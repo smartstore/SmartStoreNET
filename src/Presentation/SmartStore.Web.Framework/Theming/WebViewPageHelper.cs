@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Theming
 		private bool _initialized;
 		private ControllerContext _controllerContext;
 		private ExpandoObject _themeVars;
-		private IList<NotifyEntry> _internalNotifications;
+		private ICollection<NotifyEntry> _internalNotifications;
 
 		private int? _currentCategoryId;
 		private int? _currentManufacturerId;
@@ -164,12 +164,12 @@ namespace SmartStore.Web.Framework.Theming
 			if (_internalNotifications == null)
 			{
 				string key = NotifyAttribute.NotificationsKey;
-				IList<NotifyEntry> entries;
+				ICollection<NotifyEntry> entries;
 
 				var tempData = _controllerContext.Controller.TempData;
 				if (tempData.ContainsKey(key))
 				{
-					entries = tempData[key] as IList<NotifyEntry>;
+					entries = tempData[key] as ICollection<NotifyEntry>;
 					if (entries != null)
 					{
 						result = result.Concat(entries);
@@ -179,14 +179,14 @@ namespace SmartStore.Web.Framework.Theming
 				var viewData = _controllerContext.Controller.ViewData;
 				if (viewData.ContainsKey(key))
 				{
-					entries = viewData[key] as IList<NotifyEntry>;
+					entries = viewData[key] as ICollection<NotifyEntry>;
 					if (entries != null)
 					{
 						result = result.Concat(entries);
 					}
 				}
 
-				_internalNotifications = new List<NotifyEntry>(result);
+				_internalNotifications = new HashSet<NotifyEntry>(result);
 			}
 
 			if (type == null)

@@ -536,6 +536,41 @@
 			$('.more-less').moreLess();
 		}
 
+		// state region dropdown
+		var countryDropdown = $(".country-input.country-selector");
+
+		if (countryDropdown.length > 0) {
+
+			$(countryDropdown).on('change', function () {
+				var el = $(this);
+				var selectedItem = el.val();
+				var ddlStates = $(el.data("region-control-selector"));
+				var ajaxUrl = el.data("states-ajax-url");
+				var addEmptyStateIfRequired = el.data("param-addemptystateifrequired");
+				var addAsterisk = el.data("param-addasterisk");
+				
+				$.ajax({
+					cache: false,
+					type: "GET",
+					url: ajaxUrl,
+					data: { "countryId": selectedItem, "addEmptyStateIfRequired": addEmptyStateIfRequired, "addAsterisk": addAsterisk },
+					success: function (data) {
+						if (data.error)
+							return;
+
+						ddlStates.html('');
+						$.each(data, function (id, option) {
+							ddlStates.append($('<option></option>').val(option.id).html(option.name));
+						});
+						ddlStates.trigger("change");
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert('Failed to retrieve states.');
+					}
+				});
+			});
+		}
+		
 		// scroll top
 		(function () {
 			$('#scroll-top').click(function (e) {

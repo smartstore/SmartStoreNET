@@ -17,7 +17,8 @@ namespace SmartStore.Data.Migrations
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 4),
                         AmountBalance = c.Decimal(nullable: false, precision: 18, scale: 4),
                         CreatedOnUtc = c.DateTime(nullable: false),
-                        UsageReason = c.Int(nullable: false),
+                        Message = c.String(maxLength: 1000),
+                        AdminComment = c.String(maxLength: 4000),
                         UsedWithOrder_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)

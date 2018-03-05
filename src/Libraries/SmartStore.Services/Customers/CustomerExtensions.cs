@@ -458,16 +458,18 @@ namespace SmartStore.Services.Customers
 		/// Adds a wallet history entry.
 		/// </summary>
 		/// <param name="customer">The customer.</param>
-		/// <param name="amount"></param>
-		/// <param name="usageReason"></param>
+		/// <param name="amount">The amount.</param>
 		/// <param name="storeId">The store identifier. Must not be zero.</param>
+		/// <param name="message">The message.</param>
+		/// <param name="adminComment">The admin comment.</param>
 		/// <param name="usedWithOrder">The associated order.</param>
 		/// <returns>The added wallet history entry.</returns>
 		public static WalletHistory AddWalletHistoryEntry(
 			this Customer customer,
 			decimal amount,
-			WalletUsageReason usageReason,
 			int storeId,
+			string message = null,
+			string adminComment = null,
 			Order usedWithOrder = null)
 		{
 			Guard.NotNull(customer, nameof(customer));
@@ -480,8 +482,9 @@ namespace SmartStore.Services.Customers
 				StoreId = storeId,
 				Amount = amount,
 				AmountBalance = newAmountBalance,
-				UsageReason = usageReason,
 				CreatedOnUtc = DateTime.UtcNow,
+				Message = message,
+				AdminComment = adminComment,
 				UsedWithOrder = usedWithOrder
 			};
 

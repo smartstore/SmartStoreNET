@@ -5,14 +5,6 @@ using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Core.Domain.Customers
 {
-	public enum WalletUsageReason
-	{
-		/// <summary>
-		/// No particular usage reason.
-		/// </summary>
-		None = 0
-	}
-
 	/// <summary>
 	/// Represents a digital wallet history entry.
 	/// </summary>
@@ -52,10 +44,16 @@ namespace SmartStore.Core.Domain.Customers
 		public DateTime CreatedOnUtc { get; set; }
 
 		/// <summary>
-		/// Gets or sets the usage reason.
+		/// Gets or sets the message.
 		/// </summary>
 		[DataMember]
-		public WalletUsageReason UsageReason { get; set; }
+		public string Message { get; set; }
+
+		/// <summary>
+		/// Gets or sets the admin comment.
+		/// </summary>
+		[DataMember]
+		public string AdminComment { get; set; }
 
 		/// <summary>
 		/// Gets or sets the order for which wallet entry was used.

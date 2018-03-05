@@ -24,6 +24,7 @@
 @Html.HiddenFor(model => model.PhoneRequired)
 @Html.HiddenFor(model => model.FaxEnabled)
 @Html.HiddenFor(model => model.FaxRequired)
+
 <table class="adminContent">
     @if (Model.FirstNameEnabled)
     {
@@ -96,9 +97,9 @@
 				new
 				{
 					@class = "form-control country-input country-selector",
-					data_region_control_selector = "#Address_StateProvinceId",
+					data_region_control_selector = "#" + Html.FieldIdFor(m => m.StateProvinceId),
 					data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
-					data_param_addEmptyStateIfRequired = "true"
+					data_addEmptyStateIfRequired = "true"
 				})
                 @Html.ValidationMessageFor(model => model.CountryId)
 

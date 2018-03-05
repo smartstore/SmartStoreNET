@@ -103,8 +103,8 @@
 							@class = "form-control country-input country-selector",
 							data_region_control_selector = "#AddStateProvinceId",
 							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }),
-							data_param_addAsterisk = "true",
-							data_param_addEmptyStateIfRequired = "false"
+							data_addAsterisk = "true",
+							data_addEmptyStateIfRequired = "false"
 						})
 						@Html.ValidationMessageFor(model => model.AddCountryId)
 					</td>

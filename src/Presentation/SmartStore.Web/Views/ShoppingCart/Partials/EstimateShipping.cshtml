@@ -59,7 +59,7 @@
 					@class = "form-control noskin country-input country-selector",
 					data_region_control_selector = "#StateProvinceId",
 					data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
-					data_param_addEmptyStateIfRequired = "true"
+					data_addEmptyStateIfRequired = "true"
 				})
                 @Html.ValidationMessageFor(model => model.CountryId)
             </div>

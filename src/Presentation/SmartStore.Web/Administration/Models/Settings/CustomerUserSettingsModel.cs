@@ -136,10 +136,10 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CountryEnabled")]
             public bool CountryEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled")]
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled")]
             public bool StateProvinceEnabled { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.PhoneEnabled")]
+			
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.PhoneEnabled")]
             public bool PhoneEnabled { get; set; }
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.PhoneRequired")]
             public bool PhoneRequired { get; set; }
@@ -188,11 +188,15 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryEnabled")]
             public bool CountryEnabled { get; set; }
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryRequired")]
+			public bool CountryRequired { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled")]
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled")]
             public bool StateProvinceEnabled { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled")]
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceRequired")]
+			public bool StateProvinceRequired { get; set; }
+			
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled")]
             public bool PhoneEnabled { get; set; }
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired")]
             public bool PhoneRequired { get; set; }

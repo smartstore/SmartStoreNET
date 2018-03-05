@@ -359,6 +359,19 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Buttons.Secondary", "Secondary", "Secondary");
 			builder.AddOrUpdate("Common.Buttons.Light", "Light", "Light");
 			builder.AddOrUpdate("Common.Buttons.Dark", "Dark", "Dark");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryRequired",
+				"'Country' required",
+				"Die Eingabe eines Landes ist erforderlich",
+				"Check the box if 'Country' is required.",
+				"Legt fest, ob die Eingabe eines Landes erforderlich ist.");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceRequired",
+				"'State/province' required",
+				"Die Eingabe eines Bundeslandes ist erforderlich",
+				"Check the box if 'State/province' is required.",
+				"Legt fest, ob die Eingabe eines Bundeslandes erforderlich ist.");
+
+			builder.AddOrUpdate("Address.Fields.StateProvince.Required", "State is required.", "Bundesland wird benötigt");
 		}
 	}
 }

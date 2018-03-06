@@ -41,22 +41,34 @@
 
 				var $container = options.dialogsInBody ? $body : $editor;
 				var body = [
-					'<div class="form-group note-form-group">',
-						'<label class="note-form-label">' + lang.link.textToDisplay + '</label>',
-						'<input class="note-link-text form-control note-form-control  note-input" type="text" />',
+					'<div class="row form-group note-form-group">',
+					'	<label class="note-form-label col-3">' + lang.link.url + '</label>',
+					'	<div class="input-group col-12 col-sm-9">',
+					'		<input id="note-link-url" class="note-link-url form-control note-form-control note-input" type="text" value="http://" />',
+					'		<div class="input-group-append">',
+					'			<button class="btn btn-outline-secondary btn-browse" type="button">' + lang.image.selectFromFiles + '...</button>',
+					'		</div>',
+					'	</div>',
 					'</div>',
-					'<div class="form-group note-form-group">',
-						'<label class="note-form-label">' + lang.link.url + '</label>',
-						'<div class="input-group">',
-							'<input id="note-link-url" class="note-link-url form-control note-form-control note-input" type="text" value="http://" />',
-							'<div class="input-group-append">',
-								'<button class="btn btn-outline-secondary btn-browse" type="button">' + lang.image.selectFromFiles + '...</button>',
-							'</div>',
-						'</div>',
+					'<div class="row form-group note-form-group">',
+					'	<label class="note-form-label col-3">' + lang.link.textToDisplay + '</label>',
+					'	<div class=" col-12 col-sm-9"><input class="note-link-text form-control note-form-control note-input" type="text" /></div>',
 					'</div>',
-					'<div class="form-check">',
-						'<input id="sn-checkbox-open-in-new-window" class="form-check-input" type="checkbox" checked aria-checked="true" />',
-						'<label for="sn-checkbox-open-in-new-window" class="form-check-label">' + lang.link.openInNewWindow + '</label>',
+					'<div class="row form-group note-form-group">',
+					'	<label class="note-form-label col-3">' + 'CSS Klasse' + '</label>',
+					'	<div class=" col-12 col-sm-9"><input class="note-link-class form-control note-form-control note-input" type="text" /></div>',
+					'</div>',
+					'<div class="row form-group note-form-group">',
+					'	<label class="note-form-label col-3">' + 'CSS Stil' + '</label>',
+					'	<div class=" col-12 col-sm-9"><input class="note-link-style form-control note-form-control note-input" type="text" /></div>',
+					'</div>',
+					'<div class="row form-group note-form-group">',
+					'	<label class="note-form-label col-3">' + 'Rel' + '</label>',
+					'	<div class=" col-12 col-sm-9"><input class="note-link-rel form-control note-form-control note-input" type="text" /></div>',
+					'</div>',
+					'<div class="form-group form-check">',
+					'	<input id="sn-checkbox-open-in-new-window" class="form-check-input" type="checkbox" checked aria-checked="true" />',
+					'	<label for="sn-checkbox-open-in-new-window" class="form-check-label">' + lang.link.openInNewWindow + '</label>',
 					'</div>'
 				].join('');
 				var buttonClass = 'btn btn-primary note-btn note-btn-primary note-link-btn';
@@ -89,21 +101,47 @@
 			};
 
 			this.show = function () {
+				//var linkInfo;
 				//var img = $(context.layoutInfo.editable.data('target'));
-				//console.log(img[0]);
-				var rng = context.invoke('editor.createRange');
-				//console.log(rng);
+				//if (img) {
+				//	var rng = context.invoke('editor.createRange');
+				//	console.log(rng);
+				//	var a = $(self.findLinkInRange(rng));
+				//	if (a.length) {
+				//		linkInfo = {
+				//			range: rng,
+				//			url: a.attr('href')
+				//		};
+				//	}
+				//}			
 
-				var linkInfo = context.invoke('editor.getLinkInfo');
-				console.log(self.findLinkInRange(linkInfo.range));
+				if (!linkInfo) {
+					linkInfo = context.invoke('editor.getLinkInfo');
+				}			
+
+				var a = $(self.findLinkInRange(linkInfo.range));
+				if (a.length) {
+					linkInfo.cssClass = a.attr("class");
+					linkInfo.cssStyle = a.attr("style");
+					linkInfo.rel = a.attr("rel");
+				}
 
 				context.invoke('editor.saveRange');
 				self.showLinkDialog(linkInfo).then(function (linkInfo) {
 					context.invoke('editor.restoreRange');
 					context.invoke('editor.createLink', linkInfo);
 
-					//var a = $(linkInfo.range.sc.nextSibling);
-					console.log(self.findLinkInRange(linkInfo.range));
+					// add our custom attributes
+					var a = $(self.findLinkInRange(linkInfo.range));
+					if (a.length) {
+						var $linkClass = self.$dialog.find('.note-link-class');
+						var $linkStyle = self.$dialog.find('.note-link-style');
+						var $linkRel = self.$dialog.find('.note-link-rel');
+
+						if ($linkClass.val()) a.attr("class", $linkClass.val());
+						if ($linkStyle.val()) a.attr("style", $linkStyle.val());
+						if ($linkRel.val()) a.attr("rel", $linkRel.val());
+					}
 				}).fail(function () {
 					context.invoke('editor.restoreRange');
 				});
@@ -125,6 +163,9 @@
 				return $.Deferred(function (deferred) {
 					var $linkText = self.$dialog.find('.note-link-text');
 					var $linkUrl = self.$dialog.find('.note-link-url');
+					var $linkClass = self.$dialog.find('.note-link-class');
+					var $linkStyle = self.$dialog.find('.note-link-style');
+					var $linkRel = self.$dialog.find('.note-link-rel');
 					var $linkBtn = self.$dialog.find('.note-link-btn');
 					var $openInNewWindow = self.$dialog.find('input[type=checkbox]');
 					var $fileBrowse = self.$dialog.find('.btn-browse');
@@ -135,6 +176,9 @@
 							linkInfo.url = linkInfo.text;
 						}
 						$linkText.val(linkInfo.text);
+						$linkClass.val(linkInfo.cssClass);
+						$linkStyle.val(linkInfo.cssStyle);
+						$linkRel.val(linkInfo.rel);
 
 						$fileBrowse.click(function (e) {
 							e.preventDefault();

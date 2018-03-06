@@ -8,7 +8,7 @@ namespace SmartStore.Services.Customers
 {
 	public partial class WalletService : IWalletService
 	{
-		private readonly IRepository<WalletHistory> _walletHistoryRepository;
+		protected readonly IRepository<WalletHistory> _walletHistoryRepository;
 
 		public WalletService(
 			IRepository<WalletHistory> walletHistoryRepository)
@@ -16,7 +16,38 @@ namespace SmartStore.Services.Customers
 			_walletHistoryRepository = walletHistoryRepository;
 		}
 
-		public virtual WalletHistory InsertWalletHistoryEntry(
+		protected virtual void UpdateBalances(WalletHistory entity, decimal amountDifference)
+		{
+			if (amountDifference == decimal.Zero)
+			{
+				return;
+			}
+
+			var entries = _walletHistoryRepository.Table
+				.Where(x => x.CustomerId == entity.CustomerId && x.StoreId == entity.StoreId && x.Id >= entity.Id)
+				.OrderByDescending(x => x.CreatedOnUtc)
+				.ThenByDescending(x => x.Id)
+				.ToList();
+
+			foreach (var entry in entries)
+			{
+				entry.AmountBalance = entry.AmountBalance + amountDifference;
+			}
+
+			_walletHistoryRepository.UpdateRange(entries);
+		}
+
+		public virtual WalletHistory GetHistoryEntryById(int id)
+		{
+			if (id == 0)
+			{
+				return null;
+			}
+
+			return _walletHistoryRepository.GetById(id);
+		}
+
+		public virtual WalletHistory InsertHistoryEntry(
 			int customerId,
 			int storeId,
 			decimal amount,
@@ -27,7 +58,7 @@ namespace SmartStore.Services.Customers
 			Guard.NotZero(customerId, nameof(customerId));
 			Guard.NotZero(storeId, nameof(storeId));
 
-			var newAmountBalance = GetWalletAmountBalance(customerId, storeId) + amount;
+			var newAmountBalance = GetAmountBalance(customerId, storeId) + amount;
 
 			var entry = new WalletHistory
 			{
@@ -46,7 +77,44 @@ namespace SmartStore.Services.Customers
 			return entry;
 		}
 
-		public decimal GetWalletAmountBalance(int customerId, int storeId)
+		public virtual void UpdateHistoryEntry(
+			int id,
+			decimal amount,
+			string message,
+			string adminComment)
+		{
+			var entity = GetHistoryEntryById(id);
+			if (entity == null)
+			{
+				return;
+			}
+
+			var amountDifference = amount - entity.Amount;
+
+			entity.Amount = amount;
+			entity.Message = message.NullEmpty();
+			entity.AdminComment = adminComment.NullEmpty();
+
+			_walletHistoryRepository.Update(entity);
+
+			UpdateBalances(entity, amountDifference);
+		}
+
+		public virtual void DeleteHistoryEntry(int id)
+		{
+			var entity = GetHistoryEntryById(id);
+			if (entity == null)
+			{
+				return;
+			}
+
+			var amountDifference = -1 * entity.Amount;
+			UpdateBalances(entity, amountDifference);
+
+			_walletHistoryRepository.Delete(entity);
+		}
+
+		public decimal GetAmountBalance(int customerId, int storeId)
 		{
 			Guard.NotZero(customerId, nameof(customerId));
 			Guard.NotZero(storeId, nameof(storeId));

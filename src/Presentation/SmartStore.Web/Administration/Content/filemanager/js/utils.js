@@ -117,7 +117,7 @@ var RoxyIconHints = {
 	"markup": { name: "file-code-o", color: "#4CAF50" },
 	"code": { name: "bolt", color: "#4CAF50" },
 	"exe": { name: "gear", color: "#58595B" },
-	"image": { name: "file-image-o", color: "#FF9800" },
+	"image": { name: "file-image-o", color: "#e77c00" },
 	"text": { name: "file-text-o", color: "#607D8B" },
 	"video": { name: "file-video-o", color: "#FF5722" },
 	"font": { name: "font", color: "#797985" },

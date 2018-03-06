@@ -698,12 +698,15 @@ function pasteToDirs(e, el) {
 	if (!d)
 		d = Directory.Parse($('#pnlDirList li:first').children('div').first());
 	if (clipBoard && d) {
-		if (clipBoard.action == 'copy')
+		if (clipBoard.action == 'copy') {
 			clipBoard.obj.Copy(d.fullPath);
+		}	
 		else {
 			clipBoard.obj.Move(d.fullPath);
 			clearClipboard();
-			d.ListFiles(true);
+			if (!$("#pnlDirList").data("indeterm")) {
+				d.ListFiles(true);
+			}
 		}
 	} else
 		alert('error');
@@ -864,6 +867,7 @@ function initSelection(filePath) {
 	if (!hasSelection)
 		selectFirst();
 }
+
 $(function () {
 	RoxyUtils.LoadConfig();
 	var d = new Directory();

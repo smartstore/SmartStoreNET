@@ -89,15 +89,37 @@
 			};
 
 			this.show = function () {
+				//var img = $(context.layoutInfo.editable.data('target'));
+				//console.log(img[0]);
+				var rng = context.invoke('editor.createRange');
+				//console.log(rng);
+
 				var linkInfo = context.invoke('editor.getLinkInfo');
+				console.log(self.findLinkInRange(linkInfo.range));
+
 				context.invoke('editor.saveRange');
 				self.showLinkDialog(linkInfo).then(function (linkInfo) {
 					context.invoke('editor.restoreRange');
 					context.invoke('editor.createLink', linkInfo);
+
+					//var a = $(linkInfo.range.sc.nextSibling);
+					console.log(self.findLinkInRange(linkInfo.range));
 				}).fail(function () {
 					context.invoke('editor.restoreRange');
 				});
 			};
+
+			this.findLinkInRange = function (rng) {
+				var test = [rng.sc, rng.sc.nextSibling, rng.ec.parentNode, rng.ec, rng.ec.nextSibling, rng.ec.parentNode];
+
+				for (var i = 0; i < test.length; i++) {
+					if (test[i]) {
+						if ($(test[i]).is("a")) {
+							return test[i];
+						}
+					}
+				}
+			}
 
 			this.showLinkDialog = function (linkInfo) {
 				return $.Deferred(function (deferred) {

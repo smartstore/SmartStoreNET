@@ -183,7 +183,7 @@ namespace SmartStore.Services.Media
 			// TODO: (mc) this could lead to more thumbs getting deleted as desired. But who cares? :-)
 			var filter = string.Format("{0}*.*", file.Title);
 
-			var files = _fileSystem.SearchFiles(BuildPath(file.Path), filter);
+			var files = _fileSystem.SearchFiles(BuildPath(file.Directory), filter);
 			foreach (var f in files)
 			{
 				_fileSystem.DeleteFile(f);

@@ -64,7 +64,7 @@ function Directory(fullPath, numDirs, numFiles) {
 	this.path = RoxyUtils.GetPath(fullPath);
 	this.dirs = (numDirs ? numDirs : 0);
 	this.files = (numFiles ? numFiles : 0);
-	this.filesList = new Array();
+	this.filesList = [];
 
 	this.Show = function () {
 		var html = this.GetHtml();
@@ -153,6 +153,10 @@ function Directory(fullPath, numDirs, numFiles) {
 		var el = this.GetElement().children('ul');
 		return (el && el.is(":visible"));
 	};
+	this.IsIndeterm = function () {
+		var el = this.GetElement().find('> .dir-item');
+		return el.is(".indeterm");
+	};
 	this.IsListed = function () {
 		if ($('#hdDir').val() == this.fullPath)
 			return true;
@@ -190,10 +194,8 @@ function Directory(fullPath, numDirs, numFiles) {
 		if (li.find('li').length < 1)
 			chevrons.addClass('invisible');
 		else if (this.IsExpanded())
-			//chevrons.prop('src', RoxyUtils.GetAssetPath('images/dir-minus.png'));
 			chevrons.removeClass('invisible fa-chevron-right').addClass("fa-chevron-down");
 		else
-			//chevrons.prop('src', RoxyUtils.GetAssetPath('images/dir-plus.png'));
 			chevrons.removeClass('invisible fa-chevron-down').addClass("fa-chevron-right");
 	};
 	this.Update = function (newPath) {
@@ -205,9 +207,9 @@ function Directory(fullPath, numDirs, numFiles) {
 				this.name = 'My files';
 			this.path = RoxyUtils.GetPath(newPath);
 		}
-		el.attr('data-path', this.fullPath);
-		el.attr('data-dirs', this.dirs);
-		el.attr('data-files', this.files);
+		el.data('path', this.fullPath);
+		el.data('dirs', this.dirs);
+		el.data('files', this.files);
 		el.children('div').children('.name').html(this.name + ' (' + this.files + ')');
 		this.SetOpened();
 	};

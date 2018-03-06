@@ -35,6 +35,7 @@ namespace SmartStore.Admin.Controllers
 
 		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly Lazy<IPictureService> _pictureService;
+		private readonly Lazy<IImageCache> _imageCache;
 		private readonly IMediaFileSystem _fileSystem;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ILocalizationFileResolver _locFileResolver;
@@ -43,6 +44,7 @@ namespace SmartStore.Admin.Controllers
 		public RoxyFileManagerController(
 			Lazy<IImageProcessor> imageProcessor,
 			Lazy<IPictureService> pictureService,
+			Lazy<IImageCache> imageCache,
 			IMediaFileSystem fileSystem,
 			IEventPublisher eventPublisher,
 			ILocalizationFileResolver locFileResolver,
@@ -50,6 +52,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			_imageProcessor = imageProcessor;
 			_pictureService = pictureService;
+			_imageCache = imageCache;
 			_fileSystem = fileSystem;
 			_eventPublisher = eventPublisher;
 			_locFileResolver = locFileResolver;
@@ -564,9 +567,9 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_MoveDir") + " \"" + path + "\"");
+				throw new Exception(LangRes("E_MoveDir") + " \"" + path + "\"" + ": (" + ex.Message + ")");
 			}
 		}
 
@@ -593,17 +596,17 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_CopyFile"));
+				throw new Exception(LangRes("E_CopyFile") + ": " + ex.Message);
 			}
 		}
 
 		private void DeleteFile(string path)
 		{
 			path = GetRelativePath(path);
-
-			if (!_fileSystem.FileExists(path))
+			var file = _fileSystem.GetFile(path);
+			if (!file.Exists)
 			{
 				throw new Exception(LangRes("E_DeleteFileInvalidPath"));
 			}
@@ -611,12 +614,13 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				_fileSystem.DeleteFile(path);
+				_imageCache.Value.Delete(file);
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_DeletеFile"));
+				throw new Exception(LangRes("E_DeletеFile") + ": " + ex.Message);
 			}
 		}
 
@@ -642,9 +646,9 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_CannotDeleteDir"));
+				throw new Exception(LangRes("E_CannotDeleteDir") + ": " + ex.Message);
 			}
 		}
 
@@ -666,9 +670,9 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_CreateDirFailed"));
+				throw new Exception(LangRes("E_CreateDirFailed") + ": " + ex.Message);
 			}
 		}
 

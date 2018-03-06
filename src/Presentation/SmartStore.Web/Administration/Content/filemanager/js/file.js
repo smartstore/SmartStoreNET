@@ -100,7 +100,7 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 			'title="' + this.name + '"'
 		];
 		var html = [
-			'<li class="file-item' + (this.IsImage() ? ' file-image' : '') + '" ' + attrs.join(' ') + '>',
+			'<li class="file-item' + (this.IsImage() ? ' file-image loaded' : '') + '" ' + attrs.join(' ') + '>',
 			'<div class="icon"><img class="thumb" src="' + this.thumb + '"><i class="file-icon fa fa-fw fa-' + this.icon.name + '" style="color:' + this.icon.color + '"></i></div>',
 			'<span class="time">' + RoxyUtils.FormatDate(new Date(this.time * 1000)) + '</span>',
 			'<span class="name">' + this.name + '</span>',
@@ -215,7 +215,9 @@ function File(filePath, fileSize, modTime, w, h, mime) {
 						d.files++;
 						d.Update();
 						d.SetStatusBar();
-						d.ListFiles(true);
+						if (!$("#pnlDirList").data("indeterm")) {
+							d.ListFiles(true);
+						}
 					}
 					ret = true;
 				}

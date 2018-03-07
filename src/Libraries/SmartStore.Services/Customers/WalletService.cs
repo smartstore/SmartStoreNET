@@ -118,7 +118,7 @@ namespace SmartStore.Services.Customers
 			_walletHistoryRepository.Delete(entity);
 		}
 
-		public decimal GetAmountBalance(int customerId, int storeId)
+		public virtual decimal GetAmountBalance(int customerId, int storeId)
 		{
 			Guard.NotZero(customerId, nameof(customerId));
 			Guard.NotZero(storeId, nameof(storeId));

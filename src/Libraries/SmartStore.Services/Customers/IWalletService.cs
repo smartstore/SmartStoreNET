@@ -57,7 +57,7 @@ namespace SmartStore.Services.Customers
 		void DeleteHistoryEntry(int id);
 
 		/// <summary>
-		/// Gets the current wallet amount balance for the customer.
+		/// Gets the current wallet amount balance for a customer.
 		/// </summary>
 		/// <param name="customerId">The customer identifier.</param>
 		/// <param name="storeId">The store identifier. Must not be zero.</param>

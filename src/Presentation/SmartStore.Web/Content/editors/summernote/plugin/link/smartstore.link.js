@@ -101,39 +101,57 @@
 			};
 
 			this.show = function () {
-				//var linkInfo;
-				//var img = $(context.layoutInfo.editable.data('target'));
-				//if (img) {
-				//	var rng = context.invoke('editor.createRange');
-				//	console.log(rng);
-				//	var a = $(self.findLinkInRange(rng));
-				//	if (a.length) {
-				//		linkInfo = {
-				//			range: rng,
-				//			url: a.attr('href')
-				//		};
-				//	}
-				//}			
+				var linkInfo;
+				var img = $(context.layoutInfo.editable.data('target'));
+				if (img.length) {
+					var a = img.parent();
+					if (a.is("a")) {
+						var sc = a[0];
+						var so = 0;
+						var ec = a[0];
+						var eo = a[0].childNodes.length;
+
+						var rng = editor.createRange(sc, so, ec, eo);
+						linkInfo = {
+							forImage: true,
+							range: rng,
+							url: a.attr('href'),
+							cssClass: a.attr("class"),
+							cssStyle: a.attr("style"),
+							rel: a.attr("rel")
+						};
+					}
+				}		
 
 				if (!linkInfo) {
 					linkInfo = context.invoke('editor.getLinkInfo');
+					a = $(self.findLinkInRange(linkInfo.range));
+					if (a.length) {
+						linkInfo.cssClass = a.attr("class");
+						linkInfo.cssStyle = a.attr("style");
+						linkInfo.rel = a.attr("rel");
+					}
 				}			
-
-				var a = $(self.findLinkInRange(linkInfo.range));
-				if (a.length) {
-					linkInfo.cssClass = a.attr("class");
-					linkInfo.cssStyle = a.attr("style");
-					linkInfo.rel = a.attr("rel");
-				}
 
 				context.invoke('editor.saveRange');
 				self.showLinkDialog(linkInfo).then(function (linkInfo) {
-					context.invoke('editor.restoreRange');
-					context.invoke('editor.createLink', linkInfo);
+					console.log(linkInfo);
+					//context.invoke('editor.restoreRange');
+
+					a = $(self.findLinkInRange(linkInfo.range));
+
+					if (linkInfo.forImage) {
+						var $linkUrl = self.$dialog.find('.note-link-url');
+						a.attr("href", $linkUrl.val());
+					}
+					else {
+						context.invoke('editor.restoreRange');
+						context.invoke('editor.createLink', linkInfo);
+					}			
 
 					// add our custom attributes
-					var a = $(self.findLinkInRange(linkInfo.range));
 					if (a.length) {
+						console.log(a);
 						var $linkClass = self.$dialog.find('.note-link-class');
 						var $linkStyle = self.$dialog.find('.note-link-style');
 						var $linkRel = self.$dialog.find('.note-link-rel');
@@ -230,9 +248,13 @@
 						$linkBtn.one('click', function (e) {
 							e.preventDefault();
 							deferred.resolve({
+								forImage: linkInfo.forImage,
 								range: linkInfo.range,
 								url: $linkUrl.val(),
 								text: $linkText.val(),
+								cssClasss: $linkClass.val(),
+								cssStyle: $linkStyle.val(),
+								rel: $linkRel.val(),
 								isNewWindow: $openInNewWindow.is(':checked')
 							});
 							ui.hideDialog(self.$dialog);

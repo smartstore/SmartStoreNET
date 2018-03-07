@@ -53,7 +53,8 @@ namespace SmartStore.Services.Customers
 			decimal amount,
 			string message = null,
 			string adminComment = null,
-			Order usedWithOrder = null)
+			Order usedWithOrder = null,
+			WalletPostingReason? reason = null)
 		{
 			Guard.NotZero(customerId, nameof(customerId));
 			Guard.NotZero(storeId, nameof(storeId));
@@ -69,7 +70,8 @@ namespace SmartStore.Services.Customers
 				CreatedOnUtc = DateTime.UtcNow,
 				Message = message.NullEmpty(),
 				AdminComment = adminComment.NullEmpty(),
-				UsedWithOrder = usedWithOrder
+				UsedWithOrder = usedWithOrder,
+				Reason = reason
 			};
 
 			_walletHistoryRepository.Insert(entry);
@@ -81,7 +83,8 @@ namespace SmartStore.Services.Customers
 			int id,
 			decimal amount,
 			string message,
-			string adminComment)
+			string adminComment,
+			WalletPostingReason? reason = null)
 		{
 			var entity = GetHistoryEntryById(id);
 			if (entity == null)
@@ -94,6 +97,7 @@ namespace SmartStore.Services.Customers
 			entity.Amount = amount;
 			entity.Message = message.NullEmpty();
 			entity.AdminComment = adminComment.NullEmpty();
+			entity.Reason = reason;
 
 			_walletHistoryRepository.Update(entity);
 
@@ -129,6 +133,5 @@ namespace SmartStore.Services.Customers
 
 			return result;
 		}
-
 	}
 }

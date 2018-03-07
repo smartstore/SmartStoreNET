@@ -1,9 +1,11 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
-    public partial class Wallet : DbMigration
+    using System.Web.Hosting;
+    using Core.Data;
+    using Setup;
+
+    public partial class Wallet : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -17,6 +19,7 @@ namespace SmartStore.Data.Migrations
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 4),
                         AmountBalance = c.Decimal(nullable: false, precision: 18, scale: 4),
                         CreatedOnUtc = c.DateTime(nullable: false),
+                        Reason = c.Int(),
                         Message = c.String(maxLength: 1000),
                         AdminComment = c.String(maxLength: 4000),
                         UsedWithOrder_Id = c.Int(),
@@ -38,6 +41,34 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.WalletHistory", new[] { "CustomerId" });
             DropIndex("dbo.WalletHistory", "IX_StoreId_CreatedOn");
             DropTable("dbo.WalletHistory");
+        }
+
+        public bool RollbackOnFailure
+        {
+            get { return false; }
+        }
+
+        public void Seed(SmartObjectContext context)
+        {
+            context.MigrateLocaleResources(MigrateLocaleResources);
+
+            context.SaveChanges();
+        }
+
+        public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+        {
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Admin",
+                "Administrator",
+                "Administrator");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Purchase",
+                "Purchase",
+                "Einkauf");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refill",
+				"Refilling",
+				"Auffüllung");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refund",
+                "Refund",
+                "Rückerstattung");
         }
     }
 }

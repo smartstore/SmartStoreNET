@@ -24,6 +24,7 @@ namespace SmartStore.Services.Customers
 		/// <param name="message">An optional message to the customer.</param>
 		/// <param name="adminComment">An optional admin comment.</param>
 		/// <param name="usedWithOrder">The order the amount is used with.</param>
+		/// <param name="reason">The reason for posting this entry.</param>
 		/// <returns>The inserted wallet history entry.</returns>
 		WalletHistory InsertHistoryEntry(
 			int customerId,
@@ -31,7 +32,8 @@ namespace SmartStore.Services.Customers
 			decimal amount,
 			string message = null,
 			string adminComment = null,
-			Order usedWithOrder = null);
+			Order usedWithOrder = null,
+			WalletPostingReason? reason = null);
 
 		/// <summary>
 		/// Updates a wallet history entry.
@@ -40,11 +42,13 @@ namespace SmartStore.Services.Customers
 		/// <param name="amount">The amount.</param>
 		/// <param name="message">An optional message to the customer.</param>
 		/// <param name="adminComment">An optional admin comment.</param>
+		/// <param name="reason">The reason for posting this entry.</param>
 		void UpdateHistoryEntry(
 			int id,
 			decimal amount,
 			string message,
-			string adminComment);
+			string adminComment,
+			WalletPostingReason? reason = null);
 
 		/// <summary>
 		/// Deletes a wallet history entry.

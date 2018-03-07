@@ -44,6 +44,12 @@ namespace SmartStore.Core.Domain.Customers
 		public DateTime CreatedOnUtc { get; set; }
 
 		/// <summary>
+		/// Gets or sets the reason for posting this entry.
+		/// </summary>
+		[DataMember]
+		public WalletPostingReason? Reason { get; set; }
+
+		/// <summary>
 		/// Gets or sets the message.
 		/// </summary>
 		[DataMember]

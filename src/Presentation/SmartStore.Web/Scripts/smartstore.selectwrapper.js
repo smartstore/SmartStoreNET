@@ -24,11 +24,29 @@
 			'select2/utils'
 		],
 		function (ArrayData, Utils) {
+
 			function LazyAdapter($element, options) {
+				this._isInitialized = false;
 				LazyAdapter.__super__.constructor.call(this, $element, options);
 			}
 
 			Utils.Extend(LazyAdapter, ArrayData);
+
+			// Replaces the old 'initSelection()' callback method
+			LazyAdapter.prototype.current = function (callback) {
+				var select = this.$element,
+					data = [];
+
+				if (!this._isInitialized) {
+					callback([{
+						id: select.data('select-selected-id'),
+						text: select.data('select-init-text')
+					}]);
+				}
+				else {
+					LazyAdapter.__super__.current.call(this, callback);
+				}
+			};
 
 			LazyAdapter.prototype.query = function (params, callback) {
 				var opts = this.options.options;
@@ -57,6 +75,8 @@
 
 				var data = { results: list };
 				callback(data);
+
+				this._isInitialized = true;
 			};
 
 			return LazyAdapter;
@@ -91,8 +111,8 @@
                 url = sel.data("select-url"),
                 noCache = sel.data("select-nocache"), // future use
                 loaded = sel.data("select-loaded"),
-                lazy = sel.data("select-lazy"),
-                initText = sel.data("select-init-text"),
+				lazy = sel.data("select-lazy"),
+				initText = sel.data("select-init-text"),
                 selectedId = sel.data("select-selected-id");
 
             var placeholder = getPlaceholder();
@@ -191,7 +211,7 @@
                 }
             }
 
-            sel.select2(opts);
+			sel.select2(opts);
 
             if (autoWidth) {
                 // move special "autowidth" class to plugin container,

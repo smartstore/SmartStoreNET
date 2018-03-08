@@ -2,7 +2,6 @@
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -47,51 +46,36 @@ namespace SmartStore.Services.Customers
 			return _walletHistoryRepository.GetById(id);
 		}
 
-		public virtual WalletHistory InsertHistoryEntry(
-			int customerId,
-			int storeId,
-			decimal amount,
-			string message = null,
-			string adminComment = null,
-			Order usedWithOrder = null,
-			WalletPostingReason? reason = null)
+		public virtual WalletHistory InsertHistoryEntry(WalletHistory entity)
 		{
-			Guard.NotZero(customerId, nameof(customerId));
-			Guard.NotZero(storeId, nameof(storeId));
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotZero(entity.CustomerId, nameof(entity.CustomerId));
+			Guard.NotZero(entity.StoreId, nameof(entity.StoreId));
 
-			var newAmountBalance = GetAmountBalance(customerId, storeId) + amount;
+			entity.Message = entity.Message.NullEmpty();
+			entity.AdminComment = entity.AdminComment.NullEmpty();
 
-			var entry = new WalletHistory
-			{
-				CustomerId = customerId,
-				StoreId = storeId,
-				Amount = amount,
-				AmountBalance = newAmountBalance,
-				CreatedOnUtc = DateTime.UtcNow,
-				Message = message.NullEmpty(),
-				AdminComment = adminComment.NullEmpty(),
-				UsedWithOrder = usedWithOrder,
-				Reason = reason
-			};
+			// Always overwrite what could break the sequence.
+			entity.CreatedOnUtc = DateTime.UtcNow;
+			entity.AmountBalance = GetAmountBalance(entity.CustomerId, entity.StoreId) + entity.Amount;
 
-			_walletHistoryRepository.Insert(entry);
-
-			return entry;
+			_walletHistoryRepository.Insert(entity);
+			return entity;
 		}
 
-		public virtual void UpdateHistoryEntry(
-			int id,
-			decimal amount,
-			string message,
-			string adminComment,
-			WalletPostingReason? reason = null)
+		public virtual WalletHistory UpdateHistoryEntry(WalletHistory entity)
 		{
-			var entity = GetHistoryEntryById(id);
-			if (entity == null)
-			{
-				return;
-			}
+			Guard.NotNull(entity, nameof(entity));
 
+			// Update only what is uncritical and does not break the sequence.
+			var amount = entity.Amount;
+			var message = entity.Message;
+			var adminComment = entity.AdminComment;
+			var reason = entity.Reason;
+
+			_walletHistoryRepository.Context.ReloadEntity(entity);
+
+			// Entity is in now in unchanged state.
 			var amountDifference = amount - entity.Amount;
 
 			entity.Amount = amount;
@@ -102,20 +86,19 @@ namespace SmartStore.Services.Customers
 			_walletHistoryRepository.Update(entity);
 
 			UpdateBalances(entity, amountDifference);
+
+			return entity;
 		}
 
-		public virtual void DeleteHistoryEntry(int id)
+		public virtual void DeleteHistoryEntry(WalletHistory entity)
 		{
-			var entity = GetHistoryEntryById(id);
-			if (entity == null)
+			if (entity != null)
 			{
-				return;
+				var amountDifference = -1 * entity.Amount;
+				UpdateBalances(entity, amountDifference);
+
+				_walletHistoryRepository.Delete(entity);
 			}
-
-			var amountDifference = -1 * entity.Amount;
-			UpdateBalances(entity, amountDifference);
-
-			_walletHistoryRepository.Delete(entity);
 		}
 
 		public virtual decimal GetAmountBalance(int customerId, int storeId)

@@ -36,14 +36,39 @@ namespace SmartStore.Services.Tests.Customers
 
 			_walletService = new WalletService(_walletHistoryRepository);
 
-			_entry1 = _walletService.InsertHistoryEntry(1, 1, 120M);
-			_entry2 = _walletService.InsertHistoryEntry(1, 2, 12.3M);
-			_entry3 = _walletService.InsertHistoryEntry(1, 1, 60.5M);
-			_entry4 = _walletService.InsertHistoryEntry(1, 1, -20M, "test");
+			_entry1 = _walletService.InsertHistoryEntry(new WalletHistory
+			{
+				Id = 1,
+				CustomerId = 1,
+				StoreId = 1,
+				Amount = 120M
+			});
+			_entry2 = _walletService.InsertHistoryEntry(new WalletHistory
+			{
+				Id = 2,
+				CustomerId = 1,
+				StoreId = 2,
+				Amount = 12.3M
+			});
+			_entry3 = _walletService.InsertHistoryEntry(new WalletHistory
+			{
+				Id = 3,
+				CustomerId = 1,
+				StoreId = 1,
+				Amount = 60.5M
+			});
+			_entry4 = _walletService.InsertHistoryEntry(new WalletHistory
+			{
+				Id = 4,
+				CustomerId = 1,
+				StoreId = 1,
+				Amount = -20M,
+				Message = "test"
+			});
 		}
 
 		[Test]
-		public void Can_get_wallet_amount_balance()
+		public void Can_get_amount_balance()
 		{
 			var balance1 = _walletService.GetAmountBalance(1, 1);
 			balance1.ShouldEqual(160.5M);

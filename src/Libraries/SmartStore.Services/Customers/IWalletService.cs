@@ -1,5 +1,4 @@
 ﻿using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -16,45 +15,24 @@ namespace SmartStore.Services.Customers
 		WalletHistory GetHistoryEntryById(int id);
 
 		/// <summary>
-		/// Inserts a wallet history entry.
+		/// Inserts a wallet history entry. AmountBalance and CreatedOnUtc are set internally.
 		/// </summary>
-		/// <param name="customerId">The customer identifier.</param>
-		/// <param name="storeId">The store identifier. Must not be zero.</param>
-		/// <param name="amount">The amount.</param>
-		/// <param name="message">An optional message to the customer.</param>
-		/// <param name="adminComment">An optional admin comment.</param>
-		/// <param name="usedWithOrder">The order the amount is used with.</param>
-		/// <param name="reason">The reason for posting this entry.</param>
+		/// <param name="entity">Wallet history entry.</param>
 		/// <returns>The inserted wallet history entry.</returns>
-		WalletHistory InsertHistoryEntry(
-			int customerId,
-			int storeId,
-			decimal amount,
-			string message = null,
-			string adminComment = null,
-			Order usedWithOrder = null,
-			WalletPostingReason? reason = null);
+		WalletHistory InsertHistoryEntry(WalletHistory entity);
 
 		/// <summary>
-		/// Updates a wallet history entry.
+		/// Updates a wallet history entry. Some fields like AmountBalance and CreatedOnUtc cannot be changed subsequently.
 		/// </summary>
-		/// <param name="id">Identifier of the wallet history entity.</param>
-		/// <param name="amount">The amount.</param>
-		/// <param name="message">An optional message to the customer.</param>
-		/// <param name="adminComment">An optional admin comment.</param>
-		/// <param name="reason">The reason for posting this entry.</param>
-		void UpdateHistoryEntry(
-			int id,
-			decimal amount,
-			string message,
-			string adminComment,
-			WalletPostingReason? reason = null);
+		/// <param name="entity">Wallet history entry.</param>
+		/// <returns>The updated wallet history entry.</returns>
+		WalletHistory UpdateHistoryEntry(WalletHistory entity);
 
 		/// <summary>
 		/// Deletes a wallet history entry.
 		/// </summary>
-		/// <param name="id">Identifier of the wallet history entity.</param>
-		void DeleteHistoryEntry(int id);
+		/// <param name="entity">Wallet history entry.</param>
+		void DeleteHistoryEntry(WalletHistory entity);
 
 		/// <summary>
 		/// Gets the current wallet amount balance for a customer.

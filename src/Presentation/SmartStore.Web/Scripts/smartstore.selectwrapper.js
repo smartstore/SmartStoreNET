@@ -84,14 +84,15 @@
 	);
 
     $.fn.selectWrapper = function (options) {
-
     	if (options && !_.str.isBlank(options.resetDataUrl) && lists[options.resetDataUrl]) {
     		lists[options.resetDataUrl] = null;
     		return this.each(function () { });
-    	}
+		}
+
+		this.options = options;
 
         return this.each(function () {
-            var sel = $(this);
+			var sel = $(this);
 
             if (sel.data("select2")) { 
                 // skip process if select is skinned already
@@ -242,9 +243,9 @@
             }
 
             function getPlaceholder () {
-                return sel.attr("placeholder") ||
-                       sel.data("placeholder") ||
-                       sel.data("select-placeholder");
+				return sel.attr("placeholder") ||
+					sel.data("placeholder") ||
+					sel.data("select-placeholder");
             }
 
         });

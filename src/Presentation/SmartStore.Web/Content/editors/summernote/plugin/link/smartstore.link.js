@@ -101,10 +101,10 @@
 			};
 
 			this.show = function () {
-				var linkInfo;
+				var linkInfo, a;
 				var img = $(context.layoutInfo.editable.data('target'));
 				if (img.length) {
-					var a = img.parent();
+					a = img.parent();
 					if (a.is("a")) {
 						var sc = a[0];
 						var so = 0;
@@ -135,7 +135,7 @@
 
 				context.invoke('editor.saveRange');
 				self.showLinkDialog(linkInfo).then(function (linkInfo) {
-					console.log(linkInfo);
+					//console.log(linkInfo);
 					//context.invoke('editor.restoreRange');
 
 					a = $(self.findLinkInRange(linkInfo.range));
@@ -159,6 +159,8 @@
 						if ($linkClass.val()) a.attr("class", $linkClass.val());
 						if ($linkStyle.val()) a.attr("style", $linkStyle.val());
 						if ($linkRel.val()) a.attr("rel", $linkRel.val());
+
+						console.log(a);
 					}
 				}).fail(function () {
 					context.invoke('editor.restoreRange');
@@ -166,7 +168,7 @@
 			};
 
 			this.findLinkInRange = function (rng) {
-				var test = [rng.sc, rng.sc.nextSibling, rng.ec.parentNode, rng.ec, rng.ec.nextSibling, rng.ec.parentNode];
+				var test = [rng.sc, rng.ec, rng.sc.nextSibling, rng.ec.nextSibling, rng.ec.parentNode, rng.ec.parentNode];
 
 				for (var i = 0; i < test.length; i++) {
 					if (test[i]) {

@@ -222,6 +222,7 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
 
 			//if value not changed --> trigger 'nochange' event and return
 			/*jslint eqeq: true*/
+			
 			if (!this.options.savenochange && this.input.value2str(newValue) === this.input.value2str(this.value)) {
 				/*jslint eqeq: false*/
                 /**        
@@ -242,7 +243,7 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
 			$.when(this.save(submitValue))
 				.done($.proxy(function (response) {
 					this.isSaving = false;
-
+					
 					//run success callback
 					var res = typeof this.options.success === 'function' ? this.options.success.call(this.options.scope, response, newValue) : null;
 
@@ -1637,10 +1638,12 @@ Makes editable any HTML element on the page. Applied as jQuery method.
 			if (this.input.value2htmlFinal) {
 				return this.input.value2html(this.value, this.$element[0], this.options.display, response);
 				//if display method defined --> use it    
-			} else if (typeof this.options.display === 'function') {
+			}
+			else if (typeof this.options.display === 'function') {
 				return this.options.display.call(this.$element[0], this.value, response);
 				//else use input's original value2html() method    
-			} else {
+			}
+			else {
 				return this.input.value2html(this.value, this.$element[0]);
 			}
 		},
@@ -1736,7 +1739,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
 			if (this.options.display === false) {
 				return;
 			}
-
+			
             /* 
             isEmpty may be set directly as param of method.
             It is required when we enable/disable field and can't rely on content 
@@ -1871,23 +1874,8 @@ Makes editable any HTML element on the page. Applied as jQuery method.
 				}, 10);
 			}
 
-			//set new value
-			this.setValue(params.newValue, false, params.response);
-
-            /**        
-            Fired when new value was submitted. You can use <code>$(this).data('editable')</code> to access to editable instance
-            
-            @event save 
-            @param {Object} event event object
-            @param {Object} params additional params
-            @param {mixed} params.newValue submitted value
-            @param {Object} params.response ajax response
-            @example
-            $('#username').on('save', function(e, params) {
-                alert('Saved value: ' + params.newValue);
-            });
-            **/
-			//event itself is triggered by editableContainer. Description here is only for documentation              
+			// set new value
+			this.setValue(params.newValue, false, params.response);            
 		},
 
 		validate: function () {
@@ -1908,13 +1896,15 @@ Makes editable any HTML element on the page. Applied as jQuery method.
 			} else {
 				this.value = value;
 			}
+
 			if (this.container) {
 				this.container.option('value', this.value);
 			}
-			$.when(this.render(response))
+
+			var yo = $.when(this.render(response))
 				.then($.proxy(function () {
 					this.handleEmpty();
-				}, this));
+				}, this));	
 		},
 
         /**
@@ -3734,7 +3724,7 @@ $(function(){
 				ajax.url = source;
 			}
 			else {
-				//check format and convert x-editable format to select2 format (if needed)
+				// check format and convert x-editable format to select2 format (if needed)
 				this.sourceData = this.convertSource(source);
 				options.select2.data = this.sourceData;
 			}
@@ -3756,14 +3746,14 @@ $(function(){
 			this.idFunc = function (e) { return e[idKey]; };
 		}
 
-		//store function that renders text in select2
+		// store function that renders text in select2
 		this.templateSelection = this.options.select2.templateSelection;
 		if (typeof (this.templateSelection) !== "function") {
 			this.templateSelection = function (item) { return item.text; };
 		}
 	};
 
-	$.fn.editableutils.inherit(Constructor, $.fn.editabletypes.list);
+	$.fn.editableutils.inherit(Constructor, $.fn.editabletypes.abstractinput);
 
 	$.extend(Constructor.prototype, {
 		render: function () {
@@ -3794,7 +3784,7 @@ $(function(){
 			var text = '',
 				data,
 				that = this;
-			
+
 			if (this.options.select2.tags) { //in tags mode just assign value
 				data = value;
 				//data = $.fn.editableutils.itemsByValue(value, this.options.select2.tags, this.idFunc);
@@ -3821,7 +3811,6 @@ $(function(){
 
 			text = $.isArray(text) ? text.join(this.options.viewseparator) : text;
 
-			//$(element).text(text);
 			Constructor.superclass.value2html.call(this, text, element);
 		},
 
@@ -3860,7 +3849,6 @@ $(function(){
 			// for remote source just set value, text is updated by initSelection
 			if (!select.data("select2")) {
 				select.val(value);
-				//select.select2(this.options.select2);
 				select.selectWrapper(this.options.select2);
 			}
 			else {
@@ -3893,7 +3881,6 @@ $(function(){
 
 		input2value: function () {
 			return this.$input.val();
-
 		},
 
 		autosubmit: function () {
@@ -3921,6 +3908,7 @@ $(function(){
 					}
 				}
 			}
+
 			return source;
 		},
 

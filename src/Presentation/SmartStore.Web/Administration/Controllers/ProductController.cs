@@ -2485,7 +2485,7 @@ namespace SmartStore.Admin.Controllers
                                 })
                                 .ToList();
 
-                            psaModel.SpecificationAttributeOptionsJsonString = HttpUtility.HtmlEncode(JsonConvert.SerializeObject(psaModel.SpecificationAttributeOptions));
+							psaModel.SpecificationAttributeOptionsUrl = Url.Action("GetOptionsByAttributeId", "SpecificationAttribute", new { attributeId = attributeId });
                         }
 
                         return psaModel;

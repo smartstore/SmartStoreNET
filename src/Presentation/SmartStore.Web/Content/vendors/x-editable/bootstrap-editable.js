@@ -3730,16 +3730,15 @@ $(function(){
 			}
 		}
 
-		//overriding objects in config (as by default jQuery extend() is not recursive)
+		// overriding objects in config (as by default jQuery extend() is not recursive)
 		this.options.select2 = $.extend({}, Constructor.defaults.select2, options.select2);
-		this.options.select2.theme = 'bootstrap';
 
 		//detect whether it is multi-valued
 		this.isMultiple = this.options.select2.tags || this.options.select2.multiple;
 		this.isRemote = ('ajax' in this.options.select2);
 
 		//store function returning ID of item
-		//should be here as used inautotext for local source
+		//should be here as used in autotext for local source
 		this.idFunc = this.options.select2.id;
 		if (typeof (this.idFunc) !== "function") {
 			var idKey = this.idFunc || 'id';
@@ -3758,6 +3757,11 @@ $(function(){
 	$.extend(Constructor.prototype, {
 		render: function () {
 			this.setClass();
+
+			if (this.sourceData && (this.options.placeholder || this.options.select2.placeholder)) {
+				// select2 with ArrayAdapter requires an empty option tag to correctly the placeholder
+				this.$input.append('<option></option>');
+			}
 
 			//can not apply select2 here as it calls initSelection 
 			//over input that does not have correct value yet.

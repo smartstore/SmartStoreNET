@@ -481,8 +481,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="product">Product</param>
         /// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
         /// <returns>Final price</returns>
-		public virtual decimal GetFinalPrice(Product product, 
-            bool includeDiscounts)
+		public virtual decimal GetFinalPrice(Product product, bool includeDiscounts)
         {
             var customer = _services.WorkContext.CurrentCustomer;
 			return GetFinalPrice(product, customer, includeDiscounts);
@@ -495,9 +494,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="customer">The customer</param>
         /// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
         /// <returns>Final price</returns>
-		public virtual decimal GetFinalPrice(Product product, 
-            Customer customer, 
-            bool includeDiscounts)
+		public virtual decimal GetFinalPrice(Product product, Customer customer, bool includeDiscounts)
         {
 			return GetFinalPrice(product, customer, decimal.Zero, includeDiscounts);
         }

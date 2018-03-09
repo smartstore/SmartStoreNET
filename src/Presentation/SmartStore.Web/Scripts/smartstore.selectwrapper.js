@@ -35,12 +35,13 @@
 			// Replaces the old 'initSelection()' callback method
 			LazyAdapter.prototype.current = function (callback) {
 				var select = this.$element,
+					opts = this.options.options,
 					data = [];
 
 				if (!this._isInitialized) {
 					callback([{
-						id: select.data('select-selected-id'),
-						text: select.data('select-init-text')
+						id: opts.init ? opts.init.id : null,
+						text: opts.init ? opts.init.text : null
 					}]);
 				}
 				else {
@@ -51,12 +52,12 @@
 			LazyAdapter.prototype.query = function (params, callback) {
 				var opts = this.options.options;
 
-				if (!opts.selectLazy && !opts.selectUrl) {
+				if (!opts.lazy && !opts.lazy.url) {
 					callback({ results: [] });
 				}
 
-				var url = opts.selectUrl;
-				var selectedId = this.$element.data("select-selected-id");
+				var url = opts.lazy.url;
+				var selectedId = opts.init ? opts.init.id : null;
 				var term = params.term;
 
 				if (!lists[url]) {
@@ -83,13 +84,13 @@
 		}
 	);
 
-    $.fn.selectWrapper = function (options) {
+	$.fn.selectWrapper = function (options) {
     	if (options && !_.str.isBlank(options.resetDataUrl) && lists[options.resetDataUrl]) {
     		lists[options.resetDataUrl] = null;
     		return this.each(function () { });
 		}
-
-		this.options = options;
+		
+		options = options || {};
 
         return this.each(function () {
 			var sel = $(this);
@@ -106,48 +107,53 @@
             	}
             }
 
+			if (!options.lazy && sel.data("select-url")) {
+				options.lazy = {
+					url: sel.data("select-url"),
+					loaded: sel.data("select-loaded")
+				}
+			}
+
+			if (!options.init && sel.data("select-init-text") && sel.data("select-selected-id")) {
+				options.init = {
+					id: sel.data("select-selected-id"),
+					text: sel.data("select-init-text")
+				}
+			}
+
             var autoWidth = sel.hasClass("autowidth"),
                 minResultsForSearch = sel.data("select-min-results-for-search"),
                 minInputLength = sel.data("select-min-input-length"),
-                url = sel.data("select-url"),
-                noCache = sel.data("select-nocache"), // future use
-                loaded = sel.data("select-loaded"),
-				lazy = sel.data("select-lazy"),
-				initText = sel.data("select-init-text"),
-                selectedId = sel.data("select-selected-id");
+				noCache = sel.data("select-nocache"), // future use
+				lazy = options.lazy,
+				url = options.lazy ? options.lazy.url : null,
+				loaded = options.lazy ? options.lazy.loaded : null,
+				initText = options.init ? options.init.text : null,
+				selectedId = options.init ? options.init.id : null;
 
             var placeholder = getPlaceholder();
 
-            if (sel.is("select")) {
-                // following code only applicable to select boxes (not input:hidden)
-                var firstOption = sel.children("option").first();
-                var hasOptionLabel = firstOption.length &&
-                                     (firstOption[0].attributes['value'] === undefined || _.str.isBlank(firstOption.val()));
+            // following code only applicable to select boxes (not input:hidden)
+            var firstOption = sel.children("option").first();
+            var hasOptionLabel = firstOption.length &&
+                                    (firstOption[0].attributes['value'] === undefined || _.str.isBlank(firstOption.val()));
 
-                if (placeholder && hasOptionLabel) {
-                    // clear first option text in nullable dropdowns.
-                    // "allowClear" doesn't work otherwise.
-                    firstOption.text("");
-                }
-
-                if (placeholder && !hasOptionLabel) {
-                    // create empty first option
-                    // "allowClear" doesn't work otherwise.
-                    firstOption = $('<option></option>').prependTo(sel);
-                }
-
-				if (!placeholder && hasOptionLabel && firstOption.text() && !sel.data("tags")) {
-                    // use first option text as placeholder
-                    placeholder = firstOption.text();
-                    firstOption.text("");
-                }
+            if (placeholder && hasOptionLabel) {
+                // clear first option text in nullable dropdowns.
+                // "allowClear" doesn't work otherwise.
+                firstOption.text("");
             }
-            else {
-                // sel is input:hidden
-                if (placeholder && sel.val() == 0) {
-                    // we assume that a "0" value indicates nullability
-                    sel.removeAttr("value");
-                }
+
+            if (placeholder && !hasOptionLabel) {
+                // create empty first option
+                // "allowClear" doesn't work otherwise.
+                firstOption = $('<option></option>').prependTo(sel);
+            }
+
+			if (!placeholder && hasOptionLabel && firstOption.text() && !sel.data("tags")) {
+                // use first option text as placeholder
+                placeholder = firstOption.text();
+                firstOption.text("");
             }
 
             function renderSelectItem(item) {
@@ -210,7 +216,11 @@
                     // ...immediately
                     buildOptions();
                 }
-            }
+			}
+			else if (opts.ajax && opts.init && opts.init.text && sel.find('option[value="' + opts.init.text + '"]').length === 0) {
+				// In AJAX mode: add initial option when missing
+				sel.append('<option value="' + opts.init.id + '" selected>' + opts.init.text + '</option>');
+			}
 
 			sel.select2(opts);
 
@@ -242,8 +252,9 @@
                 }
             }
 
-            function getPlaceholder () {
-				return sel.attr("placeholder") ||
+			function getPlaceholder() {
+				return (options && options.placeholder)
+					sel.attr("placeholder") ||
 					sel.data("placeholder") ||
 					sel.data("select-placeholder");
             }

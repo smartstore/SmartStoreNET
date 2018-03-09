@@ -3699,12 +3699,12 @@ $(function(){
 
 		this.sourceData = null;
 
-		//placeholder
+		// placeholder
 		if (options.placeholder) {
 			options.select2.placeholder = options.placeholder;
 		}
 
-		//if not `tags` mode, use source
+		// if not `tags` mode, use source
 		if (!options.select2.tags && options.source) {
 			var source = options.source;
 			//if source is function, call it (once!)
@@ -3733,7 +3733,7 @@ $(function(){
 		// overriding objects in config (as by default jQuery extend() is not recursive)
 		this.options.select2 = $.extend({}, Constructor.defaults.select2, options.select2);
 
-		//detect whether it is multi-valued
+		// detect whether it is multi-valued
 		this.isMultiple = this.options.select2.tags || this.options.select2.multiple;
 		this.isRemote = ('ajax' in this.options.select2);
 
@@ -3758,15 +3758,11 @@ $(function(){
 		render: function () {
 			this.setClass();
 
-			if (this.sourceData && (this.options.placeholder || this.options.select2.placeholder)) {
-				// select2 with ArrayAdapter requires an empty option tag to correctly the placeholder
-				this.$input.append('<option></option>');
-			}
-
 			//can not apply select2 here as it calls initSelection 
 			//over input that does not have correct value yet.
 			//apply select2 only in value2input
 			//this.$input.select2(this.options.select2);
+			this.$input.selectWrapper(this.options.select2);
 
 			//when data is loaded via ajax, we need to know when it's done to populate listData
 			if (this.isRemote) {
@@ -3843,25 +3839,18 @@ $(function(){
 		},
 
 		value2input: function (value) {
-			// if value array => join it anyway
+			// if value is array => join it anyway
 			if ($.isArray(value)) {
 				value = value.join(this.getSeparator());
 			}
 
 			var select = $(this.$input);
 
-			// for remote source just set value, text is updated by initSelection
-			if (!select.data("select2")) {
-				select.val(value);
-				select.selectWrapper(this.options.select2);
-			}
-			else {
-				//second argument needed to separate initial change from user's click (for autosubmit)   
-				select.val(value).trigger('change', true);
+			//second argument needed to separate initial change from user's click (for autosubmit)   
+			select.val(value).trigger('change', true);
 
-				//Uncaught Error: cannot call val() if initSelection() is not defined
-				select.select2('val', value);
-			}
+			//Uncaught Error: cannot call val() if initSelection() is not defined
+			select.val(value);
 
 			// if defined remote source AND no multiple mode AND no user's initSelection provided --> 
 			// we should somehow get text for provided id.

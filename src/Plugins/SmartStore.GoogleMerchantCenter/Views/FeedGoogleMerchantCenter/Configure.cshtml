@@ -81,6 +81,8 @@
 				c.Bound(x => x.Export2)
 					.ClientTemplate(XEditableLink("Export2", "select2").ToHtmlString());
 				c.Bound(x => x.Taxonomy)
+					.HtmlAttributes(new { @class = "gmc-taxonomy" })
+					.HeaderHtmlAttributes(new { @class = "gmc-taxonomy" })
 					.ClientTemplate(XEditableLink("Taxonomy", "select2").ToHtmlString());
 				c.Bound(x => x.Gender)
 					.ClientTemplate(XEditableLink("Gender", "select2").ToHtmlString());
@@ -115,7 +117,8 @@
 			})
 			.ClientEvents(e =>
 			{
-				e.OnDataBound("OnGridDataBound");
+				//e.OnDataBound("OnGridDataBound");
+				e.OnRowDataBound("OnGridRowDataBound");
 				e.OnDataBinding("OnGridDataBinding");
 				e.OnError("OnGridError");
 			})
@@ -159,9 +162,9 @@
 	   data-type="@type">@displayText</a>
 }
 
-	<script type="text/javascript">
+	<script>
 
-	$('#search-products').click(function () {
+	$('#search-products').on('click', function () {
 		var grid = $('#gmc-products-grid').data('tGrid');
 		grid.currentPage = 1;
 		grid.ajaxRequest();
@@ -180,8 +183,9 @@
 		};
 	}
 
-	function OnGridDataBound(e) {
-		var grid = $('#gmc-products-grid'),
+	function OnGridRowDataBound(e) {
+		var grid = $(e.currentTarget),
+			row = $(e.row),
 			emptyCell = @T("Plugins.Feed.Froogle.EmptyGridCell").JsText;
 
 		var options = {
@@ -204,14 +208,14 @@
 			{ id: 'false', text: @T("Admin.Common.No").JsText }
 		];
 
-		grid.find('a.edit-link-export2').editable($.extend({}, options, {
+		row.find('a.edit-link-export2').editable($.extend({}, options, {
 			select2: {
 				minimumResultsForSearch: 20
 			},
 			source: boolSource
 		}));
 
-		grid.find('a.edit-link-gender').editable($.extend({}, options, {
+		row.find('a.edit-link-gender').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
 				{ id: 'male', text: @T("Plugins.Feed.Froogle.GenderMale").JsText },
@@ -220,7 +224,7 @@
 			]
 		}));
 
-		grid.find('a.edit-link-agegroup').editable($.extend({}, options, {
+		row.find('a.edit-link-agegroup').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
 				{ id: 'adult', text: @T("Plugins.Feed.Froogle.AgeGroupAdult").JsText },
@@ -228,16 +232,16 @@
 			]
 		}));
 
-		grid.find('a.edit-link-isadult').editable($.extend({}, options, {
+		row.find('a.edit-link-isadult').editable($.extend({}, options, {
 			select2: select2Options,
 			source: boolSource
 		}));
 
-		grid.find('a.edit-link-color').editable(options);
-		grid.find('a.edit-link-size').editable(options);
-		grid.find('a.edit-link-material').editable(options);
-		grid.find('a.edit-link-pattern').editable(options);
-		grid.find('a.edit-link-multipack2').editable($.extend({}, options, {
+		row.find('a.edit-link-color').editable(options);
+		row.find('a.edit-link-size').editable(options);
+		row.find('a.edit-link-material').editable(options);
+		row.find('a.edit-link-pattern').editable(options);
+		row.find('a.edit-link-multipack2').editable($.extend({}, options, {
 			validate: function(value) {
 				if (value.length !== 0) {
 					var regex = /^[0-9]+$/;
@@ -249,12 +253,12 @@
 			}
 		}));
 
-		grid.find('a.edit-link-isbundle').editable($.extend({}, options, {
+		row.find('a.edit-link-isbundle').editable($.extend({}, options, {
 			select2: select2Options,
 			source: boolSource
 		}));
 
-		grid.find('a.edit-link-energyefficiencyclass').editable($.extend({}, options, {
+		row.find('a.edit-link-energyefficiencyclass').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
 				@if (Model.EnergyEfficiencyClasses != null && Model.EnergyEfficiencyClasses.Any())
@@ -267,30 +271,14 @@
 			]
 		}));
 
-		// Test date inline editing. Set 'datetime' type for XEditableLink.
-		//grid.find('a.edit-link-customlabel0').editable($.extend({}, rightOptions, {
-		//	viewformat: 'L LT',
-		//	display: function (value, sourceData) {
-		//		if (value) {
-		//			// 'value' is an object of type date.
-		//			// $.fn.editabletypes.datetime.prototype.value2str(value);
-		//			var m = moment(value);
-		//			var text = m.format('L LT');
-		//			$(this).text(text);
-		//		}
-		//		else {
-		//			$(this).text(null);
-		//		}
-		//	}
-		//}));
+		row.find('a.edit-link-customlabel0').editable(rightOptions);
+		row.find('a.edit-link-customlabel1').editable(rightOptions);
+		row.find('a.edit-link-customlabel2').editable(rightOptions);
+		row.find('a.edit-link-customlabel3').editable(rightOptions);
+		row.find('a.edit-link-customlabel4').editable(rightOptions);
 
-		grid.find('a.edit-link-customlabel0').editable(rightOptions);
-		grid.find('a.edit-link-customlabel1').editable(rightOptions);
-		grid.find('a.edit-link-customlabel2').editable(rightOptions);
-		grid.find('a.edit-link-customlabel3').editable(rightOptions);
-		grid.find('a.edit-link-customlabel4').editable(rightOptions);
-
-		grid.find('a.edit-link-taxonomy').editable($.extend({}, options, {
+		var link = row.find('a.edit-link-taxonomy');
+		link.editable($.extend({}, options, {
 			type: 'select2',
 			unsavedclass: null,
 			display: function (value, sourceData) {
@@ -301,6 +289,10 @@
 				dropdownAutoWidth: true,
 				allowClear: true,
 				language: '@Model.LanguageSeoCode',
+				init: {
+					id: link.data('value'),
+					text: link.data('value')
+				},
 				ajax: {
 					delay: 300,
 					cache: true,
@@ -327,6 +319,5 @@
 				}
 			}
 		}));
-
 	}
 </script>

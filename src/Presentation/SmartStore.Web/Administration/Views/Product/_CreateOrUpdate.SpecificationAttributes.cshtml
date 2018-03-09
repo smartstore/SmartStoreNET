@@ -161,13 +161,21 @@
 
                     link.editable({
 						type: 'select2',
-						tpl: '<select class="noskin" data-select-lazy="true" data-select-url="{0}" data-select-selected-id="{1}" data-select-init-text="{2}"></select>'.format(optionsUrl, selectedId, initText),
 						url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
 						unsavedclass: null,
 						inputclass: 'form-control form-control-sm',
 						mode: 'popup',
 						placement: 'right',
 						autotext: 'auto',
+						select2: {
+							lazy: {
+								url: optionsUrl
+							},
+							init: {
+								id: selectedId,
+								text: initText
+							}
+						},
 						display: function (value, sourceData) {
 							// ABS4: display new value, otherwise always 'empty' is displayed.
 							if (sourceData && sourceData.success) {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 
@@ -114,6 +115,20 @@ namespace SmartStore.Services.Customers
 				.Select(x => x.AmountBalance)
 				.FirstOrDefault();
 
+			return result;
+		}
+
+		public virtual IPagedList<WalletHistory> GetHistoryByCustomerId(int customerId, int storeId, int pageIndex, int pageSize)
+		{
+			Guard.NotZero(customerId, nameof(customerId));
+			Guard.NotZero(storeId, nameof(storeId));
+
+			var query = _walletHistoryRepository.TableUntracked
+				.Where(x => x.CustomerId == customerId && x.StoreId == storeId)
+				.OrderByDescending(x => x.CreatedOnUtc)
+				.ThenByDescending(x => x.Id);
+
+			var result = new PagedList<WalletHistory>(query, pageIndex, pageSize);
 			return result;
 		}
 	}

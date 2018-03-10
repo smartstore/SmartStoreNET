@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Customers;
+﻿using SmartStore.Core;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Customers
 {
@@ -41,5 +42,15 @@ namespace SmartStore.Services.Customers
 		/// <param name="storeId">The store identifier. Must not be zero.</param>
 		/// <returns>Current wallet amount balance.</returns>
 		decimal GetAmountBalance(int customerId, int storeId);
+
+		/// <summary>
+		/// Get wallet history by customer identifier.
+		/// </summary>
+		/// <param name="customerId">The customer identifier.</param>
+		/// <param name="storeId">The store identifier.</param>
+		/// <param name="pageIndex">The page index.</param>
+		/// <param name="pageSize">The page size.</param>
+		/// <returns>Wallet history.</returns>
+		IPagedList<WalletHistory> GetHistoryByCustomerId(int customerId, int storeId, int pageIndex, int pageSize);
 	}
 }

@@ -58,8 +58,8 @@ namespace SmartStore.Data.Migrations
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Admin",
-                "Administrator",
-                "Administrator");
+				"Administration",
+				"Administration");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Purchase",
                 "Purchase",
                 "Einkauf");

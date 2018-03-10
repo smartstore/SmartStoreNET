@@ -1,4 +1,8 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.Widgets.DevToolsDemo" AppendRootKey="false">
+		<Value>Dev-Tools Demo Widget</Value>
+	</LocaleResource>
+	
   <LocaleResource Name="EnableMiniProfilerInPublicStore">
     <Value>Enable Mini-Profiler in public store</Value>
   </LocaleResource>

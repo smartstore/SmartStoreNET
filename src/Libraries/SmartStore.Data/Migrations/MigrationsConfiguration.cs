@@ -372,6 +372,8 @@ namespace SmartStore.Data.Migrations
 				"Legt fest, ob die Eingabe eines Bundeslandes erforderlich ist.");
 
 			builder.AddOrUpdate("Address.Fields.StateProvince.Required", "State is required.", "Bundesland wird benötigt");
+
+			builder.AddOrUpdate("Common.Columns", "Columns", "Spalten");
 		}
 	}
 }

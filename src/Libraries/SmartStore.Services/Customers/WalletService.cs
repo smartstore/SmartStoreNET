@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 
@@ -9,11 +8,14 @@ namespace SmartStore.Services.Customers
 	public partial class WalletService : IWalletService
 	{
 		protected readonly IRepository<WalletHistory> _walletHistoryRepository;
+		protected readonly ICustomerService _customerService;
 
 		public WalletService(
-			IRepository<WalletHistory> walletHistoryRepository)
+			IRepository<WalletHistory> walletHistoryRepository,
+			ICustomerService customerService)
 		{
 			_walletHistoryRepository = walletHistoryRepository;
+			_customerService = customerService;
 		}
 
 		protected virtual void UpdateBalances(WalletHistory entity, decimal amountDifference)
@@ -24,7 +26,7 @@ namespace SmartStore.Services.Customers
 			}
 
 			var entries = _walletHistoryRepository.Table
-				.Where(x => x.CustomerId == entity.CustomerId && x.StoreId == entity.StoreId && x.Id >= entity.Id)
+				.Where(x => x.CustomerId == entity.CustomerId && x.Id >= entity.Id)
 				.OrderByDescending(x => x.CreatedOnUtc)
 				.ThenByDescending(x => x.Id)
 				.ToList();
@@ -32,6 +34,11 @@ namespace SmartStore.Services.Customers
 			foreach (var entry in entries)
 			{
 				entry.AmountBalance = entry.AmountBalance + amountDifference;
+
+				if (entry.StoreId == entity.StoreId)
+				{
+					entry.AmountBalancePerStore = entry.AmountBalancePerStore + amountDifference;
+				}
 			}
 
 			_walletHistoryRepository.UpdateRange(entries);
@@ -53,12 +60,16 @@ namespace SmartStore.Services.Customers
 			Guard.NotZero(entity.CustomerId, nameof(entity.CustomerId));
 			Guard.NotZero(entity.StoreId, nameof(entity.StoreId));
 
+			var customer = entity.Customer ?? _customerService.GetCustomerById(entity.CustomerId);
+
 			entity.Message = entity.Message.NullEmpty();
 			entity.AdminComment = entity.AdminComment.NullEmpty();
 
 			// Always overwrite what could break the sequence.
 			entity.CreatedOnUtc = DateTime.UtcNow;
-			entity.AmountBalance = GetAmountBalance(entity.CustomerId, entity.StoreId) + entity.Amount;
+			entity.AmountBalance = customer.GetWalletAmountBalance(0) + entity.Amount;
+			// This can only work if all stores have the same primary store currency!
+			entity.AmountBalancePerStore = customer.GetWalletAmountBalance(entity.StoreId) + entity.Amount;
 
 			_walletHistoryRepository.Insert(entity);
 			return entity;
@@ -102,34 +113,32 @@ namespace SmartStore.Services.Customers
 			}
 		}
 
-		public virtual decimal GetAmountBalance(int customerId, int storeId)
-		{
-			Guard.NotZero(customerId, nameof(customerId));
-			Guard.NotZero(storeId, nameof(storeId));
+		//public virtual decimal GetAmountBalance(int customerId, int storeId = 0)
+		//{
+		//	Guard.NotZero(customerId, nameof(customerId));
 
-			// TODO: caching per request required?
-			var result = _walletHistoryRepository.TableUntracked
-				.Where(x => x.CustomerId == customerId && x.StoreId == storeId)
-				.OrderByDescending(x => x.CreatedOnUtc)
-				.ThenByDescending(x => x.Id)
-				.Select(x => x.AmountBalance)
-				.FirstOrDefault();
+		//	if (storeId == 0)
+		//	{
+		//		var result = _walletHistoryRepository.TableUntracked
+		//			.Where(x => x.CustomerId == customerId)
+		//			.OrderByDescending(x => x.CreatedOnUtc)
+		//			.ThenByDescending(x => x.Id)
+		//			.Select(x => x.AmountBalance)
+		//			.FirstOrDefault();
 
-			return result;
-		}
+		//		return result;
+		//	}
+		//	else
+		//	{
+		//		var result = _walletHistoryRepository.TableUntracked
+		//			.Where(x => x.CustomerId == customerId && x.StoreId == storeId)
+		//			.OrderByDescending(x => x.CreatedOnUtc)
+		//			.ThenByDescending(x => x.Id)
+		//			.Select(x => x.AmountBalancePerStore)
+		//			.FirstOrDefault();
 
-		public virtual IPagedList<WalletHistory> GetHistoryByCustomerId(int customerId, int storeId, int pageIndex, int pageSize)
-		{
-			Guard.NotZero(customerId, nameof(customerId));
-			Guard.NotZero(storeId, nameof(storeId));
-
-			var query = _walletHistoryRepository.TableUntracked
-				.Where(x => x.CustomerId == customerId && x.StoreId == storeId)
-				.OrderByDescending(x => x.CreatedOnUtc)
-				.ThenByDescending(x => x.Id);
-
-			var result = new PagedList<WalletHistory>(query, pageIndex, pageSize);
-			return result;
-		}
+		//		return result;
+		//	}
+		//}
 	}
 }

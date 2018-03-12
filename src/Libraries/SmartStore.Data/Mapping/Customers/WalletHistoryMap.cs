@@ -12,6 +12,7 @@ namespace SmartStore.Data.Mapping.Customers
 
 			Property(x => x.Amount).HasPrecision(18, 4);
 			Property(x => x.AmountBalance).HasPrecision(18, 4);
+			Property(x => x.AmountBalancePerStore).HasPrecision(18, 4);
 			Property(x => x.Message).HasMaxLength(1000);
 			Property(x => x.AdminComment).HasMaxLength(4000);
 

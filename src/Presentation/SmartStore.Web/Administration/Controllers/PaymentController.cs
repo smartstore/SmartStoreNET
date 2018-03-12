@@ -67,9 +67,13 @@ namespace SmartStore.Admin.Controllers
 		private void PreparePaymentMethodEditModel(PaymentMethodEditModel model, PaymentMethod paymentMethod)
 		{
 			var allFilters = _paymentService.GetAllPaymentMethodFilters();
+			var configUrls = allFilters
+				.Select(x => x.GetConfigurationUrl(model.SystemName))
+				.Where(x => x.HasValue())
+				.ToList();
 
-			model.FilterConfigurationUrls = allFilters
-				.Select(x => "'" + x.GetConfigurationUrl(model.SystemName) + "'")
+			model.FilterConfigurationUrls = configUrls
+				.Select(x => string.Concat("'", x, "'"))
 				.OrderBy(x => x)
 				.ToList();
 

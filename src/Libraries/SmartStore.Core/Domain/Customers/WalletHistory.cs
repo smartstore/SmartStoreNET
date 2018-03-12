@@ -31,10 +31,16 @@ namespace SmartStore.Core.Domain.Customers
 		public decimal Amount { get; set; }
 
 		/// <summary>
-		/// Gets or sets the amount balance at the time of the entry.
+		/// Gets or sets the amount balance when the entry was created.
 		/// </summary>
 		[DataMember]
 		public decimal AmountBalance { get; set; }
+
+		/// <summary>
+		/// Gets or sets the amount balance per store when the entry was created.
+		/// </summary>
+		[DataMember]
+		public decimal AmountBalancePerStore { get; set; }
 
 		/// <summary>
 		/// Gets or sets the date ehen the entry was created (in UTC).

@@ -68,12 +68,16 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareShippingMethodModel(ShippingMethodModel model, ShippingMethod shippingMethod)
 		{
-			var allFilters = _shippingService.GetAllShippingMethodFilters();
-
 			if (shippingMethod != null)
 			{
-				model.FilterConfigurationUrls = allFilters
-					.Select(x => "'" + x.GetConfigurationUrl(shippingMethod.Id) + "'")
+				var allFilters = _shippingService.GetAllShippingMethodFilters();
+				var configUrls = allFilters
+					.Select(x => x.GetConfigurationUrl(shippingMethod.Id))
+					.Where(x => x.HasValue())
+					.ToList();
+
+				model.FilterConfigurationUrls = configUrls
+					.Select(x => string.Concat("'", x, "'"))
 					.OrderBy(x => x)
 					.ToList();
 

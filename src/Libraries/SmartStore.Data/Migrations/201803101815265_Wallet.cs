@@ -18,6 +18,7 @@ namespace SmartStore.Data.Migrations
                         CustomerId = c.Int(nullable: false),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 4),
                         AmountBalance = c.Decimal(nullable: false, precision: 18, scale: 4),
+                        AmountBalancePerStore = c.Decimal(nullable: false, precision: 18, scale: 4),
                         CreatedOnUtc = c.DateTime(nullable: false),
                         Reason = c.Int(),
                         Message = c.String(maxLength: 1000),
@@ -58,15 +59,15 @@ namespace SmartStore.Data.Migrations
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Admin",
-				"Administration",
-				"Administration");
+                "Administration",
+                "Administration");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Purchase",
                 "Purchase",
                 "Einkauf");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refill",
-				"Refilling",
-				"Auffüllung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refund",
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refill",
+                "Refilling",
+                "Auffüllung");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refund",
                 "Refund",
                 "Rückerstattung");
         }

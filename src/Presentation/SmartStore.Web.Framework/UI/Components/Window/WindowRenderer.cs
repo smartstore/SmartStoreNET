@@ -114,7 +114,7 @@ namespace SmartStore.Web.Framework.UI
 
 			if (win.Title.HasValue())
 			{
-				writer.Write("<h5 class='modal-title' id='{0}'>{1}</h3>".FormatCurrent(win.Id + "Label", win.Title));
+				writer.Write("<h5 class='modal-title' id='{0}'>{1}</h5>".FormatCurrent(win.Id + "Label", win.Title));
 			}
 
 			if (win.ShowClose)

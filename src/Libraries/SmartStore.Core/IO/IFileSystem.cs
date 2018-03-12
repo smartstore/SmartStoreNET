@@ -21,8 +21,12 @@ namespace SmartStore.Core.IO
 		/// Retrieves the public URL for a given file within the storage provider.
 		/// </summary>
 		/// <param name="path">The relative path within the storage provider.</param>
+		/// <param name="forCloud">
+		/// If <c>true</c> and the storage is in the cloud, returns the actual remote cloud URL to the resource.
+		/// If <c>false</c>, retrieves an app relative URL to delegate further processing to the media middleware (which can handle remote files)
+		/// </param>
 		/// <returns>The public URL.</returns>
-		string GetPublicUrl(string path);
+		string GetPublicUrl(string path, bool forCloud = false);
 
 		/// <summary>
 		/// Retrieves the path within the storage provider for a given public url.

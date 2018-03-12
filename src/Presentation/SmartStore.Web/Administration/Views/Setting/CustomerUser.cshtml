@@ -626,15 +626,35 @@
                 @Html.ValidationMessageFor(model => model.AddressSettings.CountryEnabled)
             </td>
         </tr>
-        <tr id="pnlAddressStateProvinceEnabled">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddressSettings.StateProvinceEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.StateProvinceEnabled)
-                @Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceEnabled)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddressSettings.CountryRequired)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AddressSettings.CountryRequired)
+				@Html.ValidationMessageFor(model => model.AddressSettings.CountryRequired)
+			</td>
+		</tr>
+		<tbody id="pnlAddressStateProvinceEnabled">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AddressSettings.StateProvinceEnabled)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.AddressSettings.StateProvinceEnabled)
+					@Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceEnabled)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AddressSettings.StateProvinceRequired)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.AddressSettings.StateProvinceRequired)
+					@Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceRequired)
+				</td>
+			</tr>
+		</tbody>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddressSettings.PhoneEnabled)

@@ -87,12 +87,6 @@ $theme-colors: (
 	"gray": $gray-700 
 );
 
-$spacer: 1rem;
-$spacers: (
-    5: ($spacer * 2.25),
-    6: ($spacer * 3)
-);
-
 $line-height-base:              1.5;
 $line-height-sm:                1.5;
 $line-height-lg:                (4 / 3);

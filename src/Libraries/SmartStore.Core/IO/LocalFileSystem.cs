@@ -138,7 +138,7 @@ namespace SmartStore.Core.IO
 							 : path.TrimStart('/', '\\');
 		}
 
-		public string GetPublicUrl(string path)
+		public string GetPublicUrl(string path, bool forCloud = false)
 		{
 			return MapPublic(path);
 		}

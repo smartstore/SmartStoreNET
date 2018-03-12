@@ -62,5 +62,8 @@ function GetSelectedValue() {
 
 	var p = (window.opener || window.parent);
 	var fieldId = RoxyUtils.GetUrlParam('field');
-	return p.window.jQuery('#' + fieldId).val();
+
+	if (fieldId) {
+		return p.window.jQuery('#' + fieldId).val();
+	}
 }

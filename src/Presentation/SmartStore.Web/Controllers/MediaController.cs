@@ -207,7 +207,7 @@ namespace SmartStore.Web.Controllers
 				{
 					// Redirect to existing remote file
 					Response.ContentType = mime;
-					return Redirect(_mediaFileSystem.GetPublicUrl(path));
+					return Redirect(_mediaFileSystem.GetPublicUrl(path, true));
 				}
 				else
 				{

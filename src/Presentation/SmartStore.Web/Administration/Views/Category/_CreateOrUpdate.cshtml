@@ -179,14 +179,18 @@
                 @Html.SmartLabelFor(model => model.ParentCategoryId)
             </td>
             <td class="adminData">
-				@Html.DropDownListFor(model => model.ParentCategoryId, Enumerable.Empty<SelectListItem>(), new
-			   {
-				   placeholder = "[" + T("Common.Unspecified") + "]",
-				   data_select = true,
-				   data_select_lazy = true,
-				   data_select_init_text = Model.ParentCategoryBreadcrumb,
-				   data_select_url = Url.Action("Allcategories", "Category")
-			   })
+				@Html.DropDownListFor(model => model.ParentCategoryId,
+				Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
+					new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
+				},
+				new
+				{
+					placeholder = "[" + T("Common.Unspecified") + "]",
+					data_select = true,
+					data_select_lazy = true,
+					data_select_init_text = Model.ParentCategoryBreadcrumb,
+					data_select_url = Url.Action("Allcategories", "Category", new { selectedId =  Model.ParentCategoryId })
+				})
                 @Html.ValidationMessageFor(model => model.ParentCategoryId)
             </td>
         </tr>

@@ -19,32 +19,52 @@
 
   Contact: Lyubomir Arsov, liubo (at) web-lobby.com
 */
-function File(filePath, fileSize, modTime, w, h) {
-	this.fullPath = filePath;
-	this.type = RoxyUtils.GetFileType(filePath);
-	this.name = RoxyUtils.GetFilename(filePath);
-	this.ext = RoxyUtils.GetFileExt(filePath);
-	this.path = RoxyUtils.GetPath(filePath);
-	this.icon = RoxyUtils.GetFileIcon(filePath);
-	this.bigIcon = this.icon.replace('filetypes', 'filetypes/big');
-	this.image = filePath;
-	this.size = (fileSize ? fileSize : RoxyUtils.GetFileSize(filePath));
-	this.time = modTime;
-	this.width = (w ? w : 0);
-	this.height = (h ? h : 0);
-	this.Show = function () {
-		html = '<li data-path="' + this.fullPath + '" data-time="' + this.time + '" data-icon="' + this.icon + '" data-w="' + this.width + '" data-h="' + this.height + '" data-size="' + this.size + '" data-icon-big="' + (this.IsImage() ? this.fullPath : this.bigIcon) + '" title="' + this.name + '">';
-		html += '<img src="' + this.icon + '" class="icon">';
-		html += '<span class="time">' + RoxyUtils.FormatDate(new Date(this.time * 1000)) + '</span>';
-		html += '<span class="name">' + this.name + '</span>';
-		html += '<span class="size">' + RoxyUtils.FormatFileSize(this.size) + '</span>';
-		html += '</li>';
-		$('#pnlFileList').append(html);
-		var li = $("#pnlFileList li:last");
-		if (RoxyFilemanConf.MOVEFILE) {
+
+$(function () {
+	$(document).on('dblclick', '.file-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		selectFile(this);
+		setFile();
+	});
+
+	$('#pnlFileList').on('contextmenu', '.file-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		closeMenus('dir');
+		selectFile(this);
+		$(this).tooltip('close');
+		var t = e.pageY;
+		var menuEnd = t + $('#menuFile').height() + 30;
+		if (menuEnd > $(window).height()) {
+			offset = menuEnd - $(window).height() + 30;
+			t -= offset;
+		}
+		$('#menuFile').css({
+			top: t + 'px',
+			left: e.pageX + 'px'
+		}).show();
+
+		return false;
+	});
+
+	$(document).on('click', '.file-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		selectFile(this);
+	});
+
+	$(document).on('mouseenter', '.file-item', function (e) {
+		var li = $(this);
+
+		// create draggable
+		if (!li.data('ui-draggable')) {
 			li.draggable({
 				helper: makeDragFile,
 				start: startDragFile,
+				addClasses: false,
+				appendTo: 'body',
 				cursorAt: {
 					left: 10,
 					top: 10
@@ -52,46 +72,49 @@ function File(filePath, fileSize, modTime, w, h) {
 				delay: 200
 			});
 		}
-		li.click(function (e) {
-			selectFile(this);
-		});
-		li.dblclick(function (e) {
-			selectFile(this);
-			setFile();
-		});
-		li.tooltip({
-			show: {
-				delay: 700
-			},
-			track: true,
-			content: tooltipContent
-		});
+	});
+});
 
-		li.bind('contextmenu', function (e) {
-			e.stopPropagation();
-			e.preventDefault();
-			closeMenus('dir');
-			selectFile(this);
-			$(this).tooltip('close');
-			var t = e.pageY - $('#menuFile').height();
-			if (t < 0)
-				t = 0;
-			$('#menuFile').css({
-				top: t + 'px',
-				left: e.pageX + 'px'
-			}).show();
+function File(filePath, fileSize, modTime, w, h, mime) {
+	this.fullPath = filePath;
+	this.mime = mime;
+	this.type = RoxyUtils.GetFileType(filePath, mime);
+	this.icon = RoxyIconHints[this.type];
+	this.name = RoxyUtils.GetFilename(filePath);
+	this.ext = RoxyUtils.GetFileExt(filePath);
+	this.path = RoxyUtils.GetPath(filePath);
+	this.image = filePath;
+	this.size = (fileSize ? fileSize : RoxyUtils.GetFileSize(filePath));
+	this.time = modTime;
+	this.width = (w ? w : 0);
+	this.height = (h ? h : 0);
+	this.thumb = this.type === 'image' ? filePath : RoxyUtils.GetAssetPath("images/blank.gif");
+	this.GenerateHtml = function () {
+		var attrs = [
+			'data-mime="' + this.mime + '"',
+			'data-path="' + this.fullPath + '"',
+			'data-time="' + this.time + '"',
+			'data-w="' + this.width + '"',
+			'data-h="' + this.height + '"',
+			'data-size="' + this.size + '"',
+			'title="' + this.name + '"'
+		];
+		var html = [
+			'<li class="file-item' + (this.IsImage() ? ' file-image loaded' : '') + '" ' + attrs.join(' ') + '>',
+			'<div class="icon"><img class="thumb" src="' + this.thumb + '"><i class="file-icon fa fa-fw fa-' + this.icon.name + '" style="color:' + this.icon.color + '"></i></div>',
+			'<span class="time">' + RoxyUtils.FormatDate(new Date(this.time * 1000)) + '</span>',
+			'<span class="name">' + this.name + '</span>',
+			'<span class="size">' + RoxyUtils.FormatFileSize(this.size) + '</span>',
+			'</li>'
+		].join("");
 
-			return false;
-		});
+		return html;
 	};
 	this.GetElement = function () {
 		return $('li[data-path="' + this.fullPath + '"]');
 	};
 	this.IsImage = function () {
-		var ret = false;
-		if (this.type == 'image')
-			ret = true;
-		return ret;
+		return this.type === 'image';
 	};
 	this.Delete = function () {
 		if (!RoxyFilemanConf.DELETEFILE) {
@@ -149,8 +172,12 @@ function File(filePath, fileSize, modTime, w, h) {
 			success: function (data) {
 				if (data.res.toLowerCase() == 'ok') {
 					var newPath = RoxyUtils.MakePath(this.path, newName);
-					$('li[data-path="' + item.fullPath + '"] .icon').attr('src', RoxyUtils.GetFileIcon(newName));
-					$('li[data-path="' + item.fullPath + '"] .name').text(newName);
+					var fileType = RoxyUtils.GetFileIcon(newName);
+					var icon = RoxyIconHints[fileType];
+					var li = $('li[data-path="' + item.fullPath + '"]');
+					li.toggleClass('file-image', fileType == 'image');
+					$('.file-icon', li).attr('class', "").addClass('file-icon fa fa-fw fa-' + icon.name).css('color', icon.color);
+					$('.name', li).text(newName);
 					$('li[data-path="' + newPath + '"]').attr('data-path', newPath);
 					ret = true;
 				}
@@ -188,7 +215,9 @@ function File(filePath, fileSize, modTime, w, h) {
 						d.files++;
 						d.Update();
 						d.SetStatusBar();
-						d.ListFiles(true);
+						if (!$("#pnlDirList").data("indeterm")) {
+							d.ListFiles(true);
+						}
 					}
 					ret = true;
 				}
@@ -244,11 +273,12 @@ function File(filePath, fileSize, modTime, w, h) {
 		return ret;
 	};
 }
+
 File.Parse = function (path) {
 	var ret = false;
 	var li = $('#pnlFileList').find('li[data-path="' + path + '"]');
 	if (li.length > 0)
-		ret = new File(li.attr('data-path'), li.attr('data-size'), li.attr('data-time'), li.attr('data-w'), li.attr('data-h'));
+		ret = new File(li.data('path'), li.data('size'), li.data('time'), li.data('w'), li.data('h'));
 
 	return ret;
 };

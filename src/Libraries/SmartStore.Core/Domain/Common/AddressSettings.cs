@@ -19,7 +19,9 @@ namespace SmartStore.Core.Domain.Common
 			CityEnabled = true;
 			CityRequired = true;
 			CountryEnabled = true;
+			CountryRequired = true;
 			StateProvinceEnabled = true;
+			StateProvinceRequired = false;
 			PhoneEnabled = true;
 			PhoneRequired = true;
 			FaxEnabled = true;
@@ -95,15 +97,25 @@ namespace SmartStore.Core.Domain.Common
         /// </summary>
         public bool CountryEnabled { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether 'State / province' is enabled
-        /// </summary>
-        public bool StateProvinceEnabled { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether 'Country' is required
+		/// </summary>
+		public bool CountryRequired { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether 'Phone number' is enabled
-        /// </summary>
-        public bool PhoneEnabled { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether 'State / province' is enabled
+		/// </summary>
+		public bool StateProvinceEnabled { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether 'State / province' is required
+		/// </summary>
+		public bool StateProvinceRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether 'Phone number' is enabled
+		/// </summary>
+		public bool PhoneEnabled { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether 'Phone number' is required
         /// </summary>

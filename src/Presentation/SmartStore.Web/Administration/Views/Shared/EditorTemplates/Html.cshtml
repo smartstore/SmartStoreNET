@@ -21,6 +21,13 @@
 		Html.AddScriptParts(true, locFile.VirtualPath);
 	}
 
+	// Find summernote Link plugin localization file
+	locFile = base.ResolveLocalizationFile(WorkContext.WorkingLanguage.LanguageCulture, "~/Content/editors/summernote/plugin/link/lang", "*.js", null);
+	if (locFile != null)
+	{
+		Html.AddScriptParts(true, locFile.VirtualPath);
+	}
+
 	// Find summernote ImageAttributes plugin localization file
 	locFile = base.ResolveLocalizationFile(WorkContext.WorkingLanguage.LanguageCulture, "~/Content/editors/summernote/plugin/image/lang", "*.js", null);
 	if (locFile != null)
@@ -49,7 +56,7 @@
 
 @Html.TextArea(string.Empty, /* Name suffix */
 	html, /* Initial value */
-	new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { type = "image", area = "admin" }) }
+	new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { area = "admin" }) }
 )
 
 <script>

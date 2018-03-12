@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Routing;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
+using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 
 namespace SmartStore.DevTools
 {
-	public class DevToolsPlugin : BasePlugin, IConfigurable
-    {
+	[DisplayOrder(10)]
+	[SystemName("Widgets.DevToolsDemo")]
+	[FriendlyName("Dev-Tools Demo Widget")]
+	public class DevToolsPlugin : BasePlugin, IConfigurable, IWidget
+	{
 		private readonly ISettingService _settingService;
 
 		public DevToolsPlugin(ISettingService settingService)
@@ -22,7 +27,21 @@ namespace SmartStore.DevTools
 
 		public ILogger Logger { get; set; }
 
-        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		public IList<string> GetWidgetZones() => new List<string> { "home_page_top" };
+
+		public void GetDisplayWidgetRoute(string widgetZone, object model, int storeId, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+		{
+			actionName = "MyDemoWidget";
+			controllerName = "DevTools";
+
+			routeValues = new RouteValueDictionary
+			{
+				{ "Namespaces", "SmartStore.DevTools.Controllers" },
+				{ "area", "SmartStore.DevTools" }
+			};
+		}
+
+		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
             controllerName = "DevTools";
@@ -72,5 +91,5 @@ namespace SmartStore.DevTools
 
 			return result;
 		}
-    }
+	}
 }

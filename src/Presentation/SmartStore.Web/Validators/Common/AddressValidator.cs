@@ -21,7 +21,8 @@ namespace SmartStore.Web.Validators.Common
             RuleFor(x => x.Email)
                 .EmailAddress()
                 .WithMessage(localizationService.GetResource("Common.WrongEmail"));
-            if (addressSettings.CountryEnabled)
+
+            if (addressSettings.CountryRequired && addressSettings.CountryEnabled)
             {
                 RuleFor(x => x.CountryId)
                     .NotNull()
@@ -31,7 +32,17 @@ namespace SmartStore.Web.Validators.Common
                     .WithMessage(localizationService.GetResource("Address.Fields.Country.Required"));
             }
 
-            if (addressSettings.CompanyRequired && addressSettings.CompanyEnabled)
+			if (addressSettings.StateProvinceRequired && addressSettings.StateProvinceEnabled)
+			{
+				RuleFor(x => x.StateProvinceId)
+					.NotNull()
+					.WithMessage(localizationService.GetResource("Address.Fields.StateProvince.Required"));
+				RuleFor(x => x.StateProvinceId)
+					.NotEqual(0)
+					.WithMessage(localizationService.GetResource("Address.Fields.StateProvince.Required"));
+			}
+
+			if (addressSettings.CompanyRequired && addressSettings.CompanyEnabled)
             {
                 RuleFor(x => x.Company).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.Company.Required"));
             }

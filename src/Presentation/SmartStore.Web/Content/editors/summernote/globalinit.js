@@ -24,7 +24,7 @@ var summernote_image_upload_url;
 		height: 300,
 		onCreateLink: function (url) {
 			// Prevents that summernote prepends "http://" to our links (WTF!!!)
-			if (url[0] == "/" || url[0] == "~" || url[0] == "\\" || url[0] == ".") {
+			if (url[0] == "/" || url[0] == "~" || url[0] == "\\" || url[0] == "." || url[0] == "#") {
 				return url;
 			}
 

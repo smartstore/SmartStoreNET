@@ -19,6 +19,42 @@
 
   Contact: Lyubomir Arsov, liubo (at) web-lobby.com
 */
+
+$(function () {
+	$('#pnlDirList').on('contextmenu', '.dir-item', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		closeMenus('file');
+		selectDir(this, true);
+		var t = e.pageY;
+		var menuEnd = t + $('#menuDir').height() + 30;
+		if (menuEnd > $(window).height()) {
+			offset = menuEnd - $(window).height() + 30;
+			t -= offset;
+		}
+		if (t < 0)
+			t = 0;
+		$('#menuDir').css({
+			top: t + 'px',
+			left: e.pageX + 'px'
+		}).show();
+
+		return false;
+	});
+
+	$('#pnlDirList').on('click', '.dir-item', function (e) {
+		e.preventDefault();
+		selectDir(this);
+	});
+
+	$('#pnlDirList').on('click', '.dirPlus', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		var d = Directory.Parse($(this).closest('li').attr('data-path'));
+		d.Expand();
+	});
+});
+
 function Directory(fullPath, numDirs, numFiles) {
 	if (!fullPath) fullPath = '';
 	this.fullPath = fullPath;
@@ -28,7 +64,7 @@ function Directory(fullPath, numDirs, numFiles) {
 	this.path = RoxyUtils.GetPath(fullPath);
 	this.dirs = (numDirs ? numDirs : 0);
 	this.files = (numFiles ? numFiles : 0);
-	this.filesList = new Array();
+	this.filesList = [];
 
 	this.Show = function () {
 		var html = this.GetHtml();
@@ -48,56 +84,27 @@ function Directory(fullPath, numDirs, numFiles) {
 	};
 	this.SetEvents = function () {
 		var el = this.GetElement();
-		if (RoxyFilemanConf.MOVEDIR) {
-			el.draggable({
-				helper: makeDragDir,
-				start: startDragDir,
-				cursorAt: {
-					left: 10,
-					top: 10
-				},
-				delay: 200
-			});
-		}
-		el = el.children('div');
-		el.click(function (e) {
-			selectDir(this);
+		el.draggable({
+			helper: makeDragDir,
+			start: startDragDir,
+			cursorAt: {
+				left: 10,
+				top: 10
+			},
+			delay: 200
 		});
-
-		el.on('contextmenu', function (e) {
-			e.stopPropagation();
-			e.preventDefault();
-			closeMenus('file');
-			selectDir(this);
-			var t = e.pageY - $('#menuDir').height();
-			if (t < 0)
-				t = 0;
-			$('#menuDir').css({
-				top: t + 'px',
-				left: e.pageX + 'px'
-			}).show();
-
-			return false;
-		});
-
-		el.droppable({
+		el.find('> .dir-item').droppable({
 			drop: moveObject,
 			over: dragFileOver,
 			out: dragFileOut
 		});
-		el = el.children('.dirPlus');
-		el.click(function (e) {
-			e.stopPropagation();
-			var d = Directory.Parse($(this).closest('li').attr('data-path'));
-			d.Expand();
-		});
 	};
 	this.GetHtml = function () {
+		var dirClass = (this.dirs > 0 ? "" : " invisible");
+
 		var html = '<li data-path="' + this.fullPath + '" data-dirs="' + this.dirs + '" data-files="' + this.files + '" class="directory">';
-		var path = RoxyUtils.GetAssetPath("images/" + (this.dirs > 0 ? "dir-plus.png" : "blank.gif"));
-		html += '<div class="d-flex flex-nowrap align-items-baseline"><img src="' + path + '" class="dirPlus mr-2" width="9" height="9">';
-		//html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
-		html += '<i class="dir fa fa-folder-open mr-2 text-gray"></i><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
+		html += '<div class="d-flex flex-row flex-nowrap align-items-center dir-item"><i class="fa fa-chevron-right dirPlus' + dirClass + '"></i>';
+		html += '<img src="' + RoxyUtils.GetAssetPath("images/folder.png") + '" class="dir mr-1"><span class="name">' + this.name + (parseInt(this.files) ? ' (' + this.files + ')' : '') + '</span></div>';
 		html += '</li>';
 		
 		return html;
@@ -113,20 +120,31 @@ function Directory(fullPath, numDirs, numFiles) {
 			}
 		}
 	};
-	this.Select = function (selectedFile) {
-		var el = this.GetElement();
-		el.children('div').addClass('selected');
-		$('#pnlDirList li[data-path!="' + this.fullPath + '"] > div').removeClass('selected');
-		el.children('img.dir').prop('src', RoxyUtils.GetAssetPath('images/folder.png'));
-		this.SetStatusBar();
-		var p = this.GetParent();
-		while (p) {
-			p.Expand(true);
-			p = p.GetParent();
+	this.Select = function (selectedFile, indeterm) {
+		var li = this.GetElement();
+		var dir = li.find('> .dir-item');
+		var currentSelected = getSelectedDir();
+
+		if (indeterm && currentSelected) {
+			if (currentSelected.fullPath != li.data('path')) {
+				$('#pnlDirList').data('indeterm', dir);
+				$('#pnlDirList .indeterm').removeClass('indeterm');
+				dir.addClass('indeterm');
+			}
 		}
-		this.Expand(true);
-		this.ListFiles(true, selectedFile);
-		setLastDir(this.fullPath);
+		else {
+			dir.addClass('selected');
+			$('#pnlDirList li[data-path!="' + this.fullPath + '"] > .dir-item').removeClass('selected');
+			this.SetStatusBar();
+
+			var p = this.GetParent();
+			while (p) {
+				p.Expand(true);
+				p = p.GetParent();
+			}
+			this.ListFiles(true, selectedFile);
+			setLastDir(this.fullPath);
+		}		
 	};
 	this.GetElement = function () {
 		return $('li[data-path="' + this.fullPath + '"]');
@@ -134,6 +152,10 @@ function Directory(fullPath, numDirs, numFiles) {
 	this.IsExpanded = function () {
 		var el = this.GetElement().children('ul');
 		return (el && el.is(":visible"));
+	};
+	this.IsIndeterm = function () {
+		var el = this.GetElement().find('> .dir-item');
+		return el.is(".indeterm");
 	};
 	this.IsListed = function () {
 		if ($('#hdDir').val() == this.fullPath)
@@ -168,12 +190,13 @@ function Directory(fullPath, numDirs, numFiles) {
 	};
 	this.SetOpened = function () {
 		var li = this.GetElement();
+		var chevrons = li.children('div').children('.dirPlus');
 		if (li.find('li').length < 1)
-			li.children('div').children('.dirPlus').prop('src', RoxyUtils.GetAssetPath('images/blank.gif'));
+			chevrons.addClass('invisible');
 		else if (this.IsExpanded())
-			li.children('div').children('.dirPlus').prop('src', RoxyUtils.GetAssetPath('images/dir-minus.png'));
+			chevrons.removeClass('invisible fa-chevron-right').addClass("fa-chevron-down");
 		else
-			li.children('div').children('.dirPlus').prop('src', RoxyUtils.GetAssetPath('images/dir-plus.png'));
+			chevrons.removeClass('invisible fa-chevron-down').addClass("fa-chevron-right");
 	};
 	this.Update = function (newPath) {
 		var el = this.GetElement();
@@ -184,9 +207,9 @@ function Directory(fullPath, numDirs, numFiles) {
 				this.name = 'My files';
 			this.path = RoxyUtils.GetPath(newPath);
 		}
-		el.attr('data-path', this.fullPath);
-		el.attr('data-dirs', this.dirs);
-		el.attr('data-files', this.files);
+		el.data('path', this.fullPath);
+		el.data('dirs', this.dirs);
+		el.data('files', this.files);
 		el.children('div').children('.name').html(this.name + ' (' + this.files + ')');
 		this.SetOpened();
 	};
@@ -210,16 +233,16 @@ function Directory(fullPath, numDirs, numFiles) {
 			cache: false,
 			success: function (dirs) {
 				$('#pnlDirList').children('li').remove();
+				var d;
 				for (i = 0; i < dirs.length; i++) {
-					var d = new Directory(dirs[i].p, dirs[i].d, dirs[i].f);
+					d = new Directory(dirs[i].p, dirs[i].d, dirs[i].f);
 					d.Show();
 				}
 				$('#pnlLoadingDirs').hide();
 				$('#pnlDirList').show();
 				dir.RestoreExpanded(expanded);
-				var d = Directory.Parse(selectedDir);
-				if (d)
-					d.Select();
+				d = Directory.Parse(selectedDir);
+				if (d) d.Select();
 			},
 			error: function (data) {
 				$('#pnlLoadingDirs').hide();
@@ -424,22 +447,40 @@ function Directory(fullPath, numDirs, numFiles) {
 		this.LoadFiles(refresh, selectedFile);
 	};
 	this.FilesLoaded = function (filesList, selectedFile) {
+		var list = $('#pnlFileList');
 		filesList = this.SortFiles(filesList);
-		$('#pnlFileList').html('');
+		
+		var html = [];
 		for (i = 0; i < filesList.length; i++) {
 			var f = filesList[i];
-			f.Show();
+			html.push(f.GenerateHtml());
 		}
+
+		// Set Html
+		list.html(html.join(""));
+
+		// Bind events
+		list.find('.file-item').tooltip({
+			show: {
+				delay: 700,
+				duration: 100
+			},
+			hide: 200,
+			track: true,
+			content: tooltipContent
+		});
+
 		$('#hdDir').val(this.fullPath);
 		$('#pnlLoading').hide();
-		if ($('#pnlFileList').children('li').length == 0)
+		var liLen = list.children('li').length;
+		if (liLen == 0)
 			$('#pnlEmptyDir').show();
-		this.files = $('#pnlFileList').children('li').length;
+		this.files = liLen;
 		this.Update();
 		this.SetStatusBar();
 		filterFiles();
 		switchView();
-		$('#pnlFileList').show();
+		list.show();
 		this.SetSelectedFile(selectedFile);
 	};
 	this.LoadFiles = function (refresh, selectedFile) {
@@ -453,7 +494,6 @@ function Directory(fullPath, numDirs, numFiles) {
 		fileURL = RoxyUtils.AddParam(fileURL, 'type', RoxyUtils.GetUrlParam('type'));
 		var item = this;
 		if (!this.IsListed() || refresh) {
-
 			$.ajax({
 				url: fileURL,
 				type: 'POST',
@@ -466,7 +506,8 @@ function Directory(fullPath, numDirs, numFiles) {
 				cache: false,
 				success: function (files) {
 					for (i = 0; i < files.length; i++) {
-						ret.push(new File(files[i].p, files[i].s, files[i].t, files[i].w, files[i].h));
+						var f = files[i];
+						ret.push(new File(f.p, f.s, f.t, f.w, f.h, f.m));
 					}
 					item.FilesLoaded(ret, selectedFile);
 				},

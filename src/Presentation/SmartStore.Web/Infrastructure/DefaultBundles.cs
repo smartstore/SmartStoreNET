@@ -83,12 +83,6 @@ namespace SmartStore.Web.Infrastructure
 				roxy + "js/jquery-dateFormat.min.js");
 			scriptBundle.Orderer = new NullOrderer();
 			bundles.Add(scriptBundle);
-
-			var styleBundle = new CustomStyleBundle("~/css/roxyfm").Include(
-				roxy + "css/jquery-ui-1.10.4.custom.css",
-				roxy + "css/main.css");
-			styleBundle.Orderer = new NullOrderer();
-			bundles.Add(styleBundle);
 		}
 
 		public int Priority

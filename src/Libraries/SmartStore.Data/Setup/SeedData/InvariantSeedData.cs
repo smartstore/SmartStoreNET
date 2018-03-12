@@ -4018,9 +4018,6 @@ namespace SmartStore.Data.Setup
 					BaseDimensionId = _ctx.Set<MeasureDimension>().Where(m => m.SystemKeyword == "inch").Single().Id,
 					BaseWeightId = _ctx.Set<MeasureWeight>().Where(m => m.SystemKeyword == "lb").Single().Id,
 				},
-				new MessageTemplatesSettings()
-				{
-				},
 				new ShoppingCartSettings()
 				{
 				},

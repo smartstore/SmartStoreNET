@@ -79,6 +79,11 @@ namespace SmartStore.DevTools.Controllers
             var result = PartialView(model);
             result.ViewData.TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "CustomProperties[DevTools]" };
             return result;
-        }       
-    }
+        }
+
+		public ActionResult MyDemoWidget()
+		{
+			return Content("Hello world! This is a sample widget created for demonstration purposes by Dev-Tools plugin.");
+		}
+	}
 }

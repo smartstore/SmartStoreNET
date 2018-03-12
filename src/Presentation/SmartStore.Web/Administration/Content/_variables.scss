@@ -98,12 +98,6 @@ $yiq-contrasted-threshold:	164;
 $yiq-text-dark:				$gray-800;
 $yiq-text-light:			#fff;
 
-$spacer: 1rem;
-$spacers: (
-    5: ($spacer * 2.25),
-    6: ($spacer * 3)
-);
-
 $font-size-base: 0.875rem;
 $font-size-lg:   1rem;
 $font-size-sm:   0.8125rem;
@@ -176,3 +170,24 @@ $alert-border-radius: 0;
 
 $nav-tabs-border-color:			#e1e4e8;
 $nav-tabs-link-active-color:	$gray-900;
+
+$component-active-bg:			lighten($primary, 36%);
+$component-active-color:		inherit;
+
+
+/*$custom-control-indicator-bg:				$gray-200;
+$custom-control-indicator-disabled-bg:		$gray-100;
+$custom-control-indicator-checked-color:	#fff;
+$custom-control-indicator-checked-bg:		$primary;
+$custom-control-indicator-active-color:		#fff;
+$custom-control-indicator-active-bg:		$component-active-bg;
+$custom-checkbox-indicator-indeterminate-bg:$primary;*/
+
+$custom-control-indicator-bg:					$gray-200;
+$custom-control-indicator-disabled-bg:			$gray-100;
+$custom-control-indicator-checked-color:		#fff;
+$custom-control-indicator-checked-bg:			$warning;
+$custom-control-indicator-active-color:			#fff;
+$custom-control-indicator-active-bg:			lighten($warning, 35%);
+$custom-checkbox-indicator-indeterminate-bg:	$warning;
+$custom-control-indicator-focus-box-shadow:		0 0 0 1px $body-bg, 0 0 0 $input-btn-focus-width rgba($warning, .25);

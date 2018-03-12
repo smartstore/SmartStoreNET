@@ -11,7 +11,7 @@
     {
         <script type="text/javascript">
             $(function() {
-                $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)").change(function() {
+                $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)").on('change', function() {
 
                     var selectedItem = $(this).val();
                     var ddlSpecOptions = $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeOptionId)")
@@ -151,27 +151,30 @@
                     initXEditable(link);
                 }
 
-                function initXEditable(link){
+                function initXEditable(link) {
                 	if (!$.fn.editable)
                 		return;
 
+					var optionsUrl = link.data('options-url'),
+						initText = link.text(),
+						selectedId = link.data('value');
+
                     link.editable({
-                        type: 'select2',
-                        url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
+						type: 'select2',
+						url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
 						unsavedclass: null,
 						inputclass: 'form-control form-control-sm',
 						mode: 'popup',
-                        placement: 'right',
-                        autotext: 'auto',
+						placement: 'right',
+						autotext: 'auto',
 						select2: {
-                            minimumResultsForSearch: 8,
-                            data: link.data("options") || [],
-							initSelection: function (el, fn) {
-								var id = $(el).val();
-                                if (id !== "") {
-                                    fn({ id: link.data("value"), text: link.text() });
-                                }
-                            }
+							lazy: {
+								url: optionsUrl
+							},
+							init: {
+								id: selectedId,
+								text: initText
+							}
 						},
 						display: function (value, sourceData) {
 							// ABS4: display new value, otherwise always 'empty' is displayed.
@@ -179,30 +182,28 @@
 								$(this).html(sourceData.name);
 							}
 						},
-                        success: function (response, newValue)
-                        {                       	
-                        	if (response.success) {
-                        		// we have to overwrite grid data so the correct values are displayed when a value was saved with xeditable
-                        		// else the data that initialy populated the client template would be displayed
-                        		var grid = $('#specificationattributes-grid').data('tGrid');
+						success: function (response, newValue) {
+							if (response.success) {
+								// we have to overwrite grid data so the correct values are displayed when a value was saved with x-editable
+								// else the data that initialy populated the client template would be displayed
+								var grid = $('#specificationattributes-grid').data('tGrid');
 
-                        		// get the index of the tr holding the updated value because the data is stored in an array
-                        		var index = link.closest("tr").index();
-                        		var data = grid.data[index];
+								// get the index of the tr holding the updated value because the data is stored in an array
+								var index = link.closest("tr").index();
+								var data = grid.data[index];
 
-                        		// overwrite data of option id and name
-                        		data.SpecificationAttributeOptionId = newValue;
-                        		data.SpecificationAttributeOptionName = response.name;                        		
-                        	}
-                        	else {
-                        		displayNotification(response.message, 'warning');
+								// overwrite data of option id and name
+								data.SpecificationAttributeOptionId = newValue;
+								data.SpecificationAttributeOptionName = response.name;
+							}
+							else {
+								displayNotification(response.message, 'warning');
+								$("#specificationattributes-grid").data('tGrid').ajaxRequest();
+							}
+						}
+					});
 
-                        		$("#specificationattributes-grid").data('tGrid').ajaxRequest();
-                        	}
-                        }
-                    });
-
-                }
+				}
             </script>
 
             @(Html.Telerik().Grid<ProductSpecificationAttributeModel>()
@@ -217,7 +218,7 @@
 						.Width(200)
 						.ReadOnly();
 					columns.Bound(x => x.SpecificationAttributeOptionName)
-						.ClientTemplate("<a href='#' data-options='<#= SpecificationAttributeOptionsJsonString #>' data-pk='<#= SpecificationAttributeId #>' data-value='<#= SpecificationAttributeOptionId #>' id='<#= Id #>' class='editable editable-click spec-attr-opt'><#= SpecificationAttributeOptionName #></a>")
+						.ClientTemplate("<a href='#' data-options-url='<#= SpecificationAttributeOptionsUrl #>' data-pk='<#= SpecificationAttributeId #>' data-value='<#= SpecificationAttributeOptionId #>' id='<#= Id #>' class='editable editable-click spec-attr-opt'><#= SpecificationAttributeOptionName #></a>")
 						.ReadOnly()
 						.Width(300);
 					columns.Bound(x => x.AllowFiltering)

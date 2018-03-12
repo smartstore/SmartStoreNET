@@ -55,8 +55,6 @@
 	$.extend($.summernote.options, {
 		imageAttributes: {
 			icon: '<i class="note-icon-pencil"/>',
-			removeEmpty: true,
-			disableUpload: false,
 			imageFolder: ''
 		}
 	});
@@ -70,11 +68,6 @@
 				options = context.options,
 				lang = options.langInfo,
 				imageAttributesLimitation = '';
-			if (options.maximumImageFileSize) {
-				var unit = Math.floor(Math.log(options.maximumImageFileSize) / Math.log(1024));
-				var readableSize = (options.maximumImageFileSize / Math.pow(1024, unit)).toFixed(2) * 1 + ' ' + ' KMGTP'[unit] + 'B';
-				imageAttributesLimitation = '<small class="form-text text-muted note-help-block">' + lang.image.maximumFileSize + ' : ' + readableSize + '</small>';
-			}
 			context.memo('button.imageAttributes', function () {
 				var button = ui.button({
 					contents: options.imageAttributes.icon,
@@ -96,9 +89,6 @@
 					'  <li class="nav-item"><a class="nav-link active" href="#note-imageAttributes' + timestamp + '" data-toggle="tab">' + lang.imageAttributes.tabImage + '</a></li>' +
 					'  <li class="nav-item"><a class="nav-link" href="#note-imageAttributes-attributes' + timestamp + '" data-toggle="tab">' + lang.imageAttributes.tabAttributes + '</a></li>' +
 					'  <li class="nav-item"><a class="nav-link" href="#note-imageAttributes-link' + timestamp + '" data-toggle="tab">' + lang.imageAttributes.tabLink + '</a></li>';
-				if (options.imageAttributes.disableUpload == false) {
-					body += '  <li class="nav-item"><a class="nav-link" href="#note-imageAttributes-upload' + timestamp + '" data-toggle="tab">' + lang.imageAttributes.tabUpload + '</a></li>';
-				}
 				body += '</ul>' +
 					'<div class="tab-content note-tab-content">' +
 					// Tab 2
@@ -163,16 +153,6 @@
 					'      </div>' +
 					'    </div>' +
 					'  </div>';
-				if (options.imageAttributes.disableUpload == false) {
-					// Tab 4
-					body += '  <div class="tab-pane note-tab-pane" id="note-imageAttributes-upload' + timestamp + '">' +
-						'   <label class="col-form-label note-form-label col-3">' + lang.imageAttributes.upload + '</label>' +
-						'   <div class="input-group note-input-group col-12 col-sm-9">' +
-						'     <input class="note-imageAttributes-input form-control note-form-control note-input" type="file" name="files" accept="image/*" multiple="multiple" />' +
-						imageAttributesLimitation +
-						'    </div>' +
-						'  </div>';
-				}
 				// Tab 1
 				body += '  <div class="tab-pane note-tab-pane fade show active" id="note-imageAttributes' + timestamp + '">' +
 					'    <div class="note-form-group form-group row note-group-imageAttributes-url">' +
@@ -262,16 +242,6 @@
 						else $img.removeAttr('style');
 						if (imgInfo.role) $img.attr('role', imgInfo.role);
 						else $img.removeAttr('role');
-					} else {
-						if (imgInfo.src) $img.attr('src', imgInfo.src);
-						else $img.attr('src', '#');
-						$img.attr('alt', imgInfo.alt);
-						$img.attr('width', imgInfo.width);
-						$img.attr('height', imgInfo.height);
-						$img.attr('title', imgInfo.title);
-						$img.attr('class', imgInfo.class);
-						$img.attr('style', imgInfo.style);
-						$img.attr('role', imgInfo.role);
 					}
 					if ($img.parent().is("a")) $img.unwrap();
 					if (imgInfo.linkHref) {

@@ -19,9 +19,9 @@ namespace SmartStore.Admin.Models.Catalog
         public int SpecificationAttributeId { get; set; }
         public int SpecificationAttributeOptionId { get; set; }
 
-        public string SpecificationAttributeOptionsJsonString { get; set; }
+		public string SpecificationAttributeOptionsUrl { get; set; }
 
-        public List<SpecificationAttributeOption> SpecificationAttributeOptions { get; set; }
+		public List<SpecificationAttributeOption> SpecificationAttributeOptions { get; set; }
         
 
         [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.SpecificationAttributeOption")]

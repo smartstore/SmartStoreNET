@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -28,6 +28,7 @@
 * #1247 Allow to import non system customer roles in customer import
 * #1117 Added an option to display a dropdown menu for manufacturers 
 * #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
+* GMC: column chooser for edit grid
 * #1100 Customer can register in frontend via "Login with Amazon" button
 * **Web API**:
 	* #1292 Added endpoint to get order in PDF format

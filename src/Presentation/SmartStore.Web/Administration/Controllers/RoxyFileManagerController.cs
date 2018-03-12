@@ -7,11 +7,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
 using SmartStore.Core.IO;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
@@ -26,7 +28,6 @@ namespace SmartStore.Admin.Controllers
 	{
 		private const int BUFFER_SIZE = 32768;
 		private const string CONFIG_FILE = "~/Administration/Content/filemanager/conf.json";
-		private const string LANGUAGE_FILE = "~/Administration/Content/filemanager/lang/{0}.json";
 
 		private string _fileRoot = null;
 		private Dictionary<string, string> _lang = null;
@@ -34,21 +35,27 @@ namespace SmartStore.Admin.Controllers
 
 		private readonly Lazy<IImageProcessor> _imageProcessor;
 		private readonly Lazy<IPictureService> _pictureService;
+		private readonly Lazy<IImageCache> _imageCache;
 		private readonly IMediaFileSystem _fileSystem;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly ILocalizationFileResolver _locFileResolver;
 		private readonly Lazy<MediaSettings> _mediaSettings;
 
 		public RoxyFileManagerController(
 			Lazy<IImageProcessor> imageProcessor,
 			Lazy<IPictureService> pictureService,
+			Lazy<IImageCache> imageCache,
 			IMediaFileSystem fileSystem,
 			IEventPublisher eventPublisher,
+			ILocalizationFileResolver locFileResolver,
 			Lazy<MediaSettings> mediaSettings)
 		{
 			_imageProcessor = imageProcessor;
 			_pictureService = pictureService;
+			_imageCache = imageCache;
 			_fileSystem = fileSystem;
 			_eventPublisher = eventPublisher;
+			_locFileResolver = locFileResolver;
 			_mediaSettings = mediaSettings;
 		}
 
@@ -56,20 +63,16 @@ namespace SmartStore.Admin.Controllers
 
 		private Dictionary<string, string> ParseJson(string path)
 		{
-			var result = new Dictionary<string, string>();
-			var json = "";
-			
 			try
 			{
-				json = System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8);
+				var json = System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8);
+				return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				exception.Dump();
+				ex.Dump();
+				return new Dictionary<string, string>();
 			}
-
-			var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-			return dict;
 		}
 
 		private string LangRes(string name)
@@ -78,29 +81,21 @@ namespace SmartStore.Admin.Controllers
 
 			if (_lang == null)
 			{
-				var lang = GetSetting("LANG");
+				var locFile = _locFileResolver.Resolve(Services.WorkContext.WorkingLanguage.UniqueSeoCode, "~/Administration/Content/filemanager/lang/", "*.js");
 
-				if (lang.IsCaseInsensitiveEqual("auto"))
+				if (locFile == null)
 				{
-					lang = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
+					return name;
 				}
 
-				var filename = CommonHelper.MapPath(LANGUAGE_FILE.FormatInvariant(lang));
+				var js = System.IO.File.ReadAllText(CommonHelper.MapPath(locFile.VirtualPath));
+				var objStart = js.IndexOf("{");
+				var json = js.Substring(objStart);
 
-				if (!System.IO.File.Exists(filename))
-				{
-					filename = CommonHelper.MapPath(LANGUAGE_FILE.FormatInvariant("en"));
-				}
-
-				_lang = ParseJson(filename);
+				_lang = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 			}
 
-			if (_lang.ContainsKey(name))
-			{
-				result = _lang[name];
-			}
-
-			return result;
+			return _lang.Get(name) ?? name;
 		}
 
 		private string GetSetting(string name)
@@ -155,7 +150,7 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		private void ImageResize(string path, string dest, int maxWidth, int maxHeight)
+		private void ImageResize(string path, string dest, int maxWidth, int maxHeight, bool notify = true)
 		{
 			if (dest.IsEmpty())
 				return;
@@ -172,7 +167,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				Quality = _mediaSettings.Value.DefaultImageQuality,
 				Format = Path.GetExtension(path).Trim('.').ToLower(),
-				IsValidationMode = true
+				IsValidationMode = true,
+				Notify = notify
 			};
 
 			var originalSize = ImageHeader.GetDimensions(buffer, MimeTypes.MapNameToMimeType(path));
@@ -264,7 +260,7 @@ namespace SmartStore.Admin.Controllers
 				path = uri.PathAndQuery;
 			}
 
-			return _fileSystem.GetStoragePath(path) ?? path;
+			return (_fileSystem.GetStoragePath(path) ?? path).TrimStart('/', '\\');
 		}
 
 		private IEnumerable<IFile> GetFiles(string path, string type)
@@ -369,6 +365,7 @@ namespace SmartStore.Admin.Controllers
 				Response.Write("{");
 				Response.Write("\"p\":\"" + url + "\"");
 				Response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
+				Response.Write(",\"m\":\"" + MimeTypes.MapNameToMimeType(file.Name) + "\"");
 				Response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
 				Response.Write(",\"w\":\"" + size.Width.ToString() + "\"");
 				Response.Write(",\"h\":\"" + size.Height.ToString() + "\"");
@@ -570,9 +567,9 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_MoveDir") + " \"" + path + "\"");
+				throw new Exception(LangRes("E_MoveDir") + " \"" + path + "\"" + ": (" + ex.Message + ")");
 			}
 		}
 
@@ -599,17 +596,17 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_CopyFile"));
+				throw new Exception(LangRes("E_CopyFile") + ": " + ex.Message);
 			}
 		}
 
 		private void DeleteFile(string path)
 		{
 			path = GetRelativePath(path);
-
-			if (!_fileSystem.FileExists(path))
+			var file = _fileSystem.GetFile(path);
+			if (!file.Exists)
 			{
 				throw new Exception(LangRes("E_DeleteFileInvalidPath"));
 			}
@@ -617,12 +614,13 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				_fileSystem.DeleteFile(path);
+				_imageCache.Value.Delete(file);
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_DeletеFile"));
+				throw new Exception(LangRes("E_DeletеFile") + ": " + ex.Message);
 			}
 		}
 
@@ -648,9 +646,9 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_CannotDeleteDir"));
+				throw new Exception(LangRes("E_CannotDeleteDir") + ": " + ex.Message);
 			}
 		}
 
@@ -672,9 +670,9 @@ namespace SmartStore.Admin.Controllers
 
 				Response.Write(GetResultString());
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(LangRes("E_CreateDirFailed"));
+				throw new Exception(LangRes("E_CreateDirFailed") + ": " + ex.Message);
 			}
 		}
 
@@ -732,7 +730,7 @@ namespace SmartStore.Admin.Controllers
 			Response.Write(GetResultString());
 		}
 
-		private void Upload(string path, bool external = false)
+		private async Task UploadAsync(string path, bool external = false)
 		{
 			path = GetRelativePath(path);
 
@@ -749,6 +747,8 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
+				var notify = Request.Files.Count < 4;
+
 				// copy uploaded files to temp folder and resize them
 				for (var i = 0; i < Request.Files.Count; ++i)
 				{
@@ -762,7 +762,7 @@ namespace SmartStore.Admin.Controllers
 
 						if (GetFileContentType(extension).IsCaseInsensitiveEqual("image"))
 						{
-							ImageResize(dest, dest, width, height);
+							ImageResize(dest, dest, width, height, notify);
 						}
 					}
 					else
@@ -783,7 +783,7 @@ namespace SmartStore.Admin.Controllers
 							newPath = file.Path;
 						}
 
-						_fileSystem.SaveStream(newPath, stream);
+						await _fileSystem.SaveStreamAsync(newPath, stream);
 						url = _fileSystem.GetPublicUrl(newPath);
 					}
 				}
@@ -829,7 +829,7 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
-		public void ProcessRequest(string a = null, string d = null)
+		public async Task ProcessRequest(string a = null, string d = null)
 		{
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.UploadPictures))
 			{
@@ -841,7 +841,7 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				if (Request["a"] != null)
+				if (a == null && Request["a"] != null)
 				{
 					action = Request["a"];
 				}
@@ -888,7 +888,7 @@ namespace SmartStore.Admin.Controllers
 						RenameFile(Request["f"], Request["n"]);
 						break;
 					case "UPLOAD":
-						Upload(Request["d"] ?? d, Request["ext"].ToBool());
+						await UploadAsync(Request["d"] ?? d, Request["ext"].ToBool());
 						break;
 					default:
 						Response.Write(GetResultString("This action is not implemented.", "error"));

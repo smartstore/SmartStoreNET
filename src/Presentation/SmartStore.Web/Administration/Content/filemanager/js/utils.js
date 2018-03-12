@@ -106,6 +106,24 @@ RoxyLang = {
 	"E_UploadingFile": "error"
 }
 
+var RoxyIconHints = {
+	"pdf": { name: "file-pdf-o", color: "#F44336" },
+	"document": { name: "file-word-o", color: "#2B579A" },
+	"spreadsheet": { name: "file-excel-o", color: "#217346" },
+	"database": { name: "database", color: "#3ba074" },
+	"presentation": { name: "file-powerpoint-o", color: "#D24726" },
+	"archive": { name: "file-archive-o", color: "#3F51B5" },
+	"audio": { name: "file-audio-o", color: "#009688" },
+	"markup": { name: "file-code-o", color: "#4CAF50" },
+	"code": { name: "bolt", color: "#4CAF50" },
+	"exe": { name: "gear", color: "#58595B" },
+	"image": { name: "file-image-o", color: "#e77c00" },
+	"text": { name: "file-text-o", color: "#607D8B" },
+	"video": { name: "file-video-o", color: "#FF5722" },
+	"font": { name: "font", color: "#797985" },
+	"misc": { name: "file-o", color: "#ccc" }
+}
+
 function RoxyUtils() { }
 RoxyUtils.GetRootPath = function (path) {
 	return roxy_root + path;
@@ -230,19 +248,117 @@ RoxyUtils.GetFileSize = function (path) {
 
 	return ret;
 };
-RoxyUtils.GetFileType = function (path) {
-	var ret = RoxyUtils.GetFileExt(path).toLowerCase();
-	if (ret == 'png' || ret == 'jpg' || ret == 'gif' || ret == 'jpeg')
-		ret = 'image';
+RoxyUtils.GetFileType = function (path, mime) {
+	var ext = RoxyUtils.GetFileExt(path).toLowerCase();
+	var ret;
+
+	switch (ext) {
+		case "pdf":
+			ret = "pdf";
+			break;
+		case "doc":
+		case "docx":
+		case "docm":
+		case "odt":
+		case "dot":
+		case "rtf":
+		case "dotx":
+		case "dotm":
+			ret = "document";
+			break;
+		case "mdb":
+		case "db":
+		case "sqlite":
+			ret = "database";
+			break;
+		case "xls":
+		case "xlsx":
+		case "xlsm":
+		case "xlsb":
+		case "ods":
+		case "csv":
+			ret = "spreadsheet";
+			break;
+		case "ppt":
+		case "pptx":
+		case "pptm":
+		case "ppsx":
+		case "odp":
+		case "potx":
+		case "pot":
+		case "potm":
+		case "pps":
+		case "ppsm":
+			ret = "presentation";
+			break;
+		case "zip":
+		case "rar":
+		case "7z":
+			ret = "archive";
+			break;
+		case "png":
+		case "jpg":
+		case "jpeg":
+		case "bmp":
+		case "gif":
+		case "webp":
+		case "psd":
+			ret = "image";
+			break;
+		case "mp3":
+		case "wav":
+		case "ogg":
+		case "wma":
+			ret = "audio";
+			break;
+		case "mp4":
+		case "mkv":
+		case "wmv":
+		case "avi":
+		case "asf":
+		case "mpg":
+		case "mpeg":
+		case "flv":
+		case "swf":
+			ret = "video";
+			break;
+		case "txt":
+		case "css":
+			ret = "text";
+			break;
+		case "exe":
+			ret = "exe";
+			break;
+		case "ttf":
+		case "eot":
+		case "woff":
+		case "woff2":
+			ret = "font";
+			break;
+		case "xml":
+		case "html":
+		case "htm":
+			ret = "markup";
+			break;
+		case "js":
+		case "json":
+			ret = "code";
+			break;
+		default:
+			ret = "misc";
+	}
+
+	if (mime && ret === "misc") {
+		mime = mime.substring(0, mime.indexOf("/"));
+		if (RoxyIconHints[mime]) {
+			ret = mime;
+		}
+	}
 
 	return ret;
 };
 RoxyUtils.IsImage = function (path) {
-	var ret = false;
-	if (RoxyUtils.GetFileType(path) == 'image')
-		ret = true;
-
-	return ret;
+	return RoxyUtils.GetFileType(path) === 'image';
 };
 RoxyUtils.FormatFileSize = function (x) {
 	var suffix = 'B';

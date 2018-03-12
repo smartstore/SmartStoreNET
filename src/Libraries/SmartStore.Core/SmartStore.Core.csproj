@@ -216,6 +216,8 @@
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
+    <Compile Include="Domain\Customers\WalletHistory.cs" />
+    <Compile Include="Domain\Customers\WalletPostingReason.cs" />
     <Compile Include="Domain\DataExchange\DataExchangeEnums.cs" />
     <Compile Include="Domain\DataExchange\ImportEnums.cs" />
     <Compile Include="Domain\DataExchange\ImportProfile.cs" />

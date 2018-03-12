@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
@@ -430,5 +429,42 @@ namespace SmartStore.Services.Customers
 		}
 
 		#endregion
-    }
+
+		#region Wallet
+
+		/// <summary>
+		/// Gets the wallet amount balance.
+		/// </summary>
+		/// <param name="customer">Customer.</param>
+		/// <param name="storeId">Store identifier to get the amount balance per store.</param>
+		/// <returns>The wallet amount balance.</returns>
+		public static decimal GetWalletAmountBalance(this Customer customer, int storeId = 0)
+		{
+			Guard.NotNull(customer, nameof(customer));
+
+			if (storeId == 0)
+			{
+				var result = customer.WalletHistory
+					.OrderByDescending(x => x.CreatedOnUtc)
+					.ThenByDescending(x => x.Id)
+					.Select(x => x.AmountBalance)
+					.FirstOrDefault();
+
+				return result;
+			}
+			else
+			{
+				var result = customer.WalletHistory
+					.Where(x => x.StoreId == storeId)
+					.OrderByDescending(x => x.CreatedOnUtc)
+					.ThenByDescending(x => x.Id)
+					.Select(x => x.AmountBalancePerStore)
+					.FirstOrDefault();
+
+				return result;
+			}
+		}
+
+		#endregion
+	}
 }

@@ -21,7 +21,8 @@ namespace SmartStore.Core.Domain.Customers
         private ICollection<ShoppingCartItem> _shoppingCartItems;
         private ICollection<Order> _orders;
         private ICollection<RewardPointsHistory> _rewardPointsHistory;
-        private ICollection<ReturnRequest> _returnRequests;
+		private ICollection<WalletHistory> _walletHistory;
+		private ICollection<ReturnRequest> _returnRequests;
         private ICollection<Address> _addresses;
         private ICollection<ForumTopic> _forumTopics;
         private ICollection<ForumPost> _forumPosts;
@@ -201,6 +202,22 @@ namespace SmartStore.Core.Domain.Customers
 			get { return _rewardPointsHistory ?? (_rewardPointsHistory = new HashSet<RewardPointsHistory>()); }
             protected set { _rewardPointsHistory = value; }            
         }
+
+		/// <summary>
+		/// Gets or sets the wallet history.
+		/// </summary>
+		[DataMember]
+		public virtual ICollection<WalletHistory> WalletHistory
+		{
+			get
+			{
+				return _walletHistory ?? (_walletHistory = new HashSet<WalletHistory>());
+			}
+			protected set
+			{
+				_walletHistory = value;
+			}
+		}
 
         /// <summary>
         /// Gets or sets return request of this customer

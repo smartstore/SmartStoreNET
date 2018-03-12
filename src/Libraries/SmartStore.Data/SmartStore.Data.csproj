@@ -137,6 +137,7 @@
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionsSetMap.cs" />
+    <Compile Include="Mapping\Customers\WalletHistoryMap.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
@@ -560,6 +561,10 @@
     <Compile Include="Migrations\201802270844034_ExportAttributeMappings.cs" />
     <Compile Include="Migrations\201802270844034_ExportAttributeMappings.Designer.cs">
       <DependentUpon>201802270844034_ExportAttributeMappings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803101815265_Wallet.cs" />
+    <Compile Include="Migrations\201803101815265_Wallet.Designer.cs">
+      <DependentUpon>201803101815265_Wallet.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1015,6 +1020,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802270844034_ExportAttributeMappings.resx">
       <DependentUpon>201802270844034_ExportAttributeMappings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803101815265_Wallet.resx">
+      <DependentUpon>201803101815265_Wallet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

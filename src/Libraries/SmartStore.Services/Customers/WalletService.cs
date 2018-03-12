@@ -54,7 +54,7 @@ namespace SmartStore.Services.Customers
 			return _walletHistoryRepository.GetById(id);
 		}
 
-		public virtual WalletHistory InsertHistoryEntry(WalletHistory entity)
+		public virtual void InsertHistoryEntry(WalletHistory entity)
 		{
 			Guard.NotNull(entity, nameof(entity));
 			Guard.NotZero(entity.CustomerId, nameof(entity.CustomerId));
@@ -67,15 +67,13 @@ namespace SmartStore.Services.Customers
 
 			// Always overwrite what could break the sequence.
 			entity.CreatedOnUtc = DateTime.UtcNow;
-			entity.AmountBalance = customer.GetWalletAmountBalance(0) + entity.Amount;
-			// This can only work if all stores have the same primary store currency!
-			entity.AmountBalancePerStore = customer.GetWalletAmountBalance(entity.StoreId) + entity.Amount;
+			entity.AmountBalance = customer.GetWalletCreditBalance(0) + entity.Amount;
+			entity.AmountBalancePerStore = customer.GetWalletCreditBalance(entity.StoreId) + entity.Amount;
 
 			_walletHistoryRepository.Insert(entity);
-			return entity;
 		}
 
-		public virtual WalletHistory UpdateHistoryEntry(WalletHistory entity)
+		public virtual void UpdateHistoryEntry(WalletHistory entity)
 		{
 			Guard.NotNull(entity, nameof(entity));
 
@@ -98,8 +96,6 @@ namespace SmartStore.Services.Customers
 			_walletHistoryRepository.Update(entity);
 
 			UpdateBalances(entity, amountDifference);
-
-			return entity;
 		}
 
 		public virtual void DeleteHistoryEntry(WalletHistory entity)
@@ -113,7 +109,7 @@ namespace SmartStore.Services.Customers
 			}
 		}
 
-		//public virtual decimal GetAmountBalance(int customerId, int storeId = 0)
+		//public virtual decimal GetCreditBalance(int customerId, int storeId = 0)
 		//{
 		//	Guard.NotZero(customerId, nameof(customerId));
 

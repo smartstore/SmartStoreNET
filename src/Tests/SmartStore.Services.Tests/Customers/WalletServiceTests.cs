@@ -24,17 +24,17 @@ namespace SmartStore.Services.Tests.Customers
 
 		private void Insert(WalletHistory entry)
 		{
-			var newEntry = _walletService.InsertHistoryEntry(entry);
-			_allEntries.Add(newEntry);
+			_walletService.InsertHistoryEntry(entry);
+			_allEntries.Add(entry);
 
 			// Let entry.Customer be null here for testing purposes.
 			if (entry.CustomerId == 1)
 			{
-				_customer1.WalletHistory.Add(newEntry);
+				_customer1.WalletHistory.Add(entry);
 			}
 			else if (entry.CustomerId == 2)
 			{
-				_customer2.WalletHistory.Add(newEntry);
+				_customer2.WalletHistory.Add(entry);
 			}
 
 			// Let repository grow by inserted entries that also reflect preceded entries.
@@ -75,16 +75,16 @@ namespace SmartStore.Services.Tests.Customers
 		[Test]
 		public void Can_get_amount_balance()
 		{
-			var balance1 = _customer1.GetWalletAmountBalance(0);
+			var balance1 = _customer1.GetWalletCreditBalance(0);
 			balance1.ShouldEqual(222.8M);
 
-			var balance2 = _customer1.GetWalletAmountBalance(1);
+			var balance2 = _customer1.GetWalletCreditBalance(1);
 			balance2.ShouldEqual(160.5M);
 
-			var balance3 = _customer1.GetWalletAmountBalance(2);
+			var balance3 = _customer1.GetWalletCreditBalance(2);
 			balance3.ShouldEqual(62.3M);
 
-			var balance4 = _customer2.GetWalletAmountBalance(0);
+			var balance4 = _customer2.GetWalletCreditBalance(0);
 			balance4.ShouldEqual(decimal.Zero);
 		}
 	}

@@ -18,15 +18,13 @@ namespace SmartStore.Services.Customers
 		/// Inserts a wallet history entry. AmountBalance and CreatedOnUtc are set internally.
 		/// </summary>
 		/// <param name="entity">Wallet history entry.</param>
-		/// <returns>The inserted wallet history entry.</returns>
-		WalletHistory InsertHistoryEntry(WalletHistory entity);
+		void InsertHistoryEntry(WalletHistory entity);
 
 		/// <summary>
 		/// Updates a wallet history entry. Some fields like AmountBalance and CreatedOnUtc cannot be changed subsequently.
 		/// </summary>
 		/// <param name="entity">Wallet history entry.</param>
-		/// <returns>The updated wallet history entry.</returns>
-		WalletHistory UpdateHistoryEntry(WalletHistory entity);
+		void UpdateHistoryEntry(WalletHistory entity);
 
 		/// <summary>
 		/// Deletes a wallet history entry.

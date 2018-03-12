@@ -433,12 +433,12 @@ namespace SmartStore.Services.Customers
 		#region Wallet
 
 		/// <summary>
-		/// Gets the wallet amount balance.
+		/// Gets the wallet credit balance.
 		/// </summary>
 		/// <param name="customer">Customer.</param>
-		/// <param name="storeId">Store identifier to get the amount balance per store.</param>
-		/// <returns>The wallet amount balance.</returns>
-		public static decimal GetWalletAmountBalance(this Customer customer, int storeId = 0)
+		/// <param name="storeId">Store identifier to get the credit balance per store.</param>
+		/// <returns>The wallet credit balance.</returns>
+		public static decimal GetWalletCreditBalance(this Customer customer, int storeId = 0)
 		{
 			Guard.NotNull(customer, nameof(customer));
 

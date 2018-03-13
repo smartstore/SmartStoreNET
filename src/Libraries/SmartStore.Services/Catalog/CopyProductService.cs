@@ -14,6 +14,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Catalog
 {
@@ -33,6 +34,7 @@ namespace SmartStore.Services.Catalog
         private readonly IUrlRecordService _urlRecordService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ICatalogSearchService _catalogSearchService;
+		private readonly SeoSettings _seoSettings;
 
 		public CopyProductService(
 			IRepository<Product> productRepository,
@@ -48,7 +50,8 @@ namespace SmartStore.Services.Catalog
             IProductAttributeParser productAttributeParser,
 			IUrlRecordService urlRecordService,
 			IStoreMappingService storeMappingService,
-			ICatalogSearchService catalogSearchService)
+			ICatalogSearchService catalogSearchService,
+			SeoSettings seoSettings)
         {
 			_productRepository = productRepository;
 			_relatedProductRepository = relatedProductRepository;
@@ -64,6 +67,7 @@ namespace SmartStore.Services.Catalog
 			_urlRecordService = urlRecordService;
 			_storeMappingService = storeMappingService;
 			_catalogSearchService = catalogSearchService;
+			_seoSettings = seoSettings;
 
 			T = NullLocalizer.Instance;
         }
@@ -423,7 +427,8 @@ namespace SmartStore.Services.Catalog
 		{
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoCommit: true))
 			{
-				_urlRecordService.SaveSlug(clone, clone.ValidateSeName("", clone.Name, true), 0);
+				var slug = clone.ValidateSeName("", clone.Name, true, _urlRecordService, _seoSettings);
+				_urlRecordService.SaveSlug(clone, slug, 0);
 			}
 		}
 
@@ -461,8 +466,9 @@ namespace SmartStore.Services.Catalog
 					if (!String.IsNullOrEmpty(bundleTitleText))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.BundleTitleText, bundleTitleText, lang.Id);
 
-					// search engine name
-					_urlRecordService.SaveSlug(clone, clone.ValidateSeName("", name, false), lang.Id);
+					// Search engine name.
+					var slug = clone.ValidateSeName("", name, false, _urlRecordService, _seoSettings, lang.Id);
+					_urlRecordService.SaveSlug(clone, slug, lang.Id);
 				}
 			}
 		}

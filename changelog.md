@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -79,6 +79,7 @@
 * The option to send manually was ignored when sending e-mails
 * #528 LimitedToStores is required on payment provider rather than plugin level
 * #1318 Disabled preselected attribute combination permanently hides the shopping cart button, even if another combination is selected.
+* Copy product: Fixes "Cannot insert duplicate key row in object dbo.UrlRecord with unique index IX_UrlRecord_Slug"
 
 
 ## SmartStore.NET 3.0.3

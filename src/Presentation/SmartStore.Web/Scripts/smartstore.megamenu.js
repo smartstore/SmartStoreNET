@@ -408,6 +408,9 @@
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);
 
+									var list = container.find('.mega-menu-product-rotator > .artlist-grid');
+									list.attr('data-slick', '{"dots": false, "autoplay": true}');
+
                                 	// Init carousel
                                     applyCommonPlugins(container);
 

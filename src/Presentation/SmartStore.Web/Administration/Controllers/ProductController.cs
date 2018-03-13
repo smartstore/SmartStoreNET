@@ -3020,37 +3020,6 @@ namespace SmartStore.Admin.Controllers
 			return TierPriceList(command, productId);
 		}
 
-        public ActionResult AllCalculationMethods(string label, int selectedId)
-        {
-            var list = new List<object>
-            {
-                new
-				{
-					id = ((int)TierPriceCalculationMethod.Fixed).ToString(),
-					text = T("Admin.Product.Price.Tierprices.Fixed").Text,
-					selected = selectedId == (int)TierPriceCalculationMethod.Fixed
-				},
-                new
-				{
-					id = ((int)TierPriceCalculationMethod.Adjustment).ToString(),
-					text = T("Admin.Product.Price.Tierprices.Adjustment").Text,
-					selected = selectedId == (int)TierPriceCalculationMethod.Adjustment
-				},
-                new
-				{
-					id = ((int)TierPriceCalculationMethod.Percental).ToString(),
-					text = T("Admin.Product.Price.Tierprices.Percental").Text,
-					selected = selectedId == (int)TierPriceCalculationMethod.Percental
-				}
-            };
-
-            return new JsonResult
-			{
-				Data = list,
-				JsonRequestBehavior = JsonRequestBehavior.AllowGet
-			};
-        }
-
         #endregion
 
         #region Product variant attributes

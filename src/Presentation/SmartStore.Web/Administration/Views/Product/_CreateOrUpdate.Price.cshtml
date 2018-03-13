@@ -225,11 +225,23 @@
             <script>
 				function onTierPriceEdit(e) {
 					if (e.mode == "edit") {
-						_.delay(function () {
-							$('#Store').val(e.dataItem['StoreId']).trigger('change');
-							$('#CustomerRole').val(e.dataItem['CustomerRoleId']).trigger('change');
-							$('#CalculationMethod').val(e.dataItem['CalculationMethodId']).trigger('change');
-						}, 0);
+						$('#Store')
+							.data('select-selected-id', e.dataItem['StoreId'])
+							.data('select-init-text', e.dataItem['Store'])
+							.val(e.dataItem['StoreId'])
+							.trigger('change');
+
+						$('#CustomerRole')
+							.data('select-selected-id', e.dataItem['CustomerRoleId'])
+							.data('select-init-text', e.dataItem['CustomerRole'])
+							.val(e.dataItem['CustomerRoleId'])
+							.trigger('change');
+
+						$('#CalculationMethod')
+							.data('select-selected-id', e.dataItem['CalculationMethodId'])
+							.data('select-init-text', e.dataItem['CalculationMethod'])
+							.val(e.dataItem['CalculationMethodId'])
+							.trigger('change');
 					}
                 }
             </script>

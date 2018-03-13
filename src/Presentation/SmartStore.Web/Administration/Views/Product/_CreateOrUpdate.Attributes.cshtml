@@ -11,14 +11,21 @@
 		{
 			<script>
 				function onProductVariantAttributeEdit(e) {
-					var id = parseInt(e.dataItem['Id']);
-
 					if (e.mode == "edit") {
-						_.delay(function () {
-							$('#AttributeControlType').val(e.dataItem['AttributeControlTypeId']).trigger('change');
-							$('#ProductAttribute').val(e.dataItem['ProductAttributeId']).trigger('change');
-						}, 0);
+						$('#AttributeControlType')
+							.data('select-selected-id', e.dataItem['AttributeControlTypeId'])
+							.data('select-init-text', e.dataItem['AttributeControlType'])
+							.val(e.dataItem['AttributeControlTypeId'])
+							.trigger('change');
+
+						$('#ProductAttribute')
+							.data('select-selected-id', e.dataItem['ProductAttributeId'])
+							.data('select-init-text', e.dataItem['ProductAttribute'])
+							.val(e.dataItem['ProductAttributeId'])
+							.trigger('change');
 					}
+
+					var id = parseInt(e.dataItem['Id']);
 
 					if (id === 0) {
 						$(e.form).find('#IsRequired').prop('checked', true);

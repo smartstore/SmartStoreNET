@@ -9,9 +9,11 @@
         <script>
 			function onProductCategoryEdit(e) {
 				if (e.mode == "edit") {
-					_.delay(function () {
-						$('#Category').val(e.dataItem['CategoryId']).trigger('change');
-					}, 0);
+					$('#Category')
+						.data('select-selected-id', e.dataItem['CategoryId'])
+						.data('select-init-text', e.dataItem['Category'])
+						.val(e.dataItem['CategoryId'])
+						.trigger('change');
 				}
 			}
 

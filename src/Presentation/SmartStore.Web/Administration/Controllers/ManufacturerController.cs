@@ -220,7 +220,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Index()

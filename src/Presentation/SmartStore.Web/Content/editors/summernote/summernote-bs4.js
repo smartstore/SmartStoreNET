@@ -2491,8 +2491,8 @@ var range = {
      * @return {WrappedRange}
      */
     create: function (sc, so, ec, eo) {
-        if (arguments.length === 4) {
-            return new WrappedRange(sc, so, ec, eo);
+		if (arguments.length === 4) {
+			return new WrappedRange(sc, so, ec, eo);
         }
         else if (arguments.length === 2) {
             ec = sc;

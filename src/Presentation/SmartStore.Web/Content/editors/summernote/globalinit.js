@@ -50,7 +50,7 @@ var summernote_image_upload_url;
 		],
 		popover: {
 			image: [
-				['custom', ['imageAttributes']],
+				['custom', ['imageAttributes', 'link']],
 				['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
 				['float', ['floatLeft', 'floatRight', 'floatNone']],
 				['remove', ['removeMedia']]

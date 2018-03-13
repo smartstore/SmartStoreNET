@@ -50,7 +50,7 @@
 					'		</div>',
 					'	</div>',
 					'</div>',
-					'<div class="row form-group note-form-group">',
+					'<div class="row form-group note-form-group form-group-text">',
 					'	<label class="note-form-label col-3">' + lang.link.textToDisplay + '</label>',
 					'	<div class=" col-12 col-sm-9"><input class="note-link-text form-control note-form-control note-input" type="text" /></div>',
 					'</div>',
@@ -72,7 +72,10 @@
 					'</div>'
 				].join('');
 				var buttonClass = 'btn btn-primary note-btn note-btn-primary note-link-btn';
-				var footer = "<button type=\"submit\" href=\"#\" class=\"" + buttonClass + "\" disabled>" + lang.link.insert + "</button>";
+				var footer = [
+					'<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">' + Res['Common.Cancel'] + '</button>',
+					'<button type="submit" class="' + buttonClass + '" disabled>' + lang.link.insert + '</button>',
+				].join('');
 				self.$dialog = ui.dialog({
 					className: 'link-dialog',
 					title: lang.link.insert,
@@ -100,58 +103,84 @@
 				ui.toggleBtn($linkBtn, $linkText.val() && $linkUrl.val());
 			};
 
+			this.createLinkRange = function (a) {
+				var sc = a[0];
+				var so = 0;
+				var ec = a[0];
+				var eo = a[0].childNodes.length;
+
+				// Create range and assign points again.
+				// Something is wrong with Summernote's createRange method.
+				var rng = editor.createRange(sc, so, ec, eo);
+				rng.sc = sc;
+				rng.so = so;
+				rng.ec = ec;
+				rng.eo = eo;
+
+				return rng;
+			}
+
 			this.show = function () {
 				var linkInfo, a;
 				var img = $(context.layoutInfo.editable.data('target'));
 				if (img.length) {
+					// Hide "text" control
+					self.$dialog.find('.form-group-text').hide();
+
 					a = img.parent();
 					if (a.is("a")) {
-						var sc = a[0];
-						var so = 0;
-						var ec = a[0];
-						var eo = a[0].childNodes.length;
-
-						var rng = editor.createRange(sc, so, ec, eo);
 						linkInfo = {
-							forImage: true,
-							range: rng,
+							a: a, // indicates that an existing link should be edited
+							img: img,
+							range: self.createLinkRange(a),
 							url: a.attr('href'),
 							cssClass: a.attr("class"),
 							cssStyle: a.attr("style"),
 							rel: a.attr("rel")
 						};
 					}
-				}		
+				}
+				else {
+					self.$dialog.find('.form-group-text').show();
+				}
 
 				if (!linkInfo) {
 					linkInfo = context.invoke('editor.getLinkInfo');
+					if (img.length) {
+						linkInfo.img = img;
+					}
 					a = $(self.findLinkInRange(linkInfo.range));
 					if (a.length) {
 						linkInfo.cssClass = a.attr("class");
 						linkInfo.cssStyle = a.attr("style");
 						linkInfo.rel = a.attr("rel");
 					}
-				}			
+				}
 
 				context.invoke('editor.saveRange');
 				self.showLinkDialog(linkInfo).then(function (linkInfo) {
-					//console.log(linkInfo);
-					//context.invoke('editor.restoreRange');
-
-					a = $(self.findLinkInRange(linkInfo.range));
-
-					if (linkInfo.forImage) {
-						var $linkUrl = self.$dialog.find('.note-link-url');
-						a.attr("href", $linkUrl.val());
+					var enteredUrl = self.$dialog.find('.note-link-url').val();
+					console.log(linkInfo);
+					if (linkInfo.img && !linkInfo.a) {
+						// UNlinked image selected
+						linkInfo.img.wrap('<a href="' + enteredUrl + '"></a>');
+						a = linkInfo.img.parent();
+						linkInfo.range = self.createLinkRange(a);
+						console.log(a, linkInfo);
+					}
+					else if (linkInfo.img && linkInfo.a) {
+						// linked image selected
+						a = linkInfo.a;
+						a.attr("href", enteredUrl);
 					}
 					else {
+						// (Un)linked text selected... let SN process the link
 						context.invoke('editor.restoreRange');
 						context.invoke('editor.createLink', linkInfo);
 					}			
 
 					// add our custom attributes
 					if (a.length) {
-						console.log(a);
 						var $linkClass = self.$dialog.find('.note-link-class');
 						var $linkStyle = self.$dialog.find('.note-link-style');
 						var $linkRel = self.$dialog.find('.note-link-rel');
@@ -159,8 +188,12 @@
 						if ($linkClass.val()) a.attr("class", $linkClass.val());
 						if ($linkStyle.val()) a.attr("style", $linkStyle.val());
 						if ($linkRel.val()) a.attr("rel", $linkRel.val());
+					}
 
-						console.log(a);
+					if (linkInfo.img) {
+						// Ensure that SN saves the change
+						context.layoutInfo.note.val(context.invoke('code'));
+						context.layoutInfo.note.change();
 					}
 				}).fail(function () {
 					context.invoke('editor.restoreRange');
@@ -224,9 +257,6 @@
 							// stop cloning text from linkUrl
 							linkInfo.text = $linkText.val();
 						};
-						$linkText.on('input', handleLinkTextUpdate).on('paste', function () {
-							setTimeout(handleLinkTextUpdate, 0);
-						});
 						var handleLinkUrlUpdate = function () {
 							self.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
 							// display same link on `Text to display` input
@@ -235,12 +265,19 @@
 								$linkText.val($linkUrl.val());
 							}
 						};
+
+						$linkText.on('input', handleLinkTextUpdate).on('paste', function () {
+							setTimeout(handleLinkTextUpdate, 0);
+						});
+
 						$linkUrl.on('input', handleLinkUrlUpdate).on('paste', function () {
 							setTimeout(handleLinkUrlUpdate, 0);
 						}).val(linkInfo.url);
+
 						if (!Modernizr.touchevents) {
 							$linkUrl.trigger('focus');
 						}
+
 						self.toggleLinkBtn($linkBtn, $linkText, $linkUrl);
 						self.bindEnterKey($linkUrl, $linkBtn);
 						self.bindEnterKey($linkText, $linkBtn);
@@ -250,7 +287,8 @@
 						$linkBtn.one('click', function (e) {
 							e.preventDefault();
 							deferred.resolve({
-								forImage: linkInfo.forImage,
+								img: linkInfo.img,
+								a: linkInfo.a,
 								range: linkInfo.range,
 								url: $linkUrl.val(),
 								text: $linkText.val(),

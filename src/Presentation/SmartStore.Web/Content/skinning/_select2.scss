@@ -609,16 +609,22 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 
 	.select2-results__option {
 		//font-size: $s2sm-option-font-size;
+		position: relative;
 		border-bottom: 1px solid $s2sm-inner-border-color;
 
 		> .select2-option {
+			display: block;
 			font-size: $s2sm-option-font-size;
+			padding-left: 18px;
 
 			&:before {
+				position: absolute;
+				left: $s2bs-padding-base-horizontal;
 				@include fontawesome("\f00c");
 				color: $success;
 				text-align: left;
 				width: 18px;
+				line-height: $line-height-base;
 				visibility: hidden;
 			}
 		}

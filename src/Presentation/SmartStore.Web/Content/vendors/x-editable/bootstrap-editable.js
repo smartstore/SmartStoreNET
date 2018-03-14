@@ -3758,10 +3758,16 @@ $(function(){
 		render: function () {
 			this.setClass();
 
+			if (this.options.mode !== 'inline' && !this.options.select2.dropdownParent) {
+				var popover = this.$input.closest('.popover');
+				if (popover.length) {
+					this.options.select2.dropdownParent = popover;
+				}
+			}
+
 			//can not apply select2 here as it calls initSelection 
 			//over input that does not have correct value yet.
 			//apply select2 only in value2input
-			//this.$input.select2(this.options.select2);
 			this.$input.selectWrapper(this.options.select2);
 
 			//when data is loaded via ajax, we need to know when it's done to populate listData
@@ -3918,44 +3924,16 @@ $(function(){
 	});
 
 	Constructor.defaults = $.extend({}, $.fn.editabletypes.abstractinput.defaults, {
-        /**
-        @property tpl 
-        @default <select></select>
-        **/
-		tpl: '<select class="noskin"></select>',
-        /**
-        Configuration of select2. [Full list of options](http://ivaynberg.github.com/select2).
-
-        @property select2 
-        @type object
-        @default null
-        **/
+		tpl: '<select class="noskin select-editable drop-editable"></select>',
 		select2: null,
-        /**
-        Placeholder attribute of select
-
-        @property placeholder 
-        @type string
-        @default null
-        **/
 		placeholder: null,
         /**
         Source data for select. It will be assigned to select2 `data` property and kept here just for convenience.
         Please note, that format is different from simple `select` input: use 'id' instead of 'value'.
-        E.g. `[{id: 1, text: "text1"}, {id: 2, text: "text2"}, ...]`.
-
-        @property source 
-        @type array|string|function
-        @default null        
+        E.g. `[{id: 1, text: "text1"}, {id: 2, text: "text2"}, ...]`.       
         **/
 		source: null,
-        /**
-        Separator used to display tags.
-
-        @property viewseparator 
-        @type string
-        @default ', '        
-        **/
+        // Separator used to display tags.      
 		viewseparator: ', '
 	});
 

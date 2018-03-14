@@ -112,7 +112,7 @@ namespace SmartStore.Services.Media
 				else if (mediaSettings.AutoGenerateAbsoluteUrls)
 				{
 					var uri = httpContext.Request.Url;
-					_host = "{0}://{1}{2}".FormatInvariant(uri.Scheme, uri.Authority, appPath);
+					_host = "//{0}{1}".FormatInvariant(uri.Authority, appPath);
 				}
 				else
 				{

@@ -86,8 +86,15 @@
 					var doQuery = function (data) {
 						list = data;
 						if (term) {
+							var isGrouped = data.length && data[0].children;
+							if (isGrouped) {
+								// In a grouped list, find the optgroup marked with "main"
+								var mainGroup = _.find(data, function (x) { return x.children && x.main });
+								data = mainGroup ? mainGroup.children : data[0].children;
+							}
 							list = _.filter(data, function (val) {
-								return new RegExp(term, "i").test(val.text);
+								var rg = new RegExp(term, "i");
+								return rg.test(val.text);
 							});
 						}
 						select.data("loaded", true);

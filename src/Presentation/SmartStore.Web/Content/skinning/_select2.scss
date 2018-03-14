@@ -16,7 +16,7 @@ $s2bs-btn-default-border: $input-border-color !default;
 $s2bs-caret-width-base: 0.35rem !default;
 $s2bs-caret-width-large: 0.35rem !default;
 $s2bs-cursor-disabled: not-allowed !default;
-$s2bs-dropdown-header-color: $dropdown-header-color !default;
+$s2bs-dropdown-header-color: $gray-700 !default;
 $s2bs-dropdown-link-active-bg: $gray-100 !default;
 $s2bs-dropdown-link-active-color: $yiq-text-dark !default;
 $s2bs-dropdown-link-disabled-color: $dropdown-link-disabled-color !default;
@@ -57,7 +57,7 @@ $s2bs-remove-choice-color: $input-placeholder-color !default;
 $s2bs-remove-choice-hover-color: $body-color !default;
 $s2bs-selection-choice-border-radius: $input-border-radius-sm !default;
 $s2bs-dropdown-header-padding-vertical: $s2bs-padding-base-vertical !default;
-$s2bs-dropdown-header-font-size: $s2bs-font-size-small !default;
+$s2bs-dropdown-header-font-size: $s2bs-font-size-base !default;
 
 // SMNET extra styling
 // -------------------------
@@ -207,32 +207,24 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		&[role=group] {
 			padding: 0;
 		}
-		/**
-     * Disabled results.
-     *
-     * @see https://select2.github.io/examples.html#disabled-results
-     */
+
 		&[aria-disabled=true] {
 			color: $s2bs-dropdown-link-disabled-color;
 			cursor: $s2bs-cursor-disabled;
 		}
-		/**
-     * Hover state.
-     */
+
 		&[aria-selected=true] {
 			color: $s2bs-dropdown-link-hover-color;
 			font-weight: $font-weight-medium;
 		}
-		/**
-     * Selected state.
-     */
+
 		&--highlighted[aria-selected] {
 			background-color: $s2bs-dropdown-link-active-bg;
 			color: $s2bs-dropdown-link-active-color;
 		}
 
 		.select2-results__option {
-			padding: $s2bs-padding-base-vertical $s2bs-padding-base-horizontal;
+			padding: $input-btn-padding-y-sm $s2bs-padding-base-horizontal;
 
 			.select2-results__group {
 				padding-left: 0;
@@ -268,13 +260,17 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 
 
 	.select2-results__group {
-		color: $s2bs-dropdown-header-color;
+		color: inherit; // $s2bs-dropdown-header-color;
 		display: block;
 		padding: $s2bs-dropdown-header-padding-vertical $s2bs-padding-base-horizontal;
-		font-size: $s2bs-dropdown-header-font-size;
-		line-height: $s2bs-line-height-base;
 		white-space: nowrap;
 		font-weight: 600;
+		border-bottom: 1px solid rgba(#000, 0.1);
+
+		.select2-option {
+			font-size: $s2bs-dropdown-header-font-size;
+			line-height: $s2bs-line-height-base;
+		}
 	}
 
 	&.select2-container--focus {
@@ -295,16 +291,12 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 	}
 
 	&.select2-container--open {
-		/**
-     * Make the dropdown arrow point up while the dropdown is visible.
-     */
+		// Make the dropdown arrow point up while the dropdown is visible.
 		.select2-selection .select2-selection__arrow b {
 			border-color: transparent transparent $s2bs-dropdown-arrow-color transparent;
 			border-width: 0 $s2bs-caret-width-base $s2bs-caret-width-base $s2bs-caret-width-base;
 		}
-		/**
-     * Handle border radii of the container when the dropdown is showing.
-     */
+		// Handle border radii of the container when the dropdown is showing.
 		&.select2-container--below {
 			.select2-selection {
 				@include border-bottom-radius(0);
@@ -319,9 +311,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 			}
 		}
 	}
-	/**
-   * Clear the selection.
-   */
+
 	.select2-selection__clear {
 		color: $s2bs-clear-selection-color;
 		cursor: pointer;
@@ -332,12 +322,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 			color: $s2bs-clear-selection-hover-color;
 		}
 	}
-	/**
-   * Address disabled Select2 styles.
-   *
-   * @see https://select2.github.io/examples.html#disabled
-   * @see http://getbootstrap.com/css/#forms-control-disabled
-   */
+
 	&.select2-container--disabled {
 		.select2-selection {
 			border-color: $s2bs-input-border;
@@ -626,7 +611,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		//font-size: $s2sm-option-font-size;
 		border-bottom: 1px solid $s2sm-inner-border-color;
 
-		.select2-option {
+		> .select2-option {
 			font-size: $s2sm-option-font-size;
 
 			&:before {
@@ -638,22 +623,9 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 			}
 		}
 
-		&[aria-selected=true] .select2-option:before {
+		&[aria-selected=true] > .select2-option:before {
 			visibility: visible;
 		}
-		/*&:before {
-			@include fontawesome("\f00c");
-			color: $success;
-			text-align: left;
-			width: 18px;
-			visibility: hidden;
-		}
-
-		&[aria-selected=true] {
-			&:before {
-				visibility: visible;
-			}
-		}*/
 	}
 
 	.select2-results__option:last-child {
@@ -691,6 +663,7 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 
 		> .select2-selection__rendered {
 			width: 100%;
+
 			> .select2-selection__clear {
 				margin-top: 5px;
 			}

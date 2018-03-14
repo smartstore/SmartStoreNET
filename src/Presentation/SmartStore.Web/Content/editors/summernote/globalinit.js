@@ -22,9 +22,11 @@ var summernote_image_upload_url;
 		dialogsInBody: false,
 		dialogsFade: true,
 		height: 300,
+		prettifyHtml: true,
 		onCreateLink: function (url) {
 			// Prevents that summernote prepends "http://" to our links (WTF!!!)
-			if (url[0] == "/" || url[0] == "~" || url[0] == "\\" || url[0] == "." || url[0] == "#") {
+			var c = url[0];
+			if (c == "/" || c == "~" || c == "\\" || c == "." || c == "#") {
 				return url;
 			}
 
@@ -39,6 +41,11 @@ var summernote_image_upload_url;
 			},
 			onImageUpload: function (files) {
 				sendFile(files[0], this);
+			},
+			onBlurCodeview: function (code, e) {
+				// Summernote does not update WYSIWYG content on codable blur,
+				// only when switched back to editor
+				$(this).val(code);
 			}
 		},
 		toolbar: [

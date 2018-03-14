@@ -333,30 +333,41 @@ namespace SmartStore.Admin.Controllers
 					selected = c.Id == selectedId
 				};
 
-			var data = query.ToList();
+			var mainList = query.ToList();
 
-			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
-				_catalogSettings.MostRecentlyUsedCategoriesMaxSize);
-
-			// TODO: return two option groups... new JsonResult { Data = new object[] { new { text = "Last used", children = mruItems }, new { text = "All Categories", children = items } } };
-			// and load them through select2.ajax option.
-
-			for (int i = mru.Count - 1; i >= 0; --i)
-			{
-				string id = mru[i];
-				var item = categoryTree.SelectNodeById(id);
-				if (item != null)
+			var mruList = new MostRecentlyUsedList<string>(
+				_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+				_catalogSettings.MostRecentlyUsedCategoriesMaxSize)
+				.Reverse()
+				.Select(x =>
 				{
-					data.Insert(0, new
+					var item = categoryTree.SelectNodeById(x.ToInt());
+					if (item != null)
 					{
-						id = id,
-						text = _categoryService.GetCategoryPath(item),
-						selected = false
-					});
-				}
+						return new
+						{
+							id = x,
+							text = _categoryService.GetCategoryPath(item),
+							selected = false
+						};
+					}
+
+					return null;
+				})
+				.Where(x => x != null)
+				.ToList();
+
+			object data = mainList;
+			if (mruList.Count > 0)
+			{
+				data = new List<object>
+				{
+					new Dictionary<string, object> { ["text"] = T("Common.Mru").Text, ["children"] = mruList },
+					new Dictionary<string, object> { ["text"] = T("Admin.Catalog.Categories").Text, ["children"] = mainList, ["main"] = true }
+				};
 			}
 
-            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Tree()

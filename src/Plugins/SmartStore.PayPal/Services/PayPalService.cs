@@ -286,19 +286,15 @@ namespace SmartStore.PayPal.Services
 					return;
 
 				string[] orderNoteStrings = T("Plugins.SmartStore.PayPal.OrderNoteStrings").Text.SplitSafe(";");
-				var faviconUrl = "{0}Plugins/{1}/Content/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(false), Plugin.SystemName);
-
-				var sb = new StringBuilder();
-				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
-
-				var note = orderNoteStrings.SafeGet(0).FormatInvariant(anyString);
-
-				sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", note);
+				var faviconUrl = "{0}Plugins/{1}/Content/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(), Plugin.SystemName);
+				var note = $"<img src='{faviconUrl}' class='mr-1 align-text-top' />" + orderNoteStrings.SafeGet(0).FormatInvariant(anyString);
 
 				if (isIpn)
+				{
 					order.HasNewPaymentNotification = true;
+				}
 
-				_orderService.AddOrderNote(order, sb.ToString());
+				_orderService.AddOrderNote(order, note);
 			}
 			catch { }
 		}

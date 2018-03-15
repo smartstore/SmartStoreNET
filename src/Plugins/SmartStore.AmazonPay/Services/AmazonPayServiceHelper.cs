@@ -115,10 +115,10 @@ namespace SmartStore.AmazonPay.Services
 					return;
 
 				var sb = new StringBuilder();
-				var faviconUrl = "{0}Plugins/{1}/Content/images/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(false), AmazonPayPlugin.SystemName);
+				var faviconUrl = "{0}Plugins/{1}/Content/images/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(), AmazonPayPlugin.SystemName);
 
-				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
-				sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", T("Plugins.Payments.AmazonPay.AmazonDataProcessed"));
+				sb.AppendFormat("<img src='{0}' class='mr-1 align-text-top' />", faviconUrl);
+				sb.Append(T("Plugins.Payments.AmazonPay.AmazonDataProcessed"));
 				sb.Append(":<br />");
 				sb.Append(anyString);
 

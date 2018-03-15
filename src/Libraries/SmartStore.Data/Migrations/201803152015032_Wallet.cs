@@ -16,6 +16,7 @@ namespace SmartStore.Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         StoreId = c.Int(nullable: false),
                         CustomerId = c.Int(nullable: false),
+                        OrderId = c.Int(),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 4),
                         AmountBalance = c.Decimal(nullable: false, precision: 18, scale: 4),
                         AmountBalancePerStore = c.Decimal(nullable: false, precision: 18, scale: 4),
@@ -23,22 +24,21 @@ namespace SmartStore.Data.Migrations
                         Reason = c.Int(),
                         Message = c.String(maxLength: 1000),
                         AdminComment = c.String(maxLength: 4000),
-                        UsedWithOrder_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Customer", t => t.CustomerId, cascadeDelete: true)
-                .ForeignKey("dbo.Order", t => t.UsedWithOrder_Id)
+                .ForeignKey("dbo.Order", t => t.OrderId)
                 .Index(t => new { t.StoreId, t.CreatedOnUtc }, name: "IX_StoreId_CreatedOn")
                 .Index(t => t.CustomerId)
-                .Index(t => t.UsedWithOrder_Id);
+                .Index(t => t.OrderId);
             
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.WalletHistory", "UsedWithOrder_Id", "dbo.Order");
+            DropForeignKey("dbo.WalletHistory", "OrderId", "dbo.Order");
             DropForeignKey("dbo.WalletHistory", "CustomerId", "dbo.Customer");
-            DropIndex("dbo.WalletHistory", new[] { "UsedWithOrder_Id" });
+            DropIndex("dbo.WalletHistory", new[] { "OrderId" });
             DropIndex("dbo.WalletHistory", new[] { "CustomerId" });
             DropIndex("dbo.WalletHistory", "IX_StoreId_CreatedOn");
             DropTable("dbo.WalletHistory");
@@ -70,9 +70,9 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refund",
                 "Refund",
                 "Rückerstattung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.PartialRefund",
-				"Partial refund",
-				"Teilerstattung");
-		}
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.PartialRefund",
+                "Partial refund",
+                "Teilerstattung");
+        }
     }
 }

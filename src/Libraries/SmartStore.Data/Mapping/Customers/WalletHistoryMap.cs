@@ -20,8 +20,9 @@ namespace SmartStore.Data.Mapping.Customers
 				.WithMany(x => x.WalletHistory)
 				.HasForeignKey(x => x.CustomerId);
 
-			HasOptional(x => x.UsedWithOrder)
-				.WithOptionalDependent(x => x.WalletHistoryEntry)
+			HasOptional(x => x.Order)
+				.WithMany(x => x.WalletHistory)
+				.HasForeignKey(x => x.OrderId)
 				.WillCascadeOnDelete(false);
 		}
 	}

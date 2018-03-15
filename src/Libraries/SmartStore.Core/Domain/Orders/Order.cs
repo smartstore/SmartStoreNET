@@ -20,8 +20,8 @@ namespace SmartStore.Core.Domain.Orders
     [DataContract]
 	public partial class Order : BaseEntity, IAuditable, ISoftDeletable
     {
-
-        private ICollection<DiscountUsageHistory> _discountUsageHistory;
+		private ICollection<WalletHistory> _walletHistory;
+		private ICollection<DiscountUsageHistory> _discountUsageHistory;
         private ICollection<GiftCardUsageHistory> _giftCardUsageHistory;
         private ICollection<OrderNote> _orderNotes;
         private ICollection<OrderItem> _orderItems;
@@ -496,9 +496,13 @@ namespace SmartStore.Core.Domain.Orders
         public virtual RewardPointsHistory RedeemedRewardPointsEntry { get; set; }
 
 		/// <summary>
-		/// Gets or sets the wallet history entry.
+		/// Gets or sets the wallet history.
 		/// </summary>
-		public virtual WalletHistory WalletHistoryEntry { get; set; }
+		public virtual ICollection<WalletHistory> WalletHistory
+		{
+			get { return _walletHistory ?? (_walletHistory = new HashSet<WalletHistory>()); }
+			protected set { _walletHistory = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets discount usage history

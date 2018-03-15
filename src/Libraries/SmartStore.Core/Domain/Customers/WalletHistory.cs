@@ -25,6 +25,12 @@ namespace SmartStore.Core.Domain.Customers
 		public int CustomerId { get; set; }
 
 		/// <summary>
+		/// Gets or sets the order identifier.
+		/// </summary>
+		[DataMember]
+		public int? OrderId { get; set; }
+
+		/// <summary>
 		/// Gets or sets the amount of the entry.
 		/// </summary>
 		[DataMember]
@@ -68,15 +74,15 @@ namespace SmartStore.Core.Domain.Customers
 		public string AdminComment { get; set; }
 
 		/// <summary>
-		/// Gets or sets the order for which wallet entry was used.
-		/// </summary>
-		[DataMember]
-		public virtual Order UsedWithOrder { get; set; }
-
-		/// <summary>
 		/// Gets or sets the customer.
 		/// </summary>
 		[DataMember]
 		public virtual Customer Customer { get; set; }
+
+		/// <summary>
+		/// Gets or sets the order for which the wallet entry was used.
+		/// </summary>
+		[DataMember]
+		public virtual Order Order { get; set; }
 	}
 }

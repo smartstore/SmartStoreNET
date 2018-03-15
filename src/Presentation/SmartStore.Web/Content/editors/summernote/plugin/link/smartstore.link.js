@@ -11,6 +11,10 @@
 		factory(window.jQuery);
 	}
 }(function ($) {
+	function isImg(node) {
+		return node && node.nodeName.toUpperCase() === "IMG";
+	}
+
 	$.extend($.summernote.plugins, {
 		'linkDialog': function (context) {
 			var self = this;
@@ -36,6 +40,22 @@
 				}).render();
 			});
 
+			// Create custom "unlink image" button for the image popover
+			context.memo('button.unlinkImage', function () {
+				return ui.button({
+					contents: ui.icon(options.icons.unlink),
+					className: 'btn-unlink-image',
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.attr("title", lang.link.unlink);
+						btn.tooltip();
+					},
+					click: function () {
+						self.unlinkImage(this);
+					}
+				}).render();
+			});
+
 			this.initialize = function () {
 				context.memo('help.linkDialog.show', options.langInfo.help['linkDialog.show']);
 
@@ -43,8 +63,8 @@
 				var body = [
 					'<div class="form-group note-form-group">',
 					'	<label class="note-form-label">URL</label>',
-					'	<div class="input-group">',
-					'		<input id="note-link-url" class="note-link-url form-control form-control-sm note-form-control note-input" type="text" value="http://" />',
+					'	<div class="input-group input-group-sm">',
+					'		<input id="note-link-url" class="note-link-url form-control note-form-control note-input" type="text" value="http://" />',
 					'		<div class="input-group-append">',
 					'			<button class="btn btn-secondary btn-browse" type="button">' + lang.link.browse + '...</button>',
 					'		</div>',
@@ -83,7 +103,45 @@
 					body: body,
 					footer: footer
 				}).render().appendTo($container);
+
+				self.handleUnlinkButtonState();
 			};
+
+			// Hack: toggle our custom "unlink image" button when
+			// imagePopover is about to be shown.
+			this.handleUnlinkButtonState = function () {
+				var popover = context.modules.imagePopover;
+
+				// save the original summernote method
+				var fnImagePopoverUpdate = popover.update;
+
+				// decorate the original method with our cusrom stuff
+				popover.update = function (target) {
+					var btn = popover.$popover.find('.btn-unlink-image');
+					var isLinkedImage = $(target).is('img') && $(target).parent().is('a');
+					// hide/show the unlink button depending on current selection
+					btn.toggle(isLinkedImage);
+
+					// Call the original summernote method
+					fnImagePopoverUpdate.apply(popover, [target]);
+				};
+			}
+
+			// Unlinks a linked image from image popover
+			this.unlinkImage = function (btn) {
+				var img = $(context.layoutInfo.editable.data('target'));
+				if (img.is('img') && img.parent().is('a')) {
+					img.unwrap();
+
+					// Ensure that SN saves the change
+					context.layoutInfo.note.val(context.invoke('code'));
+					context.layoutInfo.note.change();
+
+					// Hide the popover
+					var popover = context.modules.imagePopover;
+					popover.hide();
+				}
+			}
 
 			this.destroy = function () {
 				ui.hideDialog(this.$dialog);

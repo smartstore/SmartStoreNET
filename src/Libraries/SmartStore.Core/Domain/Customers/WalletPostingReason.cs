@@ -8,6 +8,7 @@
 		Admin = 0,
 		Purchase,
 		Refill,
-		Refund
+		Refund,
+		PartialRefund
 	}
 }

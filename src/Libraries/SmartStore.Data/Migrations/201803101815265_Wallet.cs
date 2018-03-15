@@ -70,6 +70,9 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Refund",
                 "Refund",
                 "Rückerstattung");
-        }
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.PartialRefund",
+				"Partial refund",
+				"Teilerstattung");
+		}
     }
 }

@@ -10,6 +10,7 @@ using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 using SmartStore.Utilities;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Search.Modelling
 {
@@ -304,7 +305,7 @@ namespace SmartStore.Services.Search.Modelling
 					displayOrder = _searchSettings.BrandDisplayOrder;
 					break;
 				case FacetGroupKind.Price:
-					if (_searchSettings.PriceDisabled)
+					if (_searchSettings.PriceDisabled || !_services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
 						return;
 					fieldName = "price";
 					displayOrder = _searchSettings.PriceDisplayOrder;

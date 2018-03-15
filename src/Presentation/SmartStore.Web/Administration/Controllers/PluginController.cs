@@ -525,12 +525,20 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 
 			var model = _pluginMediator.ToProviderModel(provider, true);
+			var pageTitle = model.FriendlyName;
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
 				locale.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata, languageId, false);
 				locale.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata, languageId, false);
+
+				if (pageTitle.IsEmpty() && languageId == _services.WorkContext.WorkingLanguage.Id)
+				{
+					pageTitle = locale.FriendlyName;
+				}
 			});
+
+			ViewBag.Title = pageTitle;
 
 			return View(model);
 		}

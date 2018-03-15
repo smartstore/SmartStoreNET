@@ -366,35 +366,40 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+			{
+				return AccessDeniedView();
+			}
 
-            //load registered customers by default
-            var defaultRoleIds = new[] {_customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Id};
-            var listModel = new CustomerListModel()
+			// Load registered customers by default.
+			var allRoles = _customerService.GetAllCustomerRoles(true);
+			var registeredRoleId = allRoles.First(x => x.SystemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Registered)).Id;
+
+			var listModel = new CustomerListModel
             {
                 UsernamesEnabled = _customerSettings.UsernamesEnabled,
                 DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled,
                 CompanyEnabled = _customerSettings.CompanyEnabled,
                 PhoneEnabled = _customerSettings.PhoneEnabled,
                 ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled,
-				AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true)
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList(),
+				SearchCustomerRoleIds = registeredRoleId.ToString()
+			};
 
-				SearchCustomerRoleIds = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Id.ToString(),
-            };
+			listModel.AvailableCustomerRoles = allRoles
+				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+				.ToList();
 
-            var customers = _customerService.GetAllCustomers(null, null, defaultRoleIds, null,
+			var customers = _customerService.GetAllCustomers(null, null, new int[] { registeredRoleId }, null,
                 null, null, null, 0, 0, null, null, null,
                 false, null, 0, _adminAreaSettings.GridPageSize);
 
-            //customer list
+            // Customer list.
             listModel.Customers = new GridModel<CustomerModel>
             {
                 Data = customers.Select(PrepareCustomerModelForList),
                 Total = customers.TotalCount
             };
+
             return View(listModel);
         }
 

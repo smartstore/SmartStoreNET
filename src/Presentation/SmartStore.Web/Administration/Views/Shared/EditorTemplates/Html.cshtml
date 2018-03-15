@@ -21,8 +21,8 @@
 		Html.AddScriptParts(true, locFile.VirtualPath);
 	}
 
-	// Find summernote Link plugin localization file
-	locFile = base.ResolveLocalizationFile(WorkContext.WorkingLanguage.LanguageCulture, "~/Content/editors/summernote/plugin/link/lang", "*.js", null);
+	// Find custom plugins localization file
+	locFile = base.ResolveLocalizationFile(WorkContext.WorkingLanguage.LanguageCulture, "~/Content/editors/summernote/lang-sm", "*.js", null);
 	if (locFile != null)
 	{
 		Html.AddScriptParts(true, locFile.VirtualPath);

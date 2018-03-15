@@ -4,6 +4,22 @@ var summernote_global_config;
 var summernote_image_upload_url;
 
 (function () {
+	$.extend(true, $.summernote.lang, {
+		'en-US': {
+			attrs: {
+				cssClass: 'CSS Class',
+				cssStyle: 'CSS Style',
+				rel: 'Rel',
+			},
+			link: {
+				browse: 'Browse'
+			},
+			image: {
+
+			}
+		}
+	});
+
 	// Editor toggling
 	$(document).on('click', '.note-editor-preview', function (e) {
 		var div = $(this);
@@ -30,6 +46,12 @@ var summernote_image_upload_url;
 				return url;
 			}
 
+			if (/^[A-Za-z][A-Za-z0-9+-.]*\:[\/\/]?/.test(url)) {
+				// starts with a valid protocol
+				return url;
+			}
+
+			// if url doesn't match an URL schema, set http:// as default
 			return "http://" + url;
 		},
 		callbacks: {
@@ -62,6 +84,20 @@ var summernote_image_upload_url;
 				['float', ['floatLeft', 'floatRight', 'floatNone']],
 				['remove', ['removeMedia']]
 			],
+            link: [
+                ['link', ['linkDialogShow', 'unlink']]
+            ],
+            table: [
+                ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
+                ['delete', ['deleteRow', 'deleteCol', 'deleteTable']]
+            ],
+            air: [
+                ['color', ['color']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['para', ['ul', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture']]
+            ]
 		},
 		icons: {
 			'align': 'fa fa-align-left',

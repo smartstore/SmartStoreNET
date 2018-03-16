@@ -384,7 +384,9 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.AllowBackInStockSubscriptions);
 				row.SetProperty(context.Result, (x) => x.OrderMinimumQuantity, 1);
 				row.SetProperty(context.Result, (x) => x.OrderMaximumQuantity, 100);
-                row.SetProperty(context.Result, (x) => x.HideQuantityControl);
+				row.SetProperty(context.Result, (x) => x.QuantityStep, 1);
+				row.SetProperty(context.Result, (x) => x.QuantiyControlType);
+				row.SetProperty(context.Result, (x) => x.HideQuantityControl);
                 row.SetProperty(context.Result, (x) => x.AllowedQuantities);
 				row.SetProperty(context.Result, (x) => x.DisableBuyButton);
 				row.SetProperty(context.Result, (x) => x.DisableWishlistButton);

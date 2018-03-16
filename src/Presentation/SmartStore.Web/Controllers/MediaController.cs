@@ -14,6 +14,7 @@ using System.IO;
 using SmartStore.Core.Async;
 using SmartStore.Core.Events;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Web.Controllers
 {
@@ -151,6 +152,14 @@ namespace SmartStore.Web.Controllers
 			if (path.IsEmpty())
 			{
 				return NotFound(null);
+			}
+
+			var tenantPrefix = DataSettings.Current.TenantName + "/";
+			if (path.StartsWith(tenantPrefix))
+			{
+				// V3.0.x comapt: in previous versions the file path
+				// contained the tenant name. Strip it out.
+				path = path.Substring(tenantPrefix.Length);
 			}
 
 			name = Path.GetFileName(path);

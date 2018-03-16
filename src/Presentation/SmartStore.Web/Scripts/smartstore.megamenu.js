@@ -305,7 +305,8 @@
 
                     	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {
                     		try {
-                    			$(this).slick('unslick');
+								$(this).slick('unslick');
+								$(this).attr('data-slick', '{"dots": false, "autoplay": true}');
                     			applyCommonPlugins($(this).closest('.rotator-content'));
                     		}
 							catch (err) { }
@@ -377,10 +378,11 @@
                     // reinit slick product rotator
                     container.find('.mega-menu-product-rotator > .artlist-grid').each(function (i, el) {
                         try {
-                            $(this).slick('unslick');
+							$(this).slick('unslick');
+							$(this).attr('data-slick', '{"dots": false, "autoplay": true}');
                             applyCommonPlugins($(this).closest('.rotator-content'));
                         }
-                        catch (err) { }
+						catch (err) { }
                     });
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
@@ -405,6 +407,9 @@
 
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);
+
+									var list = container.find('.mega-menu-product-rotator > .artlist-grid');
+									list.attr('data-slick', '{"dots": false, "autoplay": true}');
 
                                 	// Init carousel
                                     applyCommonPlugins(container);

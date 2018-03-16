@@ -1398,9 +1398,9 @@ table.payment-method-features td {
 	border-color: $input-border-color !important;
 	border-radius: $input-border-radius !important;
 
-	.modal-dialog {
+	/*.modal-dialog {
 		@extend .modal-lg;
-	}
+	}*/
 
 	&.focus {
 		border-color: $input-focus-border-color !important;

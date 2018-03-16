@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -197,30 +198,41 @@ namespace SmartStore.Admin.Controllers
                            selected = m.Id == selectedId
                        };
 
-			var data = list.ToList();
+			var mainList = list.ToList();
 
-			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-				_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
-
-			// TODO: return two option groups... new JsonResult { Data = new object[] { new { text = "Last used", children = mruItems }, new { text = "All Manufacturers", children = items } } };
-			// and load them through select2.ajax option.
-
-			for (int i = mru.Count - 1; i >= 0; --i)
-			{
-				string id = mru[i];
-				var item = manufacturers.FirstOrDefault(x => x.Id.ToString() == id);
-				if (item != null)
+			var mruList = new MostRecentlyUsedList<string>(
+				_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+				_catalogSettings.MostRecentlyUsedManufacturersMaxSize)
+				.Reverse()
+				.Select(x => 
 				{
-					data.Insert(0, new
+					var item = manufacturers.FirstOrDefault(m => m.Id.ToString() == x);
+					if (item != null)
 					{
-						id = id,
-						text = item.Name,
-						selected = false
-					});
-				}
+						return new
+						{
+							id = x,
+							text = item.Name,
+							selected = false
+						};
+					}
+
+					return null;
+				})
+				.Where(x => x != null)
+				.ToList();
+
+			object data = mainList;
+			if (mruList.Count > 0)
+			{
+				data = new List<object>
+				{
+					new Dictionary<string, object> { ["text"] = T("Common.Mru").Text, ["children"] = mruList },
+					new Dictionary<string, object> { ["text"] = T("Admin.Catalog.Manufacturers").Text, ["children"] = mainList, ["main"] = true }
+				};
 			}
 
-            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Index()

@@ -51,7 +51,11 @@
 				button.click();
 				return false;
 			});
-		}
+		},
+		// ColorPicker
+		function (ctx) {
+			ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false });
+		},
 	];
 
 

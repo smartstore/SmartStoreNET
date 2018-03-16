@@ -374,6 +374,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Address.Fields.StateProvince.Required", "State is required.", "Bundesland wird benötigt");
 
 			builder.AddOrUpdate("Common.Columns", "Columns", "Spalten");
+			builder.AddOrUpdate("Common.Mru", "Recently", "Zuletzt");
 		}
 	}
 }

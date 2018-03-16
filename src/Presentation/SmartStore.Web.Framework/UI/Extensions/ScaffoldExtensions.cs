@@ -68,7 +68,7 @@ namespace SmartStore.Web.Framework.UI
 
 			string link = "<a href=\"{0}<#= Id #>\"><#= OrderNumber #></a>".FormatInvariant(url);
 
-			string label = "<span class='badge badge-warning' title='{0}'>{1}</span>".FormatInvariant(
+			string label = "<span class='badge badge-warning mr-1' title='{0}'>{1}</span>".FormatInvariant(
 				localize.GetResource("Admin.Orders.Payments.NewIpn.Hint"),
 				localize.GetResource("Admin.Orders.Payments.NewIpn"));
 
@@ -82,12 +82,14 @@ namespace SmartStore.Web.Framework.UI
 
 			if (isPrimaryStoreCurrency)
 			{
-				sb.AppendFormat("<span class='badge badge-warning'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency"));
+				sb.AppendFormat("<span class='badge badge-warning{0}'>{1}</span>",
+					isPrimaryExchangeRateCurrency ? String.Empty : " mr-1",
+					localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency"));
 			}
 
 			if (isPrimaryExchangeRateCurrency)
 			{
-				sb.AppendFormat("<span class='badge badge-info'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency"));
+				sb.AppendFormat("<span class='badge badge-info mr-1'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency"));
 			}
 
 			string url = UrlHelper.GenerateContentUrl("~/Admin/Currency/Edit/", helper.ViewContext.RequestContext.HttpContext);

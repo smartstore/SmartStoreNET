@@ -9,9 +9,11 @@
         <script>
 			function onProductManufacturerEdit(e) {
 				if (e.mode == "edit") {
-					_.delay(function () {
-						$('#Manufacturer').val(e.dataItem['ManufacturerId']).trigger('change');
-					}, 0);
+					$('#Manufacturer')
+						.data('select-selected-id', e.dataItem['ManufacturerId'])
+						.data('select-init-text', e.dataItem['Manufacturer'])
+						.val(e.dataItem['ManufacturerId'])
+						.trigger('change');
 				}
 			}
 

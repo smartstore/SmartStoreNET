@@ -39,7 +39,7 @@ function FileSelected(file) {
 	// Set the value of field sent to Fileman via URL param "field".
 	var fieldId = RoxyUtils.GetUrlParam('field');
 	//opener.document.getElementById(fieldId).value = file.fullPath;
-	p.window.jQuery('#' + fieldId).val(file.fullPath).trigger('change');
+	p.window.jQuery('#' + fieldId).val(file.fullPath).trigger('change').trigger('input');
 
 	//// Set the source of an image which id is sent to Fileman via URL param "img".
 	// opener.document.getElementById(RoxyUtils.GetUrlParam('img')).src = file.fullPath;

@@ -63,7 +63,11 @@
 	function grid_onStoreEdit(e) {
 		if (e.mode == "edit") {
 			_.delay(function () {
-				$('#Store').val(e.dataItem['StoreId']).trigger('change');
+				$('#Store')
+					.data('select-selected-id', e.dataItem['StoreId'])
+					.data('select-init-text', e.dataItem['Store'])
+					.val(e.dataItem['StoreId'])
+					.trigger('change');
 			}, 0);
 		}
     }

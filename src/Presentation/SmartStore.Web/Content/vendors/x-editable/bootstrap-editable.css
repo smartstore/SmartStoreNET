@@ -7,8 +7,10 @@
 -------------------------------------------------------------- */
 .editable-input .select2-container:not(.autowidth),
 .editable-input input[type=text]:not(.autowidth),
-.editable-input .form-control:not(.autowidth) {
-	min-width: 314px; /* ensures more clean look & feel */
+.editable-input .form-control:not(.autowidth),
+.select2-dropdown.drop-editable {
+	min-width: 300px; /* ensures more clean look & feel */
+	max-width: 500px;
 }
 
 /* ABS4 end

@@ -7,14 +7,15 @@
 
 	var lists = [];
 
-	function load(url, selectedId) {
+	function load(url, selectedId, callback) {
 		$.ajax({
 			url: url,
 			dataType: 'json',
-			async: false,
+			async: true,
 			data: { selectedId: selectedId || 0 },
 			success: function (data, status, jqXHR) {
 				lists[url] = data;
+				callback(data);
 			}
 		});
 	};
@@ -35,47 +36,78 @@
 			// Replaces the old 'initSelection()' callback method
 			LazyAdapter.prototype.current = function (callback) {
 				var select = this.$element,
-					opts = this.options.options,
-					data = [];
+					opts = this.options.options;
 
 				if (!this._isInitialized) {
-					callback([{
-						id: opts.init ? opts.init.id : null,
-						text: opts.init ? opts.init.text : null
-					}]);
+					var init = opts.init || {},
+						initId = init.id || select.data('select-selected-id'),
+						initText = init.text || select.data('select-init-text');
+
+					if (initId) {
+						// Add the option tag to the select element,
+						// otherwise the current val() will not be resolved.
+						var $option = select.find('option').filter(function (i, elm) {
+							return elm.value == initId;
+						});
+
+						if ($option.length === 0) {
+							$option = this.option({ id: initId, text: initText, selected: true });
+							this.addOptions($option);
+						}
+
+						callback([{
+							id: initId,
+							text: initText || ''
+						}]);
+
+						return;
+					}
 				}
-				else {
-					LazyAdapter.__super__.current.call(this, callback);
-				}
+
+				LazyAdapter.__super__.current.call(this, callback);
 			};
 
 			LazyAdapter.prototype.query = function (params, callback) {
-				var opts = this.options.options;
+				var select = this.$element,
+					opts = this.options.options;
 
 				if (!opts.lazy && !opts.lazy.url) {
 					callback({ results: [] });
 				}
-
-				var url = opts.lazy.url;
-				var selectedId = opts.init ? opts.init.id : null;
-				var term = params.term;
-
-				if (!lists[url]) {
-					load(url, selectedId);
-				}
-
-				var list;
-				if (!term) {
-					list = lists[url];
-				}
 				else {
-					list = _.filter(lists[url], function (val) {
-						return new RegExp(term, "i").test(val.text);
-					});
-				}
+					var url = opts.lazy.url,
+						init = opts.init || {},
+						initId = init.id || select.data('select-selected-id'),
+						term = params.term,
+						list = null;
 
-				var data = { results: list };
-				callback(data);
+					list = lists[url];
+
+					var doQuery = function (data) {
+						list = data;
+						if (term) {
+							var isGrouped = data.length && data[0].children;
+							if (isGrouped) {
+								// In a grouped list, find the optgroup marked with "main"
+								var mainGroup = _.find(data, function (x) { return x.children && x.main });
+								data = mainGroup ? mainGroup.children : data[0].children;
+							}
+							list = _.filter(data, function (val) {
+								var rg = new RegExp(term, "i");
+								return rg.test(val.text);
+							});
+						}
+						select.data("loaded", true);
+						callback({ results: list });
+					}
+
+					if (!list) {
+						load(url, initId, doQuery);
+					}
+					else {
+						doQuery(list);
+					}
+				}
 
 				this._isInitialized = true;
 			};
@@ -131,7 +163,7 @@
 				initText = options.init ? options.init.text : null,
 				selectedId = options.init ? options.init.id : null;
 
-            var placeholder = getPlaceholder();
+			var placeholder = getPlaceholder();
 
             // following code only applicable to select boxes (not input:hidden)
             var firstOption = sel.children("option").first();
@@ -206,16 +238,9 @@
 				opts = $.extend({}, opts, options);
 			}
 
-            if (url) {
-                // url specified: load data remotely...
-                if (lazy) {
-                    // ...but lazy (on first open)
-					opts.dataAdapter = $.fn.select2.amd.require('select2/data/lazyAdapter');
-                }
-                else {
-                    // ...immediately
-                    buildOptions();
-                }
+			if (url) {
+				// url specified: load data remotely (lazily on first open)...
+				opts.dataAdapter = $.fn.select2.amd.require('select2/data/lazyAdapter');
 			}
 			else if (opts.ajax && opts.init && opts.init.text && sel.find('option[value="' + opts.init.text + '"]').length === 0) {
 				// In AJAX mode: add initial option when missing
@@ -230,30 +255,8 @@
                 sel.data("select2").$container.addClass("autowidth");
             }
 
-            function buildOptions() {
-                if (!lists[url]) {
-					load(url, selectedId);
-                }
-
-                // create option tags
-                if (!loaded) {
-                    $.each(lists[url], function () {
-                        var o = $(document.createElement('option'))
-                                    .attr('value', this.id)
-                                    .text(this.text || this.name)
-                                    .appendTo(sel);
-                        if (this.selected) {
-                            o.attr("selected", "selected");
-                        }
-                    })
-
-                    // mark select as 'filled'
-                    sel.data("loaded", true);
-                }
-            }
-
 			function getPlaceholder() {
-				return (options && options.placeholder)
+				return options.placeholder ||
 					sel.attr("placeholder") ||
 					sel.data("placeholder") ||
 					sel.data("select-placeholder");

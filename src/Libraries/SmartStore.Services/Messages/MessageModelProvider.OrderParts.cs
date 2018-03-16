@@ -57,7 +57,10 @@ namespace SmartStore.Services.Messages
 
 			d.ID = part.Id;
 			d.Billing = CreateModelPart(part.BillingAddress, messageContext);
-			d.Shipping = part.ShippingAddress?.IsPostalDataEqual(part.BillingAddress) == true ? null : CreateModelPart(part.ShippingAddress, messageContext);
+			if (part.ShippingAddress != null)
+			{
+				d.Shipping = part.ShippingAddress.IsPostalDataEqual(part.BillingAddress) == true ? null : CreateModelPart(part.ShippingAddress, messageContext);
+			}
 			d.CustomerEmail = part.BillingAddress.Email.NullEmpty();
 			d.CustomerComment = part.CustomerOrderComment.NullEmpty();
 			d.Disclaimer = GetTopic("Disclaimer", messageContext);

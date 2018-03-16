@@ -48,7 +48,7 @@
         unlink: 'Link entfernen',
         edit: 'Editieren',
         textToDisplay: 'Anzeigetext',
-        url: 'Ziel des Links?',
+        url: 'URL',
         openInNewWindow: 'In einem neuen Fenster öffnen'
       },
       table: {

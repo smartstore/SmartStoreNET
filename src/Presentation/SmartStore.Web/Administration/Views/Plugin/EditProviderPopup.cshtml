@@ -2,8 +2,8 @@
 @model SmartStore.Web.Framework.Plugins.ProviderModel
 
 @{
-    Layout = "_AdminPopupLayout";   
-    ViewBag.Title = T("Common.Edit") + ": " + Model.FriendlyName.Truncate(30, "...");
+	Layout = "_AdminPopupLayout";
+	ViewBag.Title = string.Concat(T("Common.Edit"), " - ", ((ViewBag.Title as string) ?? Model.SystemName).Truncate(30, "…"));
 }
 
 @using (Html.BeginForm())

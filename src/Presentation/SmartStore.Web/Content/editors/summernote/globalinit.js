@@ -4,6 +4,22 @@ var summernote_global_config;
 var summernote_image_upload_url;
 
 (function () {
+	$.extend(true, $.summernote.lang, {
+		'en-US': {
+			attrs: {
+				cssClass: 'CSS Class',
+				cssStyle: 'CSS Style',
+				rel: 'Rel',
+			},
+			link: {
+				browse: 'Browse'
+			},
+			image: {
+				imageProps: 'Image Attributes'
+			}
+		}
+	});
+
 	// Editor toggling
 	$(document).on('click', '.note-editor-preview', function (e) {
 		var div = $(this);
@@ -22,12 +38,20 @@ var summernote_image_upload_url;
 		dialogsInBody: false,
 		dialogsFade: true,
 		height: 300,
+		prettifyHtml: true,
 		onCreateLink: function (url) {
 			// Prevents that summernote prepends "http://" to our links (WTF!!!)
-			if (url[0] == "/" || url[0] == "~" || url[0] == "\\" || url[0] == "." || url[0] == "#") {
+			var c = url[0];
+			if (c == "/" || c == "~" || c == "\\" || c == "." || c == "#") {
 				return url;
 			}
 
+			if (/^[A-Za-z][A-Za-z0-9+-.]*\:[\/\/]?/.test(url)) {
+				// starts with a valid protocol
+				return url;
+			}
+
+			// if url doesn't match an URL schema, set http:// as default
 			return "http://" + url;
 		},
 		callbacks: {
@@ -35,10 +59,21 @@ var summernote_image_upload_url;
 				$(this).next().addClass('focus');
 			},
 			onBlur: function () {
+				// Close all popovers
+				_.delay(function () { $('.note-popover').hide(); }, 50);
+				
+
+				//$(this).summernote('saveRange');;
+				////console.log(rng);
 				$(this).next().removeClass('focus');
 			},
 			onImageUpload: function (files) {
 				sendFile(files[0], this);
+			},
+			onBlurCodeview: function (code, e) {
+				// Summernote does not update WYSIWYG content on codable blur,
+				// only when switched back to editor
+				$(this).val(code);
 			}
 		},
 		toolbar: [
@@ -50,11 +85,25 @@ var summernote_image_upload_url;
 		],
 		popover: {
 			image: [
-				['custom', ['imageAttributes']],
+				['custom', ['imageAttributes', 'link', 'unlinkImage']],
 				['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
 				['float', ['floatLeft', 'floatRight', 'floatNone']],
 				['remove', ['removeMedia']]
 			],
+            link: [
+                ['link', ['linkDialogShow', 'unlink']]
+            ],
+            table: [
+                ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
+                ['delete', ['deleteRow', 'deleteCol', 'deleteTable']]
+            ],
+            air: [
+                ['color', ['color']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['para', ['ul', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture']]
+            ]
 		},
 		icons: {
 			'align': 'fa fa-align-left',

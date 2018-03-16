@@ -17,14 +17,14 @@
 
 	$.extend($.summernote.plugins, {
 		'linkDialog': function (context) {
-			var self = this;
-			var ui = $.summernote.ui;
-			var $body = $(document.body);
-			var $editor = context.layoutInfo.editor;
-			var options = context.options;
-			var lang = options.langInfo;
-			var buttons = context.modules.buttons;
-			var editor = context.modules.editor;
+			var self = this,
+				ui = $.summernote.ui,
+				$body = $(document.body),
+				$editor = context.layoutInfo.editor,
+				options = context.options,
+				lang = options.langInfo,
+				buttons = context.modules.buttons,
+				editor = context.modules.editor;
 
 			context.memo('button.link', function () {
 				return ui.button({

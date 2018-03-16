@@ -80,18 +80,12 @@
 	<div class="text-muted">
 		@T("Admin.ContentManagement.MessageTemplates.NoModelTree")
 	</div>
-	<script>
-		function onNodeSelect() {
-
-		}
-	</script>
 }
 else
 {
 	@TokenSelector()
 
 	<script>
-
 		var lastSelectedNode;
 
 		$(document).on("click", "#addtoken-btn", function () {
@@ -116,7 +110,7 @@ else
 			var note = summernote
 				? summernote.$note
 				: $('.summernote-editor').first();
-			note.summernote('editor.insertText', '{{ ' + token + ' }}');
+			note.summernote('editor.pasteHTML', '{{ ' + token + ' }}');
 
 			$("#addtoken-window").modal("hide");
 

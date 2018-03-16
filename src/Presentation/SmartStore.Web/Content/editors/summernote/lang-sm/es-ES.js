@@ -9,7 +9,7 @@ $.extend(true, $.summernote.lang, {
 			browse: 'Buscar'
 		},
 		image: {
-
+			imageProps: 'Propiedades de la Imagen'
 		}
 	}
 });

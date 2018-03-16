@@ -9,7 +9,7 @@ $.extend(true, $.summernote.lang, {
 			browse: 'Parcourir'
 		},
 		image: {
-
+			imageProps: 'Attributs de l\'image'
 		}
 	}
 });

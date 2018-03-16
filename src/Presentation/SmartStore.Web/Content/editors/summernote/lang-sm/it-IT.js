@@ -9,7 +9,7 @@ $.extend(true, $.summernote.lang, {
 			browse: 'Sfoglia'
 		},
 		image: {
-
+			imageProps: 'Attributi Immagine'
 		}
 	}
 });

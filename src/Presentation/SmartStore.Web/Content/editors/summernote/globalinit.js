@@ -15,7 +15,7 @@ var summernote_image_upload_url;
 				browse: 'Browse'
 			},
 			image: {
-
+				imageProps: 'Image Attributes'
 			}
 		}
 	});
@@ -59,6 +59,12 @@ var summernote_image_upload_url;
 				$(this).next().addClass('focus');
 			},
 			onBlur: function () {
+				// Close all popovers
+				_.delay(function () { $('.note-popover').hide(); }, 50);
+				
+
+				//$(this).summernote('saveRange');;
+				////console.log(rng);
 				$(this).next().removeClass('focus');
 			},
 			onImageUpload: function (files) {

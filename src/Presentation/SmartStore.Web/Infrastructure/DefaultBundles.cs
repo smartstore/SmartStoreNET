@@ -32,7 +32,6 @@ namespace SmartStore.Web.Infrastructure
 				"~/Content/editors/summernote/summernote-bs4.min.js",
 				"~/Content/editors/summernote/plugin/image/smartstore.image.js",
 				"~/Content/editors/summernote/plugin/link/smartstore.link.js",
-				"~/Content/editors/summernote/plugin/image/summernote-image-attributes.js",
 				"~/Content/editors/summernote/globalinit.js"));
 
 			/* CodeMirror (V 5.3.3)

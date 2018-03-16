@@ -275,6 +275,17 @@ namespace SmartStore.Web.Framework.Theming
 			return url2;
 		}
 
+		public string GenerateHelpUrl(HelpTopic topic)
+		{
+			var seoCode = WorkContext?.WorkingLanguage?.UniqueSeoCode;
+			if (seoCode.IsEmpty())
+			{
+				return topic?.EnPath;
+			}
+
+			return SmartStoreVersion.GenerateHelpUrl(seoCode, topic);
+		}
+
 		public string GenerateHelpUrl(string path)
 		{
 			var seoCode = WorkContext?.WorkingLanguage?.UniqueSeoCode;

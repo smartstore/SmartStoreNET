@@ -7,7 +7,7 @@
 
 @helper TokenSelector()
 {
-	<a href="#addtoken-window" id="addtoken-button" data-toggle="modal" class="btn btn-primary">
+	<a id="btn-choosetoken" href="#addtoken-window" data-toggle="modal" class="btn btn-primary">
 		<i class="fa fa-plus"></i>
 		<span>@T("Admin.Common.ChooseToken")</span>
 	</a>
@@ -30,13 +30,13 @@
 		.DragAndDrop(false))
 	</text>)
 	.FooterContent(@<text>
-			<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
-				<span>@T("Admin.Common.Cancel")</span>
-			</button>
-			<button id="addtoken-btn" type="submit" class="btn btn-primary disabled">
-				<i class="fa fa-check"></i>
-				<span>@T("Common.AddNew")</span>
-			</button>
+		<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+		<button id="btn-addtoken" type="submit" class="btn btn-primary disabled">
+			<i class="fa fa-check"></i>
+			<span>@T("Common.AddNew")</span>
+		</button>
 	</text>)
 	.Render();
 }
@@ -88,7 +88,22 @@ else
 	<script>
 		var lastSelectedNode;
 
-		$(document).on("click", "#addtoken-btn", function () {
+		function getEditor() {
+			var editor = $("#messagetemplate-localized .tab-pane.active .summernote-editor");
+			if (editor.length) {
+				return editor;
+			}
+			else {
+				return $('.summernote-editor').first();
+			}
+		}
+
+		$(document).on("mousedown", "#btn-choosetoken", function () {
+			var editor = getEditor();
+			editor.summernote('editor.saveRange');
+		});
+
+		$(document).on("click", "#btn-addtoken", function () {
 			pasteTokenIntoEditor(lastSelectedNode);
 		});
 
@@ -106,11 +121,9 @@ else
 			if (!token || !isLeaf)
 				return false;
 
-			var summernote = $("#messagetemplate-localized .tab-pane.active .summernote-editor").data('summernote');
-			var note = summernote
-				? summernote.$note
-				: $('.summernote-editor').first();
-			note.summernote('editor.pasteHTML', '{{ ' + token + ' }}');
+			var editor = getEditor();
+			editor.summernote('editor.restoreRange');
+			editor.summernote('editor.insertText', '{{ ' + token + ' }}');
 
 			$("#addtoken-window").modal("hide");
 
@@ -118,16 +131,19 @@ else
 		}
 
 		function onNodeSelect(e) {
+			e.preventDefault();
+
 			lastSelectedNode = e;
 
 			// disable button if elem is branch
 			var isLeaf = ($(e.item).attr("isleaf") == "true");
-			var btn = $("#addtoken-btn");
+			var btn = $("#btn-addtoken");
 			var isBtnDisabled = btn.hasClass("disabled");
 			
 			if (isLeaf == true) {
 				btn.removeClass("disabled");
-			} else  if (!isBtnDisabled) {
+			}
+			else if (!isBtnDisabled) {
 				btn.addClass("disabled");
 			}
 		}

@@ -19,8 +19,9 @@
 		    this.createGallery(opts.galleryStartIndex);
 			
 			// Update product data and gallery
-		    $(el).find(':input').change(function (e) {
-		    	var ctx = $(this).closest('.update-container');
+			$(el).on('change', ':input', function (e) {
+				var ctx = $(this).closest('.update-container');
+				var isTouchSpin = $(this).parent(".bootstrap-touchspin").length > 0;
 				
 		    	if (ctx.length == 0) {
 		    		// associated or bundled item
@@ -30,14 +31,14 @@
 		    	ctx.doAjax({
 		    		data: ctx.find(':input').serialize(),
 		    		callbackSuccess: function (response) {
-		    			self.updateDetailData(response, ctx);
+						self.updateDetailData(response, ctx, isTouchSpin);
 
 		    			if (ctx.hasClass('pd-bundle-item')) {
 		    				// update bundle price too
 		    				$('#main-update-container').doAjax({
 		    					data: $('.pd-bundle-items').find(':input').serialize(),
 		    					callbackSuccess: function (response2) {
-		    						self.updateDetailData(response2, $('#main-update-container'));
+									self.updateDetailData(response2, $('#main-update-container'), isTouchSpin);
 		    					}
 		    				});
 		    			}
@@ -48,7 +49,7 @@
 			return this;
 		};
 
-		this.updateDetailData = function (data, ctx) {
+		this.updateDetailData = function (data, ctx, isTouchSpin) {
 			var gallery = $('#pd-gallery').data(galPluginName);
 
 			// Image gallery needs special treatment
@@ -68,7 +69,7 @@
 				// Iterate all elems with [data-partial] attribute...
 				var $el = $(el);
 				var partial = $el.data('partial');
-				if (partial) {
+				if (partial && (isTouchSpin && partial !== 'OfferActions')) {
 					// ...fetch the updated html from the corresponding AJAX result object's properties
 					if (data.Partials && data.Partials.hasOwnProperty(partial)) {
 						var updatedHtml = data.Partials[partial] || "";
@@ -77,6 +78,8 @@
 					}
 				}
 			});
+
+			applyCommonPlugins(ctx);
 
 			ctx.find(".pd-tierprices").html(data.Partials["TierPrices"]);
 		     

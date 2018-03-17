@@ -58,14 +58,15 @@ var summernote_image_upload_url;
 			onFocus: function () {
 				$(this).next().addClass('focus');
 			},
-			onBlur: function () {
-				// Close all popovers
-				_.delay(function () { $('.note-popover').hide(); }, 50);
-				
+			onBlur: function (e) {
+				var inside = $(e.relatedTarget).closest('.note-editable').length || $(e.relatedTarget).closest('.note-popover').length;
+				if (!inside) {
+					 // Close all popovers
+					_.delay(function () { $('.note-popover').hide(); }, 50);
 
-				//$(this).summernote('saveRange');;
-				////console.log(rng);
-				$(this).next().removeClass('focus');
+					$(this).next().removeClass('focus');
+				}
+
 			},
 			onImageUpload: function (files) {
 				sendFile(files[0], this);

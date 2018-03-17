@@ -304,9 +304,9 @@ namespace SmartStore.Web.Framework
             monthsList.Attributes.Add("class", "date-part form-control noskin");
             yearsList.Attributes.Add("class", "date-part form-control noskin");
 
-			daysList.Attributes.Add("data-select-min-results-for-search", "100");
-			monthsList.Attributes.Add("data-select-min-results-for-search", "100");
-			//yearsList.Attributes.Add("data-select-min-results-for-search", "100");
+			daysList.Attributes.Add("data-minimum-results-for-search", "100");
+			monthsList.Attributes.Add("data-minimum-results-for-search", "100");
+			//yearsList.Attributes.Add("data-minimum-results-for-search", "100");
 
 			if (disabled)
 			{

@@ -230,6 +230,8 @@
 						enteredUrl = options.onCreateLink(enteredUrl);
 					}
 
+					context.invoke('editor.restoreRange');
+
 					if (linkInfo.img && !linkInfo.a) {
 						// UNlinked image selected
 						linkInfo.img.wrap('<a href="' + enteredUrl + '"></a>');
@@ -243,7 +245,6 @@
 					}
 					else {
 						// (Un)linked selected text... let SN process the link
-						context.invoke('editor.restoreRange');
 						context.invoke('editor.createLink', linkInfo);
 					}			
 

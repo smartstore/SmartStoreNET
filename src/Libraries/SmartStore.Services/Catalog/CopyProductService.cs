@@ -175,6 +175,8 @@ namespace SmartStore.Services.Catalog
 						AllowBackInStockSubscriptions = product.AllowBackInStockSubscriptions,
 						OrderMinimumQuantity = product.OrderMinimumQuantity,
 						OrderMaximumQuantity = product.OrderMaximumQuantity,
+						QuantityStep = product.QuantityStep,
+						QuantiyControlType = product.QuantiyControlType,
 						HideQuantityControl = product.HideQuantityControl,
 						AllowedQuantities = product.AllowedQuantities,
 						DisableBuyButton = product.DisableBuyButton,

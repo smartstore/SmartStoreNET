@@ -5,6 +5,14 @@
 ;
 (function ($, window, document, undefined) {
 
+	// Customize select2 defaults
+	$.extend($.fn.select2.defaults.defaults, {
+		minimumResultsForSearch: 12,
+		theme: 'bootstrap',
+		width: 'style', // 'resolve',
+		dropdownAutoWidth: false
+	});
+
 	var lists = [];
 
 	function load(url, selectedId, callback) {
@@ -121,7 +129,7 @@
     		lists[options.resetDataUrl] = null;
     		return this.each(function () { });
 		}
-		
+
 		options = options || {};
 
         return this.each(function () {
@@ -138,30 +146,6 @@
             		return;
             	}
             }
-
-			if (!options.lazy && sel.data("select-url")) {
-				options.lazy = {
-					url: sel.data("select-url"),
-					loaded: sel.data("select-loaded")
-				}
-			}
-
-			if (!options.init && sel.data("select-init-text") && sel.data("select-selected-id")) {
-				options.init = {
-					id: sel.data("select-selected-id"),
-					text: sel.data("select-init-text")
-				}
-			}
-
-            var autoWidth = sel.hasClass("autowidth"),
-                minResultsForSearch = sel.data("select-min-results-for-search"),
-                minInputLength = sel.data("select-min-input-length"),
-				noCache = sel.data("select-nocache"), // future use
-				lazy = options.lazy,
-				url = options.lazy ? options.lazy.url : null,
-				loaded = options.lazy ? options.lazy.loaded : null,
-				initText = options.init ? options.init.text : null,
-				selectedId = options.init ? options.init.id : null;
 
 			var placeholder = getPlaceholder();
 
@@ -210,15 +194,10 @@
             }
 
             var opts = {
-            	width: 'style', // 'resolve',
-            	dropdownAutoWidth: false,
                 allowClear: !!(placeholder), // assuming that a placeholder indicates nullability
                 placeholder: placeholder,
-                minimumResultsForSearch: _.isNumber(minResultsForSearch) ? minResultsForSearch : 8,
-                minimumInputLength: _.isNumber(minInputLength) ? minInputLength : 0,
                 templateResult: renderSelectItem,
                 templateSelection: renderSelectItem,
-				theme: 'bootstrap',
 				closeOnSelect: !(sel.prop('multiple') || sel.data("tags")),
 				adaptContainerCssClass: function (c) {
 					if (c.startsWith("select-"))
@@ -234,11 +213,25 @@
 				}
 			};
 
+			if (!options.lazy && sel.data("select-url")) {
+				opts.lazy = {
+					url: sel.data("select-url"),
+					loaded: sel.data("select-loaded")
+				}
+			}
+
+			if (!options.init && sel.data("select-init-text") && sel.data("select-selected-id")) {
+				opts.init = {
+					id: sel.data("select-selected-id"),
+					text: sel.data("select-init-text")
+				}
+			}
+
 			if ($.isPlainObject(options)) {
 				opts = $.extend({}, opts, options);
 			}
 
-			if (url) {
+			if (opts.lazy && opts.lazy.url) {
 				// url specified: load data remotely (lazily on first open)...
 				opts.dataAdapter = $.fn.select2.amd.require('select2/data/lazyAdapter');
 			}
@@ -249,7 +242,7 @@
 
 			sel.select2(opts);
 
-            if (autoWidth) {
+			if (sel.hasClass("autowidth")) {
                 // move special "autowidth" class to plugin container,
             	// so we are able to omit min-width per css
                 sel.data("select2").$container.addClass("autowidth");

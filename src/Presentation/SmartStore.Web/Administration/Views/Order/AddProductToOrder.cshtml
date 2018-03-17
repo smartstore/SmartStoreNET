@@ -37,7 +37,6 @@
 	</div>
 
 	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-		<label>&nbsp;</label>
 		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
 			<span>@T("Admin.Common.ApplyFilter")</span>
 		</button>
@@ -69,7 +68,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#search-products').click(function () {
+		$('#btnSearch').click(function () {
             var grid = $('#products-grid').data('tGrid');
             grid.currentPage = 1; //new search. Set page size to 1
             grid.ajaxRequest();
@@ -79,7 +78,7 @@
 
     $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
         if (event.keyCode == 13) {
-            $("#search-products").click();
+			$("#btnSearch").click();
             return false;
         }
     });

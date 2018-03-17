@@ -1,4 +1,5 @@
 ﻿using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -7,6 +8,15 @@ namespace SmartStore.Services.Customers
 	/// </summary>
 	public partial interface IWalletService
 	{
+		/// <summary>
+		/// Count wallet history entries.
+		/// </summary>
+		/// <param name="customer">Customer.</param>
+		/// <param name="order">Order.</param>
+		/// <param name="storeId">Store identifier.</param>
+		/// <returns>Number of wallet history entries.</returns>
+		int CountEntries(Customer customer = null, Order order = null, int? storeId = null);
+
 		/// <summary>
 		/// Gets wallet history entry by identifier.
 		/// </summary>

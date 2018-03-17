@@ -25,7 +25,10 @@
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Name).Width("25%");
-			columns.Bound(x => x.Value).Width("55%").EditorTemplateName("MultilineText");
+			columns.Bound(x => x.Value)
+				.Width("55%")
+				.HtmlAttributes(new { style = "max-width: 600px;" })
+				.EditorTemplateName("MultilineText");
 			columns.Bound(x => x.Store).EditorTemplateName("Store").Width("15%");
 			columns.Command(commands =>
 			{

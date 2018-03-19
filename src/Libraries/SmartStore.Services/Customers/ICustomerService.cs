@@ -162,10 +162,12 @@ namespace SmartStore.Services.Customers
         /// <param name="clearRewardPoints">A value indicating whether to clear "Use reward points" flag</param>
         /// <param name="clearShippingMethod">A value indicating whether to clear selected shipping method</param>
         /// <param name="clearPaymentMethod">A value indicating whether to clear selected payment method</param>
+		/// <param name="clearDepositAmount">A value indicating whether to clear deposit amount.</param>
 		void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
             bool clearRewardPoints = false, bool clearShippingMethod = true,
-            bool clearPaymentMethod = true);
+            bool clearPaymentMethod = true,
+			bool clearDepositAmount = false);
 
         /// <summary>
         /// Delete guest customer records

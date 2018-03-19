@@ -153,13 +153,15 @@ namespace SmartStore.Services.Orders
         /// Gets the shopping cart total
         /// </summary>
         /// <param name="cart">Shopping cart</param>
-        /// <param name="ignoreRewardPonts">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
+        /// <param name="ignoreRewardPoints">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
         /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating order total</param>
+		/// <param name="ignoreDepositAmount">A value indicating whether to ignore a deposit amount.</param>
         /// <returns>Shopping cart total. TotalAmount is <c>null</c> if shopping cart total couldn't be calculated now.</returns>
         ShoppingCartTotal GetShoppingCartTotal(
             IList<OrganizedShoppingCartItem> cart,
-            bool ignoreRewardPonts = false,
-            bool usePaymentMethodAdditionalFee = true);
+            bool ignoreRewardPoints = false,
+            bool usePaymentMethodAdditionalFee = true,
+			bool ignoreDepositAmount = false);
 
 
         /// <summary>

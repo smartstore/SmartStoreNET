@@ -453,7 +453,8 @@ namespace SmartStore.Services.Customers
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
             bool clearRewardPoints = false, bool clearShippingMethod = true,
-            bool clearPaymentMethod = true)
+            bool clearPaymentMethod = true,
+			bool clearDepositAmount = false)
         {
             if (customer == null)
                 throw new ArgumentNullException();
@@ -476,6 +477,11 @@ namespace SmartStore.Services.Customers
             {
 				_genericAttributeService.SaveAttribute<bool>(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, false, storeId);
             }
+
+			if (clearDepositAmount)
+			{
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseDepositAmountDuringCheckout, decimal.Zero, storeId);
+			}
 
             //clear selected shipping method
             if (clearShippingMethod)

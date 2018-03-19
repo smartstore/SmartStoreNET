@@ -1101,8 +1101,9 @@ namespace SmartStore.Services.Orders
 
         public virtual ShoppingCartTotal GetShoppingCartTotal(
             IList<OrganizedShoppingCartItem> cart,
-            bool ignoreRewardPonts = false,
-            bool usePaymentMethodAdditionalFee = true)
+            bool ignoreRewardPoints = false,
+            bool usePaymentMethodAdditionalFee = true,
+			bool ignoreDepositAmount = false)
         {
             var customer = cart.GetCustomer();
             var store = _storeContext.CurrentStore;
@@ -1214,7 +1215,7 @@ namespace SmartStore.Services.Orders
             var redeemedRewardPointsAmount = decimal.Zero;
 
             if (_rewardPointsSettings.Enabled &&
-                !ignoreRewardPonts && customer != null &&
+                !ignoreRewardPoints && customer != null &&
                 customer.GetAttribute<bool>(SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, _genericAttributeService, store.Id))
             {
                 var rewardPointsBalance = customer.GetRewardPointsBalance();
@@ -1235,25 +1236,47 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            #endregion
+			#endregion
 
-            if (resultTemp < decimal.Zero)
+			if (resultTemp < decimal.Zero)
             {
                 resultTemp = decimal.Zero;
             }
 
             resultTemp = resultTemp.RoundIfEnabledFor(currency);
 
-            // Return null if we have errors
-            var roundingAmount = decimal.Zero;
+			// Return null if we have errors
+			var roundingAmount = decimal.Zero;
             var roundingAmountConverted = decimal.Zero;
             var orderTotal = shoppingCartShipping.HasValue ? resultTemp : (decimal?)null;
             var orderTotalConverted = orderTotal;
+			var allowedDepositAmount = decimal.Zero;
 
-            if (orderTotal.HasValue)
+			if (orderTotal.HasValue)
             {
                 orderTotal = orderTotal.Value - redeemedRewardPointsAmount;
-                orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
+
+				// Deposit amount.
+				if (!ignoreDepositAmount && customer != null && orderTotal > decimal.Zero)
+				{
+					var depositAmount = customer.GetAttribute<decimal>(SystemCustomerAttributeNames.UseDepositAmountDuringCheckout, _genericAttributeService, store.Id);
+					if (depositAmount > decimal.Zero)
+					{
+						if (depositAmount > orderTotal)
+						{
+							// Normalize used amount.
+							allowedDepositAmount = orderTotal.Value;
+							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseDepositAmountDuringCheckout, orderTotal.Value,	store.Id);
+						}
+						else
+						{
+							allowedDepositAmount = depositAmount;
+						}
+					}
+				}
+
+				orderTotal = orderTotal.Value - allowedDepositAmount;
+				orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
 
                 orderTotalConverted = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, currency, store);
 
@@ -1276,6 +1299,7 @@ namespace SmartStore.Services.Orders
             result.AppliedGiftCards = appliedGiftCards;
             result.RedeemedRewardPoints = redeemedRewardPoints;
             result.RedeemedRewardPointsAmount = redeemedRewardPointsAmount;
+			result.DepositAmount = allowedDepositAmount;
 
             result.ConvertedFromPrimaryStoreCurrency.TotalAmount = orderTotalConverted;
             result.ConvertedFromPrimaryStoreCurrency.RoundingAmount = roundingAmountConverted;

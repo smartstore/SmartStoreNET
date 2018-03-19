@@ -630,7 +630,7 @@
 				@Html.SmartLabelFor(model => model.IsTaxExempt)
 			</td>
 			<td class="adminData">
-				@Html.CheckBoxFor(model => model.IsTaxExempt, new { data_toggler_for = "#pnlIsTaxExempt" })
+				@Html.CheckBoxFor(model => model.IsTaxExempt, new { data_toggler_for = "#pnlIsTaxExempt", data_toggler_reverse = "true" })
 				@Html.ValidationMessageFor(model => model.IsTaxExempt)
 			</td>
 		</tr>

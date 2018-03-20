@@ -214,11 +214,11 @@
 								<td class="value">@order.RedeemedRewardPointsAmount</td>
 							</tr>
                         }
-						@if (order.DepositAmount.HasValue())
+						@if (order.CreditBalance.HasValue())
 						{
 							<tr>
-								<td class="label">@T("ShoppingCart.Totals.Deposit"):</td>
-								<td class="value">@order.DepositAmount</td>
+								<td class="label">@T("ShoppingCart.Totals.CreditBalance"):</td>
+								<td class="value">@order.CreditBalance</td>
 							</tr>
 						}
                         @if (order.OrderTotalRounding.HasValue())

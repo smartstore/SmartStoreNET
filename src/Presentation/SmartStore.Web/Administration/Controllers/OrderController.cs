@@ -327,10 +327,10 @@ namespace SmartStore.Admin.Controllers
                 model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-order.RedeemedRewardPointsEntry.UsedAmount, true, false);
             }
 
-			// Deposit.
-			if (order.OrderDeposit > decimal.Zero)
+			// Credit balance.
+			if (order.CreditBalance > decimal.Zero)
 			{
-				model.DepositAmount = _priceFormatter.FormatPrice(-order.OrderDeposit, true, false);
+				model.CreditBalance = _priceFormatter.FormatPrice(-order.CreditBalance, true, false);
 			}
 
 			//total

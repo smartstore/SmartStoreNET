@@ -1103,7 +1103,7 @@ namespace SmartStore.Services.Orders
             IList<OrganizedShoppingCartItem> cart,
             bool ignoreRewardPoints = false,
             bool usePaymentMethodAdditionalFee = true,
-			bool ignoreDepositAmount = false)
+			bool ignoreCreditBalance = false)
         {
             var customer = cart.GetCustomer();
             var store = _storeContext.CurrentStore;
@@ -1250,32 +1250,32 @@ namespace SmartStore.Services.Orders
             var roundingAmountConverted = decimal.Zero;
             var orderTotal = shoppingCartShipping.HasValue ? resultTemp : (decimal?)null;
             var orderTotalConverted = orderTotal;
-			var allowedDepositAmount = decimal.Zero;
+			var appliedCreditBalance = decimal.Zero;
 
 			if (orderTotal.HasValue)
             {
                 orderTotal = orderTotal.Value - redeemedRewardPointsAmount;
 
-				// Deposit amount.
-				if (!ignoreDepositAmount && customer != null && orderTotal > decimal.Zero)
+				// Credit balance.
+				if (!ignoreCreditBalance && customer != null && orderTotal > decimal.Zero)
 				{
-					var depositAmount = customer.GetAttribute<decimal>(SystemCustomerAttributeNames.UseDepositAmountDuringCheckout, _genericAttributeService, store.Id);
-					if (depositAmount > decimal.Zero)
+					var creditBalance = customer.GetAttribute<decimal>(SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, _genericAttributeService, store.Id);
+					if (creditBalance > decimal.Zero)
 					{
-						if (depositAmount > orderTotal)
+						if (creditBalance > orderTotal)
 						{
 							// Normalize used amount.
-							allowedDepositAmount = orderTotal.Value;
-							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseDepositAmountDuringCheckout, orderTotal.Value,	store.Id);
+							appliedCreditBalance = orderTotal.Value;
+							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, orderTotal.Value,	store.Id);
 						}
 						else
 						{
-							allowedDepositAmount = depositAmount;
+							appliedCreditBalance = creditBalance;
 						}
 					}
 				}
 
-				orderTotal = orderTotal.Value - allowedDepositAmount;
+				orderTotal = orderTotal.Value - appliedCreditBalance;
 				orderTotal = orderTotal.Value.RoundIfEnabledFor(currency);
 
                 orderTotalConverted = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, currency, store);
@@ -1299,7 +1299,7 @@ namespace SmartStore.Services.Orders
             result.AppliedGiftCards = appliedGiftCards;
             result.RedeemedRewardPoints = redeemedRewardPoints;
             result.RedeemedRewardPointsAmount = redeemedRewardPointsAmount;
-			result.DepositAmount = allowedDepositAmount;
+			result.CreditBalance = appliedCreditBalance;
 
             result.ConvertedFromPrimaryStoreCurrency.TotalAmount = orderTotalConverted;
             result.ConvertedFromPrimaryStoreCurrency.RoundingAmount = roundingAmountConverted;

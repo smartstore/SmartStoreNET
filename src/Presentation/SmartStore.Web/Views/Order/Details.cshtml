@@ -241,11 +241,11 @@
 										<td class="cart-summary-value">@Model.RedeemedRewardPointsAmount</td>
 									</tr>
 								}
-								@if (Model.DepositAmount.HasValue())
+								@if (Model.CreditBalance.HasValue())
 								{
-									<tr class="cart-summary-deposit cart-summary-pos">
-										<td class="cart-summary-label">@T("ShoppingCart.Totals.Deposit"):</td>
-										<td class="cart-summary-value">@Model.DepositAmount</td>
+									<tr class="cart-summary-credit-balance cart-summary-pos">
+										<td class="cart-summary-label">@T("ShoppingCart.Totals.CreditBalance"):</td>
+										<td class="cart-summary-value">@Model.CreditBalance</td>
 									</tr>
 								}
                                 @if (Model.OrderTotalRounding.HasValue())

@@ -2099,11 +2099,11 @@ namespace SmartStore.Web.Controllers
                     model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, true, false);
                 }
 
-				// Deposit.
-				if (cartTotal.DepositAmount > decimal.Zero)
+				// Credit balance.
+				if (cartTotal.CreditBalance > decimal.Zero)
 				{
-					var convertedDeposit = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.DepositAmount, currency);
-					model.DepositAmount = _priceFormatter.FormatPrice(-convertedDeposit, true, false);
+					var convertedCreditBalance = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.CreditBalance, currency);
+					model.CreditBalance = _priceFormatter.FormatPrice(-convertedCreditBalance, true, false);
 				}
             }
             

@@ -368,15 +368,15 @@
 			</td>
 		</tr>
 	}
-	@if (Model.DepositAmount.HasValue())
+	@if (Model.CreditBalance.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DepositAmount)
+				@Html.SmartLabelFor(model => model.CreditBalance)
 			</td>
 			<td class="adminData">
 				<div class="form-control-plaintext">
-					@Model.DepositAmount
+					@Model.CreditBalance
 				</div>
 			</td>
 		</tr>

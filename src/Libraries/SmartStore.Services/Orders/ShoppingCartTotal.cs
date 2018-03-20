@@ -57,9 +57,9 @@ namespace SmartStore.Services.Orders
         public decimal RedeemedRewardPointsAmount { get; set; }
 
 		/// <summary>
-		/// Deposit amount like used wallet amount.
+		/// Credit balance.
 		/// </summary>
-		public decimal DepositAmount { get; set; }
+		public decimal CreditBalance { get; set; }
 
 		public ConvertedAmounts ConvertedFromPrimaryStoreCurrency { get; set; }
 

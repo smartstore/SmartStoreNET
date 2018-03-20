@@ -427,11 +427,11 @@ namespace SmartStore.Web.Controllers
                     true, order.CustomerCurrencyCode, false, language);
             }
 
-			// Deposit.
-			if (order.OrderDeposit > decimal.Zero)
+			// Credit balance.
+			if (order.CreditBalance > decimal.Zero)
 			{
-				var convertedDeposit = _currencyService.ConvertCurrency(order.OrderDeposit, order.CurrencyRate);
-				model.DepositAmount = _priceFormatter.FormatPrice(-convertedDeposit, true, order.CustomerCurrencyCode, false, language);
+				var convertedCreditBalance = _currencyService.ConvertCurrency(order.CreditBalance, order.CurrencyRate);
+				model.CreditBalance = _priceFormatter.FormatPrice(-convertedCreditBalance, true, order.CustomerCurrencyCode, false, language);
 			}
 
             // Total

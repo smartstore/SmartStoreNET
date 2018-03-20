@@ -454,43 +454,38 @@ namespace SmartStore.Services.Customers
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
             bool clearRewardPoints = false, bool clearShippingMethod = true,
             bool clearPaymentMethod = true,
-			bool clearDepositAmount = false)
+			bool clearCreditBalance = false)
         {
             if (customer == null)
                 throw new ArgumentNullException();
 
-            //clear entered coupon codes
             if (clearCouponCodes)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.DiscountCouponCode, null);
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.GiftCardCouponCodes, null);
             }
 
-            //clear checkout attributes
             if (clearCheckoutAttributes)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.CheckoutAttributes, null);
             }
 
-            //clear reward points flag
             if (clearRewardPoints)
             {
 				_genericAttributeService.SaveAttribute<bool>(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, false, storeId);
             }
 
-			if (clearDepositAmount)
+			if (clearCreditBalance)
 			{
-				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseDepositAmountDuringCheckout, decimal.Zero, storeId);
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, decimal.Zero, storeId);
 			}
 
-            //clear selected shipping method
             if (clearShippingMethod)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, storeId);
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.OfferedShippingOptions, null, storeId);
             }
 
-            //clear selected payment method
             if (clearPaymentMethod)
             {
 				_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, storeId);

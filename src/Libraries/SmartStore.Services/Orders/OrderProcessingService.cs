@@ -977,7 +977,7 @@ namespace SmartStore.Services.Orders
                             OrderTotal = cartTotal.TotalAmount.Value,
                             RefundedAmount = decimal.Zero,
                             OrderDiscount = cartTotal.DiscountAmount,
-							OrderDeposit = cartTotal.DepositAmount,
+							CreditBalance = cartTotal.CreditBalance,
                             CheckoutAttributeDescription = checkoutAttributeDescription,
                             CheckoutAttributesXml = checkoutAttributesXml,
                             CustomerCurrencyCode = customerCurrencyCode,
@@ -1324,7 +1324,7 @@ namespace SmartStore.Services.Orders
 						//reset checkout data
                         if (!processPaymentRequest.IsRecurringPayment && !processPaymentRequest.IsMultiOrder)
 						{
-							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, true, true, true, clearDepositAmount: true);
+							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, true, true, true, clearCreditBalance: true);
 						}
 
 						// check for generic attributes to be inserted automatically

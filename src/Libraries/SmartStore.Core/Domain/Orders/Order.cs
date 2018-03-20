@@ -231,10 +231,10 @@ namespace SmartStore.Core.Domain.Orders
         public decimal OrderDiscount { get; set; }
 
 		/// <summary>
-		/// Gets or sets the order deposit.
+		/// Gets or sets the order credit balance.
 		/// </summary>
 		[DataMember]
-		public decimal OrderDeposit { get; set; }
+		public decimal CreditBalance { get; set; }
 
 		/// <summary>
 		/// /// Gets or sets the order total rounding amount

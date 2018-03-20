@@ -32,7 +32,7 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.CustomerId)
                 .Index(t => t.OrderId);
             
-            AddColumn("dbo.Order", "OrderDeposit", c => c.Decimal(nullable: false, precision: 18, scale: 4));
+            AddColumn("dbo.Order", "CreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
         }
         
         public override void Down()
@@ -42,7 +42,7 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.WalletHistory", new[] { "OrderId" });
             DropIndex("dbo.WalletHistory", new[] { "CustomerId" });
             DropIndex("dbo.WalletHistory", "IX_StoreId_CreatedOn");
-            DropColumn("dbo.Order", "OrderDeposit");
+            DropColumn("dbo.Order", "CreditBalance");
             DropTable("dbo.WalletHistory");
         }
 
@@ -76,15 +76,15 @@ namespace SmartStore.Data.Migrations
                 "Partial refund",
                 "Teilerstattung");
 
-            builder.AddOrUpdate("ShoppingCart.Totals.Deposit",
-                "Deposit",
+            builder.AddOrUpdate("ShoppingCart.Totals.CreditBalance",
+                "Credit balance",
                 "Guthaben");
 
-			builder.AddOrUpdate("Admin.Orders.Fields.DepositAmount",
-				"Deposit",
-				"Guthaben",
-				"The used deposit.",
-				"Das verwendete Guthaben.");
+            builder.AddOrUpdate("Admin.Orders.Fields.CreditBalance",
+                "Credit balance",
+                "Guthaben",
+                "The used credit balance.",
+                "Das verwendete Guthaben.");
         }
     }
 }

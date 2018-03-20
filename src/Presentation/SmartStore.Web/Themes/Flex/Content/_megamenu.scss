@@ -202,7 +202,8 @@ $mixed-megamenu-bg:             $megamenu-bg;
 .megamenu-container {
     position: relative;
 
-	.show .mega-menu-dropdown {
+	.show .mega-menu-dropdown,
+	.show .dropdown-menu {
 		display: block;
 	}
 

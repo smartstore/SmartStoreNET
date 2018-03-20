@@ -22,13 +22,13 @@ namespace SmartStore.Core.Domain.Localization
 		public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the language culture
+        /// Gets or sets the language culture (e.g. "en-US")
         /// </summary>
 		[DataMember]
 		public string LanguageCulture { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique SEO code
+        /// Gets or sets the unique SEO code (e.g. "en")
         /// </summary>
 		[DataMember]
 		public string UniqueSeoCode { get; set; }

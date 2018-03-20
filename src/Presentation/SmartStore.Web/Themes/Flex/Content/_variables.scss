@@ -67,6 +67,25 @@ $mtab-text-transform:		uppercase;
 $mtab-font-weight:			$font-weight-normal;
 $mtab-color:				inherit;
 
+//
+// Checkout Steps
+// --------------------------------------------------
+
+$costep-border:                 #f2f2f2;
+$costep-bg:                     #fff; 
+$costep-color:                  #ccc;
+$costep-label-color:            $body-color;
+
+$costep-visited-border:         $costep-progress-color;
+$costep-visited-bg:             $costep-progress-color;
+$costep-visited-color:          rgba(#fff, 0.85);
+$costep-visited-label-color:    $costep-label-color;
+
+$costep-active-border:          $costep-visited-border;
+$costep-active-bg:              #fff;
+$costep-active-color:           $body-color;
+$costep-active-label-color:     $costep-label-color;
+
 
 // Bootstrap variable overrides
 // ========================================

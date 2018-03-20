@@ -4,18 +4,10 @@
 /// <reference path="_checkout.scss" />
 /// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
-// right to left
+// RTL support (right to left)
 // --------------------------------------------------
 
-body.rtl {
-	direction: rtl;
-	text-align: right;
-
-	.table th,
-	.dropdown-menu {
-		text-align: right;
-	}
-
+[dir=rtl] {
 	dd {
 		margin-right: 0;
 		padding-right: 0;
@@ -43,11 +35,6 @@ body.rtl {
 
 	.breadcrumb-item {
 		float: right;
-	}
-
-	.dropdown-menu {
-		left: initial;
-		right: 0;
 	}
 
 	// forms
@@ -362,51 +349,5 @@ body.rtl {
 
 	.fa-toggle-right:before {
 		content: "\f191";
-	}
-
-	// Adaption of BS _spacing.scss
-	@each $breakpoint in map-keys($grid-breakpoints) {
-		@include media-breakpoint-up($breakpoint) {
-			$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
-
-			@each $prop, $abbrev in (margin: m, padding: p) {
-				@each $size, $length in $spacers {
-					.#{$abbrev}r#{$infix}-#{$size} {
-						#{$prop}-left: $length !important;
-						#{$prop}-right: initial !important;
-					}
-
-					.#{$abbrev}l#{$infix}-#{$size} {
-						#{$prop}-right: $length !important;
-						#{$prop}-left: initial !important;
-					}
-				}
-			}
-			// Some special margin utils
-			.mr#{$infix}-auto {
-				margin-right: initial !important;
-				margin-left: auto !important;
-			}
-
-			.ml#{$infix}-auto {
-				margin-left: initial !important;
-				margin-right: auto !important;
-			}
-		}
-	}
-
-	// Adaption of BS _text.scss
-	@each $breakpoint in map-keys($grid-breakpoints) {
-		@include media-breakpoint-up($breakpoint) {
-			$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
-
-			.text#{$infix}-right {
-				text-align: left !important;
-			}
-
-			.text#{$infix}-left {
-				text-align: right !important;
-			}
-		}
 	}
 }

@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Localization
@@ -86,7 +87,7 @@ namespace SmartStore.Web.Framework.Localization
 				{ "name", ci.Name },
 				{ "englishName", ci.EnglishName },
 				{ "nativeName", ci.NativeName },
-				{ "isRTL", ci.TextInfo.IsRightToLeft },
+				{ "isRTL", WorkContext.Value.WorkingLanguage?.Rtl ?? ci.TextInfo.IsRightToLeft }, // favor RTL property of Language
 				{ "language", ci.TwoLetterISOLanguageName },
 				{ "numberFormat", new Dictionary<string, object>
 				{

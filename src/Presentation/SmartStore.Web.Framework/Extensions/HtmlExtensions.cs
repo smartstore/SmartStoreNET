@@ -12,6 +12,7 @@ using System.Web.Routing;
 using System.Web.WebPages;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
@@ -486,10 +487,31 @@ namespace SmartStore.Web.Framework
 		public static IHtmlString MetaAcceptLanguage(this HtmlHelper html)
         {
             var acceptLang = HttpUtility.HtmlAttributeEncode(Thread.CurrentThread.CurrentUICulture.ToString());
-            return new HtmlString(string.Format("<meta name=\"accept-language\" content=\"{0}\"/>", acceptLang));
+            return new MvcHtmlString(string.Format("<meta name=\"accept-language\" content=\"{0}\"/>", acceptLang));
         }
 
-        public static MvcHtmlString ControlGroupFor<TModel, TValue>(
+		public static IHtmlString LanguageAttributes(this HtmlHelper html, bool omitLTR = false)
+		{
+			return LanguageAttributes(html, EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage, omitLTR);
+		}
+
+		public static IHtmlString LanguageAttributes(this HtmlHelper html, Language language, bool omitLTR = false)
+		{
+			Guard.NotNull(language, nameof(language));
+
+			var code = language.GetTwoLetterISOLanguageName();
+			var rtl = language.Rtl;
+
+			var result = "lang=\"" + code + "\"";
+			if (rtl || !omitLTR)
+			{
+				result += " dir=\"" + (rtl ? "rtl" : "ltr") + "\"";
+			}
+
+			return new MvcHtmlString(result);
+		}
+
+		public static MvcHtmlString ControlGroupFor<TModel, TValue>(
             this HtmlHelper<TModel> html, 
             Expression<Func<TModel, TValue>> expression, 
             InputEditorType editorType = InputEditorType.TextBox,

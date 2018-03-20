@@ -9,7 +9,6 @@ namespace SmartStore.Web.Framework.Localization
 {
     public static class LocalizedRouteExtensions
     {
-
         #region RouteCollection extensions
 
         public static Route MapLocalizedRoute(this RouteCollection routes, string name, string url)

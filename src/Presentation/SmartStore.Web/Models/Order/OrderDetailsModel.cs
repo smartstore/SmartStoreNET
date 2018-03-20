@@ -67,7 +67,8 @@ namespace SmartStore.Web.Models.Order
         public string OrderTotalDiscount { get; set; }
         public int RedeemedRewardPoints { get; set; }
         public string RedeemedRewardPointsAmount { get; set; }
-        public string OrderTotalRounding { get; set; }
+		public string DepositAmount { get; set; }
+		public string OrderTotalRounding { get; set; }
         public string OrderTotal { get; set; }
         public string CustomerComment { get; set; }
 

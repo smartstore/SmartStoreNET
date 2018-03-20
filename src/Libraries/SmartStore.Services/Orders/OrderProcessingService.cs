@@ -977,6 +977,7 @@ namespace SmartStore.Services.Orders
                             OrderTotal = cartTotal.TotalAmount.Value,
                             RefundedAmount = decimal.Zero,
                             OrderDiscount = cartTotal.DiscountAmount,
+							OrderDeposit = cartTotal.DepositAmount,
                             CheckoutAttributeDescription = checkoutAttributeDescription,
                             CheckoutAttributesXml = checkoutAttributesXml,
                             CustomerCurrencyCode = customerCurrencyCode,

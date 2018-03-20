@@ -214,6 +214,20 @@
 								<td class="value">@order.RedeemedRewardPointsAmount</td>
 							</tr>
                         }
+						@if (order.DepositAmount.HasValue())
+						{
+							<tr>
+								<td class="label">@T("ShoppingCart.Totals.Deposit"):</td>
+								<td class="value">@order.DepositAmount</td>
+							</tr>
+						}
+                        @if (order.OrderTotalRounding.HasValue())
+                        {
+                            <tr>
+                                <td class="label">@T("ShoppingCart.Totals.Rounding"):</td>
+                                <td class="value">@order.OrderTotalRounding</td>
+                            </tr>
+                        }
 						<tr>
 							<td class="label">@T("Order.OrderTotal"):</td>
 							<td class="value"><strong>@order.OrderTotal</strong></td>

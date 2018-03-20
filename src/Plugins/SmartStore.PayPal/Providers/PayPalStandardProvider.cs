@@ -426,19 +426,6 @@ namespace SmartStore.PayPal
                 cartTotal += orderItem.PriceExclTax;
             }
 
-            // Rounding
-            if (order.OrderTotalRounding != decimal.Zero)
-            {
-                var item = new PayPalLineItem
-                {
-                    Type = PayPalItemType.Rounding,
-                    Name = T("ShoppingCart.Totals.Rounding").Text,
-                    Quantity = 1,
-                    Amount = order.OrderTotalRounding
-                };
-                lst.Add(item);
-            }
-
             // Shipping
             if (order.OrderShippingExclTax > decimal.Zero)
             {
@@ -623,7 +610,6 @@ namespace SmartStore.PayPal
 		CartItem = 0,
 		Shipping,
 		PaymentFee,
-		Tax,
-        Rounding
+		Tax
 	}
 }

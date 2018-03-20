@@ -2098,6 +2098,13 @@ namespace SmartStore.Web.Controllers
                     model.RedeemedRewardPoints = cartTotal.RedeemedRewardPoints;
                     model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, true, false);
                 }
+
+				// Deposit.
+				if (cartTotal.DepositAmount > decimal.Zero)
+				{
+					var convertedDeposit = _currencyService.ConvertFromPrimaryStoreCurrency(cartTotal.DepositAmount, currency);
+					model.DepositAmount = _priceFormatter.FormatPrice(-convertedDeposit, true, false);
+				}
             }
             
             return PartialView(model);

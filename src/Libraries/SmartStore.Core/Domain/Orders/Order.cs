@@ -230,10 +230,16 @@ namespace SmartStore.Core.Domain.Orders
         [DataMember]
         public decimal OrderDiscount { get; set; }
 
-        /// <summary>
-        /// /// Gets or sets the order total rounding amount
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets the order deposit.
+		/// </summary>
+		[DataMember]
+		public decimal OrderDeposit { get; set; }
+
+		/// <summary>
+		/// /// Gets or sets the order total rounding amount
+		/// </summary>
+		[DataMember]
         public decimal OrderTotalRounding { get; set; }
 
         /// <summary>

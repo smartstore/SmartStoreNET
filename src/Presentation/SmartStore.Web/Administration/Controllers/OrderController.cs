@@ -297,9 +297,11 @@ namespace SmartStore.Admin.Controllers
             model.TaxValue = order.OrderTax;
             model.TaxRatesValue = order.TaxRates;
 
-            //discount
-            if (order.OrderDiscount > 0)
-                model.OrderTotalDiscount = _priceFormatter.FormatPrice(-order.OrderDiscount, true, false);
+			//discount
+			if (order.OrderDiscount > 0)
+			{
+				model.OrderTotalDiscount = _priceFormatter.FormatPrice(-order.OrderDiscount, true, false);
+			}
             model.OrderTotalDiscountValue = order.OrderDiscount;
 
             if (order.OrderTotalRounding != decimal.Zero)
@@ -325,8 +327,14 @@ namespace SmartStore.Admin.Controllers
                 model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-order.RedeemedRewardPointsEntry.UsedAmount, true, false);
             }
 
-            //total
-            model.OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false);
+			// Deposit.
+			if (order.OrderDeposit > decimal.Zero)
+			{
+				model.DepositAmount = _priceFormatter.FormatPrice(-order.OrderDeposit, true, false);
+			}
+
+			//total
+			model.OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false);
             model.OrderTotalValue = order.OrderTotal;
 
             //refunded amount

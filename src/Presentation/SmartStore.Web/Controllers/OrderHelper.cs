@@ -427,6 +427,13 @@ namespace SmartStore.Web.Controllers
                     true, order.CustomerCurrencyCode, false, language);
             }
 
+			// Deposit.
+			if (order.OrderDeposit > decimal.Zero)
+			{
+				var convertedDeposit = _currencyService.ConvertCurrency(order.OrderDeposit, order.CurrencyRate);
+				model.DepositAmount = _priceFormatter.FormatPrice(-convertedDeposit, true, order.CustomerCurrencyCode, false, language);
+			}
+
             // Total
             var roundingAmount = decimal.Zero;
             var orderTotal = order.GetOrderTotalInCustomerCurrency(_currencyService, _paymentService, out roundingAmount);

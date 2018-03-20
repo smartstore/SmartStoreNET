@@ -85,7 +85,11 @@ namespace SmartStore.Admin.Models.Orders
         public int RedeemedRewardPoints { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.RedeemedRewardPoints")]
         public string RedeemedRewardPointsAmount { get; set; }
-        [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
+
+		[SmartResourceDisplayName("Admin.Orders.Fields.DepositAmount")]
+		public string DepositAmount { get; set; }
+
+		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
         public string OrderTotalRounding { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
         public string OrderTotal { get; set; }

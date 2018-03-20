@@ -368,6 +368,19 @@
 			</td>
 		</tr>
 	}
+	@if (Model.DepositAmount.HasValue())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DepositAmount)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.DepositAmount
+				</div>
+			</td>
+		</tr>
+	}
 	@if (Model.OrderTotalRounding.HasValue())
 	{
 		<tr>
@@ -572,49 +585,49 @@
 				@Html.EditorFor(model => model.CardCvv2)
 			</td>
 		</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CardExpirationMonth)
-				</td>
-				<td class="adminData">
-					<div class="form-control-plaintext">
-						<span id="lblCardExpirationMonth" class="cc-control">@Model.CardExpirationMonth</span>
-					</div>
-					@Html.EditorFor(model => model.CardExpirationMonth)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CardExpirationYear)
-				</td>
-				<td class="adminData">
-					<div class="form-control-plaintext">
-						<span id="lblCardExpirationYear" class="cc-control">@Model.CardExpirationYear</span>
-					</div>
-					@Html.EditorFor(model => model.CardExpirationYear)
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<button type="submit" name="btnEditCC" value="@T("Admin.Orders.Fields.EditCC")" onclick="toggleCC(true);return false;" id="btnEditCC" class="btn btn-secondary">
-						<i class="fa fa-pencil-square-o"></i>
-						<span>@T("Admin.Orders.Fields.EditCC")</span>
-					</button>
-					<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary ask-to-proceed">
-						<i class="fa fa-check"></i>
-						<span>@T("Admin.Orders.Fields.SaveCC")</span>
-					</button>
-					<button type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn btn-secondary">
-						<i class="fa fa-times"></i>
-						<span>@T("Admin.Orders.Fields.CancelCC")</span>
-					</button>
-				</td>
-			</tr>
-			<tr class="adminSeparator">
-				<td colspan="2">
-					<hr />
-				</td>
-			</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardExpirationMonth)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblCardExpirationMonth" class="cc-control">@Model.CardExpirationMonth</span>
+				</div>
+				@Html.EditorFor(model => model.CardExpirationMonth)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardExpirationYear)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblCardExpirationYear" class="cc-control">@Model.CardExpirationYear</span>
+				</div>
+				@Html.EditorFor(model => model.CardExpirationYear)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<button type="submit" name="btnEditCC" value="@T("Admin.Orders.Fields.EditCC")" onclick="toggleCC(true);return false;" id="btnEditCC" class="btn btn-secondary">
+					<i class="fa fa-pencil-square-o"></i>
+					<span>@T("Admin.Orders.Fields.EditCC")</span>
+				</button>
+				<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary ask-to-proceed">
+					<i class="fa fa-check"></i>
+					<span>@T("Admin.Orders.Fields.SaveCC")</span>
+				</button>
+				<button type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn btn-secondary">
+					<i class="fa fa-times"></i>
+					<span>@T("Admin.Orders.Fields.CancelCC")</span>
+				</button>
+			</td>
+		</tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<hr />
+			</td>
+		</tr>
 	}
 
 	@if (Model.AllowStoringDirectDebit)

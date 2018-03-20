@@ -75,7 +75,7 @@ body.rtl {
 
 	.form-control + .input-group-append:not(:first-child) {
 		border-right: initial;
-		border-left: 1px solid rgba(0,0,0,0.15);
+		border-left: 1px solid rgba(#000, 0.15);
 	}
 
 	// product lists
@@ -129,7 +129,7 @@ body.rtl {
 
 	.pd-actions .pd-action-item {
 		border-right: 0;
-		border-left: 1px solid rgba(0,0,0,0.15);
+		border-left: 1px solid rgba(#000, 0.15);
 	}
 
 	.btn-edit-product {
@@ -239,7 +239,22 @@ body.rtl {
 		padding-left: 0;
 	}
 
-	.btn .fa + span, .btn .fa + em, .btn .icm + span, .btn .icm + em, .menubar-link .fa + span, .menubar-link .fa + em, .menubar-link .icm + span, .menubar-link .icm + em, .nav-link .fa + span, .nav-link .fa + em, .nav-link .icm + span, .nav-link .icm + em, .dropdown-item .fa + span, .dropdown-item .fa + em, .dropdown-item .icm + span, .dropdown-item .icm + em {
+	.btn .fa + span, 
+	.btn .fa + em, 
+	.btn .icm + span, 
+	.btn .icm + em, 
+	.menubar-link .fa + span, 
+	.menubar-link .fa + em,
+	.menubar-link .icm + span, 
+	.menubar-link .icm + em, 
+	.nav-link .fa + span, 
+	.nav-link .fa + em, 
+	.nav-link .icm + span, 
+	.nav-link .icm + em, 
+	.dropdown-item .fa + span, 
+	.dropdown-item .fa + em, 
+	.dropdown-item .icm + span, 
+	.dropdown-item .icm + em {
 		padding-right: 0.4em;
 		padding-left: 0;
 	}

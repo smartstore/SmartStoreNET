@@ -4,7 +4,7 @@
 			"name": "Admin.ContentManagement.Homepage",
 			"zones": [
 				"home_page_top",
-				"home_page_after_intro",
+				"home_page_after_intro", 
 				"home_page_after_categories",
 				"home_page_after_products",
 				"home_page_after_bestsellers",

@@ -8,6 +8,7 @@ using SmartStore.Collections;
 using SmartStore.Utilities;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
+using SmartStore.Core.IO;
 using System.Web;
 using Newtonsoft.Json.Linq;
 
@@ -15,8 +16,15 @@ namespace SmartStore.Web.Framework.UI
 {
 	public class WidgetProvider : IWidgetProvider
 	{
+		private readonly IApplicationEnvironment _env;
+
 		private Multimap<string, WidgetRouteInfo> _zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
 		private Multimap<Regex, WidgetRouteInfo> _zoneExpressionWidgetsMap = new Multimap<Regex, WidgetRouteInfo>();
+
+		public WidgetProvider(IApplicationEnvironment env)
+		{
+			_env = env;
+		}
 
 		public void RegisterAction(string[] widgetZones, string actionName, string controllerName, RouteValueDictionary routeValues, int order = 0)
 		{
@@ -107,26 +115,40 @@ namespace SmartStore.Web.Framework.UI
 		
 		public dynamic GetAllKnownWidgetZones()
 		{
-			var env = EngineContext.Current.Resolve<IApplicationEnvironment>();
-			var folder = env.AppDataFolder;
-			var filePath = "widgetzones.json";
-			var virtualPath = folder.Combine(filePath);
-			
-			if (virtualPath.IsEmpty())
+			var fileName = "widgetzones.json";
+
+			var cacheKey = HttpRuntime.Cache.BuildScopedKey(fileName);
+			var rawJson = HttpRuntime.Cache.Get(cacheKey);
+
+			if (rawJson == null)
 			{
-				return null;
+				if (_env.AppDataFolder.FileExists(fileName))
+				{
+					rawJson = _env.AppDataFolder.ReadFile(fileName);
+					var virtualPath = _env.AppDataFolder.GetVirtualPath(fileName);
+					var cacheDependency = _env.AppDataFolder.VirtualPathProvider.GetCacheDependency(virtualPath, DateTime.UtcNow);
+					HttpRuntime.Cache.Insert(cacheKey, rawJson, cacheDependency);
+				}
+				else
+				{
+					HttpRuntime.Cache.Insert(cacheKey, "");
+				}
 			}
 
-			var cacheKey = HttpRuntime.Cache.BuildScopedKey("WidgetZones://" + virtualPath);
-			var cachedZones = HttpRuntime.Cache.Get(cacheKey);
-
-			if (cachedZones == null)
+			if (rawJson is string json && json.HasValue())
 			{
-				cachedZones = folder.ReadFile(filePath);
-				HttpRuntime.Cache.Insert(cacheKey, cachedZones);
+				try
+				{
+					return JObject.Parse(json);
+				}
+				catch
+				{
+					// Json is invalid. Don't parse again.
+					HttpRuntime.Cache.Insert(cacheKey, "");
+				}
 			}
 
-			return JObject.Parse(cachedZones.ToString());
+			return null;
 		}
 	}
 }

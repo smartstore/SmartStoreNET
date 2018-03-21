@@ -135,7 +135,7 @@ namespace SmartStore.Admin.Controllers
 				gridModel.Data = topics.Select(x =>
 				{
 					var item = x.ToModel();
-					item.WidgetZone = x.WidgetZone?.Split(',');
+					item.WidgetZone = x.WidgetZone.SplitSafe(",");
 					// otherwise maxJsonLength could be exceeded
 					item.Body = "";
 					return item;
@@ -231,7 +231,7 @@ namespace SmartStore.Admin.Controllers
             });
 
 
-			model.WidgetZone = topic.WidgetZone?.Split(',');
+			model.WidgetZone = topic.WidgetZone.SplitSafe(",");
 
 			return View(model);
         }
@@ -258,7 +258,7 @@ namespace SmartStore.Admin.Controllers
             {
                 topic = model.ToEntity(topic);
 
-				if(model.WidgetZone != null)
+				if (model.WidgetZone != null)
 				{
 					topic.WidgetZone = string.Join(",", model.WidgetZone);
 				}

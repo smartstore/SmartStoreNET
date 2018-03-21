@@ -103,6 +103,10 @@
 // TODO: implement right positioning
 // ==============================================================
 
+.tabs-left .nav-tabs .nav-link {
+	border-radius: $nav-tabs-border-radius 0 0 $nav-tabs-border-radius;
+}
+
 @include media-breakpoint-up(lg) {
 	.tabs-left {
 		flex-wrap: nowrap;

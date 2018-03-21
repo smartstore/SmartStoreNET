@@ -12,11 +12,6 @@
 		padding-right: 0;
 	}
 
-	.heading .heading-title {
-		padding-right: 0;
-		padding-left: 1rem;
-	}
-
 	.art-badges {
 		left: initial;
 		right: 0;
@@ -27,10 +22,6 @@
 	}
 
 	// forms
-	fieldset.content-group > legend > span {
-		padding-right: initial;
-		padding-left: 1rem;
-	}
 
 	/*.form-control + .input-group-append:not(:first-child) {
 		border-right: initial;
@@ -38,7 +29,6 @@
 	}*/
 
 	// product lists
-	.choice-box-group .choice-box,
 	.art-color-opt {
 		float: right;
 	}
@@ -63,11 +53,6 @@
 		.fa-chevron-right:before {
 			content: "\f053";
 		}
-	}
-
-	.has-count[data-count]:after {
-		padding-left: 0;
-		padding-right: 0.2rem;
 	}
 
 	.cart-action .cart-action-title:after,
@@ -159,8 +144,8 @@
 		margin-left: 0;
 	}
 
-	.myaccount-menu .list-group-item,
-	#menubar-my-account .dropdown-item {
+	#x-menubar-my-account .dropdown-item {
+		// TBD: (mh) Why?
 		position: relative;
 
 		.fa {
@@ -174,51 +159,7 @@
 		}
 	}
 
-	.myaccount-menu .list-group-item .fa {
-		top: 1rem;
-	}
-	.list-group.has-icons .list-group-item-icon {
-		margin-left: 0.75rem;
-		margin-right: initial;
-	}
-	.list-group .list-group-item.active:before {
-		right: -1px;
-		left: initial;
-	}
-
-	// notifications
-	.alert:after, .validation-summary-valid:after, .validation-summary-errors:after,
-	.alert:before, .validation-summary-valid:before, .validation-summary-errors:before {
-		left: initial;
-		right: 0;
-	}
-
-	.alert, .validation-summary-valid, .validation-summary-errors {
-		padding-right: 4rem;
-		padding-left: 0;
-	}
-
-	.btn .fa + span, 
-	.btn .fa + em, 
-	.btn .icm + span, 
-	.btn .icm + em, 
-	.menubar-link .fa + span, 
-	.menubar-link .fa + em,
-	.menubar-link .icm + span, 
-	.menubar-link .icm + em, 
-	.nav-link .fa + span, 
-	.nav-link .fa + em, 
-	.nav-link .icm + span, 
-	.nav-link .icm + em, 
-	.dropdown-item .fa + span, 
-	.dropdown-item .fa + em, 
-	.dropdown-item .icm + span, 
-	.dropdown-item .icm + em {
-		padding-right: 0.4em;
-		padding-left: 0;
-	}
-
-	// rtl display brakes text in brackets in chrome
+	// rtl display breaks text in brackets in chrome
 	.block-title .text-muted:after,
 	.pd-oldprice-line:after,
 	.dropdown-item:after,

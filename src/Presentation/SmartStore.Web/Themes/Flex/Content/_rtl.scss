@@ -58,7 +58,7 @@
 	.cart-action .cart-action-title:after,
 	.facet-toggle:after {
 		right: initial;
-		left: 0;
+		left: 1rem;
 	}
 
 	// product detail
@@ -88,6 +88,10 @@
 
 	#pd-gallery .gal {
 		direction: ltr;
+	}
+
+	.drift-zoom-pane img {
+		left: 0;
 	}
 
 	.review-title h4 {

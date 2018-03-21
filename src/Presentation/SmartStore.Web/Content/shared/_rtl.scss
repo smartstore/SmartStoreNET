@@ -241,6 +241,23 @@
 	}
 
 
+	// Pagination
+	// -----------
+
+	.pagination .page-nav {
+		&:first-of-type { margin-left: 0.25rem; margin-right: initial; }
+        &:last-of-type { margin-right: 0.25rem; margin-left: initial; }
+	}
+
+
+	// Star rating
+	// ----
+
+	.star-rating:not(:checked) > label {
+		float: left;
+	}
+
+
 	// Typo
 	// ----
 

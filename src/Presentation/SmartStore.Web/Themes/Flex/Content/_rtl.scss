@@ -8,6 +8,15 @@
 // --------------------------------------------------
 
 [dir=rtl] {
+	// Text expander
+	// -------------
+
+	.more-less .btn-text-expander .fa {
+		padding-left: 0.4rem;
+		padding-right: initial;
+	}
+
+
 	.nav-tabs-line {
 		padding-right: 0;
 	}
@@ -20,14 +29,11 @@
 			border-radius: 0.85rem 0 0 0.85rem;
 		}
 	}
-
 	// forms
-
 	/*.form-control + .input-group-append:not(:first-child) {
 		border-right: initial;
 		border-left: 1px solid rgba(#000, 0.15);
 	}*/
-
 	// product lists
 	.art-color-opt {
 		float: right;
@@ -60,7 +66,6 @@
 		right: initial;
 		left: 1rem;
 	}
-
 	// product detail
 	.pd-attrs td:first-child {
 		padding-left: 1rem;
@@ -81,10 +86,10 @@
 		left: 0;
 	}
 
-	.art-rating .rating,
+	/*.art-rating .rating,
 	.pd-rating-box .rating {
 		text-align: left;
-	}
+	}*/
 
 	#pd-gallery .gal {
 		direction: ltr;
@@ -98,7 +103,6 @@
 		padding-left: 0;
 		padding-right: 90px;
 	}
-
 	// checkout
 	.costep {
 		&:first-child:after,
@@ -121,7 +125,6 @@
 			background-color: $costep-active-border;
 		}
 	}
-
 	// forum
 	.forum-topic .block .block-title a {
 		padding-left: 0.75rem;
@@ -129,7 +132,7 @@
 	}
 
 	.forum-topic .block-title > div {
-		.edit-post-link-button, 
+		.edit-post-link-button,
 		.delete-post-link-button,
 		.post-link,
 		.fa {
@@ -162,12 +165,29 @@
 			padding-right: 1rem;
 		}
 	}
-
 	// rtl display breaks text in brackets in chrome
 	.block-title .text-muted:after,
 	.pd-oldprice-line:after,
 	.dropdown-item:after,
 	.pd-oldprice-line:after {
 		content: '\200E';
+	}
+
+	// Product
+	// -------
+
+	.pd-actions .pd-action-item {
+		border-left: 1px solid rgba(#000, 0.15);
+		border-right-width: 0;
+		&:last-child { border-left-color: transparent; }
+	}
+
+
+	// Rating
+	// -------
+
+	.rating,
+	.rating > * {
+		background-position-x: 100%;
 	}
 }

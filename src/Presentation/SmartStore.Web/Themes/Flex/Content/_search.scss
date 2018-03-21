@@ -262,8 +262,6 @@ $facet-selection-color:             darken($success, 15%);
 // Facetes (Check/Radio)
 // --------------------------------------------------
 
-$facet-control-size:        20px;
-
 .facet-control-ui {
     position: absolute;
     display: block;
@@ -360,8 +358,8 @@ $facet-control-size:        20px;
     position: relative;
     display: block;
     padding-left: $facet-control-size + ($facet-control-size / 1.5);
-    padding-top: 1px;
     padding-right: 8px;
+	padding-top: 1px;
 
     .facet-control-native:checked ~ & {
         font-weight: $font-weight-medium;

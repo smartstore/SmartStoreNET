@@ -61,8 +61,7 @@
 		}
 	}
 
-	.cart-action .cart-action-title:after,
-	.facet-toggle:after {
+	.cart-action .cart-action-title:after {
 		right: initial;
 		left: 1rem;
 	}
@@ -85,11 +84,6 @@
 		right: initial;
 		left: 0;
 	}
-
-	/*.art-rating .rating,
-	.pd-rating-box .rating {
-		text-align: left;
-	}*/
 
 	#pd-gallery .gal {
 		direction: ltr;
@@ -189,5 +183,48 @@
 	.rating,
 	.rating > * {
 		background-position-x: 100%;
+	}
+
+
+	// Search
+	// ------
+
+	.facet-toggle:after {
+		left: 0;
+		right: auto;
+	}
+
+	.facet-control-ui {
+		right: 2px;
+		left: auto;
+	}
+
+	.facet-radio .facet-control-native + .facet-control-ui:after {
+		margin-left: 0;
+		margin-right: 3px;
+	}
+
+	.facet-label {
+		padding-right: $facet-control-size + ($facet-control-size / 1.5);
+		padding-left: 8px;
+	}
+
+	.facet-body-rating .rating {
+		margin-left: 3px;
+		margin-right: initial;
+	}
+
+	.active-filter-item {
+		float: right;
+	}
+
+	.active-filter-link {
+		padding-left: 1.5rem;
+		padding-right: $btn-padding-x-sm;
+
+		&:after {
+			left: 0.375rem;
+			right: auto;
+		}
 	}
 }

@@ -4,7 +4,7 @@
 
 
 // RTL overrides for shared styles
-// TODO: .btn-labeled
+// TODO: .btn-labeled, .sortable-grip, .switch
 // ==============================================================
 
 
@@ -46,16 +46,16 @@
 		.btn.has-caret {
 			text-align: right;
 			padding-left: $input-btn-padding-x * 2;
-			padding-right: initial;
+			padding-right: $btn-padding-x;
 
 			&.btn-sm {
 				padding-left: $input-btn-padding-x-sm * 2;
-				padding-right: initial;
+				padding-right: $btn-padding-x-sm;
 			}
 
 			&.btn-lg {
 				padding-left: $input-btn-padding-x-lg * 2;
-				padding-right: initial;
+				padding-right: $btn-padding-x-lg;
 			}
 		}
 
@@ -142,34 +142,34 @@
 		&:not(.has-icon-right) {
 			.form-control {
 				padding-right: $input-height;
-				padding-left: initial;
+				padding-left: $input-padding-x;
 			}
 
 			&.input-group-lg .form-control {
 				padding-right: $input-height-lg;
-				padding-left: initial;
+				padding-left: $input-padding-x-lg;
 			}
 
 			&.input-group-sm .form-control {
 				padding-right: $input-height-sm;
-				padding-left: initial;
+				padding-left: $input-padding-x-sm;
 			}
 		}
 
 		&.has-icon-right {
 			.form-control {
 				padding-left: $input-height;
-				padding-right: initial;
+				padding-right: $input-padding-x;
 			}
 
 			&.input-group-lg .form-control {
 				padding-left: $input-height-lg;
-				padding-right: initial;
+				padding-right: $input-padding-x-lg;
 			}
 
 			&.input-group-sm .form-control {
 				padding-left: $input-height-sm;
-				padding-right: initial;
+				padding-right: $input-padding-x-sm;
 			}
 		}
 	}

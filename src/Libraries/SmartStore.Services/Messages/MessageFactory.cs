@@ -434,7 +434,7 @@ namespace SmartStore.Services.Messages
 			var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
 			{
 				{ "BlogComment", () => GetRandomEntity<BlogComment>(x => true) },
-				{ "Product", () => GetRandomEntity<Product>(x => !x.Deleted && x.VisibleIndividually && x.Published) },
+				{ "Product", () => GetRandomEntity<Product>(x => !x.Deleted && !x.IsSystemProduct && x.VisibleIndividually && x.Published) },
 				{ "Customer", () => GetRandomEntity<Customer>(x => !x.Deleted && !x.IsSystemAccount && !string.IsNullOrEmpty(x.Email)) },
 				{ "Order", () => GetRandomEntity<Order>(x => !x.Deleted) },
 				{ "Shipment", () => GetRandomEntity<Shipment>(x => !x.Order.Deleted) },
@@ -448,7 +448,7 @@ namespace SmartStore.Services.Messages
 				{ "ForumPost", () => GetRandomEntity<ForumPost>(x => true) },
 				{ "PrivateMessage", () => GetRandomEntity<PrivateMessage>(x => true) },
 				{ "GiftCard", () => GetRandomEntity<GiftCard>(x => true) },
-				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && x.Product.VisibleIndividually && x.Product.Published) },
+				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && !x.Product.IsSystemProduct && x.Product.VisibleIndividually && x.Product.Published) },
 				{ "NewsComment", () => GetRandomEntity<NewsComment>(x => x.NewsItem.Published) }
 			};
 

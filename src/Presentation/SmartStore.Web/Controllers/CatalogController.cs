@@ -757,7 +757,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult AddProductToCompareList(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published)
 				return HttpNotFound();
 
 			if (!_catalogSettings.CompareProductsEnabled)
@@ -777,7 +777,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult AddProductToCompareListAjax(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published || !_catalogSettings.CompareProductsEnabled)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.CompareProductsEnabled)
 			{
 				return Json(new
 				{

@@ -174,8 +174,8 @@ namespace SmartStore.Services.Catalog
                 var query = from pm in _productManufacturerRepository.Table
                             join p in _productRepository.Table on pm.ProductId equals p.Id
                             where pm.ManufacturerId == manufacturerId &&
-                                  !p.Deleted &&
-                                  (showHidden || p.Published)
+                                  !p.Deleted && !p.IsSystemProduct &&
+								  (showHidden || p.Published)
                             orderby pm.DisplayOrder
                             select pm;
 

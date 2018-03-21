@@ -215,7 +215,7 @@ namespace SmartStore.Services.Orders
                          (!paymentStatusId.HasValue || paymentStatusId == o.PaymentStatusId) &&
                          (!shippingStatusId.HasValue || shippingStatusId == o.ShippingStatusId) &&
                          (!o.Deleted) &&
-                         (!p.Deleted) &&
+                         (!p.Deleted) && (!p.IsSystemProduct) &&
                          (billingCountryId == 0 || o.BillingAddress.CountryId == billingCountryId) &&
                          (showHidden || p.Published)
                          select orderItem;
@@ -281,8 +281,8 @@ namespace SmartStore.Services.Orders
                          (showHidden || p.Published) &&
 						 (!orderItem.Order.Deleted) &&
 						 (storeId == 0 || orderItem.Order.StoreId == storeId) &&
-                         (!p.Deleted) &&
-                         (showHidden || p.Published)
+                         (!p.Deleted) && (!p.IsSystemProduct) &&
+						 (showHidden || p.Published)
                          select new { orderItem = orderItem, p };
 
             var query3 = from orderItem_p in query2

@@ -1507,7 +1507,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult UploadFileProductAttribute(int productId, int productAttributeId)
         {
             var product = _productService.GetProductById(productId);
-            if (product == null || !product.Published || product.Deleted)
+            if (product == null || !product.Published || product.Deleted || product.IsSystemProduct)
             {
                 return Json(new
                 {

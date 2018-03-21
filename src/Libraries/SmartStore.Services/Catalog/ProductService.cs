@@ -74,7 +74,7 @@ namespace SmartStore.Services.Catalog
 				var mutualAssociations = (
 					from rp in _relatedProductRepository.Table
 					join p in _productRepository.Table on rp.ProductId2 equals p.Id
-					where !p.Deleted && rp.ProductId2 == id1
+					where rp.ProductId2 == id1 && !p.Deleted && !p.IsSystemProduct
 					select rp).ToList();
 
 				foreach (int id2 in productIds)
@@ -115,7 +115,7 @@ namespace SmartStore.Services.Catalog
 				var mutualAssociations = (
 					from rp in _crossSellProductRepository.Table
 					join p in _productRepository.Table on rp.ProductId2 equals p.Id
-					where !p.Deleted && rp.ProductId2 == id1
+					where rp.ProductId2 == id1 && !p.Deleted && !p.IsSystemProduct
 					select rp).ToList();
 
 				foreach (int id2 in productIds)
@@ -172,7 +172,7 @@ namespace SmartStore.Services.Catalog
             var query = 
 				from p in _productRepository.Table
 				orderby p.HomePageDisplayOrder
-				where p.Published && !p.Deleted && p.ShowOnHomePage
+				where p.Published && !p.Deleted && !p.IsSystemProduct && p.ShowOnHomePage
 				select p;
 
             var products = query.ToList();
@@ -326,7 +326,7 @@ namespace SmartStore.Services.Catalog
 			// Track inventory for product
 			var query1 = from p in _productRepository.Table
 						 orderby p.MinStockQuantity
-						 where !p.Deleted &&
+						 where !p.Deleted && !p.IsSystemProduct &&
 							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
 							p.MinStockQuantity >= p.StockQuantity
 						 select p;
@@ -335,7 +335,7 @@ namespace SmartStore.Services.Catalog
 			// Track inventory for product by product attributes
 			var query2 = from p in _productRepository.Table
 						 from pvac in p.ProductVariantAttributeCombinations
-						 where !p.Deleted &&
+						 where !p.Deleted && !p.IsSystemProduct &&
 							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
 							pvac.StockQuantity <= 0
 						 select p;
@@ -363,7 +363,7 @@ namespace SmartStore.Services.Catalog
 
 			var query = from p in _productRepository.Table
 						orderby p.DisplayOrder, p.Id
-						where !p.Deleted && p.Sku == sku
+						where !p.Deleted && !p.IsSystemProduct && p.Sku == sku
 						select p;
 			var product = query.FirstOrDefault();
 			return product;
@@ -378,8 +378,7 @@ namespace SmartStore.Services.Catalog
 
             var query = from p in _productRepository.Table
                         orderby p.Id
-                        where !p.Deleted &&
-                        p.Gtin == gtin
+                        where !p.Deleted && !p.IsSystemProduct && p.Gtin == gtin
                         select p;
             var product = query.FirstOrDefault();
             return product;
@@ -393,7 +392,7 @@ namespace SmartStore.Services.Catalog
 			manufacturerPartNumber = manufacturerPartNumber.Trim();
 
 			var product = _productRepository.Table
-				.Where(x => !x.Deleted && x.ManufacturerPartNumber == manufacturerPartNumber)
+				.Where(x => !x.Deleted && !x.IsSystemProduct && x.ManufacturerPartNumber == manufacturerPartNumber)
 				.OrderBy(x => x.Id)
 				.FirstOrDefault();
 
@@ -408,7 +407,7 @@ namespace SmartStore.Services.Catalog
 			name = name.Trim();
 
 			var product = _productRepository.Table
-				.Where(x => !x.Deleted && x.Name == name)
+				.Where(x => !x.Deleted && !x.IsSystemProduct && x.Name == name)
 				.OrderBy(x => x.Id)
 				.FirstOrDefault();
 
@@ -644,7 +643,7 @@ namespace SmartStore.Services.Catalog
         {
             var query = from rp in _relatedProductRepository.Table
                         join p in _productRepository.Table on rp.ProductId2 equals p.Id
-                        where rp.ProductId1 == productId1 && !p.Deleted && (showHidden || p.Published)
+                        where rp.ProductId1 == productId1 && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
                         orderby rp.DisplayOrder
                         select rp;
 
@@ -702,7 +701,7 @@ namespace SmartStore.Services.Catalog
         {
             var query = from csp in _crossSellProductRepository.Table
                         join p in _productRepository.Table on csp.ProductId2 equals p.Id
-                        where csp.ProductId1 == productId1 && !p.Deleted && (showHidden || p.Published)
+                        where csp.ProductId1 == productId1 && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
                         orderby csp.Id
                         select csp;
 
@@ -716,7 +715,7 @@ namespace SmartStore.Services.Catalog
 
 			var query = from csp in _crossSellProductRepository.Table
 						join p in _productRepository.Table on csp.ProductId2 equals p.Id
-						where productIds.Contains(csp.ProductId1) && !p.Deleted && (showHidden || p.Published)
+						where productIds.Contains(csp.ProductId1) && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
 						orderby csp.Id
 						select csp;
 
@@ -1019,7 +1018,7 @@ namespace SmartStore.Services.Catalog
 			var query =
 				from pbi in _productBundleItemRepository.Table
 				join p in _productRepository.Table on pbi.ProductId equals p.Id
-				where pbi.BundleProductId == bundleProductId && !p.Deleted && (showHidden || (pbi.Published && p.Published))
+				where pbi.BundleProductId == bundleProductId && !p.Deleted && !p.IsSystemProduct && (showHidden || (pbi.Published && p.Published))
 				orderby pbi.DisplayOrder
 				select pbi;
 
@@ -1039,7 +1038,7 @@ namespace SmartStore.Services.Catalog
 			var query =
 				from pbi in _productBundleItemRepository.TableUntracked
 				join p in _productRepository.TableUntracked on pbi.ProductId equals p.Id
-				where productIds.Contains(pbi.BundleProductId) && !p.Deleted && (showHidden || (pbi.Published && p.Published))
+				where productIds.Contains(pbi.BundleProductId) && !p.Deleted && !p.IsSystemProduct && (showHidden || (pbi.Published && p.Published))
 				orderby pbi.DisplayOrder
 				select pbi;
 

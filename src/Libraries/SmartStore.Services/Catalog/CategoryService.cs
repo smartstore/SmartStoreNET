@@ -511,7 +511,7 @@ namespace SmartStore.Services.Catalog
             {
                 var query = from pc in _productCategoryRepository.Table
                             join p in _productRepository.Table on pc.ProductId equals p.Id
-                            where pc.CategoryId == categoryId && !p.Deleted && (showHidden || p.Published)
+                            where pc.CategoryId == categoryId && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
                             select pc;
 
                 if (!showHidden)

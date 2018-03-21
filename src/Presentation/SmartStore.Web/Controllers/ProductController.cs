@@ -133,7 +133,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult ProductDetails(int productId, string attributes, ProductVariantQuery query)
 		{
 			var product = _productService.GetProductById(productId);
-			if (product == null || product.Deleted)
+			if (product == null || product.Deleted || product.IsSystemProduct)
 				return HttpNotFound();
 
 			// Is published? Check whether the current user has a "Manage catalog" permission.
@@ -410,7 +410,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult BackInStockSubscribePopup(int id /* productId */)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted)
+			if (product == null || product.Deleted || product.IsSystemProduct)
 			{
 				throw new ArgumentException(T("Products.NotFound", id));
 			}
@@ -445,7 +445,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult BackInStockSubscribePopup(int id /* productId */, FormCollection form)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted)
+			if (product == null || product.Deleted || product.IsSystemProduct)
 			{
 				throw new ArgumentException(T("Products.NotFound", id));
 			}
@@ -661,7 +661,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult Reviews(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published || !product.AllowCustomerReviews)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
 				return HttpNotFound();
 
 			var model = new ProductReviewsModel();
@@ -685,7 +685,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, bool captchaValid)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published || !product.AllowCustomerReviews)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !product.AllowCustomerReviews)
 				return HttpNotFound();
 
 			// validate CAPTCHA
@@ -832,7 +832,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult AskQuestion(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published || !_catalogSettings.AskQuestionEnabled)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
 				return HttpNotFound();
 
 			var customer = _services.WorkContext.CurrentCustomer;
@@ -855,7 +855,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
 		{
 			var product = _productService.GetProductById(model.Id);
-			if (product == null || product.Deleted || !product.Published || !_catalogSettings.AskQuestionEnabled)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.AskQuestionEnabled)
 				return HttpNotFound();
 
 			// validate CAPTCHA
@@ -903,7 +903,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult EmailAFriend(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published || !_catalogSettings.EmailAFriendEnabled)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.EmailAFriendEnabled)
 				return HttpNotFound();
 
 			var model = new ProductEmailAFriendModel();
@@ -921,7 +921,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, bool captchaValid)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published || !_catalogSettings.EmailAFriendEnabled)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.EmailAFriendEnabled)
 				return HttpNotFound();
 
 			//validate CAPTCHA

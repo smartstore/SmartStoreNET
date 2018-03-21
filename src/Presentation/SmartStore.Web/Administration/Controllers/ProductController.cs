@@ -374,7 +374,8 @@ namespace SmartStore.Admin.Controllers
 				p.StockQuantity > 0 &&
 				prevStockQuantity <= 0 &&
 				p.Published &&
-				!p.Deleted)
+				!p.Deleted &&
+				!p.IsSystemProduct)
 			{
 				_backInStockSubscriptionService.SendNotificationsToSubscribers(p);
 			}
@@ -2832,7 +2833,8 @@ namespace SmartStore.Admin.Controllers
 								product.StockQuantity > 0 &&
 								prevStockQuantity <= 0 &&
 								product.Published &&
-								!product.Deleted)
+								!product.Deleted && 
+								!product.IsSystemProduct)
 							{
 								_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
 							}

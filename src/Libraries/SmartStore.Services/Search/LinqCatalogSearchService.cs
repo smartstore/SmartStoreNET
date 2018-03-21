@@ -223,7 +223,7 @@ namespace SmartStore.Services.Search
 			var utcNow = DateTime.UtcNow;
 			var query = baseQuery ?? _productRepository.Table;
 
-			query = query.Where(x => !x.Deleted);
+			query = query.Where(x => !x.Deleted && !x.IsSystemProduct);
 			query = ApplySearchTerm(query, searchQuery);
 
 			#region Filters
@@ -724,8 +724,8 @@ namespace SmartStore.Services.Search
 
 					var count = 0;
 					var hasActivePredefinedFacet = false;
-					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Min(x => (double)x.Price);
-					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Max(x => (double)x.Price);
+					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).Min(x => (double)x.Price);
+					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).Max(x => (double)x.Price);
 					minPrice = FacetUtility.MakePriceEven(minPrice);
 					maxPrice = FacetUtility.MakePriceEven(maxPrice);
 

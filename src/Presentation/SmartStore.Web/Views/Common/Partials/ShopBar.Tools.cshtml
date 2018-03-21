@@ -43,7 +43,7 @@
 	{
 		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
 			<a href="@Url.Action("CompareProducts", "Catalog")"  class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { compare = true })"
-			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+			   data-autohide="true" data-placement="@(isRtl ? "left" : "right")" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-repeat"></i>
 					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.CompareItemsCount == 0 ? "display:none" : "")" data-bind-to="CompareItemsCount">@Model.CompareItemsCount</span>
@@ -63,7 +63,7 @@
 	{
 		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
 			<a href="@Url.RouteUrl("Wishlist")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { wishlist = true })"
-				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				data-autohide="true" data-placement="@(isRtl ? "left" : "right")" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-heart"></i>
 					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.WishlistItemsCount == 0 ? "display:none" : "")" data-bind-to="WishlistItemsCount">@Model.WishlistItemsCount</span>

@@ -175,6 +175,10 @@
 		border-right-width: 0;
 		&:last-child { border-left-color: transparent; }
 	}
+	
+
+	// Megamenu
+	// -------
 
 
 	// Rating
@@ -188,6 +192,49 @@
 
 	// Search
 	// ------
+
+	#instasearch-progress {
+		left: 56px;
+		right: auto;
+	}
+
+	.instasearch-term {
+		padding-left: 60px;
+		padding-right: 1rem;
+	}
+
+	.instasearch-button {
+		left: 0;
+		right: auto;
+		border-right-width: 0;
+		border-left-width: $btn-border-width;
+		border-radius: $btn-border-radius 0 0 $btn-border-radius;
+	}
+
+	#instasearch-drop {
+		right: 0;
+		left: auto;
+	}
+
+	.instasearch-hits {
+		padding-right: 0;
+	}
+
+	@include media-breakpoint-up(sm) {
+		.instasearch-col {
+			&:first-child { border-left: 1px solid rgba(0,0,0, 0.1); border-right: none;  }
+		}
+	}
+
+	.instasearch-hit-tag {
+		padding-right: 0.2rem;
+		padding-left: initial;
+	}
+
+	.instasearch-hit-thumb {
+		padding-left: 12px;
+		padding-right: initial;
+	}
 
 	.facet-toggle:after {
 		left: 0;

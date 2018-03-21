@@ -4,6 +4,7 @@
 
 
 // RTL overrides for Bootstrap 4
+// TODO: Custom controls
 // ==============================================================
 
 [dir=ltr] {
@@ -14,6 +15,13 @@
 [dir=rtl] {
 	direction: rtl;
 	text-align: right;
+
+	// Common
+	// ----------------------------------------------
+
+	dd {
+		margin-right: 0;
+	}
 
 	th {
 		text-align: right;
@@ -33,132 +41,158 @@
 		left: initial;
 		right: 0;
 		text-align: right;
+
+        &.dropdown-menu-right {
+			right: auto;
+			left: 0;
+        }
 	}
 
-	.checkbox label {
-		padding-right: 1.25rem;
-		padding-left: inherit;
+	.list-unstyled,
+	.list-inline {
+		padding-right: 0;
 	}
 
-	.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
-		border-radius: 0 $border-radius $border-radius 0;
+	.list-inline &:not(:last-child) {
+		margin-left: $list-inline-padding;
+		margin-right: initial;
 	}
 
-	.btn-group > .btn:last-child:not(:first-child),
-	.btn-group > .dropdown-toggle:not(:first-child) {
-		border-radius: $border-radius 0 0 $border-radius;
+
+	// Button Groups
+	// ----------------------------------------------
+
+	.btn + .btn,
+	.btn + .btn-group,
+	.btn-group + .btn,
+	.btn-group + .btn-group {
+		margin-right: -$btn-border-width;
+		margin-left: initial;
 	}
 
-	.btn-group > .btn-group:last-child:not(:first-child) > .btn:first-child {
-		border-radius: $border-radius 0 0 $border-radius;
+	.btn-group {
+		> .btn:first-child {
+			margin-right: 0;
+		}
+		// Reset rounded corners
+		> .btn:not(:last-child):not(.dropdown-toggle),
+		> .btn-group:not(:last-child) > .btn {
+			border-radius: 0 $btn-border-radius $btn-border-radius 0;
+		}
+
+		> .btn:not(:first-child),
+		> .btn-group:not(:first-child) > .btn {
+			border-radius: $btn-border-radius 0 0 $btn-border-radius;
+		}
 	}
 
-	.custom-control-label::after,
-	.custom-control-label::before {
-		right: 0;
-		left: inherit;
+	// Input Groups
+	// ----------------------------------------------
+
+	.input-group {
+		+ .form-control,
+		+ .custom-select,
+		+ .custom-file {
+			margin-right: -$input-border-width;
+			margin-left: initial;
+		}
+
+		> .form-control,
+		> .custom-select {
+			&:not(:last-child) {
+				border-radius: 0 $input-border-radius $input-border-radius 0;
+			}
+
+			&:not(:first-child) {
+				border-radius: 0 $input-border-radius $input-border-radius 0;
+			}
+		}
 	}
 
-	.custom-select {
-		padding: $custom-select-padding-y $custom-select-padding-x $custom-select-padding-y ($custom-select-padding-x + $custom-select-indicator-padding);
-		background: $custom-select-bg $custom-select-indicator no-repeat left $custom-select-padding-x center;
-		background-size: $custom-select-bg-size;
+	.input-group-prepend,
+	.input-group-append {
+		.btn + .btn,
+		.btn + .input-group-text,
+		.input-group-text + .input-group-text,
+		.input-group-text + .btn {
+			margin-right: -$input-border-width;
+			margin-left: initial;
+		}
 	}
 
-	.input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
-	.input-group > .input-group-append:last-child > .input-group-text:not(:last-child),
+	.input-group-prepend {
+		margin-left: -$input-border-width;
+		margin-right: initial;
+	}
+
+	.input-group-append {
+		margin-right: -$input-border-width;
+		margin-left: initial;
+	}
+
+	.input-group > .input-group-prepend > .btn,
+	.input-group > .input-group-prepend > .input-group-text,
 	.input-group > .input-group-append:not(:last-child) > .btn,
 	.input-group > .input-group-append:not(:last-child) > .input-group-text,
-	.input-group > .input-group-prepend > .btn,
-	.input-group > .input-group-prepend > .input-group-text {
-		border-radius: 0 $border-radius $border-radius 0;
+	.input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+	.input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
+		border-radius: 0 $input-border-radius $input-border-radius 0;
 	}
 
 	.input-group > .input-group-append > .btn,
 	.input-group > .input-group-append > .input-group-text,
-	.input-group > .input-group-prepend:first-child > .btn:not(:first-child),
-	.input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child),
 	.input-group > .input-group-prepend:not(:first-child) > .btn,
-	.input-group > .input-group-prepend:not(:first-child) > .input-group-text {
-		border-radius: $border-radius 0 0 $border-radius;
+	.input-group > .input-group-prepend:not(:first-child) > .input-group-text,
+	.input-group > .input-group-prepend:first-child > .btn:not(:first-child),
+	.input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child) {
+		border-radius: $input-border-radius 0 0 $input-border-radius;
 	}
 
-	.input-group > .custom-select:not(:first-child),
-	.input-group > .form-control:not(:first-child) {
-		border-radius: $border-radius 0 0 $border-radius;
-	}
-
-	.input-group > .custom-select:not(:last-child),
-	.input-group > .form-control:not(:last-child) {
-		border-radius: 0 $border-radius $border-radius 0;
-	}
-
-	.input-group > .custom-select:not(:last-child):not(:first-child),
-	.input-group > .form-control:not(:last-child):not(:first-child) {
-		border-radius: 0;
-	}
-
-	.custom-control {
-		padding-right: 1.5rem;
-		padding-left: inherit;
-		margin-right: inherit;
-		margin-left: 1rem;
-	}
-
-	.custom-control-indicator {
-		right: 0;
-		left: inherit;
-	}
-
-	.custom-file-label::after {
-		right: initial;
-		left: -1px;
-		border-radius: .25rem 0 0 .25rem;
-	}
-
-	.radio input,
-	.radio-inline,
-	.checkbox input,
-	.checkbox-inline input {
-		margin-right: -1.25rem;
-		margin-left: inherit;
-	}
-
-	.list-group {
+	/*.list-group {
 		padding-right: 0;
 		padding-left: 40px;
-	}
-
-	.close {
-		float: left;
-	}
+	}*/
 
 	.modal-header .close {
-		margin: -15px auto -15px -15px;
+		margin-left: (-$modal-header-padding);
+		margin-right: auto;
 	}
 
-	.modal-footer > :not(:first-child) {
-		margin-right: .25rem;
+	.modal-footer {
+		> :not(:first-child) {
+			margin-right: .25rem;
+			margin-left: initial;
+		}
+		> :not(:last-child) {
+			margin-left: .25rem;
+			margin-right: initial;
+		}
 	}
 
-	.alert-dismissible .close {
-		right: inherit;
-		left: 0;
-	}
-
-	.dropdown-toggle::after {
-		margin-right: .255em;
+	.dropdown-toggle:after {
+		margin-right: $caret-width * .85;
 		margin-left: 0;
 	}
 
-	.form-check-input {
-		margin-right: -1.25rem;
-		margin-left: inherit;
-	}
-
-	.form-check-label {
-		padding-right: 1.25rem;
+	.form-check {
+		padding-right: $form-check-input-gutter;
 		padding-left: initial;
+
+		.form-check-input {
+			margin-right: -$form-check-input-gutter;
+			margin-left: initial;
+		}
+
+		&.form-check-inline {
+			padding-right: 0;
+			margin-left: $form-check-inline-margin-x;
+			margin-right: initial;
+
+			.form-check-input {
+				margin-left: $form-check-inline-input-margin-x;
+				margin-right: 0;
+			}
+		}
 	}
 
 	@mixin make-col-offset($size, $columns: $grid-columns) {

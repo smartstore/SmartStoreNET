@@ -8,13 +8,6 @@
 // --------------------------------------------------
 
 [dir=rtl] {
-	dd {
-		margin-right: 0;
-		padding-right: 0;
-	}
-
-	ul,
-	.list-unstyled,
 	.nav-tabs-line {
 		padding-right: 0;
 	}
@@ -33,37 +26,16 @@
 		}
 	}
 
-	.breadcrumb-item {
-		float: right;
-	}
-
 	// forms
-	.form-group label,
-	.col-form-label {
-		text-align: left;
-	}
-
-	.form-check-label {
-		padding-left: initial;
-
-		.form-check-input {
-			margin-left: initial;
-		}
-
-		span {
-			margin-right: 1.25rem;
-		}
-	}
-
 	fieldset.content-group > legend > span {
 		padding-right: initial;
 		padding-left: 1rem;
 	}
 
-	.form-control + .input-group-append:not(:first-child) {
+	/*.form-control + .input-group-append:not(:first-child) {
 		border-right: initial;
 		border-left: 1px solid rgba(#000, 0.15);
-	}
+	}*/
 
 	// product lists
 	.choice-box-group .choice-box,
@@ -252,102 +224,5 @@
 	.dropdown-item:after,
 	.pd-oldprice-line:after {
 		content: '\200E';
-	}
-
-	// switch all .fa directional icons
-	.fa-angle-double-left:before {
-		content: "\f101";
-	}
-
-	.fa-angle-double-right:before {
-		content: "\f100";
-	}
-
-	.fa-angle-left:before {
-		content: "\f105";
-	}
-
-	.fa-angle-right:before {
-		content: "\f104";
-	}
-
-	.fa-arrow-circle-left:before {
-		content: "\f0a9";
-	}
-
-	.fa-arrow-circle-right:before {
-		content: "\f0a8";
-	}
-
-	.fa-arrow-circle-o-left:before {
-		content: "\f18e";
-	}
-
-	.fa-arrow-circle-o-right:before {
-		content: "\f190";
-	}
-
-	.fa-arrow-left:before {
-		content: "\f061";
-	}
-
-	.fa-arrow-right:before {
-		content: "\f060";
-	}
-
-	.fa-caret-left:before {
-		content: "\f0da";
-	}
-
-	.fa-caret-right:before {
-		content: "\f0d9";
-	}
-
-	.fa-caret-square-o-left:before {
-		content: "\f152";
-	}
-
-	.fa-caret-square-o-right:before {
-		content: "\f191";
-	}
-
-	.fa-chevron-circle-left:before {
-		content: "\f138";
-	}
-
-	.fa-chevron-circle-right:before {
-		content: "\f137";
-	}
-
-	.fa-chevron-left:before {
-		content: "\f054";
-	}
-
-	.fa-chevron-right:before {
-		content: "\f053";
-	}
-
-	.fa-hand-o-left:before {
-		content: "\f0a4";
-	}
-
-	.fa-hand-o-right:before {
-		content: "\f0a5";
-	}
-
-	.fa-long-arrow-left:before {
-		content: "\f178";
-	}
-
-	.fa-long-arrow-right:before {
-		content: "\f177";
-	}
-
-	.fa-toggle-left:before {
-		content: "\f152";
-	}
-
-	.fa-toggle-right:before {
-		content: "\f191";
 	}
 }

@@ -202,6 +202,7 @@ namespace SmartStore.Services.Catalog
 						DisplayOrder = product.DisplayOrder,
 						Published = isPublished,
 						Deleted = product.Deleted,
+						IsSystemProduct = product.IsSystemProduct,
 						DeliveryTimeId = product.DeliveryTimeId,
 						QuantityUnitId = product.QuantityUnitId,
 						BasePriceEnabled = product.BasePriceEnabled,

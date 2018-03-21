@@ -404,15 +404,28 @@
 			</div>
 		</td>
 	</tr>
-	@if (!String.IsNullOrEmpty(Model.RefundedAmount))
+	@if (Model.RefundedAmount.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.RefundedAmount)
 			</td>
 			<td class="adminData">
-				<div class="form-control-plaintext">
+				<div class="form-control-plaintext text-danger">
 					@Model.RefundedAmount
+				</div>
+			</td>
+		</tr>
+	}
+	@if (Model.RefundedCreditBalance.HasValue())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.RefundedCreditBalance)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext text-danger">
+					@Model.RefundedCreditBalance
 				</div>
 			</td>
 		</tr>
@@ -492,6 +505,14 @@
 					</tr>
 					<tr>
 						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CreditBalanceValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.CreditBalanceValue)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
 							@Html.SmartLabelFor(model => model.OrderTotalRoundingValue)
 						</td>
 						<td class="adminData">
@@ -512,7 +533,7 @@
 	</tr>
 	<tr>
 		<td>
-			<button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn btn-secondary mt-1">
+			<button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn btn-secondary">
 				<i class="fa fa-pencil-square-o"></i>
 				<span>@T("Admin.Orders.Fields.EditOrderTotals")</span>
 			</button>
@@ -524,6 +545,8 @@
 				<i class="fa fa-times"></i>
 				<span>@T("Admin.Common.Cancel")</span>
 			</button>
+
+			@{ Html.RenderWidget("admin_order_total_edit_buttons_after"); }
 		</td>
 	</tr>
 
@@ -839,7 +862,7 @@
 			@Html.SmartLabelFor(model => model.PaymentStatus)
 		</td>
 		<td class="adminData wide">
-			<b class="pr-1">@Model.PaymentStatus</b>
+			<span class="pr-1 font-weight-bold form-control-plaintext d-inline-block" style="width: auto;">@Model.PaymentStatus</span>
 
 			@if (Model.CanMarkOrderAsPaid)
 			{

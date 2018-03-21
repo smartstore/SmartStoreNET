@@ -564,6 +564,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("BasePriceInfo", (string)product._BasePriceInfo);
 			_writer.Write("VisibleIndividually", entity.VisibleIndividually.ToString());
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
+			_writer.Write("IsSystemProduct", entity.IsSystemProduct.ToString());
 			_writer.Write("BundleTitleText", entity.BundleTitleText);
 			_writer.Write("BundlePerItemPricing", entity.BundlePerItemPricing.ToString());
 			_writer.Write("BundlePerItemShipping", entity.BundlePerItemShipping.ToString());

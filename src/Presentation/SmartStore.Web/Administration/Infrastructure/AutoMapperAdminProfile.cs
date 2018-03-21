@@ -319,6 +319,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
+				.ForMember(dest => dest.IsSystemProduct, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
 				.ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())

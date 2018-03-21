@@ -332,15 +332,21 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.CreditBalance = _priceFormatter.FormatPrice(-order.CreditBalance, true, false);
 			}
+			model.CreditBalanceValue = order.CreditBalance;
 
-			//total
+			// Total.
 			model.OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false);
             model.OrderTotalValue = order.OrderTotal;
 
-            //refunded amount
-            if (order.RefundedAmount > decimal.Zero)
-                model.RefundedAmount = _priceFormatter.FormatPrice(order.RefundedAmount, true, false);
-
+			// Refunded amount.
+			if (order.RefundedAmount > decimal.Zero)
+			{
+				model.RefundedAmount = _priceFormatter.FormatPrice(order.RefundedAmount, true, false);
+			}
+			if (order.RefundedCreditBalance > decimal.Zero)
+			{
+				model.RefundedCreditBalance = _priceFormatter.FormatPrice(order.RefundedCreditBalance, true, false);
+			}
 
             #endregion
 
@@ -1480,6 +1486,7 @@ namespace SmartStore.Admin.Controllers
             order.TaxRates = model.TaxRatesValue;
             order.OrderTax = model.TaxValue;
             order.OrderDiscount = model.OrderTotalDiscountValue;
+			order.CreditBalance = model.CreditBalanceValue;
             order.OrderTotalRounding = model.OrderTotalRoundingValue;
             order.OrderTotal = model.OrderTotalValue;
             _orderService.UpdateOrder(order);

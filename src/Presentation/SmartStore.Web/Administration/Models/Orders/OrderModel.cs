@@ -96,8 +96,11 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.RefundedAmount")]
         public string RefundedAmount { get; set; }
 
-        //edit totals
-        [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
+		[SmartResourceDisplayName("Admin.Orders.Fields.RefundedCreditBalance")]
+		public string RefundedCreditBalance { get; set; }
+
+		//edit totals
+		[SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
         public decimal OrderSubtotalInclTaxValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
         public decimal OrderSubtotalExclTaxValue { get; set; }
@@ -119,7 +122,11 @@ namespace SmartStore.Admin.Models.Orders
         public string TaxRatesValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotalDiscount")]
         public decimal OrderTotalDiscountValue { get; set; }
-        [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
+
+		[SmartResourceDisplayName("Admin.Orders.Fields.CreditBalance")]
+		public decimal CreditBalanceValue { get; set; }
+
+		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
         public decimal OrderTotalRoundingValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotal")]
         public decimal OrderTotalValue { get; set; }

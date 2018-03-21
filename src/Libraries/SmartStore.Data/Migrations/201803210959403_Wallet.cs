@@ -32,7 +32,10 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.CustomerId)
                 .Index(t => t.OrderId);
             
+            AddColumn("dbo.Product", "IsSystemProduct", c => c.Boolean(nullable: false));
             AddColumn("dbo.Order", "CreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
+            AddColumn("dbo.Order", "RefundedCreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
+            CreateIndex("dbo.Product", "IsSystemProduct");
         }
         
         public override void Down()
@@ -42,7 +45,10 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.WalletHistory", new[] { "OrderId" });
             DropIndex("dbo.WalletHistory", new[] { "CustomerId" });
             DropIndex("dbo.WalletHistory", "IX_StoreId_CreatedOn");
+            DropIndex("dbo.Product", new[] { "IsSystemProduct" });
+            DropColumn("dbo.Order", "RefundedCreditBalance");
             DropColumn("dbo.Order", "CreditBalance");
+            DropColumn("dbo.Product", "IsSystemProduct");
             DropTable("dbo.WalletHistory");
         }
 
@@ -85,6 +91,12 @@ namespace SmartStore.Data.Migrations
                 "Guthaben",
                 "The used credit balance.",
                 "Das verwendete Guthaben.");
+
+			builder.AddOrUpdate("Admin.Orders.Fields.RefundedCreditBalance",
+				"Refunded credit balance",
+				"Erstattetes Guthaben",
+				"The refunded credit balance.",
+				"Das rückerstattete Guthaben.");
         }
     }
 }

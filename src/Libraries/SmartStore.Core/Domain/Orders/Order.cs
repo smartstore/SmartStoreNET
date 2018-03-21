@@ -254,10 +254,16 @@ namespace SmartStore.Core.Domain.Orders
         [DataMember]
         public decimal RefundedAmount { get; set; }
 
-        /// <summary>
-        /// Gets or sets the value indicating whether reward points were earned for this order
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets the refunded credit balance amount.
+		/// </summary>
+		[DataMember]
+		public decimal RefundedCreditBalance { get; set; }
+
+		/// <summary>
+		/// Gets or sets the value indicating whether reward points were earned for this order
+		/// </summary>
+		[DataMember]
         public bool RewardPointsWereAdded { get; set; }
         
         /// <summary>

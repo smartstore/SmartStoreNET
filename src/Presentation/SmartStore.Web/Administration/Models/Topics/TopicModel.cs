@@ -75,8 +75,9 @@ namespace SmartStore.Admin.Models.Topics
         public bool RenderAsWidget { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
-        [UIHint("WidgetZone")]
-        public string WidgetZone { get; set; }
+		[UIHint("WidgetZone")]
+		public string[] WidgetZone { get; set; }
+		public MultiSelectList AvailableWidgetZones { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetWrapContent")]
 		public bool WidgetWrapContent { get; set; }

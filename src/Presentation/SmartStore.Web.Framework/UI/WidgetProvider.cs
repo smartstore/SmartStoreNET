@@ -6,6 +6,10 @@ using System.Text.RegularExpressions;
 using System.Web.Routing;
 using SmartStore.Collections;
 using SmartStore.Utilities;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core;
+using System.Web;
+using Newtonsoft.Json.Linq;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -99,6 +103,30 @@ namespace SmartStore.Web.Framework.UI
 				return null;
 
 			return result;
+		}
+		
+		public dynamic GetAllKnownWidgetZones()
+		{
+			var env = EngineContext.Current.Resolve<IApplicationEnvironment>();
+			var folder = env.AppDataFolder;
+			var filePath = "widgetzones.json";
+			var virtualPath = folder.Combine(filePath);
+			
+			if (virtualPath.IsEmpty())
+			{
+				return null;
+			}
+
+			var cacheKey = HttpRuntime.Cache.BuildScopedKey("WidgetZones://" + virtualPath);
+			var cachedZones = HttpRuntime.Cache.Get(cacheKey);
+
+			if (cachedZones == null)
+			{
+				cachedZones = folder.ReadFile(filePath);
+				HttpRuntime.Cache.Insert(cacheKey, cachedZones);
+			}
+
+			return JObject.Parse(cachedZones.ToString());
 		}
 	}
 }

@@ -375,6 +375,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Common.Columns", "Columns", "Spalten");
 			builder.AddOrUpdate("Common.Mru", "Recently", "Zuletzt");
+
+			builder.AddOrUpdate("Admin.WidgetZones.UserDefined", "User-defined", "Benutzerdefiniert");
+
 		}
 	}
 }

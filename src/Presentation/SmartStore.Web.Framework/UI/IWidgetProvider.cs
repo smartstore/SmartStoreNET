@@ -33,6 +33,11 @@ namespace SmartStore.Web.Framework.UI
 		void RegisterAction(Regex widgetZoneExpression, string actionName, string controllerName, RouteValueDictionary routeValues, int order = 0);
 
 		IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone);
+
+		/// <summary>
+		/// Reads all known widgetzones from the json file /App_Data/widgetzones.json
+		/// </summary>
+		dynamic GetAllKnownWidgetZones();
 	}
 
 	public static class IWidgetProviderExtensions

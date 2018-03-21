@@ -103,7 +103,7 @@
 
         		list.slick({
 					infinite: false,
-					rtl: $("body").hasClass("rtl"),
+					rtl: $("body[dir='rtl']").length > 0,
         			dots: true,
         			cssEase: 'ease-in-out',
         			speed: 300,

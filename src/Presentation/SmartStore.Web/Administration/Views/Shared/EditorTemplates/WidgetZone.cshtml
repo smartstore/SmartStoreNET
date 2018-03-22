@@ -1,9 +1,9 @@
 @model string[]
 
 @using Newtonsoft.Json.Linq;
-@using System.Globalization;
+@using SmartStore.Utilities;
 
-@functions{
+@functions {
 	private string[] Value
 	{
 		get
@@ -11,7 +11,6 @@
 			string[] value = null;
 			if (ViewData.Model != null)
 			{
-				//value = ViewData.Model.ToString().Split(',');
 				value = ViewData.Model;
 			}
 			return value;
@@ -41,7 +40,7 @@
 			from p in area["zones"]
 			select p;
 
-		var groupName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(T(areaName.ToString()).Text);
+		var groupName = Inflector.Pascalize(T(areaName.ToString()).Text);
 		var group = new SelectListGroup { Name = groupName };
 
 		foreach (var zone in areasObj)

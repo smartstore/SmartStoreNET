@@ -206,16 +206,6 @@
 		}
 	}
 
-	.megamenu-nav {
-		&.megamenu-nav--prev a { padding-left: 10px; padding-right: initial; }
-		&.megamenu-nav--next {
-			left: 0;
-			right: auto;
-			a { padding-right: 10px;  padding-left: initial; }
-		}  
-	}
-
-
 	// Rating
 	// -------
 
@@ -274,6 +264,10 @@
 	.facet-toggle:after {
 		left: 0;
 		right: auto;
+	}
+
+	.offcanvas .facet-toggle:after {
+		left: 1rem;
 	}
 
 	.facet-control-ui {

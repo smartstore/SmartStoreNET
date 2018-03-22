@@ -10,7 +10,8 @@
                 productRotatorAjaxUrl: ""
             };
 
-			var rtl = SmartStore.globalization.culture.isRTL;
+			var rtl = SmartStore.globalization.culture.isRTL,
+				marginX = rtl ? 'margin-right' : 'margin-left';
 
             settings = $.extend(defaults, settings);
 
@@ -134,8 +135,12 @@
                 }
 
 				function alignDrop(popper, drop, container) {
-					var nav = $(".navbar-nav", container);
-					var left, right;
+					var nav = $(".navbar-nav", container),
+						left,
+						right,
+						popperWidth = popper.width(),
+						dropWidth = drop.width(),
+						containerWidth = container.width();
 
 					if (!rtl) {
 						left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
@@ -144,25 +149,30 @@
 						if (left < 0) {
 							left = 0;
 						}
-
-						if (left + drop.width() > container.width()) {
+						else if (left + dropWidth > containerWidth) {
 							left = "auto";
 							right = 0;
 						}
 					}
 					else {
 						left = "auto";
-						right = Math.ceil(container.width() - (popper.position().left + popper.width()));
+						right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
 
 						if (right < 0) {
 							right = 0;
 						}
-
-						if (right + drop.width() > container.width()) {
+						else if (right + dropWidth > containerWidth) {
 							left = 0;
 							right = "auto";
 						}
 					}
+
+					if (popperWidth > dropWidth) {
+						// ensure that drop is not smaller than popper
+						drop.width(popperWidth);
+					}
+
+					drop.toggleClass("ar", (rtl && left == "auto") || _.isNumber(right));
 
 					if (_.isNumber(left)) left = left + "px";
 					if (_.isNumber(right)) right = right + "px";
@@ -170,8 +180,6 @@
 					// jQuery does not accept "!important"
 					drop[0].style.setProperty('left', left, 'important');
 					drop[0].style.setProperty('right', right, 'important');
-
-					drop.toggleClass("ar", (rtl && left == "auto") || right === 0);
 				}
 
                 // correct dropdown position
@@ -201,28 +209,27 @@
 
                     megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
 
-                    // 
-					getCurrentNavigationElements();
+     //               // 
+					//toggleSlideArrows();
 
 					var navSlider = $(".nav-slider", megamenu);
 					var nav = $(".navbar-nav", navSlider);
 
-                    updateNavState();
+                    //updateNavState();
 
                     if (!Modernizr.touchevents) {
-
                         megamenuNext.on('click', function (e) {
-                            e.preventDefault();
+							e.preventDefault();
                             scrollToNextInvisibleNavItem(false);
                         });
 
 						megamenuPrev.on('click', function (e) {
-                            e.preventDefault();
+							e.preventDefault();
                             scrollToNextInvisibleNavItem(true);
                         });
                     }
 
-                    function scrollToNextInvisibleNavItem(backwards) {
+					function scrollToNextInvisibleNavItem(backwards) {
                         // determine the first completely visible nav item (either from left or right side, depending on 'backwards')
                         var firstVisible = findFirstVisibleNavItem(backwards);
 
@@ -235,50 +242,57 @@
                             return;
 
                         // determine left pos of the item 
-                        var leftPos = nextItem.position().left;
+						var leftPos = nextItem.position().left;
+						var offset = Math.abs(parseFloat(nav.css(marginX)));
 
                         // 30 = offset for arrows
-                        // if 'backwards == true': scroll to the left position of the current item 
-                        var newMarginLeft = (leftPos * -1) + 1 + 30;
-                        if (!backwards) {
-                            // if 'backwards == true': scroll to the right position of the current item 
-                            var rightPos = leftPos + nextItem.outerWidth(true) + 1;
-                            newMarginLeft = navSlider.width() - rightPos - (nextItem[0].nextElementSibling ? 30 : 0);
+                        // if 'backwards': scroll to the left position of the current item 
+						var newMarginStart = rtl
+							? leftPos - offset - 31
+							: (leftPos * -1) + 31;
+
+                        if ((!rtl && !backwards) || (rtl && backwards)) {
+                            // if 'forward': scroll to the right position of the current item 
+							var rightPos = leftPos + nextItem.outerWidth(true) + 1;
+							newMarginStart = rtl
+								? (nav.width() - rightPos - (nextItem[0].previousElementSibling ? 30 : 0)) * -1
+								: navSlider.width() - rightPos - (nextItem[0].nextElementSibling ? 30 : 0);
                         }
 
-                        newMarginLeft = Math.min(0, newMarginLeft);
+						newMarginStart = Math.min(0, newMarginStart);
 
-                        nav.css('margin-left', Math.ceil(newMarginLeft) + 'px').one(Prefixer.event.transitionEnd, function (e) {
+						nav.css(marginX, Math.ceil(newMarginStart) + 'px').one(Prefixer.event.transitionEnd, function (e) {
                             // performs UI update after end of animation (.one(trans...))
                             updateNavState();
                         });
                     }
 
-                    function findFirstVisibleNavItem(fromLeft) {
+                    function findFirstVisibleNavItem(fromStart) {
                         var navItems = navElems;
-                        if (!fromLeft) {
+						if (!fromStart) {
                             // turn nav items around as we start iteration from the right side
                             navItems = $($.makeArray(navElems).reverse());
                         }
 
                         var result;
                         var cntWidth = navSlider.width();
-                        var curMarginLeft = parseFloat(nav.css('margin-left'));
+						var curMarginStart = rtl ? 0 : parseFloat(nav.css(marginX));
 
                         function isInView(pos) {
-                            var realPos = pos + curMarginLeft;
+							var realPos = pos + curMarginStart;
                             return realPos >= 0 && realPos < cntWidth;
                         }
 
                         navItems.each(function (i, el) {
-
-                            // iterates all nav items from the left OR the right side and leaves the intartion once the left AND the right edge are displayed within the viewpoint
+                            // iterates all nav items from the left OR the right side and breaks loop once the left AND the right edges fall into the viewport
                             var navItem = $(el);
-                            var leftPos = navItem.position().left;
+							var leftPos = navItem.position().left;
+							//console.log("leftPos", fromStart, leftPos + curMarginStart, el);
                             var leftIn = isInView(leftPos);
                             if (leftIn) {
                                 var rightIn = isInView(leftPos + navItem.outerWidth(true));
-                                if (rightIn) {
+								if (rightIn) {
+									console.log("firstVisible", navItem[0]);
                                     result = navItem;
                                     return false;
                                 }
@@ -293,15 +307,15 @@
                         var realNavWidth = 0;
                         navElems.each(function (i, el) { realNavWidth += parseFloat($(this).outerWidth(true)); });
 
-                        var curMarginLeft = parseFloat(nav.css('margin-left'));
+						var curMarginStart = parseFloat(nav.css(marginX));
 
                         if (realNavWidth > megamenu.width()) {
                             // nav items don't fit in the megamenu container: display next arrow 
                             megamenu.addClass('megamenu-blend--next');
                         }
 
-                        if (curMarginLeft < 0) {
-                            // user has scrolled to the right: show prev arrow 
+						if (curMarginStart < 0) {
+                            // user has scrolled: show prev arrow 
                             megamenu.addClass('megamenu-blend--prev');
 
                             // determine whether we're at the end
@@ -322,7 +336,8 @@
                         megamenu.tapstart(function () {
                             closeNow($(".nav-item.active .nav-link"));
                         }).tapend(function () {
-                            getCurrentNavigationElements();
+							//toggleSlideArrows();
+							updateNavState();
                         });
                     }
 
@@ -339,7 +354,7 @@
                     		megamenuContainer.removeClass("show-scroll-buttons");
                     	}
 
-                    	getCurrentNavigationElements();
+						toggleSlideArrows();
 
                     	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {
                     		try {
@@ -354,58 +369,54 @@
                 	// show scroll buttons when menu items don't fit into screen
                     EventBroker.subscribe("page.resized", function (msg, viewport) {
                     	onPageResized();
-                    });
+					});
+
                     onPageResized();
 
-                    function getCurrentNavigationElements() {
-                        firstVisibleElem = null;
-                        isLastItemVisible = false;
+      //              function toggleSlideArrows() {
+      //                  firstVisibleElem = null;
+      //                  isLastItemVisible = false;
 
-                        var p = $(".nav-slider", megamenuContainer);
+      //                  var navSlider = $(".nav-slider", megamenuContainer);
 
-                        navElems.each(function (i, val) {
+      //                  navElems.each(function (i, val) {
+      //                      var el = $(val);
+						//	console.log(el.offset().left, navSlider.offset().left, el.position().left);
+						//	if ((el.offset().left > navSlider.offset().left) && firstVisibleElem == null) {
+      //                          firstVisibleElem = el.prev();
+						//		isFirstItemVisible = firstVisibleElem.position().left == 0;
+      //                      }
 
-                            var el = $(val);
+      //                      // if visible
+						//	if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(navSlider.offset().left) + parseInt(navSlider.width())) {
+      //                          lastVisibleElem = el;
+						//		isLastItemVisible = parseInt(el.offset().left) + parseInt(el.width()) == parseInt(navSlider.offset().left) + parseInt(navSlider.width());
 
-                            if ((el.offset().left > p.offset().left) && firstVisibleElem == null) {
-                                firstVisibleElem = el.prev();
+      //                          // we've got everything we need, so get out of here
+      //                          return false;
+      //                      }
+      //                  });
 
-                                if (firstVisibleElem.position().left == 0)
-                                    isFirstItemVisible = true;
-                                else
-                                    isFirstItemVisible = false;
-                            }
+      //                  // show or hide navigation buttons depending on whether first or last navitems are displayed
+						//megamenu.toggleClass("megamenu-blend--prev", !isFirstItemVisible);
+						//megamenu.toggleClass("megamenu-blend--next", !isLastItemVisible);
+      //              }
 
-                            // if visible
-                            if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(p.offset().left) + parseInt(p.width())) {
+					function toggleSlideArrows() {
+						//var navSlider = $(".nav-slider", megamenuContainer);
+						//var nav = $(".navbar-nav", navSlider);
+						//var cntWidth = navSlider.width();
+						//var curMarginStart = parseFloat(nav.css(marginX));
 
-                                lastVisibleElem = el;
+						//function isInView(pos) {
+						//	var realPos = pos + curMarginStart;
+						//	return realPos >= 0 && realPos < cntWidth;
+						//}
 
-                                if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(p.offset().left) + parseInt(p.width()))
-                                    isLastItemVisible = true;
-                                else
-                                    isLastItemVisible = false;
-
-                                // we've got everything we need, so get out of here
-                                return false;
-                            }
-                        });
-
-                        // show or hide navigation buttons depending on whether first or last navitems are displayed
-                        if (!isFirstItemVisible) {
-                            megamenu.addClass("megamenu-blend--prev");
-                        }
-                        else {
-                            megamenu.removeClass("megamenu-blend--prev");
-                        }
-
-                        if (!isLastItemVisible) {
-                            megamenu.addClass("megamenu-blend--next");
-                        }
-                        else {
-                            megamenu.removeClass("megamenu-blend--next");
-                        }
-                    }
+						//// show or hide navigation buttons depending on whether first or last navitems are displayed
+						//megamenu.toggleClass("megamenu-blend--prev", !isFirstItemVisible);
+						//megamenu.toggleClass("megamenu-blend--next", !isLastItemVisible);
+					}
                 });
 
                 function initRotator(containerId) {

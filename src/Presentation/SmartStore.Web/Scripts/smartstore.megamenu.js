@@ -142,32 +142,36 @@
 						right = "auto";
 
 						if (left < 0) {
-							left = "0";
+							left = 0;
 						}
 
 						if (left + drop.width() > container.width()) {
 							left = "auto";
-							right = "0";
+							right = 0;
 						}
 					}
 					else {
 						left = "auto";
 						right = Math.ceil(container.width() - (popper.position().left + popper.width()));
 
-						if (right > container.width()) {
-							right = "0";
+						if (right < 0) {
+							right = 0;
 						}
 
-						// [...]
+						if (right + drop.width() > container.width()) {
+							left = 0;
+							right = "auto";
+						}
 					}
 
 					if (_.isNumber(left)) left = left + "px";
 					if (_.isNumber(right)) right = right + "px";
 
+					// jQuery does not accept "!important"
 					drop[0].style.setProperty('left', left, 'important');
 					drop[0].style.setProperty('right', right, 'important');
 
-					drop.toggleClass("ar", rtl || right === 0);
+					drop.toggleClass("ar", (rtl && left == "auto") || right === 0);
 				}
 
                 // correct dropdown position

@@ -1165,8 +1165,7 @@ namespace SmartStore.Services.Orders
 		public virtual void AddToCart(AddToCartContext ctx)
 		{
 			var customer = ctx.Customer ?? _workContext.CurrentCustomer;
-			int storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
-			var cart = GetCartItems(customer, ctx.CartType, storeId);
+			var storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
 
 			_customerService.ResetCheckoutData(customer, storeId);
 

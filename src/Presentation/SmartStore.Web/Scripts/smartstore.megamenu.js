@@ -152,7 +152,7 @@
 					}
 					else {
 						left = "auto";
-						right = Math.ceil(container.width() - (popper.position().left + popper.width() + parseInt(nav.css('margin-right'))));
+						right = Math.ceil(container.width() - (popper.position().left + popper.width()));
 
 						if (right > container.width()) {
 							right = "0";

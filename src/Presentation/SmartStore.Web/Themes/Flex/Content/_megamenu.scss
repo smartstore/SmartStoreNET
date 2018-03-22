@@ -381,6 +381,10 @@ $mixed-megamenu-bg:             $megamenu-bg;
         margin-top: -1px;
         min-width: 250px;
         z-index: ($megamenu-zindex-base + 1);
+		transform: translateX($grid-gutter-width/2);
+		&.ar {
+			transform: translateX(-($grid-gutter-width/2));
+		}
     }
     .dropdown-item {
         padding-top: 0.35rem;

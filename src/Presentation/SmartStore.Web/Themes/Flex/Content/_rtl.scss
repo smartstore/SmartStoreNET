@@ -180,6 +180,41 @@
 	// Megamenu
 	// -------
 
+	.megamenu .navbar-nav {
+		margin-right: 0;
+		transition-property: margin-right;
+
+		.nav-item {
+			.badge {
+				left: 3px;
+				right: auto;
+			}
+
+			&.active:before {
+				left: 0;
+				right: auto;
+			}
+
+			&.active:after {
+				left: -2px;
+				right: auto;
+			}
+		}
+
+		.nav-item + .nav-item { 
+			margin-right: 0; 
+		}
+	}
+
+	.megamenu-nav {
+		&.megamenu-nav--prev a { padding-left: 10px; padding-right: initial; }
+		&.megamenu-nav--next {
+			left: 0;
+			right: auto;
+			a { padding-right: 10px;  padding-left: initial; }
+		}  
+	}
+
 
 	// Rating
 	// -------

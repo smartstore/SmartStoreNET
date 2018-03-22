@@ -10,11 +10,13 @@
                 productRotatorAjaxUrl: ""
             };
 
+			var rtl = SmartStore.globalization.culture.isRTL;
+
             settings = $.extend(defaults, settings);
 
             return this.each(function () {
                 var megamenuContainer = $(this);
-                var megamenu = $(".megamenu", megamenuContainer);
+				var megamenu = $(".megamenu", megamenuContainer);
                 var isSimple = megamenu.hasClass("simple");
                 var megamenuNext = $(".megamenu-nav--next", megamenuContainer);
                 var megamenuPrev = $(".megamenu-nav--prev", megamenuContainer);
@@ -131,29 +133,60 @@
                     });
                 }
 
+				function alignDrop(popper, drop, container) {
+					var nav = $(".navbar-nav", container);
+					var left, right;
+
+					if (!rtl) {
+						left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+						right = "auto";
+
+						if (left < 0) {
+							left = "0";
+						}
+
+						if (left + drop.width() > container.width()) {
+							left = "auto";
+							right = "0";
+						}
+					}
+					else {
+						left = "auto";
+						right = Math.ceil(container.width() - (popper.position().left + popper.width() + parseInt(nav.css('margin-right'))));
+
+						if (right > container.width()) {
+							right = "0";
+						}
+
+						// [...]
+					}
+
+					if (_.isNumber(left)) left = left + "px";
+					if (_.isNumber(right)) right = right + "px";
+
+					drop[0].style.setProperty('left', left, 'important');
+					drop[0].style.setProperty('right', right, 'important');
+
+					drop.toggleClass("ar", rtl || right === 0);
+				}
+
                 // correct dropdown position
                 if (isSimple) {
-
-                    var event = Modernizr.touchevents ? "click" : "mouseenter";
+					var event = Modernizr.touchevents ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
-                        var navItem = $(this);
-                        var opendMenu = $(navItem.find(".nav-link").data("target")).find(".dropdown-menu");
-                        var offsetLeft = (navItem.offset().left - megamenu.offset().left) + 10;
+						var navItem = $(this);
+						var targetSelector = navItem.find(".nav-link").data("target");
+						if (!targetSelector)
+							return;
 
-                        if (offsetLeft < 0) {
-                            offsetLeft = 0;
-                        }
-                        else if (offsetLeft + opendMenu.width() > megamenu.width()) {
-                            offsetLeft = megamenu.width() - opendMenu.width();
-                        }
-                        else if (navItem.width() > opendMenu.width()) {
-                            offsetLeft = offsetLeft + (navItem.width() - opendMenu.width()) + 5;
-                        }
+						var drop = $(targetSelector).find(".dropdown-menu");
+						if (!drop.length)
+							return;
 
-                        opendMenu.css("left", offsetLeft);
+						alignDrop(navItem, drop, megamenu);
                     });
-                }
+				}
 
                 megamenuContainer.evenIfHidden(function (el) {
                     var scrollCorrection = null;
@@ -165,20 +198,21 @@
                     megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
 
                     // 
-                    getCurrentNavigationElements();
+					getCurrentNavigationElements();
 
-                    var nav = $('.megamenu .navbar-nav');
-                    var navSlider = $('.megamenu .nav-slider');
+					var navSlider = $(".nav-slider", megamenu);
+					var nav = $(".navbar-nav", navSlider);
+
                     updateNavState();
 
                     if (!Modernizr.touchevents) {
 
-                        megamenuNext.click(function (e) {
+                        megamenuNext.on('click', function (e) {
                             e.preventDefault();
                             scrollToNextInvisibleNavItem(false);
                         });
 
-                        megamenuPrev.click(function (e) {
+						megamenuPrev.on('click', function (e) {
                             e.preventDefault();
                             scrollToNextInvisibleNavItem(true);
                         });

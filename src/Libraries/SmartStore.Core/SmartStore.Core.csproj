@@ -433,6 +433,7 @@
     <Compile Include="Plugins\LoadPluginResult.cs" />
     <Compile Include="Search\AcquireWriterContext.cs" />
     <Compile Include="Search\DefaultIndexManager.cs" />
+    <Compile Include="Search\Events\IndexingCompletedEvent.cs" />
     <Compile Include="Search\Facets\Facet.cs" />
     <Compile Include="Search\Facets\FacetExtensions.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />
@@ -444,11 +445,14 @@
     <Compile Include="Search\Filter\SearchFilterBase.cs" />
     <Compile Include="Search\IIndexDocument.cs" />
     <Compile Include="Search\IIndexManager.cs" />
+    <Compile Include="Search\IIndexOperation.cs" />
     <Compile Include="Search\IIndexProvider.cs" />
     <Compile Include="Search\IIndexStore.cs" />
     <Compile Include="Search\IndexDocument.cs" />
     <Compile Include="Search\IndexField.cs" />
+    <Compile Include="Search\IndexInfo.cs" />
     <Compile Include="Search\IndexProviderBase.cs" />
+    <Compile Include="Search\Events\IndexSegmentProcessedEvent.cs" />
     <Compile Include="Search\ISearchAlias.cs" />
     <Compile Include="Search\ISearchBits.cs" />
     <Compile Include="Search\ISearchEngine.cs" />

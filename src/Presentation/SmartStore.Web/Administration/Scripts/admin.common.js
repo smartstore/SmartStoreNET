@@ -156,7 +156,9 @@ var Admin = {
 									// restore element to it's init state
 									var jel = $(el);
 									jel.addClass('hide').html('').attr('data-running', 'false').data('running', false);
+									console.log('onTaskCompleted', opts.onTaskCompleted, jel);
 									if (_.isFunction(opts.onTaskCompleted)) {
+										
 										opts.onTaskCompleted(jel.data('task-id'), jel);
 									}
 								}

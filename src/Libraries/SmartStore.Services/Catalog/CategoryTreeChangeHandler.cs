@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
@@ -11,7 +10,6 @@ using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data;
 
 namespace SmartStore.Services.Catalog
 {

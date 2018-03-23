@@ -37,9 +37,9 @@
 	position: absolute;
 	display: none;
 	top: 0;
-	right: 0;
 	bottom: 0;
 	left: 0;
+	right: 0;
 	margin: auto;
 	width: auto;
 	height: auto;
@@ -104,10 +104,6 @@
 	padding: 3px;
 }
 
-/*.touchevents .gal-nav-cell {
-	display: none !important;
-}*/
-
 .gal-nav-cell {
 	display: table-cell; 
 	vertical-align: top; 
@@ -121,16 +117,6 @@
     display: table-cell; 
     vertical-align: top;
 }
-
-/*@media (min-width: 992px) {
-	.no-touchevents .gal .slick-dots {
-		display: none !important;
-	}
-
-	.no-touchevents .gal.slick-dotted.slick-slider {
-		margin-bottom: 0 !important;
-	}
-}*/
 
 @media (min-width: 1200px) {
 	.gal-nav-cell {

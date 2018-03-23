@@ -207,15 +207,10 @@
                     var isFirstItemVisible = true;
                     var isLastItemVisible = false;
 
-                    megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
-
-     //               // 
-					//toggleSlideArrows();
+                    megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow:hidden; position:relative;" />');
 
 					var navSlider = $(".nav-slider", megamenu);
 					var nav = $(".navbar-nav", navSlider);
-
-                    //updateNavState();
 
                     if (!Modernizr.touchevents) {
                         megamenuNext.on('click', function (e) {
@@ -287,12 +282,10 @@
                             // iterates all nav items from the left OR the right side and breaks loop once the left AND the right edges fall into the viewport
                             var navItem = $(el);
 							var leftPos = navItem.position().left;
-							//console.log("leftPos", fromStart, leftPos + curMarginStart, el);
                             var leftIn = isInView(leftPos);
                             if (leftIn) {
                                 var rightIn = isInView(leftPos + navItem.outerWidth(true));
 								if (rightIn) {
-									console.log("firstVisible", navItem[0]);
                                     result = navItem;
                                     return false;
                                 }
@@ -336,7 +329,6 @@
                         megamenu.tapstart(function () {
                             closeNow($(".nav-item.active .nav-link"));
                         }).tapend(function () {
-							//toggleSlideArrows();
 							updateNavState();
                         });
                     }
@@ -354,8 +346,6 @@
                     		megamenuContainer.removeClass("show-scroll-buttons");
                     	}
 
-						toggleSlideArrows();
-
                     	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {
                     		try {
 								$(this).slick('unslick');
@@ -363,7 +353,7 @@
                     			applyCommonPlugins($(this).closest('.rotator-content'));
                     		}
 							catch (err) { }
-                    	});
+						});
                     }
 
                 	// show scroll buttons when menu items don't fit into screen
@@ -372,51 +362,6 @@
 					});
 
                     onPageResized();
-
-      //              function toggleSlideArrows() {
-      //                  firstVisibleElem = null;
-      //                  isLastItemVisible = false;
-
-      //                  var navSlider = $(".nav-slider", megamenuContainer);
-
-      //                  navElems.each(function (i, val) {
-      //                      var el = $(val);
-						//	console.log(el.offset().left, navSlider.offset().left, el.position().left);
-						//	if ((el.offset().left > navSlider.offset().left) && firstVisibleElem == null) {
-      //                          firstVisibleElem = el.prev();
-						//		isFirstItemVisible = firstVisibleElem.position().left == 0;
-      //                      }
-
-      //                      // if visible
-						//	if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(navSlider.offset().left) + parseInt(navSlider.width())) {
-      //                          lastVisibleElem = el;
-						//		isLastItemVisible = parseInt(el.offset().left) + parseInt(el.width()) == parseInt(navSlider.offset().left) + parseInt(navSlider.width());
-
-      //                          // we've got everything we need, so get out of here
-      //                          return false;
-      //                      }
-      //                  });
-
-      //                  // show or hide navigation buttons depending on whether first or last navitems are displayed
-						//megamenu.toggleClass("megamenu-blend--prev", !isFirstItemVisible);
-						//megamenu.toggleClass("megamenu-blend--next", !isLastItemVisible);
-      //              }
-
-					function toggleSlideArrows() {
-						//var navSlider = $(".nav-slider", megamenuContainer);
-						//var nav = $(".navbar-nav", navSlider);
-						//var cntWidth = navSlider.width();
-						//var curMarginStart = parseFloat(nav.css(marginX));
-
-						//function isInView(pos) {
-						//	var realPos = pos + curMarginStart;
-						//	return realPos >= 0 && realPos < cntWidth;
-						//}
-
-						//// show or hide navigation buttons depending on whether first or last navitems are displayed
-						//megamenu.toggleClass("megamenu-blend--prev", !isFirstItemVisible);
-						//megamenu.toggleClass("megamenu-blend--next", !isLastItemVisible);
-					}
                 });
 
                 function initRotator(containerId) {
@@ -436,7 +381,6 @@
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
                     if (catId != null && displayRotator) {
-
                         var rotatorColumn = $(".rotator-" + catId);
 
                         // clear content & init throbber
@@ -446,14 +390,12 @@
 
                         // wait a little to imply hard work is going on ;-)
                         setTimeout(function () {
-
                             $.ajax({
                                 cache: false,
                                 type: "POST",
                                 url: settings.productRotatorAjaxUrl,
                                 data: { "catId": catId },
                                 success: function (data) {
-
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);
 

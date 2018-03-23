@@ -150,6 +150,11 @@
 		.nav-item + .nav-item { 
 			margin-right: 0; 
 		}
+
+		.dropdown-toggle:after {
+			margin-right: 0.15rem;
+			margin-left: 0;
+		}
 	}
 
 	// Rating

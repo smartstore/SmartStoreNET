@@ -70,7 +70,7 @@ namespace SmartStore.Services.Customers
 			var store = _storeService.GetStoreById(storeId);
 			var paymentSettings = _settingService.LoadSetting<PaymentSettings>(0);
 
-			// Nothing to convert if aource and target currency are equal.
+			// Nothing to convert if source and target currency are equal.
 			if (store.PrimaryStoreCurrencyId == paymentSettings.WalletCurrencyId)
 			{
 				return amount;

@@ -78,7 +78,8 @@ img.slick-loading {
         left: 0; 
         right: auto; 
         border-radius: 0 $btn-border-radius-lg $btn-border-radius-lg 0;
-        border-left: none;
+        border-left-width: 0;
+		border-right-width: $btn-border-width;
         box-shadow: 1px 1px 3px rgba(0,0,0, 0.12);
     }
 
@@ -86,9 +87,30 @@ img.slick-loading {
         right: 0; 
         left: auto; 
         border-radius: $btn-border-radius-lg 0 0 $btn-border-radius-lg;
-        border-right: none;
+        border-right-width: 0;
+		border-left-width: $btn-border-width;
         box-shadow: -1px 1px 3px rgba(0,0,0, 0.12);
     }
+
+	[dir=rtl] & {
+		.slick-prev { 
+			left: auto; 
+			right: 0; 
+			border-radius: $btn-border-radius-lg 0 0 $btn-border-radius-lg;
+			border-right-width: 0;
+			border-left-width: $btn-border-width;
+			box-shadow: -1px 1px 3px rgba(0,0,0, 0.12);
+		}
+
+		.slick-next { 
+			left: 0;
+			right: auto; 
+			border-radius: 0 $btn-border-radius-lg $btn-border-radius-lg 0;
+			border-left-width: 0;
+			border-right-width: $btn-border-width;
+			box-shadow: 1px 1px 3px rgba(0,0,0, 0.12);
+		}
+	}
 
     .slick-arrow.slick-disabled {
         color: $gray-300 !important;

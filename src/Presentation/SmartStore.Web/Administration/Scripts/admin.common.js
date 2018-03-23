@@ -120,7 +120,7 @@ var Admin = {
 						type: 'POST',
 						global: false,
 						url: opts.pollUrl,
-						dataType: 'json',
+						//dataType: 'json',
 						success: function (data) {
 							data = data || [];
 							var runningElements = [];
@@ -151,14 +151,12 @@ var Admin = {
 							// remove runningElements for finished tasks (the ones currently running but are not in 'runningElements'
 							var currentlyRunningElements = opts.context.find(opts.elementsSelector + '[data-running=true]');
 							$.each(currentlyRunningElements, function (i, el) {
-								var shouldRun = _.find(runningElements, function (val) { return val == el; });
+								var shouldRun = _.find(runningElements, function (val) { return val === el; });			
 								if (!shouldRun) {
 									// restore element to it's init state
 									var jel = $(el);
 									jel.addClass('hide').html('').attr('data-running', 'false').data('running', false);
-									console.log('onTaskCompleted', opts.onTaskCompleted, jel);
 									if (_.isFunction(opts.onTaskCompleted)) {
-										
 										opts.onTaskCompleted(jel.data('task-id'), jel);
 									}
 								}
@@ -166,6 +164,7 @@ var Admin = {
 						},
 						error: function (xhr, ajaxOptions, thrownError) {
 							window.clearInterval(interval);
+							console.error(thrownError);
 						}
 					});
 				}

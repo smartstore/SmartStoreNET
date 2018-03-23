@@ -370,7 +370,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	            $(".form-control", ocmLanguageSelector).append(languageOptions);
 	        }
-
+			
             // on change navigate to value 
 	        $(footer).find(".form-control").on("change", function (e) {
 	            var select = $(this);

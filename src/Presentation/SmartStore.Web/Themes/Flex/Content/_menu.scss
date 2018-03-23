@@ -147,7 +147,7 @@ $ocm-selected-color:                    $warning;
     .ocm-nav .show-current-cat {
         font-weight: $font-weight-medium;
     }
-
+	/*
     .button-bar {
         background: $gray-100;
         padding: 1rem $ocm-horizontal-padding;    
@@ -155,6 +155,7 @@ $ocm-selected-color:                    $warning;
             margin-right: 1rem;
         }
     }
+	*/
     .category-info {
         padding: 0 $ocm-horizontal-padding;
         .category-name {
@@ -312,10 +313,10 @@ $ocm-selected-color:                    $warning;
     max-height: 18px;
 }
 
-
+/*
 body > .select2-container,
 body > .select2-container .select2-dropdown {
     // one higher than .offcanvas-overlay
     z-index: $offcanvas-z-index + 1;
 }
-
+*/

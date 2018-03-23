@@ -152,10 +152,9 @@
 		border-radius: $input-border-radius 0 0 $input-border-radius;
 	}
 
-	/*.list-group {
+	.list-group {
 		padding-right: 0;
-		padding-left: 40px;
-	}*/
+	}
 
 	.modal-header .close {
 		margin-left: (-$modal-header-padding);

@@ -39,10 +39,6 @@
 		float: right;
 	}
 
-	.cart-action .cart-action-title:after {
-		right: initial;
-		left: 1rem;
-	}
 	// product detail
 	.pd-attrs td:first-child {
 		padding-left: 1rem;
@@ -75,48 +71,6 @@
 		padding-left: 0;
 		padding-right: 90px;
 	}
-	// checkout
-	.costep {
-		&:first-child:after,
-		&:last-child:before {
-			display: none;
-		}
-
-		&:first-child:before,
-		&:last-child:after {
-			display: block;
-		}
-	}
-
-	.costep.active {
-		&:before {
-			background-color: $costep-border;
-		}
-
-		&:after {
-			background-color: $costep-active-border;
-		}
-	}
-	// forum
-	.forum-topic .block .block-title a {
-		padding-left: 0.75rem;
-		padding-right: initial;
-	}
-
-	.forum-topic .block-title > div {
-		.edit-post-link-button,
-		.delete-post-link-button,
-		.post-link,
-		.fa {
-			float: right;
-		}
-
-		.fa {
-			margin-top: 5px;
-			margin-left: 5px;
-		}
-	}
-
 
 	.menubar-group {
 		margin-right: 1rem;
@@ -295,4 +249,225 @@
 			right: auto;
 		}
 	}
+
+	// Cart
+	// ------
+
+	.label-cart-amount {
+		left: -5px;
+		right: auto;
+	}
+
+	.offcanvas-cart-item {
+		.mb-bundle-pictures {
+			a, .fa {
+				padding-right: 0;
+				padding-left: 3px;
+			}
+		}
+	}
+
+	.cart-col-subtotal {
+		text-align: left;
+	}
+
+	@include media-breakpoint-up(md) {
+
+		.cart-col-qty {
+			text-align: right;
+		}
+
+		.cart-editable {
+			.cart-col-price     { text-align: right; }
+		}
+	}
+
+	.cart-summary {
+		.cart-summary-label {
+			padding-right: 0;
+			padding-left: 0.5rem;
+		}
+
+		.cart-summary-value {
+			text-align: left;
+		}
+	}
+	.order-summary-content .selected-checkout-attributes,
+	.order-details .checkout-attributes {
+		.attr-caption {
+			padding-left: 10px;
+			padding-right: 0;
+		}
+		.attr-value {
+			text-align: right;
+		}
+	}
+
+
+	.cart-action {
+		.cart-action-title {
+			&:after {
+				right: initial;
+				left: 0;
+			}
+		}
+	}
+
+	// Checkout
+	// ------
+
+	.costep {
+		&:first-child:after,
+		&:last-child:before {
+			display: none;
+		}
+
+		&:first-child:before,
+		&:last-child:after {
+			display: block;
+		}
+	}
+
+	.costep.active {
+		&:before {
+			background-color: $costep-border;
+		}
+
+		&:after {
+			background-color: $costep-active-border;
+		}
+	}
+
+	.checkout-data {
+		.opt-name { 
+			margin-right: 4px;
+			margin-left: 0;
+		}
+
+
+		@include media-breakpoint-up(md) {
+			.opt-name { 
+				margin-right: 12px;
+				margin-left: 0;
+			}
+
+			.opt-info,
+			.opt-info-item { 
+				margin-right: 32px;
+				margin-left: 0;
+			}
+		}
+	}
+
+	// Forum
+	// ------
+
+	.forum-topic {
+		.block .block-title {
+			a {
+				padding-left: 0.75rem;
+				padding-right: initial;
+			}
+			i {
+				padding-left: 0.25rem;
+				padding-right: initial;
+			}
+		}
+	}
+
+	.forum-search-box {
+		text-align: left;
+	}
+	.basic-search,
+	#advanced-search-block label {
+		padding-left: 10px;
+		padding-right: 0;
+		@include media-breakpoint-up(sm) { 
+			text-align: left;
+		}
+	}
+
+	// Menu 
+	// ------
+	
+    .catmenu-path-item.expanded,
+    .catmenu-item.parent {
+        padding-left: $list-group-item-padding-x * 1.5;
+
+        &:after {
+            content: "\f104";   
+            left: 1rem;
+			right: auto;
+        }
+    }
+
+	#offcanvas-menu {
+
+		.menubar-link,
+		.manufacturer-container .ocm-item,
+		.category-container .ocm-item {
+
+			.ocm-link {
+				padding: 1rem 2rem 1rem 2.5rem;
+			}
+        
+			&.has-children:after {
+				right: auto;
+				left: 1rem;
+				content: "\f104";   
+			}
+		}
+   
+		.ocm-nav .navigate-back {
+			padding-right: 0;
+			padding-left: initial;
+
+			.fa {
+				padding-right: initial;    
+				padding-left: .425rem;
+			}
+		}
+
+		/*
+		.button-bar {
+			span {
+				margin-left: 1rem;
+				margin-right: initial;
+			}
+		}
+		*/
+
+		.manufacturer-container {
+			.ocm-item {
+				.ocm-link { padding-right: 0.75rem; padding-left: 0; }
+				.col-img ~ .col-data > .ocm-link { padding-right: 0; }
+			}
+		}
+	}
+
+
+	#ocm-service {	
+		.menubar-group {
+			margin-right: 0 !important;
+			margin-left: auto;
+		}
+
+		.menubar-caret {
+			left: 1rem;
+			right: auto;
+		}
+
+		.menubar-link span {
+			padding-right: 0;
+		}
+
+		.dropdown-item {
+			padding-right: 2.75rem;
+			padding-left: 0;
+			span:not(.badge) {
+				padding-right: 0;
+			}
+		}
+	}
+
 }

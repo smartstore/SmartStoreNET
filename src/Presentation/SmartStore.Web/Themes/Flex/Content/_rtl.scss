@@ -8,6 +8,21 @@
 // --------------------------------------------------
 
 [dir=rtl] {
+
+	// Artlist
+	// -------------
+
+	.artlist-action--pager {
+		> *:not(:first-child) { margin-right: -1px; margin-left: initial; }
+		.btn-pager-prev { border-radius: 0 3px 3px 0; }   
+		.btn-pager-next { border-radius: 3px 0 0 3px; }    
+	}
+
+    @include media-breakpoint-up(lg) {
+        .artlist-actions--top .artlist-action-group--page { margin-right: auto; margin-left: initial; }
+    }
+
+
 	// Text expander
 	// -------------
 

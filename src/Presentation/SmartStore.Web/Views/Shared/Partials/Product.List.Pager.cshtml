@@ -69,7 +69,7 @@
 
 @if (pageable.TotalPages > 1)
 {
-	<div class="artlist-action artlist-action--pager">
+	<div class="artlist-action artlist-action--pager d-flex flex-nowrap">
 		@if (pageable.PageNumber > 1)
 		{
 			<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber - 1))' class="btn btn-secondary btn-pager-prev pull-xs-left" data-toggle="tooltip" title="@T("Pager.PageX", pageable.PageNumber - 1)">

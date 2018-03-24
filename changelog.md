@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -48,6 +48,8 @@
 * Lower memory consumption
 * #649 Media FileSystem provider: segmenting files in subfolders to increase IO perf with huge amount of files
 * #1141 Clearer backend order list. Added more infos like payment method.
+* OuputCache: Simple product changes that affect visibility now correctly invalidate all assigned category and manufacturer pages
+* * OuputCache: When MegaSearch is active, invalidation occurs only during indexing and not ad-hoc anymore. 
 * #1248 New payment integration guidelines for Sofort\Klarna
 * TwitterAuth: better error handling and enhanced admin instruction
 * #1181 Debitoor: Add option to display shipping address on invoices

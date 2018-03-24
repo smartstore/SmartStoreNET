@@ -9,6 +9,7 @@ namespace SmartStore.Core.Search
 			Guard.NotNull(indexInfo, nameof(indexInfo));
 
 			IndexInfo = indexInfo;
+			WasRebuilt = wasRebuilt;
 		}
 
 		public IndexInfo IndexInfo

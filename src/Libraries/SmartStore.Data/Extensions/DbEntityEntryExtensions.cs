@@ -2,13 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.ComponentModel;
-using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data

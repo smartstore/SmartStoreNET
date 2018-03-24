@@ -5,14 +5,14 @@ namespace SmartStore.Core.Search
 {
 	public class IndexSegmentProcessedEvent
 	{
-		public IndexSegmentProcessedEvent(string scope, IEnumerable<IIndexOperation> documents, bool isRebuild)
+		public IndexSegmentProcessedEvent(string scope, IEnumerable<IIndexOperation> operations, bool isRebuild)
 		{
 			Guard.NotEmpty(scope, nameof(scope));
-			Guard.NotNull(documents, nameof(documents));
+			Guard.NotNull(operations, nameof(operations));
 
 			Scope = scope;
 			IsRebuild = isRebuild;
-			Documents = documents;
+			Operations = operations;
 			Metadata = new Dictionary<string, object>();
 		}
 
@@ -28,7 +28,7 @@ namespace SmartStore.Core.Search
 			private set;
 		}
 
-		public IEnumerable<IIndexOperation> Documents
+		public IEnumerable<IIndexOperation> Operations
 		{
 			get;
 			private set;

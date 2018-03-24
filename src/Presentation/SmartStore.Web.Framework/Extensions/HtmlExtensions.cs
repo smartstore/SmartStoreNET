@@ -746,7 +746,7 @@ namespace SmartStore.Web.Framework
 			sb.Append("<label class='switch switch-blue multi-store-override-switch'>");
 
 			sb.AppendFormat("<input type='checkbox' id='{0}' name='{0}' class='multi-store-override-option'", fieldId);
-			sb.AppendFormat(" onclick='Admin.checkOverriddenStoreValue(this)' data-parent-selector='{0}'{1} />",
+			sb.AppendFormat(" onclick='SmartStore.Admin.checkOverriddenStoreValue(this)' data-parent-selector='{0}'{1} />",
 				parentSelector.EmptyNull(), overrideForStore ? " checked" : "");
 
 			sb.AppendFormat("<span class='switch-toggle' data-on='{0}' data-off='{1}'></span>",

@@ -186,7 +186,7 @@ else
 			return false;
 		});
 
-		Admin.TaskWatcher.startWatching({
+		SmartStore.Admin.TaskWatcher.startWatching({
 			context: $('#import-profile-list'),
 			elementsSelector: '.task-progress',
 			defaultProgressMessage: @T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText,

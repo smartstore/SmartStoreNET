@@ -6,7 +6,7 @@
 		// panel toggling
 		function (ctx) {
 			ctx.find('input[type=checkbox][data-toggler-for]').each(function (i, el) {
-				Admin.togglePanel(el, false);
+				SmartStore.Admin.togglePanel(el, false);
 			});
 		},
 		// select2
@@ -78,7 +78,7 @@
 
     	// Handle panel toggling
         $(document).on('change', 'input[type=checkbox][data-toggler-for]', function (e) {
-        	Admin.togglePanel(e.target, true);
+			SmartStore.Admin.togglePanel(e.target, true);
         });
 
         $("#page").tooltip({
@@ -102,7 +102,7 @@
 
 		// check overridden store settings
         $('.multi-store-override-option').each(function (i, el) {
-        	Admin.checkOverriddenStoreValue(el);
+			SmartStore.Admin.checkOverriddenStoreValue(el);
 		});
 
         // publish entity commit messages

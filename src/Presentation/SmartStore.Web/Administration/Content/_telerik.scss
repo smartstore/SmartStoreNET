@@ -329,6 +329,7 @@ a.t-button.t-state-disabled:hover,
 
 			&.t-arrow-down:before {
 				content: "\f078"; // chevron-down
+				top: 40%; // better alignment
 			}
 
 			&.t-arrow-down {

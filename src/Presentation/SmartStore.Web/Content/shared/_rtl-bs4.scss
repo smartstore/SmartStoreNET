@@ -230,29 +230,34 @@
 
 			@each $prop, $abbrev in (margin: m, padding: p) {
 				@each $size, $length in $spacers {
-
-					.#{$abbrev}r#{$infix}-#{$size},
 					.#{$abbrev}x#{$infix}-#{$size} {
+						#{$prop}-left: $length !important;
+						#{$prop}-right: $length !important;
+					}
+
+					.#{$abbrev}r#{$infix}-#{$size} {
 						#{$prop}-right: 0 !important;
 						#{$prop}-left: $length !important;
 					}
 
-					.#{$abbrev}l#{$infix}-#{$size},
-					.#{$abbrev}x#{$infix}-#{$size} {
+					.#{$abbrev}l#{$infix}-#{$size} {
 						#{$prop}-left: 0 !important;
 						#{$prop}-right: $length !important;
 					}
 				}
 			}
 
-			.mr#{$infix}-auto,
 			.mx#{$infix}-auto {
+				margin-left: auto !important;
+				margin-right: auto !important;
+			}
+
+			.mr#{$infix}-auto {
 				margin-right: 0 !important;
 				margin-left: auto !important;
 			}
 
-			.ml#{$infix}-auto,
-			.mx#{$infix}-auto {
+			.ml#{$infix}-auto {
 				margin-right: auto !important;
 				margin-left: 0 !important;
 			}

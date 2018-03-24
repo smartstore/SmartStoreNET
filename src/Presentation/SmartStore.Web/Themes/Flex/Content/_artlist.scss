@@ -76,7 +76,7 @@ $art-border-color:              #ddd;
 }
 
 .artlist-action--pager {
-    > * { position: relative; display: block; float: left; }
+    > * { position: relative; }
     > *:not(:first-child) { margin-left: -1px; }
     .btn-pager-prev { border-top-left-radius: 3px; border-bottom-left-radius: 3px }   
     .btn-pager-next { border-top-right-radius: 3px; border-bottom-right-radius: 3px }    

@@ -1,4 +1,4 @@
-namespace SmartStore.Data.Migrations
+ï»¿namespace SmartStore.Data.Migrations
 {
 	using System;
 	using System.Data.Entity;
@@ -82,9 +82,9 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.MaxItemsToDisplayInCatalogMenu",
                 "Max items to display in catalog menu",
-                "Maximale Anzahl von Elementen im Katalogmenü",
+                "Maximale Anzahl von Elementen im KatalogmenÃ¼",
                 "Defines the maximum number of top level items to be displayed in the main catalog menu. All menu items which are exceeding this limit will be placed in a new dropdown menu item.",
-                "Legt die maximale Anzahl von Menu-Einträgen der obersten Hierarchie fest, die im Katalogmenü angezeigt werden. Alle weiteren Menu-Einträge werden innerhalb eines neuen Dropdownmenus ausgegeben.");
+                "Legt die maximale Anzahl von Menu-EintrÃ¤gen der obersten Hierarchie fest, die im KatalogmenÃ¼ angezeigt werden. Alle weiteren Menu-EintrÃ¤ge werden innerhalb eines neuen Dropdownmenus ausgegeben.");
 
             builder.AddOrUpdate("CatalogMenu.MoreLink", "More", "Mehr");
 
@@ -112,29 +112,29 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Languages.CheckAvailableLanguagesFailed",
                 "An error occurred while checking for other available languages.",
-                "Bei der Suche nach weiteren verfügbaren Sprachen trat ein Fehler auf.");
+                "Bei der Suche nach weiteren verfÃ¼gbaren Sprachen trat ein Fehler auf.");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.NoAvailableLanguagesFound",
 				"There were no other available languages found for version {0}. On <a href='http://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> you will find more details about available resources.",
-				"Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf <a href='http://translate.smartstore.com/ target='_blank''>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
+				"Es wurden keine weiteren verfÃ¼gbaren Sprachen fÃ¼r Version {0} gefunden. Auf <a href='http://translate.smartstore.com/ target='_blank''>translate.smartstore.com</a> finden Sie weitere Details zu verfÃ¼gbaren Ressourcen.");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.InstalledLanguages",
                 "Installed Languages",
                 "Installierte Sprachen");
             builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages",
                 "Available Languages",
-                "Verfügbare Sprachen");
+                "VerfÃ¼gbare Sprachen");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages.Note",
 				"Click <b>Download</b> to install a new language including all localized resources. On <a href='http://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> you will find more details about available resources.",
-				"Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a href='http://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
+				"Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a href='http://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> finden Sie weitere Details zu verfÃ¼gbaren Ressourcen.");
 
             builder.AddOrUpdate("Common.Translated",
                 "Translated",
-                "Übersetzt");
+                "Ãœbersetzt");
             builder.AddOrUpdate("Admin.Configuration.Languages.TranslatedPercentage",
                 "{0}% translated",
-                "{0}% übersetzt");
+                "{0}% Ã¼bersetzt");
             builder.AddOrUpdate("Admin.Configuration.Languages.TranslatedPercentageAtLastImport",
                 "{0}% at the last import",
                 "{0}% beim letzten Import");
@@ -152,23 +152,23 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Languages.OnePublishedLanguageRequired",
                 "At least one published language is required.",
-                "Mindestens eine veröffentlichte Sprache ist erforderlich.");
+                "Mindestens eine verÃ¶ffentlichte Sprache ist erforderlich.");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.Fields.AvailableLanguageSetId",
                 "Available Languages",
-                "Verfügbare Sprachen",
+                "VerfÃ¼gbare Sprachen",
                 "Specifies the available language whose localized resources are to be imported.",
-                "Legt die verfügbare Sprache fest, deren lokalisierte Ressourcen importiert werden sollen.");
+                "Legt die verfÃ¼gbare Sprache fest, deren lokalisierte Ressourcen importiert werden sollen.");
 
             builder.AddOrUpdate("Admin.Configuration.Languages.UploadFileOrSelectLanguage",
                 "Please upload an import file or select an available language whose resources are to be imported.",
-                "Bitte laden Sie eine Importdatei hoch oder wählen Sie eine verfügbare Sprache, deren Ressourcen importiert werden sollen.");
+                "Bitte laden Sie eine Importdatei hoch oder wÃ¤hlen Sie eine verfÃ¼gbare Sprache, deren Ressourcen importiert werden sollen.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.ChargeOnlyHighestProductShippingSurcharge",
                 "Charge the highest shipping surcharge only",
-                "Nur den höchsten Transportzuschlag berechnen",
+                "Nur den hÃ¶chsten Transportzuschlag berechnen",
                 "Specifies  whether to charge only the highest additional shipping surcharge of products.",
-                "Bestimmt ob bei der Berechnung der Versandkosten nur der höchste Transportzuschlag von Produkten berücksichtigt wird.");
+                "Bestimmt ob bei der Berechnung der Versandkosten nur der hÃ¶chste Transportzuschlag von Produkten berÃ¼cksichtigt wird.");
 
             builder.AddOrUpdate("Order.OrderDetails")
                 .Value("en", "Order Details");
@@ -177,11 +177,11 @@ namespace SmartStore.Data.Migrations
 				"Generate absolute URLs",
 				"Absolute URLs erzeugen",
 				"Generates absolute URLs for media files by prepending the current host name (e.g. http://myshop.com/media/image/1.jpg instead of /media/image/1.jpg). Has no effect if a CDN URL has been applied to the store.",
-				"Erzeugt absolute URLs für Mediendateien, indem der aktuelle Hostname vorangestellt wird (z.B. http://meinshop.de/media/image/1.jpg statt /media/image/1.jpg). Hat keine Auswirkung, wenn für den Store eine CDN-URL eingerichtet wurde.");
+				"Erzeugt absolute URLs fÃ¼r Mediendateien, indem der aktuelle Hostname vorangestellt wird (z.B. http://meinshop.de/media/image/1.jpg statt /media/image/1.jpg). Hat keine Auswirkung, wenn fÃ¼r den Store eine CDN-URL eingerichtet wurde.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFieldsNote",
 				"The Name, SKU and Short Description fields can be searched in the standard search. Other fields require a search plugin such as the MegaSearch plugin from <a href='http://www.smartstore.com/de/net#section-pricing' target='_blank'>Premium Edition</a>.",
-				"In der Standardsuche können die Felder Name, SKU und Kurzbeschreibung durchsucht werden. Für weitere Felder ist ein Such-Plugin wie etwa das MegaSearch-Plugin aus der <a href='http://www.smartstore.com/de/net#section-pricing' target='_blank'>Premium Edition</a> notwendig.");
+				"In der Standardsuche kÃ¶nnen die Felder Name, SKU und Kurzbeschreibung durchsucht werden. FÃ¼r weitere Felder ist ein Such-Plugin wie etwa das MegaSearch-Plugin aus der <a href='http://www.smartstore.com/de/net#section-pricing' target='_blank'>Premium Edition</a> notwendig.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.FolderName", "Folder path", "Ordnerpfad");
 
@@ -211,7 +211,7 @@ namespace SmartStore.Data.Migrations
 				"Do not export bundled products",
 				"Keine Produkt-Bundle exportieren",
 				"Specifies whether to export bundled products. If this option is activated, then the associated bundle items will be exported.",
-				"Legt fest, ob Produkt-Bundle exportiert werden sollen. Ist diese Option aktiviert, so werden die zum Bundle gehörenden Produkte (Bundle-Bestandteile) exportiert.");
+				"Legt fest, ob Produkt-Bundle exportiert werden sollen. Ist diese Option aktiviert, so werden die zum Bundle gehÃ¶renden Produkte (Bundle-Bestandteile) exportiert.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.ShoppingCartTypeId",
 				"Shopping cart type",
@@ -223,26 +223,26 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Account.AccountActivation.InvalidEmailOrToken",
 				"Unknown email or token. Please register again.",
-				"Unbekannte E-Mail oder Token. Bitte führen Sie die Registrierung erneut durch.");
+				"Unbekannte E-Mail oder Token. Bitte fÃ¼hren Sie die Registrierung erneut durch.");
 
 			builder.AddOrUpdate("Account.PasswordRecoveryConfirm.InvalidEmailOrToken",
 				"Unknown email or token. Please click \"Forgot password\" again, if you want to renew your password.",
-				"Unbekannte E-Mail oder Token. Klicken Sie bitte erneut \"Passwort vergessen\", falls Sie Ihr Passwort erneuern möchten.");
+				"Unbekannte E-Mail oder Token. Klicken Sie bitte erneut \"Passwort vergessen\", falls Sie Ihr Passwort erneuern mÃ¶chten.");
 
 			builder.Delete("Account.PasswordRecoveryConfirm.InvalidEmail");
 			builder.Delete("Account.PasswordRecoveryConfirm.InvalidToken");
 
 			builder.AddOrUpdate("Admin.Common.Acl.SubjectTo",
 				"Restrict access",
-				"Zugriff einschränken",
+				"Zugriff einschrÃ¤nken",
 				"Determines whether this entity is subject to access restrictions (no = no restriction, yes = accessible only for selected customer groups)",
-				"Legt fest, ob dieser Datensatz Zugriffsbeschränkungen unterliegt (Nein = keine Beschränkung, Ja = zugänglich nur für gewählte Kundengruppen)");
+				"Legt fest, ob dieser Datensatz ZugriffsbeschrÃ¤nkungen unterliegt (Nein = keine BeschrÃ¤nkung, Ja = zugÃ¤nglich nur fÃ¼r gewÃ¤hlte Kundengruppen)");
 
 			builder.AddOrUpdate("Admin.Common.Acl.AvailableFor",
 				"Customer roles",
 				"Kundengruppen",
 				"Select customer roles who can access the entity. For all inactive roles, this record is hidden.",
-				"Wählen Sie Kundengruppen, die auf den Datensatz zugreifen können. Bei allen nicht aktivierten Gruppen wird dieser Datensatz ausgeblendet.");
+				"WÃ¤hlen Sie Kundengruppen, die auf den Datensatz zugreifen kÃ¶nnen. Bei allen nicht aktivierten Gruppen wird dieser Datensatz ausgeblendet.");
 
 			builder.Delete(
 				"Admin.Catalog.Categories.Fields.SubjectToAcl",
@@ -290,10 +290,10 @@ namespace SmartStore.Data.Migrations
 				"Der Auftrag wurde als ausgeliefert markiert");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Payment.CapturePaymentReason",
-				"Capture payment amount when…",
-				"Zahlungsbetrag einziehen, wenn…",
+				"Capture payment amount whenâ€¦",
+				"Zahlungsbetrag einziehen, wennâ€¦",
 				"Specifies the event when the payment amount is automatically captured. The selected payment method must support capturing for this.",
-				"Legt das Ereignis fest, zu dem der Zahlunsgbetrag automatisch eingezogen wird. Die gewählte Zahlart muss hierfür Buchungen unterstützen.");
+				"Legt das Ereignis fest, zu dem der Zahlunsgbetrag automatisch eingezogen wird. Die gewÃ¤hlte Zahlart muss hierfÃ¼r Buchungen unterstÃ¼tzen.");
 			
 
 			#region taken from V22Final, because they were never added yet
@@ -303,7 +303,7 @@ namespace SmartStore.Data.Migrations
 				"Weiter");
 			builder.AddOrUpdate("Admin.Common.BackToConfiguration",
 				"Back to configuration",
-				"Zurück zur Konfiguration");
+				"ZurÃ¼ck zur Konfiguration");
 			builder.AddOrUpdate("Admin.Common.UploadFileSucceeded",
 				"The file has been successfully uploaded.",
 				"Die Datei wurde erfolgreich hochgeladen.");
@@ -315,7 +315,7 @@ namespace SmartStore.Data.Migrations
 				"Alle importieren");
 			builder.AddOrUpdate("Admin.Common.ImportSelected",
 				"Import selected",
-				"Ausgewählte importieren");
+				"AusgewÃ¤hlte importieren");
 			builder.AddOrUpdate("Admin.Common.UnknownError",
 				"An unknown error has occurred.",
 				"Es ist ein unbekannter Fehler aufgetreten.");
@@ -329,31 +329,31 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Product.Picture.Added",
 				"The picture has successfully been added",
-				"Das Bild wurde erfolgreich zugefügt");
+				"Das Bild wurde erfolgreich zugefÃ¼gt");
 
 			builder.AddOrUpdate("HtmlEditor.ClickToEdit", "Click to edit HTML...", "Hier klicken, um HTML zu editieren...");
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings.Note",
 				"Define mappings of attribute values to export fields according to the pattern <b>&lt;Format prefix&gt;:&lt;Export field name&gt;</b>. Example: <b>gmc:color</b> exports the attribute values for colors to the field <b>color</b> during the Google Merchant Center Export. The mappings are only effective when exporting attribute combinations.",
-				"Legen Sie Zuordnungen von Attributwerten zu Exportfeldern nach dem Muster <b>&lt;Formatpräfix&gt;:&lt;Export-Feldname&gt;</b> fest. Beispiel: <b>gmc:color</b> exportiert beim Google Merchant Center Export die Attributwerte für Farben in das Feld <b>color</b>. Die Zuordnungen sind nur beim Export von Attributkombinationen wirksam.");
+				"Legen Sie Zuordnungen von Attributwerten zu Exportfeldern nach dem Muster <b>&lt;FormatprÃ¤fix&gt;:&lt;Export-Feldname&gt;</b> fest. Beispiel: <b>gmc:color</b> exportiert beim Google Merchant Center Export die Attributwerte fÃ¼r Farben in das Feld <b>color</b>. Die Zuordnungen sind nur beim Export von Attributkombinationen wirksam.");
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings",
 				"Mappings to export fields",
 				"Zuordnungen zu Exportfeldern",
 				"Allows to map attribute values to export fields. Each entry has to be entered in a new line.",
-				"Ermöglicht die Zuordnung von Attributwerten zu Exportfeldern. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
+				"ErmÃ¶glicht die Zuordnung von Attributwerten zu Exportfeldern. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.AdditionalFee",
 				"Additional fee",
-				"Zusätzliche Gebühr",
+				"ZusÃ¤tzliche GebÃ¼hr",
 				"Specifies an additional fee to be charged to the customer for using the payment method.",
-				"Legt eine zusätzliche Gebühr fest, die dem Kunden für die Inanspruchnahme der Zahlart berechnet wird.");
+				"Legt eine zusÃ¤tzliche GebÃ¼hr fest, die dem Kunden fÃ¼r die Inanspruchnahme der Zahlart berechnet wird.");
 
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.AdditionalFeePercentage",
 				"Additional fee percentage",
-				"Zusätzliche Gebühr prozentual",
+				"ZusÃ¤tzliche GebÃ¼hr prozentual",
 				"Specifies whether the additional fee should be calculated as a percentage. A fixed value is used if this option is disabled.",
-				"Legt fest, ob die zusätzliche Gebühr prozentual berechnet werden soll. Es wird ein fester Wert verwendet, falls diese Option deaktiviert ist.");
+				"Legt fest, ob die zusÃ¤tzliche GebÃ¼hr prozentual berechnet werden soll. Es wird ein fester Wert verwendet, falls diese Option deaktiviert ist.");
 			
 			builder.Delete("Common.Buttons.Default");
 			builder.AddOrUpdate("Common.Buttons.Secondary", "Secondary", "Secondary");
@@ -371,10 +371,13 @@ namespace SmartStore.Data.Migrations
 				"Check the box if 'State/province' is required.",
 				"Legt fest, ob die Eingabe eines Bundeslandes erforderlich ist.");
 
-			builder.AddOrUpdate("Address.Fields.StateProvince.Required", "State is required.", "Bundesland wird benötigt");
+			builder.AddOrUpdate("Address.Fields.StateProvince.Required", "State is required.", "Bundesland wird benÃ¶tigt");
 
 			builder.AddOrUpdate("Common.Columns", "Columns", "Spalten");
 			builder.AddOrUpdate("Common.Mru", "Recently", "Zuletzt");
+
+			builder.AddOrUpdate("Admin.WidgetZones.UserDefined", "User-defined", "Benutzerdefiniert");
+
 		}
 	}
 }

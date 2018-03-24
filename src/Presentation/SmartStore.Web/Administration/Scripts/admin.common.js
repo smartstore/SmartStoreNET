@@ -11,22 +11,20 @@ function openModalWindow(modalId) {
 }
 
 // global Admin namespace
-var Admin = {
-
+SmartStore.Admin = {
+	modelTrees: {},
 	checkboxCheck: function (obj, checked) {
 		if (checked)
 			$(obj).attr('checked', 'checked');
 		else
 			$(obj).removeAttr('checked');
 	},
-
 	checkAllOverriddenStoreValue: function (obj) {
 		$('.multi-store-override-option').each(function (i, el) {
-			Admin.checkboxCheck(el, obj.checked);
-			Admin.checkOverriddenStoreValue(el);
+			SmartStore.Admin.checkboxCheck(el, obj.checked);
+			SmartStore.Admin.checkOverriddenStoreValue(el);
 		});
 	},
-
 	checkOverriddenStoreValue: function (el) {
 		var checkbox = $(el);
 		var parentSelector = checkbox.data('parent-selector'),
@@ -45,7 +43,6 @@ var Admin = {
 			}
 		});
 	},
-
 	movePluginActionButtons: function() {
 		// Move plugin specific action buttons (like 'Save') to top header section
 		var pluginActions = $('.plugin-config-container .plugin-actions');
@@ -63,7 +60,6 @@ var Admin = {
 			});
 		}
 	},
-
 	togglePanel: function(el /* the toggler */, animate) {
 		var ctl = $(el),
 			show = ctl.is(':checked'),
@@ -108,7 +104,6 @@ var Admin = {
 			}
 		});
 	},
-
 	TaskWatcher: (function () {
 		var interval;
 
@@ -120,7 +115,7 @@ var Admin = {
 						type: 'POST',
 						global: false,
 						url: opts.pollUrl,
-						dataType: 'json',
+						//dataType: 'json',
 						success: function (data) {
 							data = data || [];
 							var runningElements = [];
@@ -151,7 +146,7 @@ var Admin = {
 							// remove runningElements for finished tasks (the ones currently running but are not in 'runningElements'
 							var currentlyRunningElements = opts.context.find(opts.elementsSelector + '[data-running=true]');
 							$.each(currentlyRunningElements, function (i, el) {
-								var shouldRun = _.find(runningElements, function (val) { return val == el; });
+								var shouldRun = _.find(runningElements, function (val) { return val === el; });			
 								if (!shouldRun) {
 									// restore element to it's init state
 									var jel = $(el);
@@ -164,6 +159,7 @@ var Admin = {
 						},
 						error: function (xhr, ajaxOptions, thrownError) {
 							window.clearInterval(interval);
+							console.error(thrownError);
 						}
 					});
 				}
@@ -173,11 +169,3 @@ var Admin = {
 		}
 	})()
 };
-
-(function () {
-	// TODO: (mc) BS4 > move SmartStore namespace to SmartStore.Web and replace $.smartstore.
-	// Also move 'Admin' object above to SmartStore.Admin.
-	SmartStore.Admin = {
-		modelTrees: {}
-	};
-})();

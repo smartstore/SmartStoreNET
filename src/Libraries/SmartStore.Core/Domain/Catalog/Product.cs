@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
@@ -19,7 +20,41 @@ namespace SmartStore.Core.Domain.Catalog
     [DataContract]
 	public partial class Product : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
 	{
-        private ICollection<ProductCategory> _productCategories;
+		#region static
+
+		private static readonly HashSet<string> _visibilityAffectingProductProps = new HashSet<string>();
+
+		static Product()
+		{
+			AddPropsToSet(_visibilityAffectingProductProps,
+				x => x.AvailableEndDateTimeUtc,
+				x => x.AvailableStartDateTimeUtc,
+				x => x.Deleted,
+				x => x.LowStockActivityId,
+				x => x.LimitedToStores,
+				x => x.ManageInventoryMethodId,
+				x => x.MinStockQuantity,
+				x => x.Published,
+				x => x.SubjectToAcl,
+				x => x.VisibleIndividually);
+		}
+
+		static void AddPropsToSet(HashSet<string> props, params Expression<Func<Product, object>>[] lambdas)
+		{
+			foreach (var lambda in lambdas)
+			{
+				props.Add(lambda.ExtractPropertyInfo().Name);
+			}
+		}
+
+		public static HashSet<string> GetVisibilityAffectingPropertyNames()
+		{
+			return _visibilityAffectingProductProps;
+		}
+
+		#endregion
+
+		private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
         private ICollection<ProductPicture> _productPictures;
         private ICollection<ProductReview> _productReviews;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.IO;
 using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.IO
@@ -32,9 +33,10 @@ namespace SmartStore.Core.IO
 		{
 			using (_rwLock.GetWriteLock())
 			{
-				if (_released || !_folder.FileExists(_path))
+				if (_released || !File.Exists(_folder.MapPath(_path)))
 				{
 					// nothing to do, might happen if re-granted or already released
+					// INFO: VirtualPathProvider caches file existence info, so not very reliable here.
 					return;
 				}
 

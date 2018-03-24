@@ -83,13 +83,18 @@ $forum-unobstrusive-link-color: #646464;
         a {
             padding-right: 0.75rem;
         }
+		i {
+            padding-right: 0.25rem;
+        }
     }
     .post-content {
+		/*
 	    .functions {
 	        right: 10px;
 	        bottom: 10px;
 	        .fa-quote-left { font-size: 10px;}
         }
+		*/
         .signature {
 	        position: absolute;
 	        bottom: 10px;

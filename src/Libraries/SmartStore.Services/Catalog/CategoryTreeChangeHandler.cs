@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
@@ -11,7 +10,6 @@ using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data;
 
 namespace SmartStore.Services.Catalog
 {
@@ -43,8 +41,6 @@ namespace SmartStore.Services.Catalog
 		private readonly bool[] _handledReasons = new bool[(int)CategoryTreeChangeReason.Hierarchy + 1];
 		private bool _invalidated;
 
-		private static readonly HashSet<string> _countAffectingProductProps = new HashSet<string>();
-
 		// Hierarchy affecting category prop names
 		private static readonly string[] _h = new string[] { "ParentCategoryId", "Published", "Deleted", "DisplayOrder" };
 		// Visibility affecting category prop names
@@ -63,29 +59,6 @@ namespace SmartStore.Services.Catalog
 			typeof(StoreMapping),
 			typeof(AclRecord)
 		};
-
-		static CategoryTreeChangeHook()
-		{
-			AddPropsToSet(_countAffectingProductProps,
-				x => x.AvailableEndDateTimeUtc,
-				x => x.AvailableStartDateTimeUtc,
-				x => x.Deleted,
-				x => x.LowStockActivityId,
-				x => x.LimitedToStores,
-				x => x.ManageInventoryMethodId,
-				x => x.MinStockQuantity,
-				x => x.Published,
-				x => x.SubjectToAcl,
-				x => x.VisibleIndividually);
-		}
-
-		static void AddPropsToSet(HashSet<string> props, params Expression<Func<Product, object>>[] lambdas)
-		{
-			foreach (var lambda in lambdas)
-			{
-				props.Add(lambda.ExtractPropertyInfo().Name);
-			}
-		}
 
 		public CategoryTreeChangeHook(ICommonServices services, ICategoryService categoryService)
 		{
@@ -107,7 +80,8 @@ namespace SmartStore.Services.Catalog
 			if (entity is Product)
 			{
 				var modProps = _services.DbContext.GetModifiedProperties(entity);
-				if (modProps.Keys.Any(x => _countAffectingProductProps.Contains(x)))
+				var toxicPropNames = Product.GetVisibilityAffectingPropertyNames();
+				if (modProps.Keys.Any(x => toxicPropNames.Contains(x)))
 				{
 					// No eviction, just notification
 					PublishEvent(CategoryTreeChangeReason.ElementCounts);
@@ -122,10 +96,8 @@ namespace SmartStore.Services.Catalog
 					PublishEvent(CategoryTreeChangeReason.ElementCounts);
 				}
 			}
-			else if (entity is Category)
+			else if (entity is Category category)
 			{
-				var category = entity as Category;
-
 				var modProps = _services.DbContext.GetModifiedProperties(entity);
 
 				if (modProps.Keys.Any(x => _h.Contains(x)))

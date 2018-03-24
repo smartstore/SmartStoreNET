@@ -67,10 +67,10 @@
 		jsRoot + "public.offcanvas-menu.js",
 		jsRoot + "public.product.js");
 
-	Html.AddBodyCssClass(this.WorkContext.WorkingLanguage.Rtl ? "rtl" : "");
+	//Html.AddBodyCssClass(this.WorkContext.WorkingLanguage.Rtl ? "rtl" : "");
 }
 <!DOCTYPE html>
-<html lang="@this.WorkContext.WorkingLanguage.UniqueSeoCode" data-pnotify-firstpos1="140">
+<html data-pnotify-firstpos1="140">
 <head>
 	<meta charset="utf-8">
     <title itemprop="name">@Html.SmartTitle(true)</title>
@@ -109,7 +109,7 @@
 	@{ Html.RenderZone("head"); }
     <!--Powered by SmartStore.NET - https://www.smartstore.com-->
 </head>
-<body class="@Html.BodyCssClass()"@(Html.BodyId())>
+<body class="@Html.BodyCssClass()"@(Html.BodyId()) @Html.LanguageAttributes(true)>
 	@{ Html.RenderZone("start"); }
     @RenderBody()
 	@{ Html.RenderZone("aftercontent"); }

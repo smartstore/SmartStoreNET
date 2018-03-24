@@ -10,11 +10,14 @@
                 productRotatorAjaxUrl: ""
             };
 
+			var rtl = SmartStore.globalization.culture.isRTL,
+				marginX = rtl ? 'margin-right' : 'margin-left';
+
             settings = $.extend(defaults, settings);
 
             return this.each(function () {
                 var megamenuContainer = $(this);
-                var megamenu = $(".megamenu", megamenuContainer);
+				var megamenu = $(".megamenu", megamenuContainer);
                 var isSimple = megamenu.hasClass("simple");
                 var megamenuNext = $(".megamenu-nav--next", megamenuContainer);
                 var megamenuPrev = $(".megamenu-nav--prev", megamenuContainer);
@@ -131,29 +134,71 @@
                     });
                 }
 
+				function alignDrop(popper, drop, container) {
+					var nav = $(".navbar-nav", container),
+						left,
+						right,
+						popperWidth = popper.width(),
+						dropWidth = drop.width(),
+						containerWidth = container.width();
+
+					if (!rtl) {
+						left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+						right = "auto";
+
+						if (left < 0) {
+							left = 0;
+						}
+						else if (left + dropWidth > containerWidth) {
+							left = "auto";
+							right = 0;
+						}
+					}
+					else {
+						left = "auto";
+						right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
+
+						if (right < 0) {
+							right = 0;
+						}
+						else if (right + dropWidth > containerWidth) {
+							left = 0;
+							right = "auto";
+						}
+					}
+
+					if (popperWidth > dropWidth) {
+						// ensure that drop is not smaller than popper
+						drop.width(popperWidth);
+					}
+
+					drop.toggleClass("ar", (rtl && left == "auto") || _.isNumber(right));
+
+					if (_.isNumber(left)) left = left + "px";
+					if (_.isNumber(right)) right = right + "px";
+
+					// jQuery does not accept "!important"
+					drop[0].style.setProperty('left', left, 'important');
+					drop[0].style.setProperty('right', right, 'important');
+				}
+
                 // correct dropdown position
                 if (isSimple) {
-
-                    var event = Modernizr.touchevents ? "click" : "mouseenter";
+					var event = Modernizr.touchevents ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
-                        var navItem = $(this);
-                        var opendMenu = $(navItem.find(".nav-link").data("target")).find(".dropdown-menu");
-                        var offsetLeft = (navItem.offset().left - megamenu.offset().left) + 10;
+						var navItem = $(this);
+						var targetSelector = navItem.find(".nav-link").data("target");
+						if (!targetSelector)
+							return;
 
-                        if (offsetLeft < 0) {
-                            offsetLeft = 0;
-                        }
-                        else if (offsetLeft + opendMenu.width() > megamenu.width()) {
-                            offsetLeft = megamenu.width() - opendMenu.width();
-                        }
-                        else if (navItem.width() > opendMenu.width()) {
-                            offsetLeft = offsetLeft + (navItem.width() - opendMenu.width()) + 5;
-                        }
+						var drop = $(targetSelector).find(".dropdown-menu");
+						if (!drop.length)
+							return;
 
-                        opendMenu.css("left", offsetLeft);
+						alignDrop(navItem, drop, megamenu);
                     });
-                }
+				}
 
                 megamenuContainer.evenIfHidden(function (el) {
                     var scrollCorrection = null;
@@ -162,29 +207,24 @@
                     var isFirstItemVisible = true;
                     var isLastItemVisible = false;
 
-                    megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
+                    megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow:hidden; position:relative;" />');
 
-                    // 
-                    getCurrentNavigationElements();
-
-                    var nav = $('.megamenu .navbar-nav');
-                    var navSlider = $('.megamenu .nav-slider');
-                    updateNavState();
+					var navSlider = $(".nav-slider", megamenu);
+					var nav = $(".navbar-nav", navSlider);
 
                     if (!Modernizr.touchevents) {
-
-                        megamenuNext.click(function (e) {
-                            e.preventDefault();
+                        megamenuNext.on('click', function (e) {
+							e.preventDefault();
                             scrollToNextInvisibleNavItem(false);
                         });
 
-                        megamenuPrev.click(function (e) {
-                            e.preventDefault();
+						megamenuPrev.on('click', function (e) {
+							e.preventDefault();
                             scrollToNextInvisibleNavItem(true);
                         });
                     }
 
-                    function scrollToNextInvisibleNavItem(backwards) {
+					function scrollToNextInvisibleNavItem(backwards) {
                         // determine the first completely visible nav item (either from left or right side, depending on 'backwards')
                         var firstVisible = findFirstVisibleNavItem(backwards);
 
@@ -197,50 +237,55 @@
                             return;
 
                         // determine left pos of the item 
-                        var leftPos = nextItem.position().left;
+						var leftPos = nextItem.position().left;
+						var offset = Math.abs(parseFloat(nav.css(marginX)));
 
                         // 30 = offset for arrows
-                        // if 'backwards == true': scroll to the left position of the current item 
-                        var newMarginLeft = (leftPos * -1) + 1 + 30;
-                        if (!backwards) {
-                            // if 'backwards == true': scroll to the right position of the current item 
-                            var rightPos = leftPos + nextItem.outerWidth(true) + 1;
-                            newMarginLeft = navSlider.width() - rightPos - (nextItem[0].nextElementSibling ? 30 : 0);
+                        // if 'backwards': scroll to the left position of the current item 
+						var newMarginStart = rtl
+							? leftPos - offset - 31
+							: (leftPos * -1) + 31;
+
+                        if ((!rtl && !backwards) || (rtl && backwards)) {
+                            // if 'forward': scroll to the right position of the current item 
+							var rightPos = leftPos + nextItem.outerWidth(true) + 1;
+							newMarginStart = rtl
+								? (nav.width() - rightPos - (nextItem[0].previousElementSibling ? 30 : 0)) * -1
+								: navSlider.width() - rightPos - (nextItem[0].nextElementSibling ? 30 : 0);
                         }
 
-                        newMarginLeft = Math.min(0, newMarginLeft);
+						newMarginStart = Math.min(0, newMarginStart);
 
-                        nav.css('margin-left', Math.ceil(newMarginLeft) + 'px').one(Prefixer.event.transitionEnd, function (e) {
+						nav.css(marginX, Math.ceil(newMarginStart) + 'px').one(Prefixer.event.transitionEnd, function (e) {
                             // performs UI update after end of animation (.one(trans...))
                             updateNavState();
                         });
                     }
 
-                    function findFirstVisibleNavItem(fromLeft) {
+                    function findFirstVisibleNavItem(fromStart) {
                         var navItems = navElems;
-                        if (!fromLeft) {
+						if (!fromStart) {
                             // turn nav items around as we start iteration from the right side
                             navItems = $($.makeArray(navElems).reverse());
                         }
 
                         var result;
                         var cntWidth = navSlider.width();
-                        var curMarginLeft = parseFloat(nav.css('margin-left'));
+						var curMarginStart = rtl ? 0 : parseFloat(nav.css(marginX));
 
                         function isInView(pos) {
-                            var realPos = pos + curMarginLeft;
+							var realPos = pos + curMarginStart;
                             return realPos >= 0 && realPos < cntWidth;
                         }
 
                         navItems.each(function (i, el) {
-
-                            // iterates all nav items from the left OR the right side and leaves the intartion once the left AND the right edge are displayed within the viewpoint
+                            // iterates all nav items from the left OR the right side and breaks loop once the left AND the right edges fall into the viewport
                             var navItem = $(el);
-                            var leftPos = navItem.position().left;
+							var leftPos = navItem.position().left;
                             var leftIn = isInView(leftPos);
                             if (leftIn) {
                                 var rightIn = isInView(leftPos + navItem.outerWidth(true));
-                                if (rightIn) {
+								if (rightIn) {
                                     result = navItem;
                                     return false;
                                 }
@@ -255,15 +300,15 @@
                         var realNavWidth = 0;
                         navElems.each(function (i, el) { realNavWidth += parseFloat($(this).outerWidth(true)); });
 
-                        var curMarginLeft = parseFloat(nav.css('margin-left'));
+						var curMarginStart = parseFloat(nav.css(marginX));
 
                         if (realNavWidth > megamenu.width()) {
                             // nav items don't fit in the megamenu container: display next arrow 
                             megamenu.addClass('megamenu-blend--next');
                         }
 
-                        if (curMarginLeft < 0) {
-                            // user has scrolled to the right: show prev arrow 
+						if (curMarginStart < 0) {
+                            // user has scrolled: show prev arrow 
                             megamenu.addClass('megamenu-blend--prev');
 
                             // determine whether we're at the end
@@ -284,7 +329,7 @@
                         megamenu.tapstart(function () {
                             closeNow($(".nav-item.active .nav-link"));
                         }).tapend(function () {
-                            getCurrentNavigationElements();
+							updateNavState();
                         });
                     }
 
@@ -301,8 +346,6 @@
                     		megamenuContainer.removeClass("show-scroll-buttons");
                     	}
 
-                    	getCurrentNavigationElements();
-
                     	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {
                     		try {
 								$(this).slick('unslick');
@@ -310,64 +353,15 @@
                     			applyCommonPlugins($(this).closest('.rotator-content'));
                     		}
 							catch (err) { }
-                    	});
+						});
                     }
 
                 	// show scroll buttons when menu items don't fit into screen
                     EventBroker.subscribe("page.resized", function (msg, viewport) {
                     	onPageResized();
-                    });
+					});
+
                     onPageResized();
-
-                    function getCurrentNavigationElements() {
-                        firstVisibleElem = null;
-                        isLastItemVisible = false;
-
-                        var p = $(".nav-slider", megamenuContainer);
-
-                        navElems.each(function (i, val) {
-
-                            var el = $(val);
-
-                            if ((el.offset().left > p.offset().left) && firstVisibleElem == null) {
-                                firstVisibleElem = el.prev();
-
-                                if (firstVisibleElem.position().left == 0)
-                                    isFirstItemVisible = true;
-                                else
-                                    isFirstItemVisible = false;
-                            }
-
-                            // if visible
-                            if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(p.offset().left) + parseInt(p.width())) {
-
-                                lastVisibleElem = el;
-
-                                if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(p.offset().left) + parseInt(p.width()))
-                                    isLastItemVisible = true;
-                                else
-                                    isLastItemVisible = false;
-
-                                // we've got everything we need, so get out of here
-                                return false;
-                            }
-                        });
-
-                        // show or hide navigation buttons depending on whether first or last navitems are displayed
-                        if (!isFirstItemVisible) {
-                            megamenu.addClass("megamenu-blend--prev");
-                        }
-                        else {
-                            megamenu.removeClass("megamenu-blend--prev");
-                        }
-
-                        if (!isLastItemVisible) {
-                            megamenu.addClass("megamenu-blend--next");
-                        }
-                        else {
-                            megamenu.removeClass("megamenu-blend--next");
-                        }
-                    }
                 });
 
                 function initRotator(containerId) {
@@ -387,7 +381,6 @@
 
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
                     if (catId != null && displayRotator) {
-
                         var rotatorColumn = $(".rotator-" + catId);
 
                         // clear content & init throbber
@@ -397,14 +390,12 @@
 
                         // wait a little to imply hard work is going on ;-)
                         setTimeout(function () {
-
                             $.ajax({
                                 cache: false,
                                 type: "POST",
                                 url: settings.productRotatorAjaxUrl,
                                 data: { "catId": catId },
                                 success: function (data) {
-
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);
 

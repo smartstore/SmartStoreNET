@@ -135,6 +135,7 @@ namespace SmartStore.Admin.Controllers
 				gridModel.Data = topics.Select(x =>
 				{
 					var item = x.ToModel();
+					item.WidgetZone = x.WidgetZone.SplitSafe(",");
 					// otherwise maxJsonLength could be exceeded
 					item.Body = "";
 					return item;
@@ -229,7 +230,10 @@ namespace SmartStore.Admin.Controllers
                 locale.MetaTitle = topic.GetLocalized(x => x.MetaTitle, languageId, false, false);
             });
 
-            return View(model);
+
+			model.WidgetZone = topic.WidgetZone.SplitSafe(",");
+
+			return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
@@ -253,7 +257,12 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 topic = model.ToEntity(topic);
-				topic.WidgetZone = form["WidgetZone"];
+
+				if (model.WidgetZone != null)
+				{
+					topic.WidgetZone = string.Join(",", model.WidgetZone);
+				}
+				
 				_topicService.UpdateTopic(topic);
 				
 				//Stores

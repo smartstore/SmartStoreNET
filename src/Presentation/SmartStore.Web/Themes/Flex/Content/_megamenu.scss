@@ -35,6 +35,15 @@ $mixed-megamenu-bg:             $megamenu-bg;
         font-weight: $font-weight-medium;
         font-size: $megamenu-navlink-font-size;
     }
+
+	.dropdown-toggle:after {
+		border: none !important;
+		@include fontawesome("\f107");
+		width: auto;
+		height: auto;
+		vertical-align: initial;
+		margin-left: 0.15rem;
+	}
 }
 
 .navbar-light .megamenu .nav-item {
@@ -140,8 +149,11 @@ $mixed-megamenu-bg:             $megamenu-bg;
     z-index: $megamenu-zindex-base;
     display: none;
 
-    &.megamenu-nav--prev a { padding-right: 10px; }
-    &.megamenu-nav--next {
+    &.alpha {
+        left: 0;
+        a { padding-right: 10px; }
+    }  
+    &.omega {
         right: 0;
         a { padding-left: 10px; }
     }   
@@ -154,6 +166,7 @@ $mixed-megamenu-bg:             $megamenu-bg;
         padding: 0px;
         width: 40px;
         height: 98%;
+		box-shadow: none !important;
     }
 
     i {
@@ -177,11 +190,12 @@ $mixed-megamenu-bg:             $megamenu-bg;
     opacity: 1;
     display: block;
 }
-.megamenu .megamenu-nav--prev .megamenu-nav-btn {
-    background-image: linear-gradient(to left, rgba($mixed-megamenu-bg, 0), $mixed-megamenu-bg 40%, $mixed-megamenu-bg 100%);
+
+.megamenu .megamenu-nav.alpha > .megamenu-nav-btn {
+    background-image: linear-gradient(to left, rgba($mixed-megamenu-bg, 0), $mixed-megamenu-bg 40%, $mixed-megamenu-bg 100%) !important;
 }
-.megamenu .megamenu-nav--next .megamenu-nav-btn {
-    background-image: linear-gradient(to right, rgba($mixed-megamenu-bg, 0), $mixed-megamenu-bg 40%, $mixed-megamenu-bg 100%);
+.megamenu .megamenu-nav.omega > .megamenu-nav-btn {
+    background-image: linear-gradient(to right, rgba($mixed-megamenu-bg, 0), $mixed-megamenu-bg 40%, $mixed-megamenu-bg 100%) !important;
 }
 
 .touchevents .megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav-btn i,
@@ -202,7 +216,8 @@ $mixed-megamenu-bg:             $megamenu-bg;
 .megamenu-container {
     position: relative;
 
-	.show .mega-menu-dropdown {
+	.show .mega-menu-dropdown,
+	.show .dropdown-menu {
 		display: block;
 	}
 
@@ -331,10 +346,12 @@ $mixed-megamenu-bg:             $megamenu-bg;
     border: 1px solid rgba(0, 0, 0, 0.1);
     background: $megamenu-rotator-bg;
     overflow: hidden;
+	min-height: 320px;
 
     .rotator-heading {
         padding: 0.5rem 0;
     }
+
     .rotator-content > div.placeholder {
         height: 280px;
         background-color: rgba(255,255,255, 0.85);
@@ -343,6 +360,13 @@ $mixed-megamenu-bg:             $megamenu-bg;
             background-color: transparent;
         }
     }
+}
+
+@include media-breakpoint-up(xl) {
+	.megamenu-container .rotator-container {
+		// Prevents nav-item focus loss when background image is available
+		min-height: 370px;
+	}
 }
 
 // brand menu 
@@ -380,6 +404,10 @@ $mixed-megamenu-bg:             $megamenu-bg;
         margin-top: -1px;
         min-width: 250px;
         z-index: ($megamenu-zindex-base + 1);
+		transform: translateX($grid-gutter-width/2);
+		&.ar {
+			transform: translateX(-($grid-gutter-width/2));
+		}
     }
     .dropdown-item {
         padding-top: 0.35rem;

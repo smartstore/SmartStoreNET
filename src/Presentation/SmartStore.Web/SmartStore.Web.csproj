@@ -1023,6 +1023,8 @@
     <Content Include="Content\editors\summernote\font\summernote.eot" />
     <Content Include="Content\editors\summernote\font\summernote.ttf" />
     <Content Include="Content\editors\summernote\font\summernote.woff" />
+    <Content Include="Content\shared\_rtl.scss" />
+    <Content Include="App_Data\widgetzones.json" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1777,6 +1779,8 @@
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\address.liquid" />
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\order.liquid" />
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\shipment.liquid" />
+    <Content Include="Themes\Flex\Content\theme-rtl.scss" />
+    <Content Include="Content\shared\_rtl-bs4.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

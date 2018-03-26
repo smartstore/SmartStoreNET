@@ -81,8 +81,11 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.PartialRefund",
                 "Partial refund",
                 "Teilerstattung");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Debit",
+				"Debit",
+				"Kontobelastung");
 
-            builder.AddOrUpdate("ShoppingCart.Totals.CreditBalance",
+			builder.AddOrUpdate("ShoppingCart.Totals.CreditBalance",
                 "Credit balance",
                 "Guthaben");
 

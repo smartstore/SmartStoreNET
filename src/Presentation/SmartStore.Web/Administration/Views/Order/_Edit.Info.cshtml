@@ -900,6 +900,8 @@
 			{
 				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary ask-to-proceed" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
 			}
+
+			@{ Html.RenderWidget("admin_order_edit_payment_buttons_after"); }
 		</td>
 	</tr>
 	<tr>

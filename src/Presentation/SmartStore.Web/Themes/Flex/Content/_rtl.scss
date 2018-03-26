@@ -172,6 +172,14 @@
 		}
 	}
 
+	.megamenu-dropdown-container.simple {
+		.dropdown-menu {
+			&.ar {
+				transform: translateX(-($grid-gutter-width));
+			}
+		}
+	}
+
 	// Rating
 	// -------
 

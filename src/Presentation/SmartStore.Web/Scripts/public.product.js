@@ -69,7 +69,7 @@
 				// Iterate all elems with [data-partial] attribute...
 				var $el = $(el);
 				var partial = $el.data('partial');
-				if (partial && (isTouchSpin && partial !== 'OfferActions')) {
+				if (partial && !(isTouchSpin && partial == 'OfferActions')) {
 					// ...fetch the updated html from the corresponding AJAX result object's properties
 					if (data.Partials && data.Partials.hasOwnProperty(partial)) {
 						var updatedHtml = data.Partials[partial] || "";

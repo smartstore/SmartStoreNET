@@ -9,13 +9,14 @@
 		// Adapt to moment.js
 		if (typeof moment !== undefined) {
 			var dtf = g.culture.dateTimeFormat;
-			moment.defineLocale('glob', {
+
+			var glob = {
 				parentLocale: moment.locale(),
 				months: dtf.months.names,
 				monthsShort: dtf.months.namesAbbr,
 				weekdays: dtf.days.names,
-				weekdaysShort: dtf.days.namesShort,
-				weekdaysMin: dtf.days.namesAbbr,
+				weekdaysShort: dtf.days.namesAbbr,
+				weekdaysMin: dtf.days.namesShort,
 				longDateFormat: {
 					LT: g.convertDatePatternToMomentFormat(dtf.patterns['t']),
 					LTS: g.convertDatePatternToMomentFormat(dtf.patterns['T']),
@@ -27,8 +28,30 @@
 				week: {
 					dow: dtf.firstDay, // Monday is the first day of the week.
 					doy: 4  // The week that contains Jan 4th is the first week of the year.
+				},
+				// Unfortunately .NET cannot handle native digits in dates (like moment.js does).
+				// So we need to return the original system digits here
+				// (instead of - e.g. - eastern arabic digits).
+				preparse: function (string) {
+					return string;
+				},
+				postformat: function (string) {
+					return string;
 				}
-			});
+			};
+
+			var meridiem = dtf.AM && dtf.AM.length && dtf.PM && dtf.PM.length;
+			if (meridiem) {
+				// AM/PM: we cannot rely on moment.js definitions, because there are some discrepancies
+				// to .NET Framework's DateTime handling. Therefore we 'teach' moment how it's done in .NET.
+				glob.meridiemParse = new RegExp(dtf.AM[0] + '|' + dtf.PM[0], 'i');
+				glob.meridiem = function (hour, minute, isLower) {
+					var d = hour < 12 ? dtf.AM : dtf.PM;
+					return isLower ? d[1] : d[0];
+				}
+			}
+
+			moment.defineLocale('glob', glob);
 		}
 
 		// Adapt to jQuery validate

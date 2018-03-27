@@ -815,6 +815,18 @@ legend {
 	}
 }
 
+.locale-editor-content[data-rtl="true"] {
+	input,
+	textarea,
+	select,
+	.locale-editor-control,
+	.note-editable,
+	.note-editor-preview:not(.empty) {
+		direction: rtl;
+		text-align: right;
+	}
+}
+
 
 //
 // Thumb Zoomer

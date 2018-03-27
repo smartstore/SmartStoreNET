@@ -1781,6 +1781,7 @@
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\shipment.liquid" />
     <Content Include="Themes\Flex\Content\theme-rtl.scss" />
     <Content Include="Content\shared\_rtl-bs4.scss" />
+    <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

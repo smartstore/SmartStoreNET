@@ -94,6 +94,7 @@ namespace SmartStore.Services.Messages
 				{ "TemplateName", messageContext.MessageTemplate.Name },
 				{ "LanguageId", messageContext.Language.Id },
 				{ "LanguageCulture", messageContext.Language.LanguageCulture },
+				{ "LanguageRtl", messageContext.Language.Rtl },
 				{ "BaseUrl", messageContext.BaseUri.ToString() }
 			};
 
@@ -389,9 +390,12 @@ namespace SmartStore.Services.Messages
 				{ "Copyright", T("Content.CopyrightNotice", messageContext.Language.Id, DateTime.Now.Year.ToString(), part.Name).Text }
 			};
 
-			PublishModelPartCreatedEvent<Store>(part, m);
+			var he = new HybridExpando(true);
+			he.Merge(m, true);
 
-			return m;
+			PublishModelPartCreatedEvent<Store>(part, he);
+
+			return he;
 		}
 
 		protected virtual object CreateModelPart(PictureInfo part, MessageContext messageContext, 
@@ -616,7 +620,7 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(part, nameof(part));
 
 			var protocol = messageContext.BaseUri.Scheme;
-			var host = messageContext.BaseUri.Host;
+			var host = messageContext.BaseUri.Authority;
 			var body = HtmlUtils.RelativizeFontSizes(part.Body.EmptyNull());
 
 			// We must render the body separately

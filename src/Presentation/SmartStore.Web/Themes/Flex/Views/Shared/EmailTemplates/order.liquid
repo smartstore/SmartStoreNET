@@ -3,9 +3,9 @@
 <table class="w-100 brd order-items" cellpadding="10">
 	<thead>
 		<tr>
-			<th style="padding-right: 0" colspan="2" nowrap>{{ 'Order.Product(s).Item' | T }}</th>
-			<th style="padding-right: 0" nowrap>{{ 'Order.Product(s).Price' | T }}</th>
-			<th style="padding-right: 0" nowrap>{{ 'Order.Product(s).Quantity' | T }}</th>
+			<th style="padding-{{_right}}: 0" colspan="2" nowrap>{{ 'Order.Product(s).Item' | T }}</th>
+			<th style="padding-{{_right}}: 0" nowrap>{{ 'Order.Product(s).Price' | T }}</th>
+			<th style="padding-{{_right}}: 0" nowrap>{{ 'Order.Product(s).Quantity' | T }}</th>
 			<th nowrap>{{ 'Order.Product(s).Total' | T }}</th>
 		</tr>
 	</thead>
@@ -13,7 +13,7 @@
 		{% for item in Order.Items %}
 			{% assign product = item.Product %}
 			<tr>
-				<td style="border-top: 1px solid #eceeef; padding-right: 0" align="center">
+				<td style="border-top: 1px solid #eceeef; padding-{{_right}}: 0" align="center">
 					{% if product.Thumbnail %}
 						{% assign thumb = product.Thumbnail %}
 					    <img src="{{ thumb.Src }}" alt="{{ thumb.Alt }}"
@@ -22,7 +22,7 @@
 						/>
 					{% endif %}				
 				</td>
-				<td style="border-top: 1px solid #eceeef; padding-right: 0; line-height: 1.3em" width="70%">
+				<td style="border-top: 1px solid #eceeef; padding-{{_right}}: 0; line-height: 1.3em" width="70%">
 					<div class="mb-2">
 						<a class="order-item-link text-sm" href="{{ item.Product.Url }}">
 							{{ product.Name }}
@@ -47,10 +47,10 @@
 						</div>
 					{% endif %}		
 				</td>
-				<td class="text-sm" style="border-top: 1px solid #eceeef; padding-right: 0" nowrap>
+				<td class="text-sm" style="border-top: 1px solid #eceeef; padding-{{_right}}: 0" nowrap>
 					{{ item.UnitPrice }}
 				</td>
-				<td class="text-sm" style="border-top: 1px solid #eceeef; padding-right: 0" nowrap>
+				<td class="text-sm" style="border-top: 1px solid #eceeef; padding-{{_right}}: 0" nowrap>
 					{{ item.Qty }}
 					{% if product.QtyUnit %}
 						<span class="text-sm">{{ product.QtyUnit }}</span>
@@ -82,14 +82,14 @@
 				<!-- Subtotal -->
 				<tr>
 					<td class="text-sm" width="60%" nowrap>{{ 'Order.SubTotal' | T }}:</td>
-					<td class="text-sm" width="40%" align="right" nowrap>{{ totals.SubTotal }}</td>
+					<td class="text-sm text-right" width="40%" nowrap>{{ totals.SubTotal }}</td>
 				</tr>
 				
 				<!-- Subtotal Discount -->
 				{% if totals.SubTotalDiscount %}
 				<tr>
 					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.SubTotalDiscount' | T }}:</td>
-					<td class="text-sm text-success" width="40%" style="padding-top: 5px" align="right" nowrap>{{ totals.SubTotalDiscount }}</td>
+					<td class="text-sm text-success text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.SubTotalDiscount }}</td>
 				</tr>
 				{% endif %}
 
@@ -97,7 +97,7 @@
 				{% if totals.Shipping %}
 				<tr>
 					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.Shipping' | T }}:</td>
-					<td class="text-sm text-danger" width="40%" style="padding-top: 5px" align="right" nowrap>{{ totals.Shipping }}</td>
+					<td class="text-sm text-danger text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Shipping }}</td>
 				</tr>
 				{% endif %}		
 					
@@ -105,7 +105,7 @@
 				{% if totals.Payment %}
 				<tr>
 					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.PaymentMethodAdditionalFee' | T }}:</td>
-					<td class="text-sm text-danger" width="40%" style="padding-top: 5px" align="right" nowrap>{{ totals.Payment }}</td>
+					<td class="text-sm text-danger text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Payment }}</td>
 				</tr>
 				{% endif %}
 				
@@ -114,7 +114,7 @@
 					{% for rate in totals.TaxRates %}
 						<tr>
 							<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ rate.Rate }}:</td>
-							<td class="text-sm" width="40%" style="padding-top: 5px" align="right" nowrap>{{ rate.Value }}</td>
+							<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ rate.Value }}</td>
 						</tr>
 					{% endfor %}
 				{% endif %}
@@ -124,7 +124,7 @@
 				{% if totals.Tax %}
 				<tr>
 					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.Tax' | T }}:</td>
-					<td class="text-sm" width="40%" style="padding-top: 5px" align="right" nowrap>{{ totals.Tax }}</td>
+					<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Tax }}</td>
 				</tr>
 				{% endif %}
 				
@@ -132,7 +132,7 @@
 				{% if totals.Discount %}
 				<tr>
 					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.TotalDiscount' | T }}:</td>
-					<td class="text-sm text-success" width="40%" style="padding-top: 5px" align="right" nowrap>{{ totals.Discount }}</td>
+					<td class="text-sm text-success text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Discount }}</td>
 				</tr>
 				{% endif %}
 				
@@ -141,7 +141,7 @@
 					{% for gc in totals.GiftCardUsage %}
 						<tr>
 							<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ gc.GiftCard }}:</td>
-							<td class="text-sm" width="40%" style="padding-top: 5px" align="right" nowrap>{{ gc.UsedAmount }}</td>
+							<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ gc.UsedAmount }}</td>
 						</tr>
 					{% endfor %}
 				{% endif %}
@@ -152,7 +152,7 @@
 					{% for rp in totals.RedeemedRewardPoints %}
 						<tr>
 							<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ rp.Title }}:</td>
-							<td class="text-sm" width="40%" style="padding-top: 5px" align="right" nowrap>{{ rp.Amount }}</td>
+							<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ rp.Amount }}</td>
 						</tr>
 					{% endfor %}
 				{% endif %}
@@ -162,14 +162,14 @@
 				{% if totals.RoundingDiff %}
 				<tr>
 					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'ShoppingCart.Totals.Rounding' | T }}:</td>
-					<td class="text-sm" width="40%" style="padding-top: 5px" align="right" nowrap>{{ totals.RoundingDiff }}</td>
+					<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.RoundingDiff }}</td>
 				</tr>
 				{% endif %}
 				
 				<!-- TOTAL -->
 				<tr>
 					<td width="60%" style="padding-top: 5px" nowrap><b>{{ 'Order.OrderTotal' | T }}:</b></td>
-					<td width="40%" style="padding-top: 5px" align="right" nowrap><b>{{ totals.Total }}</b></td>
+					<td class="text-right" width="40%" style="padding-top: 5px" nowrap><b>{{ totals.Total }}</b></td>
 				</tr>
 			</table>
 		</td>

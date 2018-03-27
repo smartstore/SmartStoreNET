@@ -76,7 +76,9 @@ namespace SmartStore.Web.Framework.Controllers
 
 			if (additionalViewData != null)
 			{
+				var vdd = (ViewDataDictionary)additionalViewData;
 				controller.ViewData.AddRange(CommonHelper.ObjectToDictionary(additionalViewData));
+				controller.ViewData.TemplateInfo.HtmlFieldPrefix = vdd.TemplateInfo.HtmlFieldPrefix;
 			}
 
             using (var sw = new StringWriter())

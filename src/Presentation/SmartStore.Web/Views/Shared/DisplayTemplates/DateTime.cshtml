@@ -1,0 +1,24 @@
+﻿@model DateTime
+
+@using System.Globalization;
+@using System.Text.RegularExpressions;
+
+@{ 
+	var culture = CultureInfo.CurrentCulture;
+	var formatString = ViewContext.ViewData.ModelMetadata.DisplayFormatString;
+}
+
+@functions {
+	private string ToNativeDigits(DateTime value, CultureInfo ci, string fmt)
+	{
+		var nativeDigits = ci.NumberFormat.NativeDigits;
+		var result = fmt.HasValue() ? value.ToString(fmt, ci) : value.ToString(ci);
+		
+		var rg = new Regex(@"\d");
+		result = rg.Replace(result, m => nativeDigits[m.Value.ToInt()] );
+
+		return result;
+	}
+}
+
+@ToNativeDigits(Model, culture, formatString)

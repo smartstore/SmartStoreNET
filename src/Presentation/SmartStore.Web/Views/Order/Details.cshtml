@@ -39,7 +39,7 @@
 		<div class="row mb-3">
 			<div class="col-6 col-sm-auto pb-3">
 				<h5 class="text-muted">@T("Order.OrderDate")</h5>
-				<div>@Model.CreatedOn.ToShortDateString()</div>
+				<div>@Model.CreatedOn.ToShortDateString().ReplaceNativeDigits()</div>
 			</div>
 			<div class="col-6 col-sm-auto pb-3">
 				<h5 class="text-muted">@T("Order.Order#")</h5>

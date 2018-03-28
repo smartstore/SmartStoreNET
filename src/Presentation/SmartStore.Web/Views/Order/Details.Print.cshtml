@@ -80,7 +80,7 @@
 						</tr>
 						<tr>
 							<td class="label">@T("Common.Date"):</td>
-							<td class="value">@order.CreatedOn.ToShortDateString()</td>
+							<td class="value">@order.CreatedOn.ToShortDateString().ReplaceNativeDigits()</td>
 						</tr>
 						<tr>
 							<td class="label">@T("Order.PaymentMethod"):</td>

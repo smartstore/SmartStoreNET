@@ -12,4 +12,29 @@
 	// PNOTIFY
 	// -------
 
+	.alert.ui-pnotify-container {
+		padding-left: 1.25rem !important;
+		padding-right: 70px !important;
+	}
+
+	.ui-pnotify-icon {
+		right: 0;
+		left: auto;
+
+		&:before, 
+		&:after {
+			// No bubble in RTL mode, too much CSS!
+			border-width: 0 !important;
+		}
+	}
+
+	.ui-pnotify-closer, 
+	.ui-pnotify-sticker {
+		float: left;
+		padding-right: 2px;
+		padding-left: 0;
+		right: 5px;
+		left: auto;
+	}
+
 }

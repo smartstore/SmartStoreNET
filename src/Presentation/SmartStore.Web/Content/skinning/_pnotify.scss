@@ -22,6 +22,8 @@
     width: 3rem;
     color: #fff;
     z-index: 10;
+	float: none;
+	margin: 0;
 
 	@if $alert-info-is-primary {
 		// info should have primary color
@@ -43,6 +45,8 @@
         line-height: 1.2em;
         top: 50%;
         transform: translateY(-50%);
+		float: none;
+		margin: 0;
     }
 }
 

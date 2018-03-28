@@ -20,21 +20,23 @@
 	// add css assets
 	var telerikCssRoot = "~/Administration/Content/telerik/css/2012.2.607/";
 
-	if (WorkContext.WorkingLanguage.Rtl)
-	{
-		Html.AppendCssFileParts(false,
-			"~/Administration/Content/theme-rtl.scss",
-			telerikCssRoot + "telerik.rtl.css");
-	}
-
 	Html.AppendCssFileParts(
 		contentRoot + "fontastic/fontastic.css",
 		vendorsRoot + "font-awesome/font-awesome.css",
 		telerikCssRoot + "telerik.common.css",
 		vendorsRoot + "pnotify/css/pnotify.css",
 		vendorsRoot + "pnotify/css/pnotify.mobile.css",
-		vendorsRoot + "pnotify/css/pnotify.buttons.css",
-		"~/Administration/Content/theme.scss");
+		vendorsRoot + "pnotify/css/pnotify.buttons.css");
+
+	// Theme
+	Html.AddCssFileParts(true, "~/Administration/Content/theme.scss");
+
+	if (WorkContext.WorkingLanguage.Rtl)
+	{
+		Html.AddCssFileParts(true,
+			telerikCssRoot + "telerik.rtl.css",
+			"~/Administration/Content/theme-rtl.scss");
+	}
 
 	// add js assets (Head)
 	Html.AppendScriptParts(ResourceLocation.Head,

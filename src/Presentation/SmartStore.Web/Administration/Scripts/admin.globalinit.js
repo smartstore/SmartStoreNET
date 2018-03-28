@@ -1,7 +1,7 @@
 /// <reference path="admin.common.js" />
 
 (function ($, window, document, undefined) {
-    
+
 	var _commonPluginFactories = [
 		// panel toggling
 		function (ctx) {
@@ -17,7 +17,7 @@
 		function (ctx) {
 			ctx.find(".cph").tooltip({
 				selector: "a.hint",
-				placement: "left",
+				placement: SmartStore.globalization.culture.isRTL ? "right" : "left",
 				trigger: 'hover',
 				delay: { show: 400, hide: 0 }
 			});

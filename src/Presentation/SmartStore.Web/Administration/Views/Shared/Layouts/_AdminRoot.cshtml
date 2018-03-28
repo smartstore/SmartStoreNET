@@ -19,6 +19,14 @@
 
 	// add css assets
 	var telerikCssRoot = "~/Administration/Content/telerik/css/2012.2.607/";
+
+	if (WorkContext.WorkingLanguage.Rtl)
+	{
+		Html.AppendCssFileParts(false,
+			"~/Administration/Content/theme-rtl.scss",
+			telerikCssRoot + "telerik.rtl.css");
+	}
+
 	Html.AppendCssFileParts(
 		contentRoot + "fontastic/fontastic.css",
 		vendorsRoot + "font-awesome/font-awesome.css",
@@ -101,7 +109,7 @@
 
 	@{ Html.RenderZone("head"); }
 </head>
-<body class="@Html.BodyCssClass()"@(Html.BodyId())>   
+<body @Html.LanguageAttributes(true) class="@Html.BodyCssClass()"@(Html.BodyId())>   
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
 	@{ Html.RenderZone("aftercontent"); }

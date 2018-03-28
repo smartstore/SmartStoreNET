@@ -27,7 +27,7 @@
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Action")</dt>
 					<dd class="col-sm-8">@item.ReturnAction</dd>
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
-					<dd class="col-sm-8">@item.CreatedOn.ToString()</dd>
+					<dd class="col-sm-8">@item.CreatedOn.ToNativeString()</dd>
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Comments")</dt>
 					<dd class="col-sm-8">@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(item.Comments, false, true, false, false, false, false))</dd>
 				</dl>

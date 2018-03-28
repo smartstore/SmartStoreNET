@@ -179,6 +179,14 @@ namespace SmartStore
 		/// <summary>
 		/// Converts a DateTime to a string with native digits
 		/// </summary>
+		public static string ToNativeString(this DateTime value, string format)
+		{
+			return value.ToNativeString(format, null);
+		}
+
+		/// <summary>
+		/// Converts a DateTime to a string with native digits
+		/// </summary>
 		public static string ToNativeString(this DateTime value, string format, IFormatProvider provider)
 		{
 			provider = provider ?? CultureInfo.CurrentCulture;

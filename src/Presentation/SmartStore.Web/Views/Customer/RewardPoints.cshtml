@@ -49,7 +49,7 @@
 							var item = Model.RewardPoints[i];
 							<tr>
 								<td>
-									@item.CreatedOn
+									@item.CreatedOn.ToNativeString()
 								</td>
 								<td>
 									@item.Points.ToString("N0")

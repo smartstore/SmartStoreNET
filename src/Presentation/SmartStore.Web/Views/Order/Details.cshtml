@@ -318,7 +318,7 @@
 									<td>
 										@if (item.ShippedDate.HasValue)
 										{
-											@item.ShippedDate.Value.ToString("D")
+											@item.ShippedDate.Value.ToNativeString("D")
 										}
 										else
 										{
@@ -328,7 +328,7 @@
 									<td>
 										@if (item.DeliveryDate.HasValue)
 										{
-											@item.DeliveryDate.Value.ToString("D")
+											@item.DeliveryDate.Value.ToNativeString("D")
 										}
 										else
 										{

@@ -28,7 +28,7 @@
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.Order#")</dt>
 					<dd class="col-sm-9"><a href="@Url.Action("Details", "Order", new { id = item.OrderId })" rel="nofollow">@item.OrderId</a></dd>
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Common.CreatedOn")</dt>
-					<dd class="col-sm-9">@item.CreatedOn.ToString("d")</dd>
+					<dd class="col-sm-9">@item.CreatedOn.ToNativeString("d")</dd>
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("DownloadableProducts.Fields.Product")</dt>
 					<dd class="col-sm-9">
 						<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>

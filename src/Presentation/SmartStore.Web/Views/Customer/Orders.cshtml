@@ -119,7 +119,7 @@
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderStatus")</dt>
 					<dd class="col-sm-9">@order.OrderStatus</dd>
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderDate")</dt>
-					<dd class="col-sm-9">@order.CreatedOn.ToString()</dd>
+					<dd class="col-sm-9">@order.CreatedOn.ToNativeString()</dd>
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderTotal")</dt>
 					<dd class="col-sm-9 price">@order.OrderTotal</dd>
 				</dl>

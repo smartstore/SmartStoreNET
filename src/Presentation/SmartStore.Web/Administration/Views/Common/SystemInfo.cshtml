@@ -113,7 +113,7 @@
         </td>
         <td class="adminData">
 			<div class="form-control-plaintext">
-				@Model.ServerLocalTime.ToString("F")
+				@Model.ServerLocalTime.ToNativeString("F")
 			</div>
         </td>
     </tr>
@@ -123,7 +123,7 @@
         </td>
         <td class="adminData">
 			<div class="form-control-plaintext">
-				@Model.UtcTime.ToString("F")
+				@Model.UtcTime.ToNativeString("F")
 			</div>
         </td>
     </tr>

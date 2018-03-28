@@ -190,19 +190,7 @@ namespace SmartStore
 		public static string ToNativeString(this DateTime value, string format, IFormatProvider provider)
 		{
 			provider = provider ?? CultureInfo.CurrentCulture;
-			var nfi = NumberFormatInfo.GetInstance(provider);
-
-			if (nfi.DigitSubstitution == DigitShapes.None)
-			{
-				return value.ToString(format, provider);
-			}
-
-			var nativeDigits = nfi.NativeDigits;
-			var result = value.ToString(format, provider);
-			var rg = new Regex(@"\d");
-
-			result = rg.Replace(result, m => nativeDigits[m.Value.ToInt()]);
-			return result;
+			return value.ToString(format, provider).ReplaceNativeDigits(provider);
 		}
     }
 

@@ -185,8 +185,6 @@ header {
 
 	.title, .options {
 		@include make-col-ready();
-		/*padding-left: 0;
-        padding-right: 0;*/
 	}
 
 	.title {
@@ -257,15 +255,15 @@ header {
 		z-index: 600;
 		left: $content-padding-x / 2;
 		right: $content-padding-x / 2;
-		margin-left: 0;
-		margin-right: 0;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
 		background: $gray-100;
 		background: #fff;
 		border-bottom: 1px solid rgba(0,0,0, 0.08);
 
 		.modal-open & {
 			// add the killed scrollbar width
-			margin-right: 17px;
+			margin-right: 17px !important;
 		}
 	}
 
@@ -299,8 +297,6 @@ header {
 	}
 
 	.navbar-brand {
-		//margin-right: 1.75rem;
-
 		> .navbar-img {
 			height: 28px;
 			width: auto;
@@ -329,10 +325,7 @@ header {
 	.dropdown-item > i,
 	.dropdown-item > img {
 		display: inline-block;
-		/*margin-left: -8px;
-		margin-right: 0.6rem;*/
 		font-size: inherit;
-		//vertical-align: bottom;
 	}
 
 	.dropdown-header {
@@ -1107,9 +1100,6 @@ textarea:not([class*="form-control"]) {
 	border-bottom: none;
 }
 
-.module-col {
-}
-
 .module-heading {
 	display: flex;
 	flex-wrap: nowrap;
@@ -1315,7 +1305,8 @@ table.payment-method-features td {
 }
 
 .column-mapping {
-	.column-one, .column-two {
+	.column-one, 
+	.column-two {
 		width: 42%;
 	}
 

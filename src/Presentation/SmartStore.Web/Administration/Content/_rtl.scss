@@ -9,6 +9,65 @@
 // --------------------------------------------------
 
 [dir=rtl] {
+
+	// Layout
+	// ------
+
+	.section-header {
+		.title {
+			padding-right: 0;
+			padding-left: 5px;
+
+			> i {
+				margin-left: 0.5rem;
+				margin-right: initial;
+			}
+
+			> img {
+				margin-left: 5px;
+				margin-right: initial;
+			}
+		}
+
+		.options {
+			padding-right: 5px;
+			padding-left: 0;
+		}
+	}
+
+
+	// Main Menu
+	// ---------
+
+	#navbar #navbar-menu .nav-item > .dropdown-menu {
+		// Dropdown bubble
+		&:before	{ right: 10px; left: auto; }
+		&:after		{ right: 11px; left: auto; }
+	}
+
+
+	// Forms
+	// -----
+
+	.ctl-label {
+		padding-left: 2.5rem;
+		padding-right: initial;
+
+		> label {
+			padding-left: 0;
+			padding-right: initial;
+		}
+
+		> .hint {
+			left: 0;
+			right: auto;
+		}
+	}
+
+
+	// Form Grid
+	// ---------
+
 	.adminContent {
 		&:not(.adminContent-vertical) > tbody > tr:not(.wide),
 		&:not(.adminContent-vertical) > tr:not(.wide),
@@ -50,18 +109,60 @@
 		}
 	}
 
-	.ctl-label {
-		padding-left: 2.5rem;
-		padding-right: initial;
 
-		> label {
-			padding-left: 0;
-			padding-right: initial;
-		}
+	// Themes
+	// ------
 
-		> .hint {
-			left: 0;
-			right: auto;
+	#theme-list .theme-broken-badge {
+		left: 0;
+		right: auto;
+	}
+
+	.theme-editor .themevar-chain-info {
+		margin-right: 0.75rem;
+		margin-left: initial;
+	}
+
+
+	// Dashboard
+	// ---------
+
+	.stats-today .stats-today-item {
+		text-align: right;
+		border-left: 1px solid $gray-300;
+		border-right-width: 0;
+
+		&:last-child {
+			border-left: none
 		}
+	}
+
+
+	// Plugins & Providers
+	// -------------------
+
+	.module-icon {
+		padding-right: $content-padding-x;
+		padding-left: initial;
+	}
+
+	.module-badges {
+		margin-right: 0.4rem;
+		margin-left: initial;
+	}
+
+	.module-actions {
+		margin-right: auto;
+		margin-left: initial;
+	}
+
+	.module-info .attr-value {
+		padding-right: 0.15rem;
+		padding-left: initial;
+	}
+
+	.plugin-configuration > div:last-child {
+		padding-right: 2rem;
+		padding-left: initial;
 	}
 }

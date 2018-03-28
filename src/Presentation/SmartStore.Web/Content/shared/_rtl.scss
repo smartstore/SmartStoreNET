@@ -97,11 +97,12 @@
 	.dropdown-group {
 		> .dropdown-item {
 			padding-left: 2rem;
-			padding-right: initial;
+			padding-right: $dropdown-item-padding-x;
 
 			&:before {
 				left: $dropdown-item-padding-x / 2;
 				right: auto;
+				content: "\f104";
 			}
 		}
 

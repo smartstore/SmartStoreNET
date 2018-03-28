@@ -1025,6 +1025,7 @@
     <Content Include="Content\editors\summernote\font\summernote.woff" />
     <Content Include="Content\shared\_rtl.scss" />
     <Content Include="App_Data\widgetzones.json" />
+    <Content Include="Content\skinning\_rtl.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />

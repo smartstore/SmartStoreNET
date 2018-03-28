@@ -142,7 +142,9 @@
             @Html.SmartLabelFor(model => model.CreatedOn)
         </td>
         <td class="adminData">
-            @Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			<div class="form-control-plaintext">
+				@Html.DisplayFor(model => model.CreatedOn)
+			</div>
         </td>
     </tr>
 	<tr>
@@ -150,7 +152,9 @@
 			@Html.SmartLabelFor(model => model.UpdatedOn)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			<div class="form-control-plaintext">
+				@Html.DisplayFor(model => model.UpdatedOn)
+			</div>
 		</td>
 	</tr>
 </table>

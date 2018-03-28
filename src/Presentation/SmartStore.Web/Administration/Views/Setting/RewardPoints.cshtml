@@ -93,7 +93,7 @@
 				<td class="adminData wide">
 					@Html.SettingEditorFor(model => Model.PointsForPurchases_Amount, @<div class="form-row flex-nowrap">
 						<div class="col-auto">
-							<div class=" form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")</div>
+							<div class="form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")</div>
 						</div>
 						<div class="col-auto">
 							@Html.EditorFor(model => model.PointsForPurchases_Amount, new { postfix = Model.PrimaryStoreCurrencyCode })

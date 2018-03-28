@@ -109,7 +109,9 @@
         <td class="adminData">
             @if (Model.SentOn.HasValue)
             {
-                @Html.TextBoxFor(model => model.SentOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+				<div class="form-control-plaintext">
+					@Html.DisplayFor(model => model.SentOn)
+				</div>
 			}
 			else
 			{
@@ -130,7 +132,9 @@
             @Html.SmartLabelFor(model => model.CreatedOn)
         </td>
         <td class="adminData">
-            @Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			<div class="form-control-plaintext">
+				@Html.DisplayFor(model => model.CreatedOn)
+			</div>
         </td>
     </tr>
 </table>

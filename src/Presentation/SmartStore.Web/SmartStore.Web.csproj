@@ -870,6 +870,7 @@
     <Content Include="Content\editors\summernote\plugins\lang\ru-RU.js" />
     <Content Include="Content\editors\summernote\plugins\lang\tr-TR.js" />
     <Content Include="Content\editors\summernote\plugins\lang\zh-TW.js" />
+    <Content Include="Content\editors\summernote\plugins\smartstore.tablestyles.js" />
     <Content Include="Content\editors\summernote\plugins\smartstore.link.js" />
     <Content Include="Content\editors\summernote\plugins\smartstore.image.js" />
     <Content Include="Content\editors\summernote\summernote-bs4.css" />

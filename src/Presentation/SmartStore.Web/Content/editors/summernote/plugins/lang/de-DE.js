@@ -10,6 +10,11 @@ $.extend(true, $.summernote.lang, {
 		},
 		image: {
 			imageProps: 'Bild Eigenschaften'
+		},
+		tableStyles: {
+			tooltip: "Tabellenstil",
+			stylesExclusive: ["Standard", "Eingerahmt"],
+			stylesInclusive: ["Streifen", "Kompakt", "Hover Effekt"]
 		}
   }
 });

@@ -1008,9 +1008,10 @@ namespace SmartStore.Services.Orders
 						}
                     }
 
-                    // price is the same (for products which require customers to enter a price)
-                    var customerEnteredPricesEqual = true;
-					if (sci.Item.Product.CustomerEntersPrice)
+					// Products with CustomerEntersPrice are equal if the price is the same.
+					// But a system product may only be placed once in the shopping cart.
+					var customerEnteredPricesEqual = true;
+					if (sci.Item.Product.CustomerEntersPrice && !sci.Item.Product.IsSystemProduct)
 					{
 						customerEnteredPricesEqual = Math.Round(sci.Item.CustomerEnteredPrice, 2) == Math.Round(customerEnteredPrice, 2);
 					}

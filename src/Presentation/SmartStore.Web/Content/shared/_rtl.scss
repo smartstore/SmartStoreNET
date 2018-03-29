@@ -10,6 +10,19 @@
 
 [dir=rtl] {
 
+	// Tables
+	// ------------------------------
+
+	td[align="right"],
+	th[align="right"] {
+		text-align: left;
+	}
+
+	td[align="left"],
+	th[align="left"] {
+		text-align: right;
+	}
+
 	// Alert
 	// ------------------------------
 

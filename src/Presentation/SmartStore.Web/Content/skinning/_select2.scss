@@ -355,8 +355,8 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 		padding-top: $s2bs-padding-base-vertical;
 		padding-bottom: $s2bs-padding-base-vertical;
 		padding-left: $s2bs-padding-base-horizontal;
-		padding-right: ($s2bs-padding-base-horizontal + ($s2bs-caret-width-base * 3));
 		padding-right: calc(#{$s2sm-caret-width} + #{$s2bs-padding-base-horizontal / 2});
+		//padding-right: ($s2bs-padding-base-horizontal + ($s2bs-caret-width-base * 3));
 		/**
      * Adjust the single Select2's dropdown arrow button appearance.
      */
@@ -370,7 +370,8 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 			top: 1px;
 			bottom: 1px;
 			right: 1px;
-			border-left: 1px solid $input-border-color;
+			border: 0 solid $input-border-color;
+			border-left-width: 1px;
 			width: $s2sm-caret-width;
 			background-color: $s2sm-shade-bg;
 
@@ -656,10 +657,10 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 	/*------------------------------------*\
     #RTL SUPPORT
   \*------------------------------------*/
-	/*&[dir="rtl"] {
+	&[dir="rtl"] {
 		.select2-selection--single {
-			padding-left: $s2bs-padding-base-horizontal + $s2bs-caret-width-base*3;
 			padding-right: $s2bs-padding-base-horizontal;
+			padding-left: calc(#{$s2sm-caret-width} + #{$s2bs-padding-base-horizontal / 2});
 
 			.select2-selection__rendered {
 				padding-right: 0;
@@ -669,19 +670,23 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 
 			.select2-selection__clear {
 				float: left;
+				margin-left: 4px;
+				margin-right: initial;
 			}
 
 			.select2-selection__arrow {
-				left: $s2bs-padding-base-horizontal;
+				left: 1px;
 				right: auto;
-
-				b {
-					margin-left: 0;
-				}
+				border-left-width: 0;
+				border-right-width: 1px;
 			}
 		}
 
 		.select2-selection--multiple {
+			.select2-search--inline {
+				float: right;
+			}
+
 			.select2-selection__choice,
 			.select2-selection__placeholder {
 				float: right;
@@ -697,7 +702,21 @@ $s2bs-form-control-transition: none; // border-color ease-in-out .15s, box-shado
 				margin-right: auto;
 			}
 		}
-	}*/
+	}
+
+	// RTL for dropdown
+	> [dir="rtl"] {
+		.select2-results__option > .select2-option {
+			padding-right: 18px;
+			padding-left: initial;
+
+			&:before {
+				right: $s2bs-padding-base-horizontal;
+				left: auto;
+				text-align: right;
+			}
+		}
+	}
 }
 
 

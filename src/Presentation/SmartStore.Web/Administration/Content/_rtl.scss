@@ -165,4 +165,45 @@
 		padding-right: 2rem;
 		padding-left: initial;
 	}
+
+
+	// Misc
+	// ----
+
+	.color-container {
+		padding-left: 0.5rem;
+		padding-right: initial;
+	}
+
+
+	// HTML editors
+	// ------------
+
+	.note-editor .note-toolbar {
+		> .note-btn-group {
+			border-left-width: 2px;
+			border-right-width: 0;
+			padding-left: 5px;
+		}
+
+		> .note-btn-group:last-of-type {
+			border-left-width: 0;
+			padding-left: 0;
+		}
+
+		.dropdown-toggle:after {
+			margin-right: 0.5em;
+			margin-left: initial;
+		}
+
+		.dropdown-toggle:empty:after {
+			margin-right: 0;
+		}
+	}
+
+	.note-popover .popover-content .note-color .dropdown-toggle, 
+	.card-header.note-toolbar .note-color .dropdown-toggle {
+		padding-left: 5px;
+		padding-right: 5px;
+	}
 }

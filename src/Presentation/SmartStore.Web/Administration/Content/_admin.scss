@@ -1390,10 +1390,6 @@ table.payment-method-features td {
 	border-color: $input-border-color !important;
 	border-radius: $input-border-radius !important;
 
-	/*.modal-dialog {
-		@extend .modal-lg;
-	}*/
-
 	&.focus {
 		border-color: $input-focus-border-color !important;
 	}
@@ -1403,7 +1399,8 @@ table.payment-method-features td {
 		flex-wrap: wrap;
 
 		> .note-btn-group {
-			border-right: 1px solid rgba(#000, 0.12);
+			border: 0 solid rgba(#000, 0.12);
+			border-right-width: 1px;
 			padding-right: 5px;
 		}
 
@@ -1438,10 +1435,5 @@ table.payment-method-features td {
 			padding-right: 0.5rem;
 			min-width: 50px;
 		}
-
-		/*.note-current-fontname,
-		.note-current-fontsize {
-			font-weight: $font-weight-normal;
-		}*/
 	}
 }

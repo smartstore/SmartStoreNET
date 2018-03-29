@@ -192,7 +192,7 @@ namespace SmartStore.Web.Framework.UI
 
             if (pager.ShowSummary && pager.Model.TotalPages > 1)
             {
-                writer.AddAttribute("class", "pagination-summary pull-left");
+                writer.AddAttribute("class", "pagination-summary float-left");
                 writer.RenderBeginTag("div");
                 writer.WriteEncodedText(pager.CurrentPageText.FormatInvariant(pager.Model.PageNumber, pager.Model.TotalPages, pager.Model.TotalCount));
                 writer.RenderEndTag(); // div

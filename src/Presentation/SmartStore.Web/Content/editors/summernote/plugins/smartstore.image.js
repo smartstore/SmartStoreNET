@@ -33,7 +33,7 @@
 					},
 					click: function (e) {
 						var $img = $(context.layoutInfo.editable.data('target'));
-						$img.removeClass('pull-right pull-left').addClass('pull-left');
+						$img.removeClass('float-right float-left').addClass('float-left');
 						context.invoke('editor.afterCommand');
 					}
 				}).render();
@@ -48,7 +48,7 @@
 					},
 					click: function (e) {
 						var $img = $(context.layoutInfo.editable.data('target'));
-						$img.removeClass('pull-right pull-left').addClass('pull-right');
+						$img.removeClass('float-right float-left').addClass('float-right');
 						context.invoke('editor.afterCommand');
 					}
 				}).render();
@@ -63,7 +63,7 @@
 					},
 					click: function (e) {
 						var $img = $(context.layoutInfo.editable.data('target'));
-						$img.removeClass('pull-right pull-left');
+						$img.removeClass('float-right float-left');
 						context.invoke('editor.afterCommand');
 					}
 				}).render();

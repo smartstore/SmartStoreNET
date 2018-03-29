@@ -16,6 +16,10 @@ var summernote_image_upload_url;
 			},
 			image: {
 				imageProps: 'Image Attributes'
+			},
+			imageShapes: {
+				tooltip: 'Image Shapes',
+				tooltipShapeOptions: ['Responsive', 'Rounded', 'Circle', 'Thumbnail', 'None']
 			}
 		}
 	});

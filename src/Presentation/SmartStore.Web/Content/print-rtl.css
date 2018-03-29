@@ -38,8 +38,10 @@
 .text-left		{ text-align: right }
 .text-right		{ text-align: left }
 
-.pull-left		{ float: right }
-.pull-right		{ float: left }
+.pull-left,
+.float-left		{ float: right }
+.pull-right,
+.float-right	{ float: left }
 
 /* -------------------------------------------------------------- 
  	Tables

@@ -69,7 +69,7 @@
                     <td class="topic-name">
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
                         <div>
-                            <div class="topic-starter text-muted pull-left">
+                            <div class="topic-starter text-muted float-left">
                                 @if (topic.CustomerId > 0)
                                 {
                                     var authorText = T("Forum.Author");

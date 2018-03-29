@@ -88,7 +88,8 @@ var summernote_image_upload_url;
 			image: [
 				['custom', ['imageAttributes', 'link', 'unlinkImage']],
 				['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
-				['float', ['floatLeft', 'floatRight', 'floatNone']],
+				//['float', ['floatLeft', 'floatRight', 'floatNone']],
+				['float', ['bsFloatLeft', 'bsFloatRight', 'bsFloatNone']],
 				['remove', ['removeMedia']]
 			],
             link: [

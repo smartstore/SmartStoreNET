@@ -22,6 +22,53 @@
 				buttons = context.modules.buttons,
 				editor = context.modules.editor;
 
+			// Image float popover stuff
+			context.memo('button.bsFloatLeft', function () {
+				return ui.button({
+					contents: ui.icon(options.icons.alignLeft),
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.attr("title", lang.image.floatLeft);
+						btn.tooltip();
+					},
+					click: function (e) {
+						var $img = $(context.layoutInfo.editable.data('target'));
+						$img.removeClass('pull-right pull-left').addClass('pull-left');
+						context.invoke('editor.afterCommand');
+					}
+				}).render();
+			});
+			context.memo('button.bsFloatRight', function () {
+				return ui.button({
+					contents: ui.icon(options.icons.alignRight),
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.attr("title", lang.image.floatRight);
+						btn.tooltip();
+					},
+					click: function (e) {
+						var $img = $(context.layoutInfo.editable.data('target'));
+						$img.removeClass('pull-right pull-left').addClass('pull-right');
+						context.invoke('editor.afterCommand');
+					}
+				}).render();
+			});
+			context.memo('button.bsFloatNone', function () {
+				return ui.button({
+					contents: ui.icon(options.icons.alignJustify),
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.attr("title", lang.image.floatNone);
+						btn.tooltip();
+					},
+					click: function (e) {
+						var $img = $(context.layoutInfo.editable.data('target'));
+						$img.removeClass('pull-right pull-left');
+						context.invoke('editor.afterCommand');
+					}
+				}).render();
+			});
+
 			context.memo('button.media', function () {
 				return ui.button({
 					contents: '<i class="fa fa-picture-o">',

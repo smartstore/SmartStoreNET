@@ -29,7 +29,7 @@
 					<p>
 						@if (Model.ShippedDate.HasValue)
 						{
-							@Model.ShippedDate.Value.ToString("D")
+							@Model.ShippedDate.Value.ToNativeString("D")
 						}
 						else
 						{
@@ -41,7 +41,7 @@
 					<p>
 						@if (Model.DeliveryDate.HasValue)
 						{
-							@Model.DeliveryDate.Value.ToString("D")
+							@Model.DeliveryDate.Value.ToNativeString("D")
 						}
 						else
 						{
@@ -153,7 +153,7 @@
                                     <td>
                                         @if (item.Date.HasValue)
                                         {
-                                            @item.Date.Value.ToString("D")
+                                            @item.Date.Value.ToNativeString("D")
                                         }
                                     </td>
                                 </tr>

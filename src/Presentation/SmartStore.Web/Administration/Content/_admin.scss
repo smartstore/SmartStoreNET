@@ -1436,4 +1436,14 @@ table.payment-method-features td {
 			min-width: 50px;
 		}
 	}
+
+	.note-editable {
+		table:not(.table-bordered):not([border]),
+		table:not(.table-bordered)[border='0'] {
+			border-collapse: collapse;
+			td, th {
+				border: 1px dashed #bbb;
+			}
+		}
+	}
 }

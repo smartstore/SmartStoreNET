@@ -878,6 +878,7 @@
     <Content Include="Content\fontastic\fontastic.css" />
     <Content Include="Content\fontastic\fonts\fontastic.svg" />
     <Content Include="Content\placeholder.txt" />
+    <Content Include="Content\print-rtl.css" />
     <Content Include="Content\vendors\drift\Drift.js" />
     <Content Include="Content\vendors\drift\Drift.min.js" />
     <Content Include="Content\vendors\fileuploader\images\loading.gif" />

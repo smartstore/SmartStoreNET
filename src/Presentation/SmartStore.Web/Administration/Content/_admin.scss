@@ -1296,12 +1296,14 @@ table.payment-method-features td {
 
 .column-mapping .right-label,
 .mapping-list-item .right-label {
-	float: right;
 	font-size: 0.9em;
 	padding-top: 2px;
+	align-self: flex-end;
 }
 .mapping-list-item {
 	@include text-truncate();
+	display: flex;
+	flex-wrap: nowrap;
 }
 
 .column-mapping {
@@ -1318,14 +1320,9 @@ table.payment-method-features td {
 	.mapping-edit {
 		white-space: nowrap;
 
-		.select-column, .select-property {
+		.select-column, 
+		.select-property {
 			width: 84%;
-		}
-		.select2-container {
-			float: left;
-			display: inline-block;
-			min-width: 220px;
-			margin-right: 4px;
 		}
 	}
 
@@ -1334,20 +1331,12 @@ table.payment-method-features td {
 			white-space: nowrap;
 			cursor: pointer;
 			padding: 7px 0;
-
-			.property-icon {
-				display: inline-block;
-				margin-right: 0;
-			}
-			.left-label {
-				display: inline-block;
-			}
-			.right-label {
-				margin-right: 20px;
-			}
+			display: flex;
+			flex-wrap: nowrap;
 		}
+
 		.select2-selection__clear {
-			margin: 0 0 0 3px;
+			margin-left: 3px;
 		}
 	}
 }

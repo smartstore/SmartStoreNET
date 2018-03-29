@@ -35,29 +35,37 @@
 </div>
 
 <div id="PropertyMappingTemplate" class="d-none">
-	<div class="mapping-edit">
-		<select class="form-control select-property noskin">
+	<div class="mapping-edit form-row">
+		<div class="col">
+			<select class="form-control select-property noskin">
 			@foreach (var property in Model.AvailableEntityProperties)
 			{
-				<option value="@property.Property" data-defaultdisabled="@(property.IsDefaultDisabled ? "1" : "0")">@property.PropertyDescription</option>
+					<option value="@property.Property" data-defaultdisabled="@(property.IsDefaultDisabled ? "1" : "0")">@property.PropertyDescription</option>
 			}
-		</select>
-		<button type="button" class="btn btn-warning mapping-apply btn-icon"><i class="fa fa-check"></i></button>
-		<button type="button" class="btn btn-outline-secondary btn-to-danger mapping-cancel btn-icon"><i class="fa fa-times"></i></button>
+			</select>
+		</div>
+		<div class="col-auto">
+			<button type="button" class="btn btn-warning mapping-apply btn-icon"><i class="fa fa-check"></i></button>
+			<button type="button" class="btn btn-outline-secondary btn-to-danger mapping-cancel btn-icon"><i class="fa fa-times"></i></button>
+		</div>
 	</div>
 </div>
 
 <div id="ColumnMappingTemplate" class="d-none">
-	<div class="mapping-edit">
-		<select class="form-control select-column noskin" data-placeholder="@ignore">
-			<option></option>
-			@foreach (var column in Model.AvailableSourceColumns)
-			{
-				<option value="@column.Column">@column.PropertyDescription</option>
-			}
-		</select>
-		<button type="button" class="btn btn-warning mapping-apply btn-icon"><i class="fa fa-check"></i></button>
-		<button type="button" class="btn btn-outline-secondary btn-to-danger mapping-cancel btn-icon"><i class="fa fa-times"></i></button>
+	<div class="mapping-edit form-row">
+		<div class="col">
+			<select class="form-control select-column noskin" data-placeholder="@ignore">
+				<option></option>
+				@foreach (var column in Model.AvailableSourceColumns)
+				{
+					<option value="@column.Column">@column.PropertyDescription</option>
+				}
+			</select>
+		</div>
+		<div class="col-auto">
+			<button type="button" class="btn btn-warning mapping-apply btn-icon"><i class="fa fa-check"></i></button>
+			<button type="button" class="btn btn-outline-secondary btn-to-danger mapping-cancel btn-icon"><i class="fa fa-times"></i></button>
+		</div>
 	</div>
 </div>
 
@@ -70,11 +78,11 @@
 					<div class="mapping-item mapping-property">
 						<input type="hidden" class="input-property" value="" />
 						<div class="item-inner hide">
-							<span class="property-icon">
+							<span class="property-icon pr-2">
 								<i class="text-success fa fa-fw"></i>
 							</span>
 							<span class="left-label"></span>
-							<span class="muted right-label"></span>
+							<span class="muted right-label ml-auto"></span>
 						</div>
 						<select class="form-control select-property noskin" data-placeholder="@selectTargetProperty">
 							<option></option>
@@ -141,7 +149,7 @@
 						<div class="mapping-item mapping-property">
 							<input type="hidden" name="ColumnMapping.Property.@(index)" value="@mapping.Property" />
 							<div class="item-inner">
-								<span class="property-icon">
+								<span class="property-icon pr-2">
 									<i class="text-success fa fa-fw @(mapping.Property.EmptyNull().EndsWith("]") ? "fa-globe" : "fa-chain-broken")"></i>
 								</span>
 								@if (mapping.PropertyDescription.Length > Model.MaxMappingLabelTextLength)
@@ -152,7 +160,7 @@
 								{
 									<span class="left-label">@mapping.PropertyDescription</span>
 								}
-								<span class="muted right-label">@mapping.Property</span>
+								<span class="muted right-label ml-auto">@mapping.Property</span>
 							</div>
 						</div>
 					</td>

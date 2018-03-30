@@ -197,7 +197,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CustomerService>().As<ICustomerService>().InstancePerRequest();
 			builder.RegisterType<CustomerRegistrationService>().As<ICustomerRegistrationService>().InstancePerRequest();
 			builder.RegisterType<CustomerReportService>().As<ICustomerReportService>().InstancePerRequest();
-			builder.RegisterType<WalletService>().As<IWalletService>().InstancePerRequest();
 
 			builder.RegisterType<PermissionService>().As<IPermissionService>().InstancePerRequest();
 

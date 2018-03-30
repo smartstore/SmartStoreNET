@@ -102,7 +102,6 @@
     <Compile Include="Configuration\ConfigurationProviderTests.cs" />
     <Compile Include="Customers\CustomerExtensionTests.cs" />
     <Compile Include="Customers\CustomerRegistrationServiceTests.cs" />
-    <Compile Include="Customers\WalletServiceTests.cs" />
     <Compile Include="DataExchange\CsvWriterTests.cs" />
     <Compile Include="DataExchange\DataReaderTests.cs" />
     <Compile Include="DataExchange\ImportDataSegmenterTests.cs" />

@@ -429,42 +429,5 @@ namespace SmartStore.Services.Customers
 		}
 
 		#endregion
-
-		#region Wallet
-
-		/// <summary>
-		/// Gets the wallet credit balance.
-		/// </summary>
-		/// <param name="customer">Customer.</param>
-		/// <param name="storeId">Store identifier to get the credit balance per store.</param>
-		/// <returns>The wallet credit balance.</returns>
-		public static decimal GetWalletCreditBalance(this Customer customer, int storeId = 0)
-		{
-			Guard.NotNull(customer, nameof(customer));
-
-			if (storeId == 0)
-			{
-				var result = customer.WalletHistory
-					.OrderByDescending(x => x.CreatedOnUtc)
-					.ThenByDescending(x => x.Id)
-					.Select(x => x.AmountBalance)
-					.FirstOrDefault();
-
-				return result;
-			}
-			else
-			{
-				var result = customer.WalletHistory
-					.Where(x => x.StoreId == storeId)
-					.OrderByDescending(x => x.CreatedOnUtc)
-					.ThenByDescending(x => x.Id)
-					.Select(x => x.AmountBalancePerStore)
-					.FirstOrDefault();
-
-				return result;
-			}
-		}
-
-		#endregion
 	}
 }

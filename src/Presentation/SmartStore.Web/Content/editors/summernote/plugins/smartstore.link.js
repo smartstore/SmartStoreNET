@@ -31,6 +31,7 @@
 					contents: ui.icon(options.icons.link),
 					callback: function (btn) {
 						btn.data("placement", "bottom");
+						btn.data("trigger", "hover");
 						btn.attr("title", lang.link.link + buttons.representShortcut('linkDialog.show'));
 						btn.tooltip();
 					},
@@ -47,6 +48,7 @@
 					className: 'btn-unlink-image',
 					callback: function (btn) {
 						btn.data("placement", "bottom");
+						btn.data("trigger", "hover");
 						btn.attr("title", lang.link.unlink);
 						btn.tooltip();
 					},

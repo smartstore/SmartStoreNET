@@ -18,8 +18,8 @@ var summernote_image_upload_url;
 				imageProps: 'Image Attributes'
 			},
 			imageShapes: {
-				tooltip: 'Image Shapes',
-				tooltipShapeOptions: ['Responsive', 'Rounded', 'Circle', 'Thumbnail', 'None']
+				tooltip: 'Shape',
+				tooltipShapeOptions: ['Responsive', 'Rounded', 'Thumbnail', 'None']
 			}
 		}
 	});
@@ -84,13 +84,13 @@ var summernote_image_upload_url;
 		toolbar: [
 			['text', ['bold', 'italic', 'underline', 'strikethrough', 'clear', 'cleaner']],
 			['font', ['fontname', 'color', 'fontsize']],
-			['para', ['style', 'ul', 'ol', 'paragraph']],
+			['para', ['style', 'cssclass', 'ul', 'ol', 'paragraph']],
 			['insert', ['link', 'media',  'table', 'hr', 'video']],
 			['view', ['fullscreen', 'codeview', 'help']]
 		],
 		popover: {
 			image: [
-				['custom', ['imageAttributes', 'link', 'unlinkImage']],
+				['custom', ['imageAttributes', 'link', 'unlinkImage', 'imageShapes']],
 				['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
 				//['float', ['floatLeft', 'floatRight', 'floatNone']],
 				['float', ['bsFloatLeft', 'bsFloatRight', 'bsFloatNone']],

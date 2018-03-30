@@ -48,6 +48,7 @@
 						contents: ui.dropdownButtonContents(ui.icon(options.icons.magic), options),
 						callback: function (btn) {
 							btn.data("placement", "bottom");
+							btn.data("trigger", "hover");
 							btn.attr("title", lang.tableStyles.tooltip);
 							btn.tooltip();
 

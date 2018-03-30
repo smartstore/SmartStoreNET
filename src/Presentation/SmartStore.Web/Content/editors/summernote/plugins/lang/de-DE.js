@@ -15,6 +15,10 @@ $.extend(true, $.summernote.lang, {
 			tooltip: "Tabellenstil",
 			stylesExclusive: ["Standard", "Eingerahmt"],
 			stylesInclusive: ["Streifen", "Kompakt", "Hover Effekt"]
+		},
+		imageShapes: {
+			tooltip: 'Stil',
+			tooltipShapeOptions: ['Responsiv', 'Abgerundet', 'Thumbnail', 'Standard']
 		}
   }
 });

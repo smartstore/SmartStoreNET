@@ -425,6 +425,7 @@ namespace SmartStore.AmazonPay.Services
 			data.ReferenceId = response.GetRefundReferenceId();
 			data.Creation = response.GetCreationTimestamp();
 			data.Fee = new AmazonPayPrice(response.GetRefundFee(), response.GetRefundFeeCurrencyCode());
+			data.RefundId = response.GetAmazonRefundId();
 			data.RefundedAmount = new AmazonPayPrice(response.GetRefundAmount(), response.GetRefundAmountCurrencyCode());
 			data.ReasonCode = response.GetReasonCode();
 			data.ReasonDescription = response.GetReasonDescription();

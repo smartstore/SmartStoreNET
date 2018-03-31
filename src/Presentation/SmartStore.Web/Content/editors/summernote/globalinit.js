@@ -16,6 +16,10 @@ var summernote_image_upload_url;
 			},
 			image: {
 				imageProps: 'Image Attributes'
+			},
+			imageShapes: {
+				tooltip: 'Shape',
+				tooltipShapeOptions: ['Responsive', 'Rounded', 'Thumbnail', 'None']
 			}
 		}
 	});
@@ -80,15 +84,16 @@ var summernote_image_upload_url;
 		toolbar: [
 			['text', ['bold', 'italic', 'underline', 'strikethrough', 'clear', 'cleaner']],
 			['font', ['fontname', 'color', 'fontsize']],
-			['para', ['style', 'ul', 'ol', 'paragraph']],
+			['para', ['style', 'cssclass', 'ul', 'ol', 'paragraph']],
 			['insert', ['link', 'media',  'table', 'hr', 'video']],
 			['view', ['fullscreen', 'codeview', 'help']]
 		],
 		popover: {
 			image: [
-				['custom', ['imageAttributes', 'link', 'unlinkImage']],
+				['custom', ['imageAttributes', 'link', 'unlinkImage', 'imageShapes']],
 				['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
-				['float', ['floatLeft', 'floatRight', 'floatNone']],
+				//['float', ['floatLeft', 'floatRight', 'floatNone']],
+				['float', ['bsFloatLeft', 'bsFloatRight', 'bsFloatNone']],
 				['remove', ['removeMedia']]
 			],
             link: [
@@ -96,7 +101,8 @@ var summernote_image_upload_url;
             ],
             table: [
                 ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
-                ['delete', ['deleteRow', 'deleteCol', 'deleteTable']]
+				['delete', ['deleteRow', 'deleteCol', 'deleteTable']],
+				['custom', ['tableStyles']]
             ],
             air: [
                 ['color', ['color']],

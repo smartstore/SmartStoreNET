@@ -8,7 +8,7 @@
 <div class="page forums-main">
     <div class="forums-main-header">
         <div class="current-time">
-            @Model.CurrentTime.ToString("F")
+            @Model.CurrentTime.ToNativeString("F")
         </div>
         @{ Html.RenderPartial("_SearchBox"); }
     </div>

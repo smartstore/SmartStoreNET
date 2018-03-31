@@ -131,8 +131,8 @@ SmartStore.Admin = {
 									else {
 										// new task
 										var row1 = $('<div class="hint clearfix" style="position: relative"></div>').appendTo(el);
-										row1.append($('<div class="text pull-left">' + (task.message || opts.defaultProgressMessage) + '</div>'));
-										row1.append($('<div class="percent pull-right">' + (task.percent >> 0 ? task.percent + ' %' : "") + '</div>'));
+										row1.append($('<div class="text float-left">' + (task.message || opts.defaultProgressMessage) + '</div>'));
+										row1.append($('<div class="percent float-right">' + (task.percent >> 0 ? task.percent + ' %' : "") + '</div>'));
 										var row2 = $('<div class="loading-bar mt-2"></div>').appendTo(el);
 										el.attr('data-running', 'true').data('running', true);
 										if (_.isFunction(opts.onTaskStarted)) {

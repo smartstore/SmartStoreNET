@@ -25,7 +25,7 @@ namespace SmartStore.Core.Domain.Catalog
         {
             FileUploadAllowedExtensions = new List<string>();
 			AllowProductSorting = true;
-            DefaultSortOrder = ProductSortingEnum.Initial;
+            DefaultSortOrder = ProductSortingEnum.Relevance;
 			AllowProductViewModeChanging = true;
 			DefaultViewMode = "grid";
 			CategoryBreadcrumbEnabled = true;

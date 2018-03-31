@@ -591,12 +591,15 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-                partials = new
+				var dataDictAddToCart = new ViewDataDictionary();
+				dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", m.Id);
+
+				partials = new
 				{
 					Attrs = this.RenderPartialViewToString("Product.Attrs", m),
 					Price = this.RenderPartialViewToString("Product.Offer.Price", m),
 					Stock = this.RenderPartialViewToString("Product.StockInfo", m),
-					OfferActions = this.RenderPartialViewToString("Product.Offer.Actions", m),
+					OfferActions = this.RenderPartialViewToString("Product.Offer.Actions", m, dataDictAddToCart),
 					TierPrices = this.RenderPartialViewToString("Product.TierPrices", _helper.CreateTierPriceModel(product, m.ProductPrice.PriceValue - product.Price)),
                     BundlePrice = product.ProductType == ProductType.BundledProduct ? this.RenderPartialViewToString("Product.Bundle.Price", m) : (string)null
 				};

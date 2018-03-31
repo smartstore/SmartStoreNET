@@ -2,6 +2,7 @@
 using System.Xml;
 using System.Globalization;
 using TimeZone = System.TimeZoneInfo;
+using System.Text.RegularExpressions;
 
 namespace SmartStore
 {
@@ -12,21 +13,21 @@ namespace SmartStore
         /// <summary>
         /// Converts a nullable date/time value to UTC.
         /// </summary>
-        /// <param name="dateTime">The nullable date/time</param>
+        /// <param name="value">The nullable date/time</param>
         /// <returns>The nullable date/time in UTC</returns>
-        public static DateTime? ToUniversalTime(this DateTime? dateTime)
+        public static DateTime? ToUniversalTime(this DateTime? value)
         {
-            return dateTime.HasValue ? dateTime.Value.ToUniversalTime() : (DateTime?)null;
+            return value.HasValue ? value.Value.ToUniversalTime() : (DateTime?)null;
         }
 
         /// <summary>
         /// Converts a nullable UTC date/time value to local time.
         /// </summary>
-        /// <param name="dateTime">The nullable UTC date/time</param>
+        /// <param name="value">The nullable UTC date/time</param>
         /// <returns>The nullable UTC date/time as local time</returns>
-        public static DateTime? ToLocalTime(this DateTime? dateTime)
+        public static DateTime? ToLocalTime(this DateTime? value)
         {
-            return dateTime.HasValue ? dateTime.Value.ToLocalTime() : (DateTime?)null;
+            return value.HasValue ? value.Value.ToLocalTime() : (DateTime?)null;
         }
 
 
@@ -39,16 +40,16 @@ namespace SmartStore
         /// date's 'day' will be promoted, and the time will be set to 00:00:00.
         /// </p>
         /// </summary>
-        /// <param name="dateTime">the Date to round, if <see langword="null" /> the current time will
+        /// <param name="value">the Date to round, if <see langword="null" /> the current time will
         /// be used</param>
         /// <returns>the new rounded date</returns>
-        public static DateTime GetEvenHourDate(this DateTime? dateTime)
+        public static DateTime GetEvenHourDate(this DateTime? value)
         {
-            if (!dateTime.HasValue)
+            if (!value.HasValue)
             {
-                dateTime = DateTime.UtcNow;
+                value = DateTime.UtcNow;
             }
-            DateTime d = dateTime.Value.AddHours(1);
+            DateTime d = value.Value.AddHours(1);
             return new DateTime(d.Year, d.Month, d.Day, d.Hour, 0, 0);
         }
 
@@ -61,16 +62,16 @@ namespace SmartStore
         /// then the hour (and possibly the day) will be promoted.
         /// </p>
         /// </summary>
-        /// <param name="dateTime">The Date to round, if <see langword="null" /> the current time will  be used</param>
+        /// <param name="value">The Date to round, if <see langword="null" /> the current time will  be used</param>
         /// <returns>The new rounded date</returns>
-        public static DateTime GetEvenMinuteDate(this DateTime? dateTime)
+        public static DateTime GetEvenMinuteDate(this DateTime? value)
         {
-            if (!dateTime.HasValue)
+            if (!value.HasValue)
             {
-                dateTime = DateTime.UtcNow;
+                value = DateTime.UtcNow;
             }
 
-            DateTime d = dateTime.Value;
+            DateTime d = value.Value;
             d = d.AddMinutes(1);
             return new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, 0);
         }
@@ -83,23 +84,23 @@ namespace SmartStore
         /// with the time of 08:13:00.
         /// </p>
         /// </summary>
-        /// <param name="dateTime">the Date to round, if <see langword="null" /> the current time will
+        /// <param name="value">the Date to round, if <see langword="null" /> the current time will
         /// be used</param>
         /// <returns>the new rounded date</returns>
-        public static DateTime GetEvenMinuteDateBefore(this DateTime? dateTime)
+        public static DateTime GetEvenMinuteDateBefore(this DateTime? value)
         {
-            if (!dateTime.HasValue)
+            if (!value.HasValue)
             {
-                dateTime = DateTime.UtcNow;
+                value = DateTime.UtcNow;
             }
 
-            DateTime d = dateTime.Value;
+            DateTime d = value.Value;
             return new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, 0);
         }
 
-        public static long ToJavaScriptTicks(this DateTime dateTime)
+        public static long ToJavaScriptTicks(this DateTime value)
         {
-            DateTimeOffset utcDateTime = dateTime.ToUniversalTime();
+            DateTimeOffset utcDateTime = value.ToUniversalTime();
 			long javaScriptTicks = (utcDateTime.Ticks - BeginOfEpoch.Ticks) / (long)10000;
             return javaScriptTicks;
         }
@@ -108,11 +109,11 @@ namespace SmartStore
         /// Get the first day of the month for
         /// any full date submitted
         /// </summary>
-        /// <param name="date"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static DateTime GetFirstDayOfMonth(this DateTime date)
+        public static DateTime GetFirstDayOfMonth(this DateTime value)
         {
-            DateTime dtFrom = date;
+            DateTime dtFrom = value;
             dtFrom = dtFrom.AddDays(-(dtFrom.Day - 1));
             return dtFrom;
         }
@@ -121,38 +122,75 @@ namespace SmartStore
         /// Get the last day of the month for any
         /// full date
         /// </summary>
-        /// <param name="date"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static DateTime GetLastDayOfMonth(this DateTime date)
+        public static DateTime GetLastDayOfMonth(this DateTime value)
         {
-            DateTime dtTo = date;
+            DateTime dtTo = value;
             dtTo = dtTo.AddMonths(1);
             dtTo = dtTo.AddDays(-(dtTo.Day));
             return dtTo;
         }
 
-		public static DateTime ToEndOfTheDay(this DateTime dt)
+		public static DateTime ToEndOfTheDay(this DateTime value)
 		{
-			if (dt != null)
-				return new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59);
-			return dt;
+			if (value != null)
+				return new DateTime(value.Year, value.Month, value.Day, 23, 59, 59);
+			return value;
 		}
 
-		public static DateTime? ToEndOfTheDay(this DateTime? dt)
+		public static DateTime? ToEndOfTheDay(this DateTime? value)
 		{
-			return (dt.HasValue ? dt.Value.ToEndOfTheDay() : dt);
+			return (value.HasValue ? value.Value.ToEndOfTheDay() : value);
 		}
 
-		/// <summary>Epoch time. Number of seconds since midnight (UTC) on 1st January 1970.</summary>
-		public static long ToUnixTime(this DateTime date)
+		/// <summary>
+		/// Epoch time. Number of seconds since midnight (UTC) on 1st January 1970.
+		/// </summary>
+		public static long ToUnixTime(this DateTime value)
 		{
-			return Convert.ToInt64((date.ToUniversalTime() - BeginOfEpoch).TotalSeconds);
+			return Convert.ToInt64((value.ToUniversalTime() - BeginOfEpoch).TotalSeconds);
 		}
 
-		/// <summary>UTC date based on number of seconds since midnight (UTC) on 1st January 1970.</summary>
+		/// <summary>
+		/// UTC date based on number of seconds since midnight (UTC) on 1st January 1970.
+		/// </summary>
 		public static DateTime FromUnixTime(this long unixTime)
 		{
 			return BeginOfEpoch.AddSeconds(unixTime);
+		}
+
+		/// <summary>
+		/// Converts a DateTime to a string with native digits
+		/// </summary>
+		public static string ToNativeString(this DateTime value)
+		{
+			return value.ToNativeString(null, null);
+		}
+
+		/// <summary>
+		/// Converts a DateTime to a string with native digits
+		/// </summary>
+		public static string ToNativeString(this DateTime value, IFormatProvider provider)
+		{
+			return value.ToNativeString(null, provider);
+		}
+
+		/// <summary>
+		/// Converts a DateTime to a string with native digits
+		/// </summary>
+		public static string ToNativeString(this DateTime value, string format)
+		{
+			return value.ToNativeString(format, null);
+		}
+
+		/// <summary>
+		/// Converts a DateTime to a string with native digits
+		/// </summary>
+		public static string ToNativeString(this DateTime value, string format, IFormatProvider provider)
+		{
+			provider = provider ?? CultureInfo.CurrentCulture;
+			return value.ToString(format, provider).ReplaceNativeDigits(provider);
 		}
     }
 

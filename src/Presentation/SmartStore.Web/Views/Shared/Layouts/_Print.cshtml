@@ -11,10 +11,15 @@
 	<title>@Html.SmartTitle(false)</title>
 	<link rel="stylesheet" type="text/css" href="~/Content/print.css" />
 
+	@if (WorkContext.WorkingLanguage.Rtl)
+	{
+		<link rel="stylesheet" type="text/css" href="~/Content/print-rtl.css" />
+	}
+
 	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
 	@Html.CustomHead()
 </head>
-<body class="@Html.BodyCssClass()">
+<body class="@Html.BodyCssClass()" @Html.LanguageAttributes(true)>
 	@RenderBody()
 	@Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
 </body>

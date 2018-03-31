@@ -948,6 +948,29 @@ namespace SmartStore
 			return value;
 		}
 
+		/// <summary>
+		/// Replaces digits in a string with culture native digits (if digit substitution for culture is required)
+		/// </summary>
+		[DebuggerStepThrough]
+		public static string ReplaceNativeDigits(this string value, IFormatProvider provider = null)
+		{
+			Guard.NotNull(value, nameof(value));
+			
+			provider = provider ?? NumberFormatInfo.CurrentInfo;
+			var nfi = NumberFormatInfo.GetInstance(provider);
+
+			if (nfi.DigitSubstitution == DigitShapes.None)
+			{
+				return value;
+			}
+
+			var nativeDigits = nfi.NativeDigits;
+			var rg = new Regex(@"\d");
+
+			var result = rg.Replace(value, m => nativeDigits[m.Value.ToInt()]);
+			return result;
+		}
+
 		[DebuggerStepThrough]
 		public static string TrimSafe(this string value) 
         {

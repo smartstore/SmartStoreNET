@@ -73,7 +73,14 @@
 			</td>
 			<td class="adminData">
 				<div class="form-control-plaintext">
-					@(Model.LastStart.HasValue ? Model.LastStart.Value.ToString("g") : T("Common.Never").Text)
+					@if (Model.LastStart.HasValue)
+					{
+						@Html.DisplayFor(model => model.LastStart)
+					}
+					else
+					{
+						@T("Common.Never")
+					}
 				</div>
 			</td>
 		</tr>
@@ -110,7 +117,7 @@
 					</td>
 					<td class="adminData">
 						<div class="form-control-plaintext">
-							@Model.LastSuccess.Value.ToString("g")
+							@Html.DisplayFor(model => model.LastSuccess)
 						</div>
 					</td>
 				</tr>
@@ -124,7 +131,7 @@
 				</td>
 				<td class="adminData">
 					<div class="form-control-plaintext">
-						@Model.NextRun.Value.ToString("g")
+						@Html.DisplayFor(model => model.NextRun)
 					</div>
 				</td>
 			</tr>

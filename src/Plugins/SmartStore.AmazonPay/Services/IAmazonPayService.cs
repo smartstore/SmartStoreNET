@@ -1,6 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Payments;
 
@@ -11,6 +12,8 @@ namespace SmartStore.AmazonPay.Services
 		void SetupConfiguration(ConfigurationModel model);
 
 		AmazonPayViewModel CreateViewModel(AmazonPayRequestType type, TempDataDictionary tempData);
+
+		void CloseOrderReference(AmazonPaySettings settings, Order order);
 
 		void AddCustomerOrderNoteLoop(AmazonPayActionState state);
 

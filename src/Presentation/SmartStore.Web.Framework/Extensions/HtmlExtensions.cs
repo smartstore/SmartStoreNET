@@ -76,6 +76,7 @@ namespace SmartStore.Web.Framework
                             var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(locale.LanguageId);
 
  							x.Add().Text(language.Name)
+								.ContentHtmlAttributes(new { @class = "locale-editor-content", data_lang = language.LanguageCulture, data_rtl = language.Rtl.ToString().ToLower() })
 								.Content(localizedTemplate(i))
 								.ImageUrl("~/Content/images/flags/" + language.FlagImageFileName)
 								.Selected(i == 0 && standardTemplate == null);

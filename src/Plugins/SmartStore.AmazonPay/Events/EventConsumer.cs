@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
@@ -10,20 +12,23 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.AmazonPay.Events
 {
-	public class MessageTokenEventConsumer : IConsumer<MessageModelCreatedEvent>
+	public class EventConsumer : IConsumer<MessageModelCreatedEvent>, IConsumer<OrderPaidEvent>
 	{
 		private readonly IPluginFinder _pluginFinder;
 		private readonly ICommonServices _services;
 		private readonly IOrderService _orderService;
+		private readonly Lazy<IAmazonPayService> _amazonPayService;
 
-		public MessageTokenEventConsumer(
+		public EventConsumer(
 			IPluginFinder pluginFinder,
 			ICommonServices services,
-			IOrderService orderService)
+			IOrderService orderService,
+			Lazy<IAmazonPayService> amazonPayService)
 		{
 			_pluginFinder = pluginFinder;
 			_services = services;
 			_orderService = orderService;
+			_amazonPayService = amazonPayService;
 		}
 
 		public void HandleEvent(MessageModelCreatedEvent message)
@@ -55,6 +60,19 @@ namespace SmartStore.AmazonPay.Events
 					{ "BillingAddressMessageNote", tokenValue }
 				};
 			}
+		}
+
+		public void HandleEvent(OrderPaidEvent eventMessage)
+		{
+			if (eventMessage == null || eventMessage.Order == null)
+				return;
+
+			if (!_pluginFinder.IsPluginReady(_services.Settings, AmazonPayPlugin.SystemName, eventMessage.Order.StoreId))
+				return;
+
+			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(eventMessage.Order.StoreId);
+
+			_amazonPayService.Value.CloseOrderReference(settings, eventMessage.Order);
 		}
 	}
 }

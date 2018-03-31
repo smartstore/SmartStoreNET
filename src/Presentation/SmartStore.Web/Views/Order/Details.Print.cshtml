@@ -1,10 +1,7 @@
 ﻿@model IEnumerable<OrderDetailsModel>
 
-@using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.Order;
-@using SmartStore.Services.Localization;
-@using SmartStore.Core.Html;
 
 @{
 
@@ -51,7 +48,7 @@
 
 			<!-- Address & Info -->
 			<div class="clearfix" style="margin-bottom: 100px">
-				<div class="order-address mt-5 pull-left">
+				<div class="order-address mt-5 pull-left float-left">
 					<div>
 						<span class="header text-smallest">
 							@{
@@ -68,7 +65,7 @@
 
 				@Html.Widget("invoice_orderinfo_top", order)
 
-				<div class="order-info text-small pull-right">
+				<div class="order-info text-small pull-right float-right">
 					<table>
 						<tr>
 							<td class="label">@T("PDFInvoice.Order#"):</td>
@@ -80,7 +77,7 @@
 						</tr>
 						<tr>
 							<td class="label">@T("Common.Date"):</td>
-							<td class="value">@order.CreatedOn.ToShortDateString()</td>
+							<td class="value">@order.CreatedOn.ToShortDateString().ReplaceNativeDigits()</td>
 						</tr>
 						<tr>
 							<td class="label">@T("Order.PaymentMethod"):</td>
@@ -146,7 +143,7 @@
 			@{ Html.RenderWidget("invoice_ordertotals_before", order); }
 
 			<div class="order-totals clearfix">
-				<div class="pull-right table-responsive" style="width: 40%; page-break-inside: avoid">
+				<div class="pull-right float-right table-responsive" style="width: 40%; page-break-inside: avoid">
 					<table class="table order-totals">
 						<tr>
 							<td class="label">@T("Order.SubTotal"):</td>
@@ -260,7 +257,7 @@
                             {
 								<tr>
 									<td>
-										@note.CreatedOn.ToString()
+										@note.CreatedOn.ToNativeString()
 									</td>
 									<td>
 										@Html.Raw(note.Note)

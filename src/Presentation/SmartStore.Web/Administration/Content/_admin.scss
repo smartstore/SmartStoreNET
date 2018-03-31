@@ -185,8 +185,6 @@ header {
 
 	.title, .options {
 		@include make-col-ready();
-		/*padding-left: 0;
-        padding-right: 0;*/
 	}
 
 	.title {
@@ -257,15 +255,15 @@ header {
 		z-index: 600;
 		left: $content-padding-x / 2;
 		right: $content-padding-x / 2;
-		margin-left: 0;
-		margin-right: 0;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
 		background: $gray-100;
 		background: #fff;
 		border-bottom: 1px solid rgba(0,0,0, 0.08);
 
 		.modal-open & {
 			// add the killed scrollbar width
-			margin-right: 17px;
+			margin-right: 17px !important;
 		}
 	}
 
@@ -299,8 +297,6 @@ header {
 	}
 
 	.navbar-brand {
-		//margin-right: 1.75rem;
-
 		> .navbar-img {
 			height: 28px;
 			width: auto;
@@ -329,10 +325,7 @@ header {
 	.dropdown-item > i,
 	.dropdown-item > img {
 		display: inline-block;
-		/*margin-left: -8px;
-		margin-right: 0.6rem;*/
 		font-size: inherit;
-		//vertical-align: bottom;
 	}
 
 	.dropdown-header {
@@ -815,6 +808,18 @@ legend {
 	}
 }
 
+.locale-editor-content[data-rtl="true"] {
+	input,
+	textarea,
+	select,
+	.locale-editor-control,
+	.note-editable,
+	.note-editor-preview:not(.empty) {
+		direction: rtl;
+		text-align: right;
+	}
+}
+
 
 //
 // Thumb Zoomer
@@ -1095,9 +1100,6 @@ textarea:not([class*="form-control"]) {
 	border-bottom: none;
 }
 
-.module-col {
-}
-
 .module-heading {
 	display: flex;
 	flex-wrap: nowrap;
@@ -1294,16 +1296,19 @@ table.payment-method-features td {
 
 .column-mapping .right-label,
 .mapping-list-item .right-label {
-	float: right;
 	font-size: 0.9em;
 	padding-top: 2px;
+	align-self: flex-end;
 }
 .mapping-list-item {
 	@include text-truncate();
+	display: flex;
+	flex-wrap: nowrap;
 }
 
 .column-mapping {
-	.column-one, .column-two {
+	.column-one, 
+	.column-two {
 		width: 42%;
 	}
 
@@ -1315,14 +1320,9 @@ table.payment-method-features td {
 	.mapping-edit {
 		white-space: nowrap;
 
-		.select-column, .select-property {
+		.select-column, 
+		.select-property {
 			width: 84%;
-		}
-		.select2-container {
-			float: left;
-			display: inline-block;
-			min-width: 220px;
-			margin-right: 4px;
 		}
 	}
 
@@ -1331,20 +1331,12 @@ table.payment-method-features td {
 			white-space: nowrap;
 			cursor: pointer;
 			padding: 7px 0;
-
-			.property-icon {
-				display: inline-block;
-				margin-right: 0;
-			}
-			.left-label {
-				display: inline-block;
-			}
-			.right-label {
-				margin-right: 20px;
-			}
+			display: flex;
+			flex-wrap: nowrap;
 		}
+
 		.select2-selection__clear {
-			margin: 0 0 0 3px;
+			margin-left: 3px;
 		}
 	}
 }
@@ -1398,10 +1390,6 @@ table.payment-method-features td {
 	border-color: $input-border-color !important;
 	border-radius: $input-border-radius !important;
 
-	/*.modal-dialog {
-		@extend .modal-lg;
-	}*/
-
 	&.focus {
 		border-color: $input-focus-border-color !important;
 	}
@@ -1411,7 +1399,8 @@ table.payment-method-features td {
 		flex-wrap: wrap;
 
 		> .note-btn-group {
-			border-right: 1px solid rgba(#000, 0.12);
+			border: 0 solid rgba(#000, 0.12);
+			border-right-width: 1px;
 			padding-right: 5px;
 		}
 
@@ -1446,10 +1435,15 @@ table.payment-method-features td {
 			padding-right: 0.5rem;
 			min-width: 50px;
 		}
+	}
 
-		/*.note-current-fontname,
-		.note-current-fontsize {
-			font-weight: $font-weight-normal;
-		}*/
+	.note-editable {
+		table:not(.table-bordered):not([border]),
+		table:not(.table-bordered)[border='0'] {
+			border-collapse: collapse;
+			td, th {
+				border: 1px dashed #bbb;
+			}
+		}
 	}
 }

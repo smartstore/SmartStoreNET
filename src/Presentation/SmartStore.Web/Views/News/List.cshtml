@@ -29,7 +29,7 @@
             {
 				<div class="news-item mb-5">
 					<div class="text-muted small">
-						@item.CreatedOn.ToString("D")
+						@item.CreatedOn.ToNativeString("D")
 					</div>
 					<h4 class="news-title">
 						<a class="fs-h5 color-body" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">

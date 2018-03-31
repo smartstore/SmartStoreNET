@@ -17,7 +17,7 @@
                             {
                                 <li class="ml-3">
                                     <a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })" class="font-weight-normal color-body">
-                                        @(new DateTime(yearItem.Year, monthItem.Month, 1).ToString("MMMM"))
+                                        @(new DateTime(yearItem.Year, monthItem.Month, 1).ToNativeString("MMMM"))
                                         (@(monthItem.BlogPostCount))
                                     </a> 
                                 </li>

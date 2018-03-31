@@ -306,7 +306,7 @@ namespace SmartStore.Web.Framework.UI
 
 			if (item.Pull == TabPull.Right)
 			{
-				item.HtmlAttributes.AppendCssClass("pull-right");
+				item.HtmlAttributes.AppendCssClass("float-right");
 			}
 
 			writer.AddAttributes(item.HtmlAttributes);
@@ -389,7 +389,7 @@ namespace SmartStore.Web.Framework.UI
 						temp += " badge-" + item.BadgeStyle.ToString().ToLower();
 						if (base.Component.Position == TabsPosition.Left)
 						{
-							temp += " pull-right"; // looks nicer 
+							temp += " float-right"; // looks nicer 
 						}
 						writer.AddAttribute("class", temp);
 						writer.RenderBeginTag("span");

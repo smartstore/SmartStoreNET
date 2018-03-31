@@ -69,7 +69,7 @@
                     @if (Model.ShowCustomersJoinDate && !Model.IsCustomerGuest)
                     {
                         <div class="joined">
-                            @T("Forum.Joined"): <span class="stat-value">@Model.CustomerJoinDate.ToString("d")</span>
+                            @T("Forum.Joined"): <span class="stat-value">@Model.CustomerJoinDate.ToNativeString("d")</span>
                         </div>
                     }
 

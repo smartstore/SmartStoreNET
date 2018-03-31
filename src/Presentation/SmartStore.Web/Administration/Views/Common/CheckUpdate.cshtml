@@ -31,7 +31,7 @@
 			<dt>@T("Admin.CheckUpdate.CurrentVersion")</dt>
 			<dd class="text-danger">aon</dd>
 			<dt>@T("Common.Date")</dt>
-			<dd>@Model.ReleaseDateUtc.ToShortDateString()</dd>
+			<dd>@Model.ReleaseDateUtc.ToShortDateString().ReplaceNativeDigits()</dd>
 		</dl>
 
 		if (Model.AutoUpdatePossible && Model.AutoUpdatePackageUrl.IsWebUrl())

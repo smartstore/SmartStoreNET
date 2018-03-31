@@ -225,8 +225,10 @@ tr {
 .text-smaller	{ font-size: 0.77em; }
 .text-smallest	{ font-size: 0.69em; }
 
-.pull-left		{ float: left }
-.pull-right		{ float: right }
+.pull-left,
+.float-left		{ float: left }
+.pull-right,
+.float-right	{ float: right }
 
 .nobr			{ white-space: nowrap !important }
 

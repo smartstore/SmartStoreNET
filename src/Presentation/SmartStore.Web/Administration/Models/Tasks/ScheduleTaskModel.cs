@@ -4,6 +4,7 @@ using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStore.Admin.Models.Tasks
 {
@@ -26,18 +27,22 @@ namespace SmartStore.Admin.Models.Tasks
         public bool StopOnError { get; set; }
 
 		[SmartResourceDisplayName("Admin.System.ScheduleTasks.LastStart")]
+		[DisplayFormat(DataFormatString = "g")]
 		public DateTime? LastStart { get; set; }
 		public string LastStartPretty { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastEnd")]
+		[DisplayFormat(DataFormatString = "g")]
 		public DateTime? LastEnd { get; set; }
         public string LastEndPretty { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastSuccess")]
+		[DisplayFormat(DataFormatString = "g")]
 		public DateTime? LastSuccess { get; set; }
         public string LastSuccessPretty { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.NextRun")]
+		[DisplayFormat(DataFormatString = "g")]
 		public DateTime? NextRun { get; set; }
         public string NextRunPretty { get; set; }
 

@@ -396,7 +396,9 @@
 					@Html.SmartLabelFor(model => model.CreatedOn)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.CreatedOn)
+					</div>
 				</td>
 			</tr>
             <tr>
@@ -404,7 +406,9 @@
                     @Html.SmartLabelFor(model => model.LastActivityDate)
                 </td>
                 <td class="adminData">
-                    @Html.TextBoxFor(model => model.LastActivityDate, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.LastActivityDate)
+					</div>
                 </td>
             </tr>
         }

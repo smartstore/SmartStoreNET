@@ -30,8 +30,10 @@ namespace SmartStore.Web.Infrastructure
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/summernote").Include(
 				"~/Content/editors/summernote/summernote-bs4.min.js",
-				"~/Content/editors/summernote/plugin/image/smartstore.image.js",
-				"~/Content/editors/summernote/plugin/link/smartstore.link.js",
+				"~/Content/editors/summernote/plugins/smartstore.image.js",
+				"~/Content/editors/summernote/plugins/smartstore.link.js",
+				"~/Content/editors/summernote/plugins/smartstore.tablestyles.js",
+				"~/Content/editors/summernote/plugins/smartstore.cssclass.js",
 				"~/Content/editors/summernote/globalinit.js"));
 
 			/* CodeMirror (V 5.3.3)

@@ -862,22 +862,25 @@
     <Content Include="Content\editors\summernote\lang\summernote-uk-UA.js" />
     <Content Include="Content\editors\summernote\lang\summernote-zh-CN.js" />
     <Content Include="Content\editors\summernote\lang\summernote-zh-TW.js" />
-    <Content Include="Content\editors\summernote\lang-sm\de-DE.js" />
-    <Content Include="Content\editors\summernote\lang-sm\es-ES.js" />
-    <Content Include="Content\editors\summernote\lang-sm\fr-FR.js" />
-    <Content Include="Content\editors\summernote\lang-sm\it-IT.js" />
-    <Content Include="Content\editors\summernote\lang-sm\pt-BR.js" />
-    <Content Include="Content\editors\summernote\lang-sm\ru-RU.js" />
-    <Content Include="Content\editors\summernote\lang-sm\tr-TR.js" />
-    <Content Include="Content\editors\summernote\lang-sm\zh-TW.js" />
-    <Content Include="Content\editors\summernote\plugin\link\smartstore.link.js" />
-    <Content Include="Content\editors\summernote\plugin\image\smartstore.image.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\de-DE.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\es-ES.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\fr-FR.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\it-IT.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\pt-BR.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\ru-RU.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\tr-TR.js" />
+    <Content Include="Content\editors\summernote\plugins\lang\zh-TW.js" />
+    <Content Include="Content\editors\summernote\plugins\smartstore.cssclass.js" />
+    <Content Include="Content\editors\summernote\plugins\smartstore.tablestyles.js" />
+    <Content Include="Content\editors\summernote\plugins\smartstore.link.js" />
+    <Content Include="Content\editors\summernote\plugins\smartstore.image.js" />
     <Content Include="Content\editors\summernote\summernote-bs4.css" />
     <Content Include="Content\editors\summernote\summernote-bs4.js" />
     <Content Include="Content\editors\summernote\summernote-bs4.min.js" />
     <Content Include="Content\fontastic\fontastic.css" />
     <Content Include="Content\fontastic\fonts\fontastic.svg" />
     <Content Include="Content\placeholder.txt" />
+    <Content Include="Content\print-rtl.css" />
     <Content Include="Content\vendors\drift\Drift.js" />
     <Content Include="Content\vendors\drift\Drift.min.js" />
     <Content Include="Content\vendors\fileuploader\images\loading.gif" />
@@ -1025,6 +1028,7 @@
     <Content Include="Content\editors\summernote\font\summernote.woff" />
     <Content Include="Content\shared\_rtl.scss" />
     <Content Include="App_Data\widgetzones.json" />
+    <Content Include="Content\skinning\_rtl.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1781,6 +1785,7 @@
     <Content Include="Themes\Flex\Views\Shared\EmailTemplates\shipment.liquid" />
     <Content Include="Themes\Flex\Content\theme-rtl.scss" />
     <Content Include="Content\shared\_rtl-bs4.scss" />
+    <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

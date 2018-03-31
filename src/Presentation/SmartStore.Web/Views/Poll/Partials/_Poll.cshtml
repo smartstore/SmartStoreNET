@@ -12,7 +12,7 @@
             @foreach (var item in Model.Answers)
             {
                 <div class="answer">
-                    <div class="vote-result-percent pull-right">@((item.PercentOfTotalVotes/100).ToString("#0.##%"))</div>
+                    <div class="vote-result-percent float-right">@((item.PercentOfTotalVotes/100).ToString("#0.##%"))</div>
                     <div class="vote-result-line">@item.Name (@item.NumberOfVotes)</div>
 
                     <div class="progress">

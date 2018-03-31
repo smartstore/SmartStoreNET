@@ -22,11 +22,104 @@
 				buttons = context.modules.buttons,
 				editor = context.modules.editor;
 
+			// Image float popover stuff
+			context.memo('button.bsFloatLeft', function () {
+				return ui.button({
+					contents: ui.icon(options.icons.alignLeft),
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.data("trigger", "hover");
+						btn.attr("title", lang.image.floatLeft);
+						btn.tooltip();
+					},
+					click: function (e) {
+						var $img = $(context.layoutInfo.editable.data('target'));
+						$img.removeClass('float-right float-left').addClass('float-left');
+						context.invoke('editor.afterCommand');
+					}
+				}).render();
+			});
+			context.memo('button.bsFloatRight', function () {
+				return ui.button({
+					contents: ui.icon(options.icons.alignRight),
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.data("trigger", "hover");
+						btn.attr("title", lang.image.floatRight);
+						btn.tooltip();
+					},
+					click: function (e) {
+						var $img = $(context.layoutInfo.editable.data('target'));
+						$img.removeClass('float-right float-left').addClass('float-right');
+						context.invoke('editor.afterCommand');
+					}
+				}).render();
+			});
+			context.memo('button.bsFloatNone', function () {
+				return ui.button({
+					contents: ui.icon(options.icons.alignJustify),
+					callback: function (btn) {
+						btn.data("placement", "bottom");
+						btn.data("trigger", "hover");
+						btn.attr("title", lang.image.floatNone);
+						btn.tooltip();
+					},
+					click: function (e) {
+						var $img = $(context.layoutInfo.editable.data('target'));
+						$img.removeClass('float-right float-left');
+						context.invoke('editor.afterCommand');
+					}
+				}).render();
+			});
+
+			// Image shape stuff
+			context.memo('button.imageShapes', function () {
+				var button = ui.buttonGroup([
+					ui.button({
+						className: 'dropdown-toggle',
+						//contents: options.imageShapes.icon + '&nbsp;&nbsp;<span class="caret"></span>',
+						contents: ui.icon("fa fa-css3 pr-1"),
+						callback: function (btn) {
+							btn.data("placement", "bottom");
+							btn.data("trigger", "hover");
+							btn.attr("title", lang.imageShapes.tooltip);
+							btn.tooltip();
+						},
+						data: {
+							toggle: 'dropdown'
+						}
+					}),
+					ui.dropdown({
+						className: 'dropdown-shape',
+						items: lang.imageShapes.tooltipShapeOptions,
+						click: function (e) {
+							e.preventDefault();
+							var $button = $(e.target);
+							var $img = $(context.layoutInfo.editable.data('target'));
+							var index = $.inArray(
+								$button.data('value'),
+								lang.imageShapes.tooltipShapeOptions
+							);
+
+							var shapes = ['img-fluid', 'rounded', 'img-thumbnail', ''];
+							$.each(shapes, function (index, value) {
+								$img.removeClass(value);
+							});
+							$img.addClass(shapes[index]);
+							context.invoke('editor.afterCommand');
+						}
+					})
+				]);
+				return button.render();
+			});
+
+			// ImageDialog replacement with lots of sugar
 			context.memo('button.media', function () {
 				return ui.button({
 					contents: '<i class="fa fa-picture-o">',
 					callback: function (btn) {
 						btn.data("placement", "bottom");
+						btn.data("trigger", "hover");
 						btn.attr("title", lang.image.image);
 						btn.tooltip();
 					},
@@ -41,6 +134,7 @@
 					contents: '<i class="fa fa-pencil"></i>',
 					callback: function (btn) {
 						btn.data("placement", "bottom");
+						btn.data("trigger", "hover");
 						btn.attr("title", lang.image.imageProps);
 						btn.tooltip();
 					},

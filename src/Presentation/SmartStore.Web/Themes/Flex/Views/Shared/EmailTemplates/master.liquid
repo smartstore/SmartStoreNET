@@ -1,6 +1,12 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
+		{% assign _left = "left" %}
+		{% assign _right = "right" %}
+		{% if Context.LanguageRtl %}
+			{% assign _left = "right" %}
+			{% assign _right = "left" %}
+		{% endif %}
 		<!-- https://github.com/wildbit/postmark-templates -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -29,7 +35,6 @@
 			ol,
 			blockquote {
 				line-height: 1.5;
-				text-align: left;
 			}
 
 			a {
@@ -93,8 +98,8 @@
 				-premailer-width: 100%;
 			}
 			
-			th {
-				text-align: left;
+			th, td {
+				text-align: {{ _left }};
 			}
 			
 			td {
@@ -332,7 +337,7 @@
 
 			.purchase-total {
 				margin: 0;
-				text-align: right;
+				text-align: {{ _right }};
 				font-weight: 600;
 				color: {{ Theme.TitleColor }};
 			}
@@ -462,7 +467,6 @@
 				color: {{ Theme.TitleColor }};
 				font-size: 1.375em;
 				font-weight: 600;
-				text-align: left;
 				line-height: 1.2em;
 				margin-bottom: 16px;
 			}
@@ -472,7 +476,6 @@
 				color: {{ Theme.TitleColor }};
 				font-size: 1.1875em;
 				font-weight: 600;
-				text-align: left;
 				line-height: 1.2em;
 				margin-bottom: 12px;
 			}
@@ -482,7 +485,6 @@
 				color: {{ Theme.TitleColor }};
 				font-size: 1em;
 				font-weight: 600;
-				text-align: left;
 				line-height: 1.2em;
 				margin-bottom: 8px;
 			}
@@ -491,7 +493,6 @@
 				margin-top: 0;
 				color: {{ Theme.BodyColor }};
 				line-height: 1.5em;
-				text-align: left;
 			}
 
 			.message {
@@ -499,9 +500,17 @@
 				/*color: {{ Theme.MutedColor }};*/
 			}
 			
-			.text-right 	{ text-align: right; }
-			.text-left		{ text-align: left; }
+			.text-right 	{ text-align: {{ _right }}; }
+			.text-left		{ text-align: {{ _left }}; }
 			.text-center	{ text-align: center; }
+			
+			th.text-right,
+			td.text-right 	{ -premailer-align: {{ _right }}; }
+			th.text-left,
+			td.text-left 	{ -premailer-align: {{ _left }}; }
+			th.text-center,
+			td.text-center 	{ -premailer-align: center; }
+			
 			.text-primary	{ color: {{ Theme.BrandPrimary }}; }
 			.text-warning	{ color: {{ Theme.BrandWarning }}; }
 			.text-success	{ color: {{ Theme.BrandSuccess }}; }
@@ -552,7 +561,7 @@
 			{% zone 'css' %}
     	</style>
 	</head>
-  	<body>
+  	<body{% if Context.LanguageRtl %} dir="rtl"{% endif %}>
   	
 	<style type="text/css" id="ignore">
 		/* Client-specific Styles ------------ */

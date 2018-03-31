@@ -42,9 +42,10 @@
 		right: 0;
 		text-align: right;
 
-        &.dropdown-menu-right {
+        &.dropdown-menu-right,
+		&.dropdown-menu-left {
 			right: auto;
-			left: 0;
+			left: 0 !important;
         }
 	}
 

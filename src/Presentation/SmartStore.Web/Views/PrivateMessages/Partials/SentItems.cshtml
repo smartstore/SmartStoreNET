@@ -67,7 +67,7 @@
 									@Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = "pm-read" })
 								</td>
 								<td class="a-left">
-									@item.CreatedOn
+									@item.CreatedOn.ToNativeString()
 								</td>
 							</tr>
 						}

@@ -571,6 +571,8 @@
     <Content Include="Scripts\admin.globalinit.js" />
     <Content Include="Scripts\smartstore.download.js" />
     <Content Include="Scripts\smartstore.discountrules.js" />
+    <Content Include="Content\theme-rtl.scss" />
+    <Content Include="Content\_rtl.scss" />
     <None Include="Scripts\_references.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>

@@ -454,8 +454,8 @@
 
 					if (option.length === 0) {
 						html += '<div class="mapping-list-item">';
-						html += '<span style="display: inline-block; margin-right: 0;">';
-						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
+						html += '<span class="pr-2 d-inline-block">';
+						html += '	<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
 						html += '</span>';
 					}
 					else {
@@ -476,16 +476,14 @@
 						html += '<div class="clear"></div>';
 						html += '<div class="mapping-list-item' + (mappingIndex === -1 ? '' : ' muted') + '">';
 
-						html += '<span style="display: inline-block; margin-right: 0;">';
+						html += '<span class="pr-2 d-inline-block">';
 						html += '<i class="fa fa-fw ';
 						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-chain-broken' : 'fa-link'));
 						html += (mappingIndex === -1 ? ' text-success" />' : ' text-warning" />');
 						html += '</span>';
 					}
 
-					html += '<span class="muted right-label">' + item.id + '</span>';
-
-					html += '<span class="ml-1" style="display: inline-block;"';
+					html += '<span class="ml-1 d-inline-block"';
 					if (item.text.length > maxMappingLableLength) {
 						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 					}
@@ -493,6 +491,9 @@
 						html += '>' + item.text;
 					}
 					html += '</span>';
+
+					html += '<span class="muted right-label ml-auto">' + item.id + '</span>';
+
 					html += '</div>';
 					return $(html);
 				}
@@ -509,8 +510,10 @@
 
 					html += '<div class="mapping-list-item">';
 
+					html += '<span>' + item.id + '</span>';
+
 					if (item.text !== item.id) {
-						html += '<span class="muted right-label"'
+						html += '<span class="muted right-label ml-auto"'
 						if (item.text.length > maxMappingLableLength) {
 							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 						}
@@ -519,8 +522,6 @@
 						}
 						html += '</span>';
 					}
-
-					html += '<span>' + item.id + '</span>';
 
 					html += '</div>';
 					return $(html);

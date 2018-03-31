@@ -28,7 +28,7 @@ else
 			@foreach (var day in Model.ToLookup(x => x.Date))
 			{
 				<tr>
-					<td><strong>@day.Key.ToShortDateString()</strong></td>
+					<td><strong>@day.Key.ToShortDateString().ReplaceNativeDigits()</strong></td>
 					<td>
 						@foreach (var time in day)
 						{

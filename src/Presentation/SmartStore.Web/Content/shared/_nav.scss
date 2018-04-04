@@ -274,6 +274,11 @@
 		font-size: inherit;
 		margin-right: 0.5rem;
 		color: $text-muted;
+
+		+ span {
+			// Reset left space
+			padding-left: 0 !important;
+		}
 	}
 
 	.nav-link:hover > i,

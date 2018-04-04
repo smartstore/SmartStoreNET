@@ -297,7 +297,7 @@ namespace SmartStore.Web.Framework.UI
 			string loadedTabName = null;
 
             // <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
-            item.HtmlAttributes.AppendCssClass("nav-item" + (item.Selected && this.Component.ComponentVersion == BootstrapVersion.V2 ? " active" : "")); // .active for BS2
+            item.HtmlAttributes.AppendCssClass("nav-item"); // .active for BS2
 
 			if (!item.Selected && !item.Visible)
 			{
@@ -320,7 +320,7 @@ namespace SmartStore.Web.Framework.UI
 					writer.AddAttribute("href", itemId);
 					writer.AddAttribute("data-toggle", "tab");
 					writer.AddAttribute("data-loaded", "true");
-                    writer.AddAttribute("class", "nav-link" + (item.Selected && this.Component.ComponentVersion == BootstrapVersion.V4 ? " active" : "")); // .active for BS4
+                    writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
 					loadedTabName = GetTabName(item) ?? itemId;
 				}
 				else

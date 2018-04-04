@@ -9,7 +9,6 @@ namespace SmartStore.Web.Framework.UI
         protected Component()
         {
             this.HtmlAttributes = new RouteValueDictionary();
-			this.ComponentVersion = BootstrapVersion.V4;
         }
 
         public string Id
@@ -47,11 +46,5 @@ namespace SmartStore.Web.Framework.UI
                 return false;
             }
         }
-
-		public BootstrapVersion ComponentVersion
-		{
-			get;
-			set;
-		}
 	}
 }

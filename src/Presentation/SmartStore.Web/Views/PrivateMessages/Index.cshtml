@@ -19,7 +19,7 @@
     x.Add().Text(@T("PrivateMessages.SentItems"))
         .Content(Html.Action("SentItems", new { page = Model.SentItemsPage, tab = "sent" }).ToString())
         .Selected(Model.SentItemsTabSelected);
-}).TabContentHeaderContent(TabContentHeader()).ComponentVersion(BootstrapVersion.V4).Fade(false)
+}).TabContentHeaderContent(TabContentHeader()).Fade(false)
 
 @helper TabContentHeader()
 {{

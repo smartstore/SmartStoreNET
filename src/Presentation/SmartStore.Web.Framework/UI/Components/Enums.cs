@@ -26,10 +26,4 @@ namespace SmartStore.Web.Framework.UI
 		Dark,
 		Link
 	}
-
-	public enum BootstrapVersion
-	{
-		V2 = 2,
-		V4 = 4
-	}
 }

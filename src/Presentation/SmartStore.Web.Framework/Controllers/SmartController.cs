@@ -190,9 +190,7 @@ namespace SmartStore.Web.Framework.Controllers
 			if (ControllerContext.IsChildAction)
 			{
 				var url = Url.Action(actionName, "Plugin", new { systemName, area = "Admin" });
-				Response.Redirect(url);
-
-				return new EmptyResult();
+				return new PermissiveRedirectResult(url);
 			}
 
 			return RedirectToAction(actionName, "Plugin", new { systemName, area = "Admin" });
@@ -243,5 +241,25 @@ namespace SmartStore.Web.Framework.Controllers
 		//		JsonRequestBehavior = behavior
 		//	};
 		//}
+
+		/// <summary>
+		/// Allows redirects from within achild actions and keeps TempData
+		/// </summary>
+		private class PermissiveRedirectResult : ActionResult
+		{
+			private readonly string _url;
+
+			public PermissiveRedirectResult(string url)
+			{
+				_url = url;
+			}
+
+			public override void ExecuteResult(ControllerContext context)
+			{
+				var url = UrlHelper.GenerateContentUrl(_url, context.HttpContext);
+				context.Controller.TempData.Keep();
+				context.HttpContext.Response.Redirect(url, false);
+			}
+		}
 	}
 }

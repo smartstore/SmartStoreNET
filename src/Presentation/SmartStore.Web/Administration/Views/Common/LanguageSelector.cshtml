@@ -20,12 +20,18 @@
                     @language.Name
                 </a>
             }
+
+			<div class="dropdown-divider"></div>
+
+			<a href="@Url.Action("List", "Language")" class="dropdown-item manage-languages">
+				@T("Admin.Configuration.ManageLanguages")
+			</a>
         </div>
     </li>
     
     <script>
         $(document).ready(function () {
-            $("#language-selector > .dropdown-item:not(.disabled)").on('click', function () {
+			$("#language-selector > .dropdown-item:not(.disabled, .manage-languages)").on('click', function () {
                 var el = $(this);
                 var langId = el.data("lang-id");
                 $("#customerlanguage").val(langId);

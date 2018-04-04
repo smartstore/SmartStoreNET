@@ -378,6 +378,8 @@
 
 			builder.AddOrUpdate("Admin.WidgetZones.UserDefined", "User-defined", "Benutzerdefiniert");
 
+			builder.AddOrUpdate("Admin.Configuration.ManageLanguages", "Manage languages", "Sprachen verwalten");
+
 		}
 	}
 }

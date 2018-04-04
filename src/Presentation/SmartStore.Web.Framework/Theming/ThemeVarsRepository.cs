@@ -73,8 +73,7 @@ namespace SmartStore.Web.Framework.Theming
 				string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
 				return HttpRuntime.Cache.GetOrAdd(cacheKey, () =>
 				{
-					var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
-					return themeVarService.GetThemeVariables(themeName, storeId) ?? new ExpandoObject();
+					return GetRawVariablesCore(themeName, storeId);
 				});
 			}
         }

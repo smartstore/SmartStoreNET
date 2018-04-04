@@ -251,16 +251,20 @@
 
 		var dropdownInstall = $('#pluginsToInstall'),
             dropdownUninstall = $('#pluginsToUninstall'),
-            btnExecuteTasks = $('#btn-execute-tasks');
-
+			btnExecuteTasks = $('#btn-execute-tasks')
+			inputFilterQuery = $('#filter-query');
+			
 		// Execute filtering
 		setTimeout(function() {
-			$('#filter-query').focus();
+			inputFilterQuery.focus();
 		}, 800);
 
 		var mainContainer = $('#local-plugins');
-		$('#filter-query').on('input propertychange paste', function (e) {
+		inputFilterQuery.on('input propertychange paste', function (e) {
 			var el = $(this);
+
+			// store query
+			sessionStorage.setItem("plugin-filter-query", el.val());
 
 			// Retrieve the input field text and reset the count to zero
 			var filter = el.val(),
@@ -295,6 +299,13 @@
 				$.scrollTo(mainContainer, 400, { offset: -50 });
 			}
 		});
+
+		// restore search query
+		var data = sessionStorage.getItem('plugin-filter-query');
+		if (data) {
+			inputFilterQuery.val(data);
+			inputFilterQuery.trigger("paste");
+		}
 
 		// Create tooltip for  ExecuteTasks button which informs
 		// about plugins to be installed and uninstalled

@@ -19,6 +19,11 @@
 		factory(window.jQuery);
 	}
 }(function ($) {
+	var inlineTags = 'b big i small tt abbr acronym cite code dfn em kbd stron, samp var a bdo br img map object q script span sub sup button input label select textarea'.split(' ');
+
+	function isInlineElement(el) {
+		return _.contains(inlineTags, el.tagName.toLowerCase());
+	}
 
 	// Extends plugins for adding hello.
 	//  - plugin is external module for customizing.
@@ -39,40 +44,47 @@
 
 			if (typeof options.cssclass.classes === 'undefined') {
 				options.cssclass.classes = [
-					//"display-1",
-					//"display-2",
-					//"display-3",
-					//"display-4",
-					"lead",
-					"rounded",
-					"rounded-0",
-					"btn btn-primary",
-					"btn btn-secondary",
-					"btn btn-success",
-					"btn btn-danger",
-					"btn btn-warning",
-					"btn btn-info",
-					"text-muted",
-					"text-primary",
-					"text-warning",
-					"text-danger",
-					"text-success",
-					"alert alert-primary",
-					"alert alert-success",
-					"alert alert-danger",
-					"alert alert-warning",
-					"alert alert-info",
-					"text-left",
-					"text-center",
-					"text-right",
-					"list-unstyled",
-					"jumbotron"];
+					{ value: "btn btn-primary", inline: true },
+					{ value: "btn btn-secondary", inline: true },
+					{ value: "btn btn-success", inline: true },
+					{ value: "btn btn-danger", inline: true },
+					{ value: "btn btn-warning", inline: true },
+					{ value: "btn btn-info", inline: true },
+					{ value: "btn btn-dark", inline: true },
+					{ value: "alert alert-primary" },
+					{ value: "alert alert-secondary" },
+					{ value: "alert alert-success" },
+					{ value: "alert alert-danger" },
+					{ value: "alert alert-warning" },
+					{ value: "alert alert-info" },
+					{ value: "alert alert-dark" },
+					{ value: "text-muted", displayClass: "px-2 py-1", inline: true },
+					{ value: "text-primary", displayClass: "px-2 py-1", inline: true },
+					{ value: "text-success", displayClass: "px-2 py-1", inline: true },
+					{ value: "text-danger", displayClass: "px-2 py-1", inline: true },
+					{ value: "text-warning", displayClass: "px-2 py-1" },
+					{ value: "text-info", displayClass: "px-2 py-1", inline: true },
+					{ value: "text-dark", displayClass: "px-2 py-1", inline: true },
+					{ value: "text-white", displayClass: "px-2 py-1 bg-gray", inline: true  },
+					{ value: "text-left", displayClass: "px-2 py-1 border" },
+					{ value: "text-center", displayClass: "px-2 py-1 border" },
+					{ value: "text-right", displayClass: "px-2 py-1 border" },
+					{ value: "rounded", displayClass: "px-2 py-1 border rounded" },
+					{ value: "rounded-0", displayClass: "px-2 py-1 border" },
+					{ value: "list-unstyled" },
+					{ value: "display-1", displayClass: "fs-h1" },
+					{ value: "display-2", displayClass: "fs-h2" },
+					{ value: "display-3", displayClass: "fs-h3" },
+					{ value: "display-4", displayClass: "fs-h4" },
+					{ value: "lead" },
+					{ value: "jumbotron", displayClass: "p-4 fs-h3 font-weight-400" },
+				];
 			}
 			// ui has renders to build ui elements.
 			//  - you can create a button with `ui.button`
 			var ui = $.summernote.ui;
 
-			addStyleString(".scrollable-menu {height: auto; max-height: 300px; max-width:400px; overflow-x: hidden; padding:0 !important}");
+			addStyleString(".scrollable-menu {height: auto; max-height: 300px; width:360px; overflow-x: hidden; padding:0 !important}");
 
 			context.memo('button.cssclass', function () {
 				return ui.buttonGroup([
@@ -94,35 +106,89 @@
 						items: options.cssclass.classes,
 						template: function (item) {
 							if (typeof item === 'string') {
-								item = { tag: "span", title: item, value: item };
+								item = { title: item, value: item };
+								item.title = item;
+								item.value = item;
+							}
+							else {
+								item.title = item.value;
 							}
 
-							var tag = item.tag;
-							var title = item.title;
-							var style = item.style ? ' style="' + item.style + '" ' : '';
-							var cssClass = item.value || '';
+							if (item.inline) {
+								item.option = "true";
+							}
 
-							return '<' + tag + ' ' + style + cssClass + ' class="d-block ' + cssClass + '">' + title + '</' + tag + '>';
+							var cssClass = item.value + (item.displayClass ? " " + item.displayClass : "") + " d-block";
+							return '<span class="{0}" title="{1}">{2}</span>'.format(cssClass, item.title, item.value);
 						},
 						click: function (e, namespace, value) {
 							e.preventDefault();
-							value = value || $(e.target).closest('[data-value]').data('value');
+							var ddi = $(e.target).closest('[data-value]');
+							var inline = ddi.data('option');
 
-							var $node = $(context.invoke("restoreTarget"))
-							if ($node.length == 0) {
-								$node = $(document.getSelection().focusNode.parentElement, ".note-editable");
-							}
+							value = value || ddi.data('value');
 
-							if (typeof options.cssclass !== 'undefined' && typeof options.cssclass.debug !== 'undefined' && options.cssclass.debug) {
-								console.debug(context.invoke("restoreTarget"), $node, "toggling class: " + value, window.getSelection());
-							}
+							applyClassToSelection(value, inline);
 
-							$node.toggleClass(value)
+							//var $node = $(context.invoke("restoreTarget"));
+
+							//console.log("$node", $node);
+
+							//if ($node.length == 0) {
+							//	$node = $(document.getSelection().focusNode.parentElement, ".note-editable");
+							//}
+
+							//if (typeof options.cssclass !== 'undefined' && typeof options.cssclass.debug !== 'undefined' && options.cssclass.debug) {
+							//	console.debug(context.invoke("restoreTarget"), $node, "toggling class: " + value, window.getSelection());
+							//}
+
+							//$node.toggleClass(value)
 						}
 					})
 				]).render();
 				return $optionList;
 			});
+
+			function applyClassToSelection(value, inline) {
+				var node = $(context.invoke("restoreTarget"));
+
+				context.invoke("beforeCommand");
+
+				if (node.length && inline) {
+					// Most likely IMG is selected
+					node.removeClass(value).addClass(value);
+				}
+				else {
+					var sel = window.getSelection();
+					node = $(sel.focusNode.parentElement, ".note-editable");
+					var currentNodeIsInline = isInlineElement(node[0]);
+
+					if (!inline) {
+						if (currentNodeIsInline) {
+							// Traverse parents until a block-level element is found
+							while (node.length && isInlineElement(node[0])) {
+								node = node.parent();
+							}
+						}
+
+						if (node.length && !node.is('.note-editable')) {
+							node.removeClass(value).addClass(value);
+						}
+					}
+					else if (inline && currentNodeIsInline) {
+						node.removeClass(value).addClass(value);
+					}
+					else if (sel.rangeCount) {
+						var range = sel.getRangeAt(0).cloneRange();
+						var span = $('<span class="' + value + '"></span>');
+						range.surroundContents(span[0]);
+						sel.removeAllRanges();
+						sel.addRange(range);
+					}
+				}
+
+				context.invoke("afterCommand");
+			}
 
 			function addStyleString(str) {
 				var node = document.createElement('style');

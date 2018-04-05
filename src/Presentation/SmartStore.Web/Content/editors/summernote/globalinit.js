@@ -162,7 +162,7 @@ var summernote_image_upload_url;
 			mode: "htmlmixed",
 			theme: "eclipse",
 			lineNumbers: true,
-			lineWrapping: true,
+			lineWrapping: false,
 			tabSize: 2,
 			smartIndent: true,
 			matchTags: true,

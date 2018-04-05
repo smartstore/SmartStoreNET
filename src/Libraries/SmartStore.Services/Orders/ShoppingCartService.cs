@@ -1196,7 +1196,7 @@ namespace SmartStore.Services.Orders
 			}
 
 			ctx.Warnings.AddRange(
-				AddToCart(_workContext.CurrentCustomer, ctx.Product, ctx.CartType, storeId,	ctx.AttributesXml, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
+				AddToCart(customer, ctx.Product, ctx.CartType, storeId,	ctx.AttributesXml, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
 			);
 
 			if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Warnings.Count <= 0 && ctx.BundleItem == null)

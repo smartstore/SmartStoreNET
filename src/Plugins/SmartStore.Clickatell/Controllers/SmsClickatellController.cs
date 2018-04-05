@@ -38,6 +38,8 @@ namespace SmartStore.Clickatell.Controllers
 			}
 
 			MiniMapper.Map(model, settings);
+			settings.ApiId = model.ApiId.TrimSafe();
+
 			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
 			return RedirectToConfiguration(ClickatellSmsProvider.SystemName);

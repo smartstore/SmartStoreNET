@@ -36,9 +36,14 @@ namespace SmartStore.PayPal.Models
 		public void Copy(PayPalStandardPaymentSettings settings, bool fromSettings)
         {
             if (fromSettings)
+			{
 				MiniMapper.Map(settings, this);
+			}
             else
+			{
 				MiniMapper.Map(this, settings);
+				settings.BusinessEmail = BusinessEmail.TrimSafe();
+			}
         }
 	}
 }

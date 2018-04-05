@@ -68,6 +68,9 @@ namespace SmartStore.FacebookAuth.Controllers
                 return Configure(settings);
 
 			MiniMapper.Map(model, settings);
+			settings.ClientKeyIdentifier = model.ClientKeyIdentifier.TrimSafe();
+			settings.ClientSecret = model.ClientSecret.TrimSafe();
+
 			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 
 			return RedirectToConfiguration(FacebookExternalAuthMethod.SystemName, true);

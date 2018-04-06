@@ -13,11 +13,6 @@ namespace SmartStore.Core.Domain.Security
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether all pages will be forced to use SSL (no matter of a specified [RequireHttpsByConfigAttribute] attribute)
-		/// </summary>
-		public bool ForceSslForAllPages { get; set; }
-
-		/// <summary>
 		/// When <c>true</c>, bypasses any SSL redirection on localhost
 		/// </summary>
 		public bool UseSslOnLocalhost { get; set; }

@@ -34,6 +34,12 @@ namespace SmartStore.Core.Domain.Stores
 		public string SecureUrl { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether all pages will be forced to use SSL (no matter of a specified [RequireHttpsByConfigAttribute] attribute)
+		/// </summary>
+		[DataMember]
+		public bool ForceSslForAllPages { get; set; }
+
+		/// <summary>
 		/// Gets or sets the comma separated list of possible HTTP_HOST values
 		/// </summary>
 		[DataMember]

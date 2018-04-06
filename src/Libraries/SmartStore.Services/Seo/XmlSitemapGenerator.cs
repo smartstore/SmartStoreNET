@@ -174,7 +174,7 @@ namespace SmartStore.Services.Seo
 		/// <returns>A collection of XML sitemap documents.</returns>
 		protected IList<string> Generate()
 		{
-			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
+			var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
 
 			var nodes = new List<XmlSitemapNode>();
 
@@ -215,7 +215,7 @@ namespace SmartStore.Services.Seo
 
 		protected virtual List<string> GetSiteMapDocuments(IReadOnlyCollection<XmlSitemapNode> nodes)
 		{
-			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
+			var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
 
 			int siteMapCount = (int)Math.Ceiling(nodes.Count / (double)MaximumSiteMapNodeCount);
 			CheckSitemapCount(siteMapCount);

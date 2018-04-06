@@ -27,6 +27,9 @@ namespace SmartStore.Admin.Models.Stores
 		[AllowHtml]
 		public virtual string SecureUrl { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.ForceSslForAllPages")]
+		public bool ForceSslForAllPages { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.Hosts")]
 		[AllowHtml]
 		public string Hosts { get; set; }

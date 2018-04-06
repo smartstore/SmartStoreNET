@@ -111,9 +111,6 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.HideAdminMenuItemsBasedOnPermissions")]
             public bool HideAdminMenuItemsBasedOnPermissions { get; set; }
-
-			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ForceSslForAllPages")]
-			public bool ForceSslForAllPages { get; set; }
 		}
 
 		public partial class CaptchaSettingsModel

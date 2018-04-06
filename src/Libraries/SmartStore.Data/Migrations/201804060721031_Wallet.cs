@@ -33,9 +33,10 @@ namespace SmartStore.Data.Migrations
                 .Index(t => t.OrderId);
             
             AddColumn("dbo.Product", "IsSystemProduct", c => c.Boolean(nullable: false));
+            AddColumn("dbo.Product", "SystemName", c => c.String(maxLength: 500));
             AddColumn("dbo.Order", "CreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             AddColumn("dbo.Order", "RefundedCreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
-            CreateIndex("dbo.Product", "IsSystemProduct");
+            CreateIndex("dbo.Product", new[] { "SystemName", "IsSystemProduct" }, name: "Product_SystemName_IsSystemProduct");
         }
         
         public override void Down()
@@ -45,9 +46,10 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.WalletHistory", new[] { "OrderId" });
             DropIndex("dbo.WalletHistory", new[] { "CustomerId" });
             DropIndex("dbo.WalletHistory", "IX_StoreId_CreatedOn");
-            DropIndex("dbo.Product", new[] { "IsSystemProduct" });
+            DropIndex("dbo.Product", "Product_SystemName_IsSystemProduct");
             DropColumn("dbo.Order", "RefundedCreditBalance");
             DropColumn("dbo.Order", "CreditBalance");
+            DropColumn("dbo.Product", "SystemName");
             DropColumn("dbo.Product", "IsSystemProduct");
             DropTable("dbo.WalletHistory");
         }
@@ -81,11 +83,11 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.PartialRefund",
                 "Partial refund",
                 "Teilerstattung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Debit",
-				"Debit",
-				"Kontobelastung");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.WalletPostingReason.Debit",
+                "Debit",
+                "Kontobelastung");
 
-			builder.AddOrUpdate("ShoppingCart.Totals.CreditBalance",
+            builder.AddOrUpdate("ShoppingCart.Totals.CreditBalance",
                 "Credit balance",
                 "Guthaben");
 
@@ -95,15 +97,15 @@ namespace SmartStore.Data.Migrations
                 "The used credit balance.",
                 "Das verwendete Guthaben.");
 
-			builder.AddOrUpdate("Admin.Orders.Fields.RefundedCreditBalance",
-				"Refunded credit balance",
-				"Erstattetes Guthaben",
-				"The refunded credit balance.",
-				"Das rückerstattete Guthaben.");
+            builder.AddOrUpdate("Admin.Orders.Fields.RefundedCreditBalance",
+                "Refunded credit balance",
+                "Erstattetes Guthaben",
+                "The refunded credit balance.",
+                "Das rückerstattete Guthaben.");
 
-			builder.AddOrUpdate("Admin.Validation.ValueLessThan",
-				"The value must be less than {0}.",
-				"Der Wert muss kleiner {0} sein.");
+            builder.AddOrUpdate("Admin.Validation.ValueLessThan",
+                "The value must be less than {0}.",
+                "Der Wert muss kleiner {0} sein.");
         }
     }
 }

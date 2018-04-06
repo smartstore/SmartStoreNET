@@ -43,48 +43,50 @@
 			}
 
 			if (typeof options.cssclass.classes === 'undefined') {
-				options.cssclass.classes = [
-					{ value: "btn btn-primary", inline: true },
-					{ value: "btn btn-secondary", inline: true },
-					{ value: "btn btn-success", inline: true },
-					{ value: "btn btn-danger", inline: true },
-					{ value: "btn btn-warning", inline: true },
-					{ value: "btn btn-info", inline: true },
-					{ value: "btn btn-dark", inline: true },
-					{ value: "alert alert-primary" },
-					{ value: "alert alert-secondary" },
-					{ value: "alert alert-success" },
-					{ value: "alert alert-danger" },
-					{ value: "alert alert-warning" },
-					{ value: "alert alert-info" },
-					{ value: "alert alert-dark" },
-					{ value: "text-muted", displayClass: "px-2 py-1", inline: true },
-					{ value: "text-primary", displayClass: "px-2 py-1", inline: true },
-					{ value: "text-success", displayClass: "px-2 py-1", inline: true },
-					{ value: "text-danger", displayClass: "px-2 py-1", inline: true },
-					{ value: "text-warning", displayClass: "px-2 py-1" },
-					{ value: "text-info", displayClass: "px-2 py-1", inline: true },
-					{ value: "text-dark", displayClass: "px-2 py-1", inline: true },
-					{ value: "text-white", displayClass: "px-2 py-1 bg-gray", inline: true  },
-					{ value: "text-left", displayClass: "px-2 py-1 border" },
-					{ value: "text-center", displayClass: "px-2 py-1 border" },
-					{ value: "text-right", displayClass: "px-2 py-1 border" },
-					{ value: "rounded", displayClass: "px-2 py-1 border rounded" },
-					{ value: "rounded-0", displayClass: "px-2 py-1 border" },
-					{ value: "list-unstyled" },
-					{ value: "display-1", displayClass: "fs-h1" },
-					{ value: "display-2", displayClass: "fs-h2" },
-					{ value: "display-3", displayClass: "fs-h3" },
-					{ value: "display-4", displayClass: "fs-h4" },
-					{ value: "lead" },
-					{ value: "jumbotron", displayClass: "p-4 fs-h3 font-weight-400" },
-				];
+				var rgAlert = /^alert(-.+)?$/;
+				var rgBtn = /^btn(-.+)?$/;
+				var rgTextColor = /^text-(muted|primary|success|danger|warning|info|dark|white)$/;
+				var rgTextAlign = /^text-(left|center|right)$/;
+				var rgDisplay = /^display-[1-4]$/;
+				options.cssclass.classes = {
+					"alert alert-primary": { toggle: rgAlert },
+					"alert alert-secondary": { toggle: rgAlert },
+					"alert alert-success": { toggle: rgAlert },
+					"alert alert-danger": { toggle: rgAlert },
+					"alert alert-warning": { toggle: rgAlert },
+					"alert alert-info": { toggle: rgAlert },
+					"alert alert-dark": { toggle: rgAlert },
+					"text-muted": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
+					"text-primary": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
+					"text-success": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
+					"text-danger": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
+					"text-warning": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
+					"text-info": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
+					"text-dark": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
+					"text-white": { displayClass: "px-2 py-1 bg-gray", inline: true, toggle: rgTextColor  },
+					"text-left": { displayClass: "px-2 py-1 border", style: 'border-style: dashed !important', toggle: rgTextAlign },
+					"text-center": { displayClass: "px-2 py-1 border", style: 'border-style: dashed !important', toggle: rgTextAlign },
+					"text-right": { displayClass: "px-2 py-1 border", style: 'border-style: dashed !important', toggle: rgTextAlign },
+					"btn btn-primary": { inline: true, toggle: rgBtn },
+					"btn btn-secondary": { inline: true, toggle: rgBtn },
+					"btn btn-success": { inline: true, toggle: rgBtn },
+					"btn btn-danger": { inline: true, toggle: rgBtn },
+					"btn btn-warning": { inline: true, toggle: rgBtn },
+					"btn btn-info": { inline: true, toggle: rgBtn },
+					"btn btn-dark": { inline: true, toggle: rgBtn },
+					"rounded": { displayClass: "px-2 py-1 bg-light border rounded", toggle: /^rounded(-.+)?$/ },
+					"rounded-0": { displayClass: "px-2 py-1 bg-light border", toggle: /^rounded(-.+)?$/ },
+					"list-unstyled": { },
+					"display-1": { displayClass: "fs-h1", toggle: rgDisplay },
+					"display-2": { displayClass: "fs-h2", toggle: rgDisplay },
+					"display-3": { displayClass: "fs-h3", toggle: rgDisplay },
+					"display-4": { displayClass: "fs-h4", toggle: rgDisplay },
+					"lead": { },
+					"jumbotron": { displayClass: "p-4 fs-h3 font-weight-400" },
+				};
 			}
-			// ui has renders to build ui elements.
-			//  - you can create a button with `ui.button`
-			var ui = $.summernote.ui;
 
-			addStyleString(".scrollable-menu {height: auto; max-height: 300px; width:360px; overflow-x: hidden; padding:0 !important}");
+			addStyleString(".scrollable-menu {height: auto; max-height: 340px; width:360px; overflow-x: hidden; padding:0 !important}");
 
 			context.memo('button.cssclass', function () {
 				return ui.buttonGroup([
@@ -103,67 +105,74 @@
 					}),
 					ui.dropdown({
 						className: 'dropdown-style scrollable-menu',
-						items: options.cssclass.classes,
+						items: _.keys(options.cssclass.classes),
 						template: function (item) {
-							if (typeof item === 'string') {
-								item = { title: item, value: item };
-								item.title = item;
-								item.value = item;
-							}
-							else {
-								item.title = item.value;
-							}
-
-							if (item.inline) {
-								item.option = "true";
-							}
-
-							var cssClass = item.value + (item.displayClass ? " " + item.displayClass : "") + " d-block";
-							return '<span class="{0}" title="{1}">{2}</span>'.format(cssClass, item.title, item.value);
+							var obj = options.cssclass.classes[item] || {};
+							var cssClass = item + (obj.displayClass ? " " + obj.displayClass : "") + " d-block";
+							var cssStyle = obj.style ? ' style="{0}"'.format(obj.style) : '';
+							return '<span class="{0}" title="{1}"{2}>{3}</span>'.format(cssClass, item, cssStyle, item);
 						},
 						click: function (e, namespace, value) {
 							e.preventDefault();
+
 							var ddi = $(e.target).closest('[data-value]');
-							var inline = ddi.data('option');
-
 							value = value || ddi.data('value');
+							var obj = options.cssclass.classes[value] || {};
 
-							applyClassToSelection(value, inline);
-
-							//var $node = $(context.invoke("restoreTarget"));
-
-							//console.log("$node", $node);
-
-							//if ($node.length == 0) {
-							//	$node = $(document.getSelection().focusNode.parentElement, ".note-editable");
-							//}
-
-							//if (typeof options.cssclass !== 'undefined' && typeof options.cssclass.debug !== 'undefined' && options.cssclass.debug) {
-							//	console.debug(context.invoke("restoreTarget"), $node, "toggling class: " + value, window.getSelection());
-							//}
-
-							//$node.toggleClass(value)
+							applyClassToSelection(value, obj);
 						}
 					})
 				]).render();
 				return $optionList;
 			});
 
-			function applyClassToSelection(value, inline) {
-				var node = $(context.invoke("restoreTarget"));
+			function applyClassToSelection(value, obj) {
+				var controlNode = $(context.invoke("restoreTarget"));
+				var sel = window.getSelection();
+				var node = $(sel.focusNode.parentElement, ".note-editable");
+				var currentNodeIsInline = isInlineElement(node[0]);
+				var caret = sel.type == 'None' || sel.type == 'Caret';
+
+				function apply(el) {
+					if (el.is('.' + value.replace(' ', '.'))) {
+						// "btn btn-info" > ".btn.btn-info"
+						// Just remove the same style
+						el.removeClass(value);
+						if (!el.attr('class')) {
+							el.removeAttr('class');
+						}
+
+						if (isInlineElement(el[0]) && !el[0].attributes.length) {
+							// Unwrap the node when it is inline and no attribute are present
+							el.replaceWith(el.html());
+						}
+					}
+					else {
+						if (obj.toggle) {
+							// Remove equivalent classes first
+							var classNames = (el.attr('class') || '').split(' ');
+							_.each(classNames, function (name) {
+								if (name && name !== value && obj.toggle.test(name)) {
+									el.removeClass(name);
+								}
+							});
+						}
+
+						el.toggleClass(value);
+					}
+				}
 
 				context.invoke("beforeCommand");
 
-				if (node.length && inline) {
+				if (controlNode.length) {
 					// Most likely IMG is selected
-					node.removeClass(value).addClass(value);
+					if (obj.inline) {
+						apply(controlNode);
+					}
 				}
 				else {
-					var sel = window.getSelection();
-					node = $(sel.focusNode.parentElement, ".note-editable");
-					var currentNodeIsInline = isInlineElement(node[0]);
-
-					if (!inline) {
+					if (!obj.inline) {
+						// Apply a block-style only to a block-level element
 						if (currentNodeIsInline) {
 							// Traverse parents until a block-level element is found
 							while (node.length && isInlineElement(node[0])) {
@@ -172,11 +181,11 @@
 						}
 
 						if (node.length && !node.is('.note-editable')) {
-							node.removeClass(value).addClass(value);
+							apply(node);
 						}
 					}
-					else if (inline && currentNodeIsInline) {
-						node.removeClass(value).addClass(value);
+					else if (obj.inline && caret) {
+						apply(node);
 					}
 					else if (sel.rangeCount) {
 						var range = sel.getRangeAt(0).cloneRange();

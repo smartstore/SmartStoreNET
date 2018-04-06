@@ -590,6 +590,7 @@ legend {
 		@include make-col-ready();
 		padding-right: 0;
 		padding-left: 0;
+		display: block;
 	}
 
 	.adminTitle {
@@ -1435,12 +1436,46 @@ table.payment-method-features td {
 			padding-right: 0.5rem;
 			min-width: 50px;
 		}
+
+		.scrollable-menu {
+			height: auto;
+			max-height: 340px;
+			width: 360px;
+			overflow-x: hidden;
+			padding: 0 !important
+		}
+
+		.btn-group-cssclass .dropdown-menu {
+			&.show {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.dropdown-item {
+				position: relative;
+
+				&.selected {
+					order: -1;
+
+					&:before {
+						position: absolute;
+						content: '';
+						left: 0;
+						top: 0;
+						bottom: 0;
+						width: 3px;
+						background-color: $warning;
+					}
+				}
+			}
+		}
 	}
 
 	.note-editable {
 		table:not(.table-bordered):not([border]),
 		table:not(.table-bordered)[border='0'] {
 			border-collapse: collapse;
+
 			td, th {
 				border: 1px dashed #bbb;
 			}

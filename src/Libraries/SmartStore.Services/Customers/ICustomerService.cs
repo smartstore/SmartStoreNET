@@ -109,7 +109,7 @@ namespace SmartStore.Services.Customers
         Customer GetCustomerByEmail(string email);
         
         /// <summary>
-        /// Get customer by system role
+        /// Get customer by system name
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Customer</returns>

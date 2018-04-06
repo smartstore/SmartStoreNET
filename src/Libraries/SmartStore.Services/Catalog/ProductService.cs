@@ -207,6 +207,17 @@ namespace SmartStore.Services.Catalog
 			return products.OrderBySequence(productIds).ToList();
 		}
 
+		public virtual Product GetProductBySystemName(string systemName)
+		{
+			if (systemName.IsEmpty())
+			{
+				return null;
+			}
+
+			var product = _productRepository.Table.FirstOrDefault(x => x.IsSystemProduct && x.SystemName == systemName);
+			return product;
+		}
+
 		private IQueryable<Product> ApplyLoadFlags(IQueryable<Product> query, ProductLoadFlags flags)
 		{
 			if (flags.HasFlag(ProductLoadFlags.WithAttributeCombinations))

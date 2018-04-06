@@ -80,24 +80,27 @@
 		</td>
 		<td class="adminData">
 			<div class="form-control-plaintext">
-				<b class="pr-3 align-top font-weight-medium">@Model.OrderStatus</b>
-
-				@if (Model.CanCancelOrder)
-				{
-					<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger ask-to-proceed" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")">
-						<i class="fa fa-times"></i>
-						<span>@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
-					</button>
-				}
-
-				@if (Model.CanCompleteOrder)
-				{
-					<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning ask-to-proceed" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")">
-						<i class="fa fa-check"></i>
-						<span>@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
-					</button>
-				}
+				@Model.OrderStatus
 			</div>
+			@if (Model.CanCancelOrder || Model.CanCompleteOrder)
+			{
+				<div>
+					@if (Model.CanCancelOrder)
+					{
+						<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger ask-to-proceed" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")">
+							<span>@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
+						</button>
+					}
+
+					@if (Model.CanCompleteOrder)
+					{
+						<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning ask-to-proceed" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")">
+							<i class="fa fa-check"></i>
+							<span>@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
+						</button>
+					}
+				</div>
+			}
 		</td>
 	</tr>
 	<tr>
@@ -542,7 +545,6 @@
 				<span>@T("Admin.Orders.Fields.SaveOrderTotals")</span>
 			</button>
 			<button type="submit" name="btnCancelOrderTotals" onclick="toggleOrderTotals(false);return false;" id="btnCancelOrderTotals" class="btn btn-secondary">
-				<i class="fa fa-times"></i>
 				<span>@T("Admin.Common.Cancel")</span>
 			</button>
 
@@ -641,7 +643,6 @@
 					<span>@T("Admin.Orders.Fields.SaveCC")</span>
 				</button>
 				<button type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn btn-secondary">
-					<i class="fa fa-times"></i>
 					<span>@T("Admin.Orders.Fields.CancelCC")</span>
 				</button>
 			</td>
@@ -743,7 +744,6 @@
 					<span>@T("Admin.Orders.Fields.SaveDD")</span>
 				</button>
 				<button type="submit" name="btnCancelDD" value="@T("Admin.Orders.Fields.CancelDD")" onclick="toggleDD(false);return false;" id="btnCancelDD" class="btn btn-secondary">
-					<i class="fa fa-times"></i>
 					<span>@T("Admin.Orders.Fields.CancelDD")</span>
 				</button>
 			</td>

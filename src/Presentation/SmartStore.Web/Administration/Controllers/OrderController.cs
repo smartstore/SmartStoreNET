@@ -1052,19 +1052,14 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.CancelOrder(order, true);
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
-                return View(model);
             }
             catch (Exception exc)
             {
-                //error
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 NotifyError(exc, false);
-                return View(model);
             }
-        }
+
+			return RedirectToAction("Edit", new { id = id });
+		}
 
 		[HttpPost, ActionName("Edit")]
 		[FormValueRequired("completeorder")]

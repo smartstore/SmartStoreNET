@@ -43,9 +43,9 @@ namespace SmartStore.Data.Migrations
             var topics = context.Set<Topic>().Where(x => systemTopics.Contains(x.SystemName)).ToList();
             topics.Each(x => x.IsSystemTopic = true);
 
-            context.SaveChanges();
+			context.MigrateLocaleResources(MigrateLocaleResources);
 
-            context.MigrateLocaleResources(MigrateLocaleResources);
+			context.SaveChanges();
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)

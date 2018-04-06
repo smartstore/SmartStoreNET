@@ -383,7 +383,10 @@
 			builder.AddOrUpdate("Admin.Customers.Customers.Info", "General", "Allgemein");
 			builder.AddOrUpdate("Admin.Customers.Customers.Impersonate", "Impersonate", "Imitieren");
 			builder.AddOrUpdate("Admin.Customers.Customers.CurrentCart", "Current cart", "Aktueller Warenkorb");
-			
+
+			builder.AddOrUpdate("Admin.ContentManagement.Topics.CannotBeDeleted",
+				"This topic is needed by your Shop and can therefore not be deleted.",
+				"Diese Seite wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.");
 		}
 	}
 }

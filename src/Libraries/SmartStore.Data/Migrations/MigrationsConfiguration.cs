@@ -380,6 +380,10 @@
 
 			builder.AddOrUpdate("Admin.Configuration.ManageLanguages", "Manage languages", "Sprachen verwalten");
 
+			builder.AddOrUpdate("Admin.Customers.Customers.Info", "General", "Allgemein");
+			builder.AddOrUpdate("Admin.Customers.Customers.Impersonate", "Impersonate", "Imitieren");
+			builder.AddOrUpdate("Admin.Customers.Customers.CurrentCart", "Current cart", "Aktueller Warenkorb");
+			
 		}
 	}
 }

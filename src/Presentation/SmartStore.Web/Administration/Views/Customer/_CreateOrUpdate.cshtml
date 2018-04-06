@@ -23,8 +23,7 @@
 		}
 		
 		x.Add().Text(T("Admin.Customers.Customers.Addresses").Text).Content(TabAddresses());
-		x.Add().Text(T("Admin.Customers.Customers.CurrentShoppingCart").Text).Content(TabCurrentShoppingCart());
-		x.Add().Text(T("Admin.Customers.Customers.CurrentWishlist").Text).Content(TabCurrentWishlist());
+		x.Add().Text(T("Admin.Customers.Customers.CurrentCart").Text).Content(TabCurrentShoppingCart());
 		x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text).Content(TabImpersonate());
 	}
 
@@ -645,51 +644,56 @@
 
 @helper TabCurrentShoppingCart()
 {
-	@(Html.Telerik().Grid<ShoppingCartItemModel>()
-		.Name("currentshoppingcart-grid")
-		.Columns(columns =>
-		{
-			columns.Bound(sci => sci.ProductName)
-				.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-				.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-			columns.Bound(sci => sci.Quantity).Centered().Width(100);
-			columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
-			columns.Bound(sci => sci.Total).RightAlign().Width(120);
-			columns.Bound(sci => sci.Store).Width(300);
-			columns.Bound(sci => sci.UpdatedOn).Width(200);
-		})
-		.DataBinding(dataBinding => dataBinding.Ajax()
-		.Select("GetCartList", "Customer", new
-		{
-			customerId = Model.Id,
-			cartTypeId = (int)ShoppingCartType.ShoppingCart
-		}))
-    )
-}
 
-@helper TabCurrentWishlist()
-{
+	<h4 class="mt-3">@T("Admin.Customers.Customers.CurrentShoppingCart")</h4>
 
-    @(Html.Telerik().Grid<ShoppingCartItemModel>()
-		.Name("currentwishlist-grid")
-		.Columns(columns =>
-		{
-			columns.Bound(sci => sci.ProductName)
-				.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-				.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-			columns.Bound(sci => sci.Quantity).Centered().Width(100);
-			columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
-			columns.Bound(sci => sci.Total).RightAlign().Width(120);
-			columns.Bound(sci => sci.Store).Width(300);
-			columns.Bound(sci => sci.UpdatedOn).Width(200);
-		})
-		.DataBinding(dataBinding => dataBinding.Ajax()
-		.Select("GetCartList", "Customer", new
-		{
-			customerId = Model.Id,
-			cartTypeId = (int)ShoppingCartType.Wishlist
-		}))
-	)
+	<div class="mt-3">
+		@(Html.Telerik().Grid<ShoppingCartItemModel>()
+			.Name("currentshoppingcart-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(sci => sci.ProductName)
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(sci => sci.Quantity).Centered().Width(100);
+				columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
+				columns.Bound(sci => sci.Total).RightAlign().Width(120);
+				columns.Bound(sci => sci.Store).Width(300);
+				columns.Bound(sci => sci.UpdatedOn).Width(200);
+			})
+			.DataBinding(dataBinding => dataBinding.Ajax()
+			.Select("GetCartList", "Customer", new
+			{
+				customerId = Model.Id,
+				cartTypeId = (int)ShoppingCartType.ShoppingCart
+			}))
+		)
+	</div>
+
+	<h4 class="mt-5">@T("Admin.Customers.Customers.CurrentWishlist")</h4>
+
+	<div class="mt-3">
+		@(Html.Telerik().Grid<ShoppingCartItemModel>()
+			.Name("currentwishlist-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(sci => sci.ProductName)
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(sci => sci.Quantity).Centered().Width(100);
+				columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
+				columns.Bound(sci => sci.Total).RightAlign().Width(120);
+				columns.Bound(sci => sci.Store).Width(300);
+				columns.Bound(sci => sci.UpdatedOn).Width(200);
+			})
+			.DataBinding(dataBinding => dataBinding.Ajax()
+			.Select("GetCartList", "Customer", new
+			{
+				customerId = Model.Id,
+				cartTypeId = (int)ShoppingCartType.Wishlist
+			}))
+		)
+	</div>
 }
 
 @helper TabImpersonate()

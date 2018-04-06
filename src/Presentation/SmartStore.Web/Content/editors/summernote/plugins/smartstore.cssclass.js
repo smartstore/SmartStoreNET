@@ -45,9 +45,11 @@
 			if (typeof options.cssclass.classes === 'undefined') {
 				var rgAlert = /^alert(-.+)?$/;
 				var rgBtn = /^btn(-.+)?$/;
+				var rgBg = /^bg-.+$/;
 				var rgTextColor = /^text-(muted|primary|success|danger|warning|info|dark|white)$/;
 				var rgTextAlign = /^text-(left|center|right)$/;
 				var rgDisplay = /^display-[1-4]$/;
+				var rgWidth = /^w-(25|50|75|100)$/;
 				options.cssclass.classes = {
 					"alert alert-primary": { toggle: rgAlert },
 					"alert alert-secondary": { toggle: rgAlert },
@@ -55,25 +57,38 @@
 					"alert alert-danger": { toggle: rgAlert },
 					"alert alert-warning": { toggle: rgAlert },
 					"alert alert-info": { toggle: rgAlert },
+					"alert alert-light": { toggle: rgAlert },
 					"alert alert-dark": { toggle: rgAlert },
-					"text-muted": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
-					"text-primary": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
-					"text-success": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
-					"text-danger": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
-					"text-warning": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
-					"text-info": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
-					"text-dark": { displayClass: "px-2 py-1", inline: true, toggle: rgTextColor },
-					"text-white": { displayClass: "px-2 py-1 bg-gray", inline: true, toggle: rgTextColor  },
-					"text-left": { displayClass: "px-2 py-1 border", style: 'border-style: dashed !important', toggle: rgTextAlign },
-					"text-center": { displayClass: "px-2 py-1 border", style: 'border-style: dashed !important', toggle: rgTextAlign },
-					"text-right": { displayClass: "px-2 py-1 border", style: 'border-style: dashed !important', toggle: rgTextAlign },
-					"btn btn-primary": { inline: true, toggle: rgBtn },
-					"btn btn-secondary": { inline: true, toggle: rgBtn },
-					"btn btn-success": { inline: true, toggle: rgBtn },
-					"btn btn-danger": { inline: true, toggle: rgBtn },
-					"btn btn-warning": { inline: true, toggle: rgBtn },
-					"btn btn-info": { inline: true, toggle: rgBtn },
-					"btn btn-dark": { inline: true, toggle: rgBtn },
+					"bg-primary": { displayClass: "px-2 py-1 text-white", inline: true, toggle: rgBg },
+					"bg-secondary": { displayClass: "px-2 py-1", inline: true, toggle: rgBg },
+					"bg-success": { displayClass: "px-2 py-1 text-white", inline: true, toggle: rgBg },
+					"bg-danger": { displayClass: "px-2 py-1 text-white", inline: true, toggle: rgBg },
+					"bg-warning": { displayClass: "px-2 py-1 text-white", inline: true, toggle: rgBg },
+					"bg-info": { displayClass: "px-2 py-1 text-white", inline: true, toggle: rgBg },
+					"bg-light": { displayClass: "px-2 py-1", inline: true, toggle: rgBg },
+					"bg-dark": { displayClass: "px-2 py-1 text-white", inline: true, toggle: rgBg },
+					"bg-white": { displayClass: "px-2 py-1 border", inline: true, toggle: rgBg },
+					"text-muted": { inline: true, toggle: rgTextColor },
+					"text-primary": {inline: true, toggle: rgTextColor },
+					"text-success": {inline: true, toggle: rgTextColor },
+					"text-danger": { inline: true, toggle: rgTextColor },
+					"text-warning": { inline: true, toggle: rgTextColor },
+					"text-info": { inline: true, toggle: rgTextColor },
+					"text-dark": { inline: true, toggle: rgTextColor },
+					"text-white": { displayClass: "bg-gray", inline: true, toggle: rgTextColor },
+					"font-weight-medium": { inline: true },
+					"w-25": { displayClass: "px-2 py-1 bg-light border", toggle: rgWidth },
+					"w-50": { displayClass: "px-2 py-1 bg-light border", toggle: rgWidth },
+					"w-75": { displayClass: "px-2 py-1 bg-light border", toggle: rgWidth },
+					"w-100": { displayClass: "px-2 py-1 bg-light border", toggle: rgWidth },
+					"btn btn-primary": { inline: true, toggle: rgBtn, predicate: "a" },
+					"btn btn-secondary": { inline: true, toggle: rgBtn, predicate: "a" },
+					"btn btn-success": { inline: true, toggle: rgBtn, predicate: "a" },
+					"btn btn-danger": { inline: true, toggle: rgBtn, predicate: "a" },
+					"btn btn-warning": { inline: true, toggle: rgBtn, predicate: "a" },
+					"btn btn-info": { inline: true, toggle: rgBtn, predicate: "a" },
+					"btn btn-light": { inline: true, toggle: rgBtn, predicate: "a" },
+					"btn btn-dark": { inline: true, toggle: rgBtn, predicate: "a" },
 					"rounded": { displayClass: "px-2 py-1 bg-light border rounded", toggle: /^rounded(-.+)?$/ },
 					"rounded-0": { displayClass: "px-2 py-1 bg-light border", toggle: /^rounded(-.+)?$/ },
 					"list-unstyled": { },
@@ -86,47 +101,49 @@
 				};
 			}
 
-			addStyleString(".scrollable-menu {height: auto; max-height: 340px; width:360px; overflow-x: hidden; padding:0 !important}");
-
 			context.memo('button.cssclass', function () {
-				return ui.buttonGroup([
-					ui.button({
-						className: 'dropdown-toggle',
-						contents: ui.icon("fa fa-css3"),
-						callback: function (btn) {
-							btn.data("placement", "bottom")
-								.data("trigger", 'hover')
-								.attr("title", lang.attrs.cssClass)
-								.tooltip();
-						},
-						data: {
-							toggle: 'dropdown'
-						}
-					}),
-					ui.dropdown({
-						className: 'dropdown-style scrollable-menu',
-						items: _.keys(options.cssclass.classes),
-						template: function (item) {
-							var obj = options.cssclass.classes[item] || {};
-							var cssClass = item + (obj.displayClass ? " " + obj.displayClass : "") + " d-block";
-							var cssStyle = obj.style ? ' style="{0}"'.format(obj.style) : '';
-							return '<span class="{0}" title="{1}"{2}>{3}</span>'.format(cssClass, item, cssStyle, item);
-						},
-						click: function (e, namespace, value) {
-							e.preventDefault();
+				return ui.buttonGroup({
+					className: 'btn-group-cssclass',
+					children: [
+						ui.button({
+							className: 'dropdown-toggle',
+							contents: ui.icon("fa fa-css3"),
+							callback: function (btn) {
+								btn.data("placement", "bottom")
+									.data("trigger", 'hover')
+									.attr("title", lang.attrs.cssClass)
+									.tooltip();
+							},
+							data: {
+								toggle: 'dropdown'
+							}
+						}),
+						ui.dropdown({
+							className: 'dropdown-style scrollable-menu',
+							items: _.keys(options.cssclass.classes),
+							template: function (item) {
+								var obj = options.cssclass.classes[item] || {};
+								var cssClass = item + (obj.displayClass ? " " + obj.displayClass : "") + " d-block";
+								var cssStyle = obj.style ? ' style="{0}"'.format(obj.style) : '';
+								return '<span class="{0}" title="{1}"{2}>{3}</span>'.format(cssClass, item, cssStyle, item);
+							},
+							click: function (e, namespace, value) {
+								e.preventDefault();
 
-							var ddi = $(e.target).closest('[data-value]');
-							value = value || ddi.data('value');
-							var obj = options.cssclass.classes[value] || {};
+								var ddi = $(e.target).closest('[data-value]');
+								value = value || ddi.data('value');
+								var obj = options.cssclass.classes[value] || {};
 
-							applyClassToSelection(value, obj);
-						}
-					})
-				]).render();
+								self.applyClassToSelection(value, obj);
+							}
+						})
+					]
+				}).render();
+
 				return $optionList;
 			});
 
-			function applyClassToSelection(value, obj) {
+			this.applyClassToSelection = function(value, obj) {
 				var controlNode = $(context.invoke("restoreTarget"));
 				var sel = window.getSelection();
 				var node = $(sel.focusNode.parentElement, ".note-editable");
@@ -199,12 +216,6 @@
 				context.invoke("afterCommand");
 			}
 
-			function addStyleString(str) {
-				var node = document.createElement('style');
-				node.innerHTML = str;
-				document.body.appendChild(node);
-			}
-
 			// This events will be attached when editor is initialized.
 			this.events = {
 				// This will be called after modules are initialized.
@@ -217,14 +228,48 @@
 				}
 			};
 
-			// This method will be called when editor is initialized by $('..').summernote();
-			// You can create elements for plugin
-			this.initialize = function () {
+			this.refreshDropdown = function (drop) {
+				var node = $(window.getSelection().focusNode, ".note-editable");
 
+				drop.find('> .dropdown-item').each(function () {
+					var ddi = $(this),
+						curNode = node,
+						value = ddi.data('value'),
+						//obj = options.cssclass.classes[value] || {},
+						expr = '.' + value.replace(' ', '.'),
+						match = false;
+
+					while (curNode.length) {
+						if (curNode.is(expr)) {
+							match = true;
+							break;
+						}
+
+						if (curNode.is('.note-editable')) {
+							break;
+						}
+
+						curNode = curNode.parent();
+					}
+
+					ddi.toggleClass('selected', match);
+				});
+			}
+
+			this.initialize = function () {
+				$('.note-toolbar', $editor).on('click', '.btn-group-cssclass .dropdown-item', function (e) {
+					// Prevent dropdown close
+					e.preventDefault();
+					e.stopPropagation();
+
+					self.refreshDropdown($(this).parent());
+				});
+
+				$('.note-toolbar', $editor).on('mousedown', '.btn-group-cssclass > .btn', function (e) {
+					self.refreshDropdown($(this).next());
+				});
 			};
 
-			// This methods will be called when editor is destroyed by $('..').summernote('destroy');
-			// You should remove elements on `initialize`.
 			this.destroy = function () {
                 /*  this.$panel.remove();
                  this.$panel = null; */

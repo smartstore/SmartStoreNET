@@ -566,9 +566,9 @@
     <Compile Include="Migrations\201804060721031_Wallet.Designer.cs">
       <DependentUpon>201804060721031_Wallet.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201804060844570_ForceSslForAllPages.cs" />
-    <Compile Include="Migrations\201804060844570_ForceSslForAllPages.Designer.cs">
-      <DependentUpon>201804060844570_ForceSslForAllPages.cs</DependentUpon>
+    <Compile Include="Migrations\201804061709536_ForceSslForAllPages.cs" />
+    <Compile Include="Migrations\201804061709536_ForceSslForAllPages.Designer.cs">
+      <DependentUpon>201804061709536_ForceSslForAllPages.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1028,8 +1028,8 @@
     <EmbeddedResource Include="Migrations\201804060721031_Wallet.resx">
       <DependentUpon>201804060721031_Wallet.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804060844570_ForceSslForAllPages.resx">
-      <DependentUpon>201804060844570_ForceSslForAllPages.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201804061709536_ForceSslForAllPages.resx">
+      <DependentUpon>201804061709536_ForceSslForAllPages.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

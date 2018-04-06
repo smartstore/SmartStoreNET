@@ -214,7 +214,7 @@ namespace SmartStore.Services.Catalog
 				return null;
 			}
 
-			var product = _productRepository.Table.FirstOrDefault(x => x.IsSystemProduct && x.SystemName == systemName);
+			var product = _productRepository.Table.FirstOrDefault(x => x.SystemName == systemName && x.IsSystemProduct);
 			return product;
 		}
 

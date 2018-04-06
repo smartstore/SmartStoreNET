@@ -80,7 +80,7 @@
 		</td>
 		<td class="adminData">
 			<div class="form-control-plaintext">
-				<b class="pr-3 align-top">@Model.OrderStatus</b>
+				<b class="pr-3 align-top font-weight-medium">@Model.OrderStatus</b>
 
 				@if (Model.CanCancelOrder)
 				{
@@ -862,7 +862,7 @@
 			@Html.SmartLabelFor(model => model.PaymentStatus)
 		</td>
 		<td class="adminData wide">
-			<span class="pr-1 font-weight-bold form-control-plaintext d-inline-block" style="width: auto;">@Model.PaymentStatus</span>
+			<span class="pr-1 font-weight-medium form-control-plaintext d-inline-block" style="width: auto;">@Model.PaymentStatus</span>
 
 			@if (Model.CanMarkOrderAsPaid)
 			{

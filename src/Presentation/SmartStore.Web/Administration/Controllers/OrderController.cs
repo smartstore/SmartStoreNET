@@ -1086,9 +1086,7 @@ namespace SmartStore.Admin.Controllers
 				NotifyError(exc, false);
 			}
 
-			var model = new OrderModel();
-			PrepareOrderDetailsModel(model, order);
-			return View(model);
+			return RedirectToAction("Edit", new { id = id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1106,22 +1104,16 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 var errors = _orderProcessingService.Capture(order);
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
 					NotifyError(error, false);
-                return View(model);
-            }
+			}
             catch (Exception exc)
             {
-                //error
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 NotifyError(exc, false);
-                return View(model);
-            }
+			}
 
-        }
+			return RedirectToAction("Edit", new { id = id });
+		}
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("markorderaspaid")]
@@ -1138,19 +1130,14 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.MarkOrderAsPaid(order);
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
-                return View(model);
             }
             catch (Exception exc)
             {
-                //error
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 NotifyError(exc, false);
-                return View(model);
             }
-        }
+
+			return RedirectToAction("Edit", new { id = id });
+		}
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("refundorder")]
@@ -1167,21 +1154,16 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 var errors = _orderProcessingService.Refund(order);
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
 					NotifyError(error, false);
-                return View(model);
             }
             catch (Exception exc)
             {
-                //error
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 NotifyError(exc, false);
-                return View(model);
             }
-        }
+
+			return RedirectToAction("Edit", new { id = id });
+		}
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("refundorderoffline")]
@@ -1198,19 +1180,14 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.RefundOffline(order);
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
-                return View(model);
             }
             catch (Exception exc)
             {
-                //error
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 NotifyError(exc, false);
-                return View(model);
             }
-        }
+
+			return RedirectToAction("Edit", new { id = id });
+		}
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("voidorder")]
@@ -1227,21 +1204,16 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 var errors = _orderProcessingService.Void(order);
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
 					NotifyError(error, false);
-                return View(model);
             }
             catch (Exception exc)
             {
-                //error
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 NotifyError(exc, false);
-                return View(model);
             }
-        }
+
+			return RedirectToAction("Edit", new { id = id });
+		}
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("voidorderoffline")]
@@ -1258,19 +1230,14 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 _orderProcessingService.VoidOffline(order);
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
-                return View(model);
             }
             catch (Exception exc)
             {
-                //error
-                var model = new OrderModel();
-                PrepareOrderDetailsModel(model, order);
                 NotifyError(exc, false);
-                return View(model);
             }
-        }
+
+			return RedirectToAction("Edit", new { id = id });
+		}
         
         public ActionResult PartiallyRefundOrderPopup(int id, bool online)
         {

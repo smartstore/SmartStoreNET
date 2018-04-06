@@ -17,7 +17,7 @@
 				 data-success-msg=@T("Admin.Promotions.Discounts.Requirements.Saved").JsText>
 				<div>
 					<div class="input-group">
-						@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds" })
+						@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds", @readonly = "readonly" })
 						<div class="input-group-append">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.Products)

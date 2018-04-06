@@ -337,7 +337,7 @@
 				</td>
 				<td class="adminData">
 					<div class="input-group">
-						@Html.EditorFor(model => model.RequiredProductIds)
+						@Html.TextBoxFor(model => model.RequiredProductIds, new { @readonly = "readonly" })
 						<span class="input-group-append">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.RequiredProductIds)

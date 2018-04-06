@@ -82,8 +82,8 @@
 			});
 
 			self.updateTableStyles = function (chosenItem) {
-				const rng = context.invoke("createRange", $editable);
-				const dom = $.summernote.dom;
+				var rng = context.invoke("createRange", $editable);
+				var dom = $.summernote.dom;
 				if (rng.isCollapsed() && rng.isOnCell()) {
 					context.invoke("beforeCommand");
 					var table = dom.ancestor(rng.commonAncestor(), dom.isTable);
@@ -97,8 +97,8 @@
 
 			/* Makes sure the check marks are on the currently applied styles */
 			self.updateTableMenuState = function ($dropdownButton) {
-				const rng = context.invoke("createRange", $editable);
-				const dom = $.summernote.dom;
+				var rng = context.invoke("createRange", $editable);
+				var dom = $.summernote.dom;
 				if (rng.isCollapsed() && rng.isOnCell()) {
 					var $table = $(dom.ancestor(rng.commonAncestor(), dom.isTable));
 					var $listItems = $dropdownButton.next().find("a");
@@ -156,16 +156,16 @@
 				var index = 0;
 				var list = "";
 
-				for (const style of exclusiveStyles) {
-					list += self.getListItem(style, exclusiveLabels[index], true);
-					index++;
-				}
+				_.each(exclusiveStyles, function (style, i) {
+					list += self.getListItem(style, exclusiveLabels[i], true);
+				});
+
 				list += '<div class="dropdown-divider"></div>';
-				index = 0;
-				for (const style of inclusiveStyles) {
-					list += self.getListItem(style, inclusiveLabels[index], false);
-					index++;
-				}
+
+				_.each(inclusiveStyles, function (style, i) {
+					list += self.getListItem(style, inclusiveLabels[i], false);
+				});
+
 				return list;
 			};
 

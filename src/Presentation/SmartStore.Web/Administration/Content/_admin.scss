@@ -1454,7 +1454,7 @@ table.payment-method-features td {
 			.dropdown-item {
 				position: relative;
 
-				&.selected {
+				&.checked {
 					order: -1;
 
 					&:before {

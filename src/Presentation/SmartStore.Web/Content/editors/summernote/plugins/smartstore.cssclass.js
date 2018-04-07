@@ -101,6 +101,15 @@
 				};
 			}
 
+			if (typeof options.cssclass.imageShapes === 'undefined') {
+				options.cssclass.imageShapes = {
+					"img-fluid": { inline: true },
+					"rounded": { toggle: /^(rounded(-.+)?)|img-thumbnail$/, inline: true },
+					"rounded-circle": { toggle: /^(rounded(-.+)?)|img-thumbnail$/, inline: true  },
+					"img-thumbnail": { toggle: /^rounded(-.+)?$/, inline: true  },
+				};
+			}
+
 			context.memo('button.cssclass', function () {
 				return ui.buttonGroup({
 					className: 'btn-group-cssclass',
@@ -141,6 +150,53 @@
 				}).render();
 
 				return $optionList;
+			});
+
+			// Image shape stuff
+			context.memo('button.imageShapes', function () {
+				var imageShapes = _.keys(options.cssclass.imageShapes);
+				var button = ui.buttonGroup({
+					className: 'btn-group-imageshape',
+					children: [
+						ui.button({
+							className: 'dropdown-toggle',
+							contents: ui.icon("fa fa-css3 pr-1"),
+							callback: function (btn) {
+								btn.data("placement", "bottom");
+								btn.data("trigger", "hover");
+								btn.attr("title", lang.imageShapes.tooltip);
+								btn.tooltip();
+
+								btn.on('click', function () {
+									self.refreshDropdown($(this).next(), $(context.layoutInfo.editable.data('target')), true);
+								});
+							},
+							data: {
+								toggle: 'dropdown'
+							}
+						}),
+						ui.dropdownCheck({
+							className: 'dropdown-shape',
+							checkClassName: options.icons.menuCheck,
+							items: imageShapes,
+							template: function (item) {
+								var index = $.inArray(item, imageShapes);
+								return lang.imageShapes.tooltipShapeOptions[index];
+							},
+							click: function (e) {
+								e.preventDefault();
+
+								var ddi = $(e.target).closest('[data-value]');
+								var value = ddi.data('value');
+								var obj = options.cssclass.imageShapes[value] || {};
+								
+								self.applyClassToSelection(value, obj);
+							}
+						})
+					]
+				});
+
+				return button.render();
 			});
 
 			this.applyClassToSelection = function(value, obj) {
@@ -216,20 +272,8 @@
 				context.invoke("afterCommand");
 			}
 
-			// This events will be attached when editor is initialized.
-			this.events = {
-				// This will be called after modules are initialized.
-				'summernote.init': function (we, e) {
-					//console.log('summernote initialized', we, e);
-				},
-				// This will be called when user releases a key on editable.
-				'summernote.keyup': function (we, e) {
-					//  console.log('summernote keyup', we, e);
-				}
-			};
-
-			this.refreshDropdown = function (drop) {
-				var node = $(window.getSelection().focusNode, ".note-editable");
+			this.refreshDropdown = function (drop, node /* selectedNode */, noBubble) {
+				node = node || $(window.getSelection().focusNode, ".note-editable");
 
 				drop.find('> .dropdown-item').each(function () {
 					var ddi = $(this),
@@ -245,6 +289,10 @@
 							break;
 						}
 
+						if (noBubble) {
+							break;
+						}
+
 						if (curNode.is('.note-editable')) {
 							break;
 						}
@@ -252,9 +300,21 @@
 						curNode = curNode.parent();
 					}
 
-					ddi.toggleClass('selected', match);
+					ddi.toggleClass('checked', match);
 				});
 			}
+
+			// This events will be attached when editor is initialized.
+			this.events = {
+				// This will be called after modules are initialized.
+				'summernote.init': function (we, e) {
+					//console.log('summernote initialized', we, e);
+				},
+				// This will be called when user releases a key on editable.
+				'summernote.keyup': function (we, e) {
+					//  console.log('summernote keyup', we, e);
+				}
+			};
 
 			this.initialize = function () {
 				$('.note-toolbar', $editor).on('click', '.btn-group-cssclass .dropdown-item', function (e) {

@@ -19,7 +19,7 @@ var summernote_image_upload_url;
 			},
 			imageShapes: {
 				tooltip: 'Shape',
-				tooltipShapeOptions: ['Responsive', 'Rounded', 'Thumbnail', 'None']
+				tooltipShapeOptions: ['Responsive', 'Rounded', 'Circle', 'Thumbnail']
 			}
 		}
 	});

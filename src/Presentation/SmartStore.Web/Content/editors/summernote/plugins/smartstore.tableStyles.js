@@ -87,11 +87,7 @@
 				if (rng.isCollapsed() && rng.isOnCell()) {
 					context.invoke("beforeCommand");
 					var table = dom.ancestor(rng.commonAncestor(), dom.isTable);
-					self.updateStyles(
-						$(table),
-						chosenItem,
-						options.tableStyles.stylesExclusive
-					);
+					self.updateStyles($(table), chosenItem, options.tableStyles.stylesExclusive);
 				}
 			};
 
@@ -102,11 +98,7 @@
 				if (rng.isCollapsed() && rng.isOnCell()) {
 					var $table = $(dom.ancestor(rng.commonAncestor(), dom.isTable));
 					var $listItems = $dropdownButton.next().find("a");
-					self.updateMenuState(
-						$table,
-						$listItems,
-						options.tableStyles.stylesExclusive
-					);
+					self.updateMenuState($table, $listItems, options.tableStyles.stylesExclusive);
 				}
 			};
 

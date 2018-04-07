@@ -18,7 +18,7 @@ $.extend(true, $.summernote.lang, {
 		},
 		imageShapes: {
 			tooltip: 'Stil',
-			tooltipShapeOptions: ['Responsiv', 'Abgerundet', 'Thumbnail', 'Standard']
+			tooltipShapeOptions: ['Responsiv', 'Abgerundet', 'Kreis', 'Thumbnail']
 		}
   }
 });

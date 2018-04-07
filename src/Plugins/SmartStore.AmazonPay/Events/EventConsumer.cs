@@ -4,6 +4,7 @@ using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Messages;
@@ -29,7 +30,11 @@ namespace SmartStore.AmazonPay.Events
 			_services = services;
 			_orderService = orderService;
 			_amazonPayService = amazonPayService;
+
+			Logger = NullLogger.Instance;
 		}
+
+		public ILogger Logger { get; set; }
 
 		public void HandleEvent(MessageModelCreatedEvent message)
 		{
@@ -64,15 +69,25 @@ namespace SmartStore.AmazonPay.Events
 
 		public void HandleEvent(OrderPaidEvent eventMessage)
 		{
-			if (eventMessage == null || eventMessage.Order == null)
+			if (eventMessage?.Order == null)
+				return;
+
+			if (!eventMessage.Order.PaymentMethodSystemName.IsCaseInsensitiveEqual(AmazonPayPlugin.SystemName))
 				return;
 
 			if (!_pluginFinder.IsPluginReady(_services.Settings, AmazonPayPlugin.SystemName, eventMessage.Order.StoreId))
 				return;
 
-			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(eventMessage.Order.StoreId);
+			try
+			{
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(eventMessage.Order.StoreId);
 
-			_amazonPayService.Value.CloseOrderReference(settings, eventMessage.Order);
+				_amazonPayService.Value.CloseOrderReference(settings, eventMessage.Order);
+			}
+			catch (Exception exception)
+			{
+				Logger.Error(exception);
+			}
 		}
 	}
 }

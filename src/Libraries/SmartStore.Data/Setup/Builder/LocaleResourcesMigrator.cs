@@ -10,7 +10,6 @@ using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Data.Setup
 {
-	
 	internal class LocaleResourcesMigrator
 	{
 		private readonly SmartObjectContext _ctx;

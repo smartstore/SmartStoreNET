@@ -36,7 +36,7 @@
 		}
 	}
 
-	.dropdown-menu {
+	.dropdown-menu:not(.colorpicker) {
 		left: initial !important;
 		right: 0;
 		text-align: right;

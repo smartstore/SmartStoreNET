@@ -4,7 +4,6 @@
 
 
 // RTL overrides for Bootstrap 4
-// TODO: Custom controls
 // ==============================================================
 
 [dir=ltr] {
@@ -90,6 +89,47 @@
 			border-radius: $btn-border-radius 0 0 $btn-border-radius;
 		}
 	}
+
+	// Custom controls
+	// ----------------------------------------------
+	.custom-control {
+	  padding-right: $custom-control-gutter;
+	  padding-left: 0;
+	}
+	.custom-control-inline {
+	  margin-left: $custom-control-spacer-x;
+	  margin-right: 0;
+	}
+	.custom-control-label {
+		&::before {
+			right: 0;
+			left: initial;
+		}
+
+		&::after {
+			right: 0;
+			left: initial;
+		}
+	}
+
+	.custom-select {
+	  &[multiple],
+	  &[size]:not([size="1"]) {
+		padding-left: $custom-select-padding-x;
+		padding-right: 0;
+	  }
+	}
+	
+	.custom-file-label { 
+	  &::after {
+		left: 0;
+		right: initial;
+	
+		border-right: $custom-file-border-width solid $custom-file-border-color;
+		border-left: none;
+	  }
+	}
+
 
 	// Input Groups
 	// ----------------------------------------------

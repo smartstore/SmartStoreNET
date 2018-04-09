@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201804061709536_ForceSslForAllPages"; }
+            get { return "201804090744324_ForceSslForAllPages"; }
         }
         
         string IMigrationMetadata.Source

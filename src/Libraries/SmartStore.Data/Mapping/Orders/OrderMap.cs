@@ -26,7 +26,6 @@ namespace SmartStore.Data.Mapping.Orders
 			this.Property(o => o.OrderTotalRounding).HasPrecision(18, 4);
             this.Property(o => o.OrderTotal).HasPrecision(18, 4);
             this.Property(o => o.RefundedAmount).HasPrecision(18, 4);
-			this.Property(o => o.RefundedCreditBalance).HasPrecision(18, 4);
 			this.Property(o => o.OrderNumber).IsOptional();
 
             this.Ignore(o => o.OrderStatus);

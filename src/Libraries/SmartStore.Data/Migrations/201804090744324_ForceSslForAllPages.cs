@@ -14,10 +14,12 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Store", "ForceSslForAllPages", c => c.Boolean(nullable: false));
             AlterColumn("dbo.Product", "SystemName", c => c.String(maxLength: 400));
             CreateIndex("dbo.Product", new[] { "SystemName", "IsSystemProduct" }, name: "Product_SystemName_IsSystemProduct");
+            DropColumn("dbo.Order", "RefundedCreditBalance");
         }
         
         public override void Down()
         {
+            AddColumn("dbo.Order", "RefundedCreditBalance", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             DropIndex("dbo.Product", "Product_SystemName_IsSystemProduct");
             AlterColumn("dbo.Product", "SystemName", c => c.String(maxLength: 500));
             DropColumn("dbo.Store", "ForceSslForAllPages");
@@ -31,16 +33,16 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
-			context.MigrateLocaleResources(MigrateLocaleResources);
+            context.MigrateLocaleResources(MigrateLocaleResources);
 
-			try
+            try
             {
-				var stores = context.Set<Store>().ToList();
-				var settings = context.Set<Setting>();
-				// Do not use a dictionary because of duplicates.
-				var sslSettings = settings
-					.Where(x => x.Name == "SecuritySettings.ForceSslForAllPages")
-					.ToList();
+                var stores = context.Set<Store>().ToList();
+                var settings = context.Set<Setting>();
+                // Do not use a dictionary because of duplicates.
+                var sslSettings = settings
+                    .Where(x => x.Name == "SecuritySettings.ForceSslForAllPages")
+                    .ToList();
                 var defaultSetting = sslSettings.FirstOrDefault(x => x.StoreId == 0);
 
                 foreach (var store in stores)
@@ -60,13 +62,13 @@ namespace SmartStore.Data.Migrations
                     }
                 }
 
-				// Remove settings because they are not used anymore.
-				settings.RemoveRange(sslSettings);
+                // Remove settings because they are not used anymore.
+                settings.RemoveRange(sslSettings);
             }
             catch { }
 
-			context.SaveChanges();
-		}
+            context.SaveChanges();
+        }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {

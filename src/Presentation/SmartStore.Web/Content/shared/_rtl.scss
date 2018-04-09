@@ -188,6 +188,19 @@
 		}
 	}
 
+	// Nav collapsible
+	// ---
+	@include media-breakpoint-down(sm) {
+		.nav-collapsible {
+			.nav-toggler { 
+				&:after {
+					left: 1rem;
+					right: initial;
+				}
+			}
+		}
+	}
+
 	// Nav
 	// ---
 

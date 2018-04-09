@@ -24,6 +24,34 @@
     }
 
 
+	.artlist-lines {
+		.art-data-block {
+			padding-right: $grid-gutter-width / 1.5;
+			padding-left: 0;
+		}
+
+		.art-actions-block {
+			padding-right: $grid-gutter-width / 1.5;
+			padding-left: 0;
+		}
+
+		.floating > .art-brand {
+			padding-left: 90px; // ratings width + 10px
+			padding-right: 0;
+		}
+
+		.floating > .art-rating {
+			left: 0;
+			right: auto;
+		}
+
+		@include media-breakpoint-down(sm) {
+			.art-actions-block { 
+				padding-right: 0;
+			}
+		}
+	}
+
 	// Text expander
 	// -------------
 
@@ -93,20 +121,6 @@
 		margin-left: 0;
 	}
 
-	#x-menubar-my-account .dropdown-item {
-		// TBD: (mh) Why?
-		position: relative;
-
-		.fa {
-			position: absolute;
-			right: 0.75rem;
-			top: 0.75rem;
-		}
-
-		span {
-			padding-right: 1rem;
-		}
-	}
 	// rtl display breaks text in brackets in chrome
 	.block-title .text-muted:after,
 	.pd-oldprice-line:after,

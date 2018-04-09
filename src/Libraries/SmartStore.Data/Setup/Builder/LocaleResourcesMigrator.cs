@@ -33,7 +33,7 @@ namespace SmartStore.Data.Setup
 			if (!entries.Any() || !_languages.Any())
 				return;
 
-			using (var scope = new DbContextScope(_ctx, autoDetectChanges: false))
+			using (var scope = new DbContextScope(_ctx, autoDetectChanges: false, hooksEnabled: false))
 			{
 				var langMap = _languages.ToDictionarySafe(x => x.UniqueSeoCode.EmptyNull().ToLower());
 
@@ -53,8 +53,7 @@ namespace SmartStore.Data.Setup
 					var validEntries = entries.Where(x => x.Lang == null || langMap[x.Lang.ToLower()].Id == lang.Value.Id);
 					foreach (var entry in validEntries)
 					{
-						bool isLocal;
-						var db = GetResource(entry.Key, lang.Value.Id, toAdd, out isLocal);
+						var db = GetResource(entry.Key, lang.Value.Id, toAdd, out bool isLocal);
 
 						if (db == null && entry.Value.HasValue() && !entry.UpdateOnly)
 						{

@@ -395,10 +395,13 @@ namespace SmartStore.Admin.Models.Catalog
         public IList<SelectListItem> AvailableQuantityUnits { get; set; }
 
 		public string ProductSelectCheckboxClass { get; set; }
-        
-        #region Nested classes
-        
-        public class AddProductSpecificationAttributeModel : ModelBase
+
+		public bool IsSystemProduct { get; set; } 
+		public string SystemName { get; set; }
+
+		#region Nested classes
+
+		public class AddProductSpecificationAttributeModel : ModelBase
         {
             public AddProductSpecificationAttributeModel()
             {

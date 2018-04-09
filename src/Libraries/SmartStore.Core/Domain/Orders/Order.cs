@@ -231,7 +231,7 @@ namespace SmartStore.Core.Domain.Orders
         public decimal OrderDiscount { get; set; }
 
 		/// <summary>
-		/// Gets or sets the order credit balance.
+		/// Gets or sets the wallet credit amount used to (partially) pay this order.
 		/// </summary>
 		[DataMember]
 		public decimal CreditBalance { get; set; }

@@ -646,6 +646,7 @@
     <Content Include="Views\Order\_Edit.OrderNotes.cshtml" />
     <Content Include="Views\Shared\Layouts\_AdminBareLayout.cshtml" />
     <Content Include="Views\Setting\Payment.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SelectList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

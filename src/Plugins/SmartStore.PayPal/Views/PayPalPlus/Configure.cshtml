@@ -156,8 +156,9 @@
 				@Html.SmartLabelFor(model => model.ThirdPartyPaymentMethods)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ThirdPartyPaymentMethods, 
-					Html.ListBoxFor(model => model.ThirdPartyPaymentMethods, new MultiSelectList(Model.AvailableThirdPartyPaymentMethods, "Value", "Text"), new { multiple = "multiple", data_tags = "true" }))
+				@Html.SettingEditorFor(model => model.ThirdPartyPaymentMethods, @<div>
+					@Html.EditorFor(model => model.ThirdPartyPaymentMethods, "SelectList", new { multiple = "multiple", data_tags = "true", selectOptions = Model.AvailableThirdPartyPaymentMethods })
+				</div>)
 				@Html.ValidationMessageFor(model => model.ThirdPartyPaymentMethods)
 			</td>
 		</tr>

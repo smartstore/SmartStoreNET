@@ -420,19 +420,6 @@
 			</td>
 		</tr>
 	}
-	@if (Model.RefundedCreditBalance.HasValue())
-	{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.RefundedCreditBalance)
-			</td>
-			<td class="adminData">
-				<div class="form-control-plaintext text-danger">
-					@Model.RefundedCreditBalance
-				</div>
-			</td>
-		</tr>
-	}
 
 	<tr id="trEditOrderTotals">
 		<td>

@@ -343,10 +343,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.RefundedAmount = _priceFormatter.FormatPrice(order.RefundedAmount, true, false);
 			}
-			if (order.RefundedCreditBalance > decimal.Zero)
-			{
-				model.RefundedCreditBalance = _priceFormatter.FormatPrice(order.RefundedCreditBalance, true, false);
-			}
 
             #endregion
 

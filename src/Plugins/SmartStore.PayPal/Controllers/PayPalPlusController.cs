@@ -20,10 +20,12 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Tax;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.PayPal.Controllers
 {
@@ -153,7 +155,7 @@ namespace SmartStore.PayPal.Controllers
 			return paymentInfo;
 		}
 
-		[LoadSetting, AdminAuthorize, ChildActionOnly]
+		[LoadSetting, AdminAuthorize, ChildActionOnly, AdminThemed]
 		public ActionResult Configure(PayPalPlusPaymentSettings settings, int storeScope)
 		{
 			var model = new PayPalPlusConfigurationModel
@@ -162,23 +164,22 @@ namespace SmartStore.PayPal.Controllers
 			};
 
 			// It's better to also offer inactive methods here but filter them out in frontend.
-			var methods = _paymentService.LoadAllPaymentMethods(storeScope);
-
-			model.AvailableThirdPartyPaymentMethods = methods
-				.Where(x => 
-					x.Metadata.PluginDescriptor.SystemName != Plugin.SystemName &&
-					!x.Value.RequiresInteraction &&
-					(x.Metadata.PluginDescriptor.SystemName == "SmartStore.OfflinePayment" || x.Value.PaymentMethodType == PaymentMethodType.Redirection))
-				.Select(x => new SelectListItem { Value = x.Metadata.SystemName, Text = GetPaymentMethodName(x) })
-				.ToList();
+			var paymentMethods = _paymentService.LoadAllPaymentMethods(storeScope);
 
 			model.Copy(settings, true);
 			PrepareConfigurationModel(model, storeScope);
 
+			model.AvailableThirdPartyPaymentMethods = paymentMethods
+				.Where(x =>
+					x.Metadata.PluginDescriptor.SystemName != Plugin.SystemName &&
+					!x.Value.RequiresInteraction &&
+					(x.Metadata.PluginDescriptor.SystemName == "SmartStore.OfflinePayment" || x.Value.PaymentMethodType == PaymentMethodType.Redirection))
+				.ToSelectListItems(_pluginMediator, model.ThirdPartyPaymentMethods.ToArray());
+
 			return View(model);
 		}
 
-		[HttpPost, AdminAuthorize, ChildActionOnly]
+		[HttpPost, AdminAuthorize, ChildActionOnly, AdminThemed]
 		public ActionResult Configure(PayPalPlusConfigurationModel model, FormCollection form)
 		{
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);

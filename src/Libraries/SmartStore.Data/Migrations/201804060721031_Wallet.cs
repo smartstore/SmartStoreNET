@@ -97,12 +97,6 @@ namespace SmartStore.Data.Migrations
                 "The used credit balance.",
                 "Das verwendete Guthaben.");
 
-            builder.AddOrUpdate("Admin.Orders.Fields.RefundedCreditBalance",
-                "Refunded credit balance",
-                "Erstattetes Guthaben",
-                "The refunded credit balance.",
-                "Das rückerstattete Guthaben.");
-
             builder.AddOrUpdate("Admin.Validation.ValueLessThan",
                 "The value must be less than {0}.",
                 "Der Wert muss kleiner {0} sein.");

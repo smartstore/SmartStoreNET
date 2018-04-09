@@ -172,17 +172,21 @@
                 firstOption.text("");
             }
 
-            function renderSelectItem(item) {
+            function renderSelectItem(item, isResult) {
             	try {
-            		var option = $(item.element),
+					var option = $(item.element),
 						imageUrl = option.data('imageurl'),
-            			color = option.data('color');
+						color = option.data('color'),
+						hint = option.data('hint');
 
 					if (imageUrl) {
             			return $('<span><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
             		}
             		else if (color) {
             			return $('<span><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
+					}
+					else if (hint && isResult) {
+						return $('<span class="select2-option"><span>' + item.text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
 					}
 					else {
 						return $('<span class="select2-option">' + item.text + '</span>');
@@ -196,8 +200,12 @@
             var opts = {
                 allowClear: !!(placeholder), // assuming that a placeholder indicates nullability
                 placeholder: placeholder,
-                templateResult: renderSelectItem,
-                templateSelection: renderSelectItem,
+				templateResult: function (item) {
+					return renderSelectItem(item, true);
+				},
+				templateSelection: function (item) {
+					return renderSelectItem(item, false);
+				},
 				closeOnSelect: !(sel.prop('multiple') || sel.data("tags")),
 				adaptContainerCssClass: function (c) {
 					if (c.startsWith("select-"))

@@ -1,0 +1,28 @@
+﻿@using SmartStore.Web.Framework;
+@{
+	var multiple = GetValue<string>("multiple");
+	var dataTags = GetValue<string>("data_tags");
+	var selectOptions = GetValue<IList<ExtendedSelectListItem>>("selectOptions");
+	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+	var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+}
+<select id="@id" name="@name" @Html.Attr("multiple", multiple, !string.IsNullOrEmpty(multiple)) @Html.Attr("data-tags", dataTags, !string.IsNullOrEmpty(dataTags))>
+	@foreach (var item in selectOptions)
+	{
+		var hint = item.Get<string>("hint");
+		<option value="@item.Value" @Html.Attr("selected", "selected", item.Selected) @Html.Attr("data-hint", hint, !string.IsNullOrEmpty(hint))>@item.Text</option>
+	}
+</select>
+
+@functions
+{
+	private TProperty GetValue<TProperty>(string key, TProperty defaultValue = default(TProperty))
+	{
+		if (ViewData.ContainsKey(key))
+		{
+			return (TProperty)ViewData[key];
+		}
+
+		return defaultValue;
+	}
+}

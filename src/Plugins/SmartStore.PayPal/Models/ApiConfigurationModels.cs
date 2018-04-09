@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 using SmartStore.ComponentModel;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
@@ -116,7 +115,7 @@ namespace SmartStore.PayPal.Models
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.ThirdPartyPaymentMethods")]
 		public List<string> ThirdPartyPaymentMethods { get; set; }
-		public List<SelectListItem> AvailableThirdPartyPaymentMethods { get; set; }
+		public IList<ExtendedSelectListItem> AvailableThirdPartyPaymentMethods { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.DisplayPaymentMethodLogo")]
 		public bool DisplayPaymentMethodLogo { get; set; }

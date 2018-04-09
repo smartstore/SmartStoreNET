@@ -96,9 +96,6 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.RefundedAmount")]
         public string RefundedAmount { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.RefundedCreditBalance")]
-		public string RefundedCreditBalance { get; set; }
-
 		//edit totals
 		[SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
         public decimal OrderSubtotalInclTaxValue { get; set; }

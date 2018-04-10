@@ -92,6 +92,13 @@
 
 	// Choice
 	// ------
+
+	.choice-item-img,
+	.choice-item-color {
+		margin-left: 0.25rem;
+		margin-right: initial;
+	}
+
 	.choice-box-group {
 		.choice-box {
 			float: right;

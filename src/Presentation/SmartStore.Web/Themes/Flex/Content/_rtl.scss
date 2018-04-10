@@ -13,6 +13,10 @@
 	// Artlist
 	// -------------
 
+	.art-color-opt {
+		float: right;
+	}
+
 	.artlist-action--pager {
 		> *:not(:first-child) {
 			margin-right: -1px;
@@ -91,52 +95,12 @@
 	// product lists
 	// -------------
 
-	.art-color-opt {
-		float: right;
-	}
-	// product detail
-	.pd-attrs td:first-child {
-		padding-left: 1rem;
-		padding-right: 0;
-	}
-
-	.pd-price-block {
-		float: initial;
-	}
-
-	.pd-actions .pd-action-item {
-		border-right: 0;
-		border-left: 1px solid rgba(#000, 0.15);
-	}
-
-	.btn-edit-product {
-		right: initial;
-		left: 0;
-	}
-
-	#pd-gallery .gal {
-		direction: ltr;
-	}
-
-	.drift-zoom-pane img {
-		left: 0;
-	}
-
-	.review-title h4 {
-		padding-left: 0;
-		padding-right: 90px;
-	}
-
-	.menubar-group {
-		margin-right: 1rem;
-		margin-left: 0;
-	}
 	// rtl display breaks text in brackets in chrome
 	.block-title .text-muted:after,
 	.pd-oldprice-line:after,
 	.dropdown-item:after,
 	.pd-oldprice-line:after {
-		content: '\200E';
+		//content: '\200E';
 	}
 
 
@@ -151,16 +115,6 @@
 	.gal-item.slick-slide {
 		// Don't swap direction in gallery. Doesn't synch with thumbs otherwise.
 		float: left;
-	}
-	// Product
-	// -------
-	.pd-actions .pd-action-item {
-		border-left: 1px solid rgba(#000, 0.15);
-		border-right-width: 0;
-
-		&:last-child {
-			border-left-color: transparent;
-		}
 	}
 
 
@@ -213,6 +167,11 @@
 	.rating,
 	.rating > * {
 		background-position-x: 100%;
+	}
+
+	.review-title h4 {
+		padding-left: 0;
+		padding-right: 90px;
 	}
 
 
@@ -457,7 +416,12 @@
 
 
 	// Menu
-	// ------
+	// ----
+
+	.menubar-group {
+		margin-right: 1rem;
+		margin-left: 0;
+	}
 
 	.catmenu-path-item.expanded,
 	.catmenu-item.parent {
@@ -471,7 +435,6 @@
 	}
 
 	#offcanvas-menu {
-
 		.menubar-link,
 		.manufacturer-container .ocm-item,
 		.category-container .ocm-item {
@@ -535,5 +498,46 @@
 				padding-right: 0;
 			}
 		}
+	}
+
+
+	// Product
+	// -------
+
+	.pd-attrs td:first-child {
+		padding-left: 1rem;
+		padding-right: 0;
+	}
+
+	.pd-actions .pd-action-item {
+		border-left: 1px solid rgba(#000, 0.15);
+		border-right-width: 0;
+
+		&:last-child {
+			border-left-color: transparent;
+		}
+	}
+
+	.pd-price-block {
+		float: initial;
+	}
+
+	.pd-actions .pd-action-item {
+		border-right: 0;
+		border-left: 1px solid rgba(#000, 0.15);
+	}
+
+	#pd-gallery .gal {
+		direction: ltr;
+	}
+
+
+	.drift-zoom-pane img {
+		left: 0;
+	}
+
+	.btn-edit-product {
+		right: initial;
+		left: 0;
 	}
 }

@@ -53,8 +53,8 @@
 <div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")"
 	 data-download-id="@Model.GetValueOrDefault()"
 	 data-use-url="@(initiallyShowUrlPanel ? "true" : "false")"
-	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })"
-	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })">
+	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, area = "Admin" })"
+	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, area = "Admin" })">
 
 	<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
 
@@ -126,7 +126,7 @@
 					@{ var value = download != null ? download.DownloadUrl : ""; }
 					<input type="text" class="download-url-value form-control" value='@value' data-value='@value' />
 					<div class="input-group-append">
-						<a class="btn btn-outline-secondary save-download-url disabled" href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })">
+						<a class="btn btn-outline-secondary save-download-url disabled" href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, area = "Admin" })">
 							<i class="fa fa-check"></i>
 							<span>@T("Common.Save")</span>
 						</a>

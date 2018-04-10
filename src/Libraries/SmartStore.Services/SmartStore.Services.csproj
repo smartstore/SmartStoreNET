@@ -273,7 +273,7 @@
     <Compile Include="Hooks\StoreSaveHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
-    <Compile Include="Localization\LocalizedPropertyString.cs" />
+    <Compile Include="Localization\LocalizedPropertyValue.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />

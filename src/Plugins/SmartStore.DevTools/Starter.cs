@@ -1,15 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Web.Infrastructure.DynamicModuleHelper;
+﻿using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework;
 using StackExchange.Profiling;
 using StackExchange.Profiling.Storage;
+using System;
+using System.Collections.Generic;
 
 namespace SmartStore.DevTools
-{	
+{
 	public class ProfilerPreApplicationStart : IPreApplicationStart
 	{
 		public void Start()
@@ -28,8 +27,11 @@ namespace SmartStore.DevTools
 			//StackExchange.Profiling.MiniProfiler.Settings.Storage = new NullProfilerStorage();
 
 			StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
+			
+			// output cache invidation example 
+			//OutputCacheInvalidationObserver.Execute();
 		}
-
+		
 		public int Order
 		{
 			get { return int.MinValue; }

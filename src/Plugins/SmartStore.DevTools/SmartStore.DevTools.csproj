@@ -151,6 +151,7 @@
     <Compile Include="Controllers\MyCheckoutController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Events\CustomTab.cs" />
+    <Compile Include="Examples\OutputCacheInvalidationObserver.cs" />
     <Compile Include="Filters\MachineNameFilter.cs" />
     <Compile Include="Filters\Samples\SampleProductDetailActionFilter.cs" />
     <Compile Include="Filters\WidgetZoneFilter.cs" />

@@ -9,6 +9,7 @@ using SmartStore.Data.Setup;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.DevTools
 {
@@ -18,10 +19,14 @@ namespace SmartStore.DevTools
 	public class DevToolsPlugin : BasePlugin, IConfigurable, IWidget
 	{
 		private readonly ISettingService _settingService;
+		private readonly ICacheableRouteRegistrar _cacheableRouteRegistrar;
 
-		public DevToolsPlugin(ISettingService settingService)
+		public DevToolsPlugin(ISettingService settingService,
+			ICacheableRouteRegistrar cacheAbleRouteRegistrar)
         {
-			this._settingService = settingService;
+			_settingService = settingService;
+			_cacheableRouteRegistrar = cacheAbleRouteRegistrar;
+
 			this.Logger = NullLogger.Instance;
         }
 
@@ -50,8 +55,12 @@ namespace SmartStore.DevTools
 
         public override void Install()
         {
+			// Example for how to add a route to the output cache
+			//_cacheableRouteRegistrar.RegisterCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
+
 			_settingService.SaveSetting(new ProfilerSettings());
 			base.Install();
+
 			Logger.Info(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
         }
 
@@ -60,6 +69,9 @@ namespace SmartStore.DevTools
         /// </summary>
         public override void Uninstall()
         {
+			// Example for how to remove a route from the output cache
+			//_cacheableRouteRegistrar.RemoveCacheableRoute("SmartStore.DevTools/DevTools/PublicInfo");
+
 			_settingService.DeleteSetting<ProfilerSettings>();
 			base.Uninstall();
         }

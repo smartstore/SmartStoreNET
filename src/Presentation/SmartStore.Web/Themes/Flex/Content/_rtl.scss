@@ -95,12 +95,13 @@
 	// product lists
 	// -------------
 
-	// rtl display breaks text in brackets in chrome
+	// RTL display breaks text in brackets in chrome
 	.block-title .text-muted:after,
 	.pd-oldprice-line:after,
 	.dropdown-item:after,
-	.pd-oldprice-line:after {
-		//content: '\200E';
+	.pd-oldprice-line:after, 
+	.pd-name:after {
+		content: '\200E';
 	}
 
 

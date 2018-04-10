@@ -309,7 +309,8 @@
 
 	.btn,
 	.nav-link,
-	.menubar-link {
+	.menubar-link,
+	.t-button {
 		> i + span:not(:empty),
 		> i + em:not(:empty) {
 			padding-right: 0.5em;

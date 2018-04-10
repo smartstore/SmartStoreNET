@@ -13,7 +13,7 @@
 .col-form-label.required,
 .choice-label.required {
 	color: inherit;
-	font-weight: $font-weight-medium;
+	font-weight: bold;
 	&:after { content: ' *' }
 }
 
@@ -21,26 +21,23 @@
 .choice-item-color {
     display: inline-block;
     text-decoration: none !important;
-    margin-right: 0.5rem;
+    margin-right: 0.25rem;
     overflow: hidden;
-	vertical-align: -0.15em;
 }
 
 .choice-item-img {
-	max-width: 1.5rem;
-	max-height: 1.5rem;
-	vertical-align: unset;
+    max-width: 20px;
+    max-height: 1em;
 
-	> img {
-		max-width: 100%;
-		height: auto;
-	}
+    > img {
+        max-width: 100%;
+        height: auto;
+    }
 }
 
 .choice-item-color {
     width: 1em;
     height: 1em;
-	line-height: 1;
     padding: 0;
 }
 

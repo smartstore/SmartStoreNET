@@ -14,14 +14,26 @@
 	// -------------
 
 	.artlist-action--pager {
-		> *:not(:first-child) { margin-right: -1px; margin-left: initial; }
-		.btn-pager-prev { border-radius: 0 3px 3px 0; }   
-		.btn-pager-next { border-radius: 3px 0 0 3px; }    
+		> *:not(:first-child) {
+			margin-right: -1px;
+			margin-left: initial;
+		}
+
+		.btn-pager-prev {
+			border-radius: 0 3px 3px 0;
+		}
+
+		.btn-pager-next {
+			border-radius: 3px 0 0 3px;
+		}
 	}
 
-    @include media-breakpoint-up(lg) {
-        .artlist-actions--top .artlist-action-group--page { margin-right: auto; margin-left: initial; }
-    }
+	@include media-breakpoint-up(lg) {
+		.artlist-actions--top .artlist-action-group--page {
+			margin-right: auto;
+			margin-left: initial;
+		}
+	}
 
 
 	.artlist-lines {
@@ -46,11 +58,12 @@
 		}
 
 		@include media-breakpoint-down(sm) {
-			.art-actions-block { 
+			.art-actions-block {
 				padding-right: 0;
 			}
 		}
 	}
+
 
 	// Text expander
 	// -------------
@@ -73,16 +86,14 @@
 			border-radius: 0.85rem 0 0 0.85rem;
 		}
 	}
-	// forms
-	/*.form-control + .input-group-append:not(:first-child) {
-		border-right: initial;
-		border-left: 1px solid rgba(#000, 0.15);
-	}*/
+
+
 	// product lists
+	// -------------
+
 	.art-color-opt {
 		float: right;
 	}
-
 	// product detail
 	.pd-attrs td:first-child {
 		padding-left: 1rem;
@@ -120,7 +131,6 @@
 		margin-right: 1rem;
 		margin-left: 0;
 	}
-
 	// rtl display breaks text in brackets in chrome
 	.block-title .text-muted:after,
 	.pd-oldprice-line:after,
@@ -129,11 +139,12 @@
 		content: '\200E';
 	}
 
+
 	// Gallery
 	// -------
-	
+
 	.gal-nav-cell {
-		padding-left: 1.2rem; 
+		padding-left: 1.2rem;
 		padding-right: initial;
 	}
 
@@ -141,17 +152,17 @@
 		// Don't swap direction in gallery. Doesn't synch with thumbs otherwise.
 		float: left;
 	}
-
-
 	// Product
 	// -------
-
 	.pd-actions .pd-action-item {
 		border-left: 1px solid rgba(#000, 0.15);
 		border-right-width: 0;
-		&:last-child { border-left-color: transparent; }
+
+		&:last-child {
+			border-left-color: transparent;
+		}
 	}
-	
+
 
 	// Megamenu
 	// -------
@@ -177,8 +188,8 @@
 			}
 		}
 
-		.nav-item + .nav-item { 
-			margin-right: 0; 
+		.nav-item + .nav-item {
+			margin-right: 0;
 		}
 
 		.dropdown-toggle:after {
@@ -194,6 +205,7 @@
 			}
 		}
 	}
+
 
 	// Rating
 	// -------
@@ -236,7 +248,10 @@
 
 	@include media-breakpoint-up(sm) {
 		.instasearch-col {
-			&:first-child { border-left: 1px solid rgba(0,0,0, 0.1); border-right: none;  }
+			&:first-child {
+				border-left: 1px solid rgba(0,0,0, 0.1);
+				border-right: none;
+			}
 		}
 	}
 
@@ -293,6 +308,7 @@
 		}
 	}
 
+
 	// Cart
 	// ------
 
@@ -321,7 +337,9 @@
 		}
 
 		.cart-editable {
-			.cart-col-price     { text-align: right; }
+			.cart-col-price {
+				text-align: right;
+			}
 		}
 	}
 
@@ -335,12 +353,14 @@
 			text-align: left;
 		}
 	}
+
 	.order-summary-content .selected-checkout-attributes,
 	.order-details .checkout-attributes {
 		.attr-caption {
 			padding-left: 10px;
 			padding-right: 0;
 		}
+
 		.attr-value {
 			text-align: right;
 		}
@@ -355,6 +375,7 @@
 			}
 		}
 	}
+
 
 	// Checkout
 	// ------
@@ -382,25 +403,26 @@
 	}
 
 	.checkout-data {
-		.opt-name { 
+		.opt-name {
 			margin-right: 4px;
 			margin-left: 0;
 		}
 
 
 		@include media-breakpoint-up(md) {
-			.opt-name { 
+			.opt-name {
 				margin-right: 12px;
 				margin-left: 0;
 			}
 
 			.opt-info,
-			.opt-info-item { 
+			.opt-info-item {
 				margin-right: 32px;
 				margin-left: 0;
 			}
 		}
 	}
+
 
 	// Forum
 	// ------
@@ -411,6 +433,7 @@
 				padding-left: 0.75rem;
 				padding-right: initial;
 			}
+
 			i {
 				padding-left: 0.25rem;
 				padding-right: initial;
@@ -421,28 +444,31 @@
 	.forum-search-box {
 		text-align: left;
 	}
+
 	.basic-search,
 	#advanced-search-block label {
 		padding-left: 10px;
 		padding-right: 0;
-		@include media-breakpoint-up(sm) { 
+
+		@include media-breakpoint-up(sm) {
 			text-align: left;
 		}
 	}
 
-	// Menu 
-	// ------
-	
-    .catmenu-path-item.expanded,
-    .catmenu-item.parent {
-        padding-left: $list-group-item-padding-x * 1.5;
 
-        &:after {
-            content: "\f104";   
-            left: 1rem;
+	// Menu
+	// ------
+
+	.catmenu-path-item.expanded,
+	.catmenu-item.parent {
+		padding-left: $list-group-item-padding-x * 1.5;
+
+		&:after {
+			content: "\f104";
+			left: 1rem;
 			right: auto;
-        }
-    }
+		}
+	}
 
 	#offcanvas-menu {
 
@@ -453,43 +479,40 @@
 			.ocm-link {
 				padding: 1rem 2rem 1rem 2.5rem;
 			}
-        
+
 			&.has-children:after {
 				right: auto;
 				left: 1rem;
-				content: "\f104";   
+				content: "\f104";
 			}
 		}
-   
+
 		.ocm-nav .navigate-back {
 			padding-right: 0;
 			padding-left: initial;
 
 			.fa {
-				padding-right: initial;    
+				padding-right: initial;
 				padding-left: .425rem;
 			}
 		}
 
-		/*
-		.button-bar {
-			span {
-				margin-left: 1rem;
-				margin-right: initial;
-			}
-		}
-		*/
-
 		.manufacturer-container {
 			.ocm-item {
-				.ocm-link { padding-right: 0.75rem; padding-left: 0; }
-				.col-img ~ .col-data > .ocm-link { padding-right: 0; }
+				.ocm-link {
+					padding-right: 0.75rem;
+					padding-left: 0;
+				}
+
+				.col-img ~ .col-data > .ocm-link {
+					padding-right: 0;
+				}
 			}
 		}
 	}
 
 
-	#ocm-service {	
+	#ocm-service {
 		.menubar-group {
 			margin-right: 0 !important;
 			margin-left: auto;
@@ -507,10 +530,10 @@
 		.dropdown-item {
 			padding-right: 2.75rem;
 			padding-left: 0;
+
 			span:not(.badge) {
 				padding-right: 0;
 			}
 		}
 	}
-
 }

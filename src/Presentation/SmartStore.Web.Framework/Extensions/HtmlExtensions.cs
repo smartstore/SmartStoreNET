@@ -496,6 +496,18 @@ namespace SmartStore.Web.Framework
 			return LanguageAttributes(html, EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage, omitLTR);
 		}
 
+		public static IHtmlString LanguageAttributes<T>(this HtmlHelper html, LocalizedPropertyValue<T> localizedValue)
+		{
+			Guard.NotNull(localizedValue, nameof(localizedValue));
+
+			if (!localizedValue.BidiOverride)
+			{
+				return MvcHtmlString.Empty;
+			}
+
+			return LanguageAttributes(html, localizedValue.CurrentLanguage, false);
+		}
+
 		public static IHtmlString LanguageAttributes(this HtmlHelper html, Language language, bool omitLTR = false)
 		{
 			Guard.NotNull(language, nameof(language));

@@ -532,7 +532,6 @@
 		direction: ltr;
 	}
 
-
 	.drift-zoom-pane img {
 		left: 0;
 	}
@@ -540,5 +539,13 @@
 	.btn-edit-product {
 		right: initial;
 		left: 0;
+	}
+
+
+	// Footer
+	// -------
+
+	.footer-social .btn-social {
+		margin: 0 0.4rem;
 	}
 }

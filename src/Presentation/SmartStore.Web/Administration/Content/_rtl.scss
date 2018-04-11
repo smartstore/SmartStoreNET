@@ -138,6 +138,23 @@
 	}
 
 
+	//
+	// Locale Editor
+	// -------------
+
+	.locale-editor-content[data-rtl="false"] {
+		input,
+		textarea,
+		select,
+		.locale-editor-control,
+		.note-editable,
+		.note-editor-preview:not(.empty) {
+			direction: ltr;
+			text-align: left;
+		}
+	}
+
+
 	// Plugins & Providers
 	// -------------------
 

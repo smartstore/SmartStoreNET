@@ -194,19 +194,6 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     margin-bottom: 1rem;
 }
 
-.pd-price-block {
-    float: left;
-}
-
-.pd-price-block + .pd-price-block {
-    margin-left: 1rem;
-    .pd-price {
-        text-decoration: line-through;
-        color: $pd-offer-muted-color;
-        font-weight: 400;
-    }
-}
-
 .pd-price {
     font-size: 1.8rem;
     font-weight: 500;
@@ -225,6 +212,14 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     }
 }
 
+.pd-price-block + .pd-price-block {
+    .pd-price {
+        text-decoration: line-through;
+        color: $pd-offer-muted-color;
+        font-weight: 400;
+    }
+}
+
 .pd-price-label {
     line-height: 1;
     font-weight: $font-weight-medium;
@@ -232,7 +227,6 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
 .pd-oldprice {
     display: inline-block;
-    padding-left: 0.25rem;
     color: $text-muted;
     text-decoration: line-through;
 }
@@ -274,7 +268,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
 .pd-tag {
     text-decoration: none !important;
-    display: inline-block;
+    display: inline-flex;
     padding: 0.5rem;
     margin: 0 0.2rem 0.4rem 0;
     font-weight: $font-weight-medium;
@@ -289,7 +283,6 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 .pd-tag-count {
     color: $text-muted;
     font-weight: 400;
-    padding-left: 0.25rem;
 }
 
 
@@ -406,8 +399,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 // ------------------------------------------------------
 
 .deliverytime-group .delivery-time { 
-    vertical-align: top; 
-    padding-left: 0.25rem;
+    vertical-align: top;
 }
 
 .delivery-time {
@@ -417,9 +409,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     @include text-truncate();
 
     .delivery-time-status {
-        padding-right: 0.2rem;
         font-size: 0.85em;
-        margin-left: 0.025rem;
     }
 }
 

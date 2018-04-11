@@ -189,7 +189,7 @@ namespace SmartStore.Services.Messages
 					var partType = part.GetType();
 					modelPart = part;
 
-					if (!messageContext.TestMode && partType.IsPlainObjectType() && !partType.IsAnonymous())
+					if (partType.IsPlainObjectType() && !partType.IsAnonymous())
 					{
 						var evt = new MessageModelPartMappingEvent(part);
 						_services.EventPublisher.Publish(evt);

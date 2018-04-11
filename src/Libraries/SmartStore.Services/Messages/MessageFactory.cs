@@ -449,7 +449,8 @@ namespace SmartStore.Services.Messages
 				{ "PrivateMessage", () => GetRandomEntity<PrivateMessage>(x => true) },
 				{ "GiftCard", () => GetRandomEntity<GiftCard>(x => true) },
 				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && !x.Product.IsSystemProduct && x.Product.VisibleIndividually && x.Product.Published) },
-				{ "NewsComment", () => GetRandomEntity<NewsComment>(x => x.NewsItem.Published) }
+				{ "NewsComment", () => GetRandomEntity<NewsComment>(x => x.NewsItem.Published) },
+				{ "WalletHistory", () => GetRandomEntity<WalletHistory>(x => true) }
 			};
 
 			var modelNames = messageContext.MessageTemplate.ModelTypes
@@ -626,7 +627,7 @@ namespace SmartStore.Services.Messages
 			if (count > 0)
 			{
 				// Fetch a random one
-				var skip = new Random().Next(count - 1);
+				var skip = new Random().Next(count);
 				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
 			}
 			else

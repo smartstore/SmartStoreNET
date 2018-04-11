@@ -520,6 +520,18 @@
 		left: auto;
 	}
 
+	.deliverytime-group .delivery-time { 
+		padding-right: 0.4rem;
+		padding-left: 0;
+	}
+
+	.delivery-time .delivery-time-status {
+		padding-left: 0.2rem;
+		padding-right: initial;
+		margin-right: 0.025rem;
+		margin-left: initial;
+	}
+
 	#pd-gallery .gal {
 		direction: ltr;
 	}

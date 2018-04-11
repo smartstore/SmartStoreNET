@@ -34,8 +34,8 @@
 	{
 		<div class="deliverytime-group d-flex">
 			<span>@T("Products.DeliveryTime")</span>
-			<span class="delivery-time pl-2" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color: " + statusColor, statusColor.HasValue())>
-				<i class="fa fa-circle delivery-time-status pr-1" style="color: @Model.DeliveryTimeHexValue"></i>
+			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color: " + statusColor, statusColor.HasValue())>
+				<i class="fa fa-circle delivery-time-status" style="color: @Model.DeliveryTimeHexValue"></i>
 				@statusLabel
 			</span>
 		</div>

@@ -400,6 +400,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
 .deliverytime-group .delivery-time { 
     vertical-align: top;
+	padding-left: 0.4rem;
 }
 
 .delivery-time {
@@ -410,6 +411,8 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
     .delivery-time-status {
         font-size: 0.85em;
+		padding-right: 0.2rem;
+		margin-left: 0.025rem;
     }
 }
 

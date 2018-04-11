@@ -160,6 +160,13 @@
 		padding-right: 90px;
 	}
 
+	.review-meta {
+		.review-meta-value + .review-meta-label { 
+			padding-left: 0.25rem !important; 
+			padding-right: 0.5rem !important; 
+		}
+	}
+
 
 	// Search
 	// ------

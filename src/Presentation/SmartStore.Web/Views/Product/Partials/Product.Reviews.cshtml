@@ -27,31 +27,31 @@ else
 				</div>
 
 				<div class="review-meta">
-					<span class="review-meta-label">@T("Reviews.From"):</span>
+					<span class="review-meta-label pr-1">@T("Reviews.From"):</span>
 					@if (review.AllowViewingProfiles)
 					{
-						<a class="review-meta-value" href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow">@(review.CustomerName)</a>
+						<a class="review-meta-value" href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow" dir="auto">@(review.CustomerName)</a>
 					}
 					else
 					{
 						<span class="review-meta-value">@review.CustomerName</span>
 					}
 
-					<span class="review-meta-label">@T("Common.Date"):</span>
+					<span class="review-meta-label pr-1">@T("Common.Date"):</span>
 					<span class="review-meta-value">@review.WrittenOnStr</span>
 				</div>
 
-				<p class="review-text">
+				<p class="review-text" dir="auto">
 					@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
 				</p>
 
-				<div class="review-vote" data-review-id="@(helpfulness.ProductReviewId)" data-href='@(Url.Action("SetReviewHelpfulness"))'>
-					<span class="review-vote-label">@T("Reviews.Helpfulness.WasHelpful?")</span>
-					<a class="review-vote-link review-vote-link-yes" href="#" title="@T("Common.Yes")" data-toggle="tooltip" rel="nofollow">
+				<div class="review-vote d-flex" data-review-id="@(helpfulness.ProductReviewId)" data-href='@(Url.Action("SetReviewHelpfulness"))'>
+					<span class="review-vote-label pr-2">@T("Reviews.Helpfulness.WasHelpful?")</span>
+					<a class="review-vote-link review-vote-link-yes mr-1" href="#" title="@T("Common.Yes")" data-toggle="tooltip" rel="nofollow">
 						<i class="fa fa-thumbs-up"></i>
 						<span class="review-vote-count" data-bind-to="TotalYes"><strong style="font-size:12px">@(helpfulness.HelpfulYesTotal)</strong></span>
 					</a>
-					<a class="review-vote-link review-vote-link-no" href="#" title="@T("Common.No")" data-toggle="tooltip" rel="nofollow">
+					<a class="review-vote-link review-vote-link-no mr-1" href="#" title="@T("Common.No")" data-toggle="tooltip" rel="nofollow">
 						<i class="fa fa-thumbs-down"></i>
 						<span class="review-vote-count" data-bind-to="TotalNo"><strong style="font-size:12px">@(helpfulness.HelpfulNoTotal)</strong></span>
 					</a>

@@ -6,6 +6,11 @@
 // RTL overrides for Bootstrap 4
 // ==============================================================
 
+[dir=ltr] {
+	direction: ltr;
+	text-align: left;
+}
+
 [dir=rtl] {
 	direction: rtl;
 	text-align: right;

@@ -207,6 +207,88 @@ namespace SmartStore.Services.Localization
 			return result;
 		}
 
+		internal static LocalizedPropertyValue<TPropType> GetLocalizedEx<T, TPropType>(T entity,
+			string localeKeyGroup,
+			int entityId,
+			Expression<Func<T, TPropType>> keySelector,
+			Language requestLanguage,
+			bool returnDefaultValue = true,
+			bool ensureTwoPublishedLanguages = true,
+			bool detectEmptyHtml = false)
+			where T : ILocalizedEntity
+		{
+			TPropType result = default(TPropType);
+			string resultStr = string.Empty;
+
+			var member = keySelector.Body as MemberExpression;
+			if (member == null)
+			{
+				throw new ArgumentException($"Expression '{keySelector}' refers to a method, not a property.");
+			}
+
+			var propInfo = member.Member as PropertyInfo;
+			if (propInfo == null)
+			{
+				throw new ArgumentException($"Expression '{keySelector}' refers to a field, not a property.");
+			}	
+
+			var languageService = EngineContext.Current.Resolve<ILanguageService>();
+
+			Language currentLanguage = null;
+
+			// Load localized value
+			string localeKey = propInfo.Name;
+
+			if (requestLanguage != null)
+			{
+				// Ensure that we have at least two published languages
+				bool loadLocalizedValue = true;
+				if (ensureTwoPublishedLanguages)
+				{	
+					var totalPublishedLanguages = languageService.GetLanguagesCount(false);
+					loadLocalizedValue = totalPublishedLanguages >= 2;
+				}
+
+				// Localized value
+				if (loadLocalizedValue)
+				{
+					var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
+					resultStr = leService.GetLocalizedValue(requestLanguage.Id, entityId, localeKeyGroup, localeKey);
+
+					if (detectEmptyHtml && resultStr.HasValue() && resultStr.RemoveHtml().IsEmpty())
+					{
+						resultStr = string.Empty;
+					}
+
+					if (resultStr.HasValue())
+					{
+						currentLanguage = requestLanguage;
+						result = (TPropType)resultStr.Convert(typeof(TPropType), CultureInfo.InvariantCulture);
+					}
+				}
+			}
+
+			// Set default value if required
+			if (returnDefaultValue && resultStr.IsEmpty())
+			{
+				currentLanguage = languageService.GetLanguageById(languageService.GetDefaultLanguageId());
+				var localizer = keySelector.Compile();
+				result = localizer(entity);
+			}
+
+			if (requestLanguage == null)
+			{
+				requestLanguage = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage;
+			}
+
+			if (currentLanguage == null)
+			{
+				currentLanguage = requestLanguage;
+			}
+
+			return new LocalizedPropertyValue<TPropType>(result, requestLanguage, currentLanguage);
+		}
+
 
 		/// <summary>
 		/// Get localized value of enum

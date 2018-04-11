@@ -7,6 +7,14 @@ using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Localization
 {
+	public class LocalizedPropertyValue : LocalizedPropertyValue<string>
+	{
+		public LocalizedPropertyValue(string value, Language requestLanguage, Language currentLanguage)
+			: base(value, requestLanguage, currentLanguage)
+		{
+		}
+	}
+
 	[Serializable]
 	public class LocalizedPropertyValue<T> : IHtmlString
 	{
@@ -19,9 +27,9 @@ namespace SmartStore.Services.Localization
 
 		private string _bidiStr;
 
-		public LocalizedPropertyValue(T text, Language requestLanguage, Language currentLanguage)
+		public LocalizedPropertyValue(T value, Language requestLanguage, Language currentLanguage)
 		{
-			_value = text;
+			_value = value;
 			_requestLanguage = requestLanguage;
 			_currentLanguage = currentLanguage;
 		}

@@ -502,7 +502,7 @@ namespace SmartStore.Web.Framework
 			return LanguageAttributes(html, EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage, omitLTR);
 		}
 
-		public static IHtmlString LanguageAttributes<T>(this HtmlHelper html, LocalizedPropertyValue<T> localizedValue)
+		public static IHtmlString LanguageAttributes<T>(this HtmlHelper html, LocalizedValue<T> localizedValue)
 		{
 			Guard.NotNull(localizedValue, nameof(localizedValue));
 

@@ -18,16 +18,16 @@
 				}
 				else
 				{
-					<span>@brand.Name</span>
+					<span @Html.LanguageAttributes(brand.Name)>@brand.Name</span>
 				}
 			</a>
-			<meta itemprop="brand" content="@brand.Name">
+			<meta itemprop="brand" content="@brand.Name.Value">
 		</div>
 	}
 
 	<!-- Title -->
 	<div class="page-title">
-		<h1 class="pd-name pd-name-sm" itemprop="name">
+		<h1 @Html.LanguageAttributes(Model.Name) class="pd-name pd-name-sm" itemprop="name">
 			@if (Model.IsAssociatedProduct && Model.VisibleIndividually)
 			{
 				<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
@@ -40,9 +40,9 @@
 	</div>
 
 	<!-- Short description -->
-	@if (Model.ShortDescription.HasValue())
+	@if (Model.ShortDescription.Value.HasValue())
 	{
-		<div class="pd-description">
+		<div @Html.LanguageAttributes(Model.ShortDescription) class="pd-description">
 			@Html.Raw(Model.ShortDescription)
 		</div>
 	}

@@ -280,12 +280,12 @@
 
 				var expander = el.find('.btn-text-expander--expand');
 				if (expander.length == 0) {
-					el.append('<a href="#" class="btn-text-expander btn-text-expander--expand"><i class="fa fa fa-angle-double-down"></i>' + Res['Products.Longdesc.More'] + '</a>');
+					el.append('<a href="#" class="btn-text-expander btn-text-expander--expand"><i class="fa fa fa-angle-double-down pr-2"></i><span>' + Res['Products.Longdesc.More'] + '</span></a>');
 				}
 
 				var collapser = el.find('.btn-text-expander--collapse');
 				if (collapser.length == 0) {
-					el.append('<a href="#" class="btn-text-expander btn-text-expander--collapse"><i class="fa fa fa-angle-double-up"></i>' + Res['Products.Longdesc.Less'] + '</a>');
+					el.append('<a href="#" class="btn-text-expander btn-text-expander--collapse"><i class="fa fa fa-angle-double-up pr-2"></i><span>' + Res['Products.Longdesc.Less'] + '</span></a>');
 				}
 			});
 		}

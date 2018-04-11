@@ -165,19 +165,19 @@ namespace SmartStore.Services.Messages
 			// localization
 			foreach (var lang in languages)
 			{
-				var bccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, lang.Id, false, false);
+				string bccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, lang, false, false);
 				if (bccEmailAddresses.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.BccEmailAddresses, bccEmailAddresses, lang.Id);
 
-				var subject = messageTemplate.GetLocalized(x => x.Subject, lang.Id, false, false);
+				string subject = messageTemplate.GetLocalized(x => x.Subject, lang, false, false);
 				if (subject.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Subject, subject, lang.Id);
 
-				var body = messageTemplate.GetLocalized(x => x.Body, lang.Id, false, false);
+				string body = messageTemplate.GetLocalized(x => x.Body, lang, false, false);
 				if (body.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Body, subject, lang.Id);
 
-				var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, lang.Id, false, false);
+				int emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, lang, false, false);
 				if (emailAccountId > 0)
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.EmailAccountId, emailAccountId, lang.Id);
 			}

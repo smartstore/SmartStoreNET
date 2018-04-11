@@ -201,7 +201,7 @@ namespace SmartStore.Admin.Controllers
 					// get localized name of currencies
 					var currencyNames = allCurrencies.ToDictionarySafe(
 						x => x.Key,
-						x => x.Value.GetLocalized(y => y.Name, language.Id, true, false)
+						x => x.Value.GetLocalized(y => y.Name, language, true, false).Value
 					);
 
 					// fallback to english name where no localized currency name exists

@@ -3,20 +3,13 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Localization
 {
-	public class LocalizedPropertyValue : LocalizedPropertyValue<string>
-	{
-		public LocalizedPropertyValue(string value, Language requestLanguage, Language currentLanguage)
-			: base(value, requestLanguage, currentLanguage)
-		{
-		}
-	}
-
 	[Serializable]
-	public class LocalizedPropertyValue<T> : IHtmlString
+	public class LocalizedValue<T> : IHtmlString
 	{
 		// Regex for all types of brackets which need to be "swapped": ({[]})
 		private readonly static Regex _rgBrackets = new Regex(@"\(|\{|\[|\]|\}|\)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
@@ -27,7 +20,7 @@ namespace SmartStore.Services.Localization
 
 		private string _bidiStr;
 
-		public LocalizedPropertyValue(T value, Language requestLanguage, Language currentLanguage)
+		public LocalizedValue(T value, Language requestLanguage, Language currentLanguage)
 		{
 			_value = value;
 			_requestLanguage = requestLanguage;
@@ -39,11 +32,13 @@ namespace SmartStore.Services.Localization
 			get { return _value; }
 		}
 
+		[JsonIgnore]
 		public Language RequestLanguage
 		{
 			get { return _requestLanguage; }
 		}
 
+		[JsonIgnore]
 		public Language CurrentLanguage
 		{
 			get { return _currentLanguage; }
@@ -59,8 +54,13 @@ namespace SmartStore.Services.Localization
 			get { return _requestLanguage != _currentLanguage && _requestLanguage.Rtl != _currentLanguage.Rtl; }
 		}
 
-		public static implicit operator T(LocalizedPropertyValue<T> obj)
+		public static implicit operator T(LocalizedValue<T> obj)
 		{
+			if (obj == null)
+			{
+				return default(T);
+			}
+
 			return obj.Value;
 		}
 
@@ -81,19 +81,21 @@ namespace SmartStore.Services.Localization
 
 		public string ToHtmlString()
 		{
-			var str = ToString();
+			return ToString();
 
-			if (BidiOverride)
-			{
-				if (_bidiStr == null)
-				{
-					_bidiStr = FixBrackets(str, _currentLanguage.Rtl);
-				}
+			//var str = ToString();
+
+			//if (BidiOverride)
+			//{
+			//	if (_bidiStr == null)
+			//	{
+			//		_bidiStr = FixBrackets(str, _currentLanguage.Rtl);
+			//	}
 				
-				return _bidiStr;
-			}
+			//	return _bidiStr;
+			//}
 
-			return str;
+			//return str;
 		}
 
 		private string FixBrackets(string str, bool rtl)
@@ -118,7 +120,7 @@ namespace SmartStore.Services.Localization
 			if (obj == null || obj.GetType() != GetType())
 				return false;
 
-			var that = (LocalizedPropertyValue<T>)obj;
+			var that = (LocalizedValue<T>)obj;
 			return string.Equals(_value, that._value);
 		}
 	}

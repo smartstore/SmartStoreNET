@@ -2,6 +2,28 @@
 /// <reference path="_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
+
+//
+// Bidi
+// --------------------------------------------------
+
+[dir=rtl] {
+	direction: rtl;
+	text-align: right;
+
+	body {
+		text-align: right;
+	}
+
+	// Opposite/mixed
+	[dir=ltr] {
+		direction: ltr;
+		// INFO: "right" is correct!
+		text-align: right;
+	}
+}
+
+
 //
 // Grid stuff
 // --------------------------------------------------

@@ -38,7 +38,7 @@ namespace SmartStore.Services.Seo
         {
             if (productTag == null)
                 throw new ArgumentNullException("productTag");
-            string seName = GetSeName(productTag.GetLocalized(x => x.Name, languageId));
+            string seName = GetSeName((string)productTag.GetLocalized(x => x.Name, languageId));
             return seName;
         }
 

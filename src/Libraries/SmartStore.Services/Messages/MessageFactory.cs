@@ -216,7 +216,7 @@ namespace SmartStore.Services.Messages
 		private string RenderBodyTemplate(MessageContext ctx)
 		{
 			var key = BuildTemplateKey(ctx);
-			var source = ctx.MessageTemplate.GetLocalized((x) => x.Body, ctx.Language.Id);
+			var source = ctx.MessageTemplate.GetLocalized((x) => x.Body, ctx.Language);
 			var fromCache = true;
 			var template = _templateManager.GetOrAdd(key, GetBodyTemplate);	
 

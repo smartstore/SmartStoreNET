@@ -74,7 +74,7 @@ namespace SmartStore.Services.Messages
 				topic = topicService.GetTopicBySystemName(topicSystemName, 0);
 			}
 
-			var body = topic?.GetLocalized(x => x.Body, ctx.Language.Id);
+			string body = topic?.GetLocalized(x => x.Body, ctx.Language);
 			if (body.HasValue())
 			{
 				body = HtmlUtils.RelativizeFontSizes(body);
@@ -82,7 +82,7 @@ namespace SmartStore.Services.Messages
 
 			return new
 			{
-				Title = topic?.GetLocalized(x => x.Title, ctx.Language.Id).NullEmpty(),
+				Title = topic?.GetLocalized(x => x.Title, ctx.Language).Value.NullEmpty(),
 				Body = body.NullEmpty()
 			};
 		}

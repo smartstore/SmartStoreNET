@@ -302,7 +302,7 @@ namespace SmartStore.Web.Controllers
 
 				if (paymentMethod != null)
 				{
-					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage.Id);
+					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage);
 				}
 				
 				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);

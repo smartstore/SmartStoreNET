@@ -152,7 +152,7 @@ namespace SmartStore.PayPal.Services
 				{
 					var line = new Dictionary<string, object>();
 					line.Add("quantity", item.Item.Quantity);
-					line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language.Id, true, false).Truncate(127));
+					line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language, true, false).Value.Truncate(127));
 					line.Add("price", productPrice.FormatInvariant());
 					line.Add("currency", currencyCode);
 					line.Add("sku", item.Item.Product.Sku.Truncate(50));

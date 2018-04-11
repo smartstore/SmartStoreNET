@@ -8,9 +8,9 @@
 @{
 	Layout = "_Layout";
 
-	Html.AddTitleParts(Model.MetaTitle.NullEmpty() ?? Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+	Html.AddTitleParts(Model.MetaTitle.Value.NullEmpty() ?? Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription.Value);
+	Html.AddMetaKeywordParts(Model.MetaKeywords.Value);
 
 	var canonicalUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
 	if (Model.CanonicalUrlsEnabled)
@@ -25,25 +25,25 @@
 		itemType = (string)null // TODO: (mc) WTF!?
 	});
 
-	var shortDescription = Model.ShortDescription.NullEmpty() ?? Model.MetaDescription;
+	var shortDescription = Model.ShortDescription.Value.HasValue() ? Model.ShortDescription : Model.MetaDescription;
 
 	// FB OpenGraph og:*
 	Html.AddCustomHeadParts("<meta property='og:site_name' content='{0}' />".FormatInvariant(CommonServices.StoreContext.CurrentStore.Name));
 	Html.AddCustomHeadParts("<meta property='og:type' content='{0}' />".FormatInvariant(Model.ProductType == ProductType.SimpleProduct ? "product" : "product.group"));
 	Html.AddCustomHeadParts("<meta property='og:url' content='{0}' />".FormatInvariant(canonicalUrl));
 	Html.AddCustomHeadParts("<meta property='og:site' content='{0}' />".FormatInvariant(Url.RouteUrl("HomePage", null, this.Request.Url.Scheme)));
-	Html.AddCustomHeadParts("<meta property='og:title' content='{0}' />".FormatInvariant(Model.Name));
-	if (shortDescription.HasValue())
+	Html.AddCustomHeadParts("<meta property='og:title' content='{0}' />".FormatInvariant(Model.Name.Value));
+	if (shortDescription.Value.HasValue())
 	{
-		Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(shortDescription));
+		Html.AddCustomHeadParts("<meta property='og:description' content='{0}' />".FormatInvariant(shortDescription.Value));
 	}
 
 	// Twitter card
 	Html.AddCustomHeadParts("<meta property='twitter:card' content='product' />");
 	Html.AddCustomHeadParts("<meta property='twitter:title' content='{0}' />".FormatInvariant(Model.Name));
-	if (shortDescription.HasValue())
+	if (shortDescription.Value.HasValue())
 	{
-		Html.AddCustomHeadParts("<meta property='twitter:description' content='{0}' />".FormatInvariant(shortDescription));
+		Html.AddCustomHeadParts("<meta property='twitter:description' content='{0}' />".FormatInvariant(shortDescription.Value));
 	}
 
 	/* TODO: (mc)

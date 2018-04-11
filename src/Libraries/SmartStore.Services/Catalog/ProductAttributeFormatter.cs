@@ -109,7 +109,7 @@ namespace SmartStore.Services.Catalog
                             if (pva.AttributeControlType == AttributeControlType.MultilineTextbox)
                             {
                                 //multiline textbox
-                                var attributeName = pva.ProductAttribute.GetLocalized(a => a.Name, languageId);
+                                string attributeName = pva.ProductAttribute.GetLocalized(a => a.Name, languageId);
                                 //encode (if required)
                                 if (htmlEncode)
                                     attributeName = HttpUtility.HtmlEncode(attributeName);
@@ -143,7 +143,7 @@ namespace SmartStore.Services.Catalog
                                         //hyperlinks aren't allowed
                                         attributeText = fileName;
                                     }
-                                    var attributeName = pva.ProductAttribute.GetLocalized(a => a.Name, languageId);
+                                    string attributeName = pva.ProductAttribute.GetLocalized(a => a.Name, languageId);
                                     //encode (if required)
                                     if (htmlEncode)
                                         attributeName = HttpUtility.HtmlEncode(attributeName);

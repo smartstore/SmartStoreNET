@@ -172,7 +172,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 						var attributeValue = attributeValues[attributeId].FirstOrDefault(x => x.ProductVariantAttribute.ProductAttributeId == attributeId);
 						if (attributeValue != null)
 						{
-							return attributeValue.GetLocalized(x => x.Name, languageId, true, false).EmptyNull();
+							return attributeValue.GetLocalized(x => x.Name, languageId, true, false).Value.EmptyNull();
 						}
 					}
 				}

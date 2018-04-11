@@ -72,11 +72,10 @@
 	// Text expander
 	// -------------
 
-	.more-less .btn-text-expander .fa {
-		padding-left: 0.4rem;
-		padding-right: initial;
+	.more-less .btn-text-expander {
+		justify-content: flex-end;
+		> i { order: 1; }
 	}
-
 
 	.nav-tabs-line {
 		padding-right: 0;

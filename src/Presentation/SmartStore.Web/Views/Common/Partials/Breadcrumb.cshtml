@@ -15,7 +15,7 @@
 			var item = Model[i];
 			var isLast = i == Model.Count - 1;
 
-			<li class="breadcrumb-item@(isLast ? " active" : "")" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+			<li class="breadcrumb-item@(isLast ? " active" : "")" itemscope itemtype="http://data-vocabulary.org/Breadcrumb" dir="auto">
 				@if (item.HasRoute() && !isLast)
 				{
 					<a href="@item.GenerateUrl(this.Url)" title="@item.Text" itemprop="url">

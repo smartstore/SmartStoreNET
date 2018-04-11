@@ -191,7 +191,7 @@ namespace SmartStore.AmazonPay.Services
 				var merchantCountry = _countryService.GetCountryById(_companyInformationSettings.CountryId);
 				if (merchantCountry != null)
 				{
-					model.MerchantCountry = merchantCountry.GetLocalized(x => x.Name, language.Id, false, false);
+					model.MerchantCountry = merchantCountry.GetLocalized(x => x.Name, language, false, false);
 				}
 			}
 

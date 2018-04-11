@@ -547,7 +547,7 @@ namespace SmartStore.Admin.Controllers
 						.ToList();
 
 					model.Filter.AvailableCountries = allCountries
-						.Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name, language.Id, true, false), Value = x.Id.ToString() })
+						.Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name, language, true, false), Value = x.Id.ToString() })
 						.ToList();
 				}
 				else if (model.Provider.EntityType == ExportEntityType.Order)

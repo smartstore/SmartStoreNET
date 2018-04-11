@@ -97,7 +97,7 @@
 					"display-3": { displayClass: "fs-h3", toggle: rgDisplay },
 					"display-4": { displayClass: "fs-h4", toggle: rgDisplay },
 					"lead": { },
-					"jumbotron": { displayClass: "p-4 fs-h3 font-weight-400" },
+					"jumbotron": { displayClass: "p-4 fs-h3 font-weight-400" }
 				};
 			}
 
@@ -106,7 +106,7 @@
 					"img-fluid": { inline: true },
 					"rounded": { toggle: /^(rounded(-.+)?)|img-thumbnail$/, inline: true },
 					"rounded-circle": { toggle: /^(rounded(-.+)?)|img-thumbnail$/, inline: true  },
-					"img-thumbnail": { toggle: /^rounded(-.+)?$/, inline: true  },
+					"img-thumbnail": { toggle: /^rounded(-.+)?$/, inline: true  }
 				};
 			}
 
@@ -148,8 +148,6 @@
 						})
 					]
 				}).render();
-
-				return $optionList;
 			});
 
 			// Image shape stuff
@@ -199,12 +197,12 @@
 				return button.render();
 			});
 
-			this.applyClassToSelection = function(value, obj) {
+			this.applyClassToSelection = function (value, obj) {
 				var controlNode = $(context.invoke("restoreTarget"));
 				var sel = window.getSelection();
 				var node = $(sel.focusNode.parentElement, ".note-editable");
 				var currentNodeIsInline = isInlineElement(node[0]);
-				var caret = sel.type == 'None' || sel.type == 'Caret';
+				var caret = sel.type === 'None' || sel.type === 'Caret';
 
 				function apply(el) {
 					if (el.is('.' + value.replace(' ', '.'))) {
@@ -270,7 +268,7 @@
 				}
 
 				context.invoke("afterCommand");
-			}
+			};
 
 			this.refreshDropdown = function (drop, node /* selectedNode */, noBubble) {
 				node = node || $(window.getSelection().focusNode, ".note-editable");
@@ -302,7 +300,7 @@
 
 					ddi.toggleClass('checked', match);
 				});
-			}
+			};
 
 			// This events will be attached when editor is initialized.
 			this.events = {

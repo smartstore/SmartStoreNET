@@ -231,7 +231,7 @@ namespace SmartStore.Admin.Controllers
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.Name = country.GetLocalized(x => x.Name, languageId, false, false);
+				locale.Name = country.GetLocalized(x => x.Name, languageId, false, false);
             });
 
 			PrepareCountryModel(model, country, false);

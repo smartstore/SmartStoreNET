@@ -306,7 +306,7 @@ namespace SmartStore.Web.Controllers
 			var item = new ProductSummaryModel.SummaryItem(ctx.Model)
 			{
 				Id = product.Id,
-				Name = product.GetLocalized(x => x.Name).EmptyNull(),
+				Name = product.GetLocalized(x => x.Name).Value.EmptyNull(),
 				SeName = product.GetSeName()
 			};
 

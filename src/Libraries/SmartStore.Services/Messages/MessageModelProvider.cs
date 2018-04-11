@@ -460,7 +460,7 @@ namespace SmartStore.Services.Messages
 				{ "Id", part.Id },
 				{ "Sku", catalogSettings.ShowProductSku ? part.Sku : null },
 				{ "Name", name },
-				{ "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language.Id).NullEmpty() },
+				{ "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language).Value.NullEmpty() },
 				{ "StockQuantity", part.StockQuantity },
 				{ "AdditionalShippingCharge", additionalShippingChargeFormatted.NullEmpty() },
 				{ "Url", url },
@@ -477,14 +477,14 @@ namespace SmartStore.Services.Messages
 					m["DeliveryTime"] = new Dictionary<string, object>
 					{
 						{ "Color", dt.ColorHexValue },
-						{ "Name", dt.GetLocalized(x => x.Name, messageContext.Language.Id) },
+						{ "Name", dt.GetLocalized(x => x.Name, messageContext.Language) },
 					};
 				}
 			}
 
 			if (quantityUnitService.GetQuantityUnitById(part.QuantityUnitId) is QuantityUnit qu)
 			{
-				m["QtyUnit"] = qu.GetLocalized(x => x.Name, messageContext.Language.Id);
+				m["QtyUnit"] = qu.GetLocalized(x => x.Name, messageContext.Language);
 			}
 
 			PublishModelPartCreatedEvent<Product>(part, m);
@@ -761,8 +761,8 @@ namespace SmartStore.Services.Messages
 
 			var m = new Dictionary<string, object>
 			{
-				{ "Name", part.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() },
-				{ "GroupName", part.ForumGroup?.GetLocalized(x => x.Name, messageContext.Language.Id).NullEmpty() },
+				{ "Name", part.GetLocalized(x => x.Name, messageContext.Language).Value.NullEmpty() },
+				{ "GroupName", part.ForumGroup?.GetLocalized(x => x.Name, messageContext.Language)?.Value.NullEmpty() },
 				{ "NumPosts", part.NumPosts },
 				{ "NumTopics", part.NumTopics },
 				{ "Url", BuildRouteUrl("ForumSlug", new {  id = part.Id, slug = part.GetSeName(messageContext.Language.Id) }, messageContext) },
@@ -790,8 +790,8 @@ namespace SmartStore.Services.Messages
 			var street2 = settings.StreetAddress2Enabled ? part.Address2 : null;
 			var zip = settings.ZipPostalCodeEnabled ? part.ZipPostalCode : null;
 			var city = settings.CityEnabled ? part.City : null;
-			var country = settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, languageId ?? 0).NullEmpty() : null;
-			var state = settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, languageId ?? 0).NullEmpty() : null;
+			var country = settings.CountryEnabled ? part.Country?.GetLocalized(x => x.Name, languageId ?? 0)?.Value.NullEmpty() : null;
+			var state = settings.StateProvinceEnabled ? part.StateProvince?.GetLocalized(x => x.Name, languageId ?? 0)?.Value.NullEmpty() : null;
 			
 			var m = new Dictionary<string, object>
 			{

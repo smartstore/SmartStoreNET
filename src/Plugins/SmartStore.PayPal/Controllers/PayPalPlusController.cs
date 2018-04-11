@@ -107,7 +107,7 @@ namespace SmartStore.PayPal.Controllers
 					var paymentMethod = _paymentService.GetPaymentMethodBySystemName(provider.Metadata.SystemName);
 					if (paymentMethod != null)
 					{
-						var description = paymentMethod.GetLocalized(x => x.FullDescription);
+						string description = paymentMethod.GetLocalized(x => x.FullDescription);
 						if (description.HasValue())
 						{
 							description = HtmlUtils.ConvertHtmlToPlainText(description);
@@ -260,7 +260,7 @@ namespace SmartStore.PayPal.Controllers
 
 			if (pppMethod != null)
 			{
-				model.FullDescription = pppMethod.GetLocalized(x => x.FullDescription, language.Id);
+				model.FullDescription = pppMethod.GetLocalized(x => x.FullDescription, language);
 			}
 
 			if (customer.BillingAddress != null && customer.BillingAddress.Country != null)

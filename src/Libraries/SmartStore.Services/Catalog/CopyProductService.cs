@@ -441,31 +441,31 @@ namespace SmartStore.Services.Catalog
 			{
 				foreach (var lang in languages)
 				{
-					var name = product.GetLocalized(x => x.Name, lang.Id, false, false);
+					var name = product.GetLocalized(x => x.Name, lang, false, false);
 					if (!String.IsNullOrEmpty(name))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.Name, name, lang.Id);
 
-					var shortDescription = product.GetLocalized(x => x.ShortDescription, lang.Id, false, false);
+					var shortDescription = product.GetLocalized(x => x.ShortDescription, lang, false, false);
 					if (!String.IsNullOrEmpty(shortDescription))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.ShortDescription, shortDescription, lang.Id);
 
-					var fullDescription = product.GetLocalized(x => x.FullDescription, lang.Id, false, false);
+					var fullDescription = product.GetLocalized(x => x.FullDescription, lang, false, false);
 					if (!String.IsNullOrEmpty(fullDescription))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.FullDescription, fullDescription, lang.Id);
 
-					var metaKeywords = product.GetLocalized(x => x.MetaKeywords, lang.Id, false, false);
+					var metaKeywords = product.GetLocalized(x => x.MetaKeywords, lang, false, false);
 					if (!String.IsNullOrEmpty(metaKeywords))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.MetaKeywords, metaKeywords, lang.Id);
 
-					var metaDescription = product.GetLocalized(x => x.MetaDescription, lang.Id, false, false);
+					var metaDescription = product.GetLocalized(x => x.MetaDescription, lang, false, false);
 					if (!String.IsNullOrEmpty(metaDescription))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.MetaDescription, metaDescription, lang.Id);
 
-					var metaTitle = product.GetLocalized(x => x.MetaTitle, lang.Id, false, false);
+					var metaTitle = product.GetLocalized(x => x.MetaTitle, lang, false, false);
 					if (!String.IsNullOrEmpty(metaTitle))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.MetaTitle, metaTitle, lang.Id);
 
-					var bundleTitleText = product.GetLocalized(x => x.BundleTitleText, lang.Id, false, false);
+					var bundleTitleText = product.GetLocalized(x => x.BundleTitleText, lang, false, false);
 					if (!String.IsNullOrEmpty(bundleTitleText))
 						_localizedEntityService.SaveLocalizedValue(clone, x => x.BundleTitleText, bundleTitleText, lang.Id);
 
@@ -576,7 +576,7 @@ namespace SmartStore.Services.Catalog
 			{
 				foreach (var lang in languages)
 				{
-					var name = pvav.GetLocalized(x => x.Name, lang.Id, false, false);
+					var name = pvav.GetLocalized(x => x.Name, lang, false, false);
 					if (!String.IsNullOrEmpty(name))
 					{
 						var pvavClone = pvavMap.Get(pvav.Id);

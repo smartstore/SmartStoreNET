@@ -444,7 +444,7 @@ namespace SmartStore.Web.Controllers
 			if (forum == null)
 				return new RssActionResult { Feed = feed };
 
-			feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(_storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name, language.Id)));
+			feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(_storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name, language)));
 
 			var items = new List<SyndicationItem>();
 			var topics = _forumService.GetAllTopics(id, 0, string.Empty, ForumSearchType.All, 0, 0, _forumSettings.ForumFeedCount);

@@ -89,14 +89,12 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareLanguageModel(LanguageModel model, Language language, bool excludeProperties)
 		{
-			var languageId = _services.WorkContext.WorkingLanguage.Id;
-
 			var allCultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
 				.OrderBy(x => x.DisplayName)
 				.ToList();
 
 			var allCountryNames = _countryService.GetAllCountries(true)
-				.ToDictionarySafe(x => x.TwoLetterIsoCode.EmptyNull().ToLower(), x => x.GetLocalized(y => y.Name, languageId, true, false));
+				.ToDictionarySafe(x => x.TwoLetterIsoCode.EmptyNull().ToLower(), x => x.GetLocalized(y => y.Name, _services.WorkContext.WorkingLanguage, true, false));
 
 			model.AvailableCultures = allCultures
 				.Select(x => new SelectListItem { Text = "{0} [{1}]".FormatInvariant(x.DisplayName, x.IetfLanguageTag), Value = x.IetfLanguageTag })

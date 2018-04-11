@@ -54,7 +54,7 @@ namespace SmartStore.Web.Controllers
                 var country = _countryService.GetCountryById(Convert.ToInt32(countryId));
                 var states = _stateProvinceService.GetStateProvincesByCountryId(country != null ? country.Id : 0).ToList();
                 var result = (from s in states
-                              select new { id = s.Id, name = s.GetLocalized(x => x.Name) })
+                              select new { id = s.Id, name = s.GetLocalized(x => x.Name).Value })
                               .ToList();
 
                 if (addEmptyStateIfRequired && result.Count == 0)

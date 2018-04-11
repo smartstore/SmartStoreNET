@@ -58,22 +58,28 @@ namespace SmartStore.Web.Framework
             where T : ILocalizedModel<TLocalizedModelLocal>
             where TLocalizedModelLocal : ILocalizedModelLocal
         {
-            return new HelperResult(writer =>
+			return new HelperResult(writer =>
             {
                 if (helper.ViewData.Model.Locales.Count > 1)
                 {
-                    writer.Write("<div class='locale-editor'>");
+					var languageService = EngineContext.Current.Resolve<ILanguageService>();
+
+					writer.Write("<div class='locale-editor'>");
                     var tabStrip = helper.SmartStore().TabStrip().Name(name).SmartTabSelection(false).Style(TabsStyle.Tabs).AddCssClass("nav-locales").Items(x =>
                     {
 						if (standardTemplate != null)
 						{
-							x.Add().Text("Standard").Content(standardTemplate(helper.ViewData.Model).ToHtmlString()).Selected(true);
+							var masterLanguage = languageService.GetLanguageById(languageService.GetDefaultLanguageId());
+							x.Add().Text(EngineContext.Current.Resolve<ILocalizationService>().GetResource("Admin.Common.Standard"))
+								.ContentHtmlAttributes(new { @class = "locale-editor-content", data_lang = masterLanguage.LanguageCulture, data_rtl = masterLanguage.Rtl.ToString().ToLower() })
+								.Content(standardTemplate(helper.ViewData.Model).ToHtmlString())
+								.Selected(true);
 						}
 
                         for (int i = 0; i < helper.ViewData.Model.Locales.Count; i++)
                         {
                             var locale = helper.ViewData.Model.Locales[i];
-                            var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(locale.LanguageId);
+                            var language = languageService.GetLanguageById(locale.LanguageId);
 
  							x.Add().Text(language.Name)
 								.ContentHtmlAttributes(new { @class = "locale-editor-content", data_lang = language.LanguageCulture, data_rtl = language.Rtl.ToString().ToLower() })

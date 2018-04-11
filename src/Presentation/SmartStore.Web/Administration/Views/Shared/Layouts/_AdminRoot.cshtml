@@ -89,7 +89,7 @@
 		adminJsRoot + "admin.globalinit.js");
 }
 <!DOCTYPE html>
-<html lang="@this.WorkContext.WorkingLanguage.UniqueSeoCode" class="no-js not-ready loading" data-pnotify-firstpos1="140">
+<html @Html.LanguageAttributes(true) class="no-js not-ready loading" data-pnotify-firstpos1="140">
 <head>
     <title>@adminPageTitle</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
@@ -111,7 +111,7 @@
 
 	@{ Html.RenderZone("head"); }
 </head>
-<body @Html.LanguageAttributes(true) class="@Html.BodyCssClass()"@(Html.BodyId())>   
+<body class="@Html.BodyCssClass()"@(Html.BodyId())>   
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
 	@{ Html.RenderZone("aftercontent"); }

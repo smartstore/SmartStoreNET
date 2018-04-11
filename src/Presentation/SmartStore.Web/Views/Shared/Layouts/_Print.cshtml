@@ -5,7 +5,7 @@
 }
 
 <!DOCTYPE html>
-<html>
+<html @Html.LanguageAttributes(true)>
 <head>
 	<meta charset="utf-8">
 	<title>@Html.SmartTitle(false)</title>
@@ -19,7 +19,7 @@
 	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
 	@Html.CustomHead()
 </head>
-<body class="@Html.BodyCssClass()" @Html.LanguageAttributes(true)>
+<body class="@Html.BodyCssClass()">
 	@RenderBody()
 	@Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
 </body>

@@ -94,6 +94,23 @@ h6, .h6 {
     margin-bottom: 1.5rem;
 }
 
+// Bidi
+// ======================================
+
+.rlm:after {
+	content: '\200F';
+}
+
+.ltr {
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
+.rtl {
+	direction: rtl;
+	unicode-bidi: isolate;
+}
+
 
 // Misc typo stuff
 // ======================================

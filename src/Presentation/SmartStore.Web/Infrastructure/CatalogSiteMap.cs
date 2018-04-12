@@ -132,11 +132,13 @@ namespace SmartStore.Web.Infrastructure
 		private TreeNode<MenuItem> ConvertNode(TreeNode<ICategoryNode> node, IDictionary<int, PictureInfo> allPictureInfos)
 		{
 			var cat = node.Value;
+			var name = cat.Id > 0 ? cat.GetLocalized(x => x.Name) : null;
 
 			var menuItem = new MenuItem
 			{
 				EntityId = cat.Id,
-				Text = cat.Id > 0 ? cat.GetLocalized(x => x.Name) : cat.Name,
+				Text = name?.Value ?? cat.Name,
+				Rtl = name?.CurrentLanguage?.Rtl ?? false,
 				BadgeText = cat.Id > 0 ? cat.GetLocalized(x => x.BadgeText) : null,
 				BadgeStyle = (BadgeStyle)cat.BadgeStyle,
 				RouteName = cat.Id > 0 ? "Category" : "HomePage"

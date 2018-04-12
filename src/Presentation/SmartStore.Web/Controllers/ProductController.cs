@@ -187,6 +187,7 @@ namespace SmartStore.Web.Controllers
 				_breadcrumb.Track(new MenuItem
 				{
 					Text = model.Name,
+					Rtl = model.Name.CurrentLanguage.Rtl,
 					EntityId = product.Id,
 					Url = Url.RouteUrl("Product", new { productId = product.Id, SeName = model.SeName })
 				});

@@ -24,7 +24,7 @@ namespace SmartStore.Services.Localization
 	}
 
 	[Serializable]
-	public class LocalizedValue<T> : IHtmlString
+	public class LocalizedValue<T> : IHtmlString, IComparable //, IComparable<T>
 	{
 		private readonly T _value;
 		private readonly Language _requestLanguage;
@@ -126,5 +126,25 @@ namespace SmartStore.Services.Localization
 			var that = (LocalizedValue<T>)obj;
 			return string.Equals(_value, that._value);
 		}
+
+		public int CompareTo(object other)
+		{
+			if (Value is IComparable c && other is LocalizedValue<T> l)
+			{
+				return c.CompareTo(l.Value);
+			}
+
+			return 0;
+		}
+
+		//public int CompareTo(T other)
+		//{
+		//	if (Value is IComparable<T> c)
+		//	{
+		//		return c.CompareTo(other);
+		//	}
+
+		//	return 0;
+		//}
 	}
 }

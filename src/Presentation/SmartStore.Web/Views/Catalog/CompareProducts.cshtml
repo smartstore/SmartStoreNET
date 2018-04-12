@@ -24,7 +24,7 @@
 	var hasRatings = Model.Items.Any(x => x.TotalReviews > 0);
 	var hasBrands = Model.ShowBrand && Model.Items.Any(x => x.Manufacturer != null);
 	var hasSkus = Model.ShowSku && Model.Items.Any(x => x.Sku.HasValue());
-	var hasDescriptions = Model.ShowDescription && Model.Items.Any(x => x.ShortDescription.HasValue());
+	var hasDescriptions = Model.ShowDescription && Model.Items.Any(x => x.ShortDescription.Value.HasValue());
 	var hasDimensions = Model.Items.Any(x => x.Dimensions.HasValue());
 	var hasWeight = Model.Items.Any(x => x.Weight.HasValue());
 }

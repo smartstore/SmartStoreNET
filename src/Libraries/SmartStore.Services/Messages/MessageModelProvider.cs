@@ -452,7 +452,7 @@ namespace SmartStore.Services.Messages
 			var additionalShippingChargeFormatted = _services.Resolve<IPriceFormatter>().FormatPrice(additionalShippingCharge, false, currency.CurrencyCode, false, messageContext.Language);
 			var url = productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml);
 			var pictureInfo = GetPictureFor(part, null);
-			var name = part.GetLocalized(x => x.Name, messageContext.Language.Id);
+			var name = part.GetLocalized(x => x.Name, messageContext.Language.Id).Value;
 			var alt = T("Media.Product.ImageAlternateTextFormat", messageContext.Language.Id, name).Text;
 			
 			var m = new Dictionary<string, object>
@@ -477,14 +477,14 @@ namespace SmartStore.Services.Messages
 					m["DeliveryTime"] = new Dictionary<string, object>
 					{
 						{ "Color", dt.ColorHexValue },
-						{ "Name", dt.GetLocalized(x => x.Name, messageContext.Language) },
+						{ "Name", dt.GetLocalized(x => x.Name, messageContext.Language).Value },
 					};
 				}
 			}
 
 			if (quantityUnitService.GetQuantityUnitById(part.QuantityUnitId) is QuantityUnit qu)
 			{
-				m["QtyUnit"] = qu.GetLocalized(x => x.Name, messageContext.Language);
+				m["QtyUnit"] = qu.GetLocalized(x => x.Name, messageContext.Language).Value;
 			}
 
 			PublishModelPartCreatedEvent<Product>(part, m);

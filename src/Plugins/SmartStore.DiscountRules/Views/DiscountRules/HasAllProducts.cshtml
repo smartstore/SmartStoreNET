@@ -18,6 +18,13 @@
 				<div>
 					<div class="input-group">
 						@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds", @readonly = "readonly" })
+						
+						<span class="input-group-append">
+							<a class="btn btn-secondary" id="reset-productids" title="@T("Admin.Common.Reset")">
+								<i class="fa fa-times"></i>
+							</a>
+						</span>
+
 						<div class="input-group-append">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.Products)
@@ -36,3 +43,13 @@
 		</td>
     </tr>
 </table>
+
+<script>
+	$(function () {
+		// reset productids
+		$("#reset-productids").on("click", function (e) {
+			e.preventDefault();
+			$("#@Html.FieldIdFor(model => model.Products)").val("");
+		});
+	});
+</script>

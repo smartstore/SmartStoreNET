@@ -6,6 +6,12 @@
 	$(function () {
 		$("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
 		toggleProductType();
+
+		// reset required-productids
+		$("#reset-required-productids").on("click", function (e) {
+			e.preventDefault();
+			$("#@Html.FieldIdFor(model => model.RequiredProductIds)").val("");
+		});
 	});
 
     function toggleProductType() {
@@ -338,6 +344,11 @@
 				<td class="adminData">
 					<div class="input-group">
 						@Html.TextBoxFor(model => model.RequiredProductIds, new { @readonly = "readonly" })
+						<span class="input-group-append">
+							<a class="btn btn-secondary" id="reset-required-productids" title="@T("Admin.Common.Reset")">
+								<i class="fa fa-times"></i>
+							</a>
+						</span>
 						<span class="input-group-append">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.RequiredProductIds)

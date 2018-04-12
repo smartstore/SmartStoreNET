@@ -8,17 +8,29 @@ using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Localization
 {
-	[Serializable]
-	public class LocalizedValue<T> : IHtmlString
+	public class LocalizedValue
 	{
 		// Regex for all types of brackets which need to be "swapped": ({[]})
 		private readonly static Regex _rgBrackets = new Regex(@"\(|\{|\[|\]|\}|\)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
+		public static string FixBrackets(string str, bool rtl = false)
+		{
+			var controlChar = rtl ? "&rlm;" : "&lrm;";
+			return _rgBrackets.Replace(str, m =>
+			{
+				return controlChar + m.Value + controlChar;
+			});
+		}
+	}
+
+	[Serializable]
+	public class LocalizedValue<T> : IHtmlString
+	{
 		private readonly T _value;
 		private readonly Language _requestLanguage;
 		private readonly Language _currentLanguage;
 
-		private string _bidiStr;
+		//private string _bidiStr;
 
 		public LocalizedValue(T value, Language requestLanguage, Language currentLanguage)
 		{
@@ -89,22 +101,13 @@ namespace SmartStore.Services.Localization
 			//{
 			//	if (_bidiStr == null)
 			//	{
-			//		_bidiStr = FixBrackets(str, _currentLanguage.Rtl);
+			//		_bidiStr = LocalizedValue.FixBrackets(str, _currentLanguage.Rtl);
 			//	}
 				
 			//	return _bidiStr;
 			//}
 
 			//return str;
-		}
-
-		private string FixBrackets(string str, bool rtl)
-		{
-			var controlChar = rtl ? "&rlm;" : "&lrm;";
-			return _rgBrackets.Replace(str, m => 
-			{
-				return controlChar + m.Value + controlChar; 
-			});
 		}
 
 		public override int GetHashCode()

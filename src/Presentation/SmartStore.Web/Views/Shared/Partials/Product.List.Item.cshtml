@@ -54,7 +54,7 @@
 				}
 			}
 
-			<h3 class="art-name">
+			<h3 @Html.LanguageAttributes(Model.Name) class="art-name">
 				<a href="@artDetailUrl" title="@Model.Name">
 					<span>@Model.Name</span>
 				</a>
@@ -62,8 +62,8 @@
 
 			@if (list.ShowDescription)
 			{
-				<div class="art-description" title="@Model.ShortDescription">
-					@Html.Raw(Model.ShortDescription.Truncate(160, "..."))
+				<div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription">
+					@Html.Raw(Model.ShortDescription.Value.Truncate(160, "..."))
 				</div>
 			}
 
@@ -107,7 +107,7 @@
 			@if (list.ShowLegalInfo)
 			{
 				<div class="art-legalinfo">
-					* @Html.Raw(Model.LegalInfo)
+					<span>*</span> <span>@Html.Raw(Model.LegalInfo)</span>
 				</div>
 			}
 		</div>

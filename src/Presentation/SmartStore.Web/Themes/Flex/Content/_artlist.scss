@@ -344,8 +344,6 @@ $art-border-color:              #ddd;
 .art-more-opts {
     font-size: $art-font-size-sm;
     color: $text-muted;
-    
-    > a { font-weight: bold; }  
 }
 
 .art-variant-info > * + * {
@@ -453,10 +451,6 @@ $art-border-color:              #ddd;
         font-size: 1rem;
         color: $text-muted;
         font-weight: 400;
-    }
-
-    .art-oldprice {
-        //display: block;
     }
 
     .art-variant-info {

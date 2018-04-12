@@ -23,8 +23,10 @@
 		<div class="art-more-opts">
 			@if (Model.Attributes.Count == 1)
 			{
-				<span>@T("Products.PlusOption"):</span>
-				<a href="@artDetailUrl">@Model.Attributes[0].Name</a>
+				<div class="d-flex align-items-baseline">
+					<span>@T("Products.PlusOption"):</span>
+					<a href="@artDetailUrl" class="font-weight-bold pl-1">@Model.Attributes[0].Name</a>
+				</div>
 			}
 			else
 			{
@@ -37,7 +39,7 @@
 					<div>@T("Products.PlusOptions"):</div>
 				}
 
-				<a href="@artDetailUrl">@String.Join(", ", Model.Attributes.Select(x => x.Name)).Truncate(50, "...")</a>
+				<a href="@artDetailUrl" class="font-weight-bold">@String.Join(", ", Model.Attributes.Select(x => x.Name.ToHtmlString())).Truncate(50, "...")</a>
 			}
 		</div>
 	}

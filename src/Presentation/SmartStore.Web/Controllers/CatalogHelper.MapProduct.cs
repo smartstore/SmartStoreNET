@@ -288,7 +288,7 @@ namespace SmartStore.Web.Controllers
 					batchContext.Clear();
 
 					// don't show stuff without data at all
-					model.ShowDescription = model.ShowDescription && model.Items.Any(x => x.ShortDescription.HasValue());
+					model.ShowDescription = model.ShowDescription && model.Items.Any(x => x.ShortDescription.Value.HasValue());
 					model.ShowBrand = model.ShowBrand && model.Items.Any(x => x.Manufacturer != null);
 
 					return model;
@@ -306,7 +306,7 @@ namespace SmartStore.Web.Controllers
 			var item = new ProductSummaryModel.SummaryItem(ctx.Model)
 			{
 				Id = product.Id,
-				Name = product.GetLocalized(x => x.Name).Value.EmptyNull(),
+				Name = product.GetLocalized(x => x.Name),
 				SeName = product.GetSeName()
 			};
 
@@ -333,7 +333,7 @@ namespace SmartStore.Web.Controllers
 
 				var attributes = ctx.BatchContext.Attributes.GetOrLoad(contextProduct.Id);
 
-				var cachedAttributeNames = new Dictionary<int, string>();
+				var cachedAttributeNames = new Dictionary<int, LocalizedValue<string>>();
 
 				// Color squares
 				if (attributes.Any() && settings.MapColorAttributes)

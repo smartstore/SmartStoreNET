@@ -68,6 +68,18 @@
 		}
 	}
 
+	.art-oldprice {
+		padding-right: 0.25rem;
+		padding-left: initial;
+	}
+
+	.art-attrs {
+		td:first-child { 
+			padding-left: 0.5rem; 
+			padding-right: initial;
+		}
+	}
+
 
 	// Text expander
 	// -------------

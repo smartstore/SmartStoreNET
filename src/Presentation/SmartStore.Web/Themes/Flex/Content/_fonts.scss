@@ -1,0 +1,43 @@
+﻿//
+// If your shop serves multiple languages you can use this file to define deviant font families for these languages.
+// If the files which contain the fonts aren't available via the internet you need to upload them onto your server first.
+// --------------------------------------------------
+
+// China
+// --------------------------------------------------
+/*
+html[lang="cn"] {
+	body {
+		font-family: Tahoma, Helvetica, Arial, "Microsoft Yahei","微软雅黑", STXihei, "华文细黑", sans-serif;
+	}
+}
+*/
+
+// Iran 
+// --------------------------------------------------
+/*
+html[lang="fa"] {
+	@font-face {
+		font-family: 'Iranian Sans';
+		src:url('../../../Content/Fonts/irsans.ttf');
+		src:url('../../../Content/Fonts/irsansb.ttf');
+	}
+	body {
+		font-family: 'Iranian Sans';
+	}
+}
+*/
+
+// Egypt
+// --------------------------------------------------
+/*
+html[lang="eg"] {
+	@font-face {
+		font-family: 'Cairo';
+		src:url('https://fonts.googleapis.com/css?family=Cairo');
+	}
+	body {
+		font-family: 'Cairo', sans-serif;
+	}
+}
+*/

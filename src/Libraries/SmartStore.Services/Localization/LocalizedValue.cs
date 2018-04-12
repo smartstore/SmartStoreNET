@@ -35,13 +35,11 @@ namespace SmartStore.Services.Localization
 	}
 
 	[Serializable]
-	public class LocalizedValue<T> : IHtmlString, IComparable //, IComparable<T>
+	public class LocalizedValue<T> : IHtmlString, IEquatable<LocalizedValue<T>>, IComparable, IComparable<LocalizedValue<T>>
 	{
 		private readonly T _value;
 		private readonly Language _requestLanguage;
 		private readonly Language _currentLanguage;
-
-		//private string _bidiStr;
 
 		public LocalizedValue(T value, Language requestLanguage, Language currentLanguage)
 		{
@@ -87,6 +85,11 @@ namespace SmartStore.Services.Localization
 			return obj.Value;
 		}
 
+		public string ToHtmlString()
+		{
+			return this.ToString();
+		}
+
 		public override string ToString()
 		{
 			if (_value == null)
@@ -102,25 +105,6 @@ namespace SmartStore.Services.Localization
 			return _value.Convert<string>(CultureInfo.GetCultureInfo(_currentLanguage.LanguageCulture));
 		}
 
-		public string ToHtmlString()
-		{
-			return ToString();
-
-			//var str = ToString();
-
-			//if (BidiOverride)
-			//{
-			//	if (_bidiStr == null)
-			//	{
-			//		_bidiStr = LocalizedValue.FixBrackets(str, _currentLanguage.Rtl);
-			//	}
-				
-			//	return _bidiStr;
-			//}
-
-			//return str;
-		}
-
 		public override int GetHashCode()
 		{
 			var hashCode = 0;
@@ -129,33 +113,44 @@ namespace SmartStore.Services.Localization
 			return hashCode;
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object other)
 		{
-			if (obj == null || obj.GetType() != GetType())
-				return false;
+			return this.Equals(other as LocalizedValue<T>);
+		}
 
-			var that = (LocalizedValue<T>)obj;
-			return string.Equals(_value, that._value);
+		public bool Equals(LocalizedValue<T> other)
+		{
+			if (ReferenceEquals(null, other))
+				return false;
+			if (ReferenceEquals(this, other))
+				return true;
+
+			return object.Equals(_value, other._value);
 		}
 
 		public int CompareTo(object other)
 		{
-			if (Value is IComparable c && other is LocalizedValue<T> l)
+			return CompareTo(other as LocalizedValue<T>);
+		}
+
+		public int CompareTo(LocalizedValue<T> other)
+		{
+			if (other == null)
 			{
-				return c.CompareTo(l.Value);
+				return 1;
+			}
+
+			if (Value is IComparable<T> val1)
+			{
+				return val1.CompareTo(other.Value);
+			}
+
+			if (Value is IComparable val2)
+			{
+				return val2.CompareTo(other.Value);
 			}
 
 			return 0;
 		}
-
-		//public int CompareTo(T other)
-		//{
-		//	if (Value is IComparable<T> c)
-		//	{
-		//		return c.CompareTo(other);
-		//	}
-
-		//	return 0;
-		//}
 	}
 }

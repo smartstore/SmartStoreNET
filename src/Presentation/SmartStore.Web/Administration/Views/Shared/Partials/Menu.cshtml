@@ -59,7 +59,7 @@
 
         var itemUrl = GetNodeLink(node);
 
-        <li data-id="nav-@item.Id" class="nav-item@(node.HasChildren ? " dropdown" : "")@(item.Id == "dashboard" ? " dropdown" : "")">
+        <li data-id="nav-@item.Id" class="nav-item@(node.HasChildren ? " dropdown" : "")@(item.Id == "dashboard" ? " dropdown d-none d-md-block" : "")">
 			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
 				@if (item.Icon.HasValue())
 				{

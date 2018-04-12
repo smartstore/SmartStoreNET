@@ -61,7 +61,7 @@
 		@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
 		{
 			<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
-				@Html.Raw(LocalizedValue.FixBrackets(Model.BasePriceInfo, false) ?? "&nbsp;")
+				@Html.Raw(LocalizedValue.FixBrackets(Model.BasePriceInfo, WorkContext.WorkingLanguage) ?? "&nbsp;")
 			</div>
 		}
 	</div>

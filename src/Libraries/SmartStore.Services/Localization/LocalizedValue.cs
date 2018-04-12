@@ -13,9 +13,20 @@ namespace SmartStore.Services.Localization
 		// Regex for all types of brackets which need to be "swapped": ({[]})
 		private readonly static Regex _rgBrackets = new Regex(@"\(|\{|\[|\]|\}|\)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-		public static string FixBrackets(string str, bool rtl = false)
+		/// <summary>
+		/// Fixes the flow of brackets within a text if the current page language has RTL flow.
+		/// </summary>
+		/// <param name="str">The test to fix.</param>
+		/// <param name="currentLanguage">Current language</param>
+		/// <returns></returns>
+		public static string FixBrackets(string str, Language currentLanguage)
 		{
-			var controlChar = rtl ? "&rlm;" : "&lrm;";
+			if (!currentLanguage.Rtl)
+			{
+				return str;
+			}
+
+			var controlChar = "&lrm;";
 			return _rgBrackets.Replace(str, m =>
 			{
 				return controlChar + m.Value + controlChar;

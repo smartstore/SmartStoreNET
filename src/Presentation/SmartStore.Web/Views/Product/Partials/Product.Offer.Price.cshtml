@@ -117,7 +117,7 @@
 				@if (basePriceEnabled && Model.BasePriceInfo.HasValue())
 				{
 					<div class="pd-pangv">
-						@Html.Raw(LocalizedValue.FixBrackets(Model.BasePriceInfo, false))
+						@Html.Raw(LocalizedValue.FixBrackets(Model.BasePriceInfo, WorkContext.WorkingLanguage))
 					</div>
 				}
 				@if (Model.ShowLegalInfo && Model.LegalInfo.HasValue())

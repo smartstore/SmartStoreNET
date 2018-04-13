@@ -99,12 +99,12 @@
         @pager
 
         <div class="search-results">
-            @if (@Model.NoResultsVisisble == true)
+            @if (Model.NoResultsVisisble == true)
             {
                 <span class="result">@T("Forum.SearchNoResultsText")</span>
             }
             <div class="topics-group table-responsive">
-                @if (@Model.SearchResultsVisible == true)
+                @if (Model.SearchResultsVisible == true)
                 {
                     <table class="table">
                         <thead>
@@ -123,7 +123,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        @foreach (var topic in @Model.ForumTopics)
+                        @foreach (var topic in Model.ForumTopics)
                         {
                             <tr class="topic">
                                 <td class="image">
@@ -158,12 +158,12 @@
                                     }
                                 </td>
                                 <td class="topic-name">
-                                    @if (!String.IsNullOrEmpty(@topicText))
+                                    @if (!String.IsNullOrEmpty(topicText))
                                     {
-                                        <span class="topictype">@Html.Raw(topicText)</span>
+                                        <span class="topictype" dir="auto">@Html.Raw(topicText)</span>
                                     }
                                     @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
-                                    @if (@topic.NumPosts > Model.PostsPageSize)
+                                    @if (topic.NumPosts > Model.PostsPageSize)
                                     {
                                         @(Html.SmartStore().Pager(topic.TotalPostPages)
                                             .HtmlAttributes(new { @class = "topics-pager" })
@@ -175,18 +175,21 @@
                                             .Size(PagerSize.Mini)
                                             .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                                     }
-                                    <div class="topic-starter">
-                                        @if (@topic.CustomerId > 0)
-                                        {
-                                            if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
-                                            {
-                                                @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
-                                            }
-                                            else
-                                            {
-                                                @T("Forum.Author")<text>:</text> @topic.CustomerName
-                                            }
-                                        }
+
+                                    <div class="topic-starter d-inline-flex">
+										@if (topic.CustomerId > 0)
+										{
+											if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+											{
+												<span class="pr-1">@T("Forum.Author"):</span>
+												<span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
+											}
+											else
+											{
+												<span class="pr-1">@T("Forum.Author"):</span>
+												<span>@topic.CustomerName</span>
+											}
+										}
                                     </div>
                                 </td>
                                 <td class="replies">

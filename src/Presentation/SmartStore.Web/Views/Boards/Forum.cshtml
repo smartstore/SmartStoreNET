@@ -38,13 +38,13 @@
     <div class="row mt-5">
         <div class="col">
             <div class="heading mb-4">
-                <h2 class="heading-title">@Model.Name</h2>
+                <h2 class="heading-title" @Html.LanguageAttributes(Model.Name)>@Model.Name</h2>
             </div>
         </div>
         <div class="col col-auto">
             @if (Model.ForumFeedsEnabled)
             {
-                <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="btn btn-warning" title="@T("Forum.ForumRSSLinkTitle")">
+                <a href="@Url.Action("ForumRSS", new { id = Model.Id })" class="btn btn-warning" title="@T("Forum.ForumRSSLinkTitle")">
                     <i class="fa fa-rss"></i>
                     <span>@T("Forum.RSS")</span>
                 </a>
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    <p class="lead">@Model.Description</p>
+    <p class="lead" @Html.LanguageAttributes(Model.Description)>@Model.Description</p>
 
     <div>
         <div class="actions my-3 row sm-gutters">
@@ -133,25 +133,27 @@
                         }
                     </td>
                     <td class="topic-name">
-                        @if (!String.IsNullOrEmpty(@topicText))
+                        @if (!String.IsNullOrEmpty(topicText))
                         {
                             <span class="topictype">@Html.Raw(topicText)</span>
                         }
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
                         
                         <div>
-                            <div class="topic-starter text-muted">
-                                @if (@topic.CustomerId > 0)
+                            <div class="topic-starter text-muted d-inline-flex">
+                                @if (topic.CustomerId > 0)
                                 {
-                                    if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
-                                    {
-                                        @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
-                                    }
-                                    else
-                                    {
-                                        @T("Forum.Author")<text>:</text> @topic.CustomerName
-                                    }
-                                }
+									if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+									{
+										<span class="pr-1">@T("Forum.Author"):</span>
+										<span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
+									}
+									else
+									{
+										<span class="pr-1">@T("Forum.Author"):</span>
+										<span>@topic.CustomerName</span>
+									}
+								}
                             </div>
                             @if (topic.NumPosts > Model.PostsPageSize)
                             {
@@ -175,7 +177,7 @@
                         @topic.Views
                     </td>
                     <td class="last-post d-none d-md-table-cell">
-                        @{ Html.RenderAction("LastPost", new { forumPostId = @topic.LastPostId, showTopic = false }); }
+                        @{ Html.RenderAction("LastPost", new { forumPostId = topic.LastPostId, showTopic = false }); }
                     </td>
                 </tr>
             }

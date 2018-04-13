@@ -3,33 +3,39 @@
 
 @if (@Model.Id > 0)
 {
-    <div class="last-post text-muted">
-        <div class="createdon">@Model.PostCreatedOnStr</div>
-        @if (Model.ShowTopic)
-        {
-            <div>
-                @T("Forum.In"):
-                @Html.RouteLink(Model.ForumTopicSubject.Truncate(30, "..."), "TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { title = Model.ForumTopicSubject })
-            </div>
-        }
-        @if (Model.CustomerId > 0)
-        {
-            <div>
-                @if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
-                {
-                    @T("Forum.By")<text>:</text> @Html.RouteLink(Model.CustomerName, "CustomerProfile", new { Id = Model.CustomerId })
-                }
-                else
-                {
-                    @T("Forum.By")<text>:</text> @Model.CustomerName
-                }
-            </div>
-        }
+	<div class="last-post text-muted">
+		<div class="createdon">@Model.PostCreatedOnStr</div>
+		@if (Model.ShowTopic)
+		{
+			<div>
+				<div class="d-inline-flex">
+					<span>@T("Forum.In"):</span>
+					@Html.RouteLink(Model.ForumTopicSubject.Truncate(30, "..."), "TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { title = Model.ForumTopicSubject })
+				</div>
+			</div>
+		}
+		@if (Model.CustomerId > 0)
+		{
+			<div>
+				<div class="d-inline-flex">
+					@if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
+					{
+						<span>@T("Forum.By"):</span>
+						@Html.RouteLink(Model.CustomerName, "CustomerProfile", new { Id = Model.CustomerId })
+					}
+					else
+					{
+						<span>@T("Forum.By"):</span>
+						<span>@Model.CustomerName</span>
+					}
+				</div>
+			</div>
+		}
     </div>
 }
 else
 {
-    <div class="nopost">
+    <div class="nopost alert alert-warning">
         @T("Forum.NoPosts")
     </div>
 }

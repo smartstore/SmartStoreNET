@@ -13,21 +13,22 @@
         <div class="message-error">
             @Html.ValidationSummary(true)
         </div>
+
         @Html.HiddenFor(model => model.Id)
         @Html.HiddenFor(model => model.ForumTopicId)
 
         <div class="form-group row pt-3">
             <label class="col-sm-3">@T("Forum.ForumName")</label>
-            <div class="col-sm-9">@Model.ForumName</div>
+            <div class="col-sm-9" dir="auto">@Model.ForumName</div>
         </div>
 
         <div class="form-group row">
             <label class="col-sm-3">@T("Forum.TopicSubject")</label>
-            <div class="col-sm-9">@Model.ForumTopicSubject</div>
+            <div class="col-sm-9" dir="auto">@Model.ForumTopicSubject</div>
         </div>
 
         <div class="row justify-content-end">
-            <div class="col-sm-9 my-3">
+            <div class="col-sm-9 my-3" dir="auto">
                 @if (Model.ForumEditor == EditorType.BBCodeEditor)
                 {
                     @Html.BBCodeEditor("Text");

@@ -16,6 +16,14 @@
 	.lrm:after {
 		content: '\200E';
 	}
+
+	.bidi-embed {
+		unicode-bidi: embed; 
+	}
+
+	.bidi-isolate {
+		unicode-bidi: isolate; 
+	}
 	
 	// Tables
 	// ------------------------------

@@ -237,6 +237,7 @@
     <Compile Include="Controllers\AdminControllerBase.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Extensions\HtmlZoneExtensions.cs" />
+    <Compile Include="Extensions\LocalizedValueExtensions.cs" />
     <Compile Include="Filters\JsonNetAttribute.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />

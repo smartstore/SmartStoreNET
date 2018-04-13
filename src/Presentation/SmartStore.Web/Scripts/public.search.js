@@ -303,7 +303,8 @@
 				if (btn.data('offcanvas')) return;
 
 				// create offcanvas wrapper
-				var offcanvas = $('<aside class="offcanvas offcanvas-left offcanvas-overlay" data-overlay="true"><div class="offcanvas-content offcanvas-scrollable"></div></aside>').appendTo('body');
+				var placement = SmartStore.globalization.culture.isRTL ? 'right' : 'left';
+				var offcanvas = $('<aside class="offcanvas offcanvas-' + placement + ' offcanvas-overlay" data-overlay="true"><div class="offcanvas-content offcanvas-scrollable"></div></aside>').appendTo('body');
 
 				// handle .offcanvas-closer click
 				offcanvas.one('click', '.offcanvas-closer', function (e) {
@@ -315,7 +316,7 @@
 
 				btn.data('offcanvas', offcanvas)
 				   .attr('data-toggle', 'offcanvas')
-				   .attr('data-placement', 'left')
+				   .attr('data-placement', placement)
 				   .attr('data-disablescrolling', 'true')
 				   .data('target', offcanvas);
 

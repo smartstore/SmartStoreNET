@@ -75,6 +75,13 @@ $art-border-color:              #ddd;
     margin: 0 -0.25rem;
 }
 
+.artlist-action--filter,
+.artlist-action--sort {
+	flex-grow: 1;
+	flex-basis: 0;
+	max-width: 100%;
+}
+
 .artlist-action--pager {
     > * { position: relative; }
     > *:not(:first-child) { margin-left: -1px; }

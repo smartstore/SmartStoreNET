@@ -124,35 +124,34 @@
 				@Html.ValidationMessageFor(model => model.Marketplace)
 			</td>
 		</tr>
-		@if (Model.CurrentMerchantLoginDomains.Any())
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CurrentMerchantLoginDomains)
-				</td>
-				<td class="adminData">
-					@foreach (var item in Model.CurrentMerchantLoginDomains)
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CurrentMerchantLoginDomains)
+			</td>
+			<td class="adminData form-control-plaintext">
+				@if (Model.CurrentMerchantLoginDomains.Any())
+				{
+					foreach (var item in Model.CurrentMerchantLoginDomains)
 					{
 						<div>@Html.Raw(item)</div>
 					}
-				</td>
-			</tr>
-		}
-		@if (Model.CurrentMerchantLoginRedirectUrls.Any())
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CurrentMerchantLoginRedirectUrls)
-				</td>
-				<td class="adminData">
-					@foreach (var item in Model.CurrentMerchantLoginRedirectUrls)
+				}
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CurrentMerchantLoginRedirectUrls)
+			</td>
+			<td class="adminData form-control-plaintext">
+				@if (Model.CurrentMerchantLoginRedirectUrls.Any())
+				{
+					foreach (var item in Model.CurrentMerchantLoginRedirectUrls)
 					{
 						<div>@Html.Raw(item)</div>
 					}
-				</td>
-			</tr>
-		}
-
+				}
+			</td>
+		</tr>
 		<tr class="adminSeparator">
 			<td colspan="2">
 				<div class="admin-config-group">

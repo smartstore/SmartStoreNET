@@ -155,12 +155,14 @@ namespace SmartStore.AmazonPay.Services
 
 			foreach (var entity in allStores)
 			{
-				if (entity.SecureUrl.HasValue())
+				// SSL required!
+				var shopUrl = entity.SslEnabled ? entity.SecureUrl : entity.Url;
+				if (shopUrl.HasValue())
 				{
 					try
 					{
-						var uri = new Uri(entity.SecureUrl);
 						// Only protocol and domain name.
+						var uri = new Uri(shopUrl);
 						var loginDomain = uri.GetLeftPart(UriPartial.Scheme | UriPartial.Authority).EmptyNull().TrimEnd('/');
 						model.MerchantLoginDomains.Add(loginDomain);
 
@@ -171,9 +173,8 @@ namespace SmartStore.AmazonPay.Services
 					}
 					catch { }
 
-					var urlRoot = entity.SecureUrl.EnsureEndsWith("/");
-					var payHandlerUrl = urlRoot + "Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
-					var authHandlerUrl = urlRoot + "Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
+					var payHandlerUrl = shopUrl.EnsureEndsWith("/") + "Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
+					var authHandlerUrl = shopUrl.EnsureEndsWith("/") + "Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
 
 					model.MerchantLoginRedirectUrls.Add(payHandlerUrl);
 					model.MerchantLoginRedirectUrls.Add(authHandlerUrl);

@@ -514,12 +514,12 @@ namespace SmartStore.Web.Framework
 			return LanguageAttributes(html, localizedValue.CurrentLanguage, false);
 		}
 
-		public static IHtmlString LanguageAttributes(this HtmlHelper html, Language language, bool omitLTR = false)
+		public static IHtmlString LanguageAttributes(this HtmlHelper html, Language currentLanguage, bool omitLTR = false)
 		{
-			Guard.NotNull(language, nameof(language));
+			Guard.NotNull(currentLanguage, nameof(currentLanguage));
 
-			var code = language.GetTwoLetterISOLanguageName();
-			var rtl = language.Rtl;
+			var code = currentLanguage.GetTwoLetterISOLanguageName();
+			var rtl = currentLanguage.Rtl;
 
 			var result = "lang=\"" + code + "\"";
 			if (rtl || !omitLTR)
@@ -527,6 +527,20 @@ namespace SmartStore.Web.Framework
 				result += " dir=\"" + (rtl ? "rtl" : "ltr") + "\"";
 			}
 
+			return new MvcHtmlString(result);
+		}
+
+		public static IHtmlString LanguageAttributes(this HtmlHelper html, NavigationItem navItem, Language currentLanguage)
+		{
+			Guard.NotNull(navItem, nameof(navItem));
+			Guard.NotNull(currentLanguage, nameof(currentLanguage));
+
+			if (navItem.Rtl != currentLanguage.Rtl)
+			{
+				return MvcHtmlString.Empty;
+			}
+
+			var result = "dir=\"" + (navItem.Rtl ? "rtl" : "ltr") + "\"";
 			return new MvcHtmlString(result);
 		}
 

@@ -28,7 +28,7 @@
                     }
                     <div class="col col-data">
                         <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">
-                            @manufacturer.Name
+                            <span @Html.LanguageAttributes(manufacturer.Name)>@manufacturer.Name</span>
                         </a>
                     </div>
                 </div>

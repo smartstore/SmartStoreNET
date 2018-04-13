@@ -38,7 +38,7 @@
 	@if (currentNode.Depth > 0)
 	{
 		<div class="category-info">
-			<h3 class="category-name">@currentNode.Value.Text</h3>
+			<h3 @Html.LanguageAttributes(currentNode.Value, WorkContext.WorkingLanguage) class="category-name">@currentNode.Value.Text</h3>
 		</div>
 	}
 
@@ -68,7 +68,7 @@
 				data-id="@cat.EntityId" 
 				data-ajax="@(node.HasChildren ? "true" : "false")">
                 <a href="@node.Value.GenerateUrl(this.Url)" class="ocm-link has-count" @Html.Attr("data-count", cat.ElementsCount.ToString(), cat.ElementsCount > 0)>
-					<span>@cat.Text</span>
+					<span @Html.LanguageAttributes(cat, WorkContext.WorkingLanguage)>@cat.Text</span>
                 </a>
             </li>
         }

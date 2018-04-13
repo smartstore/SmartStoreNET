@@ -19,7 +19,9 @@
         <fieldset>
 
             <legend>
-                <a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" class="product">@Model.ProductName</a>
+                <a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" class="product">
+					<span @Html.LanguageAttributes(Model.ProductName)>@Model.ProductName</span>
+				</a>
             </legend>
 
             @if (!ViewData.ModelState.IsValid)

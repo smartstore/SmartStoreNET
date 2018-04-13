@@ -19,7 +19,9 @@
         @using (Html.BeginForm("EmailAFriend", null, FormMethod.Post, new { @class = "form-horizontal" }))
         {                  
             <fieldset>       
-                <legend><a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" class="product">@Model.ProductName</a></legend>
+                <legend>
+					<a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" @Html.LanguageAttributes(Model.ProductName) class="product">@Model.ProductName</a>
+				</legend>
                     
                 <p class="message-error">
                     @Html.ValidationSummary(true)

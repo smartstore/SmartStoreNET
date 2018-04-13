@@ -77,13 +77,13 @@
             @if(node.HasChildren && isDropDownActive)
             {   
                 <a href="@itemUrl" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu-@item.EntityId">
-                    @item.Text
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@item.Text</span>
                 </a>
             }
             else
             {
                 <a href="@itemUrl" class="nav-link">
-                    @item.Text
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@item.Text</span>
                 </a>
             }
 

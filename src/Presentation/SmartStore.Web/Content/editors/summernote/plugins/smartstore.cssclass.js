@@ -68,6 +68,8 @@
 					"bg-light": { displayClass: "px-2 py-1", inline: true, toggle: rgBg },
 					"bg-dark": { displayClass: "px-2 py-1 text-white", inline: true, toggle: rgBg },
 					"bg-white": { displayClass: "px-2 py-1 border", inline: true, toggle: rgBg },
+					"rtl": { displayClass: "text-uppercase", inline: true, toggle: /^ltr$/ },
+					"ltr": { displayClass: "text-uppercase", inline: true, toggle: /^rtl$/ },
 					"text-muted": { inline: true, toggle: rgTextColor },
 					"text-primary": {inline: true, toggle: rgTextColor },
 					"text-success": {inline: true, toggle: rgTextColor },

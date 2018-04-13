@@ -26,7 +26,13 @@
 			AddItemsToModelTree(tv, Model);
 		})
 		.ShowLines(true)
-		.ClientEvents(events => events.OnSelect("onNodeSelect"))
+		.ClientEvents(events =>
+		{
+			if (Model != null)
+			{
+				events.OnSelect("onNodeSelect");
+			}
+		})
 		.DragAndDrop(false))
 	</text>)
 	.FooterContent(@<text>

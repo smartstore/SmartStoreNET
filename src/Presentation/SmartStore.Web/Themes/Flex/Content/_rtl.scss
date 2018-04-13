@@ -117,6 +117,19 @@
 	}
 
 
+	// Layout
+	// ------
+
+	#scroll-top {
+		left: 0;
+		right: auto;
+		border-radius: 0 3px 3px 0;
+		border-right-width: 1px;
+		border-left-width: 0;
+		transform: translate3d(-100%, 0, 0);
+	}
+
+
 	// Megamenu
 	// -------
 

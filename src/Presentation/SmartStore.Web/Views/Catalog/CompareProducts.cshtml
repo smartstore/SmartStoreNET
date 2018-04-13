@@ -1,5 +1,6 @@
 ﻿@model ProductSummaryModel
 
+@using SmartStore.Services.Localization;
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.Catalog;
 
@@ -67,7 +68,7 @@
 													{
 														<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = product.Id, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
 														   href="#"
-														   class="btn btn-secondary btn-icon btn-flat ajax-cart-link rounded-0"
+														   class="btn btn-secondary btn-icon btn-flat btn-no-border ajax-cart-link rounded-0"
 														   title="@T("ShoppingCart.AddToCart")"
 														   rel="nofollow"
 														   data-type="cart"
@@ -79,7 +80,7 @@
 													{
 														<a data-href='@Url.Action("AddProductSimple", "ShoppingCart", new { productId = product.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
 														   href="#"
-														   class="btn btn-secondary btn-icon btn-flat ajax-cart-link rounded-0"
+														   class="btn btn-secondary btn-icon btn-flat btn-no-border ajax-cart-link rounded-0"
 														   title="@T("ShoppingCart.AddToWishlist")"
 														   rel="nofollow"
 														   data-type="wishlist"
@@ -91,7 +92,7 @@
 											</div>
 										}
 										<div class="col text-right">
-											<a class="btn btn-secondary btn-to-danger btn-flat btn-remove rounded-0" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
+											<a class="btn btn-secondary btn-to-danger btn-flat btn-no-border btn-remove rounded-0" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
 												@T("Common.Remove")
 											</a>
 										</div>
@@ -122,15 +123,15 @@
 									<th class="border-top-0 border-bottom-0 py-1">
 										@{ Html.RenderPartial("Product.List.Item.Rating", product); }
 									</th>
-											}
+								}
 							</tr>
-											}
+						}
 						<tr>
 							<th class="border-top-0 pt-1">&nbsp;</th>
 							@foreach (var product in Model.Items)
 							{
 								<td class="border-top-0 pt-1">
-									<a class="font-weight-medium" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
+									<a @Html.LanguageAttributes(product.Name) class="font-weight-medium" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
 								</td>
 							}
 						</tr>
@@ -141,7 +142,7 @@
 							@foreach (var product in Model.Items)
 							{
 								<td>@{ Html.RenderPartial("Product.List.Item.Price", product); }</td>
-									}
+							}
 						</tr>
 						@if (hasBrands)
 						{
@@ -152,7 +153,7 @@
 									<td>
 										@if (product.Manufacturer != null)
 										{
-											<span>@product.Manufacturer.Name</span>
+											<span @Html.LanguageAttributes(product.Manufacturer.Name)>@product.Manufacturer.Name</span>
 										}
 									</td>
 								}
@@ -174,7 +175,7 @@
 								<th class="caption">@T("Products.Weight")</th>
 								@foreach (var product in Model.Items)
 								{
-									<td>@product.Weight</td>
+									<td><span class="lrm">@product.Weight</span></td>
 								}
 							</tr>
 						}
@@ -184,7 +185,7 @@
 								<th class="caption">@T("Products.Dimensions")</th>
 								@foreach (var product in Model.Items)
 								{
-									<td>@product.Dimensions</td>
+									<td><span class="lrm">@Html.Raw(product.Dimensions)</span></td>
 								}
 							</tr>
 						}
@@ -203,16 +204,16 @@
 						@foreach (var specificationAttribute in specificationAttributes)
 						{
 							<tr>
-								<th class="caption">@specificationAttribute.SpecificationAttributeName</th>
+								<th class="caption"><span @Html.LanguageAttributes(specificationAttribute.SpecificationAttributeName)>@specificationAttribute.SpecificationAttributeName</span></th>
 								@foreach (var product in Model.Items)
 								{
 									var foundProductSpec = product.SpecificationAttributes.Where(psa => psa.SpecificationAttributeId == specificationAttribute.SpecificationAttributeId).FirstOrDefault();
-									var specValue = foundProductSpec != null ? foundProductSpec.SpecificationAttributeOption : "";
+									var specValue = foundProductSpec != null ? foundProductSpec.SpecificationAttributeOption : null;
 
 									<td>
-										@if (!String.IsNullOrEmpty(specValue))
+										@if (specValue != null && specValue.Value.HasValue())
 										{
-											@specValue
+											<span @Html.LanguageAttributes(specValue)>@specValue</span>
 										}
 										else
 										{
@@ -228,7 +229,7 @@
 								<th class="caption">@T("Products.Compare.FullDescription")</th>
 								@foreach (var product in Model.Items)
 								{
-									<td class="html-editor-content">
+									<td @Html.LanguageAttributes(product.FullDescription) class="html-editor-content">
 										@Html.Raw(product.FullDescription)
 									</td>
 								}

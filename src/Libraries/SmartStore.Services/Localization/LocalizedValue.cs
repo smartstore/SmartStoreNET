@@ -21,7 +21,7 @@ namespace SmartStore.Services.Localization
 		/// <returns></returns>
 		public static string FixBrackets(string str, Language currentLanguage)
 		{
-			if (!currentLanguage.Rtl)
+			if (!currentLanguage.Rtl || str.IsEmpty())
 			{
 				return str;
 			}

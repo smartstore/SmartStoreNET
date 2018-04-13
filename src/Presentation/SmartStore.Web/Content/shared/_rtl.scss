@@ -302,14 +302,22 @@
 	// Typo
 	// ----
 
-	.heading .heading-title {
-		padding-right: 0;
-		padding-left: 1rem;
+	.heading {
+		&:before {
+			background: radial-gradient(ellipse at right, $body-bg 25%, rgba(#000, 0.25) 100%);
+		}
+
+		.heading-title {
+			padding-right: 0;
+			padding-left: 1rem;
+		}
 	}
 
-	.heading-center .heading-title {
-		padding-left: 0;
-		padding-right: 1rem;
+	.heading-center {
+		.heading-title {
+			padding-right: 0;
+			padding-left: 1rem;
+		}
 	}
 
 

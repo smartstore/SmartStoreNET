@@ -85,8 +85,9 @@
 	// -------------
 
 	.more-less .btn-text-expander {
-		justify-content: flex-end;
-		> i { order: 1; }
+		direction: rtl; // enforce RTL, even with inline bidi overwrite
+		/*justify-content: flex-end;
+		> i { order: 1; }*/
 	}
 
 	.nav-tabs-line {
@@ -428,14 +429,19 @@
 		margin-left: 0;
 	}
 
-	.catmenu-path-item.expanded,
-	.catmenu-item.parent {
-		padding-left: $list-group-item-padding-x * 1.5;
+	// Category Menu
+	// -------------
 
-		&:after {
-			content: "\f104";
-			left: 1rem;
-			right: auto;
+	.catmenu {
+		.catmenu-path-item.expanded,
+		.catmenu-item.parent {
+			padding-left: $list-group-item-padding-x * 1.5;
+			padding-right: $list-group-item-padding-x;
+
+			&:after {
+				left: 1rem;
+				right: auto;
+			}
 		}
 	}
 

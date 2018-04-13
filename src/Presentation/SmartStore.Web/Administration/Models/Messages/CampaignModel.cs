@@ -36,6 +36,7 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string TestEmail { get; set; }
 
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }

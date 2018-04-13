@@ -37,6 +37,7 @@ namespace SmartStore.Admin.Models.Forums
         [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }

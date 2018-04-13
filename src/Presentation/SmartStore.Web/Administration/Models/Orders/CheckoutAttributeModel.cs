@@ -52,7 +52,8 @@ namespace SmartStore.Admin.Models.Orders
         public int DisplayOrder { get; set; }
         
         public IList<CheckoutAttributeLocalizedModel> Locales { get; set; }
-		
+
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }

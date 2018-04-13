@@ -17,6 +17,19 @@
 		float: right;
 	}
 
+	.artlist-actions--top { 
+		.artlist-action-group--page {
+			padding-right: 0.5rem;
+			padding-left: initial;
+		}
+
+		@include media-breakpoint-up(lg) {
+			.artlist-action-group--page {
+				padding-right: 0;
+			}
+		}
+	}
+
 	.artlist-action--pager {
 		> *:not(:first-child) {
 			margin-right: -1px;

@@ -100,7 +100,7 @@ $art-border-color:              #ddd;
     .btn-artlist-action,
     .btn-artlist-action span { font-weight: 400 !important; }
 
-    .artlist-action-group--filtersort {
+    .artlist-action-group {
         .btn { 
             font-size: 1rem; text-align: left; border-radius: $btn-border-radius;
             > b { background: transparent; } 
@@ -113,13 +113,43 @@ $art-border-color:              #ddd;
 }
 
 .artlist-actions--top { 
-    border-bottom: 1px solid $art-border-color; 
     display: flex;
     flex-wrap: wrap;
-    .artlist-action-group { width: 100%; }
+
+    .artlist-action-group { 
+		width: 100%;
+    }
+
+	.artlist-action-group--filtersort {
+		flex: 1 1 0; // grow shrink basis
+		max-width: 100%;
+	}
+
+	.artlist-action-group--page {
+		flex: 0 0 auto; // grow shrink basis
+		width: auto;
+		max-width: none;
+		padding-left: 0.5rem;
+	}
+
+	.artlist-action--pagesize,
+	.artlist-action--pager {
+		display: none !important;
+	}
 
     @include media-breakpoint-up(lg) {
         flex-wrap: nowrap;
+		border-bottom: 1px solid $art-border-color; 
+
+		.artlist-action--pagesize,
+		.artlist-action--pager {
+			display: flex !important;
+		}
+
+		.artlist-action-group--page {
+			padding-left: 0;
+		}
+
         .artlist-action-group { width: auto; }
         .artlist-action-group--page { margin-left: auto; }
     }

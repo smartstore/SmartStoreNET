@@ -2,17 +2,20 @@
 
 @using SmartStore.Web.Models.Catalog;
 
+@{ 
+	var isGrid = Model.ViewMode == ProductSummaryViewMode.Grid;
+	var title = isGrid ? T("Products.SwitchToList") : T("Products.SwitchToGrid");
+	var url = isGrid ? ModifyUrl(null, "v=list") : ModifyUrl(null, "v=grid");
+	var icon = isGrid ? "list" : "th";
+}
+
 <div class="artlist-action artlist-action--viewmode">
-	@if (Model.ViewMode == ProductSummaryViewMode.Grid)
-	{
-		<a href='@ModifyUrl(null, "v=list")' class="btn btn-secondary btn-artlist-action btn-icon tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToList")">
-			<i class="fa fa-list"></i>
-		</a>
-	}
-	else
-	{
-		<a href='@ModifyUrl(null, "v=grid")' class="btn btn-secondary btn-artlist-action btn-icon tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToGrid")">
-			<i class="fa fa-th"></i>
-		</a>
-	}
+	@* < lg *@
+	<a href='@url' class="btn btn-light btn-artlist-action tooltip-toggle d-lg-none" data-toggle="tooltip" rel="nofollow" title="@title">
+		<i class="fa fa-@icon"></i>
+	</a>
+	@* >= lg *@
+	<a href='@url' class="btn btn-secondary btn-artlist-action tooltip-toggle d-none d-lg-inline-block" data-toggle="tooltip" rel="nofollow" title="@title">
+		<i class="fa fa-@icon"></i>
+	</a>
 </div>

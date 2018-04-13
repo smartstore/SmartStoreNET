@@ -73,21 +73,21 @@
 					@if (list.ShowSku && Model.Sku.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Sku"):</td>
+							<td>@T("Products.Sku")</td>
 							<td>@Model.Sku</td>
 						</tr>
 					}
 					@if (list.ShowWeight && Model.Weight.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Weight"):</td>
+							<td>@T("Products.Weight")</td>
 							<td>@Model.Weight</td>
 						</tr>
 					}
 					@if (list.ShowDimensions && Model.Dimensions.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</td>
+							<td>@T("Products.Dimensions") <span class="lrm">(@Model.DimensionMeasureUnit)</span></td>
 							<td>@Model.Dimensions</td>
 						</tr>
 					}

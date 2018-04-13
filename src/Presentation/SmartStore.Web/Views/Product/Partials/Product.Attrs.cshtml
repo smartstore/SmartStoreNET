@@ -20,7 +20,7 @@
 	@if (Model.ShowSku && Model.Sku.HasValue())
 	{
 		<tr class="pd-attr-sku">
-			<td>@T("Products.Sku"):</td>
+			<td>@T("Products.Sku")</td>
 			<td itemprop="sku">@Model.Sku</td>
 		</tr>
 	}
@@ -28,7 +28,7 @@
 	@if (Model.ShowGtin && Model.Gtin.HasValue())
 	{
 		<tr class="pd-attr-gtin">
-			<td>@T("Products.GTIN"):</td>
+			<td>@T("Products.GTIN")</td>
 			<td itemprop="gtin13">@Model.Gtin</td>
 		</tr>
 	}
@@ -36,7 +36,7 @@
 	@if (Model.ShowManufacturerPartNumber && Model.ManufacturerPartNumber.HasValue())
 	{
 		<tr class="pd-attr-mpn">
-			<td>@T("Products.ManufacturerPartNumber"):</td>
+			<td>@T("Products.ManufacturerPartNumber")</td>
 			<td itemprop="mpn">@Model.ManufacturerPartNumber</td>
 		</tr>
 	}
@@ -44,7 +44,7 @@
 	@if (Model.ShowWeight && Model.Weight.HasValue())
 	{
 		<tr class="pd-attr-weight">
-			<td>@T("Products.Weight"):</td>
+			<td>@T("Products.Weight")</td>
 			<td itemprop="weight">@Model.Weight</td>
 		</tr>
 	}
@@ -54,21 +54,21 @@
 		if (Model.Width.HasValue())
 		{
 			<tr class="pd-attr-width">
-				<td>@T("Products.Width"):</td>
+				<td>@T("Products.Width")</td>
 				<td itemprop="width">@Model.Width</td>
 			</tr>
 		}
 		if (Model.Length.HasValue())
 		{
 			<tr class="pd-attr-length">
-				<td>@T("Products.Length"):</td>
+				<td>@T("Products.Length")</td>
 				<td itemprop="length">@Model.Length</td>
 			</tr>
 		}
 		if (Model.Height.HasValue())
 		{
 			<tr class="pd-attr-height">
-				<td>@T("Products.Height"):</td>
+				<td>@T("Products.Height")</td>
 				<td itemprop="height">@Model.Height</td>
 			</tr>
 		}

@@ -108,7 +108,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     }
     td:first-child { 
         padding-right: 1rem; 
-        font-weight: 700; 
+        font-weight: $font-weight-medium; 
     }
 }
 

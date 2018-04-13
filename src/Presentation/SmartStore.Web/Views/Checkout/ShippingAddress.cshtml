@@ -35,21 +35,27 @@
                                 
                                 <div class="address-data mt-3">
                                     <div class="name pb-2">
-                                        <strong>@item.FirstName @item.LastName</strong>
+										<strong>
+											<span class="bidi-embed">@item.FirstName </span>
+											<span class="bidi-embed">@item.LastName</span>
+										</strong>
                                     </div>
-                                    <div class="email">@T("Address.Fields.Email"): @item.Email</div>
+                                    <div class="email">
+										<span>@T("Address.Fields.Email"):</span>
+										<span>@item.Email</span>
+									</div>
                                     @if (item.PhoneEnabled)
                                     {
                                         <div class="phone">
-                                            @T("Address.Fields.PhoneNumber"):
-                                            @item.PhoneNumber
+											<span>@T("Address.Fields.PhoneNumber"):</span>
+                                            <span>@item.PhoneNumber</span>
                                         </div>
                                     }
                                     @if (item.FaxEnabled && !String.IsNullOrEmpty(item.FaxNumber))
                                     {
                                         <div class="fax">
-                                            @T("Address.Fields.FaxNumber"):
-                                            @item.FaxNumber
+											<span>@T("Address.Fields.FaxNumber"):</span>
+											<span>@item.FaxNumber</span>
                                         </div>
                                     }
 

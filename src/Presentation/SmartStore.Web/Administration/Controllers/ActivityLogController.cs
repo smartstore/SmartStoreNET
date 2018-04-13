@@ -160,7 +160,7 @@ namespace SmartStore.Admin.Controllers
 						else if (systemCustomer.IsPdfConverter())
 							m.SystemAccountName = T("Admin.System.SystemCustomerNames.PdfConverter");
 						else
-							m.SystemAccountName = "".NaIfEmpty();
+							m.SystemAccountName = "";
 					}
 
 					return m;

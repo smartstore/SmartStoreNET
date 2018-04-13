@@ -232,7 +232,7 @@ namespace SmartStore.Services.Logging
 				var queryCustomers = _customerRepository.Table;
 
 				if (email.HasValue())
-					queryCustomers = queryCustomers.Where(x => x.Email == email);
+					queryCustomers = queryCustomers.Where(x => x.Email.Contains(email));
 
 				if (customerSystemAccount.HasValue)
 					queryCustomers = queryCustomers.Where(x => x.IsSystemAccount == customerSystemAccount.Value);

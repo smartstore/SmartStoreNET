@@ -2,10 +2,9 @@
 @using Telerik.Web.Mvc.UI
 @using SmartStore.Core.Domain.Directory;
 @{
-    List<ExchangeRate> rates = ViewBag.Rates;
-    bool autoUpdateEnabled = ViewBag.AutoUpdateEnabled ?? false;
+	ViewBag.Title = T("Admin.Configuration.Currencies").Text;
 
-    ViewBag.Title = T("Admin.Configuration.Currencies").Text;
+	List<ExchangeRate> rates = ViewBag.Rates;
 }
 
 <div class="section-header">

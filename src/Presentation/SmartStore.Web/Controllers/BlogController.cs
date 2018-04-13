@@ -124,7 +124,9 @@ namespace SmartStore.Web.Controllers
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
-            model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel { Name = x, SeName = SeoHelper.GetSeName(x,
+            model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel
+			{ Name = x,
+				SeName = SeoHelper.GetSeName(x,
                 _seoSettings.ConvertNonWesternChars,
                 _seoSettings.AllowUnicodeCharsInUrls,
                 _seoSettings.SeoNameCharConversion)

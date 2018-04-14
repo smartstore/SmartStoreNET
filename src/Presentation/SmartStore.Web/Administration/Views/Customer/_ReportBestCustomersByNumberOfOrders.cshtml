@@ -1,6 +1,5 @@
-﻿@model BestCustomersReportModel
-@using Telerik.Web.Mvc.UI
-
+﻿@using Telerik.Web.Mvc.UI
+@model BestCustomersReportModel
 
 <div class="row mt-3 grid-filter">
 	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -26,7 +25,7 @@
 
 	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 		<label>&nbsp;</label>
-		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+		<button type="submit" id="search-best-customers-numberoforders-grid" class="btn btn-secondary btn-block">
 			<span>@T("Admin.Customers.Reports.RunReport")</span>
 		</button>
 	</div>
@@ -51,18 +50,17 @@
 	.EnableCustomBinding(true))
 
 <script type="text/javascript">
-
     $(document).ready(function () {
 
         $('#search-best-customers-numberoforders-grid').click(function () {
             var grid = $('#best-customers-numberoforders-grid').data('tGrid');
-            grid.currentPage = 1; //new search. Set page size to 1
+            grid.currentPage = 1;
             grid.ajaxRequest();
             return false;
         });
     });
 
-    function bestCustomersNumberOfOrdersOnDataBinding(e) {
+	function bestCustomersNumberOfOrdersOnDataBinding(e) {
 		var searchModel = {
 			StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
 			EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),

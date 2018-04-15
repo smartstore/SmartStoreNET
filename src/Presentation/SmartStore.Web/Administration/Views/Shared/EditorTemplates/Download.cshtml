@@ -38,6 +38,7 @@
 	var clientId = "download-editor-" + random;
 	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
 	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
+	var fileName = string.Empty;
 	var initiallyShowUrlPanel = false;
 	var hasFile = false;
 	var downloadUrl = "";
@@ -45,6 +46,9 @@
 		downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
 		initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
 		hasFile = !download.UseDownloadUrl;
+		fileName = string.IsNullOrWhiteSpace(download.Filename) || download.Filename.IsCaseInsensitiveEqual("undefined") 
+			? download.Id.ToString() 
+			: string.Concat(download.Filename, download.Extension);
 	}
 
 	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
@@ -96,8 +100,8 @@
 			{
 				<div class="col-auto">
 					<div class="form-control-plaintext text-truncate" style="min-width: 180px; max-width: 180px">
-						<a href="@downloadUrl" class="filename" title="@download.Filename@download.Extension">
-							@download.Filename@download.Extension
+						<a href="@downloadUrl" class="filename" title="@fileName">
+							@fileName
 						</a>
 					</div>
 				</div>

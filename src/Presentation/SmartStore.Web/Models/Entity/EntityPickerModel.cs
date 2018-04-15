@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -31,7 +30,7 @@ namespace SmartStore.Web.Models.Entity
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
 		public int ManufacturerId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int StoreId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]

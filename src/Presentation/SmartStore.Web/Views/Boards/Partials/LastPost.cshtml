@@ -18,14 +18,13 @@
 		{
 			<div>
 				<div class="d-inline-flex">
+					<span class="pr-1">@T("Forum.By"):</span>
 					@if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
 					{
-						<span>@T("Forum.By"):</span>
 						@Html.RouteLink(Model.CustomerName, "CustomerProfile", new { Id = Model.CustomerId })
 					}
 					else
 					{
-						<span>@T("Forum.By"):</span>
 						<span>@Model.CustomerName</span>
 					}
 				</div>

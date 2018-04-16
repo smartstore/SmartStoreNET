@@ -55,9 +55,11 @@
 
             @if (Model.DisplayCaptcha)
             {
-                <div class="captcha-box">
-                    @Html.Raw(Html.GenerateCaptcha())
-                </div>
+				<div class="form-group">
+					<div class="captcha-box">
+						@Html.Raw(Html.GenerateCaptcha())
+					</div>
+				</div>
             }
 
             <div class="control-group">

@@ -530,17 +530,16 @@ namespace SmartStore.Web.Framework
 			return new MvcHtmlString(result);
 		}
 
-		public static IHtmlString LanguageAttributes(this HtmlHelper html, NavigationItem navItem, Language currentLanguage)
+		public static IHtmlString LanguageAttributes(this HtmlHelper html, bool currentRtl, Language pageLanguage)
 		{
-			Guard.NotNull(navItem, nameof(navItem));
-			Guard.NotNull(currentLanguage, nameof(currentLanguage));
+			Guard.NotNull(pageLanguage, nameof(pageLanguage));
 
-			if (navItem.Rtl != currentLanguage.Rtl)
+			if (currentRtl == pageLanguage.Rtl)
 			{
 				return MvcHtmlString.Empty;
 			}
 
-			var result = "dir=\"" + (navItem.Rtl ? "rtl" : "ltr") + "\"";
+			var result = "dir=\"" + (currentRtl ? "rtl" : "ltr") + "\"";
 			return new MvcHtmlString(result);
 		}
 

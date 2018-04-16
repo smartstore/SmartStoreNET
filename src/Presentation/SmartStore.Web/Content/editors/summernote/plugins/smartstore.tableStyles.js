@@ -111,7 +111,7 @@
 					var cssClass = $(this).data("value");
 					if ($node.hasClass(cssClass)) {
 						$(this).addClass("checked");
-						if ($.inArray(cssClass, exclusiveStyles) != -1) {
+						if ($.inArray(cssClass, exclusiveStyles) !== -1) {
 							hasAnExclusiveStyle = true;
 						}
 					} else {
@@ -129,7 +129,7 @@
 				var cssClass = $(chosenItem).data("value");
 				context.invoke("beforeCommand");
 				// Exclusive class: only one can be applied at a time
-				if ($.inArray(cssClass, exclusiveStyles) != -1) {
+				if ($.inArray(cssClass, exclusiveStyles) !== -1) {
 					$node.removeClass(exclusiveStyles.join(" "));
 					$node.addClass(cssClass);
 				} else {

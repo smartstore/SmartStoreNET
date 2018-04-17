@@ -543,6 +543,19 @@ namespace SmartStore.Web.Framework
 			return new MvcHtmlString(result);
 		}
 
+		public static IHtmlString LanguageAttributes(this HtmlHelper html, bool requestRtl, Language currentLanguage)
+		{
+			Guard.NotNull(currentLanguage, nameof(currentLanguage));
+
+			if (requestRtl == currentLanguage.Rtl)
+			{
+				return MvcHtmlString.Empty;
+			}
+
+			var result = "dir=\"" + (requestRtl ? "rtl" : "ltr") + "\"";
+			return new MvcHtmlString(result);
+		}
+
 		public static MvcHtmlString ControlGroupFor<TModel, TValue>(
             this HtmlHelper<TModel> html, 
             Expression<Func<TModel, TValue>> expression, 

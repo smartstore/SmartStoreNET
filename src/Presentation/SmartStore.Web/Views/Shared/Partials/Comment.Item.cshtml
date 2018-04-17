@@ -31,11 +31,11 @@
 			</div>
 			@if (Model.CommentTitle.HasValue())
 			{
-				<h5 class="comment-title mt-2">
+				<h5 class="comment-title mt-2" dir="auto">
 					@Html.Raw(Model.CommentTitle)
 				</h5>
 			}
-			<p class="comment-body text-body mt-4 mb-0">
+			<p class="comment-body text-body mt-4 mb-0" dir="auto">
 				@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(Model.CommentText, false, true, false, false, false, false))
 			</p>
 		</div>

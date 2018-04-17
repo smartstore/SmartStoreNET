@@ -16,10 +16,13 @@
 			<div class="alert alert-danger">
 				<h4>@T("Admin.Plugins.AddOnLicensing")</h4>
 				<p>
-					<strong>Systemname:</strong> @Model["SystemName"]
+					<strong class="pr-1">Systemname:</strong> 
+					<span>@Model["SystemName"]</span>
 					<br />
-					<strong>Controller:</strong> @Model["ControllerName"],
-					<strong>Action:</strong> @Model["ActionName"]
+					<strong class="pr-1">Controller:</strong>
+					<span>@Model["ControllerName"],</span>
+					<strong class="pr-1">Action:</strong>
+					<span>@Model["ActionName"]</span>
 				</p>
 				<p>
 					<span>@Html.Raw(Model["Message"])</span>

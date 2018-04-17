@@ -46,7 +46,7 @@
 						<td style="width: 30px">
 							<input type="checkbox" name="biss@(item.Id)" class="rowcheckbox" />
 						</td>
-						<td>
+						<td @Html.LanguageAttributes(item.ProductName)>
 							@Html.RouteLink(item.ProductName, "Product", new { SeName = item.SeName })
 						</td>
 					</tr>

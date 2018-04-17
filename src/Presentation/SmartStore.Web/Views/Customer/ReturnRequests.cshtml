@@ -20,7 +20,7 @@
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Item")</dt>
 					<dd class="col-sm-8">
 						<span>@item.Quantity x</span>
-						<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+						<a href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
 					</dd>
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Reason")</dt>
 					<dd class="col-sm-8">@item.ReturnReason</dd>
@@ -29,7 +29,7 @@
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Date")</dt>
 					<dd class="col-sm-8">@item.CreatedOn.ToNativeString()</dd>
 					<dt class="col-sm-4 font-weight-400 text-muted">@T("Account.CustomerReturnRequests.Comments")</dt>
-					<dd class="col-sm-8">@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(item.Comments, false, true, false, false, false, false))</dd>
+					<dd class="col-sm-8" dir="auto">@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(item.Comments, false, true, false, false, false, false))</dd>
 				</dl>
 			</div>
 		</div>

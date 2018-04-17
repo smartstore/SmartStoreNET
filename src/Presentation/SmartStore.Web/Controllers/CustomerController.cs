@@ -1729,7 +1729,7 @@ namespace SmartStore.Web.Controllers
                 var forumTopicId = forumSubscription.TopicId;
                 var forumId = forumSubscription.ForumId;
                 bool topicSubscription = false;
-                var title = string.Empty;
+				string title = String.Empty;
                 var slug = string.Empty;
 
                 if (forumTopicId > 0)

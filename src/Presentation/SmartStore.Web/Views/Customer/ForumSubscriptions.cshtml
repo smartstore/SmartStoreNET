@@ -47,7 +47,7 @@
 							<td style="width: 30px">
 								<input type="checkbox" name="fs@(item.Id)" class="rowcheckbox" />
 							</td>
-							<td>
+							<td dir="auto">
 								@if (item.TopicSubscription)
 								{
 									@Html.RouteLink(item.Title, "TopicSlug", new { Id = item.ForumTopicId, slug = item.Slug })

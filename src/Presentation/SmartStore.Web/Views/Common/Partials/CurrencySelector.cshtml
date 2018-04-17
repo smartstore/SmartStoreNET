@@ -12,7 +12,8 @@
 
     <div class="dropdown currency-selector">
         <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
-			<span>@activeCurr.ISOCode (@activeCurr.Symbol)</span>
+			<span class="pr-1">@activeCurr.ISOCode</span>
+			<span class="lrm">(@activeCurr.Symbol)</span>
             <i class="fa fa-angle-down"></i>
         </a>
 
@@ -23,7 +24,7 @@
 
                 <a href="@href" class="dropdown-item@(curr.Id == activeCurr.Id ? " disabled" : "")" title="@curr.Name" rel="nofollow" 
                    data-selected="@(curr.Equals(activeCurr) ? "true" : "false")" data-abbreviation="@("{0} ({1})".FormatWith(curr.ISOCode, curr.Symbol))">
-                    @curr.Name
+                    <span>@curr.Name</span>
                     <span class="abbreviation"> - @curr.ISOCode <span class="lrm">(@curr.Symbol)</span></span>
                 </a>
             }

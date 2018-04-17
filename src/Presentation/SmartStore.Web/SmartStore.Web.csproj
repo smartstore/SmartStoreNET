@@ -401,7 +401,6 @@
     <Compile Include="Models\News\NewsItemModel.cs" />
     <Compile Include="Models\Customer\AccountActivationModel.cs" />
     <Compile Include="Models\Newsletter\SubscriptionActivationModel.cs" />
-    <Compile Include="Models\Newsletter\NewsletterBoxModel.cs" />
     <Compile Include="Models\Customer\ChangePasswordModel.cs" />
     <Compile Include="Models\Customer\PasswordRecoveryConfirmModel.cs" />
     <Compile Include="Models\Customer\PaswordRecoveryModel.cs" />
@@ -1592,11 +1591,9 @@
     <Content Include="Views\Common\Partials\Footer.cshtml" />
     <Content Include="Views\Common\Partials\JavaScriptDisabledWarning.cshtml" />
     <Content Include="Views\Common\Partials\LanguageSelector.cshtml" />
-    <Content Include="Views\Common\List.cshtml" />
     <Content Include="Views\Common\Partials\Menu.cshtml" />
     <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
-    <Content Include="Views\Common\Settings.cshtml" />
     <Content Include="Views\Common\Partials\ShopBar.cshtml" />
     <Content Include="Views\Common\Partials\StoreThemeSelector.cshtml" />
     <Content Include="Views\Common\Partials\TaxTypeSelector.cshtml" />
@@ -1630,7 +1627,6 @@
     <Content Include="Views\News\Partials\HomePageNews.cshtml" />
     <Content Include="Views\News\List.cshtml" />
     <Content Include="Views\News\NewsItem.cshtml" />
-    <Content Include="Views\Newsletter\Partials\NewsletterBox.cshtml" />
     <Content Include="Views\Newsletter\SubscriptionActivation.cshtml" />
     <Content Include="Views\Order\Details.cshtml" />
     <Content Include="Views\Order\Details.Print.cshtml" />

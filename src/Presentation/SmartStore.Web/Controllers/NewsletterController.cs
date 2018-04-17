@@ -29,15 +29,6 @@ namespace SmartStore.Web.Controllers
 			this._storeContext = storeContext;
         }
 
-        [ChildActionOnly]
-        public ActionResult NewsletterBox()
-        {
-            if (_customerSettings.HideNewsletterBlock)
-                return Content("");
-
-            return PartialView(new NewsletterBoxModel());
-        }
-
         [HttpPost]
         [ValidateInput(false)]
         public ActionResult Subscribe(bool subscribe, string email)

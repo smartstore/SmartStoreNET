@@ -109,7 +109,7 @@
                                         <td>@item.Sku</td>
                                     }
                                     <td>
-                                        <div><a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a></div>
+                                        <div><a href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a></div>
                                         @if (item.AttributeInfo.HasValue())
                                         {
                                             <div class="attributes text-muted mt-1">
@@ -176,18 +176,21 @@
 	</div>
 
 	<div class="email">
-		@T("Order.Email"): @address.Email
+		<span class="pr-1">@T("Order.Email"):</span>
+		<span>@address.Email</span>
 	</div>
 	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
 	{
 		<div class="phone">
-			@T("Order.Phone"): @address.PhoneNumber
+			<span class="pr-1">@T("Order.Phone"):</span>
+			<span>@address.PhoneNumber</span>
 		</div>
 	}
 	if (address.FaxEnabled && address.FaxNumber.HasValue())
 	{
 		<div class="fax">
-			@T("Order.Fax"): @address.FaxNumber
+			<span class="pr-1">@T("Order.Fax"):</span>
+			<span>@address.FaxNumber</span>
 		</div>
 	}
 }

@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.Order
 {
@@ -40,7 +41,7 @@ namespace SmartStore.Web.Models.Order
         {
             public int ProductId { get; set; }
 
-            public string ProductName { get; set; }
+            public LocalizedValue<string> ProductName { get; set; }
 
             public string ProductSeName { get; set; }
 

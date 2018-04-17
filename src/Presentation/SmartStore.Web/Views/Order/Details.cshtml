@@ -370,7 +370,7 @@
 							{
 								<tr>
 									<td class="text-nowrap">@item.FriendlyCreatedOn</td>
-									<td>@Html.Raw(item.Note)</td>
+									<td dir="auto">@Html.Raw(item.Note)</td>
 								</tr>
 							}
 						</tbody>
@@ -421,7 +421,7 @@
 					</div>
 				}
 				<div class="col">
-					<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+					<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
 					@if (Model.ShowSku && item.Sku.HasValue())
 					{
 						<div class="cart-item-sku small">
@@ -470,11 +470,11 @@
 							}
 							@if (item.VisibleIndividually)
 							{
-								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" dir="auto">@item.ProductName</a>
 							}
 							else
 							{
-								<span class="cart-item-link">@item.ProductName</span>
+								<span class="cart-item-link" dir="auto">@item.ProductName</span>
 							}
 							@if (item.AttributeInfo.HasValue())
 							{

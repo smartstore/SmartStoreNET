@@ -4,10 +4,8 @@
 @using SmartStore.Web.Models.Order;
 
 @{
-
     Layout = "_Print";
 
-    // title
     Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
 
 	var pdfMode = ViewBag.PdfMode == true;
@@ -259,7 +257,7 @@
 									<td>
 										@note.CreatedOn.ToNativeString()
 									</td>
-									<td>
+									<td dir="auto">
 										@Html.Raw(note.Note)
 									</td>
 								</tr>
@@ -279,7 +277,9 @@
 {
 	<tr>
 		<td>
-			@item.ProductName
+			<div @Html.LanguageAttributes(item.ProductName)>
+				@item.ProductName
+			</div>
 			@if (item.AttributeInfo.HasValue())
 			{
 				<div class="attributes text-small">
@@ -318,7 +318,9 @@
 		<tr class="child-row">
 			<td>
 				<div class="associated-product">
-					@item.ProductName
+					<div dir="auto">
+						@item.ProductName
+					</div>
 					@if (item.AttributeInfo.HasValue())
 					{
 						<div class="attributes text-small">

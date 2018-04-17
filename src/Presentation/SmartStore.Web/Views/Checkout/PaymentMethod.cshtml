@@ -40,7 +40,7 @@
 										   value="@(paymentMethod.PaymentMethodSystemName)" />
 
 									<label class="form-check-label" for="paymentmethod_@(i)">
-										<span class="opt-name">@paymentMethod.Name</span>
+										<span class="opt-name lrm">@paymentMethod.Name</span>
 									</label>
 								</div>
 								@if (paymentMethod.Fee.HasValue())
@@ -68,6 +68,7 @@
 											@Html.ValidationSummary(false)
 										</div>
 									}
+
 									@if (!(description.HasValue() && !paymentMethod.RequiresInteraction))
 									{
 										Html.RenderAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);

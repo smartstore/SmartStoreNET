@@ -44,7 +44,7 @@
 										   @Html.Attr("checked", "checked", shippingMethod.Selected)
 										   value="@(shippingMethod.Name)___@(shippingMethod.ShippingRateComputationMethodSystemName)" />
 									<label class="form-check-label" for="shippingoption_@(i)">
-										<span class="opt-name">@Html.Raw(HttpUtility.HtmlDecode(shippingMethod.Name))</span>
+										<span class="opt-name" dir="auto">@Html.Raw(HttpUtility.HtmlDecode(shippingMethod.Name))</span>
 									</label>
 								</div>
 								@if (shippingMethod.FeeRaw != 0)
@@ -63,14 +63,16 @@
 											<span class="float-left">
 												<img class="media-object img-fluid" src="@Url.Content(shippingMethod.BrandUrl)" alt="@shippingMethod.Name" />
 											</span>
-											<div class="media-body">
+											<div class="media-body" dir="auto">
 												@Html.Raw(shippingMethod.Description)
 											</div>
 										</div>
 									}
 									else
 									{
-										@Html.Raw(shippingMethod.Description)
+										<div dir="auto">
+											@Html.Raw(shippingMethod.Description)
+										</div>
 									}
 								</div>
 						}

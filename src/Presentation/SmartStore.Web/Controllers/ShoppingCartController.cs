@@ -287,12 +287,12 @@ namespace SmartStore.Web.Controllers
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, customer,
 					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: true);
 
-				string bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
-				if (bundleItemName.HasValue())
+				var bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
+				if (bundleItemName.Value.HasValue())
 					model.ProductName = bundleItemName;
 
-				string bundleItemShortDescription = item.BundleItem.GetLocalized(x => x.ShortDescription);
-				if (bundleItemShortDescription.HasValue())
+				var bundleItemShortDescription = item.BundleItem.GetLocalized(x => x.ShortDescription);
+				if (bundleItemShortDescription.Value.HasValue())
 					model.ShortDesc = bundleItemShortDescription;
 
 				model.BundleItem.Id = item.BundleItem.Id;
@@ -490,12 +490,12 @@ namespace SmartStore.Web.Controllers
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, _workContext.CurrentCustomer,
 					renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
 
-				string bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
-				if (bundleItemName.HasValue())
+				var bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
+				if (bundleItemName.Value.HasValue())
 					model.ProductName = bundleItemName;
 
-				string bundleItemShortDescription = item.BundleItem.GetLocalized(x => x.ShortDescription);
-				if (bundleItemShortDescription.HasValue())
+				var bundleItemShortDescription = item.BundleItem.GetLocalized(x => x.ShortDescription);
+				if (bundleItemShortDescription.Value.HasValue())
 					model.ShortDesc = bundleItemShortDescription;
 
 				model.BundleItem.Id = item.BundleItem.Id;
@@ -1088,7 +1088,7 @@ namespace SmartStore.Web.Controllers
                             allowHyperlinks: false)
                     };
 
-                    cartItemModel.QuantityUnitName = String.Empty;
+                    cartItemModel.QuantityUnitName = null;
 					cartItemModel.ProductUrl = _productUrlHelper.GetProductUrl(cartItemModel.ProductSeName, sci);
 
 					if (sci.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
@@ -2184,7 +2184,7 @@ namespace SmartStore.Web.Controllers
             model.Items.Each(x =>
             {
                 // don't display QuantityUnitName in OffCanvasWishlist
-                x.QuantityUnitName = String.Empty;
+                x.QuantityUnitName = null;
                 
                 var sci = cart.Where(c => c.Item.Id == x.Id).FirstOrDefault();
                 

@@ -206,18 +206,22 @@
 	</div>
 
 	<div class="email">
-		@T("Order.Email"): @address.Email
+		<span class="pr-1">@T("Order.Email"):</span>
+		<span>@address.Email</span>
 	</div>
+
 	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
 	{
 		<div class="phone">
-			@T("Order.Phone"): @address.PhoneNumber
+			<span>@T("Order.Phone"):</span>
+			<span>@address.PhoneNumber</span>
 		</div>
 	}
 	if (address.FaxEnabled && address.FaxNumber.HasValue())
 	{
 		<div class="fax">
-			@T("Order.Fax"): @address.FaxNumber
+			<span>@T("Order.Fax"):</span>
+			<span>@address.FaxNumber</span>
 		</div>
 	}
 }

@@ -20,7 +20,10 @@
 	{
 		<tr class="cart-summary-weight">
 			<td class="cart-summary-label">@T("ShoppingCart.Weight"):</td>
-			<td class="cart-summary-value">@(Model.Weight.ToString("N2")) @Model.WeightMeasureUnitName</td>
+			<td class="cart-summary-value">
+				<span class="pr-1">@(Model.Weight.ToString("N2"))</span>
+				<span>@Model.WeightMeasureUnitName</span>
+			</td>
 		</tr>
 	}
 	<tr class="cart-summary-subtotal">

@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -62,6 +62,7 @@
 * #1320 Image import: Find out the content type of image URLs by response header rather than file extension (which is sometimes missing)
 * #1219 Recently viewed products list should respect setting to hide manufacturer names
 * Import and export product quantity step
+* Add bundle item information to order messages
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing

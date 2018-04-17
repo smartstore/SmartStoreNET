@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
@@ -277,6 +278,28 @@ namespace SmartStore.Services.Messages
 			var product = part.Product;
 			product.MergeWithCombination(part.AttributesXml, productAttributeParser);
 
+			// Bundle items.
+			object bundleItems = null;
+			if (product.ProductType == ProductType.BundledProduct && part.BundleData.HasValue())
+			{
+				var bundleData = part.GetBundleData();
+				if (bundleData.Any())
+				{
+					var productService = _services.Resolve<IProductService>();
+					var products = productService.GetProductsByIds(bundleData.Select(x => x.ProductId).ToArray());
+					var productsDic = products.ToDictionarySafe(x => x.Id, x => x);
+
+					bundleItems = bundleData
+						.OrderBy(x => x.DisplayOrder)
+						.Select(x =>
+						{
+							productsDic.TryGetValue(x.ProductId, out Product bundleItemProduct);
+							return CreateModelPart(x, part, bundleItemProduct, messageContext);
+						})
+						.ToList();
+				}
+			}
+
 			var m = new Dictionary<string, object>
 			{
 				{ "DownloadUrl", !downloadService.IsDownloadAllowed(part) ? null : BuildActionUrl("GetDownload", "Download", new { id = part.OrderItemGuid, area = "" }, messageContext) },
@@ -286,10 +309,34 @@ namespace SmartStore.Services.Messages
 				{ "Qty", part.Quantity },
 				{ "UnitPrice", FormatPrice(isNet ? part.UnitPriceExclTax : part.UnitPriceInclTax, part.Order, messageContext) },
 				{ "LineTotal", FormatPrice(isNet ? part.PriceExclTax : part.PriceInclTax, part.Order, messageContext) },
-				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) }
+				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) },
+				{ "BundleItems", bundleItems }
 			};
 
 			PublishModelPartCreatedEvent<OrderItem>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(ProductBundleItemOrderData part, OrderItem orderItem, Product product, MessageContext messageContext)
+		{
+			Guard.NotNull(part, nameof(part));
+			Guard.NotNull(orderItem, nameof(orderItem));
+			Guard.NotNull(product, nameof(product));
+			Guard.NotNull(messageContext, nameof(messageContext));
+
+			var priceWithDiscount = FormatPrice(part.PriceWithDiscount, orderItem.Order, messageContext);
+
+			var m = new Dictionary<string, object>
+			{
+				{ "AttributeDescription", part.AttributesInfo.NullEmpty() },
+				{ "Quantity", part.Quantity > 1 && part.PerItemShoppingCart ? part.Quantity.ToString() : null },
+				{ "PerItemShoppingCart", part.PerItemShoppingCart },
+				{ "PriceWithDiscount", priceWithDiscount.NullEmpty() },
+				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) }
+			};
+
+			PublishModelPartCreatedEvent(part, m);
 
 			return m;
 		}

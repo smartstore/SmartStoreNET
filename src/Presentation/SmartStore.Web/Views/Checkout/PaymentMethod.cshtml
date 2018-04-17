@@ -26,6 +26,7 @@
 					{
 						var paymentMethod = Model.PaymentMethods[i];
 						var infoRoute = paymentMethod.PaymentInfoRoute;
+						var description = paymentMethod.FullDescription?.Value;
 
 						<li class="list-group-item opt-list-item payment-method-item@(paymentMethod.Selected ? " active" : "")">
 							<div class="opt-data">
@@ -48,10 +49,10 @@
 								}
 							</div>
 
-							@if (paymentMethod.FullDescription.Value.HasValue())
+							@if (description.HasValue())
 							{
 								<div class="opt-info-item payment-method-description" @Html.LanguageAttributes(paymentMethod.FullDescription)>
-									@Html.Raw(paymentMethod.FullDescription)
+									@Html.Raw(description)
 								</div>
 							}
 
@@ -67,7 +68,7 @@
 											@Html.ValidationSummary(false)
 										</div>
 									}
-									@if (!(paymentMethod.FullDescription.Value.HasValue() && !paymentMethod.RequiresInteraction))
+									@if (!(description.HasValue() && !paymentMethod.RequiresInteraction))
 									{
 										Html.RenderAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
 									}

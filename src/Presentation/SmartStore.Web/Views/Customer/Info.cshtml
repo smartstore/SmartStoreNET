@@ -96,10 +96,11 @@
 
         @if (Model.DisplayCustomerNumber)
         {
+			var customerNumberAttributes = !Model.CustomerNumberEnabled ? (object)(new { @class = "form-control", @readonly = "true" }) : (object)(new { @class = "form-control" });
             <div class="form-group row">
                 @Html.LabelFor(model => model.CustomerNumber, new { @class = "col-lg-3 col-form-label", @for = "CustomerNumber" })
                 <div class="col-lg-9">
-                    @Html.TextBoxFor(model => model.CustomerNumber, !Model.CustomerNumberEnabled ? new { @class = "form-control", @readonly = "true" } : null)
+                    @Html.TextBoxFor(model => model.CustomerNumber, customerNumberAttributes)
                 </div>
             </div>
         }

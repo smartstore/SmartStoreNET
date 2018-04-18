@@ -48,11 +48,11 @@
 						<td>
 							@if (profile.ExistingFileNames.Any())
 							{
-								<ul class="fa-ul mb-0">
+								<ul class="fa-ul mb-0 ml-0">
 									@foreach (var fileName in profile.ExistingFileNames)
 									{
 										<li title="@fileName">
-											@Html.IconForFileExtension(Path.GetExtension(fileName), "fa-li", false)
+											@Html.IconForFileExtension(Path.GetExtension(fileName), false)
 											<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = fileName })" download>@fileName</a>
 										</li>
 									}

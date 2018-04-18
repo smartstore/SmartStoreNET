@@ -3,6 +3,14 @@
 @using SmartStore.Admin.Models.DataExchange
 @model ExportProfileModel
 
+@if (!Model.Provider.IsFileBasedExport)
+{
+	<div class="alert alert-info alert-dismissible">
+		@Html.Raw(T("Admin.DataExchange.Export.NonFileBasedExport.Note"))
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+	</div>
+}
+
 <table class="adminContent">
 	<tr>
 		<td class="adminTitle">
@@ -93,7 +101,7 @@
 @if (Model.Provider.IsFileBasedExport)
 {
 	<div class="admin-config-group">
-		<div class="head">@T("Admin.DataExchange.Export.Deployment.ProfilesTitle")</div>
+		<div class="title">@T("Admin.DataExchange.Export.Deployment.ProfilesTitle")</div>
 	</div>
 
 	<div class="alert alert-info alert-dismissible">
@@ -109,7 +117,7 @@
 		</div>
 	}
 
-	if (Model.Deployments.Count > 0)
+	if (Model.Deployments.Any())
 	{
 		<div class="table-responsive">
 			<table id="export-deployment-list" class="table admin-table profile-list">
@@ -192,12 +200,6 @@
 		<i class="fa fa-plus"></i>
 		<span>@T("Admin.DataExchange.AddNewProfile")</span>
 	</a>
-}
-else
-{
-	<div class="alert alert-info">
-		@Html.Raw(T("Admin.DataExchange.Export.NonFileBasedExport.Note"))
-	</div>
 }
 
 @{Html.SmartStore().Window()

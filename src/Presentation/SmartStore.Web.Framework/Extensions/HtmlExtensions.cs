@@ -921,7 +921,7 @@ namespace SmartStore.Web.Framework
 				}
 				else
 				{
-					result = result + "<span class='ml-4'>{0}</span>".FormatInvariant(label);
+					result = result + "<span class='ml-1'>{0}</span>".FormatInvariant(label);
 				}	
 			}
 

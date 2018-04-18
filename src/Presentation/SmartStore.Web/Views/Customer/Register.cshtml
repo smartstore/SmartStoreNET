@@ -122,7 +122,7 @@
 								@Html.LabelFor(model => model.VatNumber, new { @class = "col-md-3 col-form-label", @for = "VatNumber" })
 								<div class="col-md-9">
 									<div class="input-group">
-										@Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = "Optional" })
+										@Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = T("Common.Optional") })
 										@if (Model.VatNumberStatusNote.HasValue())
 										{
 											<div class="input-group-append"><span class="input-group-text">@Model.VatNumberStatusNote</span></div>

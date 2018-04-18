@@ -61,7 +61,7 @@
 			<div class="col-@breakpoint-9">
 				<div class="row sm-gutters d-flex">
 					<div class="col">
-						@Html.TextBoxFor(model => model.City, new { placeholder = Model.CityRequired ? "" : "Optional", @class = "form-control" })
+						@Html.TextBoxFor(model => model.City, new { placeholder = Model.CityRequired ? "" : T("Common.Optional").Text, @class = "form-control" })
 					</div>
 					@if (Model.ZipPostalCodeEnabled)
 					{
@@ -69,7 +69,7 @@
 							@Html.LabelFor(model => model.ZipPostalCode, new { @class = "text-right col-form-label" + (Model.ZipPostalCodeRequired ? " required" : "") })
 						</div>
 						<div class="col col-auto">
-							@Html.TextBoxFor(model => model.ZipPostalCode, new { placeholder = Model.ZipPostalCodeRequired ? "" : "Optional", @class = "form-control", style = "width: 6rem" })
+							@Html.TextBoxFor(model => model.ZipPostalCode, new { placeholder = Model.ZipPostalCodeRequired ? "" : T("Common.Optional").Text, @class = "form-control", style = "width: 6rem" })
 						</div>
 					}
 				</div>

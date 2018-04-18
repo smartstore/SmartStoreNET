@@ -163,7 +163,7 @@
                     @Html.LabelFor(model => model.VatNumber, new { @class = "col-lg-3 col-form-label", @for = "VatNumber" })
                     <div class="col-lg-9">
 						<div class="input-group">
-							@Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = "Optional" })
+							@Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = T("Common.Optional") })
 							<div class="input-group-append"><span class="input-group-text">@Model.VatNumberStatusNote</span></div>
 						</div>
 						<div class="form-text text-muted vat-note">@T("Account.Fields.VatNumber.Note")</div>
@@ -265,11 +265,10 @@
                 <div class="form-group row">
                     @Html.LabelFor(model => model.Signature, new { @class = "col-lg-3 col-form-label", @for = "Signature" })
                     <div class="col-lg-9">
-                        @Html.TextAreaFor(model => model.Signature, new { placeholder = "Optional", @class = "form-control", rows = "3" })
+                        @Html.TextAreaFor(model => model.Signature, new { placeholder = T("Common.Optional"), @class = "form-control", rows = "3" })
                     </div>
                 </div>
             }
-
         </fieldset>
     }
 

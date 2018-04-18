@@ -103,7 +103,7 @@
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
 
-    <link rel="shortcut icon" href="~/Administration/favicon.ico" />
+    <link rel="shortcut icon" href="~/Administration/favicon.ico?v=@SmartStoreVersion.CurrentVersion" />
 
 	@Html.CustomHead()
 

@@ -58,9 +58,7 @@
                         }
 
                         <div class="col col-data">
-							<span @Html.LanguageAttributes(item.ProductName)>
-								<a class="name font-weight-medium" href="@item.ProductUrl" title="@item.ProductName">@item.ProductName</a>
-							</span>
+							<a class="name font-weight-medium" href="@item.ProductUrl" title="@item.ProductName" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
                             <div class="short-desc text-muted" @Html.LanguageAttributes(item.ShortDesc)>
                                 @Html.Raw(item.ShortDesc.Value.Truncate(descMaxLength, "..."))
                             </div>
@@ -81,11 +79,9 @@
 
                                         if (bundleItem.Picture.ImageUrl.HasValue())
                                         {
-											<span @Html.LanguageAttributes(bundleItem.ProductName)>
-												<a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
-													<img alt="@bundleItem.ProductName" src="@bundleItem.Picture.ImageUrl" title="@bundleItem.ProductName" />
-												</a>
-											</span>
+											<a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
+												<img alt="@bundleItem.ProductName" src="@bundleItem.Picture.ImageUrl" title="@bundleItem.ProductName" />
+											</a>
                                         }
 
                                         if (bundlelength != (j + 1))
@@ -110,7 +106,7 @@
                             </span>
                         </div>
 
-                        <div class="ml-auto text-nowrap" @Html.LanguageAttributes(item.ProductName)>
+                        <div class="ml-auto text-nowrap">
                             @if (Model.ShowItemsFromWishlistToCartButton)
                             {
                                 <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title='@T("ShoppingCart.AddToCart")'

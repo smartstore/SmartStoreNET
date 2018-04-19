@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.Theming
 			}
 
             result.Append("<div class='ctl-label'>");
-            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name, new { @class = "col-form-label" }));
+            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name, new { @class = "x-col-form-label" }));
 			if (hint.HasValue())
 			{
 				result.Append(html.Hint(hint).ToHtmlString());

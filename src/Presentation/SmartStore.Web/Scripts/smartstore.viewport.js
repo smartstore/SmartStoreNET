@@ -210,4 +210,3 @@
 	return self;
 
 })(jQuery);
-//# sourceMappingURL=viewport.js.map

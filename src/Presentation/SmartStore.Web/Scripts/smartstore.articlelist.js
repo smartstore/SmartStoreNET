@@ -15,7 +15,7 @@
 		if (list.parent().hasClass('artlist-carousel')) {
 			return;
 		}
-			
+		
 		var drop = art.find('.art-drop');
 
 		if (drop.length > 0) {

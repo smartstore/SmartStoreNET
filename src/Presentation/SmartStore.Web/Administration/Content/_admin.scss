@@ -944,6 +944,7 @@ textarea:not([class*="form-control"]) {
 	.themevar-chain-info {
 		color: $gray-600;
 		margin-left: 0.75rem;
+		white-space: nowrap;
 	}
 }
 

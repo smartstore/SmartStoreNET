@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.0
 ### Breaking changes
@@ -42,6 +42,7 @@
 * #729 Option for automatic order amount capturing when the shipping status changed to "shipped"
 * (Dev) ILocalizationFileResolver: responsible for finding localization files for client scripts
 * #998 GMC: Find a way to map attribute combination values to feed export values
+* Added Instagram icon to social media icons in footer
 
 ### Improvements
 * Target .NET Framework changed: 4.5.2 > 4.6.1.
@@ -63,6 +64,8 @@
 * #1219 Recently viewed products list should respect setting to hide manufacturer names
 * Import and export product quantity step
 * Add bundle item information to order messages
+* #1031 Enable offline payment methods to have brand icons
+* DevTools Plugin: Added example for how to invalidate cached output
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
@@ -84,7 +87,7 @@
 * #528 LimitedToStores is required on payment provider rather than plugin level
 * #1318 Disabled preselected attribute combination permanently hides the shopping cart button, even if another combination is selected.
 * Copy product: Fixes "Cannot insert duplicate key row in object dbo.UrlRecord with unique index IX_UrlRecord_Slug"
-
+* Fixed export publishing via email
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes
@@ -185,7 +188,7 @@
 * Added config setting *sm:PdfEngineBaseUrl*. There are cases where the PDF converter exits with a network error, when it is unable to load automatically resolved URLs.
 * (Dev) Added *Retry* utility class
 * #1176 Admin > Product Search: It ain't possible to search for parts of a product name
-
+ 
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language
 * Fixed null reference exception in product lists if sorting is not allowed

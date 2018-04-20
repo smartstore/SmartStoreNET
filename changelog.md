@@ -1,5 +1,13 @@
 # Release Notes
 
+## SmartStore.NET 3.1.5
+### New Features
+
+### Improvements
+
+### Bugfixes
+
+
 ## SmartStore.NET 3.1.0
 ### Breaking changes
 * Message template customizations are lost due to the new template engine. You have to customize the templates again. No automatic migration, sorry :-(
@@ -48,7 +56,7 @@
 * Target .NET Framework changed: 4.5.2 > 4.6.1.
 * Lower memory consumption
 * #649 Media FileSystem provider: segmenting files in subfolders to increase IO perf with huge amount of files
-* #1141 Clearer backend order list. Added more infos like payment method.
+* #1141 Cleaner backend order list. Added more infos like payment method.
 * OuputCache: Simple product changes that affect visibility now correctly invalidate all assigned category and manufacturer pages
 * * OuputCache: When MegaSearch is active, invalidation occurs only during indexing and not ad-hoc anymore. 
 * #1248 New payment integration guidelines for Sofort\Klarna
@@ -65,7 +73,7 @@
 * Import and export product quantity step
 * Add bundle item information to order messages
 * #1031 Enable offline payment methods to have brand icons
-* DevTools Plugin: Added example for how to invalidate cached output
+* DevTools Plugin: Added example for cached output invalidation 
 
 ### Bugfixes
 * #1268 Data importer always inserts new pictures and does not detect equal pictures while importing

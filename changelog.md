@@ -9,24 +9,30 @@
 
 
 ## SmartStore.NET 3.1.0
+
+### Highlights
+* **Wallet**: Enables full or partial order payment via credit account. Includes REST-Api. (commercial plugin)
+* **[Liquid](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) template engine**: very flexible templating for e-mails and campaigns with autocompletion and syntax highlighting.
+* **Cash Rounding**: define money rounding rules on currency and payment method level.
+* **Modern, responsive backend**: migrated backend to Bootstrap 4, overhauled and improved the user interface.
+* **Enhanced MegaMenu**: virtual dropdowns for surplus top-level categories and brands (commercial plugin exclusively bundled with Pro Edition).
+* **RTL**: comprehensive RTL (Right-to-left) and bidi(rectional) support.
+* **Amazon Pay**:
+	* Supports merchants registered in the USA and Japan
+	* External authentication via *Login with Amazon* button in shop frontend
+	* Several improvements through the new *Login and pay with Amazon* services
+* (Perf) **Faster image processing**: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is requested by any client.
+* **TinyImage**: scores ultra-high image compression rates (up to 80 %!) and enables WebP support (commercial plugin exclusively bundled with Premium Edition).
+* **UrlRewriter**: define URL redirection rules in the backend using *mod_rewrite* notation. (commercial plugin)
+* **Address formatting** templates by country
+* **Language packs**: downloader & auto-importer for packages available online.
+
 ### Breaking changes
 * Message template customizations are lost due to the new template engine. You have to customize the templates again. No automatic migration, sorry :-(
 * Amazon Pay: The plugin has been changed to new *Login and pay with Amazon* services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
 * (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
 * (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
 * (Dev) Completely removed all `EntityInserted<T>`, `EntityUpdated<T>` and `EntityDeleted<T>` legacy events. We were using DbSaveHooks anyway, which provides a much more powerful and way faster pub-sub mechanism for database operations.
-
-### Highlights
-* New [Liquid](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) based template engine
-* Multi-configurable rounding of order total ("cash rounding"). Can be adjusted and activated separately for each currency and payment method.
-* (Perf) Picture service: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is actually requested by any client.
-* MegaMenu shrinker and *Brands* virtual menu item
-* Address formatting templates by country
-* Connection to translate.smartstore.com. For available languages, localized resources can be downloaded and installed directly.
-* **Amazon Pay**:
-	* Supports merchants registered in the USA and Japan
-	* External authentication via *Login with Amazon* button in shop frontend
-	* Several improvements through the new *Login and pay with Amazon* services
 
 ### New Features
 * 1203 MegaMenu shrinker and *Brands* virtual menu item

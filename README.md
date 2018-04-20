@@ -39,7 +39,7 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * Unlimited number of products and categories
 * Product Bundles
 * RESTful WebApi
-* Multi-language support
+* Multi-language and RTL support
 * Modern, clean, SEO-optimized and fully responsive Theme based on Bootstrap 4
 * Ultra fast search framework with faceted search support
 * Extremely scalable thanks to output caching, REDIS & Microsoft Azure support.
@@ -56,22 +56,23 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V3.0.0 has been released on May 15, 2017. The highlights are:
+SmartStore.NET V3.1.0 has been released on April 20, 2018. The highlights are:
 
-* **Flex**: New mobile-first responsive Theme based on Bootstrap 4
-* **Mega Search \***: highly professional search framework based on Lucene.NET
-	* Ultra fast search results, even with millions of items
-	* Faceted search
-	* Synonyms
-	* Compound word splitting
-* **Mega Menu \***: highly customizable catalog menu widgets
-* **Content Slider \***: creates eye-catching content to boost sales
-* **Output Cache \*** with "donut hole caching" for maximum speed and scalability
-* **Microsoft AZURE \*** provider for media storage
-* Web Farms: **REDIS \*** providers for Business Cache, Output Cache and Session State
-* Product variant **option sets**
-* New product specification attribute type: **numeric range**
-* Image support for variant attributes
+* **Wallet \***: Enables full or partial order payment via credit account. Includes REST-Api.
+* **[Liquid](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) template engine**: very flexible templating for e-mails and campaigns with autocompletion and syntax highlighting.
+* **Cash Rounding**: define money rounding rules on currency and payment method level.
+* **Modern, responsive backend**: migrated backend to Bootstrap 4, overhauled and improved the user interface.
+* **Enhanced MegaMenu \***: virtual dropdowns for surplus top-level categories and brands.
+* **RTL**: comprehensive RTL (Right-to-left) and bidi(rectional) support.
+* **Amazon Pay**:
+	* Supports merchants registered in the USA and Japan
+	* External authentication via *Login with Amazon* button in shop frontend
+	* Several improvements through the new *Login and pay with Amazon* services
+* **Image processing**: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is requested by any client.
+* **TinyImage \***: scores ultra-high image compression rates (up to 80 %!) and enables WebP support.
+* **UrlRewriter \***: define URL redirection rules in the backend using *mod_rewrite* notation.
+* **Address formatting** templates by country
+* **Language packs**: downloader & auto-importer for packages available online.
 * ...and a lot more new features, enhancements and fixes
 
 \* Commercial plugin
@@ -105,4 +106,4 @@ NOTE: SmartStore.NET 3 requires [Visual C++ Redistributable für Visual Studio 2
 
 ## License
 
-SmartStore.NET is released under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.txt).
+SmartStore.NET Community Edition is released under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.txt).

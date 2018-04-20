@@ -36,12 +36,13 @@ namespace SmartStore.Core
             //       A release with breaking changes should definitely have at least
             //       a greater minor version.
             new Version("1.2"),
-            new Version("1.2.1"), // MC: had to be :-(
+            new Version("1.2.1"),
             new Version("2.0"),
 			new Version("2.1"),
 			new Version("2.2"),
             new Version("2.5"),
-			new Version("3.0")
+			new Version("3.0"),
+			new Version("3.1")
 		};
 
 		private const string HELP_BASEURL = "https://docs.smartstore.com/display/";
@@ -111,8 +112,8 @@ namespace SmartStore.Core
 		public static string GetUserGuideSpaceKey(string languageCode)
 		{
 			return languageCode.IsCaseInsensitiveEqual("de") 
-				? "SDDE30" 
-				: "SMNET30";
+				? "SDDE31" 
+				: "SMNET31";
 		}
 
         /// <summary>

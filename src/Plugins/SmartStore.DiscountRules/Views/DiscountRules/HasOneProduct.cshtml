@@ -4,7 +4,7 @@
     Layout = "";
 } 
 <table class="adminContent">
-    <tr>
+    <tr class="wide">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Products)
         </td>
@@ -13,18 +13,28 @@
 				 data-discount-id='@Model.DiscountId'
 				 data-requirement-id='@Model.RequirementId'
 				 data-action-url='@Url.Action("HasOneProduct")'
-				 data-fail-msg='@T("Admin.Promotions.Discounts.Requirements.FailedToSave").Text.EncodeJsString()'
-				 data-success-msg='@T("Admin.Promotions.Discounts.Requirements.Saved").Text.EncodeJsString()'>
+				 data-fail-msg=@T("Admin.Promotions.Discounts.Requirements.FailedToSave").JsText
+				 data-success-msg=@T("Admin.Promotions.Discounts.Requirements.Saved").JsText>
 				<div>
-					@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds" })
+					<div class="input-group">
+						@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds", @readonly = "readonly" })
+						<span class="input-group-append">
+							<a class="btn btn-secondary" id="reset-productids" title="@T("Admin.Common.Reset")">
+								<i class="fa fa-times"></i>
+							</a>
+						</span>
+						<div class="input-group-append">
+							@(Html.SmartStore().EntityPicker()
+								.For(x => x.Products)
+								.HtmlAttribute("class", "btn btn-outline-secondary")
+								.DialogTitle(T("Plugins.DiscountRules.HasOneProduct.Fields.Products").Text.EncodeJsString('\'', false))
+								.Caption(T("Admin.Common.Search").Text.EncodeJsString('\'', false)))
+						</div>
+					</div>
 
-					<button type="button" class="btn" id="SearchRequiredProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
-						<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-					</button>
-
-					<button type="button" class="btn btn-save-discount-rule">
-						<i class="fa fa-check"></i>
-						@T("Admin.Common.Save")
+					<button type="button" class="btn @(Model.RequirementId == 0 ? "btn-primary btn-block btn-lg" : "btn-warning") btn-save-discount-rule mt-3">
+						<i class="fa fa-@(Model.RequirementId == 0 ? "plus" : "check")"></i>
+						<span>@T(Model.RequirementId == 0 ? "Common.AddNew" : "Admin.Common.Save")</span>
 					</button>
 				</div>
 			</div>
@@ -32,23 +42,12 @@
     </tr>
 </table>
 
-<script type="text/javascript">
-	$(document).ready(function () {
-
-		// add required products
-		$(document).on('click', '#SearchRequiredProductsButton', function () {
-			$('#@(Html.FieldIdFor(x => x.Products))').entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-				caption: '@T("Plugins.DiscountRules.HasOneProduct.Fields.Products")',
-				returnValueDelimiter: ',',
-				onLoadDialogBefore: function () {
-					$('#SearchRequiredProductsButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#SearchRequiredProductsButton').prop('disabled', false).button('reset');
-				}
-			});
+<script>
+	$(function () {
+		// reset productids
+		$("#reset-productids").on("click", function (e) {
+			e.preventDefault();
+			$("#@Html.FieldIdFor(model => model.Products)").val("");
 		});
-
-    });
+	});
 </script>

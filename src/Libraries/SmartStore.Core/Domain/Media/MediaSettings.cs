@@ -6,7 +6,7 @@ namespace SmartStore.Core.Domain.Media
     {
 		public MediaSettings()
 		{
-			AvatarPictureSize = 85;
+			AvatarPictureSize = 250;
 			ProductThumbPictureSize = 250;
 			CategoryThumbPictureSize = 250;
 			ManufacturerThumbPictureSize = 250;
@@ -19,14 +19,15 @@ namespace SmartStore.Core.Domain.Media
 			CartThumbBundleItemPictureSize = 32;
 			MiniCartThumbPictureSize = ProductThumbPictureSize;
 			VariantValueThumbPictureSize = 70;
-			MaximumImageSize = 1280;
+			MaximumImageSize = 2048;
 			DefaultPictureZoomEnabled = true;
 			PictureZoomType = "window";
 			DefaultImageQuality = 90;
 			MultipleThumbDirectories = true;
 			DefaultThumbnailAspectRatio = 1;
+			AutoGenerateAbsoluteUrls = true;
 		}
-		
+
 		public int AvatarPictureSize { get; set; }
         public int ProductThumbPictureSize { get; set; }
         public int ProductDetailsPictureSize { get; set; }
@@ -64,5 +65,10 @@ namespace SmartStore.Core.Domain.Media
         /// Geta or sets a vaue indicating whether single (/media/thumbs/) or multiple (/media/thumbs/0001/ and /media/thumbs/0002/) directories will used for picture thumbs
         /// </summary>
         public bool MultipleThumbDirectories { get; set; }
-    }
+
+		/// <summary>
+		/// Generates absolute media urls based upon current request uri instead of relative urls.
+		/// </summary>
+		public bool AutoGenerateAbsoluteUrls { get; set; }
+	}
 }

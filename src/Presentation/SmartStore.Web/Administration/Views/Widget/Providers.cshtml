@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<WidgetModel>
-
 @{    
    ViewBag.Title = T("Admin.ContentManagement.Widgets").Text;
 }
@@ -11,15 +10,11 @@
    </div>
 </div>
 
-<table class="adminContent">
-	<tr>
-		<td>
-			@Html.ProviderList(Model,
-			@<div>
-				<a class='btn@(item.IsActive ? "" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
-					@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
-				</a>
-			</div>)
-		</td>
-	</tr>
-</table>
+<div>
+	@Html.ProviderList(Model,
+		@<div>
+			<a style="min-width: 150px" class='btn btn-@(item.IsActive ? "secondary btn-to-danger" : "success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+				@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
+			</a>
+		</div>)
+</div>

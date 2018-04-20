@@ -1,0 +1,109 @@
+﻿/* Everything Liquid */
+.CodeMirror .cm-liquid {
+	color: #000;
+	background-color: #eee;
+	background-color: rgba(0,0,0, 0.07); /* for newer browsers, use transparent background, so selection is visible behind it */
+}
+
+.cm-liquid.CodeMirror-searching {
+	background: #ffa;
+	background: rgba(255, 255, 0, .4);
+}
+/* Every whitespace inside Liquid markup (except inside string constants) */
+.CodeMirror .cm-liquid-whitespace {
+}
+/* Number constants */
+.CodeMirror .cm-liquid-atom {
+	color: #AA00BB;
+}
+/* Variables, keywords and operators. Assigned by the Tokenizer which cannot differentiate between these */
+.CodeMirror .cm-liquid-word {
+}
+/* String constants */
+.CodeMirror .cm-liquid-string {
+	color: #228811;
+}
+/* {{, }}, {%, %} */
+.CodeMirror .cm-liquid-markup-delimiter {
+	color: #555;
+}
+/* The name of a Liquid tag (if, assign, for, ...) */
+.CodeMirror .cm-liquid-tag-name {
+	font-weight: bold;
+}
+/* The closing name of a Liquid block tag (endif, endfor) */
+.CodeMirror .cm-liquid-endtag-name {
+	font-weight: bold;
+}
+/* Keywords (in, reversed, with, ...) */
+.CodeMirror .cm-liquid-keyword {
+	font-weight: bold;
+}
+/* Operators */
+.CodeMirror .cm-liquid-operator {
+}
+/* The name of a Tag attribute (limit, offset) */
+.CodeMirror .cm-liquid-tag-attribute-name {
+	font-style: italic;
+}
+/* A Variable */
+.CodeMirror .cm-liquid-variable {
+}
+/* A method of a drop */
+.CodeMirror .cm-liquid-method {
+	font-style: italic;
+}
+/* The name one can give to a cycle tag */
+.CodeMirror .cm-liquid-tag-cycle-name {
+	font-style: italic;
+}
+/* A filter in output markdown */
+.CodeMirror .cm-liquid-filter {
+	font-style: italic;
+}
+/* Every output markup, including the {{ and }} */
+.CodeMirror .cm-liquid-output-markup {
+}
+/* Every tag markup, including the {% and %} */
+.CodeMirror .cm-liquid-tag-markup {
+}
+
+/* Code hint styling */
+.cm-hint-kind-0:before,
+.cm-hint-kind-1:before,
+.cm-hint-kind-2:before,
+.cm-hint-kind-tag:before,
+.cm-hint-kind-filter:before {
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-style: normal;
+	display: inline-block;
+	width: 16px;
+	padding-right: 4px;
+}
+
+.cm-hint-kind-0:before {
+	/* Primitive */
+	content: "\f1b2";
+}
+
+.cm-hint-kind-1:before {
+	/* Complex */
+	content: "\f0ad";
+}
+
+.cm-hint-kind-2:before {
+	/* Collection */
+	content: "\f0c9";
+}
+
+.cm-hint-kind-tag:before {
+	/* Liquid Tags */
+	content: "\f121";
+}
+
+.cm-hint-kind-filter:before {
+	/* Liquid Filters */
+	content: "\f0b0";
+}
+

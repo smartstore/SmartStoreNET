@@ -3,6 +3,7 @@ using System.Linq;
 using SmartStore.Core.Logging;
 using SmartStore.Collections;
 using SmartStore.Services;
+using System.Collections.Generic;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -15,8 +16,8 @@ namespace SmartStore.Web.Framework.UI
 		/// {0} : sitemap name
 		/// {1} : sitemap specific key suffix
 		/// </remarks>
-		const string SITEMAP_KEY = "pres:sitemap:{0}-{1}";
-		const string SITEMAP_PATTERN_KEY = "pres:sitemap:{0}";
+		internal const string SITEMAP_KEY = "pres:sitemap:{0}-{1}";
+		internal const string SITEMAP_PATTERN_KEY = "pres:sitemap:{0}*";
 
 		public abstract string Name { get; }
 
@@ -102,6 +103,25 @@ namespace SmartStore.Web.Framework.UI
 
 		public virtual void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false)
 		{
+		}
+
+		public IDictionary<string, TreeNode<MenuItem>> GetAllCachedTrees()
+		{
+			var cache = Services.Cache;
+			var keys = cache.Keys(SITEMAP_PATTERN_KEY.FormatInvariant(this.Name));
+
+			var trees = new Dictionary<string, TreeNode<MenuItem>>(keys.Count());
+
+			foreach (var key in keys)
+			{
+				var tree = cache.Get<TreeNode<MenuItem>>(key);
+				if (tree != null)
+				{
+					trees[key] = tree;
+				}
+			}
+
+			return trees;
 		}
 
 		public void ClearCache()

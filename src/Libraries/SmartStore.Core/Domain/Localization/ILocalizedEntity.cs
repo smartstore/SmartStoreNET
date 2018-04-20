@@ -6,6 +6,5 @@ namespace SmartStore.Core.Domain.Localization
     /// </summary>
     public interface ILocalizedEntity
     {
-
-    }
+	}
 }

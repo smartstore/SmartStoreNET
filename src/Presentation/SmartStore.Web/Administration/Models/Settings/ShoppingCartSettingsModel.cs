@@ -49,9 +49,6 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.CrossSellsNumber")]
         public int CrossSellsNumber { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")]
-		public bool RoundPricesDuringCalculation { get; set; }
-
 		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
         public bool EmailWishlistEnabled { get; set; }
 
@@ -63,10 +60,7 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowProductImagesInMiniShoppingCart")]
         public bool ShowProductImagesInMiniShoppingCart { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber")]
-        public int MiniShoppingCartProductNumber { get; set; }
-
+		
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint")]
         public bool ShowConfirmOrderLegalHint { get; set; }
 

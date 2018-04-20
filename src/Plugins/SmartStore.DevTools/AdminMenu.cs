@@ -9,7 +9,7 @@ namespace SmartStore.DevTools
 		{
 			var menuItem = new MenuItem().ToBuilder()
 				.Text("Developer Tools")
-				.Icon("code")
+				.Icon("terminal")
 				.Action("ConfigurePlugin", "Plugin", new { systemName = "SmartStore.DevTools", area = "Admin" })
 				.ToItem();
 			
@@ -21,7 +21,6 @@ namespace SmartStore.DevTools
 			//	.Icon("area-chart")
 			//	.Action("BackendExtension", "DevTools", new { area = "SmartStore.DevTools" })
 			//	.ToItem();
-
 			//pluginsNode.Append(backendExtensionItem);
 
 			// uncomment to add a sub-menu (see plugin sub-menu)
@@ -29,14 +28,12 @@ namespace SmartStore.DevTools
 			//	.Text("Sub Menu")
 			//	.Action("BackendExtension", "DevTools", new { area = "SmartStore.DevTools" })
 			//	.ToItem();
-
 			//var subMenuNode = pluginsNode.Append(subMenu);
 
 			//var subMenuItem = new MenuItem().ToBuilder()
 			//	.Text("Sub Menu Item 1")
 			//	.Action("BackendExtension", "DevTools", new { area = "SmartStore.DevTools" })
 			//	.ToItem();
-
 			//subMenuNode.Append(subMenuItem);
 		}
 	}

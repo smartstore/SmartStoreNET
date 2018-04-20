@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Catalog;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -58,7 +59,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public int ProductId { get; set; }
 
-            public string ProductName { get; set; }
+            public LocalizedValue<string> ProductName { get; set; }
 
             public string ProductSeName { get; set; }
 
@@ -76,7 +77,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public int EnteredQuantity { get; set; }
 
-            public string QuantityUnitName { get; set; }
+            public LocalizedValue<string> QuantityUnitName { get; set; }
 
             public List<SelectListItem> AllowedQuantities { get; set; }
 
@@ -94,12 +95,14 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public IList<string> Warnings { get; set; }
 
-			public string ShortDesc { get; set; }
+			public LocalizedValue<string> ShortDesc { get; set; }
 
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }
 			public BundleItemModel BundleItem { get; set; }
 			public IList<ShoppingCartItemModel> ChildItems { get; set; }
+
+			public bool DisableBuyButton { get; set; }
 
 			public DateTime CreatedOnUtc { get; set; }
         }

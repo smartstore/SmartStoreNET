@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Web.Mvc;
 using System.Web.WebPages;
 using SmartStore.Core.Domain.Common;
@@ -15,6 +16,7 @@ namespace SmartStore.Web.Framework.UI
         {
             return "<i class='fa fa-fw icon-active-<#= {0} #>'></i>".FormatInvariant(boolFieldName);
         }
+
         public static HelperResult SymbolForBool<T>(this HtmlHelper<T> helper, bool value)
         {
             return new HelperResult(writer => writer.Write("<i class='fa fa-fw icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
@@ -27,7 +29,6 @@ namespace SmartStore.Web.Framework.UI
 			if (id.HasValue())
 			{
 				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
-
 				namePart = "<a href=\"{0}<#= {1} #>\"><#= {2} #></a>".FormatInvariant(url, id, name);
 			}
 			else
@@ -35,7 +36,7 @@ namespace SmartStore.Web.Framework.UI
 				namePart = "<span><#= {0} #></span>".FormatInvariant(name);
 			}
 
-			string result = "<span class='label label-smnet label-<#= {0} #>'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
+			string result = "<span class='badge badge-<#= {0} #> mr-1'><#= {1} #></span>{2}".FormatInvariant(typeLabelHint, typeName, namePart);
 			
 			return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
 		}
@@ -57,7 +58,7 @@ namespace SmartStore.Web.Framework.UI
 				namePart = "<span>{0}</span>".FormatInvariant(helper.Encode(name));
 			}
 
-			return new HelperResult(writer => writer.Write("<span class='label label-smnet label-{0}'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
+			return new HelperResult(writer => writer.Write("<span class='badge badge-{0} mr-1'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
 		}
 
 		public static string LabeledOrderNumber<T>(this HtmlHelper<T> helper)
@@ -67,7 +68,7 @@ namespace SmartStore.Web.Framework.UI
 
 			string link = "<a href=\"{0}<#= Id #>\"><#= OrderNumber #></a>".FormatInvariant(url);
 
-			string label = "<span class='label label-smnet label-info' title='{0}'>{1}</span>".FormatInvariant(
+			string label = "<span class='badge badge-warning mr-1' title='{0}'>{1}</span>".FormatInvariant(
 				localize.GetResource("Admin.Orders.Payments.NewIpn.Hint"),
 				localize.GetResource("Admin.Orders.Payments.NewIpn"));
 
@@ -81,12 +82,14 @@ namespace SmartStore.Web.Framework.UI
 
 			if (isPrimaryStoreCurrency)
 			{
-				sb.AppendFormat("<span class='label label-smnet label-warning'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency"));
+				sb.AppendFormat("<span class='badge badge-warning{0}'>{1}</span>",
+					isPrimaryExchangeRateCurrency ? String.Empty : " mr-1",
+					localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency"));
 			}
 
 			if (isPrimaryExchangeRateCurrency)
 			{
-				sb.AppendFormat("<span class='label label-smnet label-info'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency"));
+				sb.AppendFormat("<span class='badge badge-info mr-1'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency"));
 			}
 
 			string url = UrlHelper.GenerateContentUrl("~/Admin/Currency/Edit/", helper.ViewContext.RequestContext.HttpContext);
@@ -96,9 +99,10 @@ namespace SmartStore.Web.Framework.UI
 			return new HelperResult(writer => writer.Write(sb.ToString()));
 		}
 
+		[Obsolete]
         public static string RichEditorFlavor(this HtmlHelper helper)
         {
-            return EngineContext.Current.Resolve<AdminAreaSettings>().RichEditorFlavor.NullEmpty() ?? "RichEditor";
+            return "Html";
         }
 
         public static GridEditActionCommandBuilder Localize(this GridEditActionCommandBuilder builder, Localizer T)

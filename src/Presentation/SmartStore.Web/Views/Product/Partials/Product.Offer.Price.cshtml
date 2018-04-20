@@ -1,6 +1,7 @@
 ﻿@model ProductDetailsModel
 
 @using System.Globalization;
+@using SmartStore.Services.Localization;
 @using SmartStore.Web.Models.Catalog;
 
 @{
@@ -43,8 +44,8 @@
 	{
 		<!-- Current price -->
 		<div class="pd-group clearfix">
-			<div class="clearfix">
-				<div class="pd-price-block">
+			<div class="row sm-gutters pd-price-group">
+				<div class="col-auto pd-price-block">
 					@if (!isBundleItem)
 					{
 						<meta itemprop="priceCurrency" content="@WorkContext.WorkingCurrency.CurrencyCode" />
@@ -63,7 +64,7 @@
 				</div>
 				@if (oldPrice2.HasValue())
 				{
-					<div class="pd-price-block">
+					<div class="col-auto pd-price-block">
 						@if (blocksHaveLabel)
 						{
 							<div class="pd-price-label">@oldPrice2Label</div>
@@ -80,19 +81,19 @@
 			{
 				if (oldPrice1.HasValue())
 				{
-					<div class="pd-oldprice-line">
+					<div class="pd-oldprice-line d-flex">
 						@if (oldPrice1Label.HasValue())
 						{
 							<span>@Html.Raw(oldPrice1Label):</span>
 						}
-						<span class="pd-oldprice">@Html.Raw(oldPrice1)</span>
+						<span class="pd-oldprice pl-1">@Html.Raw(oldPrice1)</span>
 					</div>
 				}
 				if (priceModel.SavingAmount.HasValue())
 				{
-					<div class="pd-oldprice-line">
+					<div class="pd-oldprice-line d-flex">
 						<span>@T("ShoppingCart.ItemYouSave"):</span>
-						<span>@priceModel.SavingAmount (<span class="pd-saving-percent">@priceModel.SavingPercent.ToString("N0") %</span>)</span>
+						<span class="pl-1">@priceModel.SavingAmount <span class="pd-saving-percent">(@priceModel.SavingPercent.ToString("N0") %)</span></span>
 					</div>
 				}
 			}
@@ -116,7 +117,7 @@
 				@if (basePriceEnabled && Model.BasePriceInfo.HasValue())
 				{
 					<div class="pd-pangv">
-						@Html.Raw(Model.BasePriceInfo)
+						@Html.Raw(LocalizedValue.FixBrackets(Model.BasePriceInfo, WorkContext.WorkingLanguage))
 					</div>
 				}
 				@if (Model.ShowLegalInfo && Model.LegalInfo.HasValue())

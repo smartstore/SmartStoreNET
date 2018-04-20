@@ -79,10 +79,9 @@
 				return defVal;	
 			}
 			return x;
-		}
-				
-				
+		}				
 	});
 	
-
-})(jQuery);
+	// provide main app namespace
+	window.SmartStore = {};
+})( jQuery );

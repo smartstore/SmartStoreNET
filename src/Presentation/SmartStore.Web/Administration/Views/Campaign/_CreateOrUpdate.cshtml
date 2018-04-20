@@ -5,37 +5,12 @@
 
 @if (Model.Id > 0)
 {
-	<div class="alert alert-info">
+	<div class="alert alert-warning">
 		@T("Admin.Promotions.Campaigns.Warning")
 	</div>
-	
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.TestEmail)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.TestEmail)
-                @Html.ValidationMessageFor(model => model.TestEmail)
-
-                <button type="submit" name="send-test-email" value="send-test-email" class="btn">
-					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendTestEmail")
-				</button>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-            </td>
-            <td class="adminData">
-                <button type="submit" name="send-mass-email" value="send-mass-email" class="btn btn-warning" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendMassEmail")
-				</button>
-            </td>
-        </tr>
-    </table>
 }
 
-@Html.SmartStore().TabStrip().Name("campaign-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("campaign-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
@@ -67,18 +42,18 @@
 		</tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.TokensTree)
+                @Html.SmartLabelFor(model => model.LastModelTree)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.TokensTree, "TokenSelector")
+                @Html.EditorFor(model => model.LastModelTree, "ModelTree")
             </td>
         </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Body)
 			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Body, "RichEditor")
+			<td class="adminData wide">
+				@Html.EditorFor(model => model.Body, "Html", new { lazy = false })
 				@Html.ValidationMessageFor(model => model.Body)
 			</td>
 		</tr>
@@ -87,46 +62,5 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $('#@Html.FieldIdFor(model => model.LimitedToStores)').change(function () {
-    			$('#pnl-available-stores').toggle($(this).is(':checked'));
-    		}).trigger('change');
-
-        });
-    </script>
-	
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitedToStores)
-                @Html.ValidationMessageFor(model => model.LimitedToStores)
-            </td>
-        </tr>
-        <tr id="pnl-available-stores">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores)
-            </td>
-            <td class="adminData">
-                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-                {
-                    foreach (var store in Model.AvailableStores)
-                    {
-					<label class="checkbox">
-						<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						<span>@store.Name</span>
-					</label>
-                    }
-                }
-                else
-                {
-                    <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }
-            </td>
-        </tr>
-    </table>
+	@Html.Partial("StoreSelector", Model)
 }

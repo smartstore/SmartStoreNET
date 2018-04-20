@@ -8,7 +8,8 @@ namespace SmartStore.OfflinePayment.Models
 	public abstract class PaymentInfoModelBase : ModelBase
     {
 		public string DescriptionText { get; set; }
-    }
+		public string ThumbnailUrl { get; set; }
+	}
 
 	public class CashOnDeliveryPaymentInfoModel : PaymentInfoModelBase
 	{

@@ -28,17 +28,9 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string From { get; set; }
 
-        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.FromName")]
-        [AllowHtml]
-        public string FromName { get; set; }
-
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.To")]
         [AllowHtml]
         public string To { get; set; }
-
-        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.ToName")]
-        [AllowHtml]
-        public string ToName { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.CC")]
         [AllowHtml]

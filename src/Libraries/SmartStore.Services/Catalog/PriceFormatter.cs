@@ -166,30 +166,36 @@ namespace SmartStore.Services.Catalog
 
         public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
-            // Round before rendering (also take "BitCoin" into account, where more than 2 decimal places are relevant)
-            price = targetCurrency.CurrencyCode.IsCaseInsensitiveEqual("btc") ? Math.Round(price, 6) : Math.Round(price, 2);
+			// Round before rendering (also take "BitCoin" into account, where more than 2 decimal places are relevant)
+			price = targetCurrency.CurrencyCode.IsCaseInsensitiveEqual("btc") ? Math.Round(price, 6) : Math.Round(price, 2);
             
-            string currencyString = GetCurrencyString(price, showCurrency, targetCurrency);
-            if (showTax)
-            {
-                //show tax suffix
-                string formatStr;
-                if (priceIncludesTax)
-                {
-                    formatStr = _localizationService.GetResource("Products.InclTaxSuffix", language.Id, false);
-                    if (String.IsNullOrEmpty(formatStr))
-                        formatStr = "{0} incl tax";
-                }
-                else
-                {
-                    formatStr = _localizationService.GetResource("Products.ExclTaxSuffix", language.Id, false);
-                    if (String.IsNullOrEmpty(formatStr))
-                        formatStr = "{0} excl tax";
-                }
-                return string.Format(formatStr, currencyString);
-            }
-            else
-                return currencyString;
+            var currencyString = GetCurrencyString(price, showCurrency, targetCurrency);
+			if (showTax)
+			{
+				// Show tax suffix
+				string formatStr;
+				if (priceIncludesTax)
+				{
+					formatStr = _localizationService.GetResource("Products.InclTaxSuffix", language.Id, false);
+					if (string.IsNullOrEmpty(formatStr))
+					{
+						formatStr = "{0} incl tax";
+					}
+				}
+				else
+				{
+					formatStr = _localizationService.GetResource("Products.ExclTaxSuffix", language.Id, false);
+					if (string.IsNullOrEmpty(formatStr))
+					{
+						formatStr = "{0} excl tax";
+					}
+				}
+				return string.Format(formatStr, currencyString);
+			}
+			else
+			{
+				return currencyString;
+			}
         }
 
 

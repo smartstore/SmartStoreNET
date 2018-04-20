@@ -1,5 +1,22 @@
 ﻿#Release Notes
 
+##Login and Pay with Amazon 3.0.3.2
+###Improvements
+* Supports merchants registered in the USA and Japan
+
+##Login and Pay with Amazon 3.0.3.1
+### New Features
+* External authentication via "Login with Amazon" button in shop frontend
+###Improvements
+* Moved to new SDK AmazonPay.dll
+* Implemented new Login and Pay with Amazon features:
+	* Perf: Widget script is now loaded asynchronously
+	* Widget rendering in responsive design
+	* Display billing address on checkout confirm page
+	* Supports more languages and presentation settings
+	* Omnichronous authorization
+	* Amazon merchant registration through button on configuration page
+
 ##Pay with Amazon 2.2.0.3
 ###Improvements
 * Added message token %SmartStore.AmazonPay.BillingAddressMessageNote% for billing address note in order placed customer notification
@@ -26,11 +43,11 @@
 
 ##Pay with Amazon 1.17
 ###Improvements
-* Amazon payments review
+* Amazon Pay review
 
 ##Pay with Amazon 1.16
 ###Bugfixes
-* Reflect refunds made at amazon seller central when using data polling
+* Reflect refunds made at Amazon Seller Central when using data polling
 
 ##Pay with Amazon 1.15
 ###Bugfixes
@@ -38,7 +55,7 @@
 
 ##Pay with Amazon 1.14
 ###Bugfixes
-* Data polling did not reflect the transaction status correctly if the action took place at amazon seller central
+* Data polling did not reflect the transaction status correctly if the action took place at Amazon Seller Central
 
 ##Pay with Amazon 1.13
 ###Bugfixes

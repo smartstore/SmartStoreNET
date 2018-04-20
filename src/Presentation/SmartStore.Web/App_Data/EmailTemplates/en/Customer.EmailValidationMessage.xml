@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Account activation</Subject>
+	<ModelTypes>Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hello {{ Customer.FullName }},
+</h1>
+<p>
+  please activate your account by clicking on the following link:
+</p>
+
+<p class="text-center mt-4 mb-4">
+  <a class="btn btn-primary" href="{{ Customer.AccountActivationURL }}">Activate account</a>
+</p>
+
+<p>
+	If the link can't be openend, please copy the following URL and paste it into the address bar of your browser:
+</p>
+
+<a href="{{ Customer.AccountActivationURL }}">{{ Customer.AccountActivationURL }}</a>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

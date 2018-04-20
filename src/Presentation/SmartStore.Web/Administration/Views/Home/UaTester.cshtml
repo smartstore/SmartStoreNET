@@ -1,7 +1,6 @@
 ﻿@model IUserAgent
 @using SmartStore.Services.Common
 @{
-    //page title
     ViewBag.Title = "User Agent Tester";
 	var ua = Model;
 }
@@ -13,15 +12,15 @@
     </div>
 </div>
 
-<div>
+<div style="max-width: 800px">
 	@using (Html.BeginForm(null, null, FormMethod.Get))
 	{
 		<div>
-			@Html.TextArea("ua", ua.RawValue, new { style = "width: 800px; display: block" })
-			<button type="submit" class="btn btn-default">Test</button>
+			@Html.TextArea("ua", ua.RawValue, new { @class = "form-control" })
+			<button type="submit" class="btn btn-secondary mt-3">Test</button>
 		</div>
 
-		<div style="margin-top: 20px">
+		<div class="mt-4">
 			OS: <strong>@ua.OS.Family</strong> (@ua.OS)<br />
 			User Agent: <strong>@ua.UserAgent.Family</strong>, (@ua.UserAgent)<br />
 			Device: <strong>@ua.Device.Family</strong>, (@ua.Device)<br />

@@ -1,0 +1,64 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// THROBBER
+// ------------------------------
+
+.throbber {
+    display: none;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 2147483640;
+    background-color: rgba(0,0,0, 0.7);
+
+    &.white {
+        background-color: rgba(255,255,255, 0.85);
+    }
+
+    body > & {
+        position: fixed;
+    }
+
+    .throbber-flex {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        > * {
+            text-align: center;
+        }
+    }
+
+    .throbber-content {
+        display: block;
+        overflow: hidden;
+        line-height: 1.3;
+
+        &:not(:empty) {
+            margin-bottom: 2rem;
+        }
+    }
+
+    &.large .throbber-content {
+        font-size: 1.75rem;
+        font-weight: 100;
+    }
+
+    &.small .throbber-content {
+        font-size: $lead-font-size;
+        font-weight: $lead-font-weight;
+    }
+
+    &:not(.white) .throbber-content {
+        color: #fff;
+    }
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Routing;
@@ -49,20 +50,38 @@ namespace SmartStore
 
         public static void AppendInValue(this IDictionary<string, object> instance, string key, string separator, object value)
         {
-            instance[key] = !instance.ContainsKey(key) ? value.ToString() : (instance[key] + separator + value);
-        }
+			AddInValue(instance, key, separator, value, false);
+		}
 
         public static void PrependInValue(this IDictionary<string, object> instance, string key, string separator, object value)
         {
-            instance[key] = !instance.ContainsKey(key) ? value.ToString() : (value + separator + instance[key]);
+			AddInValue(instance, key, separator, value, true);
         }
+
+		private static void AddInValue(IDictionary<string, object> instance, string key, string separator, object value, bool prepend = false)
+		{
+			var valueStr = value.ToString();
+
+			if (!instance.ContainsKey(key))
+			{
+				instance[key] = valueStr;
+			}
+			else
+			{
+				var arr = instance[key].ToString().Trim().Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
+				var arrValue = valueStr.Trim().Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
+
+				arr = prepend ? arrValue.Union(arr) : arr.Union(arrValue);
+
+				instance[key] = string.Join(separator, arr);
+			}
+		}
 
 		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> instance, TKey key)
 		{
 			Guard.NotNull(instance, nameof(instance));
 
-			TValue val;
-			instance.TryGetValue(key, out val);
+			instance.TryGetValue(key, out var val);
 			return val;
 		}
 

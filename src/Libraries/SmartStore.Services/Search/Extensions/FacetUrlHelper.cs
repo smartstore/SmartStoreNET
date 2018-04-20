@@ -48,7 +48,7 @@ namespace SmartStore.Services.Search.Extensions
 			_languageId = _workContext.WorkingLanguage.Id;
 			_url = _httpRequest.CurrentExecutionFilePath;
 			//_initialQuery = new QueryString().FillFromString(_httpRequest.QueryString.ToString(), false);
-			_initialQuery = QueryString.Current;
+			_initialQuery = QueryString.CurrentUnvalidated;
 
 			// Remove page index (i) from query string
 			_initialQuery.Remove("i");

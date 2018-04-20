@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Routing;
 using System.Web.WebPages;
 using Newtonsoft.Json;
@@ -35,9 +33,13 @@ namespace SmartStore.Web.Framework.UI
 
         public string ImageUrl { get; set; }
 
-        public string Icon { get; set; }
+		public int? ImageId { get; set; }
+
+		public string Icon { get; set; }
 
         public string Text { get; set; }
+
+		public bool Rtl { get; set; }
 
 		public string Summary { get; set; }
 

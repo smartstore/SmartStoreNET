@@ -64,7 +64,7 @@
 					</nav>
 				</div>
 			</header>
-								}
+        }
 
         @{ 
 			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
@@ -90,7 +90,7 @@
 								Html.RenderWidget("aside_left_after");
 							}
 						</aside>
-								}
+					}
 
 					<div id="content-center" class="col-lg-@mainColspan">
 						@{ 
@@ -109,7 +109,7 @@
 								Html.RenderWidget("aside_right_after");
 							}
 						</aside>
-								}
+					}
 
                     @{ Html.RenderWidget("content_after"); }
                 </div>
@@ -125,7 +125,7 @@
             <footer id="footer" class="@(GetThemeVariable<bool>("inverse-footer") ? "footer-inverse" : "footer-light")">
                 @{ Html.RenderAction("Footer", "Common", new { area = "" }); }
 			</footer>
-					}
+		}
 
 		@{ Html.RenderZone("page-end"); }
     </div>

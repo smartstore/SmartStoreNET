@@ -1,0 +1,52 @@
+* OK	Update to latest Bootstrap
+* OK	Unify resource files between Flex and Admin (js, css etc.)
+* Merge Flex _core.scss with Admin shared/_utils.scss
+* Remove globalize.js entirely and all moment.js locale files
+* OK	Apply .wide to parent tr of td.adminData with html editor or any other "wide" control (hide the label also)
+* Find replacement for bootstrap-typeahead.js
+* OK	bootstrapper-datetimepicker skinning is missing
+* OK	Update bootstrap-editable.js
+* OK	Update popper.js
+* OK	Select2: multiple or taggable selects are not required to be hidden fields anymore > refactor.
+* OK	Enclose all button labels in <span>, when an icon is available 
+* OK	Readonly controls in .adminData: input[type=text][readonly].form-control-plaintext (formerly static labels)
+* OK	Pass "postfix" additional viewdata to relevant numerictextbox instances
+* OK	Refactor control toggling: 'data-toggler-for' instead of redundant toggle[...]() calls in every view
+* Dropdown Groups: mehr als 2 Ebenen gehen nicht, daher bspw. EditorTemplates/ModelTree.cshtml umgestalten
+* OK	window.openPopup > check whether 'fluid = true' should be passed
+* OK	Locale Editors: Move hidden fields from td to another place to avoid space
+* OK	Fix color picker control
+* IStoreSelector, IAclSelector > refactor models & views and remove obsolete locale resources.
+* OK	Validation styling for form controls
+* OK	Shared\EditorTemplates\ButtonType.cshtml > Type names
+* select2: .input-lg & .input-sm styling
+* OK	All tables (.table) must be wrapped in div.table-responsive
+* Apply .omega to all (last) table cells which contain action buttons to enable visibility toggling on hover. Apply .active-row to parent div to disable toggling, but keep other styling.
+* OK	Add .alert-dismissable with &times; closer to all .alert elements
+* OK	.form-check > .form-check-input + .form-check-label
+* OK	Replace Html.SettingOverrideCheckbox () with new Html.SettingEditorFor()
+
+
+TODOs Telerik grid:
+====================
+* OK	In ClientEvents.OnEdit: select2 change triggering only in editmode.
+* OK	Grid inline editing: when a grid is editable, assign width (either px or %) to all columns except the last buttons col (otherwise: disco!)
+* OK	.t-grid .t-last with command buttons: add *.HtmlAttributes(new { align = "right" }) to column (see ProductEdit > Promotion tab)
+* OK	Move custom grid action buttons below or above a grid to the grid toolbar (see ProductEdit > Promotion tab > CrossSellingGridCommands(...) etc.)
+* OK	.omega for last tds in Non-AJAX grids
+
+
+TODOs BS4 Migration:
+====================
+* OK	Split Dropdown Buttons: .btn-dropwdown-split
+* OK	Input Groups: .input-group-append/prepend & .input-group-text
+
+
+TODOs Assets:
+================
+* select2 localization files
+
+
+TODOs Frontend:
+================
+* .modal.modal-flex  >>  .modal-dialog.modal-flex

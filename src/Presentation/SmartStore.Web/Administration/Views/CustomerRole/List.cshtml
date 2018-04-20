@@ -1,60 +1,58 @@
 ﻿@model Telerik.Web.Mvc.GridModel<CustomerRoleModel>
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Customers.CustomerRoles").Text;
 }
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-users"></i>
         @T("Admin.Customers.CustomerRoles")
     </div>
     <div class="options">
-        
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<CustomerRoleModel>()
-                    .Name("customerroles-grid")
-                    .BindTo(Model.Data)
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name).Width(150)
-                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-                        columns.Bound(x => x.FreeShipping)
-                            .Width(100)
-                            .Centered()
-                            .Template(item => @Html.SymbolForBool(item.FreeShipping))
-                            .ClientTemplate(@Html.SymbolForBool("FreeShipping"));
-                        columns.Bound(x => x.TaxExempt)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.TaxExempt))
-                            .ClientTemplate(@Html.SymbolForBool("TaxExempt"))
-                            .Centered();
-                        columns.Bound(x => x.Active)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Active))
-                            .ClientTemplate(@Html.SymbolForBool("Active"))
-                            .Centered();
-                        columns.Bound(x => x.IsSystemRole)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.IsSystemRole))
-                            .ClientTemplate(@Html.SymbolForBool("IsSystemRole"))
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Width(50)
-                            .Centered()
-                            .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.Edit").Text))
-                            .Filterable(false);
-                    })
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CustomerRole"))
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+
+<div>
+	@(Html.Telerik().Grid<CustomerRoleModel>()
+		.Name("customerroles-grid")
+		.BindTo(Model.Data)
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Name).Width(150)
+				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+			columns.Bound(x => x.FreeShipping)
+				.Width(100)
+				.Centered()
+				.Template(item => @Html.SymbolForBool(item.FreeShipping))
+				.ClientTemplate(@Html.SymbolForBool("FreeShipping"));
+			columns.Bound(x => x.TaxExempt)
+				.Width(100)
+				.Template(item => @Html.SymbolForBool(item.TaxExempt))
+				.ClientTemplate(@Html.SymbolForBool("TaxExempt"))
+				.Centered();
+			columns.Bound(x => x.Active)
+				.Width(100)
+				.Template(item => @Html.SymbolForBool(item.Active))
+				.ClientTemplate(@Html.SymbolForBool("Active"))
+				.Centered();
+			columns.Bound(x => x.IsSystemRole)
+				.Width(100)
+				.Template(item => @Html.SymbolForBool(item.IsSystemRole))
+				.ClientTemplate(@Html.SymbolForBool("IsSystemRole"))
+				.Centered();
+			columns.Bound(x => x.Id)
+				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+				.Width(50)
+				.Filterable(false)
+				.Title(String.Empty)
+				.HtmlAttributes(new { align = "right", @class = "omega" });
+		})
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CustomerRole"))
+		.EnableCustomBinding(true))
+</div>

@@ -5,7 +5,6 @@ using System.Text;
 
 namespace SmartStore.Data.Setup
 {
-
 	internal class LocaleResourceEntry
 	{
 		public string Key { get; set; }
@@ -133,7 +132,7 @@ namespace SmartStore.Data.Setup
 
 		internal IEnumerable<LocaleResourceEntry> Build()
 		{
-			return _entries.OrderByDescending(x => x.Important).ThenBy(x => x.Lang);
+			return _entries.OrderByDescending(x => x.Important).ThenBy(x => x.Lang).ToList();
 		}
 
 		#region Nested builder for AddOrUpdate

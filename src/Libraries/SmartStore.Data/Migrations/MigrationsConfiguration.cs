@@ -1,9 +1,14 @@
-namespace SmartStore.Data.Migrations
+﻿namespace SmartStore.Data.Migrations
 {
 	using System;
 	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
+	using System.Linq;
 	using Setup;
+	using SmartStore.Utilities;
+	using SmartStore.Core.Domain.Media;
+	using Core.Domain.Configuration;
+	using SmartStore.Core.Domain.Customers;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -23,14 +28,18 @@ namespace SmartStore.Data.Migrations
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
+
+			context.SaveChanges();
         }
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
+
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			
 		}
 	}
 }

@@ -15,34 +15,29 @@
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
                 <i class="fa fa-check"></i>
-                @T("Admin.Common.Save")
+                <span>@T("Admin.Common.Save")</span>
             </button>
         </div>
     </div>
-    <p>
-    </p>
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ActivityLogTypeModel>()
-                .Name("activityLogType-grid")
-                .BindTo(Model.Data)
-                        .Columns(columns =>
+	<div>
+		@(Html.Telerik().Grid<ActivityLogTypeModel>()
+				.Name("activityLogType-grid")
+				.BindTo(Model.Data)
+						.Columns(columns =>
 						{
 							columns.Bound(x => x.Enabled)
 								.Centered()
 								.Template(x => Html.CheckBox("checkBox_" + x.Id.ToString(), x.Enabled, new { id = x.Id, @class = "checkboxGroups" }))
-								.Title("<label class='checkbox'>" + "<input id='mastercheckbox' type='checkbox'/>" + T("Admin.Configuration.ActivityLog.ActivityLogType.Fields.Enabled").Text + "</label>")
+								.Title("<input id='mastercheckbox' type='checkbox'/>")
 								.HtmlAttributes(new { style = "text-align:center" })
-								.HeaderHtmlAttributes(new { style = "text-align:center" });                    
+								.HeaderHtmlAttributes(new { style = "text-align:center" })
+								.Width(50);
 							columns.Bound(x => x.Name)
-                                .Width("100%");
-                        })
-                .Footer(false)
-)
-            </td>
-        </tr>
-    </table>
+								.Width("97%");
+						})
+				.Footer(false)
+		)
+	</div>
     <script type="text/javascript">
 
         $(document).ready(function () {

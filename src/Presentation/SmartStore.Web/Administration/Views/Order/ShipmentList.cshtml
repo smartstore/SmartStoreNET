@@ -1,11 +1,7 @@
 ﻿@model ShipmentListModel
-           
 @using Telerik.Web.Mvc.UI
-
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
-    //page title
     ViewBag.Title = T("Admin.Orders.Shipments.List").Text;
 }
 
@@ -19,92 +15,79 @@
         <div class="options">
             @if (Model.DisplayPdfPackagingSlip)
             {
-                <a href="@Url.Action("PdfPackagingSlips", new { all = true })" class="btn">
-					<i class="fa fa-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.All")
+                <a href="@Url.Action("PdfPackagingSlips", new { all = true })" class="btn btn-secondary">
+					<i class="fa fa-print"></i>
+					<span>@T("Admin.Orders.Shipments.PrintPackagingSlip.All")</span>
 				</a>
-                <button type="submit" id="exportpackagingslips-selected" class="btn">
-					<i class="fa fa-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.Selected")
+                <button type="submit" id="exportpackagingslips-selected" class="btn btn-secondary">
+					<i class="fa fa-print"></i>
+					<span>@T("Admin.Orders.Shipments.PrintPackagingSlip.Selected")</span>
 				</button>
             }
         </div>
     </div>
-    <table style="width: 100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StartDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.TrackingNumber)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.TrackingNumber)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-            </td>
-        </tr>
-    </table>
-	
-	<p></p>
-	
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ShipmentModel>()
-                        .Name("shipments-grid")
-                        .ClientEvents(events => events
-                            .OnDataBinding("onDataBinding")
-                            .OnDataBound("onDataBound"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.Id)
-                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                            .Title("<input id='mastercheckbox' type='checkbox'/>")
-                            .Width(50)
-                            .HtmlAttributes(new { style = "text-align:center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center" });
-                            columns.Bound(x => x.Id);
-							columns.Bound(x => x.OrderId)
-								.Width(80)
-								.Centered()
-								.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
-								.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\"><#= OrderId #></a>");
-                            columns.Bound(x => x.TrackingNumber);
-                            columns.Bound(x => x.TotalWeight);
-                            columns.Bound(x => x.ShippedDate);
-                            columns.Bound(x => x.DeliveryDate);
-                            columns.Bound(x => x.Id)
-                                .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.View").Text));
-                        })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("ShipmentListSelect", "Order"))
-						.PreserveGridState()
-                        .EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.StartDate)
+			@Html.EditorFor(model => model.StartDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.EndDate)
+			@Html.EditorFor(model => model.EndDate)
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.TrackingNumber)
+			@Html.EditorFor(model => model.TrackingNumber)
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.Search")</span>
+			</button>
+		</div>
+	</div>
+
+
+<div>
+	@(Html.Telerik().Grid<ShipmentModel>()
+		.Name("shipments-grid")
+		.ClientEvents(events => events
+			.OnDataBinding("onDataBinding")
+			.OnDataBound("onDataBound"))
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Id)
+			.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+			.Title("<input id='mastercheckbox' type='checkbox'/>")
+			.Width(50)
+			.HtmlAttributes(new { style = "text-align:center" })
+			.HeaderHtmlAttributes(new { style = "text-align:center" });
+			columns.Bound(x => x.Id);
+			columns.Bound(x => x.OrderId)
+				.Width(80)
+				.Centered()
+				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\"><#= OrderId #></a>");
+			columns.Bound(x => x.TrackingNumber);
+			columns.Bound(x => x.TotalWeight);
+			columns.Bound(x => x.ShippedDate);
+			columns.Bound(x => x.DeliveryDate);
+			columns.Bound(x => x.Id)
+				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { @class = "t-button" }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\" class=\"t-button\">" + T("Admin.Common.View").Text + "</a>")
+				.Width(50)
+				.Centered()
+				.Title(String.Empty);
+		})
+		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("ShipmentListSelect", "Order"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>
+
     
     <script type="text/javascript">
 

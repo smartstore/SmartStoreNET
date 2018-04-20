@@ -1,15 +1,16 @@
 ﻿@model BackInStockSubscribeModel
 @using SmartStore.Web.Models.Catalog;
-
 @{
     Layout = "_Layout.Popup.cshtml";
 }
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "back-in-stock-subscription-form" }))
+@using (Html.BeginForm("BackInStockSubscribePopup", "Product", new { id = Model.ProductId }, FormMethod.Post, new { id = "back-in-stock-subscription-form" }))
 {
     <div class="page back-in-stock-subscription-page">
         <div class="page-title">
-            <h4>@(Model.AlreadySubscribed ? @T("BackInStockSubscriptions.AlreadySubscribed").Text : @T("BackInStockSubscriptions.PopupTitle").Text)</h4>
+            <h4>
+				@T(Model.AlreadySubscribed ? "BackInStockSubscriptions.AlreadySubscribed" : "BackInStockSubscriptions.PopupTitle")
+			</h4>
         </div>
         <div class="page-body">
             @if (!Model.SubscriptionAllowed)
@@ -28,10 +29,10 @@
             {
                 if (!Model.AlreadySubscribed)
                 {
-                    <div class="x-tooltip">@T("BackInStockSubscriptions.Tooltip")</div>
+                    <p class="x-tooltip">@T("BackInStockSubscriptions.Tooltip")</p>
                 }
                 <button type="submit" id="back-in-stock-notify-me" class="btn btn-info">
-                    @(Model.AlreadySubscribed ? @T("BackInStockSubscriptions.Unsubscribe").Text : @T("BackInStockSubscriptions.NotifyMe").Text)
+					@T(Model.AlreadySubscribed ? "BackInStockSubscriptions.Unsubscribe" : "BackInStockSubscriptions.NotifyMe")
                 </button>
                 
                 <script type="text/javascript">

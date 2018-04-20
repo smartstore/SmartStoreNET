@@ -116,8 +116,9 @@ namespace SmartStore.Web.Controllers
         [NonAction]
 		protected bool IsPaymentWorkflowRequired(IList<OrganizedShoppingCartItem> cart, bool ignoreRewardPoints = false)
         {
-            //check whether order total equals zero
+            // Check whether order total equals zero
             decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, ignoreRewardPoints);
+
             if (shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero)
                 return false;
 
@@ -184,20 +185,21 @@ namespace SmartStore.Web.Controllers
 		{
 			var model = new CheckoutShippingMethodModel();
 
-			var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id);
+			var store = _storeContext.CurrentStore;
+			var customer = _workContext.CurrentCustomer;
+			var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id);
 
 			if (getShippingOptionResponse.Success)
 			{
-				//performance optimization. cache returned shipping options.
-				//we'll use them later (after a customer has selected an option).
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-					SystemCustomerAttributeNames.OfferedShippingOptions, getShippingOptionResponse.ShippingOptions, _storeContext.CurrentStore.Id);
+				// Performance optimization. cache returned shipping options.
+				// We'll use them later (after a customer has selected an option).
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.OfferedShippingOptions, getShippingOptionResponse.ShippingOptions, store.Id);
 
-				var shippingMethods = _shippingService.GetAllShippingMethods();
+				var shippingMethods = _shippingService.GetAllShippingMethods(null, store.Id);
 
 				foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
 				{
-					var soModel = new CheckoutShippingMethodModel.ShippingMethodModel()
+					var soModel = new CheckoutShippingMethodModel.ShippingMethodModel
 					{
 						ShippingMethodId = shippingOption.ShippingMethodId,
 						Name = shippingOption.Name,
@@ -211,12 +213,10 @@ namespace SmartStore.Web.Controllers
 						soModel.BrandUrl = _pluginMediator.GetBrandImageUrl(srcmProvider.Metadata);
 					}
 
-					//adjust rate
+					// Adjust rate.
 					Discount appliedDiscount = null;
-					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
-						shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
-
-					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
+					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
+					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, customer);
 					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
 					soModel.FeeRaw = rate;
 					soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
@@ -224,30 +224,38 @@ namespace SmartStore.Web.Controllers
 					model.ShippingMethods.Add(soModel);
 				}
 
-				//find a selected (previously) shipping method
-				var selectedShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
+				// Find a selected (previously) shipping method.
+				var selectedShippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, store.Id);
 				if (selectedShippingOption != null)
 				{
-					var shippingOptionToSelect = model.ShippingMethods.ToList()
+					var shippingOptionToSelect = model.ShippingMethods
+						.ToList()
 						.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
 						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) &&
 						so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
 
 					if (shippingOptionToSelect != null)
+					{
 						shippingOptionToSelect.Selected = true;
+					}
 				}
-				//if no option has been selected, let's do it for the first one
+
+				// If no option has been selected, let's do it for the first one.
 				if (model.ShippingMethods.Where(so => so.Selected).FirstOrDefault() == null)
 				{
 					var shippingOptionToSelect = model.ShippingMethods.FirstOrDefault();
 					if (shippingOptionToSelect != null)
+					{
 						shippingOptionToSelect.Selected = true;
+					}
 				}
 			}
 			else
 			{
 				foreach (var error in getShippingOptionResponse.Errors)
+				{
 					model.Warnings.Add(error);
+				}
 			}
 
 			return model;
@@ -256,10 +264,12 @@ namespace SmartStore.Web.Controllers
         [NonAction]
 		protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<OrganizedShoppingCartItem> cart)
         {
-            var model = new CheckoutPaymentMethodModel();
+			var store = _storeContext.CurrentStore;
+			var customer = _workContext.CurrentCustomer;
+			var model = new CheckoutPaymentMethodModel();
 
-            // was shipping skipped 
-            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
+            // Was shipping skipped.
+            var shippingOptions = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id).ShippingOptions;
 
             if (!cart.RequiresShipping() || (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption))
             {
@@ -269,10 +279,10 @@ namespace SmartStore.Web.Controllers
 			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Standard, PaymentMethodType.Redirection, PaymentMethodType.StandardAndRedirection };
 
             var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer, cart, _storeContext.CurrentStore.Id, paymentTypes)
+				.LoadActivePaymentMethods(customer, cart, store.Id, paymentTypes)
                 .ToList();
 
-			var allPaymentMethods = _paymentService.GetAllPaymentMethods();
+			var allPaymentMethods = _paymentService.GetAllPaymentMethods(store.Id);
 
             foreach (var pm in boundPaymentMethods)
             {
@@ -292,14 +302,14 @@ namespace SmartStore.Web.Controllers
 
 				if (paymentMethod != null)
 				{
-					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage.Id);
+					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage);
 				}
 				
 				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
 
-                // payment method additional fee
+                // Payment method additional fee.
 				decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
-                decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
+                decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, customer);
                 decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
                 
 				if (rate != decimal.Zero)
@@ -307,12 +317,10 @@ namespace SmartStore.Web.Controllers
 
                 model.PaymentMethods.Add(pmModel);
             }
-            
-            // find a selected (previously) payment method
-			var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-				 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-			bool selected = false;
+			// Find a selected (previously) payment method.
+			var selected = false;
+			var selectedPaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, store.Id);
 			if (selectedPaymentMethodSystemName.HasValue())
             {
                 var paymentMethodToSelect = model.PaymentMethods.Find(pm => pm.PaymentMethodSystemName.IsCaseInsensitiveEqual(selectedPaymentMethodSystemName));
@@ -323,7 +331,7 @@ namespace SmartStore.Web.Controllers
 				}
             }
 
-            // if no option has been selected, let's do it for the first one
+            // If no option has been selected, let's do it for the first one.
 			if (!selected)
             {
                 var paymentMethodToSelect = model.PaymentMethods.FirstOrDefault();
@@ -573,7 +581,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
         
-
         public ActionResult ShippingMethod()
         {
             //validation
@@ -594,6 +601,12 @@ namespace SmartStore.Web.Controllers
                         
             var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
 
+            var checkoutState = _httpContext.GetCheckoutState();
+            if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
+                checkoutState.CustomProperties["HasOnlyOneActiveShippingMethod"] = shippingOptions.Count == 1;
+            else
+                checkoutState.CustomProperties.Add("HasOnlyOneActiveShippingMethod", shippingOptions.Count == 1);
+            
             if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
             {
                 _genericAttributeService.SaveAttribute<ShippingOption>(
@@ -687,16 +700,22 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("ShoppingCart");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();	
+                return new HttpUnauthorizedResult();
 
-			// Check whether payment workflow is required
-			// we ignore reward points during cart total calculation
-			bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
+			// Check whether payment workflow is required. We ignore reward points during cart total calculation.
+			decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, true);
+			var isPaymentWorkflowRequired = !(shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero);
 
 			var model = PreparePaymentMethodModel(cart);
-			bool onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
+			var onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
 
-			if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod))
+            var checkoutState = _httpContext.GetCheckoutState();
+            if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActivePaymentMethod"))
+                checkoutState.CustomProperties["HasOnlyOneActivePaymentMethod"] = model.PaymentMethods.Count == 1;
+            else
+                checkoutState.CustomProperties.Add("HasOnlyOneActivePaymentMethod", model.PaymentMethods.Count == 1);
+            
+            if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod))
             {
                 // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
 				// or the current customer doesn't have any reward points so customer doesn't have to choose a payment method.
@@ -707,7 +726,7 @@ namespace SmartStore.Web.Controllers
 					!model.PaymentMethods.Any() ? null : model.PaymentMethods[0].PaymentMethodSystemName,
 					_storeContext.CurrentStore.Id);
 
-				_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = true;
+                checkoutState.IsPaymentSelectionSkipped = true;
 
 				var referrer = Services.WebHelper.GetUrlReferrer();
 				if (referrer.EndsWith("/Confirm"))
@@ -718,7 +737,7 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("Confirm");
             }
 
-			_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = false;
+            checkoutState.IsPaymentSelectionSkipped = false;
 
             return View(model);
         }

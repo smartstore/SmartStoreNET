@@ -16,15 +16,11 @@
 	</div>
 </div>
 
-<table class="adminContent">
-    <tr>
-        <td>
-			@Html.ProviderList(Model, 
-				@<div>
-					<a class='btn@(item.IsActive ? "" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
-						@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
-					</a>
-				</div>)
-        </td>
-    </tr>
-</table>
+<div>
+	@Html.ProviderList(Model,
+	@<div>
+		<a style="min-width: 150px" class='btn@(item.IsActive ? " btn-secondary btn-to-danger" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+			<span>@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))</span>
+		</a>
+	</div>)
+</div>

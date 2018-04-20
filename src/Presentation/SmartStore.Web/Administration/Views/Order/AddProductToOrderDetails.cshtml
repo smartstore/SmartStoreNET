@@ -1,5 +1,4 @@
 ﻿@using SmartStore.Core.Domain.Catalog;
-
 @model OrderModel.AddOrderProductModel.ProductDetailsModel
 
 @{
@@ -27,12 +26,10 @@
         <div class="options">
         </div>
     </div>
-    <div class="clear">
-    </div>
     <div>
         @if (Model.Warnings.Count > 0)
         {
-            <div class="alert alert-error fade in">
+            <div class="alert alert-danger">
                 @foreach (var warning in Model.Warnings)
                 {
                     @warning
@@ -41,13 +38,10 @@
             </div>
         }
     </div>
-    <div class="clear">
-    </div>
 
     if (Model.ProductType == ProductType.SimpleProduct)
     {
-        <div>
-		    <table class="adminContent">
+	    <table class="adminContent">
 		    <tr>
 			    <td class="adminTitle">
 				    @Html.SmartLabelFor(model => model.UnitPriceInclTax)
@@ -96,72 +90,59 @@
 				    @Html.EditorFor(model => model.SubTotalExclTax)
 			    </td>
 		    </tr>
-		    </table>
-		        
-		    <div class="clear"></div>
-
-            <div id="ProductAddAttributeContainer">
-                @{ Html.RenderPartial("_ProductAddAttributes", Model); }
-            </div>
-
-            <div class="clear"></div>
-
-            @{
-				var dataDictGiftCard = new ViewDataDictionary();
-				dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
-                @Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
-            }
+		</table>
+		    
+        <div id="ProductAddAttributeContainer">
+            @{ Html.RenderPartial("_ProductAddAttributes", Model); }
+        </div>
+		
+		var dataDictGiftCard = new ViewDataDictionary();
+		dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = Model.GiftCardFieldPrefix;
+        @Html.Partial("_ProductAddGiftCardInfo", Model.GiftCard, dataDictGiftCard)
             
-			<div class="clear"></div>
-			<p></p>
-
-			<table class="adminContent">
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AdjustInventory)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.AdjustInventory)
+					@Html.ValidationMessageFor(model => model.AdjustInventory)
+				</td>
+			</tr>
+			@if(Model.ShowUpdateTotals)
+			{
 				<tr>
 					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.AdjustInventory)
+						@Html.SmartLabelFor(model => model.UpdateTotals)
 					</td>
 					<td class="adminData">
-						@Html.EditorFor(model => model.AdjustInventory)
-						@Html.ValidationMessageFor(model => model.AdjustInventory)
+						@Html.EditorFor(model => model.UpdateTotals)
+						@Html.ValidationMessageFor(model => model.UpdateTotals)
 					</td>
 				</tr>
-				@if(Model.ShowUpdateTotals)
-				{
-					<tr>
-						<td class="adminTitle">
-							@Html.SmartLabelFor(model => model.UpdateTotals)
-						</td>
-						<td class="adminData">
-							@Html.EditorFor(model => model.UpdateTotals)
-							@Html.ValidationMessageFor(model => model.UpdateTotals)
-						</td>
-					</tr>
-				}
-				<tr>
-					<td class="adminTitle">&nbsp;</td>
-					<td class="adminData">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Orders.Products.AddNew")</button>
-					</td>
-				</tr>
-			</table>
-        </div>
+			}
+			<tr>
+				<td class="adminTitle"></td>
+				<td class="adminData">
+					<button type="submit" class="btn btn-primary">
+						<i class="fa fa-plus"></i>
+						<span>@T("Admin.Orders.Products.AddNew")</span>
+					</button>
+				</td>
+			</tr>
+		</table>
     }
     else if (Model.ProductType == ProductType.GroupedProduct)
     {
         <div>
-            Grouped products are not currently supported for adding to an existing order.	@* TODO TBD *@
+            Grouped products are not currently supported for adding to an existing order.
         </div>
     }
     else if (Model.ProductType == ProductType.BundledProduct)
     {
         <div>
-            Bundled products are not currently supported for adding to an existing order.	@* TODO TBD *@
-        </div>
-    }
-    else
-    {
-        <div>
-            This product type (unknown) is not currently supported for adding to an existing order
+            Bundled products are not currently supported for adding to an existing order.
         </div>
     }
 }

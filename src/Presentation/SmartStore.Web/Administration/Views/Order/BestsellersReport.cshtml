@@ -14,73 +14,49 @@
         </div>
     </div>
 
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StartDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.OrderStatusId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses, T("Admin.Common.All"))
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PaymentStatusId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses, T("Admin.Common.All"))
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.SalesReport.Bestsellers.RunReport")</button>
-            </td>
-        </tr>
-    </table>
-    
-	<p></p>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.StartDate)
+			@Html.EditorFor(model => model.StartDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.EndDate)
+			@Html.EditorFor(model => model.EndDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.OrderStatusId)
+			@Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses, T("Admin.Common.All"))
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.PaymentStatusId)
+			@Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses, T("Admin.Common.All"))
+		</div>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<BestsellersReportLineModel>()
-                        .Name("salesreport-grid")
-                        .ClientEvents(events => events.OnDataBinding("onDataBinding"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.ProductName)
-								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                            columns.Bound(x => x.TotalQuantity)
-								.Centered()
-								.Width(200);
-                            columns.Bound(x => x.TotalAmount)
-								.RightAlign()
-								.Width(200);
-                        })
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("BestsellersReportList", "Order"))
-                        .EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.SalesReport.Bestsellers.RunReport")</span>
+			</button>
+		</div>
+	</div>
+
+    <div>
+		@(Html.Telerik().Grid<BestsellersReportLineModel>()
+			.Name("salesreport-grid")
+			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.ProductName)
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(x => x.TotalQuantity)
+					.Centered()
+					.Width(200);
+				columns.Bound(x => x.TotalAmount)
+					.RightAlign()
+					.Width(200);
+			})
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("BestsellersReportList", "Order"))
+			.EnableCustomBinding(true))
+	</div>
     
     <script type="text/javascript">
 

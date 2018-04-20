@@ -8,7 +8,16 @@
 <div class="section-header">
     <div class="title">
         <i class="fa fa-sitemap"></i>
-        @T("Admin.Catalog.Categories.Manage") @Html.ActionLink("(" + T("Admin.Catalog.Categories.SwitchToListView") + ")", "List")
+        @T("Admin.Catalog.Categories.Manage")
+
+		<div class="btn-group ml-2" style="vertical-align: text-top">
+			<a class="btn btn-outline-secondary btn-sm tooltip-toggle" href="@Url.Action("List")" title="@T("Admin.Catalog.Categories.SwitchToListView")">
+				<i class="fa fa-bars"></i>
+			</a>
+			<a class="btn btn-outline-secondary btn-sm tooltip-toggle active" style="cursor:default" href="javascript:void(0)">
+				<i class="fa fa-sitemap"></i>
+			</a>
+		</div>
     </div>
     <div class="options">
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
@@ -19,41 +28,37 @@
 {
 	using (Html.BeginForm())
 	{
-		<table>
-			<tr>
-				<td class="adminTitle">
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="form-group">
 					@Html.SmartLabelFor(model => model.SearchStoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					&nbsp;
-				</td>
-				<td class="adminData">
-					<button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-				</td>
-			</tr>
-		</table>
+					<div class="form-row">
+						<div class="col">
+							@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+						</div>
+						<div class="col">
+							<button type="submit" id="btnSearch" class="btn btn-secondary">
+								<i class="fa fa-search"></i>
+								<span>@T("Admin.Common.Search")</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	}
 }
 
 <p></p>
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().TreeView()
-                .Name("category-treeview")
-				.ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
-                .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
-                .ShowLines(true)
-                .DragAndDrop(true))
-        </td>
-    </tr>
-</table>
+<div class="category-tree-container">
+    @(Html.Telerik().TreeView()
+        .Name("category-treeview")
+		.ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
+        .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
+        .ShowLines(true)
+        .DragAndDrop(true))
+</div>
 
 <script type="text/javascript">
 	$(document).ready(function () {

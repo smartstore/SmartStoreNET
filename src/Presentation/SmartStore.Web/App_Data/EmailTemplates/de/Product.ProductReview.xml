@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<ReplyTo>{% if Customer.Email %}{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;{% endif %}</ReplyTo>
+	<Subject>{{ Store.Name }}. Neue Produktrezension für '{{ Product.Name | Truncate: 30 }}'</Subject>
+	<ModelTypes>ProductReview, ProductReview.Customer, ProductReview.Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Neue Produktrezension,
+</h1>
+
+<p>
+  {% if Customer.IsRegistered %}
+  	<a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> 
+  {% else %}
+  	ein Gast 
+  {% endif %}
+  hat das Produkt <a href="{{ Product.Url }}">{{ Product.Name }}</a> rezensiert.
+</p>
+
+<table>
+  <tr class="valign-middle">
+  	<td>
+      <span class="rating">
+    		<span style="width:{{ ProductReview.Rating | Times: 20 }}%">&nbsp;</span>
+  		</span>
+    </td>
+    {% if ProductReview.Title %}
+    	<td><b>{{ ProductReview.Title }}</b></td>
+    {% endif %}
+  </tr>
+</table>
+{% if ProductReview.Text %}
+  <p class="message">
+    "{{ ProductReview.Text | Truncate: 400 }}"
+  </p>
+{% endif %}
+
+<p class="mt-4 mb-4">
+  <a href="{{ Product.Url }}" class="btn btn-primary">Zum Produkt</a>
+</p>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

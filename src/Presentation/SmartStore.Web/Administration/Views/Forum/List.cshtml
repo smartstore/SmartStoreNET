@@ -15,64 +15,62 @@
 	</div>
 </div>
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @{Html.Telerik().Grid<ForumGroupModel>(Model)
-                .Name("forumgroup-grid")
-                .ToolBar(commands =>
-                {
-                    commands.Custom().Text(T("Admin.ContentManagement.Forums.ForumGroup.CreateForumGroup").Text).Action("CreateForumGroup", "Forum").HtmlAttributes(new { style = "margin:0 0.2em;" });
-                    commands.Custom().Text(T("Admin.ContentManagement.Forums.Forum.CreateForum").Text).Action("CreateForum", "Forum");
-                })
-                .Columns(columns =>
-                {
-                    columns.Bound(x => x.Name)
-                        .Template(x => Html.ActionLink(x.Name, "EditForumGroup", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"EditForumGroup/<#= Id #>\"><#= Name #></a>");
+<div>
+	@{Html.Telerik().Grid<ForumGroupModel>(Model)
+				  .Name("forumgroup-grid")
+				  .ToolBar(commands =>
+				  {
+					  commands.Custom().Text(T("Admin.ContentManagement.Forums.ForumGroup.CreateForumGroup").Text).Action("CreateForumGroup", "Forum");
+					  commands.Custom().Text(T("Admin.ContentManagement.Forums.Forum.CreateForum").Text).Action("CreateForum", "Forum");
+				  })
+				  .Columns(columns =>
+				  {
+					  columns.Bound(x => x.Name)
+						  .Template(x => Html.ActionLink(x.Name, "EditForumGroup", new { id = x.Id }))
+							  .ClientTemplate("<a href=\"EditForumGroup/<#= Id #>\"><#= Name #></a>");
 
-                    columns.Bound(x => x.DisplayOrder)
-						.Width(150)
-						.Centered();
-					columns.Bound(x => x.LimitedToStores)
-						.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-						.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-						.Centered()
-						.Width(100)
-						.Hidden(ViewBag.StoreCount <= 1);
-                    columns.Bound(x => x.CreatedOn)
-						.Width(200);
-                    columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "EditForumGroup", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"EditForumGroup/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                })
-                .DetailView(detailView => detailView.Template(
-                    @<text>
-                        @(Html.Telerik().Grid<ForumModel>(item.ForumModels)
-                            .Name("forums_" + item.Id)
-                            .Columns(columns =>
-                            {
-                                columns.Bound(x => x.Name)
-                                    .Template(x => Html.ActionLink(x.Name, "EditForum", new { id = x.Id }))
-                                    .ClientTemplate("<a href=\"EditForum/<#= Id #>\"><#= Name #></a>");
+					  columns.Bound(x => x.DisplayOrder)
+						  .Width(150)
+						  .Centered();
+					  columns.Bound(x => x.LimitedToStores)
+						  .Template(item => @Html.SymbolForBool(item.LimitedToStores))
+						  .ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+						  .Centered()
+						  .Width(100)
+						  .Hidden(ViewBag.StoreCount <= 1);
+					  columns.Bound(x => x.CreatedOn)
+						  .Width(200);
+					  columns.Bound(x => x.Id)
+							  .Width(50)
+							  .Centered()
+							  .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "EditForumGroup", new { id = x.Id }, new { @class = "t-button" }))
+							  .ClientTemplate("<a href=\"EditForumGroup/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+							  .Title(String.Empty)
+							  .HtmlAttributes(new { align = "right", @class = "omega" });
+				  })
+				  .DetailView(detailView => detailView.Template(
+					@<text>
+						@(Html.Telerik().Grid<ForumModel>(item.ForumModels)
+							.Name("forums_" + item.Id)
+							.Columns(columns =>
+							{
+								columns.Bound(x => x.Name)
+									.Template(x => Html.ActionLink(x.Name, "EditForum", new { id = x.Id }))
+									.ClientTemplate("<a href=\"EditForum/<#= Id #>\"><#= Name #></a>");
 
-                                columns.Bound(x => x.DisplayOrder).Width(150).Centered();
-                                columns.Bound(x => x.CreatedOn).Width(200);
-                                columns.Bound(x => x.Id)
-                                        .Width(50)
-                                        .Centered()
-                                        .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "EditForum", new { id = x.Id }))
-                                        .ClientTemplate("<a href=\"EditForum/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                                        .Title(T("Admin.Common.Edit").Text);
-                            })
-                        )
-                    </text>
-                ))
-                .Render();
-            }
-        </td>
-    </tr>
-</table>
+								columns.Bound(x => x.DisplayOrder).Width(150).Centered();
+								columns.Bound(x => x.CreatedOn).Width(200);
+								columns.Bound(x => x.Id)
+										.Width(50)
+										.Centered()
+										.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "EditForum", new { id = x.Id }, new { @class = "t-button" }))
+										.ClientTemplate("<a href=\"EditForum/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+										.Title(String.Empty)
+										.HtmlAttributes(new { align = "right", @class = "omega" });
+							})
+						)
+					</text>
+	))
+	.Render();
+	}
+</div>

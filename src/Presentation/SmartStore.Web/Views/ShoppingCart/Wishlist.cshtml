@@ -63,7 +63,7 @@
                         }
                         @if (Model.DisplayAddToCart && !Model.IsEditable)
                         {
-                            <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary float-right wishlist-add-to-cart-button">
+                            <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary wishlist-add-to-cart-button">
                                 <i class="fa fa-cart-arrow-down"></i>
                                 <span>@T("ShoppingCart.AddToCart")</span>
                             </button>
@@ -128,7 +128,7 @@
                 success: function (response) {
 
                     if (response.cartItemCount == 0) {
-                        orderSummary.html('<div class="alert alert-warning fade show">@T("Wishlist.CartIsEmpty")</div>');
+                        orderSummary.html('<div class="alert alert-warning fade show">' + @T("Wishlist.CartIsEmpty").JsText + '</div>');
                         $(".share-info").hide();
                     }
 

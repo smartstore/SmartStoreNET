@@ -2,8 +2,7 @@
 @using Telerik.Web.Mvc.UI
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
-    //page title
+
     ViewBag.Title = T("Admin.Catalog.ProductReviews").Text;
 }
 <div class="section-header">
@@ -14,200 +13,198 @@
         @T("Admin.Catalog.ProductReviews")
     </div>
     <div class="options">
-        <button type="submit" id="approve-selected" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Catalog.ProductReviews.ApproveSelected")</button>
-        <button type="submit" id="disapprove-selected" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.ProductReviews.DisapproveSelected")</button>
-        <button type="submit" id="delete-selected" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")</button>
+        <button type="submit" id="approve-selected" class="btn btn-warning">
+			<i class="fa fa-check"></i>
+			<span>@T("Admin.Catalog.ProductReviews.ApproveSelected")</span>
+		</button>
+        <button type="submit" id="disapprove-selected" class="btn btn-secondary btn-to-danger">
+			<i class="fa fa-times"></i>
+			<span>@T("Admin.Catalog.ProductReviews.DisapproveSelected")</span>
+		</button>
+        <button type="submit" id="delete-selected" class="btn btn-danger">
+			<i class="fa fa-trash-o"></i>
+			<span>@T("Admin.Common.Delete.Selected")</span>
+		</button>
     </div>
 </div>
-    <table width="100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnFrom)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CreatedOnFrom)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnTo)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.CreatedOnTo)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">&nbsp;</td>
-            <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn">
-                    <i class="fa fa-search"></i>
-                    @T("Admin.Common.Search")
-                </button>
-            </td>
-        </tr>
-    </table>
 
-<table class="adminContent" style="margin-top: 12px">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<ProductReviewModel>()
-                    .Name("productreviews-grid")
-                            .ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Id)
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.Width(50)
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
 
-                        columns.Bound(x => x.ProductName)
-							.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                        columns.Bound(x => x.CustomerId)
-                            .Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
-						columns.Bound(x => x.Title);
-                        columns.Bound(x => x.ReviewText)
-                            .Width(500)
-							.ClientTemplate("<#= _.str.truncate(ReviewText, 400, ' [...]') #>")
-                            .Encoded(false);
-                        columns.Bound(x => x.Rating)
-                            .Width(50)
-                            .Centered();
-                        columns.Bound(x => x.IsApproved)
-                            .Width(80)
-                            .Template(item => @Html.SymbolForBool(item.IsApproved))
-                            .ClientTemplate(@Html.SymbolForBool("IsApproved"))
-                            .Centered();
-                        columns.Bound(x => x.CreatedOn)
-                            .Centered()
-							.Width(140);
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductReview"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div class="row mt-3 grid-filter">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.CreatedOnFrom)
+		@Html.EditorFor(model => model.CreatedOnFrom)
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.CreatedOnTo)
+		@Html.EditorFor(model => model.CreatedOnTo)
+	</div>
 
-    <script type="text/javascript">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		<label>&nbsp;</label>
+		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+			<span>@T("Admin.Common.Search")</span>
+		</button>
+	</div>
+</div>
+
+<div class="adminContent mt-3">
+
+	@(Html.Telerik().Grid<ProductReviewModel>()
+			.Name("productreviews-grid")
+					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.Width(50)
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
+
+				columns.Bound(x => x.ProductName)
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(x => x.CustomerId)
+					.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
+				columns.Bound(x => x.Title);
+				columns.Bound(x => x.ReviewText)
+					.Width(500)
+					.ClientTemplate("<#= _.str.truncate(ReviewText, 400, ' [...]') #>")
+					.Encoded(false);
+				columns.Bound(x => x.Rating)
+					.Width(50)
+					.Centered();
+				columns.Bound(x => x.IsApproved)
+					.Width(80)
+					.Template(item => @Html.SymbolForBool(item.IsApproved))
+					.ClientTemplate(@Html.SymbolForBool("IsApproved"))
+					.Centered();
+				columns.Bound(x => x.CreatedOn)
+					.Centered()
+					.Width(140);
+				columns.Bound(x => x.Id)
+					.Width(120)
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+					.Title(String.Empty)
+					.HtmlAttributes(new { align = "right" });
+			})
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductReview"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+</div>
+
+<script type="text/javascript">
 		
-        var selectedIds = [];
+    var selectedIds = [];
 
-        $(document).ready(function () {
+    $(document).ready(function () {
         
-            //search button
-            $('#btnSearch').click(function () {
-                //search
-                var grid = $('#productreviews-grid').data('tGrid');
-                grid.currentPage = 1; //new search. Set page size to 1
-                grid.ajaxRequest();
-                //clear selected checkboxes
-                $('.checkboxGroups').attr('checked', false).change();
-                selectedIds = [];
-                return false;
-            });
+        //search button
+        $('#btnSearch').click(function () {
+            //search
+            var grid = $('#productreviews-grid').data('tGrid');
+            grid.currentPage = 1; //new search. Set page size to 1
+            grid.ajaxRequest();
+            //clear selected checkboxes
+            $('.checkboxGroups').attr('checked', false).change();
+            selectedIds = [];
+            return false;
+        });
             
-            $('#approve-selected').click(function (e) {
-                processMany(e, "@(Url.Action("ApproveSelected", "ProductReview"))")
-            });
-
-            $('#disapprove-selected').click(function (e) {
-                processMany(e, "@(Url.Action("DisapproveSelected", "ProductReview"))")
-            });
-
-            $('#delete-selected').click(function (e) {
-                processMany(e, "@(Url.Action("DeleteSelected", "ProductReview"))")
-            });
-
-            function processMany(e, action) {
-                e.preventDefault();
-
-                var postData = {
-                    selectedIds: selectedIds
-                };
-
-                $.ajax({
-                    cache:false,
-                    type: "POST",
-                    url: action,
-                    data: postData,
-                    complete: function (data) {
-                        //reload grid
-                        var grid = $('#productreviews-grid').data('tGrid');
-                        grid.ajaxRequest();
-                    	//clear selected checkboxes
-                        $('.checkboxGroups').attr('checked', false).change();
-                        selectedIds = [];
-                    },
-                    error:function (xhr, ajaxOptions, thrownError) {
-                        alert(thrownError);
-                    },
-                    traditional: true
-                });
-                return false;
-            }
-
-            $('#mastercheckbox').click(function () {
-                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
-            });
-
-            //wire up checkboxes. 
-            $(document).on('change', '#productreviews-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
-                var $check = $(this);
-                if ($check.is(":checked") == true) {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked == -1) {
-                        //add id to selectedIds.  
-                        selectedIds.push($check.val());
-                    }
-                }
-                else {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked > -1) {
-                        //remove id from selectedIds.  
-                        selectedIds = $.grep(selectedIds, function (item, index) {
-                            return item != $check.val();
-                        });
-                    }
-                }
-                updateMasterCheckbox();
-            });
+        $('#approve-selected').click(function (e) {
+            processMany(e, "@(Url.Action("ApproveSelected", "ProductReview"))")
         });
 
-        function onDataBinding(e) {
-            var searchModel = {
-                CreatedOnFrom: $('#@Html.FieldIdFor(model => model.CreatedOnFrom)').val(),
-                CreatedOnTo: $('#@Html.FieldIdFor(model => model.CreatedOnTo)').val()
+        $('#disapprove-selected').click(function (e) {
+            processMany(e, "@(Url.Action("DisapproveSelected", "ProductReview"))")
+        });
+
+        $('#delete-selected').click(function (e) {
+            processMany(e, "@(Url.Action("DeleteSelected", "ProductReview"))")
+        });
+
+        function processMany(e, action) {
+            e.preventDefault();
+
+            var postData = {
+                selectedIds: selectedIds
             };
-            e.data = searchModel;
-        }
 
-        function onDataBound(e) {
-
-            $('#productreviews-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-                var currentId = $(this).val();
-                var checked = jQuery.inArray(currentId, selectedIds);
-                //set checked based on if current checkbox's value is in selectedIds.  
-                $(this).attr('checked', checked > -1);
+            $.ajax({
+                cache:false,
+                type: "POST",
+                url: action,
+                data: postData,
+                complete: function (data) {
+                    //reload grid
+                    var grid = $('#productreviews-grid').data('tGrid');
+                    grid.ajaxRequest();
+                    //clear selected checkboxes
+                    $('.checkboxGroups').attr('checked', false).change();
+                    selectedIds = [];
+                },
+                error:function (xhr, ajaxOptions, thrownError) {
+                    alert(thrownError);
+                },
+                traditional: true
             });
+            return false;
+        }
 
+        $('#mastercheckbox').click(function () {
+            $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+        });
+
+        //wire up checkboxes. 
+        $(document).on('change', '#productreviews-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+            var $check = $(this);
+            if ($check.is(":checked") == true) {
+                var checked = jQuery.inArray($check.val(), selectedIds);
+                if (checked == -1) {
+                    //add id to selectedIds.  
+                    selectedIds.push($check.val());
+                }
+            }
+            else {
+                var checked = jQuery.inArray($check.val(), selectedIds);
+                if (checked > -1) {
+                    //remove id from selectedIds.  
+                    selectedIds = $.grep(selectedIds, function (item, index) {
+                        return item != $check.val();
+                    });
+                }
+            }
             updateMasterCheckbox();
-        }
-        
-        function updateMasterCheckbox() {
-            var numChkBoxes = $('#productreviews-grid input[type=checkbox][id!=mastercheckbox]').length;
-            var numChkBoxesChecked = $('#productreviews-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-        }
+        });
+    });
 
-    </script>
+    function onDataBinding(e) {
+        var searchModel = {
+            CreatedOnFrom: $('#@Html.FieldIdFor(model => model.CreatedOnFrom)').val(),
+            CreatedOnTo: $('#@Html.FieldIdFor(model => model.CreatedOnTo)').val()
+        };
+        e.data = searchModel;
+    }
+
+    function onDataBound(e) {
+
+        $('#productreviews-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+            var currentId = $(this).val();
+            var checked = jQuery.inArray(currentId, selectedIds);
+            //set checked based on if current checkbox's value is in selectedIds.  
+            $(this).attr('checked', checked > -1);
+        });
+
+        updateMasterCheckbox();
+    }
+        
+    function updateMasterCheckbox() {
+        var numChkBoxes = $('#productreviews-grid input[type=checkbox][id!=mastercheckbox]').length;
+        var numChkBoxesChecked = $('#productreviews-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+        $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+    }
+
+</script>

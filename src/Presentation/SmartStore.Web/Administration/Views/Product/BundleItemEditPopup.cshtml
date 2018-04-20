@@ -16,11 +16,12 @@
     <div class="section-header">
         <div class="title">@ViewBag.Title</div>
 		<div class="options">
-			<button type="submit" name="save-continue" value="save-continue" class="btn">
-				@T("Admin.Common.SaveContinue")
+			<button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
 			</button>
-			<button type="submit" name="save" value="save" class="btn btn-primary">
-				<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+			<button type="submit" name="save-continue" value="save-continue" class="btn btn-secondary">
+				@T("Admin.Common.SaveContinue")
 			</button>
 		</div>
 	</div>
@@ -34,16 +35,10 @@
 				$('#attribute_@attribute.Id').selectWrapper();
 				</text>
 			}
-
-			$('#@Html.FieldIdFor(model => model.FilterAttributes)').change(function () {
-				$('#AttributeFilters').toggle(
-					$('#@Html.FieldIdFor(model => model.FilterAttributes)').is(':checked')
-				);
-			}).trigger('change');
 		});
 	</script>
     	
-	@Html.SmartStore().TabStrip().Name("bundleitem-edit").Items(x =>
+	@Html.SmartStore().TabStrip().Name("bundleitem-edit").Style(TabsStyle.Material).Items(x =>
 	{
 		x.Add().Text(T("Common.General").Text).Content(TabInfo()).Selected(true);
 		x.Add().Text(T("Admin.Catalog.Products.BundleItems.Attributes").Text).Content(TabAttributeFilters());
@@ -61,6 +56,9 @@
 						@Html.SmartLabelFor(model => model.Locales[item].Name)
 					</td>
 					<td class="adminData">
+						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
 						@Html.EditorFor(model => Model.Locales[item].Name)
 						@Html.ValidationMessageFor(model => model.Locales[item].Name)
 					</td>
@@ -72,11 +70,6 @@
 					<td class="adminData">
 						@Html.EditorFor(model => model.Locales[item].ShortDescription)
 						@Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						@Html.HiddenFor(model => model.Locales[item].LanguageId)
 					</td>
 				</tr>
 			</table>
@@ -176,7 +169,9 @@
 					@Html.SmartLabelFor(model => model.CreatedOn)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.CreatedOn)
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.CreatedOn)
+					</div>
 				</td>
 			</tr>
 			<tr>
@@ -184,7 +179,9 @@
 					@Html.SmartLabelFor(model => model.UpdatedOn)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.UpdatedOn)
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.UpdatedOn)
+					</div>
 				</td>
 			</tr>
 		</table>
@@ -192,64 +189,47 @@
 	
 	@helper TabAttributeFilters()
 	{
-		<div>
-			<table class="adminContent">
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.FilterAttributes)
-					</td>
-					<td class="adminData">
-						@Html.EditorFor(model => model.FilterAttributes)
-						@Html.ValidationMessageFor(model => model.FilterAttributes)
-					</td>
-				</tr>
-			</table>
-		</div>
-		
-		<div id="AttributeFilters" style="margin-top:10px;">
-			<table class="adminContent">
+		if (Model.Attributes.Count == 0)
+		{
+			<div class="alert alert-warning">
+				@T("Admin.Catalog.Products.BundleItems.Fields.FilterAttributes.NoneNote")
+			</div>
+			return;
+		}
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.FilterAttributes)
+				</td>
+				<td class="adminData">
+					@Html.CheckBoxFor(model => model.FilterAttributes, new { data_toggler_for = "#AttributeFilters" })
+					@Html.ValidationMessageFor(model => model.FilterAttributes)
+				</td>
+			</tr>
+			<tbody id="AttributeFilters">
 				@foreach (var attribute in Model.Attributes)
 				{
-					if(Model.Attributes.IndexOf(attribute) != 0)
-					{
-						<tr class="adminSeparator">
-							<td colspan="2">
-								<hr />
-							</td>
-						</tr>
-					}
 					<tr>
 						<td class="adminTitle">
-							<div class="ctl-label">
-								<label for="@attribute.AttributeControlId">@attribute.Name</label>
-							</div>
+							@Html.SmartLabel(attribute.AttributeControlId, attribute.Name)
 						</td>
 						<td class="adminData">
-							@Html.DropDownList(attribute.AttributeControlId, attribute.Values, null, new { multiple = "multiple" })
+							@Html.DropDownList(attribute.AttributeControlId, attribute.Values, null, new { multiple = "multiple", @class = "form-control" })
 						</td>
 					</tr>
 					if (attribute.PreSelect.Count > 0)
 					{
 						<tr>
 							<td class="adminTitle">
-								<div class="ctl-label">
-									<label for="@attribute.PreSelectControlId">@T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect")</label>
-									@Html.Hint(T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect.Hint"))
-								</div>
+								@Html.SmartLabel(attribute.PreSelectControlId, T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect"), T("Admin.Catalog.Products.BundleItems.Fields.FilterPreSelect.Hint"))
 							</td>
 							<td class="adminData">
-								@Html.DropDownList(attribute.PreSelectControlId, attribute.PreSelect)
+								@Html.DropDownList(attribute.PreSelectControlId, attribute.PreSelect, new { @class = "form-control" })
 							</td>
 						</tr>
 					}
 				}
-			</table>
-			@if (Model.Attributes.Count == 0)
-			{
-				<div class="alert alert-info">
-					@T("Admin.Catalog.Products.BundleItems.Fields.FilterAttributes.NoneNote")
-				</div>
-			}
-		</div>
+			</tbody>
+		</table>
 	}
 }

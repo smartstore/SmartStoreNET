@@ -8,6 +8,7 @@
 
     ViewBag.Title = T("Admin.Catalog.LowStockReport").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -19,40 +20,36 @@
         </div>
     </div>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel>()
-                    .Name("products-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(p => p.Name)
-							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-                        columns.Bound(p => p.Sku);
-                        columns.Bound(p => p.Price)
-							.Format("{0:0.00}")
-							.RightAlign();
-                        columns.Bound(p => p.StockQuantity)
-							.Centered()
-							.Width(140);
-                        columns.Bound(p => p.Published)
-                            .Width(140)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .Width(90)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("LowStockReportList", "Product"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+	<div>
+		@(Html.Telerik().Grid<ProductModel>()
+			.Name("products-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(p => p.Name)
+					.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+				columns.Bound(p => p.Sku);
+				columns.Bound(p => p.Price)
+					.Format("{0:0.00}")
+					.RightAlign();
+				columns.Bound(p => p.StockQuantity)
+					.Centered()
+					.Width(140);
+				columns.Bound(p => p.Published)
+					.Width(140)
+					.Template(item => @Html.SymbolForBool(item.Published))
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered();
+				columns.Bound(x => x.Id)
+					.Width(90)
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+					.HtmlAttributes(new { align = "right", @class = "omega" })
+					.Title(String.Empty);
+			})
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("LowStockReportList", "Product"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+	</div>
 }

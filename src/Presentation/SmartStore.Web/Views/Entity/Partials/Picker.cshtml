@@ -1,0 +1,102 @@
+﻿@model EntityPickerModel
+
+@using SmartStore.Web.Models.Entity;
+
+@{ 
+	var isProductPicker = Model.EntityType.IsCaseInsensitiveEqual("product");
+}
+
+<div id="entpicker-@(Model.EntityType)-dialog" class="modal fade entpicker" role="dialog" aria-hidden="true" tabindex="-1">
+	<div class="modal-dialog modal-flex" role="document">
+		<form class="modal-content" method="POST" action="@Url.Action("Picker", "Entity", new { area = "" })">
+			<div class="modal-header flex-wrap">
+				<h5 class="modal-title align-self-center">&nbsp;</h5>
+
+				@if (isProductPicker)
+				{
+					<input type="hidden" name="EntityType" value="@Model.EntityType" />
+					<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
+					<input type="hidden" name="ReturnField" value="@Model.ReturnField" />
+					<input type="hidden" name="MaxItems" value="@Model.MaxItems" />
+					<input type="hidden" name="PreselectedEntityIds" value="@Model.PreselectedEntityIds" />
+					<input type="hidden" name="DisableIf" value="@Model.DisableIf" />
+					<input type="hidden" name="DisableIds" value="@Model.DisableIds" />
+					<input type="hidden" name="PageIndex" value="@Model.PageIndex" />
+
+					@ProductSearchForm()
+				}
+			</div>
+			<div class="modal-body">
+				<div class="entpicker-list row px-2">
+					@* Items per AJAX *@
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="footer-note text-muted">
+					<span class="default" style="display: none">@T(Model.MaxItems == 1 ? "Common.EntityPicker.SinglePickNote" : "Common.EntityPicker.MultiPickNote")</span>
+					<span class="not-selectable" style="display: none">@T("Common.NotSelectable").</span>
+				</div>
+				<div class="ml-auto">
+					<button type="button" class="btn btn-light btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+					<button type="button" class="btn btn-primary" disabled="disabled">@T("Common.Apply")</button>
+				</div>
+
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+	$(function () {
+		$('#entpicker-@(Model.EntityType)-dialog').entityPicker('initDialog');
+	});
+</script>
+
+@helper ProductSearchForm()
+{
+	var availableCategories = (IEnumerable<SelectListItem>)ViewBag.AvailableCategories;
+	var availableManufacturers = (IEnumerable<SelectListItem>)ViewBag.AvailableManufacturers;
+	var availableStores = (IEnumerable<SelectListItem>)ViewBag.AvailableStores;
+	var availableProductTypes = (IEnumerable<SelectListItem>)ViewBag.AvailableProductTypes;
+
+	<div class="control-group mr-2">
+		<div class="form-inline">
+			<div class="input-group">
+				@Html.TextBoxFor(model => model.ProductName, new { @class = "form-control entpicker-searchterm", placeholder = Html.DisplayNameFor(m => m.ProductName) })
+				<span class="input-group-append">
+					<button type="button" class="btn btn-warning" name="SearchEntities" data-loading-text="@(T("Common.Loading"))&hellip;" title="@T("Admin.Common.Search")">
+						<i class="fa fa-search"></i>
+					</button>
+				</span>
+			</div>
+			<button type="button" class="btn btn-secondary ml-2" name="FilterEntities" data-toggle="button">
+				<i class="fa fa-filter"></i>
+			</button>
+		</div>
+	</div>
+
+	<div class="entpicker-filter form-row xs-gutters w-100 pt-2" style="display: none">
+		<div class="form-group col mb-0">
+			@Html.LabelFor(model => model.CategoryId, new { @class = "col-form-label text-truncate", @for = "CategoryId" })
+			@Html.DropDownListFor(model => model.CategoryId, availableCategories, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
+		</div>
+
+		<div class="form-group col mb-0">
+			@Html.LabelFor(model => model.ManufacturerId, new { @class = "col-form-label text-truncate", @for = "ManufacturerId" })
+			@Html.DropDownListFor(model => model.ManufacturerId, availableManufacturers, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
+		</div>
+
+		@if (availableStores.Count() > 1)
+		{
+			<div class="form-group col mb-0">
+				@Html.LabelFor(model => model.StoreId, new { @class = "col-form-label text-truncate", @for = "StoreId" })
+				@Html.DropDownListFor(model => model.StoreId, availableStores, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
+			</div>
+		}
+
+		<div class="form-group col mb-0">
+			@Html.LabelFor(model => model.ProductTypeId, new { @class = "col-form-label text-truncate", @for = "ProductTypeId" })
+			@Html.DropDownListFor(model => model.ProductTypeId, availableProductTypes, T("Admin.Common.All"), new { @class = "form-control form-control-sm" })
+		</div>
+	</div>
+}

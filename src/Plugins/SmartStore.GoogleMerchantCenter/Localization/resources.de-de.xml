@@ -15,13 +15,21 @@
   <LocaleResource Name="AdminInstruction">
 		<Value>
 			<![CDATA[<ul>
-<li>Für die Produktidentifizierung muss entweder die GTIN (z.B. als UPC, EAN etc.) oder der Hersteller samt Hersteller-Artikelnummer (MPN) hinterlegt sein. Google empfiehlt die Angabe aller drei Informationen.</li>
-<li>Standard Steuer- und Versanddaten sind in den Einstellungen Ihres Google-Merchant-Center-Kontos zu hinterlegen.</li>
-<li>Mehr Informationen zu benötigten Feldern finden Sie im Artikel <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=188494" target="_blank">Produkt-Feed-Spezifikationen</a>.</li>
-<li>Eine Liste mit allen gültigen Google-Produkt-Kategorie finden Sie <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=160081" target="_blank">hier</a>.</li>
-</ul>]]>
+				<li>Für die Produktidentifizierung muss entweder die GTIN (z.B. als UPC, EAN etc.) oder der Hersteller samt Hersteller-Artikelnummer (MPN) hinterlegt sein. Google empfiehlt die Angabe aller drei Informationen.</li>
+				<li>Standard Steuer- und Versanddaten sind in den Einstellungen Ihres Google-Merchant-Center-Kontos zu hinterlegen.</li>
+				<li>Mehr Informationen zu benötigten Feldern finden Sie im Artikel <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=188494" target="_blank">Produkt-Feed-Spezifikationen</a>.</li>
+				<li>Eine Liste mit allen gültigen Google-Produkt-Kategorie finden Sie <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=160081" target="_blank">hier</a>.</li>
+				</ul>]]>
 		</Value>
 	</LocaleResource>
+
+	<LocaleResource Name="TabTitleGrid">
+		<Value>Produktdaten</Value>
+	</LocaleResource>
+	<LocaleResource Name="TabTitleProfiles">
+		<Value>Export-Profile</Value>
+	</LocaleResource>
+	
   <LocaleResource Name="GeneralSettings">
     <Value>Allgemeine Einstellungen</Value>
   </LocaleResource>
@@ -164,7 +172,7 @@
 		<Value>Noch nicht bearbeitet</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays">
-		<Value>Verfällt in Tagen</Value>
+		<Value>Verfällt in</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays.Hint">
 		<Value>Anzahl der Tage, nach dem die Artikel verfallen bzw. nicht mehr angezeigt werden sollen. Der Wert 0 bewirkt, dass kein Verfallsdatum exportiert wird.</Value>

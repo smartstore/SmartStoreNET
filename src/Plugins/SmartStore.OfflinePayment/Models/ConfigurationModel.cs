@@ -3,21 +3,28 @@ using System.Web.Mvc;
 using SmartStore.OfflinePayment.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStore.OfflinePayment.Models
 { 
 	public abstract class ConfigurationModelBase : ModelBase
     {
+		public string PrimaryStoreCurrencyCode { get; set; }
+
 		[AllowHtml]
 		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.DescriptionText")]
 		public string DescriptionText { get; set; }
 
-		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.AdditionalFee")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
-		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.AdditionalFeePercentage")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
-    }
+
+		[SmartResourceDisplayName("Plugins.SmartStore.OfflinePayment.PaymentMethodLogo")]
+		[UIHint("Picture")]
+		public int PaymentMethodLogo { get; set; }
+	}
 
 	public class CashOnDeliveryConfigurationModel : ConfigurationModelBase
 	{

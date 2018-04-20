@@ -1,5 +1,6 @@
 ﻿@model ProductSummaryModel.SummaryItem
 
+@using SmartStore.Services.Localization;
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
@@ -14,7 +15,7 @@
 			var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
 			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
 				<i class="fa fa-circle delivery-time-status"></i>
-				@statusLabel
+				<span dir="auto">@statusLabel</span>
 			</span>
 		}
 	</div>
@@ -35,10 +36,13 @@
 						<span>@T("Products.Price.OldPrice"):</span>
 						<span class="art-oldprice">@Model.Price.RegularPrice</span>
 					</div>
-					<div>
-						<span>@T("ShoppingCart.ItemYouSave"):</span>
-						<span>@Model.Price.SavingAmount (@Model.Price.SavingPercent.ToString("N0") %)</span>
-					</div>
+					@if (Model.Price.SavingAmount.HasValue())
+					{
+						<div class="d-flex">
+							<span>@T("ShoppingCart.ItemYouSave"):</span>
+							<span class="pl-2">@Model.Price.SavingAmount <span class="lrm">(@Model.Price.SavingPercent.ToString("N0") %)</span></span>
+						</div>
+					}
 				</div>
 			}
 			else
@@ -57,7 +61,7 @@
 		@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
 		{
 			<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
-				@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
+				@Html.Raw(LocalizedValue.FixBrackets(Model.BasePriceInfo, WorkContext.WorkingLanguage) ?? "&nbsp;")
 			</div>
 		}
 	</div>

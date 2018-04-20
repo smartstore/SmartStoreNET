@@ -3,10 +3,8 @@
 
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-
     int? filterByNewsItemId = ViewBag.FilterByNewsItemId;
     
-    //page title
     ViewBag.Title = T("Admin.ContentManagement.News.Comments").Text;
 }
 <div class="section-header">
@@ -17,55 +15,54 @@
     <div class="options">
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<NewsCommentModel>(Model.Data)
-                    .Name("comments-grid")
-                    .DataKeys(x => {
-                        x.Add(y => y.Id).RouteKey("Id");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Id)
-                            .Width(50);
-                        columns.Bound(x => x.NewsItemTitle)
-                            .Width(450)
-                            .Template(x => Html.ActionLink(x.NewsItemTitle, "Edit", "News", new { id = x.NewsItemId }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/News/Edit/") + "<#= NewsItemId #>\"><#= NewsItemTitle #></a>");
-                        columns.Bound(x => x.CustomerId)
-							.Width(200)
-                            .Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
-                        columns.Bound(x => x.CommentTitle)
-                            .Width(200);
-                        columns.Bound(x => x.CommentText)
-                            .Encoded(false);
-                        columns.Bound(x => x.IpAddress)
-                            .Width(100);
-                        columns.Bound(x => x.CreatedOn)
-                            .Width(150);
-                        columns.Command(commands =>
-                        {
-                            commands.Delete().Localize(T);                            
-                        }).Width(90);
-                    })
-                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => {
-                        var settingBuilder = dataBinding.Ajax();
-                        if (filterByNewsItemId.HasValue)
-                        {
-                            settingBuilder = settingBuilder.Select("Comments", "News", new { filterByNewsItemId = filterByNewsItemId.Value });
-                            settingBuilder = settingBuilder.Delete("CommentDelete", "News", new { filterByNewsItemId = filterByNewsItemId.Value });
-                        }
-                        else
-                        {
-                            settingBuilder = settingBuilder.Select("Comments", "News");
-                            settingBuilder = settingBuilder.Delete("CommentDelete", "News");
-                        }
-                    })
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+
+<div>
+	@(Html.Telerik().Grid<NewsCommentModel>(Model.Data)
+			.Name("comments-grid")
+			.DataKeys(x =>
+			{
+				x.Add(y => y.Id).RouteKey("Id");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.Width(50);
+				columns.Bound(x => x.NewsItemTitle)
+					.Width(450)
+					.Template(x => Html.ActionLink(x.NewsItemTitle, "Edit", "News", new { id = x.NewsItemId }, new { }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/News/Edit/") + "<#= NewsItemId #>\"><#= NewsItemTitle #></a>");
+				columns.Bound(x => x.CustomerId)
+					.Width(200)
+					.Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
+				columns.Bound(x => x.CommentTitle)
+					.Width(200);
+				columns.Bound(x => x.CommentText)
+					.Encoded(false);
+				columns.Bound(x => x.IpAddress)
+					.Width(100);
+				columns.Bound(x => x.CreatedOn)
+					.Width(150);
+				columns.Command(commands =>
+				{
+					commands.Delete().Localize(T);
+				}).Width(90);
+			})
+			.Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding =>
+			{
+				var settingBuilder = dataBinding.Ajax();
+				if (filterByNewsItemId.HasValue)
+				{
+					settingBuilder = settingBuilder.Select("Comments", "News", new { filterByNewsItemId = filterByNewsItemId.Value });
+					settingBuilder = settingBuilder.Delete("CommentDelete", "News", new { filterByNewsItemId = filterByNewsItemId.Value });
+				}
+				else
+				{
+					settingBuilder = settingBuilder.Select("Comments", "News");
+					settingBuilder = settingBuilder.Delete("CommentDelete", "News");
+				}
+			})
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+</div>

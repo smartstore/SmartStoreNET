@@ -7,6 +7,7 @@ using System.Text;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleMerchantCenter.Domain;
 using SmartStore.GoogleMerchantCenter.Models;
@@ -15,22 +16,25 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Services
 {
-    public partial class GoogleFeedService : IGoogleFeedService
+	public partial class GoogleFeedService : IGoogleFeedService
     {
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";
 
         private readonly IRepository<GoogleProductRecord> _gpRepository;
 		private readonly ICommonServices _services;
 		private readonly IPluginFinder _pluginFinder;
+		private readonly ILogger _logger;
 
 		public GoogleFeedService(
 			IRepository<GoogleProductRecord> gpRepository,
 			ICommonServices services,
-			IPluginFinder pluginFinder)
+			IPluginFinder pluginFinder,
+			ILogger logger)
         {
             _gpRepository = gpRepository;
 			_services = services;
 			_pluginFinder = pluginFinder;
+			_logger = logger;
 
 			T = NullLocalizer.Instance;
         }
@@ -90,7 +94,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				return;
 
 			var product = GetGoogleProductRecord(pk);
-			bool insert = (product == null);
+			var insert = (product == null);
 			var utcNow = DateTime.UtcNow;
 
 			if (product == null)
@@ -291,29 +295,47 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			return model;
 		}
 
-		public string[] GetTaxonomyList()
+		public List<string> GetTaxonomyList(string searchTerm)
 		{
+			var result = new List<string>();
+
 			try
 			{
 				var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(GoogleMerchantCenterFeedPlugin.SystemName);
-
 				var fileDir = Path.Combine(descriptor.OriginalAssemblyFile.Directory.FullName, "Files");
-				var fileName = "taxonomy.{0}.txt".FormatWith(_services.WorkContext.WorkingLanguage.LanguageCulture ?? "de-DE");
+				var fileName = "taxonomy.{0}.txt".FormatInvariant(_services.WorkContext.WorkingLanguage.LanguageCulture ?? "de-DE");
 				var path = Path.Combine(fileDir, fileName);
+				var filter = searchTerm.HasValue();
+				string line;
 
 				if (!File.Exists(path))
+				{
 					path = Path.Combine(fileDir, "taxonomy.en-US.txt");
+				}
 
-				string[] lines = File.ReadAllLines(path, Encoding.UTF8);
+				using (var file = new StreamReader(path, Encoding.UTF8))
+				{
+					while ((line = file.ReadLine()) != null)
+					{
+						if (string.IsNullOrWhiteSpace(line))
+						{
+							continue;
+						}
+						if (filter && line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) < 0)
+						{
+							continue;
+						}
 
-				return lines;
+						result.Add(line);
+					}
+				}
 			}
 			catch (Exception exc)
 			{
-				exc.Dump();
+				_logger.Error(exc);
 			}
 
-			return new string[] { };
+			return result;
 		}
     }
 }

@@ -7,8 +7,7 @@
 @Html.HiddenFor(model => model.ProductVariantAttributeId)
 
 <script type="text/javascript">
-	$(document).ready(function () {
-
+	$(function () {
 		$('#@Html.FieldIdFor(model => model.ValueTypeId)').change(function () {
 			var selectedValueTypeId = $('#@Html.FieldIdFor(model => model.ValueTypeId)').val();
 
@@ -26,40 +25,19 @@
 			}
 		}).trigger('change');
 
-		$('#RemoveProductLinkageButton').click(function () {
-			$('#linked-product-name').empty();
+		$('#RemoveProductLinkageButton').on('click', function () {
+			$('#linked-product-name').val('');
 			$('#@Html.FieldIdFor(model => model.LinkedProductId)').val('0');
 			toggleLinkageButtons();
 		});
 
 		toggleLinkageButtons();
-
-		// add product linkage
-		$(document).on('click', '#AddProductLinkageButton', function () {
-			$('#@(Html.FieldIdFor(x => x.LinkedProductId))').entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-				caption: '@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew")',
-				maxReturnValues: 1,
-				appendValue: false,
-				disableIds: '@Model.ProductId',
-				onLoadDialogBefore: function () {
-					$('#AddProductLinkageButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#AddProductLinkageButton').prop('disabled', false).button('reset');
-				},
-				onOkClicked: function (ids) {
-					var dialog = $('#entity-picker-product-dialog'),
-						item = dialog.find('.entity-picker-list .selected').first();
-
-					$('#linked-product-name').html(item.find('.title').attr('title'));
-
-					return true;
-				}
-			});
-		});
-
 	});
+
+	function PickLinkedProduct_Completed(ids, selectedItems, dialog) {
+		$('#linked-product-name').val(selectedItems[0].name);
+		return true;
+	}
 
 	function toggleLinkageButtons() {
 		var unlinked = ($('#@Html.FieldIdFor(model => model.LinkedProductId)').val() === '0');
@@ -68,7 +46,7 @@
 	}
 </script>
 
-<table class="adminContent">
+<table class="adminContent mb-3">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.ValueTypeId)
@@ -84,16 +62,27 @@
         </td>
         <td class="adminData">
 			@Html.HiddenFor(model => model.LinkedProductId)
-			<div id="linked-product-name">@Model.LinkedProductName</div>
 
-			<button type="button" id="RemoveProductLinkageButton" class="btn btn-below">
-				<i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
-			</button>
-
-			<button type="button" id="AddProductLinkageButton" class="btn btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
-				<i class="fa fa-link"></i>
-				@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
-			</button>
+			<div class="input-group">
+				<input type="text" class="form-control" id="linked-product-name" placeholder="@T("Common.Unspecified")" value="@Model.LinkedProductName" readonly>
+				<div class="input-group-append">
+					<button type="button" id="RemoveProductLinkageButton" class="btn btn-outline-secondary btn-to-danger">
+						<i class="fa fa-times"></i>
+						<span>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")</span>
+					</button>
+					@(Html.SmartStore().EntityPicker()
+						.For(x => x.LinkedProductId)
+						.IconCssClass("fa fa-link")
+						.HtmlAttribute("class", "btn btn-outline-secondary")
+						.HtmlAttribute("id", "AddProductLinkageButton")
+						.MaxItems(1)
+						.AppendMode(false)
+						.DisabledEntityIds(Model.ProductId)
+						.DialogTitle(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew").Text.EncodeJsString('\'', false))
+						.Caption(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct").Text.EncodeJsString('\'', false))
+						.OnSelectionCompleted("PickLinkedProduct_Completed"))
+				</div>
+			</div>
 
             @Html.ValidationMessageFor(model => model.LinkedProductId)
         </td>
@@ -109,8 +98,6 @@
     </tr>
 </table>
 
-<p></p>
-
 @(Html.LocalizedEditor<ProductModel.ProductVariantAttributeValueModel, ProductModel.ProductVariantAttributeValueLocalizedModel>("productattributevalue-localized",
 @<table class="adminContent">
     <tr>
@@ -118,6 +105,9 @@
             @Html.SmartLabelFor(model => model.Locales[item].Name)
         </td>
         <td class="adminData">
+			@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+			@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
             @Html.EditorFor(model => Model.Locales[item].Name)
             @Html.ValidationMessageFor(model => model.Locales[item].Name)
         </td>
@@ -129,11 +119,6 @@
         <td class="adminData">
             @Html.EditorFor(model => Model.Locales[item].Alias)
             @Html.ValidationMessageFor(model => model.Locales[item].Alias)
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            @Html.HiddenFor(model => model.Locales[item].LanguageId)
         </td>
     </tr>
 </table>

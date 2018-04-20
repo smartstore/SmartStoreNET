@@ -32,9 +32,10 @@ namespace SmartStore.Admin.Validators.Localization
                 .NotNull()
                 .WithMessage(localizationService.GetResource("Admin.Configuration.Languages.Fields.UniqueSeoCode.Required"));
 
-            RuleFor(x => x.UniqueSeoCode)
-                .Length(2)
-                .WithMessage(localizationService.GetResource("Admin.Configuration.Languages.Fields.UniqueSeoCode.Length"));
-        }
-    }
+			RuleFor(x => x.UniqueSeoCode)
+				//.Length(2)	// Never validates.
+				.Length(x => 2)
+				.WithMessage(localizationService.GetResource("Admin.Configuration.Languages.Fields.UniqueSeoCode.Length"));
+		}
+	}
 }

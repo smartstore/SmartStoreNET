@@ -1,5 +1,5 @@
-﻿@model Telerik.Web.Mvc.GridModel<LanguageModel>
-@using Telerik.Web.Mvc.UI
+﻿@using SmartStore.Admin.Models.Localization;
+@model List<LanguageModel>
 @{
     ViewBag.Title = T("Admin.Configuration.Languages").Text;
 }
@@ -9,40 +9,107 @@
         @T("Admin.Configuration.Languages")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<LanguageModel>()
-                    .Name("languages-grid")
-                    .BindTo(Model.Data)
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }));
-                        columns.Bound(x => x.LanguageCulture)
-                            .Width(200)
-                            .Centered();
-                        columns.Template(
-                                @<div>
-                                    @Html.ActionLink(T("Admin.Configuration.Languages.Resources.View").Text, "Resources", new { languageId = item.Id })
-                                </div>
-                            ).Width(200)
-                            .Centered()
-                            .Title(T("Admin.Configuration.Languages.Resources.View").Text);
-                        columns.Bound(x => x.DisplayOrder)
-                            .Width(200)
-                            .Centered();
-                        columns.Bound(x => x.Published)
-                            .Width(200)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                    })
-                    //.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Language"))
-                    .EnableCustomBinding(false))
-        </td>
-    </tr>
-</table>
+
+<div>
+	<h5 class="mb-3">@T("Admin.Configuration.Languages.InstalledLanguages")</h5>
+
+	<div class="table-responsive">
+		<table class="table admin-table installed-languages-list language-list">
+			<thead>
+				<tr>
+					<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
+					<th class="text-center">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
+					<th class="text-center">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
+					<th class="text-center">@T("Admin.Configuration.Languages.Fields.Published")</th>
+					<th class="text-center">@T("Admin.Common.Store.LimitedTo")</th>
+					<th class="text-center">@T("Admin.Configuration.Languages.Fields.DisplayOrder")</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var language in Model)
+				{
+					<tr class="@(language.Published ? "" : "disabled")">
+						<td>
+							@if (language.FlagImageFileName.HasValue())
+							{
+								<img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon mr-1 mb-1" />
+							}
+							<a href="@Url.Action("Edit", new { id = language.Id })">@language.Name</a>
+						</td>
+						<td class="text-center">
+							@language.LanguageCulture
+						</td>
+						<td class="text-center">
+							@language.UniqueSeoCode
+						</td>
+						<td class="text-center">
+							@Html.SymbolForBool(language.Published)
+						</td>
+						<td class="text-center">
+							@Html.SymbolForBool(language.LimitedToStores)
+						</td>
+						<td class="text-center">
+							@language.DisplayOrder
+						</td>
+						<td class="omega text-truncate" style="width: 200px;">
+							<a href="@Url.Action("Edit", new { id = language.Id })" class="btn btn-warning btn-sm">
+								@*<i class="fa fa-pencil-square-o"></i>*@
+								<span>@T("Admin.Common.Edit")</span>
+							</a>
+							<a href="@Url.Action("Resources", new { languageId = language.Id })" class="btn btn-secondary btn-sm">
+								@*<i class="fa fa-list-alt"></i>*@
+								<span>@T("Admin.Configuration.Languages.Resources.View")</span>
+							</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="mt-5">
+	<h5 class="mb-3">@T("Admin.Configuration.Languages.AvailableLanguages")</h5>
+    <div id="AvailableLanguages"></div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var downloadProgressInterval = null,
+            downloadProgressIntervalAccess = true;
+
+        // Load available languages
+	    $({}).doAjax({
+	        url: '@Url.Action("AvailableLanguages")',
+	        smallIcon: '#AvailableLanguages',
+	        callbackSuccess: function (resp) {
+	            $('#AvailableLanguages').html(resp);
+	        }
+	    });
+
+        // Watch language download progress
+		SmartStore.Admin.TaskWatcher.startWatching({
+            context: $('#AvailableLanguages'),
+            elementsSelector: '.task-progress',
+            defaultProgressMessage: @T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText,
+            pollUrl: '@Url.Action("DownloadProgress")',
+            onTaskStarted: function (task, el) {
+                var tr = el.closest('tr');
+
+                $('#AvailableLanguages').find('a.download-language').addClass('hide');
+                $('body, html').animate({ scrollTop: tr.offset().top }, 'slow');
+            },
+            onTaskCompleted: function (taskId, el) {
+               window.location = '@Url.Action("List")';
+            }
+        });
+    });
+</script>

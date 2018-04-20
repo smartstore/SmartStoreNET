@@ -91,16 +91,6 @@ namespace SmartStore.Tests
 			return Table;
 		}
 
-		public bool IsModified(T entity)
-		{
-			return false;
-		}
-
-		public IDictionary<string, object> GetModifiedProperties(T entity)
-		{
-			return new Dictionary<string, object>();
-		}
-
 		public IDbContext Context
 		{
 			get 

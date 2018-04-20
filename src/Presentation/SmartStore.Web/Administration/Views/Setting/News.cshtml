@@ -1,7 +1,5 @@
 ﻿@model NewsSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.News").Text;
 }
 @using (Html.BeginForm())
@@ -12,7 +10,10 @@
             @T("Admin.Configuration.Settings.News")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
@@ -26,72 +27,74 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.Enabled)
+				@Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlNewsEnabled" }))
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowNotRegisteredUsersToLeaveComments)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
-                @Html.ValidationMessageFor(model => model.AllowNotRegisteredUsersToLeaveComments)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.NotifyAboutNewNewsComments)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.NotifyAboutNewNewsComments)
-                @Html.ValidationMessageFor(model => model.NotifyAboutNewNewsComments)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowNewsOnMainPage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowNewsOnMainPage)
-                @Html.ValidationMessageFor(model => model.ShowNewsOnMainPage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MainPageNewsCount)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MainPageNewsCount)
-                @Html.ValidationMessageFor(model => model.MainPageNewsCount)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.NewsArchivePageSize)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.NewsArchivePageSize)
-                @Html.ValidationMessageFor(model => model.NewsArchivePageSize)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MaxAgeInDays)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.MaxAgeInDays)
-				@Html.ValidationMessageFor(model => model.MaxAgeInDays)
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowHeaderRssUrl)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowHeaderRssUrl)
-                @Html.ValidationMessageFor(model => model.ShowHeaderRssUrl)
-            </td>
-        </tr>
+		<tbody id="pnlNewsEnabled">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+					@Html.ValidationMessageFor(model => model.AllowNotRegisteredUsersToLeaveComments)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.NotifyAboutNewNewsComments)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.NotifyAboutNewNewsComments)
+					@Html.ValidationMessageFor(model => model.NotifyAboutNewNewsComments)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ShowNewsOnMainPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.ShowNewsOnMainPage)
+					@Html.ValidationMessageFor(model => model.ShowNewsOnMainPage)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MainPageNewsCount)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.MainPageNewsCount)
+					@Html.ValidationMessageFor(model => model.MainPageNewsCount)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.NewsArchivePageSize)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.NewsArchivePageSize)
+					@Html.ValidationMessageFor(model => model.NewsArchivePageSize)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MaxAgeInDays)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.MaxAgeInDays, null, new { postfix = T("Time.Days").Text })
+					@Html.ValidationMessageFor(model => model.MaxAgeInDays)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ShowHeaderRssUrl)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.ShowHeaderRssUrl)
+					@Html.ValidationMessageFor(model => model.ShowHeaderRssUrl)
+				</td>
+			</tr>
+		</tbody>
     </table>
 }

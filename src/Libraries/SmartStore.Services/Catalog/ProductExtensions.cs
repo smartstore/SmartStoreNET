@@ -11,6 +11,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Catalog
 {
@@ -148,21 +149,6 @@ namespace SmartStore.Services.Catalog
             return null;
         }
 
-        /// <summary>
-        /// Get a default picture of a product 
-        /// </summary>
-        /// <param name="source">Source</param>
-        /// <param name="pictureService">Picture service</param>
-        /// <returns>Product picture</returns>
-        public static Picture GetDefaultProductPicture(this Product source, IPictureService pictureService)
-        {
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(pictureService, nameof(pictureService));
-
-            var picture = pictureService.GetPicturesByProductId(source.Id, 1).FirstOrDefault();
-            return picture;
-        }
-
 		public static bool IsAvailableByStock(this Product product)
 		{
 			Guard.NotNull(product, nameof(product));
@@ -183,13 +169,10 @@ namespace SmartStore.Services.Catalog
         /// <returns>The stock message</returns>
         public static string FormatStockMessage(this Product product, ILocalizationService localizationService)
         {
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
+			Guard.NotNull(localizationService, nameof(localizationService));
 
-            if (localizationService == null)
-                throw new ArgumentNullException("localizationService");
-
-            string stockMessage = string.Empty;
+			string stockMessage = string.Empty;
 
             if ((product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
                 && product.DisplayStockAvailability)
@@ -246,11 +229,10 @@ namespace SmartStore.Services.Catalog
 
 		public static bool ProductTagExists(this Product product, int productTagId)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-            bool result = product.ProductTags.ToList().Find(pt => pt.Id == productTagId) != null;
-            return result;
+			var result = product.ProductTags.Any(x => x.Id == productTagId);
+			return result;
         }
 
         /// <summary>
@@ -260,10 +242,9 @@ namespace SmartStore.Services.Catalog
         /// <returns>Result</returns>
 		public static int[] ParseAllowedQuatities(this Product product)
         {
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
-            var result = new List<int>();
+			var result = new List<int>();
             if (!String.IsNullOrWhiteSpace(product.AllowedQuantities))
             {
                 product
@@ -285,8 +266,7 @@ namespace SmartStore.Services.Catalog
 
 		public static int[] ParseRequiredProductIds(this Product product)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			if (String.IsNullOrEmpty(product.RequiredProductIds))
 				return new int[0];
@@ -314,6 +294,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="currencyService">Currency service</param>
 		/// <param name="taxService">Tax service</param>
 		/// <param name="priceCalculationService">Price calculation service</param>
+		/// <param name="customer">Customer</param>
 		/// <param name="currency">Target currency</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
 		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
@@ -324,6 +305,7 @@ namespace SmartStore.Services.Catalog
             ICurrencyService currencyService,
 			ITaxService taxService,
 			IPriceCalculationService priceCalculationService,
+			Customer customer,
             Currency currency,
 			decimal priceAdjustment = decimal.Zero,
 			bool languageInsensitive = false)
@@ -332,15 +314,14 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(currencyService, nameof(currencyService));
 			Guard.NotNull(taxService, nameof(taxService));
 			Guard.NotNull(priceCalculationService, nameof(priceCalculationService));
+			Guard.NotNull(customer, nameof(customer));
 			Guard.NotNull(currency, nameof(currency));
 
-            if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
+            if (product.BasePriceHasValue && product.BasePriceAmount != decimal.Zero)
             {
-                var workContext = EngineContext.Current.Resolve<IWorkContext>();
-
                 var taxrate = decimal.Zero;
-                var currentPrice = priceCalculationService.GetFinalPrice(product, workContext.CurrentCustomer, true);
-                var price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), out taxrate);
+                var currentPrice = priceCalculationService.GetFinalPrice(product, customer, true);
+                var price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), customer, currency, out taxrate);
                 
                 price = currencyService.ConvertFromPrimaryStoreCurrency(price, currency);
 
@@ -372,7 +353,7 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(priceFormatter, nameof(priceFormatter));
 			Guard.NotNull(currency, nameof(currency));
 
-			if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
+			if (product.BasePriceHasValue && product.BasePriceAmount != decimal.Zero)
 			{
 				var value = Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
 				var valueFormatted = priceFormatter.FormatPrice(value, true, currency);

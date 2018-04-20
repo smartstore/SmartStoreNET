@@ -1,5 +1,12 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
 
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.DiscountRules" AppendRootKey="false">
+    <Value>Standard discount rules</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.DiscountRules" AppendRootKey="false">
+    <Value>Provides standard discount rules, e.g. "Country is", "Customer group is", "Has amount x spent" etc.</Value>
+  </LocaleResource>
+
   <LocaleResource Name="ConfigureDiscountNotLoaded">
     <Value>Discount could not be loaded</Value>
   </LocaleResource>
@@ -8,6 +15,9 @@
   </LocaleResource>
   
   <!-- CustomerRoles -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.MustBeAssignedToCustomerRole" AppendRootKey="false">
+    <Value>The customer must be assigned to a customer group</Value>
+  </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRequirement.MustBeAssignedToCustomerRole" AppendRootKey="false">
     <Children>
       <LocaleResource Name="ConfigureSelectCustomerRole">
@@ -23,6 +33,9 @@
   </LocaleResource>
   
   <!-- BillingCountryIs -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.BillingCountryIs" AppendRootKey="false">
+    <Value>Country of invoice address is</Value>
+  </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRules.BillingCountry" AppendRootKey="false">
     <Children>
       <LocaleResource Name="Fields.SelectCountry">
@@ -39,6 +52,9 @@
 
 
   <!-- ShippingCountryIs -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.ShippingCountryIs" AppendRootKey="false">
+    <Value>Country of delivery address is</Value>
+  </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRules.ShippingCountry" AppendRootKey="false">
     <Children>
       <LocaleResource Name="Fields.SelectCountry">
@@ -55,6 +71,9 @@
   
   
   <!-- Store -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.Store" AppendRootKey="false">
+    <Value>Limited to specific shop</Value>
+  </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRules.Store" AppendRootKey="false">
     <Children>
       <LocaleResource Name="Fields.SelectStore">
@@ -71,6 +90,9 @@
 
 
   <!-- HasOneProduct -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasOneProduct" AppendRootKey="false">
+    <Value>Customer has one of the following products in his shopping cart</Value>
+  </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRules.HasOneProduct" AppendRootKey="false">
     <Children>
       <LocaleResource Name="Fields.Products">
@@ -84,6 +106,9 @@
 
 
   <!-- HasAllProducts -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasAllProducts" AppendRootKey="false">
+    <Value>Customer has the following products in his shopping cart</Value>
+  </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRules.HasAllProducts" AppendRootKey="false">
     <Children>
       <LocaleResource Name="Fields.Products">
@@ -97,6 +122,9 @@
 
 
   <!-- HadSpentAmount -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HadSpentAmount" AppendRootKey="false">
+    <Value>Customer has spent amount x</Value>
+  </LocaleResource>
   <LocaleResource Name="Plugins.DiscountRules.HadSpentAmount" AppendRootKey="false">
     <Children>
       <LocaleResource Name="Fields.Amount">

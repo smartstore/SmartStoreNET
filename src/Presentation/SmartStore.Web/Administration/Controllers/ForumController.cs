@@ -13,6 +13,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -49,12 +50,9 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		private void PrepareForumGroupModel(ForumGroupModel model, ForumGroup forumGroup, bool excludeProperties)
 		{
-			if (model == null)
-				throw new ArgumentNullException("model");
+			Guard.NotNull(model, nameof(model));
 
 			var allStores = _services.StoreService.GetAllStores();
-
-			model.AvailableStores = allStores.Select(s => s.ToModel()).ToList();
 
 			if (forumGroup != null)
 			{
@@ -63,12 +61,10 @@ namespace SmartStore.Admin.Controllers
 
 			if (!excludeProperties)
 			{
-				if (forumGroup != null)
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(forumGroup);
-				else
-					model.SelectedStoreIds = new int[0];
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(forumGroup);
 			}
 
+			model.AvailableStores = allStores.ToSelectListItems(model.SelectedStoreIds);
 			ViewBag.StoreCount = allStores.Count;
 		}
 

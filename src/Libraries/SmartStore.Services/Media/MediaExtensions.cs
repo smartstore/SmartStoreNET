@@ -102,12 +102,9 @@ namespace SmartStore.Services.Media
 			Action<object> deleteAction,
 			bool save) where TEntity : BaseEntity where TMedia : BaseEntity
 		{
-			bool editMode = !entity.IsTransientRecord();
-			var modifiedProperties = editMode ? rs.Context.GetModifiedProperties(entity) : new Dictionary<string, object>();
-
 			object obj = null;
 			int prevMediaId = 0;
-			if (modifiedProperties.TryGetValue(propName, out obj))
+			if (rs.Context.TryGetModifiedProperty(entity, propName, out obj))
 			{
 				prevMediaId = ((int?)obj).GetValueOrDefault();
 			}

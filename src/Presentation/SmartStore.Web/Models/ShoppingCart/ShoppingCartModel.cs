@@ -9,6 +9,7 @@ using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -67,10 +68,11 @@ namespace SmartStore.Web.Models.ShoppingCart
 		public bool? AcceptThirdPartyEmailHandOver { get; set; }
 
 		public bool DisplayEsdRevocationWaiverBox { get; set; }
+        public bool DisplayMoveToWishlistButton { get; set; }
 
-		#region Nested Classes
+        #region Nested Classes
 
-		public partial class ShoppingCartItemModel : EntityModelBase, IQuantityInput
+        public partial class ShoppingCartItemModel : EntityModelBase, IQuantityInput
         {
             public ShoppingCartItemModel()
             {
@@ -86,7 +88,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public int ProductId { get; set; }
 
-            public string ProductName { get; set; }
+            public LocalizedValue<string> ProductName { get; set; }
 
             public string ProductSeName { get; set; }
 
@@ -104,9 +106,9 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public int EnteredQuantity { get; set; }
 
-            public string QuantityUnitName { get; set; }
+            public LocalizedValue<string> QuantityUnitName { get; set; }
 
-            public List<SelectListItem> AllowedQuantities { get; set; }
+			public List<SelectListItem> AllowedQuantities { get; set; }
 
             public int MinOrderAmount { get; set; }
 
@@ -126,11 +128,11 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public bool IsShipEnabled { get; set; }
 
-            public string DeliveryTimeName { get; set; }
+            public LocalizedValue<string> DeliveryTimeName { get; set; }
             
             public string DeliveryTimeHexValue { get; set; }
 
-            public string ShortDesc { get; set; }
+            public LocalizedValue<string> ShortDesc { get; set; }
             
             public string BasePrice { get; set; }
 
@@ -143,6 +145,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 			public bool BundlePerItemShoppingCart { get; set; }
 			public BundleItemModel BundleItem { get; set; }
 			public IList<ShoppingCartItemModel> ChildItems { get; set; }
+
+			public bool DisableWishlistButton { get; set; }
 
 			public DateTime CreatedOnUtc { get; set; }
         }
@@ -219,11 +223,13 @@ namespace SmartStore.Web.Models.ShoppingCart
             public bool IsShippable { get; set; }
             public AddressModel ShippingAddress { get; set; }
             public string ShippingMethod { get; set; }
+            public bool DisplayShippingMethodChangeOption { get; set; }
 
             public string PaymentMethod { get; set; }
 			public string PaymentSummary { get; set; }
+            public bool DisplayPaymentMethodChangeOption { get; set; }
 
-			public bool IsPaymentSelectionSkipped { get; set; }
+            public bool IsPaymentSelectionSkipped { get; set; }
         }
 		#endregion
     }

@@ -12,7 +12,6 @@ using Newtonsoft.Json.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -125,17 +124,11 @@ namespace SmartStore.PayPal.Services
 			var currency = _services.WorkContext.WorkingCurrency;
 			var currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 			var includingTax = (_services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id) == TaxDisplayType.IncludingTax);
-
-			Discount orderAppliedDiscount;
-			List<AppliedGiftCard> appliedGiftCards;
-			int redeemedRewardPoints = 0;
-			decimal redeemedRewardPointsAmount;
-			decimal orderDiscountInclTax;
-			decimal totalOrderItems = decimal.Zero;
+			var totalOrderItems = decimal.Zero;
 			var taxTotal = decimal.Zero;
 
-			var total = Math.Round(_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
-				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero, 2);
+            var cartTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart);
+            var total = Math.Round(cartTotal.TotalAmount ?? decimal.Zero, 2);
 
 			if (total == decimal.Zero)
 			{
@@ -159,7 +152,7 @@ namespace SmartStore.PayPal.Services
 				{
 					var line = new Dictionary<string, object>();
 					line.Add("quantity", item.Item.Quantity);
-					line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language.Id, true, false).Truncate(127));
+					line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language, true, false).Value.Truncate(127));
 					line.Add("price", productPrice.FormatInvariant());
 					line.Add("currency", currencyCode);
 					line.Add("sku", item.Item.Product.Sku.Truncate(50));
@@ -169,7 +162,23 @@ namespace SmartStore.PayPal.Services
 				totalOrderItems += (Math.Round(productPrice, 2) * item.Item.Quantity);
 			}
 
-			if (items != null && paymentFee != decimal.Zero)
+            // Rounding.
+            if (cartTotal.RoundingAmount != decimal.Zero)
+            {
+                if (items != null)
+                {
+                    var line = new Dictionary<string, object>();
+                    line.Add("quantity", "1");
+                    line.Add("name", T("ShoppingCart.Totals.Rounding").Text.Truncate(127));
+                    line.Add("price", cartTotal.RoundingAmount.FormatInvariant());
+                    line.Add("currency", currencyCode);
+                    items.Add(line);
+                }
+
+                totalOrderItems += Math.Round(cartTotal.RoundingAmount, 2);
+            }
+
+            if (items != null && paymentFee != decimal.Zero)
 			{
 				var line = new Dictionary<string, object>();
 				line.Add("quantity", "1");
@@ -269,37 +278,6 @@ namespace SmartStore.PayPal.Services
 			return sandbox ? "https://api.sandbox.paypal.com" : "https://api.paypal.com";
 		}
 
-		public static Dictionary<SecurityProtocolType, string> GetSecurityProtocols()
-		{
-			var dic = new Dictionary<SecurityProtocolType, string>();
-
-			foreach (SecurityProtocolType protocol in Enum.GetValues(typeof(SecurityProtocolType)))
-			{
-				string friendlyName = null;
-				switch (protocol)
-				{
-					case SecurityProtocolType.Ssl3:
-						friendlyName = "SSL 3.0";
-						break;
-					case SecurityProtocolType.Tls:
-						friendlyName = "TLS 1.0";
-						break;
-					case SecurityProtocolType.Tls11:
-						friendlyName = "TLS 1.1";
-						break;
-					case SecurityProtocolType.Tls12:
-						friendlyName = "TLS 1.2";
-						break;
-					default:
-						friendlyName = protocol.ToString().ToUpper();
-						break;
-				}
-
-				dic.Add(protocol, friendlyName);
-			}
-			return dic;
-		}
-
 		public void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false)
 		{
 			try
@@ -308,19 +286,15 @@ namespace SmartStore.PayPal.Services
 					return;
 
 				string[] orderNoteStrings = T("Plugins.SmartStore.PayPal.OrderNoteStrings").Text.SplitSafe(";");
-				var faviconUrl = "{0}Plugins/{1}/Content/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(false), Plugin.SystemName);
-
-				var sb = new StringBuilder();
-				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
-
-				var note = orderNoteStrings.SafeGet(0).FormatInvariant(anyString);
-
-				sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", note);
+				var faviconUrl = "{0}Plugins/{1}/Content/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(), Plugin.SystemName);
+				var note = $"<img src='{faviconUrl}' class='mr-1 align-text-top' />" + orderNoteStrings.SafeGet(0).FormatInvariant(anyString);
 
 				if (isIpn)
+				{
 					order.HasNewPaymentNotification = true;
+				}
 
-				_orderService.AddOrderNote(order, sb.ToString());
+				_orderService.AddOrderNote(order, note);
 			}
 			catch { }
 		}
@@ -507,8 +481,7 @@ namespace SmartStore.PayPal.Services
 			if (method.IsCaseInsensitiveEqual("GET") && data.HasValue())
 				url = url.EnsureEndsWith("?") + data;
 
-			if (settings.SecurityProtocol.HasValue)
-				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 			var request = (HttpWebRequest)WebRequest.Create(url);
 			request.Method = method;
@@ -966,9 +939,9 @@ namespace SmartStore.PayPal.Services
 
 			presentation.Add("brand_name", name);
 			presentation.Add("locale_code", _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToUpper());
-
+			
 			if (logo != null)
-				presentation.Add("logo_image", _pictureService.Value.GetPictureUrl(logo, showDefaultPicture: false, storeLocation: store.Url));
+				presentation.Add("logo_image", _pictureService.Value.GetUrl(logo, 0, false, _services.StoreService.GetHost(store)));
 
 			inpuFields.Add("allow_note", false);
 			inpuFields.Add("no_shipping", 0);

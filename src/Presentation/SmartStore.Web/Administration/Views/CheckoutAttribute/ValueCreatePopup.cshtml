@@ -1,12 +1,7 @@
-﻿@{
-    Layout = "_AdminPopupLayout";
-}
-
-@model CheckoutAttributeValueModel
-
+﻿@model CheckoutAttributeValueModel
 @{
-    //page title
-    ViewBag.Title = T("Admin.Catalog.Attributes.CheckoutAttributes.Values.AddNew").Text;
+	Layout = "_AdminPopupLayout";
+	ViewBag.Title = T("Admin.Catalog.Attributes.CheckoutAttributes.Values.AddNew").Text;
 }
 @using (Html.BeginForm())
 {
@@ -15,7 +10,10 @@
             @T("Admin.Catalog.Attributes.CheckoutAttributes.Values.AddNew")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 

@@ -5,6 +5,8 @@ namespace SmartStore.Admin.Models.Settings
 {
 	public class ShippingSettingsModel
     {
+		public string PrimaryStoreCurrencyCode { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.FreeShippingOverXEnabled")]
 		public bool FreeShippingOverXEnabled { get; set; }
 
@@ -25,5 +27,8 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.SkipShippingIfSingleOption")]
         public bool SkipShippingIfSingleOption { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.ChargeOnlyHighestProductShippingSurcharge")]
+        public bool ChargeOnlyHighestProductShippingSurcharge { get; set; }
     }
 }

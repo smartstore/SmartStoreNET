@@ -21,24 +21,8 @@
 	@if (Model.Attributes.Any())
 	{
 		<div class="art-more-opts">
-			@if (Model.Attributes.Count == 1)
-			{
-				<span>@T("Products.PlusOption"):</span>
-				<a href="@artDetailUrl">@Model.Attributes[0].Name</a>
-			}
-			else
-			{
-				if (list.ViewMode == ProductSummaryViewMode.List)
-				{
-					<span>@T("Products.PlusOptions"):</span>
-				}
-				else
-				{
-					<div>@T("Products.PlusOptions"):</div>
-				}
-
-				<a href="@artDetailUrl">@String.Join(", ", Model.Attributes.Select(x => x.Name)).Truncate(50, "...")</a>
-			}
+			<span class="bidi-embed@(list.ViewMode == ProductSummaryViewMode.List ? "" : " d-block")">@T(Model.Attributes.Count == 1 ? "Products.PlusOption" : "Products.PlusOptions"):</span>
+			<a class="font-weight-medium bidi-embed" @Html.LanguageAttributes(Model.Attributes[0].Name) href="@artDetailUrl">@String.Join(", ", Model.Attributes.Select(x => x.Name.ToHtmlString())).Truncate(50, "...")</a>
 		</div>
 	}
 </div>

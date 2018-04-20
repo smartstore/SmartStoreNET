@@ -8,8 +8,8 @@
 
 @using (Html.BeginForm())
 {
-	<div class="multi-store-scope well well-small">
-		<table class="adminContent">
+	<div class="multi-store-scope well px-0 py-2">
+		<table class="adminContent adminContent-boxed">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.StoreId)
@@ -29,24 +29,24 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-            <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="fa fa-check"></i>&nbsp;
-                @T("Admin.Common.Save")
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+                <i class="fa fa-check"></i>
+                <span>@T("Admin.Common.Save")</span>
             </button>
-            <button type="submit" name="save" value="save-continue" class="btn">
-                @T("Admin.Common.SaveContinue")
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+                <span>@T("Admin.Common.SaveContinue")</span>
             </button>
-            <a href="#importvariables-window" data-toggle="modal" class="btn">
+            <a href="#importvariables-window" data-toggle="modal" class="btn btn-secondary">
                 <i class="fa fa-arrow-circle-o-up"></i>
-                @T("Common.Import")
+                <span>@T("Common.Import")</span>
             </a>
-            <a href="#exportvariables-window" data-toggle="modal" class="btn">
+            <a href="#exportvariables-window" data-toggle="modal" class="btn btn-secondary">
                 <i class="fa fa-arrow-circle-o-down"></i>
-                @T("Common.Export")
+                <span>@T("Common.Export")</span>
             </a>
             <a href='@Url.Action("Reset", new { theme = Model.ThemeName, storeId = Model.StoreId })' id="reset-vars" class="btn btn-danger">
                 <i class="fa fa-trash-o"></i>
-                @T("Admin.Common.Reset")
+                <span>@T("Admin.Common.Reset")</span>
             </a>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
@@ -55,8 +55,8 @@
 
 	if (parsingError.HasValue())
 	{
-		<div style="margin-bottom: 20px">
-			<h4 class="text-error">@T("Admin.Configuration.Themes.Validation.ErrorReportTitle")</h4>
+		<div class="mb-5">
+			<h4 class="text-danger">@T("Admin.Configuration.Themes.Validation.ErrorReportTitle")</h4>
 			<pre>@parsingError</pre>
 			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId })'>
 				@T("Admin.Configuration.Themes.Validation.RestorePrevValues")
@@ -75,23 +75,24 @@
     .Title(T("Admin.Configuration.Themes.ImportVars"))
     .Content(
     @<text>
-        @using (Html.BeginForm("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId }, FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            <div class="alert alert-info">
+		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
+            <p class="text-muted">
                 @T("Admin.Configuration.Themes.ImportVars.Note")
-            </div>
+            </p>
             <div>
                 @T("Admin.Configuration.Themes.ImportVars.XmlFile"): <input type="file" id="importxmlfile" name="importxmlfile" />
             </div>
-        }
+        </form>
     </text>)
     .FooterContent(
     @<text>
-        <button type="button" class="btn" data-dismiss="modal">@T("Admin.Common.Cancel")</button>
-        <button id="importxmlsubmit" type="button" class="btn btn-primary">@T("Common.Import")</button>
+        <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+        <button id="importxmlsubmit" type="button" class="btn btn-primary">
+			<span>@T("Common.Import")</span>
+		</button>
     </text>)
-    .Modal(true)
-    .Visible(false)
     .Render();
 }
 
@@ -101,23 +102,25 @@
     .Title(T("Admin.Configuration.Themes.ExportVars"))
     .Content(
     @<text>
-        @using (Html.BeginForm("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId }, FormMethod.Post))
-        {
-            <div class="alert alert-info">
+		<form enctype="multipart/form-data" method="POST" action="@Url.Action("ExportVariables", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId })">
+            <p class="text-muted">
                 @T("Admin.Configuration.Themes.ExportVars.Note")
+            </p>
+            <div class="form-group">
+                <label>@T("Admin.Configuration.Themes.ExportVars.ProfileName") </label>
+				@Html.TextBox("exportprofilename", "", new { placeholder = T("Common.Optional") })
             </div>
-            <div>
-                @T("Admin.Configuration.Themes.ExportVars.ProfileName"): @Html.TextBox("exportprofilename", "", new { placeholder = T("Common.Optional") })
-            </div>
-        }
+        </form>
     </text>)
     .FooterContent(
     @<text>
-        <button type="button" class="btn" data-dismiss="modal">@T("Admin.Common.Cancel")</button>
-        <button id="exportxmlsubmit" type="button" class="btn btn-primary">@T("Common.Export")</button>
+        <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+        <button id="exportxmlsubmit" type="button" class="btn btn-primary">
+			<span>@T("Common.Export")</span>
+		</button>
     </text>)
-    .Modal(true)
-    .Visible(false)
     .Render();
 }
 
@@ -134,7 +137,7 @@
         $('#exportxmlsubmit').on('click', function (e) {
             e.preventDefault();
             $('#exportvariables-window').find("form").submit();
-            $('#exportvariables-window').data('modal').hide();
+			$('#exportvariables-window').modal('hide');
         });
 
     });

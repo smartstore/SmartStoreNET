@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
+	<Subject>{{ Store.Name }}. New blog comment</Subject>
+	<ModelTypes>BlogComment, BlogComment.Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  New blog comment,
+</h1>
+<p class="mb-4">
+  the blog post <a href="{{ BlogComment.PostUrl }}">{{ BlogComment.PostTitle }}</a> was commented by <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a>:
+</p>
+<table class="w-100 brd bg-light">
+  <tbody>
+    <tr>
+    	<td class="p-3"><i>"{{ BlogComment.Text | Truncate: 400 }}"</i></td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}]]></Body>
+</MessageTemplate>

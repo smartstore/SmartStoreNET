@@ -15,31 +15,26 @@
 
 @{
 	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
-	var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
 	var value = String.Empty;
 	if (Value.HasValue && Value.Value > DateTime.MinValue)
 	{
-		value = Value.Value.ToLongTimeString();
+		value = Value.Value.ToShortTimeString();
 	}
 }
 
-<div class="input-append date" id="@id-parent" data-date="@value">
-	@Html.TextBox("", value, new { @class = "span2" })<span class="add-on"><i class="fa fa-clock-o"></i></span>
+<div class="input-group date datetimepicker-group" id="@id-parent" data-date="@value" data-target-input="nearest">
+	@Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = "LT" })
+	<div class="input-group-append input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
+		<span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+	</div>
 </div>
 
-<script>
-	$(function () {
-		var c = Globalize.culture().calendars.standard;
-		var fmt = c.patterns["T"];
-		$("#@id-parent").datetimepicker({
-			language: 'glob',
-			format: fmt,
-			pickDate: false,
-			pickTime: true,
-			pickSeconds: true,
-			pick12HourFormat: false,
-			maskInput: true });
-	});
-</script>
-
+@using (Html.BeginZoneContent("end"))
+{
+	<script data-origin="Time">
+		$(function () {
+			$("#@(id)-parent").datetimepicker({ format: 'LT', useCurrent: false });
+		});
+	</script>
+}
 

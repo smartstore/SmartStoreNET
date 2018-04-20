@@ -14,12 +14,78 @@ namespace SmartStore.Collections
 		private int? _depth = null;
 		private int _index = -1;
 
-		private IDictionary<string, object> _metadata;
+		protected object _id;
+		private IDictionary<object, TreeNodeBase<T>> _idNodeMap;
+
+		protected IDictionary<string, object> _metadata;
 		private readonly static ContextState<Dictionary<string, object>> _contextState = new ContextState<Dictionary<string, object>>("TreeNodeBase.ThreadMetadata");
 
 		public TreeNodeBase()
 		{
 		}
+
+		#region Id
+
+		public object Id
+		{
+			get
+			{
+				return _id;
+			}
+			set
+			{
+				if (_parent != null)
+				{
+					var map = GetIdNodeMap();
+
+					if (_id != value)
+					{
+						if (_id != null && map.ContainsKey(_id))
+						{
+							// Remove old id from map
+							map.Remove(_id);
+						}
+					}
+
+					if (value != null)
+					{
+						map[value] = this;
+					}
+				}
+
+				_id = value;
+			}
+		}
+
+		public T SelectNodeById(object id)
+		{
+			if (id == null || IsLeaf)
+				return null;
+
+			var map = GetIdNodeMap();
+			var node = (T)map?.Get(id);
+
+			if (node != null && !this.IsAncestorOfOrSelf(node))
+			{
+				// Found node is NOT a child of this node
+				return null;
+			}
+
+			return node;
+		}
+
+		private IDictionary<object, TreeNodeBase<T>> GetIdNodeMap()
+		{
+			var map = this.Root._idNodeMap;
+			if (map == null)
+			{
+				map = this.Root._idNodeMap = new Dictionary<object, TreeNodeBase<T>>();
+			}
+
+			return map;
+		}
+
+		#endregion
 
 		#region Metadata
 
@@ -139,7 +205,17 @@ namespace SmartStore.Collections
 
 			if (_parent != null)
 			{
+				// Detach from parent
 				_parent.Remove((T)this);
+			}
+			else
+			{
+				// Is a root node with a map: get rid of it.
+				if (_idNodeMap != null)
+				{
+					_idNodeMap.Clear();
+					_idNodeMap = null;
+				}
 			}
 
 			if (index == null)
@@ -155,6 +231,16 @@ namespace SmartStore.Collections
 			}
 
 			_parent = newParent;
+
+			// Set id in new id-node map
+			if (_id != null)
+			{
+				var map = GetIdNodeMap();
+				if (map != null)
+				{
+					map[_id] = (T)this;
+				}
+			}
 		}
 
 		[JsonIgnore]
@@ -379,11 +465,10 @@ namespace SmartStore.Collections
 				var node = (T)this;
 				do
 				{
-					trail.Add(node);
+					trail.Insert(0, node);
 					node = node._parent;
 				} while (node != null);
-
-				trail.Reverse();
+				
 				return trail;
 			}
 		}
@@ -528,6 +613,16 @@ namespace SmartStore.Collections
 				var list = node._parent?._children;
 				if (list.Remove(node))
 				{
+					// Remove id from id node map
+					if (node._id != null)
+					{
+						var map = node.GetIdNodeMap();
+						if (map != null && map.ContainsKey(node._id))
+						{
+							map.Remove(node._id);
+						}
+					}
+
 					FixIndexes(list, node._index, -1);
 
 					node._index = -1;
@@ -543,6 +638,12 @@ namespace SmartStore.Collections
 			if (_children != null)
 			{
 				_children.Clear();
+			}
+
+			var map = GetIdNodeMap();
+			if (map != null)
+			{
+				map.Clear();
 			}
 		}
 
@@ -576,7 +677,7 @@ namespace SmartStore.Collections
 			}
 		}
 
-		protected IEnumerable<T> FlattenNodes(bool includeSelf = true)
+		public IEnumerable<T> FlattenNodes(bool includeSelf = true)
 		{
 			return this.FlattenNodes(null, includeSelf);
 		}

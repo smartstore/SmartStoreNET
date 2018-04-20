@@ -10,7 +10,7 @@
 	}
 }
 
-<div class="card card-block order-review-data-box mb-3">
+<div class="card card-body order-review-data-box mb-3">
 	<div class="row">
 		<div class="col-md-8">
 			<div class="row">
@@ -60,13 +60,17 @@
 										<h5 class="heading-title font-weight-medium">@T("Order.ShippingMethod")</h5>
 									</div>
 								</div>
-								<div class="col col-auto">
-									<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
-								</div>
+
+                                @if (Model.DisplayShippingMethodChangeOption)
+                                {
+                                    <div class="col col-auto">
+                                        <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
+                                    </div>
+                                }
 							</div>
 							<p>@Model.ShippingMethod</p>
 						}
-						@if (Model.PaymentMethod.HasValue())
+						@if (Model.PaymentMethod.HasValue() && !Model.IsPaymentSelectionSkipped)
 						{
 							<div class="row sm-gutters">
 								<div class="col">
@@ -74,13 +78,12 @@
 										<h5 class="heading-title font-weight-medium">@T("Order.PaymentMethod")</h5>
 									</div>
 								</div>
-								@if (!Model.IsPaymentSelectionSkipped)
+								@if (Model.DisplayPaymentMethodChangeOption)
 								{
 									<div class="col col-auto">
 										<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
 									</div>
 								}
-
 							</div>
 							<p>@Model.PaymentMethod</p>
 							if (Model.PaymentSummary.HasValue())
@@ -101,7 +104,7 @@
                     <h5 class="m-0">@T("Order.BillingAddress")</h5>
                     <a class="change-checkout-data" href='@Url.Action("BillingAddress", "Checkout")'>@T("Common.Change")</a>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
 					@RenderAddress(Model.BillingAddress)
 				</div>
             </div>
@@ -115,7 +118,7 @@
                         <h5 class="m-0">@T("Order.ShippingAddress")</h5>
                         <a class="change-checkout-data" href='@Url.Action("ShippingAddress", "Checkout")'>@T("Common.Change")</a>
                     </div>
-                    <div class="card-block">
+                    <div class="card-body">
 						@RenderAddress(Model.ShippingAddress)
                     </div>
                 </div>
@@ -135,7 +138,7 @@
 						<a class="change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
 					}
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     @Model.PaymentMethod
 					@if (Model.PaymentSummary.HasValue())
 					{
@@ -154,7 +157,7 @@
                     <h5 class="m-0">@T("Order.ShippingMethod")</h5>
 					<a class="change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     @Model.ShippingMethod
                 </div>
             </div>
@@ -203,18 +206,22 @@
 	</div>
 
 	<div class="email">
-		@T("Order.Email"): @address.Email
+		<span class="pr-1">@T("Order.Email"):</span>
+		<span>@address.Email</span>
 	</div>
+
 	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
 	{
 		<div class="phone">
-			@T("Order.Phone"): @address.PhoneNumber
+			<span>@T("Order.Phone"):</span>
+			<span>@address.PhoneNumber</span>
 		</div>
 	}
 	if (address.FaxEnabled && address.FaxNumber.HasValue())
 	{
 		<div class="fax">
-			@T("Order.Fax"): @address.FaxNumber
+			<span>@T("Order.Fax"):</span>
+			<span>@address.FaxNumber</span>
 		</div>
 	}
 }

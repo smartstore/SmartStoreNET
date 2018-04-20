@@ -19,12 +19,12 @@ namespace SmartStore.Admin.Models.Plugins
 				if (RemainingDemoUsageDays.HasValue)
 				{
 					if (RemainingDemoUsageDays <= 3)
-						return "label-important";
+						return "badge-dark";
 
 					if (RemainingDemoUsageDays <= 6)
-						return "label-warning";
+						return "badge-warning";
 				}
-				return "label-success";
+				return "badge-success";
 			}
 		}
 	}

@@ -16,7 +16,7 @@
 	return;
 }
 
-<div class="card-block">
+<div class="card-body">
 	@if (renderBundleTitle)
 	{
 		<h4 class="h5 pd-bundle-title">@Model.BundleTitleText</h4>
@@ -41,7 +41,7 @@
 					}
 					if (item.BundleItem.Quantity > 1)
 					{
-						<span class="pd-bundle-summary-item-qty label label-success">@(item.BundleItem.Quantity)&#215;</span>
+						<span class="pd-bundle-summary-item-qty badge badge-pill badge-success">@(item.BundleItem.Quantity)&#215;</span>
 					}
 				}
 				else

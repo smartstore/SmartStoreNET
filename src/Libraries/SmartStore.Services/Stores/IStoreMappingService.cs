@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Stores
 {
@@ -76,26 +71,78 @@ namespace SmartStore.Services.Stores
 		/// <summary>
 		/// Find store identifiers with granted access (mapped to the entity)
 		/// </summary>
-		/// <typeparam name="T">Type</typeparam>
-		/// <param name="entity">Wntity</param>
+		/// <param name="entityName">Entity name to check</param>
+		/// <param name="entityId">Entity id to check</param>
 		/// <returns>Store identifiers</returns>
-		int[] GetStoresIdsWithAccess<T>(T entity) where T : BaseEntity, IStoreMappingSupported;
+		int[] GetStoresIdsWithAccess(string entityName, int entityId);
+
+		/// <summary>
+		/// Checks whether an entity can be accessed in a store (mapped to this store)
+		/// </summary>
+		/// <param name="entityName">Entity name to check</param>
+		/// <param name="entityId">Entity id to check</param>
+		/// <returns>true - authorized; otherwise, false</returns>
+		bool Authorize(string entityName, int entityId);
+
+		/// <summary>
+		/// Checks whether an entity can be accessed in a store (mapped to this store)
+		/// </summary>
+		/// <param name="entityName">Entity name to check</param>
+		/// <param name="entityId">Entity id to check</param>
+		/// <param name="storeId">Store identifier to check against</param>
+		/// <returns>true - authorized; otherwise, false</returns>
+		bool Authorize(string entityName, int entityId, int storeId);
+	}
+
+	public static class IStoreMappingServiceExtensions
+	{
+		/// <summary>
+		/// Find store identifiers with granted access (mapped to the entity)
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <returns>Store identifiers</returns>
+		public static int[] GetStoresIdsWithAccess<T>(this IStoreMappingService svc, T entity) where T : BaseEntity, IStoreMappingSupported
+		{
+			if (entity == null)
+				return new int[0];
+
+			return svc.GetStoresIdsWithAccess(typeof(T).Name, entity.Id);
+		}
 
 		/// <summary>
 		/// Authorize whether entity could be accessed in the current store (mapped to this store)
 		/// </summary>
 		/// <typeparam name="T">Type</typeparam>
-		/// <param name="entity">Wntity</param>
+		/// <param name="entity">Entity</param>
 		/// <returns>true - authorized; otherwise, false</returns>
-		bool Authorize<T>(T entity) where T : BaseEntity, IStoreMappingSupported;
+		public static bool Authorize<T>(this IStoreMappingService svc, T entity) where T : BaseEntity, IStoreMappingSupported
+		{
+			if (entity == null)
+				return false;
+
+			if (!entity.LimitedToStores)
+				return true;
+
+			return svc.Authorize(typeof(T).Name, entity.Id);
+		}
 
 		/// <summary>
 		/// Authorize whether entity could be accessed in a store (mapped to this store)
 		/// </summary>
 		/// <typeparam name="T">Type</typeparam>
 		/// <param name="entity">Entity</param>
-		/// <param name="storeId">Store identifier</param>
+		/// <param name="storeId">Store identifier to check against</param>
 		/// <returns>true - authorized; otherwise, false</returns>
-		bool Authorize<T>(T entity, int storeId) where T : BaseEntity, IStoreMappingSupported;
+		public static bool Authorize<T>(this IStoreMappingService svc, T entity, int storeId) where T : BaseEntity, IStoreMappingSupported
+		{
+			if (entity == null)
+				return false;
+
+			if (!entity.LimitedToStores)
+				return true;
+
+			return svc.Authorize(typeof(T).Name, entity.Id, storeId);
+		}
 	}
 }

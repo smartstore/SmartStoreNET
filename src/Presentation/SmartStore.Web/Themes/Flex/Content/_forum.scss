@@ -1,4 +1,7 @@
-﻿/// <reference path="bs4/scss/bootstrap.scss" />
+﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 //
 // Forum Styles
@@ -80,13 +83,18 @@ $forum-unobstrusive-link-color: #646464;
         a {
             padding-right: 0.75rem;
         }
+		i {
+            padding-right: 0.25rem;
+        }
     }
     .post-content {
+		/*
 	    .functions {
 	        right: 10px;
 	        bottom: 10px;
 	        .fa-quote-left { font-size: 10px;}
         }
+		*/
         .signature {
 	        position: absolute;
 	        bottom: 10px;
@@ -127,12 +135,6 @@ $forum-unobstrusive-link-color: #646464;
     @include media-breakpoint-up(sm) { 
 	    text-align: right;
     }
-}
-#advanced-search-block,
-.search-input,
-.search-error,
-.search-results {
-    margin-top: 2rem;
 }
 .page.post-edit .form-group .col-sm-10 span {
     vertical-align: -webkit-baseline-middle;

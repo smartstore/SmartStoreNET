@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
+using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Services.Configuration;
-using SmartStore.Core.Caching;
-using SmartStore.Core.Events;
-using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Tests.Configuration
 {
-    public class ConfigFileSettingService : SettingService
+	public class ConfigFileSettingService : SettingService
     {
-		public ConfigFileSettingService(ICacheManager cacheManager,
-			 IEventPublisher eventPublisher,
-			 IRepository<Setting> settingRepository) :
-			base(cacheManager, eventPublisher, settingRepository)
+		public ConfigFileSettingService(
+			ICacheManager cacheManager,
+			IRepository<Setting> settingRepository) :
+			base(cacheManager, settingRepository)
 		{
 		}
 

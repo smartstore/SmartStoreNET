@@ -41,7 +41,7 @@
 	</tr>
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
-	{	
+	{
 		if (Model.Provider.Feature.HasFlag(ExportFeatures.CanProjectAttributeCombinations))
 		{
 			<tr>
@@ -49,7 +49,7 @@
 					@Html.SmartLabelFor(x => x.Projection.AttributeCombinationAsProduct)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.Projection.AttributeCombinationAsProduct)
+					@Html.CheckBoxFor(x => x.Projection.AttributeCombinationAsProduct, new { data_toggler_for = "#AttributeCombinationAddValuesToNameContainer" })
 					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationAsProduct)
 				</td>
 			</tr>
@@ -61,10 +61,8 @@
 					@Html.DropDownListFor(x => x.Projection.AttributeCombinationValueMergingId, Model.Projection.AvailableAttributeCombinationValueMerging)
 					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationValueMergingId)
 
-					<span id="AttributeCombinationAsProductNote" class="control-group warning">
-						<span class="help-inline">
-							@T("Admin.DataExchange.Export.NotPreviewCompatible")
-						</span>
+					<span class="d-block text-muted mt-1">
+						@T("Admin.DataExchange.Export.NotPreviewCompatible")
 					</span>
 				</td>
 			</tr>
@@ -77,14 +75,8 @@
 					@Html.SmartLabelFor(x => x.Projection.NoGroupedProducts)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.Projection.NoGroupedProducts)
+					@Html.CheckBoxFor(x => x.Projection.NoGroupedProducts, new { data_toggler_for = "#OnlyIndividuallyVisibleAssociatedContainer" })
 					@Html.ValidationMessageFor(x => x.Projection.NoGroupedProducts)
-
-					<span id="NoGroupedProductsNote" class="control-group warning">
-						<span class="help-inline">
-							@T("Admin.DataExchange.Export.NotPreviewCompatible")
-						</span>
-					</span>
 				</td>
 			</tr>
 			<tr id="OnlyIndividuallyVisibleAssociatedContainer">
@@ -94,6 +86,10 @@
 				<td class="adminData">
 					@Html.EditorFor(x => x.Projection.OnlyIndividuallyVisibleAssociated)
 					@Html.ValidationMessageFor(x => x.Projection.OnlyIndividuallyVisibleAssociated)
+
+					<span class="ml-3 text-muted" style="vertical-align:super">
+						@T("Admin.DataExchange.Export.NotPreviewCompatible")
+					</span>
 				</td>
 			</tr>
 		}
@@ -211,7 +207,7 @@
 					@Html.SmartLabelFor(x => x.Projection.AppendDescriptionText)
 				</td>
 				<td class="adminData">
-					@Html.HiddenFor(x => x.Projection.AppendDescriptionText)
+					@Html.ListBoxFor(x => x.Projection.AppendDescriptionText, Model.Projection.AvailableAppendDescriptionTexts, new { multiple = "multiple", data_tags = "true" })
 					@Html.ValidationMessageFor(x => x.Projection.AppendDescriptionText)
 				</td>
 			</tr>
@@ -220,16 +216,16 @@
 					@Html.SmartLabelFor(x => x.Projection.RemoveCriticalCharacters)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.Projection.RemoveCriticalCharacters)
+					@Html.CheckBoxFor(x => x.Projection.RemoveCriticalCharacters, new { data_toggler_for = "#pnlCriticalCharacters" })
 					@Html.ValidationMessageFor(x => x.Projection.RemoveCriticalCharacters)
 				</td>
 			</tr>
-			<tr id="CriticalCharactersContainer">
+			<tr id="pnlCriticalCharacters">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.Projection.CriticalCharacters)
 				</td>
 				<td class="adminData">
-					@Html.HiddenFor(x => x.Projection.CriticalCharacters)
+					@Html.ListBoxFor(x => x.Projection.CriticalCharacters, Model.Projection.AvailableCriticalCharacters, new { multiple = "multiple", data_tags = "true" })
 					@Html.ValidationMessageFor(x => x.Projection.CriticalCharacters)
 				</td>
 			</tr>
@@ -245,7 +241,7 @@
 		}
 	}
 	else if (Model.Provider.EntityType == ExportEntityType.Order)
-	{	
+	{
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Projection.OrderStatusChangeId)
@@ -253,6 +249,18 @@
 			<td class="adminData">
 				@Html.DropDownListFor(x => x.Projection.OrderStatusChangeId, Model.Projection.AvailableOrderStatusChange)
 				@Html.ValidationMessageFor(x => x.Projection.OrderStatusChangeId)
+			</td>
+		</tr>
+	}
+	else if (Model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Projection.NoBundleProducts)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Projection.NoBundleProducts)
+				@Html.ValidationMessageFor(x => x.Projection.NoBundleProducts)
 			</td>
 		</tr>
 	}

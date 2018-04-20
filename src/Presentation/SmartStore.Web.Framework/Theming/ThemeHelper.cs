@@ -26,9 +26,9 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			ThemesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 
-			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
+			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|js|cshtml|svg|json|liquid)(\?explicit)*$".FormatInvariant(ThemesBasePath);
 			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-			s_themeVarsPattern = new Regex(@"\.(db|app)/themevars(.scss|.less)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_themeVarsPattern = new Regex(@"\.(db|app)/themevars(.scss)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_moduleImportsPattern = new Regex(@"\.app/moduleimports.scss$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_extensionlessPathPattern = new Regex(@"~/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 		}
@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			Guard.NotNull(virtualPathDependencies, nameof(virtualPathDependencies));
 
-			// determine the virtual themevars.(scss|less) import reference
+			// determine the virtual themevarsscss import reference
 			var themeVarsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsThemeVars(x)).FirstOrDefault();
 			var moduleImportsFile = virtualPathDependencies.Where(x => ThemeHelper.PathIsModuleImports(x)).FirstOrDefault();
 
@@ -131,10 +131,6 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				return new IsStyleSheetResult { Path = path, IsSass = true };
 			}
-			else if (extension == ".less")
-			{
-				return new IsStyleSheetResult { Path = path, IsLess = true };
-			}
 			else if (extension.IsEmpty())
 			{
 				// StyleBundles are  extension-less, so we have to ask 'BundleTable' 
@@ -147,6 +143,15 @@ namespace SmartStore.Web.Framework.Theming
 						return new IsStyleSheetResult { Path = path, IsBundle = true };
 					}
 				}
+			}
+			else if (extension.EndsWith("?explicit"))
+			{
+				// Handle virtual Sass imports with '?explicit' query
+				// TBD: (mc) other query params could exist
+
+				// Process again, this time without query
+				var pathWithoutQuery = path.Substring(0, path.IndexOf('?'));
+				return IsStyleSheet(pathWithoutQuery);
 			}
 
 			return null;
@@ -187,7 +192,6 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			public string Path { get; set; }
 			public bool IsCss { get; set; }
-			public bool IsLess { get; set; }
 			public bool IsSass { get; set; }
 			public bool IsBundle { get; set; }
 
@@ -197,8 +201,6 @@ namespace SmartStore.Web.Framework.Theming
 				{
 					if (IsSass)
 						return ".scss";
-					else if (IsLess)
-						return ".less";
 					else if (IsBundle)
 						return "";
 
@@ -208,7 +210,7 @@ namespace SmartStore.Web.Framework.Theming
 
 			public bool IsPreprocessor
 			{
-				get { return IsLess || IsSass; }
+				get { return IsSass; }
 			}
 
 			public bool IsThemeVars

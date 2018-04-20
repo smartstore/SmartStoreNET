@@ -1,0 +1,111 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+.alert-info,
+.alert-danger,
+.alert-success,
+.alert-warning {
+	position: relative;
+	padding-left: 4rem;
+	line-height: 1.5;
+	border-width: 0;
+
+	&:before {
+		display: block;
+		position: absolute;
+		content: ' ';
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 3rem;
+		z-index: 1;
+	}
+
+	&:after {
+		display: block;
+		position: absolute;
+		color: #fff;
+		font-family: FontAwesome;
+		left: 0;
+		top: 50%;
+		font-size: 24px;
+		width: 3rem;
+		text-align: center;
+		transform: translateY(-50%);
+		z-index: 2;
+	}
+}
+
+.alert-danger {
+	&:before {
+		background-color: $danger;
+	}
+
+	&:after {
+		content: "\f071"; // exclamation-triangle
+		color: theme-color-level(danger, $alert-bg-level);
+	}
+}
+
+.alert-info {
+    @if $alert-info-is-primary {
+		// info should have primary color
+		@include alert-variant(theme-color-level(primary, $alert-bg-level), theme-color-level(primary, $alert-border-level), theme-color-level(primary, $alert-color-level));
+    }
+
+	&:before {
+		
+		@if $alert-info-is-primary {
+			background-color: $primary;
+		}
+		@else {
+			background-color: $info;
+		}
+	}
+
+	&:after {
+		content: "\f129"; // info
+		@if $alert-info-is-primary {
+			color: theme-color-level(primary, $alert-bg-level);
+		}
+		@else {
+			color: theme-color-level(info, $alert-bg-level);
+		}
+	}
+}
+
+.alert-success {
+	&:before {
+		background-color: $success;
+	}
+
+	&:after {
+		content: "\f00c"; // check
+		color: theme-color-level(success, $alert-bg-level);
+	}
+}
+
+.alert-warning {
+	&:before {
+		background-color: $warning;
+	}
+
+	&:after {
+		content: "\f12a"; // exclamation
+		color: theme-color-level(warning, $alert-bg-level);
+	}
+}
+
+
+.alert > ul {
+	padding-left: 1.2rem;
+}
+
+.alert > *:first-child {
+	margin-top: 0 !important;
+}
+
+.alert > *:last-child {
+	margin-bottom: 0 !important;
+}

@@ -1,9 +1,11 @@
-﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+﻿@using SmartStore.Web.Models.Common;
+@using SmartStore.AmazonPay.Models;
+@model AmazonPayViewModel
 @{
-    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
 }
 
-<div class="card card-block order-review-data-box mb-3">
+<div class="card card-body order-review-data-box mb-3">
     <div class="row">
         <div class="col-md-12">
             <div class="row">
@@ -17,46 +19,119 @@
                                     <h5 class="heading-title font-weight-medium">@T("Order.ShippingAddress")</h5>
                                 </div>
                             </div>
-                            <div class="col col-auto">
+                            <div class="col col-auto mb-2">
                                 <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingAddress", "Checkout", new { area = "" })'>@T("Common.Change")</a>
                             </div>
                         </div>
-                        <p id="@(Model.GetWidgetId)Address"></p>
+                        <p id="amazon-pay-read-address-book-widget"></p>
                     </div>
                 }
 
-                <div class="amazon-pay-wallet-widget col">
+                <div class="col">
                     <div class="row sm-gutters">
                         <div class="col">
                             <div class="heading">
                                 <h5 class="heading-title font-weight-medium">@T("Order.PaymentMethod")</h5>
                             </div>
                         </div>
-                        <div class="col col-auto">
+                        <div class="col col-auto mb-2">
                             <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("PaymentMethod", "Checkout", new { area = "" })'>@T("Common.Change")</a>
                         </div>
                     </div>
-                    <p id="@(Model.GetWidgetId)Wallet"></p>
+                    <p id="amazon-pay-read-wallet-widget"></p>
                 </div>
 
             </div>
+			<div class="row">
 
-            @if (Model.IsShippable && Model.ShippingMethod.HasValue())
-            {
-                <div class="row sm-gutters">
-                    <div class="col">
-                        <div class="heading">
-                            <h5 class="heading-title font-weight-medium">@T("Order.ShippingMethod")</h5>
-                        </div>
-                    </div>
-                    <div class="col col-auto">
-                        <a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
-                    </div>
-                </div>
-                <p>@Model.ShippingMethod</p>
-            }
+				<div class="col">
+					<div class="row sm-gutters">
+						<div class="col">
+							<div class="heading">
+								<h5 class="heading-title font-weight-medium">@T("Order.BillingAddress")</h5>
+							</div>
+						</div>
+					</div>
+					<div>@RenderAddress(Model.BillingAddress)</div>
+				</div>
+
+				@if (Model.IsShippable && Model.ShippingMethod.HasValue())
+				{
+					<div class="col">
+						<div class="row sm-gutters">
+							<div class="col">
+								<div class="heading">
+									<h5 class="heading-title font-weight-medium">@T("Order.ShippingMethod")</h5>
+								</div>
+							</div>
+							<div class="col col-auto">
+								<a class="btn btn-primary btn-sm change-checkout-data" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
+							</div>
+						</div>
+						<p>@Model.ShippingMethod</p>
+					</div>
+				}
+
+			</div>
         </div>
     </div>
 </div>
 
 @{ Html.RenderPartial("ScriptingReadWidgets", Model); }
+
+@helper RenderAddress(AddressModel address)
+{
+	var cityStateZip = address.GetFormattedCityStateZip();
+
+	<div class="mb-2">
+		@if (address.CompanyEnabled && address.Company.HasValue())
+		{
+			<div class="company">
+				@address.Company
+			</div>
+		}
+		<div class="name">
+			@address.GetFormattedName()
+		</div>
+		@if (address.StreetAddressEnabled && address.Address1.HasValue())
+		{
+			<div class="address1">
+				@address.Address1
+			</div>
+		}
+		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
+		{
+			<div class="address2">
+				@address.Address2
+			</div>
+		}
+		@if (cityStateZip.HasValue())
+		{
+			<div class="city-state-zip">
+				@Html.Raw(cityStateZip)
+			</div>
+		}
+		@if (address.CountryEnabled && address.CountryName.HasValue())
+		{
+			<div class="country">
+				@address.CountryName
+			</div>
+		}
+	</div>
+
+	<div class="email">
+		@T("Order.Email"): @address.Email
+	</div>
+	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
+	{
+		<div class="phone">
+			@T("Order.Phone"): @address.PhoneNumber
+		</div>
+	}
+	if (address.FaxEnabled && address.FaxNumber.HasValue())
+	{
+		<div class="fax">
+			@T("Order.Fax"): @address.FaxNumber
+		</div>
+	}
+}

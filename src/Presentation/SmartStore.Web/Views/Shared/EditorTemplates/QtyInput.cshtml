@@ -24,7 +24,7 @@
     fixedAttributes["data-step"] = Model.QuantityStep;
 }
 
-<div class="qty-input@(Model.QuantityUnitName.HasValue() ? " has-postfix" : "")">
+<div class="qty-input@(Model.QuantityUnitName != null && Model.QuantityUnitName.Value.HasValue() ? " has-postfix" : "")">
 	@if (inputStyle == "spinner")
     {
         @Html.TextBoxFor(model => model.EnteredQuantity, fixedAttributes)

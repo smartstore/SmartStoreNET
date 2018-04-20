@@ -1,25 +1,7 @@
-﻿/// <reference path="_variables.scss" />
-/// <reference path="shared/_mixins.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
-
-//
-// Checkout Steps
-// --------------------------------------------------
-
-$costep-border:                 #f2f2f2;
-$costep-bg:                     #fff; 
-$costep-color:                  #ccc;
-$costep-label-color:            $body-color;
-
-$costep-visited-border:         $costep-progress-color;
-$costep-visited-bg:             $costep-progress-color;
-$costep-visited-color:          rgba(#fff, 0.85);
-$costep-visited-label-color:    $costep-label-color;
-
-$costep-active-border:          $costep-visited-border;
-$costep-active-bg:              #fff;
-$costep-active-color:           $body-color;
-$costep-active-label-color:     $costep-label-color;
+﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 .costeps {
     position: relative;
@@ -188,7 +170,7 @@ $costep-active-label-color:     $costep-label-color;
 
 	.opt-name { 
         display: block;
-        font-size: $font-size-h5;
+        font-size: $h5-font-size;
 		font-weight: $font-weight-medium;
 		margin-left: 4px;
         line-height: 1.3;
@@ -270,7 +252,6 @@ $costep-active-label-color:     $costep-label-color;
 ================================================ */
 
 .checkout-data .buttons {
-	padding-top: 1rem;
     display: flex;
     justify-content: space-between;
 }

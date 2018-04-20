@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Autofac;
 using SmartStore.Core.Configuration;
-using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
@@ -14,7 +13,7 @@ namespace SmartStore.Core.Caching
 	{
 		public IOutputCacheProvider OutputCacheProvider { get; set; }
 		public BaseEntity Entity { get; set; }
-		public EntityState EntityState { get; set; }
+		public IHookedEntity EntityEntry { get; set; }
 		public bool Handled { get; set; }
 		public ContainerManager ServiceContainer { get; set; }
 	}
@@ -155,7 +154,7 @@ namespace SmartStore.Core.Caching
 		{
 			Guard.NotNull(propertyAccessor, nameof(propertyAccessor));
 
-			var key = typeof(TSetting).Name + "." + propertyAccessor.ExtractPropertyInfo().Name;
+			var key = TypeHelper.NameOf<TSetting>(propertyAccessor, true);
 			observer.ObserveSetting(key, invalidationAction);
 		}
 	}

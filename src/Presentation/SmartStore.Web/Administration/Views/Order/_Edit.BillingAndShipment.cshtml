@@ -1,0 +1,116 @@
+﻿@model OrderModel
+
+<div class="row">
+	<div class="card-deck card-cols-sm-1 card-cols-lg-3 col-md-12">
+						
+		<div class="card">
+			<div class="card-body">
+				<h6 class="card-title">@T("Order.BillingAddress")</h6>
+				@RenderAddress(Model.BillingAddress)
+			</div>
+			<div class="card-footer d-flex p-0">
+				<a href="@Url.Action("AddressEdit", new { addressId = Model.BillingAddress.Id, orderId = Model.Id })" class="btn btn-warning btn-lg btn-flat rounded-0">
+					<i class="fa fa-pencil-square-o"></i>
+					<span>@T("Admin.Common.Edit")</span>
+				</a>
+			</div>
+		</div>
+						
+		<div class="card">
+			@if (Model.IsShippable && Model.ShippingAddress != null)
+			{
+				<div class="card-body">
+					<h6 class="card-title">@T("Order.ShippingAddress")</h6>
+					@RenderAddress(Model.ShippingAddress)
+				</div>
+				<div class="card-footer d-flex p-0">
+					<a href="@Url.Action("AddressEdit", new { addressId = Model.ShippingAddress.Id, orderId = Model.Id })" class="btn btn-warning btn-lg btn-flat rounded-0">
+						<i class="fa fa-pencil-square-o"></i>
+						<span>@T("Admin.Common.Edit")</span>
+					</a>
+					<a href="@Html.Raw(Model.ShippingAddressGoogleMapsUrl)" class="btn btn-warning btn-lg btn-flat rounded-0" target="_blank">
+						<i class="fa fa-google"></i>
+						<span>@T("Admin.Orders.Fields.ShippingAddress.ViewOnGoogleMaps")</span>
+					</a>
+				</div>
+			}
+			else
+			{
+				<div class="card-body">
+					@T("Admin.Orders.ShippingInfo.NotRequired")
+				</div>
+			}
+		</div>
+
+		<div class="card border-0">
+			@if (Model.IsShippable)
+			{
+				<h6>@T("Admin.Orders.Fields.ShippingMethod")</h6>
+				<p>@Model.ShippingMethod</p>
+
+				<h6>@T("Admin.Orders.Fields.ShippingStatus")</h6>
+				<p>@Model.ShippingStatus</p>
+			}
+		</div>
+	</div>
+</div>
+
+@if (Model.IsShippable && Model.ShippingAddress != null)
+{
+	<h5>@T("Admin.Orders.Shipments")</h5>
+	
+	<div>
+		@(Html.Telerik().Grid<ShipmentModel>().Name("shipments-grid")
+			.DataBinding(binding =>
+			{
+				binding.Ajax().Select("ShipmentsSelect", "Order", new { orderId = Model.Id });
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.Template(x => Html.ActionLink(x.Id.ToString(), "ShipmentDetails", "Order", new { id = x.Id }, new { }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\"><#= Id #></a>");
+				columns.Bound(x => x.TrackingNumber);
+				columns.Bound(x => x.TotalWeight);
+				columns.Bound(x => x.ShippedDate);
+				columns.Bound(x => x.DeliveryDate);
+			})
+			.ToolBar(commands => commands.Template(GridCommands))
+			.EnableCustomBinding(true))
+	</div>
+}
+
+@helper GridCommands(Grid<ShipmentModel> grid)
+{
+	if (Model.CanAddNewShipments)
+	{
+		<button type="submit" id="btnAddNewShipment" name="btnAddNewShipment" class="btn btn-warning" value="@T("Admin.Orders.Shipments.AddNew")"
+				onclick="javascript:setLocation('@(Url.Action("AddShipment", "Order", new { orderId = Model.Id }))'); return false;">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Orders.Shipments.AddNew")</span>
+		</button>	
+	}
+}
+
+@helper RenderAddress(AddressModel address)
+{
+	<div class="mb-2">
+		@Html.Raw(address.FormattedAddress)
+	</div>
+
+	<div class="email">
+		@T("Order.Email"): @address.Email
+	</div>
+	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
+	{
+		<div class="phone">
+			@T("Order.Phone"): @address.PhoneNumber
+		</div>
+	}
+	if (address.FaxEnabled && address.FaxNumber.HasValue())
+	{
+		<div class="fax">
+			@T("Order.Fax"): @address.FaxNumber
+		</div>
+	}
+}

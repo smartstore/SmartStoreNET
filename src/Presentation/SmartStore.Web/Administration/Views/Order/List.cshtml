@@ -14,197 +14,173 @@
             <i class="fa fa-bar-chart-o"></i>
             @T("Admin.Orders")
         </div>
-        <div class="options">
+        <div class="options d-flex">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-			<div class="btn-group">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+			<div class="input-group d-inline-flex mr-3" style="width: 400px">
+				@Html.TextBoxFor(model => Model.GoDirectlyToNumber, new { @class = "form-control", placeholder = T("Admin.Orders.List.GoDirectlyToNumber") })
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-secondary" id="go-to-order-by-number" name="go-to-order-by-number" value="go-to-order-by-number" title="@T("Admin.Orders.List.GoDirectlyToNumber.Hint")">
+						<i class="fa fa-search"></i>
+					</button>
+					<button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+						<i class="fa fa-filter"></i>
+						<span>@T("Common.Filter")</span>
+						<i class="fa fa-angle-double-down"></i>
+					</button>
+				</div>
+			</div>	
+
+			<div class="dropdown dropdown-menu-right mx-1">
+				<a class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">
 					@T("Admin.Common.Export.PDF")
-					<span class="fa fa-caret-down"></span>
 				</a>
-				<ul class="dropdown-menu pull-right">
-					<li>
-						<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = false })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
-						</a>
-					</li>
-					<li>
-						<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = true })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
-						</a>
-					</li>
-				</ul>
+				<div class="dropdown-menu dropdown-menu-right">
+					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = false })">
+						<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
+					</a>
+					<a href="javascript:void(0)" class="pdf-export-button dropdown-item" data-url="@Url.Action("ExportPdf", new { all = true })">
+						<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
+					</a>
+				</div>
 			</div>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.StartDate)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.StartDate)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.EndDate)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.EndDate)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.CustomerName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerEmail)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.CustomerEmail)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.OrderStatusIds)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple" })
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PaymentStatusIds)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("PaymentStatusIds", Model.AvailablePaymentStatuses, null, new { multiple = "multiple" })
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShippingStatusIds)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("ShippingStatusIds", Model.AvailableShippingStatuses, null, new { multiple = "multiple" })
-			</td>
-		</tr>
+	<div class="row mt-3 grid-filter" style="display: none">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.StartDate)
+			@Html.EditorFor(model => Model.StartDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.EndDate)
+			@Html.EditorFor(model => Model.EndDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CustomerName)
+			@Html.EditorFor(model => Model.CustomerName)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CustomerEmail)
+			@Html.EditorFor(model => Model.CustomerEmail)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.OrderGuid)
+			@Html.EditorFor(model => Model.OrderGuid)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.OrderNumber)
+			@Html.EditorFor(model => Model.OrderNumber)
+		</div>
 		@if (Model.AvailableStores.Count > 1)
 		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.StoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, allString)
-				</td>
-			</tr>
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.StoreId)
+				@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, allString, new { @class = "form-control" })
+			</div>
 		}
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.OrderGuid)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.OrderGuid)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.OrderNumber)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.OrderNumber)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.GoDirectlyToNumber)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.GoDirectlyToNumber)
-				<button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
-					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
-				</button>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="btnSearch" class="btn">
-					<i class="fa fa-search"></i>
-					@T("Admin.Common.Search")
-				</button>
-			</td>
-		</tr>
-	</table>
+		else
+		{
+			<div class="col-xl-3"></div>
+		}
+		<div class="col-xl-3"></div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.OrderStatusIds)
+			@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple", @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.PaymentStatusIds)
+			@Html.DropDownList("PaymentStatusIds", Model.AvailablePaymentStatuses, null, new { multiple = "multiple", @class = "form-control" })
+		</div>
 
-	<p></p>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label class="d-none d-lg-block">&nbsp;</label>
+			<button type="submit" id="btnSearch" class="btn btn-warning btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<OrderModel>()
-						.Name("orders-grid")
-						.ClientEvents(events => events
-							.OnDataBinding("onDataBinding")
-							.OnDataBound("onDataBound")
-							.OnComplete("onComplete"))
-						.Columns(columns =>
-						{
-							columns.Bound(x => x.Id)
-								.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-								.Title("<input id='mastercheckbox' type='checkbox'/>")
-								.Width(50)
-								.HtmlAttributes(new { style = "text-align:center" })
-								.HeaderHtmlAttributes(new { style = "text-align:center" });
-
-							columns.Bound(x => x.OrderNumber)
-								.ClientTemplate(@Html.LabeledOrderNumber());
-							columns.Bound(x => x.OrderStatus);
-							columns.Bound(x => x.PaymentStatus);
-							columns.Bound(x => x.ShippingStatus);
-							columns.Bound(x => x.CustomerName);
-							columns.Bound(x => x.CustomerEmail);
-							columns.Bound(x => x.StoreName)
-								.Hidden(Model.AvailableStores.Count <= 1);
-							columns.Bound(x => x.CreatedOn);
-							columns.Bound(x => x.OrderTotal)
-								.Width(180)
-								.RightAlign()
-								.FooterTemplate(
-									string.Format("<div><b>{0}:</b></div>" +
-									(hideProfitReport ? "{1}" : "<div>{1}: <span id=\"aggregator-profit-block\" class=\"pull-right\"></span></div>") +
-									"<div>{2}: <span id=\"aggregator-tax-block\" class=\"pull-right\"></span></div>" +
-									"<div>{3}: <span id=\"aggregator-total-block\" class=\"pull-right\"></span></div>",
-									@T("Admin.Orders.Report.Summary").Text,
-									(hideProfitReport ? "" : @T("Admin.Orders.Report.Profit").Text),
-									@T("Admin.Orders.Report.Tax").Text,
-									@T("Admin.Orders.Report.Total").Text));
-						})
-						.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-						.DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
-						.PreserveGridState()
-						.EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
-    
+	<div>
+		@(Html.Telerik().Grid<OrderModel>()
+			.Name("orders-grid")
+			.TableHtmlAttributes(new { @class = "multiline-grid" })
+			.ClientEvents(events => events
+				.OnDataBinding("onDataBinding")
+				.OnDataBound("onDataBound")
+				.OnComplete("onComplete"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.Width(50)
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
+				@*TODO: number of products, product summary?*@
+				columns.Bound(x => x.OrderNumber)
+					.Width(150)
+					.Title(T("Admin.Order"))
+					.ClientTemplate(@Html.LabeledOrderNumber());
+				columns.Bound(x => x.CustomerName)
+					//.Width(300)
+					.Title(T("Admin.Orders.Fields.Customer"))
+					.ClientTemplate(
+						"<div><#= CustomerName #></div>" +
+						"<div><#= CustomerEmail #></div>");
+				columns.Bound(x => x.ShippingStatus)
+					.Title(T("Admin.Orders.Shipment"))
+					.ClientTemplate(
+						"<div><i class='<#= ShippingStatusLabelClass #>' title='<#= ShippingStatus #>'></i> " +
+						"<# if(IsShippable){ #><span><#= ShippingAddressString #></span><# } #>" +
+						"<# if(IsShippable){ #><div class='muted'><#= ViaShippingMethod #></div><# } #>" +
+						"<# if(!IsShippable){ #><span class='muted'><#= ShippingStatus #></span><# } #>" +
+						"</div>");
+				columns.Bound(x => x.CreatedOn)
+					.Width(200)
+					.Title(T("Order.OrderDate"))
+					.ClientTemplate(
+						"<div><#= CreatedOnString #></div>" +
+						"<div class='muted'><#= FromStore #></div>");
+				columns.Bound(x => x.OrderStatus)
+					.Width(100)
+					.Title(T("Admin.Orders.Fields.OrderStatus"))
+					.ClientTemplate("<span class='<#= OrderStatusLabelClass #>'><#= OrderStatus #></span>");
+				columns.Bound(x => x.OrderTotal)
+					.Width(200)
+					.RightAlign()
+					.ClientTemplate(
+						"<div class='pr-2'><big style='font-weight:600'><#= OrderTotal #></big> <i class='<#= PaymentStatusLabelClass #>' title='<#= PaymentStatus #>'></i></div>" +
+						"<# if(HasPaymentMethod){ #><div class='muted pr-2'><#= WithPaymentMethod #></div><# } #>")
+					.FooterTemplate(
+						string.Format("<div class='pr-2'><div class='font-weight-medium mb-2'>{0}:</div>" +
+						(hideProfitReport ? "{1}" : "<div>{1}: <span id=\"aggregator-profit-block\" class=\"float-right\"></span></div>") +
+						"<div>{2}: <span id=\"aggregator-tax-block\" class=\"float-right\"></span></div>" +
+						"<div>{3}: <span id=\"aggregator-total-block\" class=\"float-right\"></span></div></div>",
+						@T("Admin.Orders.Report.Summary").Text,
+						(hideProfitReport ? "" : @T("Admin.Orders.Report.Profit").Text),
+						@T("Admin.Orders.Report.Tax").Text,
+						@T("Admin.Orders.Report.Total").Text));
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+	</div>
+	
     <script type="text/javascript">
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 		var reportAggregates = "";
 
 		$(document).ready(function () {
+
+			// Filter toggler
+			$('.btn-toggle-filter').on('click', function (e) {
+				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+			});
 
 			//search button
 			$('#btnSearch').click(function () {
@@ -222,7 +198,7 @@
 			$('a.pdf-export-button').click(function (e) {
 				e.preventDefault();
 
-				if (confirm('@T("Admin.Common.AskToProceed")')) {
+				if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
 					var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
 					form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
 					form += '</form>';

@@ -111,9 +111,6 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.HideAdminMenuItemsBasedOnPermissions")]
             public bool HideAdminMenuItemsBasedOnPermissions { get; set; }
-
-			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ForceSslForAllPages")]
-			public bool ForceSslForAllPages { get; set; }
 		}
 
 		public partial class CaptchaSettingsModel
@@ -328,7 +325,10 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.YoutubeLink")]
             public string YoutubeLink { get; set; }
-        }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SocialSettings.InstagramLink")]
+			public string InstagramLink { get; set; }
+		}
 
         #endregion
     }

@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Boards;
 @Html.Raw(String.Format("<a name=\"{0}\"></a>", @Model.Id))
 
-<div class="block block-bordered forum-post card" id="@Html.Encode(String.Format("post{0}", @Model.Id))">
+<div class="block block-bordered forum-post card" id="@Html.Encode(String.Format("post{0}", Model.Id))">
     <div class="block-title card-header">
         @if (@Model.CustomerId > 0)
         {
@@ -16,38 +16,38 @@
             }
         }
 
-        <div>
+        <div class="d-flex align-items-center">
 
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {
-                    <i class="fa fa-pencil-square-o"></i>
-                    @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
+                <i class="fa fa-pencil-square-o"></i>
+                @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
             }
                 
             @if (Model.IsCurrentCustomerAllowedToDeletePost)
             {
-                    <i class="fa fa-times"></i>
-                    @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm('{0}');", T("Common.AreYouSure").Text), @class = "delete-post-link-button" })
+                <i class="fa fa-times"></i>
+                @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm({0});", T("Common.AreYouSure").JsText), @class = "delete-post-link-button" })
             }
 
             @if (@Model.CurrentTopicPage > 1)
             {
-                    @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName, page = Model.CurrentTopicPage }, new { @class = "post-link", title = T("Forum.PostLinkTitle") })
+                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName, page = Model.CurrentTopicPage }, new { @class = "post-link", title = T("Forum.PostLinkTitle") })
             }
             else
             {
-                    @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, @Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { @class = "post-link pr-0", title = T("Forum.PostLinkTitle") })
+                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, @Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { @class = "post-link pr-0", title = T("Forum.PostLinkTitle") })
             }
         </div>
     </div>
 
-    <div class="block-body card-block row">
+    <div class="block-body card-body row">
         <div class="post-info col-3 d-none d-sm-block">
             <div class="user-info mt-3 text-center">
                 @if (!String.IsNullOrEmpty(Model.CustomerAvatarUrl))
                 {
                     <div class="avatar">
-                        <img src="@(Model.CustomerAvatarUrl)" class="avatar-img img-thumbnail" alt="Avatar" />
+                        <img src="@Model.CustomerAvatarUrl" class="avatar-img img-thumbnail" alt="Avatar" />
                     </div>
                 }
 
@@ -55,28 +55,32 @@
                     @if (Model.IsCustomerForumModerator)
                     {
                         <div class="status">
-                            @T("Forum.Status"): <span class="stat-value">@T("Forum.Moderator")</span>
+							<span class="pr-1">@T("Forum.Status"):</span>
+							<span class="stat-value">@T("Forum.Moderator")</span>
                         </div>
                     }
 
                     @if (Model.ShowCustomersPostCount)
                     {
                         <div class="totalposts">
-                            @T("Forum.TotalPosts"): <span class="stat-value">@Model.ForumPostCount</span>
+							<span class="pr-1">@T("Forum.TotalPosts"):</span>
+							<span class="stat-value">@Model.ForumPostCount</span>
                         </div>
                     }
 
                     @if (Model.ShowCustomersJoinDate && !Model.IsCustomerGuest)
                     {
                         <div class="joined">
-                            @T("Forum.Joined"): <span class="stat-value">@Model.CustomerJoinDate.ToString("d")</span>
+                            <span class="pr-1">@T("Forum.Joined"):</span>
+							<span class="stat-value">@Model.CustomerJoinDate.ToNativeString("d")</span>
                         </div>
                     }
 
                     @if (Model.ShowCustomersLocation && !Model.IsCustomerGuest & !String.IsNullOrEmpty(Model.CustomerLocation))
                     {
                         <div class="location">
-                            @T("Forum.Location"): <span class="stat-value">@Model.CustomerLocation</span>
+                            <span class="pr-1">@T("Forum.Location"):</span>
+							<span class="stat-value">@Model.CustomerLocation</span>
                         </div>
                     }
 
@@ -92,19 +96,20 @@
         </div>
         <div class="post-content col col-sm-9">
             <div class="posttime text-muted">
-                @T("Forum.Posted"): <span class="stat-value">@Model.PostCreatedOnStr</span>
+                <span class="pr-1">@T("Forum.Posted"):</span>
+				<span class="stat-value">@Model.PostCreatedOnStr</span>
             </div>
             <div class="post-body">
-                <div class="posttext">
-                    @Html.Raw(@Model.FormattedText)
+                <div class="posttext" dir="auto">
+                    @Html.Raw(Model.FormattedText)
                 </div>
                 @Html.Hidden("Id", @Model.Id)
             </div>
 
             @if (Model.SignaturesEnabled & !String.IsNullOrEmpty(Model.FormattedSignature))
             {
-                <div class="signature text-muted">
-                    @Html.Raw(@Model.FormattedSignature)
+                <div class="signature text-muted" dir="auto">
+                    @Html.Raw(Model.FormattedSignature)
                 </div>
             }
         </div>

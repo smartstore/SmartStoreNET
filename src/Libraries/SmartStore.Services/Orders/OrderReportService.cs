@@ -215,7 +215,7 @@ namespace SmartStore.Services.Orders
                          (!paymentStatusId.HasValue || paymentStatusId == o.PaymentStatusId) &&
                          (!shippingStatusId.HasValue || shippingStatusId == o.ShippingStatusId) &&
                          (!o.Deleted) &&
-                         (!p.Deleted) &&
+                         (!p.Deleted) && (!p.IsSystemProduct) &&
                          (billingCountryId == 0 || o.BillingAddress.CountryId == billingCountryId) &&
                          (showHidden || p.Published)
                          select orderItem;
@@ -281,8 +281,8 @@ namespace SmartStore.Services.Orders
                          (showHidden || p.Published) &&
 						 (!orderItem.Order.Deleted) &&
 						 (storeId == 0 || orderItem.Order.StoreId == storeId) &&
-                         (!p.Deleted) &&
-                         (showHidden || p.Published)
+                         (!p.Deleted) && (!p.IsSystemProduct) &&
+						 (showHidden || p.Published)
                          select new { orderItem = orderItem, p };
 
             var query3 = from orderItem_p in query2
@@ -318,8 +318,10 @@ namespace SmartStore.Services.Orders
         public virtual IPagedList<Product> ProductsNeverSold(DateTime? startTime,
             DateTime? endTime, int pageIndex, int pageSize, bool showHidden = false)
         {
-            //this inner query should retrieve all purchased order product varint identifiers
-            var query1 = (from orderItem in _orderItemRepository.Table
+			var groupedProductId = (int)ProductType.GroupedProduct;
+
+			// This inner query should retrieve all purchased order product varint identifiers.
+			var query1 = (from orderItem in _orderItemRepository.Table
                           join o in _orderRepository.Table on orderItem.OrderId equals o.Id
                           where (!startTime.HasValue || startTime.Value <= o.CreatedOnUtc) &&
                                 (!endTime.HasValue || endTime.Value >= o.CreatedOnUtc) &&
@@ -327,11 +329,12 @@ namespace SmartStore.Services.Orders
                           select orderItem.ProductId).Distinct();
 
             var query2 = from p in _productRepository.Table
-						 orderby p.Name
-                         where (!query1.Contains(p.Id)) &&
-                               (!p.Deleted) &&
+                         where !query1.Contains(p.Id) &&
+								p.ProductTypeId != groupedProductId &&
+							   !p.Deleted &&
                                (showHidden || p.Published)
-                         select p;
+						 orderby p.Name
+						 select p;
 
 			var products = new PagedList<Product>(query2, pageIndex, pageSize);
 			return products;

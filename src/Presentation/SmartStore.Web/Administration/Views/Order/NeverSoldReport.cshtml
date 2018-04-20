@@ -3,7 +3,6 @@
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
-    //page title
     ViewBag.Title = T("Admin.SalesReport.NeverSold").Text;
 }
 @using (Html.BeginForm())
@@ -16,56 +15,41 @@
         <div class="options">
         </div>
     </div>
-    <table width="100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StartDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn">
-					<i class="fa fa-search"></i>&nbsp;@T("Admin.SalesReport.NeverSold.RunReport")
-				</button>
-            </td>
-        </tr>
-    </table>
-     <p>
-    </p>
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<BestsellersReportLineModel>()
-                        .Name("neversoldreport-grid")
-                        .ClientEvents(events => events.OnDataBinding("onDataBinding"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.ProductName)
-								.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));                    
-                        })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("NeverSoldReportList", "Order"))
-						.PreserveGridState()
-                        .EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
-    
+
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.StartDate)
+			@Html.EditorFor(model => model.StartDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.EndDate)
+			@Html.EditorFor(model => model.EndDate)
+		</div>
+		
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.SalesReport.NeverSold.RunReport")</span>
+			</button>
+		</div>
+	</div>
+
+	<div>
+		@(Html.Telerik().Grid<BestsellersReportLineModel>()
+				.Name("neversoldreport-grid")
+				.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.ProductName)
+						.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+						.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				})
+				.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("NeverSoldReportList", "Order"))
+				.PreserveGridState()
+				.EnableCustomBinding(true))
+	 </div>
+
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -79,14 +63,13 @@
 
         });
 
-    function onDataBinding(e) {
-        var searchModel = {
-            StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
-            EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val()
-        };
-        e.data = searchModel;
-    }
+		function onDataBinding(e) {
+			var searchModel = {
+				StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
+				EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val()
+			};
+			e.data = searchModel;
+		}
 
    </script>
-    
 }

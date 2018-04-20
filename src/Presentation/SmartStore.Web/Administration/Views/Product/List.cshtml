@@ -12,191 +12,157 @@
             <i class="fa fa-cube"></i>
             @T("Admin.Catalog.Products.Manage")
         </div>
-        <div class="options btn-toolbar">
+        <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+			<div class="input-group d-inline-flex mr-3" style="width: 350px">
+				@Html.TextBoxFor(model => Model.GoDirectlyToSku, new { @class = "form-control", placeholder = T("Admin.Catalog.Products.List.GoDirectlyToSku") })
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-secondary" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" title="@T("Admin.Catalog.Products.List.GoDirectlyToSku.Hint")">
+						<i class="fa fa-search"></i>
+					</button>
+					<button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+						<i class="fa fa-filter"></i>
+						<span>@T("Common.Filter")</span>
+						<i class="fa fa-angle-double-down"></i>
+					</button>
+				</div>
+			</div>		
+
             <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
+                <i class="fa fa-plus"></i>
+				<span>@T("Admin.Common.AddNew")</span>
             </a>
 
-			<button type="submit" id="delete-selected" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
+			<button type="submit" id="delete-selected" class="btn btn-secondary btn-to-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete.Selected")</span>
 			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchProductName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchProductName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchProductTypeId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SearchProductTypeId, Model.AvailableProductTypes, allString)
-			</td>
-		</tr>
+	<div class="row mt-3 grid-filter" style="display: none">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductName)
+			@Html.TextBoxFor(model => Model.SearchProductName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductTypeId)
+			@Html.DropDownListFor(model => model.SearchProductTypeId, Model.AvailableProductTypes, allString, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchIsPublished)
+			@Html.EditorFor(model => model.SearchIsPublished)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchHomePageProducts)
+			@Html.EditorFor(model => model.SearchHomePageProducts)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchWithoutCategories)
+			@Html.EditorFor(model => model.SearchWithoutCategories)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchCategoryId)
+			@Html.DropDownListFor(model => model.SearchCategoryId, Model.AvailableCategories, allString, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchWithoutManufacturers)
+			@Html.EditorFor(model => model.SearchWithoutManufacturers)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchManufacturerId)
+			@Html.DropDownListFor(model => model.SearchManufacturerId, Model.AvailableManufacturers, allString, new { @class = "form-control" })
+		</div>
 		@if (Model.AvailableStores.Count > 1)
 		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SearchStoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, allString)
-				</td>
-			</tr>
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+				@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, allString, new { @class = "form-control" })
+			</div>
 		}
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchWithoutCategories)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchWithoutCategories)
-			</td>
-		</tr>
-		<tr id="SearchCategoryIdContainer">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchCategoryId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SearchCategoryId, Model.AvailableCategories, allString)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchWithoutManufacturers)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchWithoutManufacturers)
-			</td>
-		</tr>
-		<tr id="SearchManufacturerIdContainer">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchManufacturerId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SearchManufacturerId, Model.AvailableManufacturers, allString)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchIsPublished)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchIsPublished)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchHomePageProducts)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchHomePageProducts)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.GoDirectlyToSku)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.GoDirectlyToSku)
-				<button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
-					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
-				</button>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-			</td>
-		</tr>
-	</table>
-
-    <p></p>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+			<label>&nbsp;</label>
+			<button type="submit" id="search-products" value="search-products" class="btn btn-warning btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
 	
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel>()
-					.Name("products-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.Filterable(false)
-							.Sortable(false)
-							.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.Width(50)
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
+	<div>
+		@(Html.Telerik().Grid<ProductModel>()
+			.Name("products-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.Filterable(false)
+					.Sortable(false)
+					.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.Width(50)
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
 
-						if (Model.DisplayProductPictures)
-						{
-							columns.Bound(x => x.PictureThumbnailUrl)
-								.Sortable(false)
-								.Width(50)
-								.Template(
-                                    @<text>
-                                        <img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
-                                    </text>
-								)
-								.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
-						}
-						columns.Bound(x => x.Name)
-							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-						columns.Bound(x => x.Sku);
-						columns.Bound(x => x.Price)
-							.Format("{0:0.00}")
-							.RightAlign();
-						columns.Bound(x => x.StockQuantity)
-							.Centered();
-						columns.Bound(x => x.LimitedToStores)
-							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden(Model.AvailableStores.Count <= 1)
-							.Centered();
-						columns.Bound(x => x.CreatedOn);
-						columns.Bound(x => x.UpdatedOn);
-						columns.Bound(x => x.Published)
-							.Template(item => @Html.SymbolForBool(item.Published))
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-					})
-					.Sortable(x =>
-					{
-						x.AllowUnsort(true);
-						x.SortMode(GridSortMode.SingleColumn);
-					})
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
-					.ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
-					.EnableCustomBinding(true)
-					.PreserveGridState())
-            </td>
-        </tr>
-    </table>
+				if (Model.DisplayProductPictures)
+				{
+					columns.Bound(x => x.PictureThumbnailUrl)
+						.Sortable(false)
+						.Width(50)
+						.Template(
+						@<text>
+							<img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
+						</text>
+						)
+						.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
+				}
+				columns.Bound(x => x.Name)
+					.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+				columns.Bound(x => x.Sku);
+				columns.Bound(x => x.Price)
+					.Format("{0:0.00}")
+					.RightAlign();
+				columns.Bound(x => x.StockQuantity)
+					.Centered();
+				columns.Bound(x => x.LimitedToStores)
+					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.Hidden(Model.AvailableStores.Count <= 1)
+					.Centered();
+				columns.Bound(x => x.CreatedOn);
+				columns.Bound(x => x.UpdatedOn);
+				columns.Bound(x => x.Published)
+					.Template(item => @Html.SymbolForBool(item.Published))
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered();
+			})
+			.Sortable(x =>
+			{
+				x.AllowUnsort(true);
+				x.SortMode(GridSortMode.SingleColumn);
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
+			.ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
+			.EnableCustomBinding(true)
+			.PreserveGridState())
+	</div>
     
     <script type="text/javascript">
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 
-		$(document).ready(function () {
+		$(function () {
 
 			$("#products-grid").thumbZoomer();
+
+			// Filter toggler
+			$('.btn-toggle-filter').on('click', function (e) {
+				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+			});
 
 			//search button
 			$('#search-products').click(function () {
@@ -225,13 +191,23 @@
 			});
 
 			// show/hide category filter
-			$('#SearchWithoutCategories').change(function () {
-				$('#SearchCategoryIdContainer').toggle(_.isEmpty($(this).val()));
+			$('#SearchWithoutCategories').on('change', function () {
+				if (_.isEmpty($(this).val())) {
+					$('#@Html.IdFor(x => x.SearchCategoryId)').removeAttr('disabled');
+				}
+				else {
+					$('#@Html.IdFor(x => x.SearchCategoryId)').attr('disabled', 'disabled');
+				}
 			}).trigger('change');
 
 			// show/hide manufacturer filter
-			$('#SearchWithoutManufacturers').change(function () {
-				$('#SearchManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
+			$('#SearchWithoutManufacturers').on('change', function () {
+				if (_.isEmpty($(this).val())) {
+					$('#@Html.IdFor(x => x.SearchManufacturerId)').removeAttr('disabled');
+				}
+				else {
+					$('#@Html.IdFor(x => x.SearchManufacturerId)').attr('disabled', 'disabled');
+				}
 			}).trigger('change');
 
 			$('#mastercheckbox').click(function () {

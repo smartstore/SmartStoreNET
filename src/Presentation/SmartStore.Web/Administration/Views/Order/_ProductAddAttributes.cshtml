@@ -4,97 +4,73 @@
 
 @if (Model.ProductVariantAttributes.Count > 0)
 {
-    <div class="attributes">
-        @foreach (var attribute in Model.ProductVariantAttributes)
+	<div class="adminContent">
+		@foreach (var attribute in Model.ProductVariantAttributes)
 		{
 			var controlId = attribute.GetControlId(Model.ProductId, 0);
-            <div>
-                @if (attribute.IsRequired)
-                {
-                    <span>*</span>
-                }
-                @if (!string.IsNullOrEmpty(attribute.TextPrompt))
-                {
-                    <span style="font-weight: bold">@attribute.TextPrompt</span>
-                }
-                else
-                {
-                    <span style="font-weight: bold">@attribute.Name</span>
-                }
-                @if (attribute.AttributeControlType == AttributeControlType.TextBox ||
-                    attribute.AttributeControlType == AttributeControlType.FileUpload)
-                {
-                    <text>&nbsp;&nbsp;&nbsp;</text>
-                }
-                else
-                {
-                    <br />
-                }
-                @switch (attribute.AttributeControlType)
-                {
-                    case AttributeControlType.DropdownList:
-                        {
-                    <select name="@(controlId)" id="@(controlId)">
-                        @if (!attribute.IsRequired)
-                        {
-                            <option value="0">---</option>
-                        }
-                        @foreach (var pvaValue in attribute.Values)
-                        {
-                            <option @(pvaValue.IsPreSelected ? Html.Raw(" selected=\"selected\"") : null) value="@pvaValue.Id">@pvaValue.Name</option>
-                        }
-                    </select>
-                        }
-                        break;
-                    case AttributeControlType.RadioList:
-                    case AttributeControlType.Boxes:
-                        {
-                            foreach (var pvaValue in attribute.Values)
-                            {
-								<div class="radio">
-									<label for="@(controlId)">
-										<input id="@(controlId)" type="radio" class="form-control" name="@(controlId)" value="@pvaValue.Id" @(pvaValue.IsPreSelected ? Html.Raw(" checked=\"checked\"") : null) />
-										@pvaValue.Name
-									</label>
-								</div>
-							}
-						}
-						break;
-					case AttributeControlType.Checkboxes:
-						{
-							foreach (var pvaValue in attribute.Values)
+			<div class="adminRow">
+				<div class="adminTitle">
+					<div class="ctl-label">
+						<label for="SubTotalExclTax">
+							@(!string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name)
+						</label>
+					</div>
+				</div>
+				<div class="adminData">
+					@switch (attribute.AttributeControlType)
+					{
+						case AttributeControlType.DropdownList:
 							{
-								<div class="checkbox">
-									<label for="@(controlId)">
-										<input id="@(controlId)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" @(pvaValue.IsPreSelected ? Html.Raw(" checked=\"checked\"") : null) />
-										@pvaValue.Name
-									</label>
-								</div>
+								<select name="@(controlId)" id="@(controlId)">
+									@if (!attribute.IsRequired)
+								{
+										<option value="0">---</option>
+								}
+									@foreach (var pvaValue in attribute.Values)
+								{
+										<option @(pvaValue.IsPreSelected ? Html.Raw(" selected=\"selected\"") : null) value="@pvaValue.Id">@pvaValue.Name</option>
+								}
+								</select>
 							}
-						}
-						break;
-					case AttributeControlType.TextBox:
-						{
-                            <input name="@(controlId)" type="text" id="@(controlId)" class="textBox" style="width:300px;" />
-                        }
-                        break;
-                    case AttributeControlType.MultilineTextbox:
-                        {
-                            <textarea cols="20" id="@(controlId)" name="@(controlId)" rows="2" style="Width: 300px; Height: 150px;"></textarea>
-                        }
-                        break;
-                    case AttributeControlType.Datepicker:
-                        {
-                            @Html.DatePickerDropDowns(controlId + "-day", controlId + "-month", controlId + "-year", DateTime.Now.Year, DateTime.Now.Year + 1)
-                        }
-                        break;
-                    case AttributeControlType.FileUpload:
-                        {
-                            <input type="file" id="@(controlId)" name="@(controlId)" />
-                        }
-                        break;
-                }
-            </div>
-        }
-    </div>
+							break;
+						case AttributeControlType.RadioList:
+						case AttributeControlType.Boxes:
+						case AttributeControlType.Checkboxes:
+							{
+								foreach (var pvaValue in attribute.Values)
+								{
+									<div class="form-check">
+										<input id="@(controlId)" name="@(controlId)" class="form-check-input"
+											   type="@(attribute.AttributeControlType == AttributeControlType.Checkboxes ? "checkbox" : "radio")"  
+											   value="@pvaValue.Id" @(pvaValue.IsPreSelected ? Html.Raw(" checked=\"checked\"") : null) />
+										<label for="@(controlId)" class="form-check-label">@pvaValue.Name</label>
+									</div>
+								}
+							}
+							break;
+						case AttributeControlType.TextBox:
+							{
+								<input name="@(controlId)" type="text" id="@(controlId)" class="textBox" />
+							}
+							break;
+						case AttributeControlType.MultilineTextbox:
+							{
+								<textarea cols="20" id="@(controlId)" name="@(controlId)" rows="2" style="height: 150px;"></textarea>
+							}
+							break;
+						case AttributeControlType.Datepicker:
+							{
+								@Html.DatePickerDropDowns(controlId + "-day", controlId + "-month", controlId + "-year", DateTime.Now.Year, DateTime.Now.Year + 1)
+							}
+							break;
+						case AttributeControlType.FileUpload:
+							{
+								<input type="file" id="@(controlId)" name="@(controlId)" />
+							}
+							break;
+					}
+				</div>
+			</div>
+		}
+	</div>
 }

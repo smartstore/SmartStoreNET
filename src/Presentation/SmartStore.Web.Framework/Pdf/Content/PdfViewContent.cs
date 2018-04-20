@@ -6,11 +6,9 @@ using SmartStore.Services.Pdf;
 using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Framework.Pdf
-{
-	
+{	
 	public class PdfViewContent : PdfHtmlContent
 	{
-
 		public PdfViewContent(string viewName, object model, ControllerContext controllerContext)
 			: this(viewName, null, model, controllerContext)
 		{
@@ -48,5 +46,4 @@ namespace SmartStore.Web.Framework.Pdf
 			return html;
 		}
 	}
-
 }

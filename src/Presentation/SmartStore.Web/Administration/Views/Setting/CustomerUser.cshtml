@@ -1,7 +1,5 @@
 ﻿@model CustomerUserSettingsModel
-@using Telerik.Web.Mvc.UI;
 @using SmartStore.Core.Domain.Customers;
-@using SmartStore.Core.Domain.Security;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.CustomerUser").Text;
 }
@@ -13,25 +11,26 @@
             @T("Admin.Configuration.Settings.CustomerUser")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
     @Html.ValidationSummary(false)
-
-
-    @Html.SmartStore().TabStrip().Name("customersettings-edit").Items(x =>
+	
+    @Html.SmartStore().TabStrip().Name("customersettings-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
     {
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
-    x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerSettings").Text).Content(TabCustomerSettings()).Selected(true);
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields").Text).Content(TabCustomerFormFields().ToHtmlString());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
 
-    //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
+		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
 	})
 }
 
@@ -39,38 +38,10 @@
 {
     <script type="text/javascript">
         $(document).ready(function () {
-
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)").click(toggleAvatar);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.UsernamesEnabled)").click(toggleUsername);
-
-            toggleAvatar();
-            toggleUsername();
-
         	$('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberMethod)').change(function () {
         		$('#pnlCustomerNumberVisibility').toggle($(this).val() !== '@((int)CustomerNumberMethod.Disabled)');
             }).trigger('change');
         });
-
-        function toggleAvatar() {
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)').is(':checked')) {
-                $('#pnlDefaultAvatarEnabled').show();
-            }
-            else {
-                $('#pnlDefaultAvatarEnabled').hide();
-            }
-        }
-
-        function toggleUsername() {
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.UsernamesEnabled)').is(':checked')) {
-                $('#pnlAllowUsersToChangeUsernames').show();
-                $('#pnlCheckUsernameAvailability').show();
-            }
-            else {
-                $('#pnlAllowUsersToChangeUsernames').hide();
-                $('#pnlCheckUsernameAvailability').hide();
-            }
-        }
-
     </script>
     <table class="adminContent">
         <tr>
@@ -78,35 +49,36 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.UsernamesEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.UsernamesEnabled, Html.CheckBoxFor(model => model.CustomerSettings.UsernamesEnabled, new { data_toggler_for = "#pnlUsernamesEnabled" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
         </tr>
-        <tr id="pnlAllowUsersToChangeUsernames">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
-            </td>
-        </tr>
-        <tr id="pnlCheckUsernameAvailability">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
-            </td>
-        </tr>
+		<tbody id="pnlUsernamesEnabled">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
+					@Html.ValidationMessageFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
+					@Html.ValidationMessageFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
+				</td>
+			</tr>
+		</tbody>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormat)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
-				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNameFormat, ((CustomerNameFormat)Model.CustomerSettings.CustomerNameFormat).ToSelectList())
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNameFormat)
 				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormat)
 			</td>
 		</tr>
@@ -125,8 +97,7 @@
 				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberMethod)
-				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberMethod, Model.CustomerSettings.AvailableCustomerNumberMethods)
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberMethod)
 				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
 			</td>
 		</tr>
@@ -135,8 +106,7 @@
 				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberVisibility)
-				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberVisibility, Model.CustomerSettings.AvailableCustomerNumberVisibilities)
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.CustomerNumberVisibility)
 				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
 			</td>
 		</tr>
@@ -146,8 +116,7 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
-                @Html.DropDownListFor(model => model.CustomerSettings.UserRegistrationType, ((UserRegistrationType)Model.CustomerSettings.UserRegistrationType).ToSelectList())
+				@Html.EnumSettingEditorFor(model => model.CustomerSettings.UserRegistrationType)
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
         </tr>
@@ -165,8 +134,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.RegisterCustomerRoleId)
-                @Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified"))
+				@Html.SettingEditorFor(model => model.CustomerSettings.RegisterCustomerRoleId,
+					Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified")))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
         </tr>
@@ -176,7 +145,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
+				@Html.SettingEditorFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, 
+					Html.CheckBoxFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, new { data_toggler_for = "#pnlDefaultAvatarEnabled" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
             </td>
         </tr>
@@ -263,6 +233,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.StoreLastIpAddress)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.StoreLastIpAddress)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastIpAddress)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
             </td>
             <td class="adminData">
@@ -272,90 +251,12 @@
         </tr>
     </table>
 }
+
 @helper TabCustomerFormFields()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.CountryEnabled)").click(toggleCustomerCountryFormField);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.CompanyEnabled)").click(toggleCustomerRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.StreetAddressEnabled)").click(toggleCustomerRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.StreetAddress2Enabled)").click(toggleCustomerRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.ZipPostalCodeEnabled)").click(toggleCustomerRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.CityEnabled)").click(toggleCustomerRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.PhoneEnabled)").click(toggleCustomerRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.FaxEnabled)").click(toggleCustomerRequiredFormField);
-
-
-            toggleCustomerCountryFormField();
-            toggleCustomerRequiredFormField();
-        });
-
-        function toggleCustomerCountryFormField() {
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.CountryEnabled)').is(':checked')) {
-                $('#pnlCustomerStateProvinceEnabled').show();
-            }
-            else {
-                $('#pnlCustomerStateProvinceEnabled').hide();
-            }
-        }
-
-        function toggleCustomerRequiredFormField() {
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.CompanyEnabled)').is(':checked')) {
-                $('#pnlCustomerCompanyRequired').show();
-            }
-            else {
-                $('#pnlCustomerCompanyRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.StreetAddressEnabled)').is(':checked')) {
-                $('#pnlCustomerStreetAddressRequired').show();
-            }
-            else {
-                $('#pnlCustomerStreetAddressRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.StreetAddress2Enabled)').is(':checked')) {
-                $('#pnlCustomerStreetAddress2Required').show();
-            }
-            else {
-                $('#pnlCustomerStreetAddress2Required').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.ZipPostalCodeEnabled)').is(':checked')) {
-                $('#pnlCustomerZipPostalCodeRequired').show();
-            }
-            else {
-                $('#pnlCustomerZipPostalCodeRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.CityEnabled)').is(':checked')) {
-                $('#pnlCustomerCityRequired').show();
-            }
-            else {
-                $('#pnlCustomerCityRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.PhoneEnabled)').is(':checked')) {
-                $('#pnlCustomerPhoneRequired').show();
-            }
-            else {
-                $('#pnlCustomerPhoneRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.FaxEnabled)').is(':checked')) {
-                $('#pnlCustomerFaxRequired').show();
-            }
-            else {
-                $('#pnlCustomerFaxRequired').hide();
-            }
-        }
-
-    </script>
-
-	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">×</button>
+	<div class="alert alert-info alert-dismissible">
 		@T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description")
+		<button class="close" data-dismiss="alert">&times;</button>
 	</div>
 	
     <table class="adminContent">
@@ -391,7 +292,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CompanyEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CompanyEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.CompanyEnabled, 
+					Html.CheckBoxFor(model => model.CustomerSettings.CompanyEnabled, new { data_toggler_for = "#pnlCompanyRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CompanyEnabled)
             </td>
         </tr>
@@ -409,7 +311,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StreetAddressEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.StreetAddressEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.StreetAddressEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlStreetAddressRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StreetAddressEnabled)
             </td>
         </tr>
@@ -427,7 +330,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.StreetAddress2Enabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.StreetAddress2Enabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.StreetAddress2Enabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlStreetAddress2Required" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StreetAddress2Enabled)
             </td>
         </tr>
@@ -445,7 +349,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.ZipPostalCodeEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.ZipPostalCodeEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.ZipPostalCodeEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlZipPostalCodeRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.ZipPostalCodeEnabled)
             </td>
         </tr>
@@ -463,7 +368,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CityEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CityEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.CityEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.CityEnabled, new { data_toggler_for = "#pnlCityRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CityEnabled)
             </td>
         </tr>
@@ -481,7 +387,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.CountryEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CountryEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.CountryEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.CountryEnabled, new { data_toggler_for = "#pnlStateProvincEnabled" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CountryEnabled)
             </td>
         </tr>
@@ -499,7 +406,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.PhoneEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.PhoneEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.PhoneEnabled,
+					Html.CheckBoxFor(model => model.CustomerSettings.PhoneEnabled, new { data_toggler_for = "#pnlPhoneRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.PhoneEnabled)
             </td>
         </tr>
@@ -517,7 +425,8 @@
                 @Html.SmartLabelFor(model => model.CustomerSettings.FaxEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.FaxEnabled)
+				@Html.SettingEditorFor(model => model.CustomerSettings.FaxEnabled, 
+					Html.CheckBoxFor(model => model.CustomerSettings.FaxEnabled, new { data_toggler_for = "#pnlFaxRequired" }))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.FaxEnabled)
             </td>
         </tr>
@@ -541,98 +450,12 @@
         </tr>
     </table>
 }
+
 @helper TabAddressFormFields()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $("#@Html.FieldIdFor(model => model.AddressSettings.CountryEnabled)").click(toggleAddressCountryFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.CompanyEnabled)").click(toggleAddressRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.SalutationEnabled)").click(toggleAddressRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.StreetAddressEnabled)").click(toggleAddressRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.StreetAddress2Enabled)").click(toggleAddressRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.ZipPostalCodeEnabled)").click(toggleAddressRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.CityEnabled)").click(toggleAddressRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.PhoneEnabled)").click(toggleAddressRequiredFormField);
-            $("#@Html.FieldIdFor(model => model.AddressSettings.FaxEnabled)").click(toggleAddressRequiredFormField);
-
-
-            toggleAddressCountryFormField();
-            toggleAddressRequiredFormField();
-        });
-
-        function toggleAddressCountryFormField() {
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.CountryEnabled)').is(':checked')) {
-                $('#pnlAddressStateProvinceEnabled').show();
-            }
-            else {
-                $('#pnlAddressStateProvinceEnabled').hide();
-            }
-        }
-
-        function toggleAddressRequiredFormField() {
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.CompanyEnabled)').is(':checked')) {
-                $('#pnlAddressCompanyRequired').show();
-            }
-            else {
-                $('#pnlAddressCompanyRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.SalutationEnabled)').is(':checked')) {
-                $('#setting-customer-localized').parent().show();
-            }
-            else {
-                $('#setting-customer-localized').parent().hide();
-            }
-            
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.StreetAddressEnabled)').is(':checked')) {
-                $('#pnlAddressStreetAddressRequired').show();
-            }
-            else {
-                $('#pnlAddressStreetAddressRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.StreetAddress2Enabled)').is(':checked')) {
-                $('#pnlAddressStreetAddress2Required').show();
-            }
-            else {
-                $('#pnlAddressStreetAddress2Required').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.ZipPostalCodeEnabled)').is(':checked')) {
-                $('#pnlAddressZipPostalCodeRequired').show();
-            }
-            else {
-                $('#pnlAddressZipPostalCodeRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.CityEnabled)').is(':checked')) {
-                $('#pnlAddressCityRequired').show();
-            }
-            else {
-                $('#pnlAddressCityRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.PhoneEnabled)').is(':checked')) {
-                $('#pnlAddressPhoneRequired').show();
-            }
-            else {
-                $('#pnlAddressPhoneRequired').hide();
-            }
-
-            if ($('#@Html.FieldIdFor(model => model.AddressSettings.FaxEnabled)').is(':checked')) {
-                $('#pnlAddressFaxRequired').show();
-            }
-            else {
-                $('#pnlAddressFaxRequired').hide();
-            }
-        }
-
-    </script>
-
-	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">×</button>
+	<div class="alert alert-info alert-dismissible">
 		@T("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description")
+		<button class="close" data-dismiss="alert">&times;</button>
 	</div>
 	
     <table class="adminContent">
@@ -650,42 +473,43 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.SalutationEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.SalutationEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.SalutationEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.SalutationEnabled, new { data_toggler_for = "#pnlAddressSettingsSalutations" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.SalutationEnabled)
             </td>
         </tr>
     </table>
-    
-    @(Html.LocalizedEditor<CustomerUserSettingsModel, AddressSettingsLocalizedModel>("setting-customer-localized",
-		@<table class="adminContent pnlSalutations">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Locales[item].Salutations)
-				</td>
-				<td class="adminData">
-					@Html.TextBoxFor(model => Model.Locales[item].Salutations, new { @class = "input-xlarge" })
-					@Html.ValidationMessageFor(model => model.Locales[item].Salutations)
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					@Html.HiddenFor(model => model.Locales[item].LanguageId)
-				</td>
-			</tr>
-		</table>
-		,
-		@<table class="adminContent pnlSalutations">
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
-                </td>
-                <td class="adminData">
-                    @Html.TextBoxFor(model => model.AddressSettings.Salutations, new { @class = "input-xlarge" })
-                    @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
-                </td>
-            </tr>
-        </table>
-    ))
+
+	<div id="pnlAddressSettingsSalutations">
+		@(Html.LocalizedEditor<CustomerUserSettingsModel, AddressSettingsLocalizedModel>("setting-customer-localized",
+			@<table class="adminContent pnlSalutations">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Locales[item].Salutations)
+					</td>
+					<td class="adminData">
+						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+						@Html.TextBoxFor(model => Model.Locales[item].Salutations)
+						@Html.ValidationMessageFor(model => model.Locales[item].Salutations)
+					</td>
+				</tr>
+			</table>
+				,
+			@<table class="adminContent pnlSalutations">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddressSettings.Salutations)
+					</td>
+					<td class="adminData">
+						@Html.TextBoxFor(model => model.AddressSettings.Salutations)
+						@Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
+					</td>
+				</tr>
+			</table>
+			))
+	</div>
 
     <table class="adminContent">
         <tr>
@@ -702,7 +526,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CompanyEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.CompanyEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.CompanyEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.CompanyEnabled, new { data_toggler_for = "#pnlAddressCompanyRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CompanyEnabled)
             </td>
         </tr>
@@ -720,7 +545,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.StreetAddressEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.StreetAddressEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.StreetAddressEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.StreetAddressEnabled, new { data_toggler_for = "#pnlAddressStreetAddressRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.StreetAddressEnabled)
             </td>
         </tr>
@@ -738,7 +564,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.StreetAddress2Enabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.StreetAddress2Enabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.StreetAddress2Enabled,
+					Html.CheckBoxFor(model => model.AddressSettings.StreetAddress2Enabled, new { data_toggler_for = "#pnlAddressStreetAddress2Required" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.StreetAddress2Enabled)
             </td>
         </tr>
@@ -756,7 +583,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.ZipPostalCodeEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.ZipPostalCodeEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.ZipPostalCodeEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.ZipPostalCodeEnabled, new { data_toggler_for = "#pnlAddressZipPostalCodeRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.ZipPostalCodeEnabled)
             </td>
         </tr>
@@ -774,7 +602,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CityEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.CityEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.CityEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.CityEnabled, new { data_toggler_for = "#pnlAddressCityRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CityEnabled)
             </td>
         </tr>
@@ -792,25 +621,47 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.CountryEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.CountryEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.CountryEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.CountryEnabled, new { data_toggler_for = "#pnlAddressStateProvinceEnabled" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.CountryEnabled)
             </td>
         </tr>
-        <tr id="pnlAddressStateProvinceEnabled">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddressSettings.StateProvinceEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.StateProvinceEnabled)
-                @Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceEnabled)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddressSettings.CountryRequired)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AddressSettings.CountryRequired)
+				@Html.ValidationMessageFor(model => model.AddressSettings.CountryRequired)
+			</td>
+		</tr>
+		<tbody id="pnlAddressStateProvinceEnabled">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AddressSettings.StateProvinceEnabled)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.AddressSettings.StateProvinceEnabled)
+					@Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceEnabled)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AddressSettings.StateProvinceRequired)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.AddressSettings.StateProvinceRequired)
+					@Html.ValidationMessageFor(model => model.AddressSettings.StateProvinceRequired)
+				</td>
+			</tr>
+		</tbody>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddressSettings.PhoneEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.PhoneEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.PhoneEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.PhoneEnabled, new { data_toggler_for = "#pnlAddressPhoneRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.PhoneEnabled)
             </td>
         </tr>
@@ -828,7 +679,8 @@
                 @Html.SmartLabelFor(model => model.AddressSettings.FaxEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AddressSettings.FaxEnabled)
+				@Html.SettingEditorFor(model => model.AddressSettings.FaxEnabled,
+					Html.CheckBoxFor(model => model.AddressSettings.FaxEnabled, new { data_toggler_for = "#pnlAddressFaxRequired" }))
                 @Html.ValidationMessageFor(model => model.AddressSettings.FaxEnabled)
             </td>
         </tr>
@@ -843,6 +695,7 @@
         </tr>
     </table>
 }
+
 @helper TabDateTimeSettings()
 {
     <table class="adminContent">
@@ -860,13 +713,14 @@
                 @Html.SmartLabelFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
             </td>
             <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
-                @Html.DropDownListFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, Model.DateTimeSettings.AvailableTimeZones)
+				@Html.SettingEditorFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, 
+					Html.DropDownListFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId, Model.DateTimeSettings.AvailableTimeZones))
                 @Html.ValidationMessageFor(model => model.DateTimeSettings.DefaultStoreTimeZoneId)
             </td>
         </tr>
     </table>
 }
+
 @helper TabExternalAuthenticationSettings()
 {
     <table class="adminContent">

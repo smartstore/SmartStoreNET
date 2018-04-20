@@ -1,11 +1,10 @@
-﻿@{
+﻿@using Telerik.Web.Mvc.UI;
+@using System.Linq;
+@{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
-    //page title
     ViewBag.Title = T("Admin.Catalog.ProductTags").Text;
 }
-@using Telerik.Web.Mvc.UI;
-@using System.Linq;
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "product-tags-form" }))
 {
     <div class="section-header">
@@ -14,62 +13,61 @@
             @T("Admin.Catalog.ProductTags")
         </div>
     </div>
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductTagModel>()
-                    .Name("product-tags-grid")
-                    .DataKeys(x =>
-                    {
-                        x.Add(y => y.Id).RouteKey("Id");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name);
-                        columns.Bound(x => x.ProductCount)
-							.Centered()
-							.Width(150);
-                        columns.Bound(x => x.Id)
-                            .Centered()
-                            .Width(100)
-                            .Filterable(false)
-                            .Template(x => "<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/Product/EditProductTag/") + x.Id + "?btnId=btnRefresh&formId=product-tags-form'); return false;\" class='btn' />")
-                            .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/Product/EditProductTag/") + "<#= Id #>?btnId=btnRefresh&formId=product-tags-form'); return false;\" class='btn' />")
-                            .Title(T("Admin.Common.Edit").Text);
-                        columns.Command(commands =>
-                        {
-                            commands.Delete().Localize(T);
-                        }).Width(90)
-                        .Title(T("Admin.Common.Delete").Text);
-                    })
-                    .Filterable()
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-							.Select("ProductTags", "Product")
-                            .Delete("ProductTagDelete", "Product");
-                    })
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-            </td>
-        </tr>
-        <tr>
-            <td width="100%">
-                <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
-                <script type="text/javascript">
-                    $(document).ready(function () {
-                        $('#btnRefresh').click(function () {
-                            //refresh grid
-                            var optionsGrid = $("#product-tags-grid");
-                            optionsGrid.data('tGrid').ajaxRequest();
 
-                            //return false to don't reload a page
-                            return false;
-                        });
-                    });
-                </script>
-            </td>
-        </tr>
-    </table>
+    <div>
+		@(Html.Telerik().Grid<ProductTagModel>()
+			.Name("product-tags-grid")
+			.DataKeys(x => { x.Add(y => y.Id).RouteKey("Id"); })
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Name);
+				columns.Bound(x => x.ProductCount)
+					.Centered()
+					.Width(150);
+				columns.Command(commands =>
+				{
+					commands.Custom("edit-product-tag").Text(T("Common.Edit"));
+					commands.Delete().Localize(T);
+				})
+				.Width(90)
+				.HtmlAttributes(new { align = "right" });
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("ProductTags", "Product")
+					.Delete("ProductTagDelete", "Product");
+			})
+			.Filterable()
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+
+		<input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+	</div>
 }
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('#btnRefresh').click(function () {
+			//refresh grid
+			var optionsGrid = $("#product-tags-grid");
+			optionsGrid.data('tGrid').ajaxRequest();
+
+			//return false to don't reload a page
+			return false;
+		});
+
+		$('#product-tags-grid').on('click', '.t-grid-edit-product-tag', function (e) {
+			e.preventDefault();
+			var grid = $('#product-tags-grid').data('tGrid');
+			var tr = $(this).closest('tr');
+			var id = grid.dataItem(tr).Id;
+			var href = "@Url.Content("~/Admin/Product/EditProductTag/")" + id + "?btnId=btnRefresh&formId=product-tags-form";
+
+			openPopup(href);
+
+			return false;
+		});
+	});
+</script>

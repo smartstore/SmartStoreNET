@@ -4,19 +4,10 @@
 
 @if (Model.Id > 0)
 {
-    <script>
-		function onRowDataBound_bundleItems(e) {
-			if (!e.dataItem.Published) {
-				$(e.row).find('td').wrapInner('<span class="muted" />');
-			}
-		}
-	</script>
-
-	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">&#215;</button>
+	<div class="alert alert-info alert-dismissible">
 		<div>
 			@T("Admin.Catalog.Products.BundleItems.NotesOnProductBundles"):
-			<a id="ProductBundleInfoLink" href="javascript:void(0)" data-in="@T("Common.Show")" data-out="@T("Common.Hide")">@T("Common.Show")</a>
+			<a class="ml-2" id="ProductBundleInfoLink" href="javascript:void(0)" data-in="@T("Common.Show")" data-out="@T("Common.Hide")">@T("Common.Show")</a>
 		</div>
 		<div id="ProductBundleInfoContainer" class="hide">
 			@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNoteGeneral"))
@@ -28,6 +19,7 @@
 				@Html.Raw(T("Admin.Catalog.Products.BundleItems.AdminNotePerItemShipping"))
 			}
 		</div>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
 	</div>
 
 	<div>
@@ -38,6 +30,9 @@
                         @Html.SmartLabelFor(model => model.Locales[item].BundleTitleText)
                     </td>
                     <td class="adminData">
+						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+						@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
                         @Html.EditorFor(model => model.Locales[item].BundleTitleText)
                         @Html.ValidationMessageFor(model => model.Locales[item].BundleTitleText)
                     </td>
@@ -88,112 +83,111 @@
         </table>
     </div>    
     
-	<p></p>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel.BundleItemModel>()
-                    .Name("bundleitems-grid")
-                    .DataKeys(keys =>
-                    {
-                        keys.Add(x => x.Id);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-                            .Select("BundleItemList", "Product", new { productId = Model.Id })
-                            .Delete("BundleItemDelete", "Product");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.ProductName)
-                            .ReadOnly()
-							.Width(520)
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                        columns.Bound(x => x.Sku)
-                            .ReadOnly();
-						columns.Bound(x => x.Quantity)
-							.Centered();
-						columns.Bound(x => x.Discount)
-							.Centered();
-						columns.Bound(x => x.Visible)
-							.ClientTemplate(@Html.SymbolForBool("Visible"))
-							.Centered();
-                        columns.Bound(x => x.Published)
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                        columns.Bound(x => x.DisplayOrder)
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .Centered()
-                            .ClientTemplate("<button onclick=\"" + "openPopup('" + @Url.Content("~/Admin/Product/BundleItemEditPopup/") + "<#= Id #>?btnId=btnRefreshBundleItems&formId=product-form'); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
-                            .Title("");
-                        columns.Command(commands =>
-                        {
-                            commands.Delete().Localize(T);
-                        });
-                    })
-                    .ClientEvents(events => events.OnRowDataBound("onRowDataBound_bundleItems"))
-                    .EnableCustomBinding(true))
-            </td>
-        </tr>
-        <tr>
-            <td>
-				<button type="button" id="AddNewBundleItemButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
-					<i class="fa fa-plus"></i>
-					@T("Common.AddNew")
-				</button>
+	<div>
+		@(Html.Telerik().Grid<ProductModel.BundleItemModel>()
+			.Name("bundleitems-grid")
+			.DataKeys(keys => { keys.Add(x => x.Id); })
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("BundleItemList", "Product", new { productId = Model.Id })
+					.Delete("BundleItemDelete", "Product");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.ProductName)
+					.ReadOnly()
+					.Width(520)
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(x => x.Sku)
+					.ReadOnly();
+				columns.Bound(x => x.Quantity)
+					.Centered();
+				columns.Bound(x => x.Discount)
+					.Centered();
+				columns.Bound(x => x.Visible)
+					.ClientTemplate(@Html.SymbolForBool("Visible"))
+					.Centered();
+				columns.Bound(x => x.Published)
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered();
+				columns.Bound(x => x.DisplayOrder)
+					.Centered();
+				columns.Command(commands =>
+				{
+					commands.Custom("edit-bundle-part").Text(T("Common.Edit"));
+					commands.Delete().Localize(T);
+				}).HtmlAttributes(new { align = "right" });
+			})
+			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_bundleItems"))
+			.ToolBar(commands => commands.Template(GridCommands))
+			.EnableCustomBinding(true))
+	</div>
 
-				<input type="submit" id="btnRefreshBundleItems" name="btnRefreshBundleItems" class="hide" />
-            </td>
-        </tr>
-    </table>
-    
     <script>
-	$(document).ready(function () {
-		$('#btnRefreshBundleItems').click(function () {
-			$("#bundleitems-grid").data('tGrid').ajaxRequest();
-			return false;
-		});
-
-		// Toggle bundle infos
-		$(document).on('click', '#ProductBundleInfoLink', function () {
-			var info = $('#ProductBundleInfoContainer');
-			$(this).text($(this).attr(info.is(':visible') ? 'data-in' : 'data-out'));
-			info.slideToggle();
-		});
-
-		// Add new bundle item
-		$(document).on('click', '#AddNewBundleItemButton', function () {
-			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-				caption: '@T("Admin.Catalog.Products.BundleItems.AddNew")',
-				disableIf: 'notSimpleProduct',
-				onLoadDialogBefore: function () {
-					$('#AddNewBundleItemButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#AddNewBundleItemButton').prop('disabled', false).button('reset');
-				},
-				onOkClicked: function (ids) {
-					$({}).doAjax({
-						type: 'POST',
-						url: '@Url.Action("BundleItemAdd")',
-						data: { "productId": @Model.Id, "selectedProductIds": ids },
-						callbackSuccess: function () {
-							$("#bundleitems-grid").data('tGrid').ajaxRequest();
-						}
-					});
-					return true;
+		function EntPicker_Completed(ids) {
+			$({}).doAjax({
+				type: 'POST',
+				url: '@Url.Action("BundleItemAdd")',
+				data: { "productId": @Model.Id, "selectedProductIds": ids },
+				callbackSuccess: function () {
+					$("#bundleitems-grid").data('tGrid').ajaxRequest();
 				}
 			});
-		});
+			return true;
+		};
 
-	});
+		function onRowDataBound_bundleItems(e) {
+			if (!e.dataItem.Published) {
+				$(e.row).find('td').wrapInner('<span class="text-muted" />');
+			}
+		}
+
+		$(function () {
+			$('#btnRefreshBundleItems').on('click', function () {
+				$("#bundleitems-grid").data('tGrid').ajaxRequest();
+				return false;
+			});
+
+			// Toggle bundle infos
+			$(document).on('click', '#ProductBundleInfoLink', function () {
+				var info = $('#ProductBundleInfoContainer');
+				$(this).text($(this).attr(info.is(':visible') ? 'data-in' : 'data-out'));
+				info.slideToggle(200);
+			});
+
+			$('#bundleitems-grid').on('click', '.t-grid-edit-bundle-part', function (e) {
+				e.preventDefault();
+				var grid = $('#bundleitems-grid').data('tGrid');
+				var tr = $(this).closest('tr');
+				var id = grid.dataItem(tr).Id;
+				var href = '@Url.Content("~/Admin/Product/BundleItemEditPopup/")' + id + '?btnId=btnRefreshBundleItems&formId=product-form';
+
+				openPopup(href);
+
+				return false;
+			});
+		});
     </script>
 }
 else
 {
-    @T("Admin.Catalog.Products.BundleItems.SaveBeforeEdit")
+    <p class="text-muted">
+		@T("Admin.Catalog.Products.BundleItems.SaveBeforeEdit")
+	</p>
+}
+
+@helper GridCommands(Grid<ProductModel.BundleItemModel> grid)
+{
+	@(Html.SmartStore().EntityPicker()
+		.HtmlAttribute("class", "t-button t-button-primary")
+		.DialogTitle(T("Admin.Catalog.Products.BundleItems.AddNew").Text.EncodeJsString('\'', false))
+		.Caption(T("Common.AddNew").Text.EncodeJsString('\'', false))
+		.DisableBundleProducts(true)
+		.DisableGroupedProducts(true)
+		.IconCssClass("fa fa-plus")
+		.OnSelectionCompleted("EntPicker_Completed"))
+
+	<input type="submit" id="btnRefreshBundleItems" name="btnRefreshBundleItems" class="d-none" />
 }

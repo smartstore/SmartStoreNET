@@ -49,12 +49,13 @@ namespace SmartStore.Services.Shipping
         ShippingMethod GetShippingMethodById(int shippingMethodId);
 
 
-        /// <summary>
-        /// Gets all shipping methods
-        /// </summary>
+		/// <summary>
+		/// Gets all shipping methods
+		/// </summary>
 		/// <param name="request">Shipping option request to filter out shipping methods. <c>null</c> to load all shipping methods.</param>
-        /// <returns>Shipping method collection</returns>
-		IList<ShippingMethod> GetAllShippingMethods(GetShippingOptionRequest request = null);
+		/// <param name="storeId">Whether to filter methods by store identifier.</param>
+		/// <returns>Shipping method collection</returns>
+		IList<ShippingMethod> GetAllShippingMethods(GetShippingOptionRequest request = null, int storeId = 0);
 
         /// <summary>
         /// Inserts a shipping method

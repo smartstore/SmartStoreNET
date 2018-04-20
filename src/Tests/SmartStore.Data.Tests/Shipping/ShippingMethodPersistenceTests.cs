@@ -1,12 +1,11 @@
-﻿using System.Linq;
+﻿using NUnit.Framework;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Shipping
 {
-    [TestFixture]
+	[TestFixture]
     public class ShippingMethodPersistenceTests : PersistenceTest
     {
         [Test]
@@ -24,25 +23,6 @@ namespace SmartStore.Data.Tests.Shipping
             fromDb.Name.ShouldEqual("Name 1");
             fromDb.Description.ShouldEqual("Description 1");
             fromDb.DisplayOrder.ShouldEqual(1);
-        }
-
-        [Test]
-        public void Can_save_and_load_shippingMethod_with_restriction()
-        {
-            var shippingMethod = new ShippingMethod
-            {
-                Name = "Name 1",
-                DisplayOrder = 1
-            };
-            shippingMethod.RestrictedCountries.Add(GetTestCountry());
-
-            var fromDb = SaveAndLoadEntity(shippingMethod);
-            fromDb.ShouldNotBeNull();
-
-
-            fromDb.RestrictedCountries.ShouldNotBeNull();
-            (fromDb.RestrictedCountries.Count == 1).ShouldBeTrue();
-            fromDb.RestrictedCountries.First().Name.ShouldEqual("United States");
         }
 
         protected Country GetTestCountry()

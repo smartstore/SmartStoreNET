@@ -18,9 +18,9 @@ namespace SmartStore.Services.Common
 			_storeMappingService = storeMappingService;
 		}
 
-		protected override void OnDeleted(IStoreMappingSupported entity, HookedEntity entry)
+		protected override void OnDeleted(IStoreMappingSupported entity, IHookedEntity entry)
 		{
-			var entityType = entry.Entity.GetUnproxiedType();
+			var entityType = entry.EntityType;
 
 			var records = _storeMappingService.Value
 				.GetStoreMappingsFor(entityType.Name, entry.Entity.Id)

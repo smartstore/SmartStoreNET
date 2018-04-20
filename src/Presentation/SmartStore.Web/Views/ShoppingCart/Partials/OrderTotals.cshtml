@@ -20,7 +20,10 @@
 	{
 		<tr class="cart-summary-weight">
 			<td class="cart-summary-label">@T("ShoppingCart.Weight"):</td>
-			<td class="cart-summary-value">@(Model.Weight.ToString("N2")) @Model.WeightMeasureUnitName</td>
+			<td class="cart-summary-value">
+				<span class="pr-1">@(Model.Weight.ToString("N2"))</span>
+				<span>@Model.WeightMeasureUnitName</span>
+			</td>
 		</tr>
 	}
 	<tr class="cart-summary-subtotal">
@@ -159,6 +162,22 @@
 			<td class="cart-summary-value">@Model.RedeemedRewardPointsAmount</td>
 		</tr>
 	}
+	@if (Model.CreditBalance.HasValue())
+	{
+		<tr class="cart-summary-credit-balance cart-summary-pos">
+			<td class="cart-summary-label">@T("ShoppingCart.Totals.CreditBalance"):</td>
+			<td class="cart-summary-value">@Model.CreditBalance</td>
+		</tr>
+	}
+    @if (Model.OrderTotalRounding.HasValue())
+    {
+        <tr class="cart-summary-totalrounding cart-summary-pos">
+            <td class="cart-summary-label">@T("ShoppingCart.Totals.Rounding"):</td>
+            <td class="cart-summary-value">
+                <span>@Model.OrderTotalRounding</span>
+            </td>
+        </tr>
+    }
 	<tr class="cart-summary-total">
 		<td class="cart-summary-label">@T("ShoppingCart.Totals.OrderTotal"):</td>
 		<td class="cart-summary-value">

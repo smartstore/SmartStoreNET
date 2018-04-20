@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
@@ -100,19 +101,20 @@ namespace SmartStore.Core.Caching
 			var prefixLen = RegionName.Length;
 
 			pattern = pattern.NullEmpty() ?? "*";
+			var wildcard = new Wildcard(pattern, RegexOptions.IgnoreCase);
 
 			var enumerator = items.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
-				string key = enumerator.Key as string;
-				if (key == null)
-					continue;
-				if (key.StartsWith(RegionName))
+				if (enumerator.Key is string key)
 				{
-					key = key.Substring(prefixLen);
-					if (pattern == "*" || key.StartsWith(pattern, StringComparison.OrdinalIgnoreCase))
+					if (key.StartsWith(RegionName))
 					{
-						yield return key;
+						key = key.Substring(prefixLen);
+						if (pattern == "*" || wildcard.IsMatch(key))
+						{
+							yield return key;
+						}
 					}
 				}
 			}

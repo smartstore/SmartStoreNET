@@ -4,13 +4,17 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("affiliate-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("affiliate-edit").Style(TabsStyle.Material).Items(x =>
 {
-    x.Add().Text(T("Admin.Affiliates.Info").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.Affiliates.Info").Text)
+		.Content(TabInfo()).Selected(true);
+
     if (Model.Id > 0)
     {
-        x.Add().Text(T("Admin.Affiliates.Customers").Text).Content(TabCustomers());
-        x.Add().Text(T("Admin.Affiliates.Orders").Text).Content(TabOrders());
+        x.Add().Text(T("Admin.Affiliates.Customers").Text)
+			.Content(TabCustomers());
+        x.Add().Text(T("Admin.Affiliates.Orders").Text)
+			.Content(TabOrders());
     }
     
     // generate an event
@@ -27,7 +31,8 @@
                     @Html.SmartLabelFor(model => model.Id)
                 </td>
                 <td class="adminData">
-                    @Model.Id
+                    @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					@Html.ValidationMessageFor(model => model.Id)
                 </td>
             </tr>
             <tr>
@@ -35,7 +40,9 @@
                     @Html.SmartLabelFor(model => model.Url)
                 </td>
                 <td class="adminData">
-                    @Model.Url
+					<div class="form-control-plaintext">
+						<a href="@Model.Url">@Model.Url</a>
+					</div>
                 </td>
             </tr>
         }
@@ -56,52 +63,57 @@
 @helper TabCustomers()
 {
     @(Html.Telerik().Grid<AffiliateModel.AffiliatedCustomerModel>()
-                    .Name("customers-grid")
-                    .Columns(columns =>
-                    {
-						columns.Bound(x => x.Id);
-						columns.Bound(x => x.Email)
-							.Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id }, new { }))
-							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
-						columns.Bound(x => x.Username)
-							.Visible(Model.UsernamesEnabled);
-						columns.Bound(x => x.FullName);
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.Id }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
-                            .Title(T("Admin.Common.View").Text);
-                    })
-                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax().Select("AffiliatedCustomerList", "Affiliate", new { affiliateId = Model.Id });
-                    })
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
+		.Name("customers-grid")
+		.DataKeys(keys =>
+		{
+			keys.Add(x => x.Id);
+		})
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Id);
+			columns.Bound(x => x.Email)
+				.Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id }, new { }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+			columns.Bound(x => x.Username)
+				.Visible(Model.UsernamesEnabled);
+			columns.Bound(x => x.FullName);
+			columns.Bound(x => x.Id)
+				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.Id, @class = "t-button t-grid-edit" }, new { }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\" class=\"t-button t-grid-edit\">" + T("Admin.Common.View").Text + "</a>")
+				.Title(String.Empty)
+				.HtmlAttributes(new { align = "right" });
+		})
+		.DataBinding(dataBinding =>
+		{
+			dataBinding.Ajax().Select("AffiliatedCustomerList", "Affiliate", new { affiliateId = Model.Id });
+			dataBinding.Ajax().Update("Edit", "Customer", new { id = 0 });
+		})
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
 }
 
 @helper TabOrders()
 {
     @(Html.Telerik().Grid<AffiliateModel.AffiliatedOrderModel>()
-                    .Name("order-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(x.Id.ToString(), "Edit", "Order", new { id = x.Id }, new { }))
-							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\"><#= Id #></a>");
-                        columns.Bound(x => x.OrderStatus);
-                        columns.Bound(x => x.PaymentStatus);
-                        columns.Bound(x => x.ShippingStatus);
-                        columns.Bound(x => x.OrderTotal)
-							.RightAlign();
-                        columns.Bound(x => x.CreatedOn);
-
-                    })
-                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax().Select("AffiliatedOrderList", "Affiliate", new { affiliateId = Model.Id });
-                    })
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
+		.Name("order-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Id)
+				.Template(x => Html.ActionLink(x.Id.ToString(), "Edit", "Order", new { id = x.Id }, new { }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= Id #>\"><#= Id #></a>");
+			columns.Bound(x => x.OrderStatus);
+			columns.Bound(x => x.PaymentStatus);
+			columns.Bound(x => x.ShippingStatus);
+			columns.Bound(x => x.CreatedOn);
+			columns.Bound(x => x.OrderTotal)
+				.RightAlign();
+		})
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding =>
+		{
+			dataBinding.Ajax().Select("AffiliatedOrderList", "Affiliate", new { affiliateId = Model.Id });
+		})
+		.PreserveGridState()
+		.EnableCustomBinding(true))
 }

@@ -8,7 +8,13 @@
     {
         <script>
 			function onProductManufacturerEdit(e) {
-                $(e.form).find('#Manufacturer').select2('val', e.dataItem['ManufacturerId']);
+				if (e.mode == "edit") {
+					$('#Manufacturer')
+						.data('select-selected-id', e.dataItem['ManufacturerId'])
+						.data('select-init-text', e.dataItem['Manufacturer'])
+						.val(e.dataItem['ManufacturerId'])
+						.trigger('change');
+				}
 			}
 
 			function onProductManufacturerDataBound(e) {
@@ -17,46 +23,44 @@
         </script>
 	
 		@(Html.Telerik().Grid<ProductModel.ProductManufacturerModel>()
-            .Name("productmanufacturers-grid")
-            .DataKeys(keys =>
-            {
-                keys.Add(x => x.Id);
-            })
-            .DataBinding(dataBinding =>
-            {
-                dataBinding.Ajax()
-                    .Select("ProductManufacturerList", "Product", new { productId = Model.Id })
-                    .Insert("ProductManufacturerInsert", "Product", new { productId = Model.Id })
-                    .Update("ProductManufacturerUpdate", "Product")
-                    .Delete("ProductManufacturerDelete", "Product");
-            })
-            .Columns(columns =>
-            {
-                columns.Bound(x => x.Manufacturer)
+			.Name("productmanufacturers-grid")
+			.DataKeys(keys => { keys.Add(x => x.Id); })
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("ProductManufacturerList", "Product", new { productId = Model.Id })
+					.Insert("ProductManufacturerInsert", "Product", new { productId = Model.Id })
+					.Update("ProductManufacturerUpdate", "Product")
+					.Delete("ProductManufacturerDelete", "Product");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Manufacturer)
+					.Width("60%")
 					.Template(x => Html.ActionLink(x.Manufacturer, "Edit", "Manufacturer", new { id = x.ManufacturerId }))
 					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Manufacturer/Edit/") + "<#= ManufacturerId #>\"><#= Manufacturer #></a>");
-                columns.Bound(x => x.IsFeaturedProduct)
-                    .Width(100)
-                    .Template(item => Html.SymbolForBool(item.IsFeaturedProduct))
-                    .ClientTemplate(Html.SymbolForBool("IsFeaturedProduct"))
-                    .Centered();
-                columns.Bound(x => x.DisplayOrder)
+				columns.Bound(x => x.IsFeaturedProduct)
+					.Width(100)
+					.Template(item => Html.SymbolForBool(item.IsFeaturedProduct))
+					.ClientTemplate(Html.SymbolForBool("IsFeaturedProduct"))
+					.Centered();
+				columns.Bound(x => x.DisplayOrder)
 					.Centered()
-                    .Width(100);
-                columns.Command(commands =>
-                {
-                    commands.Edit().Localize(T);
-                    commands.Delete().Localize(T);
-                })
-                .Width(180);
-            })
-            .ToolBar(commands => commands.Insert())
-            .ClientEvents(events =>
+					.Width(100);
+				columns.Command(commands =>
+				{
+					commands.Edit().Localize(T);
+					commands.Delete().Localize(T);
+				})
+				.HtmlAttributes(new { align = "right" });
+			})
+			.ToolBar(commands => commands.Insert())
+			.ClientEvents(events =>
 			{
 				events.OnEdit("onProductManufacturerEdit");
 				events.OnDataBound("onProductManufacturerDataBound");
 			})
-            .EnableCustomBinding(true))
+			.EnableCustomBinding(true))
     }
     else
     {

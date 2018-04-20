@@ -2,7 +2,6 @@
 @using Telerik.Web.Mvc.UI
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
     ViewBag.Title = T("Admin.System.Log").Text;
 }
 @using (Html.BeginForm())
@@ -13,100 +12,73 @@
             @T("Admin.System.Log")
         </div>
         <div class="options">
-            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn">
-                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.Log.DeleteSelected")
+            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary">
+                <i class="fa fa-trash-o"></i>
+				<span>@T("Admin.System.Log.DeleteSelected")</span>
             </button>
             <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
-                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.Log.ClearLog")
+                <i class="fa fa-trash-o"></i>
+				<span>@T("Admin.System.Log.ClearLog")</span>
             </button>
         </div>
     </div>
 
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnFrom)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CreatedOnFrom)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnTo)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.CreatedOnTo)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Logger)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.Logger)
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Message)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.Message)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LogLevelId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("LogLevelId", Model.AvailableLogLevels, T("Admin.Common.All"))
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn">
-                    <i class="fa fa-search"></i>
-                    @T("Admin.Common.Search")
-                </button>
-            </td>
-        </tr>
-    </table>
-    <p></p>
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<LogModel>()
-						.Name("log-grid")
-						.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
-						.Columns(columns =>
-						{
-							columns.Bound(x => x.Id)
-								.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-								.Title("<input id='mastercheckbox' type='checkbox'/>")
-								.Width(50)
-								.HtmlAttributes(new { style = "text-align:center" })
-								.HeaderHtmlAttributes(new { style = "text-align:center" });
-							columns.Bound(x => x.Logger)
-								.Width(120)
-								.ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
-							columns.Bound(x => x.ShortMessage)
-								.ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
-							columns.Bound(x => x.UserName)
-								.Width(120);
-							columns.Bound(x => x.CreatedOn)
-								.Width(160);
-						})
-						.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-						.DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
-						.PreserveGridState()
-						.EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CreatedOnFrom)
+			@Html.EditorFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CreatedOnTo)
+			@Html.EditorFor(model => model.CreatedOnTo, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.Logger)
+			@Html.TextBoxFor(model => Model.Logger, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.Message)
+			@Html.TextBoxFor(model => model.Message, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.LogLevelId)
+			@Html.DropDownList("LogLevelId", Model.AvailableLogLevels, T("Admin.Common.All"))
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.Search")</span>
+			</button>
+		</div>
+	</div>
+
+	<div>
+		@(Html.Telerik().Grid<LogModel>()
+			.Name("log-grid")
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.Width(50)
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
+				columns.Bound(x => x.Logger)
+					.Width(120)
+					.ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
+				columns.Bound(x => x.ShortMessage)
+					.ClientTemplate("<span class='badge badge-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
+				columns.Bound(x => x.UserName)
+					.Width(120);
+				columns.Bound(x => x.CreatedOn)
+					.Width(160);
+			})
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+	</div>
     
     <script type="text/javascript">
 

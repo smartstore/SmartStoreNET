@@ -1,0 +1,28 @@
+﻿@using SmartStore.DevTools.Models;
+@model BackendExtensionModel
+
+@{
+    Layout = "";
+}
+
+@* VERY IMPORTANT for proper model binding *@
+@Html.Hidden("__Type__", Model.GetType().AssemblyQualifiedName)
+
+@Html.HiddenFor(m => m.ProductId)
+
+<div class="admin-config-group">
+    <div class="title">Dev-Tools</div>
+</div>
+
+<table id="GmcData" class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.Welcome)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.Welcome)
+            @Html.ValidationMessageFor(m => m.Welcome)
+        </td>
+    </tr>
+</table>
+    

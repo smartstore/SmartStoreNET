@@ -25,12 +25,14 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <param name="customer">Customer, <c>null</c> to use current customer.</param>
 		/// <param name="storeId">Store identifier, <c>null</c> to use current store.</param>
 		/// <param name="maxPicturesPerProduct">Pictures per product, <c>null</c> to load all pictures per product.</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <returns>Product export context</returns>
 		ProductExportContext CreateProductExportContext(
 			IEnumerable<Product> products = null,
 			Customer customer = null,
 			int? storeId = null,
-			int? maxPicturesPerProduct = null);
+			int? maxPicturesPerProduct = null,
+			bool showHidden = true);
 	}
 
 
@@ -60,6 +62,8 @@ namespace SmartStore.Services.DataExchange.Export
 		public bool HasPermission { get; set; }
 
 		public IList<int> EntitiesToExport { get; set; }
+
+		public string ActionOrigin { get; set; }
 
 		public IDictionary<string, object> CustomData { get; private set; }
 

@@ -4,15 +4,15 @@
 
 @model IList<ManufacturerModel>
 @{
-    Layout = "_Layout";
+	Layout = "_Layout";
 
-    Html.AddTitleParts(T("PageTitle.Manufacturers").Text);
+	Html.AddTitleParts(T("PageTitle.Manufacturers").Text);
 
-    var alphabeticalList = Model.Where(x => !Char.IsNumber(x.Name[0])).OrderBy(x => x.Name);
-    var numericList = Model.Where(x => Char.IsNumber(x.Name[0])).OrderBy(x => x.Name);
-    var currentLetter = String.Empty;
-    var areaLetter = alphabeticalList.FirstOrDefault().Name.Substring(0, 1).ToUpper();
-    var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();
+	var numericList = Model.Where(x => Char.IsNumber(x.Name.Value[0])).OrderBy(x => x.Name);
+	var alphabeticalList = Model.Except(numericList).OrderBy(x => x.Name);
+	var currentLetter = String.Empty;
+	var areaLetter = alphabeticalList.FirstOrDefault().Name.Value.Substring(0, 1).ToUpper();
+	var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();
 }
 
 <div class="page manufacturer-list-page">
@@ -28,14 +28,14 @@
             <div class="manufacturer-nav">
                 <ul class="navbar justify-content-start list-unstyled">
                     
-                    @if (numericList.Count() > 0)
+                    @if (numericList.Any())
                     {
                         <li class="nav-item"><a class="nav-link" href="#number">@T("Catalog.ManufacturerAll.Numbers")</a></li>
                     }
                     
                     @foreach (var item in alphabeticalList)
                     {
-                        currentLetter = item.Name.Substring(0, 1).ToUpper();
+                        currentLetter = item.Name.Value.Substring(0, 1).ToUpper();
                         if (!currentLetter.Equals(areaLetter))
                         {
                             <li class="nav-item"><a class="nav-link" href="#@areaLetter">@areaLetter</a></li>
@@ -46,12 +46,12 @@
                     @{ 
                         // reset 
                         currentLetter = String.Empty;
-                        areaLetter = alphabeticalList.FirstOrDefault().Name.Substring(0, 1).ToUpper();
+                        areaLetter = alphabeticalList.FirstOrDefault().Name.Value.Substring(0, 1).ToUpper();
                     }
                 </ul>
             </div>
 
-            if (numericList.Count() > 0)
+            if (numericList.Any())
             {
                 <h4 id="number" class="manufacturer-list-title">@T("Catalog.ManufacturerAll.Numbers")</h4>
                 <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
@@ -67,7 +67,7 @@
             <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
                 @foreach (var item in alphabeticalList)
                 {
-                    currentLetter = item.Name.Substring(0, 1).ToUpper();
+                    currentLetter = item.Name.Value.Substring(0, 1).ToUpper();
 
                     if (!currentLetter.Equals(areaLetter))
                     {
@@ -115,7 +115,7 @@
         </div>
         <div class="art-genericname">
             <a href="@url" title="@item.Name">
-                <span>@item.Name</span>
+                <span @Html.LanguageAttributes(item.Name)>@item.Name</span>
             </a>
         </div>
     </article>

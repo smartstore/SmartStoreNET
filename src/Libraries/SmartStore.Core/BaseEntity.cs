@@ -6,8 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 namespace SmartStore.Core
-{
-    
+{  
     /// <summary>
     /// Base class for entities
     /// </summary>
@@ -30,11 +29,12 @@ namespace SmartStore.Core
 				// it's a proxied type
 				t = t.BaseType;
 			}
+
 			return t;
         }
 
 		/// <summary>
-		/// Transient objects are not associated with an item already in storage.  For instance,
+		/// Transient objects are not associated with an item already in storage. For instance,
 		/// a Product entity is transient if its Id is 0.
 		/// </summary>
 		public virtual bool IsTransientRecord()

@@ -11,11 +11,10 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.News
 {
     [Validator(typeof(NewsItemValidator))]
-    public class NewsItemModel : EntityModelBase
+    public class NewsItemModel : EntityModelBase, IStoreSelector
     {
 		public NewsItemModel()
 		{
-			this.AvailableStores = new List<StoreModel>();
 		}
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
@@ -25,14 +24,14 @@ namespace SmartStore.Admin.Models.News
         [AllowHtml]
         public string LanguageName { get; set; }
 
-		//Store mapping
+		// Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
+
+		[SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 

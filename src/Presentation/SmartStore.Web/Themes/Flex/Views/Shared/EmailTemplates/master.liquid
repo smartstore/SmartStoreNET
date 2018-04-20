@@ -1,0 +1,658 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		{% assign _left = "left" %}
+		{% assign _right = "right" %}
+		{% if Context.LanguageRtl %}
+			{% assign _left = "right" %}
+			{% assign _right = "left" %}
+		{% endif %}
+		<!-- https://github.com/wildbit/postmark-templates -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>{{ Email.Subject }}</title>
+		<style type="text/css" rel="stylesheet" media="all">
+
+			/* Base ------------------------------ */
+			*:not(br):not(tr):not(html) {
+				font-family: {{ Theme.FontFamily }};
+				box-sizing: border-box;
+			}
+	    
+			body {
+				width: 100% !important;
+				height: 100%;
+				margin: 0;
+				font-size: 16px;
+				line-height: 1.5;
+				background-color: {{ Theme.BodyBg }};
+				color: {{ Theme.BodyColor }};
+				-webkit-text-size-adjust: none;
+			}
+	    
+			p,
+			ul,
+			ol,
+			blockquote {
+				line-height: 1.5;
+			}
+
+			a {
+				color: {{ Theme.LinkColor }};
+			}
+			
+			img {
+				outline: none; 
+				text-decoration: none; 
+				-ms-interpolation-mode: bicubic;
+			}
+			
+			a img {
+				border: none;
+			}
+
+			td {
+				word-break: break-word;
+				color: {{ Theme.BodyColor }};
+			}
+			
+			p:last-child {
+				margin-bottom: 0;
+			}
+			
+	    	/* Layout ------------------------------ */
+	    
+			.wrapper {
+				width: 100%;
+				margin: 0;
+				padding: 0;
+				background-color: {{ Theme.BodyBg }};
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;     
+			}
+	    
+			.content {
+				width: 100%;
+				margin: 0;
+				padding: 0;
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+			}
+			
+			/* Tables ------------------------------ */
+			
+			table {
+		        border-spacing: 0;
+		        mso-table-lspace: 0pt;
+		        mso-table-rspace: 0pt;				
+			}
+			
+			thead {
+				margin: 0;
+			}
+			
+			table.w-100 {
+				width: 100%;
+				-premailer-width: 100%;
+			}
+			
+			th, td {
+				text-align: {{ _left }};
+			}
+			
+			td {
+				vertical-align: top;
+				-premailer-valign: top;
+			}
+			
+			tr.valign-top td,
+			tr.valign-top th {
+				vertical-align: top;
+				-premailer-valign: top;
+			}
+			
+			tr.valign-middle td,
+			tr.valign-middle th {
+				vertical-align: middle;
+				-premailer-valign: middle;
+			}
+			
+			tr.valign-bottom td,
+			tr.valign-bottom th {
+				vertical-align: bottom;
+				-premailer-valign: bottom;
+			}
+			
+	    	/* Masthead ----------------------- */
+	    
+			.masthead {
+				padding: 25px 0;
+				text-align: center;
+			}
+
+			.masthead-logo {
+				/*width: 94px;
+				max-height: 75px;*/
+			}
+
+			.masthead-name {
+				font-size: 16px;
+				font-weight: bold;
+				color: {{ Theme.MutedColor }};
+				text-decoration: none;
+				text-shadow: 0 1px 0 #ffffff;
+			}
+			
+			
+			/* Body ------------------------------ */
+
+			.body {
+				width: 100%;
+				margin: 0;
+				padding: 0;
+				border-top: 1px solid {{ Theme.ShadeColor }};
+				border-bottom: 1px solid {{ Theme.ShadeColor }};
+				background-color: {{ Theme.ContentBg }};
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+			}
+
+			.body-inner {
+				width: 600px;
+				margin: 0 auto;
+				padding: 0;
+				background-color: {{ Theme.ContentBg }};
+				min-height: 500px;
+				-premailer-width: 600px;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+				-premailer-align: center;	  
+			}
+
+			.footer {
+				width: 600px;
+				margin: 0 auto;
+				padding: 0;
+				text-align: center;
+				-premailer-width: 600px;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+				-premailer-align: center;
+			}
+
+			.footer p {
+				color: {{ Theme.MutedColor }};
+			}
+
+			.body-sub {
+				margin-top: 25px;
+				padding-top: 25px;
+				border-top: 1px solid {{ Theme.ShadeColor }};
+			}
+
+			.content-cell {
+				padding: 35px 10px;
+			}
+
+			.content-cell > *:last-child {
+				margin-bottom: 0;
+			}
+	    	
+			/* Attribute list ------------------------------ */
+
+			.attributes {
+				margin: 0 0 21px;
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+			}
+
+			.attributes-content {
+				background-color: {{ Theme.ShadeColor }};
+				padding: 16px;
+			}
+
+			.attributes-item {
+				padding: 0;
+			}
+	    
+			/* Related Items ------------------------------ */
+
+			.related {
+				width: 100%;
+				margin: 0;
+				padding: 25px 0 0 0;
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+			}
+
+			.related-item {
+				padding: 10px 0;
+				color: {{ Theme.BodyColor }};
+				font-size: 15px;
+				line-height: 18px;
+			}
+
+			.related-item-title {
+				display: block;
+				margin: .5em 0 0;
+			}
+
+			.related-item-thumb {
+				display: block;
+				padding-bottom: 10px;
+			}
+
+			.related-heading {
+				border-top: 1px solid {{ Theme.ShadeColor }};
+				text-align: center;
+				padding: 25px 0 10px;
+			}
+	    
+			/* Discount Code ------------------------------ */
+
+			.discount {
+				width: 100%;
+				margin: 0;
+				padding: 24px;
+				background-color: {{ Theme.ShadeColor }};
+				border: 2px dashed {{ Theme.MutedColor }};
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+			}
+
+			.discount-heading {
+				text-align: center;
+			}
+
+			.discount-body {
+				text-align: center;
+				font-size: 15px;
+			}
+	    
+			/* Social Icons ------------------------------ */
+
+			.social {
+				width: auto;
+			}
+
+			.social td {
+				padding: 0;
+				width: auto;
+			}
+
+			.social_icon {
+				height: 20px;
+				margin: 0 8px 10px 8px;
+				padding: 0;
+			}
+	    
+			/* Data table ------------------------------ */
+
+			.purchase {
+				width: 100%;
+				margin: 0;
+				padding: 35px 0;
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+			}
+
+			.purchase-content {
+				width: 100%;
+				margin: 0;
+				padding: 25px 0 0 0;
+				-premailer-width: 100%;
+				-premailer-cellpadding: 0;
+				-premailer-cellspacing: 0;
+			}
+
+			.purchase-item {
+				padding: 10px 0;
+				color: {{ Theme.BodyColor }};
+				font-size: 15px;
+				line-height: 18px;
+			}
+
+			.purchase-heading {
+				padding-bottom: 8px;
+				border-bottom: 1px solid {{ Theme.ShadeColor }};
+			}
+
+			.purchase-heading p {
+				margin: 0;
+				color: {{ Theme.MutedColor }};
+				font-size: 12px;
+			}
+
+			.purchase-footer {
+				padding-top: 15px;
+				border-top: 1px solid {{ Theme.ShadeColor }};
+			}
+
+			.purchase-total {
+				margin: 0;
+				text-align: {{ _right }};
+				font-weight: 600;
+				color: {{ Theme.TitleColor }};
+			}
+
+			.purchase-total-label {
+				padding: 0 15px 0 0;
+			}
+	    
+			/* Utilities ------------------------------ */
+			
+			.m-0	{ margin: 0px; }
+			.m-1	{ margin: 5px; }
+			.m-2	{ margin: 10px; }
+			.m-3	{ margin: 20px; }
+			.m-4	{ margin: 35px; }
+			.m-5	{ margin: 64px; }
+			
+			.mt-0	{ margin-top: 0px; }
+			.mt-1	{ margin-top: 4px; }
+			.mt-2	{ margin-top: 8px; }
+			.mt-3	{ margin-top: 16px; }
+			.mt-4	{ margin-top: 32px; }
+			.mt-5	{ margin-top: 64px; }
+			
+			.mb-0	{ margin-bottom: 0px; }
+			.mb-1	{ margin-bottom: 4px; }
+			.mb-2	{ margin-bottom: 8px; }
+			.mb-3	{ margin-bottom: 16px; }
+			.mb-4	{ margin-bottom: 32px; }
+			.mb-5	{ margin-bottom: 64px; }
+			
+			.p-0	{ padding: 0px; }
+			.p-1	{ padding: 5px; }
+			.p-2	{ padding: 10px; }
+			.p-3	{ padding: 20px; }
+			.p-4	{ padding: 35px; }
+			.p-5	{ padding: 64px; }
+			
+			.pt-0	{ padding-top: 0px; }
+			.pt-1	{ padding-top: 4px; }
+			.pt-2	{ padding-top: 8px; }
+			.pt-3	{ padding-top: 16px; }
+			.pt-4	{ padding-top: 32px; }
+			.pt-5	{ padding-top: 64px; }
+			
+			.pb-0	{ padding-bottom: 0px; }
+			.pb-1	{ padding-bottom: 4px; }
+			.pb-2	{ padding-bottom: 8px; }
+			.pb-3	{ padding-bottom: 16px; }
+			.pb-4	{ padding-bottom: 32px; }
+			.pb-5	{ padding-bottom: 64px; }
+			
+			.brd	{ border: 1px solid {{ Theme.ShadeColor }}; }
+			
+			.bg-light	{ background-color: #fbfbfb; }
+			.bg-primary	{ background-color: {{ Theme.BrandPrimary }}; }
+			.bg-warning	{ background-color: {{ Theme.BrandWarning }}; }
+			.bg-success	{ background-color: {{ Theme.BrandSuccess }}; }
+			.bg-danger	{ background-color: {{ Theme.BrandDanger }}; }
+
+
+			/* Buttons ------------------------------ */
+			
+			.btn {
+				display: inline-block;
+				color: #fff;
+				text-decoration: none;
+				border-radius: 3px;
+				font-size: 16px;
+				box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16);
+				-webkit-text-size-adjust: none;
+			}
+
+			.btn-primary {
+				background-color: {{ Theme.BrandPrimary }};
+				border-top: 12px solid {{ Theme.BrandPrimary }};
+				border-right: 24px solid {{ Theme.BrandPrimary }};
+				border-bottom: 12px solid {{ Theme.BrandPrimary }};
+				border-left: 24px solid {{ Theme.BrandPrimary }};
+			}
+
+			.btn-success {
+				background-color: {{ Theme.BrandSuccess }};
+				border-top: 12px solid {{ Theme.BrandSuccess }};
+				border-right: 24px solid {{ Theme.BrandSuccess }};
+				border-bottom: 12px solid {{ Theme.BrandSuccess }};
+				border-left: 24px solid {{ Theme.BrandSuccess }};
+			}
+
+			.btn-danger {
+				background-color: {{ Theme.BrandDanger }};
+				border-top: 12px solid {{ Theme.BrandDanger }};
+				border-right: 24px solid {{ Theme.BrandDanger }};
+				border-bottom: 12px solid {{ Theme.BrandDanger }};
+				border-left: 24px solid {{ Theme.BrandDanger }};
+			}
+			
+			.btn-warning {
+				background-color: {{ Theme.BrandWarning }};
+				border-top: 12px solid {{ Theme.BrandWarning }};
+				border-right: 24px solid {{ Theme.BrandWarning }};
+				border-bottom: 12px solid {{ Theme.BrandWarning }};
+				border-left: 24px solid {{ Theme.BrandWarning }};
+			}
+	    
+			/* Typo ------------------------------ */
+			
+			body, 
+			p,
+			td,
+			th {
+				font-size: 16px;
+			}
+			
+			b,
+			strong,
+			th {
+				font-weight: 600;
+			}
+			
+			th {
+				color: {{ Theme.TitleColor }};
+			}
+			
+			h1 {
+				margin-top: 0;
+				color: {{ Theme.TitleColor }};
+				font-size: 1.375em;
+				font-weight: 600;
+				line-height: 1.2em;
+				margin-bottom: 16px;
+			}
+
+			h2 {
+				margin-top: 0;
+				color: {{ Theme.TitleColor }};
+				font-size: 1.1875em;
+				font-weight: 600;
+				line-height: 1.2em;
+				margin-bottom: 12px;
+			}
+
+			h3 {
+				margin-top: 0;
+				color: {{ Theme.TitleColor }};
+				font-size: 1em;
+				font-weight: 600;
+				line-height: 1.2em;
+				margin-bottom: 8px;
+			}
+
+			p {
+				margin-top: 0;
+				color: {{ Theme.BodyColor }};
+				line-height: 1.5em;
+			}
+
+			.message {
+				font-style: italic;
+				/*color: {{ Theme.MutedColor }};*/
+			}
+			
+			.text-right 	{ text-align: {{ _right }}; }
+			.text-left		{ text-align: {{ _left }}; }
+			.text-center	{ text-align: center; }
+			
+			th.text-right,
+			td.text-right 	{ -premailer-align: {{ _right }}; }
+			th.text-left,
+			td.text-left 	{ -premailer-align: {{ _left }}; }
+			th.text-center,
+			td.text-center 	{ -premailer-align: center; }
+			
+			.text-primary	{ color: {{ Theme.BrandPrimary }}; }
+			.text-warning	{ color: {{ Theme.BrandWarning }}; }
+			.text-success	{ color: {{ Theme.BrandSuccess }}; }
+			.text-danger	{ color: {{ Theme.BrandDanger }}; }
+			.text-white 	{ color: #fff; }
+			.text-sm 		{ font-size: 0.875em; }
+			.text-xs 		{ font-size: 0.75em; }
+			.text-lg 		{ font-size: 1.125em; }
+			.text-xl 		{ font-size: 1.5em; }
+			
+			.text-muted,
+			.text-muted-all	{ color: {{ Theme.MutedColor }}; }	
+			
+			.text-muted-all p,
+			.text-muted-all h1,
+			.text-muted-all h2,
+			.text-muted-all h3,
+			.text-muted-all td,
+			.text-muted-all th {
+				color: inherit;
+			}	
+			
+			/* Ratings ------------------------------ */
+
+			.rating {
+				display: inline-block;
+				height: 16px;
+				width: 80px;
+				background-repeat: repeat-x;
+				background-position: 0 50%;
+				background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNAay06AAAAInSURBVDiNnZI/TBNhGMZ/vV7va3vXu4otYCSNxYIJhBhDAiZUEjdlcXJhAMKkCXFycyNOmJgYZiMDAWTBxdGlaU10hiJaSgKKloZE24Y7Kr3PgT8BQ5vos715/rxvvueDBsikU5cz6VRPI43aiASmgBhwq55AabA9GQqZw5FINJlJp4b/KSCTTnmB6eaWFqLRKMBUJp0yztN6/jL2Aq3AndbWSxPhC2GkdCmVynzf3p4DngOVgeTg2klAJp1KAO+AmK4b+DQflhVGDwbZrzpIKdE0DcepUtzZwXVr2LYN8AO4pwwkB3P5/MZ0KBSi81onbW1tBAICZ98GQEqJbduoqpf2q+10dfdgmibZ1ezrgeTgRy/A0tKb9zf7+2JCiBuqquI4NlJyElCrHeA4NgcHv9n+9pXl5ZW3o2PjI3CqxpXV1QemZcWFJm77g36qVQePRwEktVoNVfVRKe+Rz298yOXW75/7iDOvXsbj8Sv5REeCSqWConhwXYmULoYRIvdlnc3NrdjI6NjWuTU2NTUlgvphW16vghCCQCCAqh4equs6VtjqOO05EyCE6DF0AyECBIMG5fIev36WEELH7w9iWiZC0/pOe858ZVX1deuGQaFQYKdQyDmO80xKKsVi8Ulzc0vXxUgEn0/rrxsgpXv989qn/O7u7ovJyaczK9ls6YiaW5iffRiJRB8ritJLPczPzY7XJY+wuLjwaGjobvh49sjjwv8TfwCXtcZoRHu4ugAAAABJRU5ErkJggg==');
+			}
+			.rating > * {
+				position: relative;
+				display: inline-block;
+				height: 16px;
+				background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNAay06AAAAHxSURBVDiNpZIxaNNBFMZ/7/5/i6k1xDa1CCYa0ii2HaQIGUToVBy03QQHuziqKLrUoSpOLhYSECcX3dpFp3RwFS2aQehQEoJFBYeKjW1qYu5/dw5pYgtJQPzg8R73vu/dd7yDLviQ3Z9YeRpKdOP43ZqnTsYyIiJQuNiN1xaF59HxWi5ia0sR+3VxaLwTT3VqxI8cmFOuLB5lGRwI3funAeVXh69gytOiQPmg7MbUdm5oph1XsjP0X5qIXPN7+054vkt5nk4p9avfkwqeD6LAGTD0YWzohzU9RRNIMahuF3JvN5741Tra1n5OmaB8hh5gXyPEBxyIgHNgTQWrK/1GkzaatA0kX62T8V6vUE8PsxCPMiHCURGQpj8H1jYc2ADs3/wuX2LycpZND2Bxmd/jCRYSg5wTiDfFzu2IzR7xm+UC5y88YhN2XQawdJdjpxOsKQ+Uary/ZcY2hhS/kTg7x1rbLeRLrBuNMxoCDUEdzE4OdKP++In1jmtMDTJiNGLq0IxgV200JKOM7Nbs+crDA4wZDa5hfxPhhQjOOWacJewcHD/EGPC+rYNwSI2agFrNHJwvbcWS8Vtcj93kxmo5lqzZ8LzRUvWQ0Y4OVqO3q0b1zk5ffZiBrdb55IMv34E7L5/d/+zbygA8bvXEOcf/4A98LtzAZGRLlgAAAABJRU5ErkJggg==');
+			}
+			
+			/* Orders ------------------------------ */
+			
+			.order-item-link {
+				font-weight: 600;
+				color: {{ Theme.TitleColor }};
+				text-decoration: none;
+			}
+		
+			{% zone 'css' %}
+    	</style>
+	</head>
+  	<body{% if Context.LanguageRtl %} dir="rtl"{% endif %}>
+  	
+	<style type="text/css" id="ignore">
+		/* Client-specific Styles ------------ */
+	
+		#outlook a { padding:0; } /* Force Outlook to provide a "view in browser" menu link. */
+		body { width:100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; margin: 0; padding: 0; }
+		/* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
+		.ExternalClass { width:100%; } /* Force Hotmail to display emails at full width */
+		.ExternalClass, 
+		.ExternalClass p, 
+		.ExternalClass span, 
+		.ExternalClass font, 
+		.ExternalClass td, 
+		.ExternalClass div { line-height: 100%; } /* Force Hotmail to display normal line spacing.  More on that: http://www.emailonacid.com/forum/viewthread/43/ */
+		#backgroundTable { margin: 0; padding: 0; width: 100% !important; line-height: 100% !important; }
+      	.ReadMsgBody { width: 100%; }
+	
+		/*Media Queries ------------------------------ */
+		@media only screen and (max-width: 600px) {
+			.email-body_inner,
+			.email-footer {
+				width: 100% !important;
+			}
+		}
+
+		@media only screen and (max-width: 500px) {
+			.button {
+				width: 100% !important;
+			}
+		}
+	</style>
+  	
+  	{% block 'wrapper_before' %}{% endblock %}
+  	{% zone 'wrapper_before' %}
+  	
+    <table class="wrapper">
+		<tr>
+			<td align="center">
+		  		<table class="content"> 
+		    		<tr>
+		      			<td class="masthead">
+		      				{% block 'header_before' %}{% endblock %}
+		      				{% zone 'header_before' %}
+		      				{% block 'header' %}
+								{% include 'header' %}
+							{% endblock %}
+							{% block 'header_after' %}{% endblock %}
+							{% zone 'header_after' %}
+		      			</td>
+		    		</tr>
+		    		<!-- Email Body -->
+		    		<tr>
+		      			<td class="body">
+		        			<table class="body-inner">
+		          				<!-- Body content -->
+		          				<tr>
+		            				<td class="content-cell">
+		            					{% block 'body_before' %}{% endblock %}
+		            					{% zone 'body_before' %}
+		            					{% block 'body' %}{% endblock %}
+		            					{% block 'body_after' %}{% endblock %}
+		            					{% zone 'body_after' %}
+									</td>
+								</tr>
+							</table>
+						</td>
+            		</tr>
+            		<tr>
+              			<td>
+            				<table class="footer">
+              					<tr>
+									<td class="content-cell" align="center">
+										{% block 'footer_before' %}{% endblock %}
+										{% zone 'footer_before' %}
+					      				{% block 'footer' %}
+											{% include 'footer' %}
+										{% endblock %}
+										{% block 'footer_after' %}{% endblock %}
+										{% zone 'footer_after' %}
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+    </table>
+    
+    {% block 'wrapper_after' %}{% endblock %}
+    {% zone 'wrapper_after' %}
+    
+	</body>
+</html>

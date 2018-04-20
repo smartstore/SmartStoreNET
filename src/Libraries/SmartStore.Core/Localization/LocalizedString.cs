@@ -44,7 +44,18 @@ namespace SmartStore.Core.Localization
             get { return _localized; }
         }
 
-        public static implicit operator string(LocalizedString obj)
+		/// <summary>
+		/// Returns a js encoded string which already contains delimiters.
+		/// </summary>
+		public IHtmlString JsText
+		{
+			get
+			{
+				return System.Web.Mvc.MvcHtmlString.Create(_localized.EncodeJsString());
+			}
+		}
+
+		public static implicit operator string(LocalizedString obj)
         {
             return obj.Text;
         }

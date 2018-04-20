@@ -1,21 +1,23 @@
 ﻿@using SmartStore.Licensing
 @model LicenseLabelModel
+
 @{
 	Layout = null;
 }
+
 @if (Model.IsLicensable && !Model.HideLabel)
 {
 	if (Model.LicenseState == LicensingState.Licensed)
 	{
-		<span class="label label-success">@T("Admin.Common.Licensed")</span>
+		<span class="badge badge-success">@T("Admin.Common.Licensed")</span>
 	}
 	else if (Model.LicenseState == LicensingState.Unlicensed && Model.TruncatedLicenseKey.HasValue())
 	{
-		<span class="label label-important">@T("Admin.Common.Unlicensed")</span>
+		<span class="badge badge-danger">@T("Admin.Common.Unlicensed")</span>
 	}
 	else
 	{
-		<span class="label @(Model.RemainingDemoUsageDaysLabel)">
+		<span class="badge @(Model.RemainingDemoUsageDaysLabel)">
 			@if (!Model.RemainingDemoUsageDays.HasValue)
 			{
 				@T("Admin.Plugins.LicensingDemoNotStarted")

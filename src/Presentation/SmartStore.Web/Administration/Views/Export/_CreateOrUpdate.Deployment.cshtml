@@ -10,8 +10,10 @@
 
 @if (!Model.CreateZip)
 {
-	<div id="ZipUsageNote" class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+	<div id="ZipUsageNote" class="alert alert-info alert-dismissable">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
 		@Html.Raw(T("Admin.DataExchange.Export.Deployment.ZipUsageNote"))
 	</div>
 }
@@ -37,7 +39,7 @@
 			@Html.SmartLabelFor(x => x.Name)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.Name)
+			@Html.TextBoxFor(model => model.Name, new { @readonly = "readonly", @class = "form-control-plaintext" })
 			@Html.ValidationMessageFor(x => x.Name)
 		</td>
 	</tr>
@@ -83,7 +85,7 @@
 			@Html.SmartLabelFor(x => x.EmailAddresses)
 		</td>
 		<td class="adminData">
-			@Html.HiddenFor(x => x.EmailAddresses)
+			@Html.ListBoxFor(model => model.EmailAddresses, Model.AvailableEmailAddresses, new { multiple = "multiple", data_tags = "true" })
 			@Html.ValidationMessageFor(x => x.EmailAddresses)
 		</td>
 	</tr>
@@ -158,11 +160,7 @@
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
-		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({
-			tags: [@(Html.Raw(Model.SerializedEmailAddresses))]
-		});
-
-		$('#@(Html.FieldIdFor(x => x.DeploymentType))').select2({
+		$('#@(Html.FieldIdFor(x => x.DeploymentType))').selectWrapper({
 			minimumResultsForSearch: 16,
 			formatResult: selectDeploymentType,
 			formatSelection: selectDeploymentType

@@ -15,11 +15,15 @@
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-		<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
-			<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
-		</button>
+		<a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
 
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+		<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
+			<i class="fa fa-trash-o"></i>
+			<span>@T("Admin.Common.Delete.Selected")</span>
+		</button>
 
 		@{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
@@ -27,75 +31,63 @@
 
 @if (Model.AvailableStores.Count > 1)
 {
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchStoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="button" id="search-newsitem" class="btn">
-					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-				</button>
-			</td>
-		</tr>
-	</table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchStoreId)
+			@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
 }
 
-<p></p>
+<div>
+	@(Html.Telerik().Grid<NewsItemModel>()
+			.Name("newsitem-grid")
+			.Columns(columns =>
+			{
+			columns.Bound(x => x.Id)
+				.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+				.Title("<input id='mastercheckbox' type='checkbox'/>")
+				.HtmlAttributes(new { style = "text-align:center" })
+				.HeaderHtmlAttributes(new { style = "text-align:center" });
+			columns.Bound(x => x.Title)
+				.Width(450)
+				.Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
+			columns.Bound(x => x.Published)
+				.Template(item => @Html.SymbolForBool(item.Published))
+				.ClientTemplate(@Html.SymbolForBool("Published"))
+				.Centered();
+			columns.Bound(x => x.LanguageName);
+			columns.Bound(x => x.Comments)
+				.Template(
+				@<div>
+					@Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
+				</div>
+					)
+					.ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
+				columns.Bound(x => x.StartDate);
+				columns.Bound(x => x.EndDate);
+				columns.Bound(x => x.LimitedToStores)
+					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+					.Hidden(Model.AvailableStores.Count <= 1)
+					.Centered();
+				columns.Bound(x => x.CreatedOn);
+			})
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+</div>
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<NewsItemModel>()
-                    .Name("newsitem-grid")
-                    .Columns(columns =>
-                    {
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
-                        columns.Bound(x => x.Title)
-							.Width(450)
-                            .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
-						columns.Bound(x => x.Published)
-							.Template(item => @Html.SymbolForBool(item.Published))
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-                        columns.Bound(x => x.LanguageName);
-                        columns.Bound(x => x.Comments)
-                            .Template(
-                            @<div>
-								@Html.ActionLink(T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - " + @item.Comments, "Comments", new { filterByNewsItemId = item.Id })
-                            </div>
-                            )
-                            .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
-                        columns.Bound(x => x.StartDate);
-                        columns.Bound(x => x.EndDate);
-						columns.Bound(x => x.LimitedToStores)
-							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden(Model.AvailableStores.Count <= 1)
-							.Centered();
-                        columns.Bound(x => x.CreatedOn);
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
-					.ClientEvents(events =>	events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+
 
 <script type="text/javascript">
 	var selectedIds = [];

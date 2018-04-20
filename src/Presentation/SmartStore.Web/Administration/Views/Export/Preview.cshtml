@@ -18,15 +18,18 @@
 
 			@if (Model.LogFileExists)
 			{
-				<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
-					<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+				<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn btn-secondary" target="LogFile">
+					<i class="fa fa-file-text-o"></i>
+					<span>@T("Admin.Configuration.ActivityLog")</span>
 				</a>
 			}
-			<button type="button" id="ExportSelected" class="btn btn-default">
-				<i class="fa fa-gears"></i>&nbsp;@T("Admin.Common.ExportSelected")
+			<button type="button" id="ExportSelected" class="btn btn-secondary">
+				<i class="fa fa-gears"></i>
+				<span>@T("Admin.Common.ExportSelected")</span>
 			</button>
-			<button type="button" id="ExportAll" class="btn btn-default">
-				<i class="fa fa-gears"></i>&nbsp;@T("Admin.Common.ExportAll")
+			<button type="button" id="ExportAll" class="btn btn-secondary">
+				<i class="fa fa-gears"></i>
+				<span>@T("Admin.Common.ExportAll")</span>
 			</button>
 		</form>
 	</div>
@@ -44,7 +47,7 @@
 				exportAll = ($(this).attr('id') === 'ExportAll');
 
 			if (!exportAll && selectedIds.length === 0) {
-				displayNotification('@T("Admin.Common.NoEntriesSelected")', 'warning');
+				displayNotification(@T("Admin.Common.NoEntriesSelected").JsText, 'warning');
 				return false;
 			}
 
@@ -160,7 +163,8 @@
 					columns.Bound(x => x.OrderStatus);
 					columns.Bound(x => x.PaymentStatus);
 					columns.Bound(x => x.ShippingStatus);
-					columns.Bound(x => x.CustomerEmail);
+					columns.Bound(x => x.CustomerId)
+						.Centered();
 					columns.Bound(x => x.StoreName);
 					columns.Bound(x => x.CreatedOn);
 					columns.Bound(x => x.OrderTotal)
@@ -300,6 +304,42 @@
 						.ClientTemplate(@Html.SymbolForBool("Active"))
 						.Centered()
 						.Width(160);
+					columns.Bound(x => x.StoreName);
+					columns.Bound(x => x.CreatedOn);
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.ClientEvents(events => events.OnDataBound("OnDataBound"))
+				.EnableCustomBinding(true))
+	}
+	else if (Model.EntityType == ExportEntityType.ShoppingCartItem)
+	{
+		@(Html.Telerik().Grid<ExportPreviewShoppingCartItemModel>()
+				.Name("export-grid-product")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+						.Title("<input id='export-grid-product-mastercheckbox' type='checkbox' class='master-checkbox' />")
+						.Width(50)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Id)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.ShoppingCartTypeName);
+					columns.Bound(x => x.CustomerId)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.CustomerEmail);
+					columns.Bound(x => x.Name)
+						.ClientTemplate(@Html.LabeledProductName(null, "Name"));
+					columns.Bound(x => x.Sku);
+					columns.Bound(x => x.Price)
+						.Format("{0:0.00}")
+						.RightAlign();
 					columns.Bound(x => x.StoreName);
 					columns.Bound(x => x.CreatedOn);
 				})

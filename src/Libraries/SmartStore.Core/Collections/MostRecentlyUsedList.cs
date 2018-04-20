@@ -42,7 +42,7 @@ namespace SmartStore.Collections
 		public MostRecentlyUsedList(string collection, T newItem, int maxSize)
 		{
 			_maxSize = maxSize;
-			_mru = collection.SplitSafe(Delimiter).Cast<T>().ToList();
+			_mru = collection.SplitSafe(Delimiter).Cast<T>().Distinct().ToList();
 
 			Add(newItem);
 		}

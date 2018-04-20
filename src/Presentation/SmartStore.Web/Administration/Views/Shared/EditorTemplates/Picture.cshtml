@@ -1,127 +1,67 @@
 ﻿@model int?
-@using SmartStore.Core;
+
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Utilities;
 
 @functions {
-    private bool TransientUpload
-    {
-        get
-        {
-            if (ViewData.ContainsKey("transientUpload"))
-            {
-                var x = ViewData["transientUpload"].Convert<bool>();
-                return x;
-            }
-            return false;
-        }
-    }
+	private bool TransientUpload
+	{
+		get
+		{
+			if (ViewData.ContainsKey("transientUpload"))
+				return ViewData["transientUpload"].Convert<bool>();
+			return false;
+		}
+	}
 
-    private bool ValidatePicture
-    {
-        get
-        {
-            if (ViewData.ContainsKey("validate"))
-            {
-                var x = ViewData["validate"].Convert<bool>();
-                return x;
-            }
-            return true;
-        }
-    }
+	private bool ValidatePicture
+	{
+		get
+		{
+			if (ViewData.ContainsKey("validate"))
+				return ViewData["validate"].Convert<bool>();
+			return true;
+		}
+	}
 }
 
 @{
-    var random = CommonHelper.GenerateRandomInteger();
-    var clientId = "picture" + random;
-    var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
-    int pictureId = Model.HasValue ? Model.Value : 0;
+	var random = CommonHelper.GenerateRandomInteger();
+	var pictureService = this.CommonServices.PictureService;
+	var mediaSettings = this.CommonServices.Resolve<SmartStore.Core.Domain.Media.MediaSettings>();
+	int pictureId = Model.HasValue ? Model.Value : 0;
 	var picture = pictureService.GetPictureById(pictureId);
-
-    Html.AddScriptParts("~/bundles/fileupload");
-    Html.AddCssFileParts("~/css/fileupload");
 }
 
-<div id="@clientId" class="fileupload" style="display: inline-block;" data-upload-url='@Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, area = "Admin" })'>
-    
-    @Html.HiddenFor(x => x, new { @class = "hidden"} )
+<div class="form-row align-items-center fileupload-container">
+	<div class="col-auto">
+		@Html.HiddenFor(x => x, new { @class = "hidden" })
+		<img src="@Url.Picture(pictureId, mediaSettings.ProductThumbPictureSize)" style="max-width: 100px; max-height: 64px" class="img-thumbnail" alt="" />
+	</div>
 
-    <img src="@(pictureService.GetPictureUrl(pictureId, 100, true))" class="img-polaroid" alt="" />
-
-    <button class="btn remove" @Html.Attr("style", "display:none", picture == null)>
-        <i class="fa fa-trash-o"></i>
-        @T("Admin.Picture.RemovePicture")
-    </button>
-
-    <span class="btn btn-primary fileinput-button">
-        <i class="fa fa-upload"></i>
-        <span>@T("Common.Fileuploader.Upload")</span>
-        <input id="fileupload-@random" type="file" name="file" />
-    </span>
-
-    <button class="btn btn-warning cancel hide">
-        <i class="fa fa-times"></i>
-        <span>@T("Common.Fileuploader.Cancel")</span>
-    </button>
-
-    <!-- The global progress information -->
-    <div class="span5 fileupload-progress fade">
-        <!-- The global progress bar -->
-        <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-            <div class="bar" style="width:0%;"></div>
-        </div>
-        <!-- The extended global progress information -->
-        <div class="progress-extended">&nbsp;</div>
-    </div>
-
+	<div class="col">
+		@(Html.SmartStore().FileUploader()
+			.UploadUrl(Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, area = "Admin" }))
+			.HtmlAttribute("data-fallback-url", pictureService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
+			.AcceptedFileTypes("gif|jpe?g|png")
+			.ShowRemoveButton(picture != null)
+			.ShowRemoveButtonAfterUpload(true)
+			.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
+		)
+	</div>
 </div>
 
-<script type="text/javascript">
-
-    $(function () {
-
-        var el = $('#@clientId'),
-            img = el.find('img'),
-            elHidden = el.find('.hidden'),
-            elRemove = el.find('.remove'),
-            elCancel = el.find('.cancel')
-            elFile = el.find('.fileinput-button');
-
-        $('#@clientId').fileupload({
-            url: el.data('upload-url'),
-            dataType: 'json',
-            //acceptFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-        	pasteZone: null,
-
-            done: function (e, data) {
-                var result = data.result;
-                if (result.success) {
-                    img.attr('src', result.imageUrl);
-                    elHidden.val(result.pictureId);
-                    elRemove.show();
-
-                    elCancel.hide();
-                    elFile.show();
-                }
-            },
-
-            error: function (jqXHR, textStatus, errorThrown) {
-                if (errorThrown === 'abort') {
-                    //alert('File Upload has been canceled');
-                }
-            }
-        });
-
-        elRemove.click(function (e) {
-            img.attr('src', '@pictureService.GetDefaultPictureUrl(100)');
-            elHidden.val(0);
-            $(this).hide();
-            e.preventDefault();
-        });
-
-        $("#addProductPicture").on("click", function () {
-            elRemove.trigger("click");
-        });
-    });
+<script>
+	window['onUploadCompleted_@random'] = function (e, el, data) {
+		$("#add-product-picture").removeAttr('disabled');
+	}
+	window['onFileRemove_@random'] = function (e, el) {
+		$("#add-product-picture").attr('disabled', 'disabled');
+	}
+	@*window['onAborted_@random'] = function (el) {
+		//console.log("onAborted", arguments);
+	}
+	window['onError_@random'] = function (el, textStatus, errorThrown) {
+		//console.log("onError", arguments);
+	}*@
 </script>

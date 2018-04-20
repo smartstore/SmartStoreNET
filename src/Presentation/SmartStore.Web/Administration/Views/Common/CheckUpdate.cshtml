@@ -24,25 +24,25 @@
 	}
 	else
 	{
-		<h3 class="text-error">@T("Admin.CheckUpdate.UpdateAvailable")!</h3>
+		<h3 class="text-danger">@T("Admin.CheckUpdate.UpdateAvailable")!</h3>
 		<dl>
 			<dt>@T("Admin.CheckUpdate.YourVersion")</dt>
 			<dd>@Model.CurrentVersion</dd>
 			<dt>@T("Admin.CheckUpdate.CurrentVersion")</dt>
-			<dd class="text-error">@Model.Version</dd>
+			<dd class="text-danger">aon</dd>
 			<dt>@T("Common.Date")</dt>
-			<dd>@Model.ReleaseDateUtc.ToShortDateString()</dd>
+			<dd>@Model.ReleaseDateUtc.ToShortDateString().ReplaceNativeDigits()</dd>
 		</dl>
 
 		if (Model.AutoUpdatePossible && Model.AutoUpdatePackageUrl.IsWebUrl())
 		{
-			<div class="alert alert-success" style="margin-top: 0px">
+			<div class="alert alert-success mt-0">
 				<h4>@T("Admin.CheckUpdate.AutoUpdatePossible")</h4>
 				@Html.Raw(T("Admin.CheckUpdate.AutoUpdatePossibleInfo"))
-				<p style="margin-top: 20px">
-					<a class="btn btn-primary" href='@Url.Action("InstallUpdate", new { packageUrl = Model.AutoUpdatePackageUrl })' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+				<p class="mt-4">
+					<a class="btn btn-primary" href='@Url.Action("InstallUpdate", new { packageUrl = Model.AutoUpdatePackageUrl })' onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
 						<i class="fa fa-level-up"></i>
-						@T("Admin.CheckUpdate.UpdateNow")
+						<span>@T("Admin.CheckUpdate.UpdateNow")</span>
 					</a>
 				</p>
 			</div>
@@ -53,16 +53,22 @@
 			<div>@Html.Raw(Model.ReleaseNotes)</div>
 		</div>
 
-		<div style="margin-top: 30px">
-			<a class="btn btn-primary" href='@Model.InfoUrl' target="UpdateInfoWnd">@T("Common.MoreInfo")</a>
+		<div class="mt-5">
+			<a class="btn btn-primary" href='@Model.InfoUrl' target="UpdateInfoWnd">
+				<span>@T("Common.MoreInfo")</span>
+			</a>
+
 			@if (Model.DownloadUrl.HasValue())
 			{
-				<a class="btn btn-default" href='@Model.DownloadUrl' style="margin-left: 5px">
+				<a class="btn btn-secondary ml-2" href='@Model.DownloadUrl'>
 					<i class="fa fa-download"></i>
-					@T("Common.Download")
+					<span>@T("Common.Download")</span>
 				</a>
 			}
-			<a class="btn btn-link" href='@Url.Action("CheckUpdateSuppress", new { myVersion = Model.CurrentVersion, newVersion = Model.Version })'>@T("Admin.CheckUpdate.DontNotifyAnymore")</a>
+
+			<a class="btn btn-link" href='@Url.Action("CheckUpdateSuppress", new { myVersion = Model.CurrentVersion, newVersion = Model.Version })'>
+				<span>@T("Admin.CheckUpdate.DontNotifyAnymore")</span>
+			</a>
 		</div>
 	}
 </div>

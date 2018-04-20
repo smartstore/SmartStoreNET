@@ -1,4 +1,7 @@
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 // Image Gallery
 // ========================================
@@ -34,9 +37,9 @@
 	position: absolute;
 	display: none;
 	top: 0;
-	right: 0;
 	bottom: 0;
 	left: 0;
+	right: 0;
 	margin: auto;
 	width: auto;
 	height: auto;
@@ -57,7 +60,7 @@
         text-align: center;
         font-size: 1.2rem;
         text-transform: uppercase;
-        color: $gray-light;
+        color: $gray-500;
     }
 }
 
@@ -101,10 +104,6 @@
 	padding: 3px;
 }
 
-/*.touchevents .gal-nav-cell {
-	display: none !important;
-}*/
-
 .gal-nav-cell {
 	display: table-cell; 
 	vertical-align: top; 
@@ -118,16 +117,6 @@
     display: table-cell; 
     vertical-align: top;
 }
-
-/*@media (min-width: 992px) {
-	.no-touchevents .gal .slick-dots {
-		display: none !important;
-	}
-
-	.no-touchevents .gal.slick-dotted.slick-slider {
-		margin-bottom: 0 !important;
-	}
-}*/
 
 @media (min-width: 1200px) {
 	.gal-nav-cell {

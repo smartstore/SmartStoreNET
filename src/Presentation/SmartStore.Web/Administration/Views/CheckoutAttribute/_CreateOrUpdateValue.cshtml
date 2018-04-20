@@ -7,42 +7,41 @@
 @Html.HiddenFor(model => model.CheckoutAttributeId)
 
 @(Html.LocalizedEditor<CheckoutAttributeValueModel, CheckoutAttributeValueLocalizedModel>("checkoutattributevalue-localized",
-@<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Locales[item].Name)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => Model.Locales[item].Name)
-            @Html.ValidationMessageFor(model => model.Locales[item].Name)
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-        </td>
-    </tr>
-</table>
-,
-@<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Name)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Name)
-            @Html.ValidationMessageFor(model => model.Name)
-        </td>
-    </tr>
-</table>
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Name)
+			</td>
+			<td class="adminData">
+				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+				@Html.EditorFor(model => Model.Locales[item].Name)
+				@Html.ValidationMessageFor(model => model.Locales[item].Name)
+			</td>
+		</tr>
+	</table>
+	,
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Name)
+				@Html.ValidationMessageFor(model => model.Name)
+			</td>
+		</tr>
+	</table>
 ))
+
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.PriceAdjustment)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.PriceAdjustment) [@Model.PrimaryStoreCurrencyCode]
+			@Html.EditorFor(model => model.PriceAdjustment, new { postfix = Model.PrimaryStoreCurrencyCode })
             @Html.ValidationMessageFor(model => model.PriceAdjustment)
         </td>
     </tr>
@@ -51,7 +50,7 @@
             @Html.SmartLabelFor(model => model.WeightAdjustment)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.WeightAdjustment) [@Model.BaseWeightIn]
+            @Html.EditorFor(model => model.WeightAdjustment, new { postfix = Model.BaseWeightIn })
             @Html.ValidationMessageFor(model => model.WeightAdjustment)
         </td>
     </tr>

@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -30,50 +28,46 @@ namespace SmartStore.PayPal.Controllers
 		{
 		}
 
-		[AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure()
+		[AdminAuthorize, ChildActionOnly, LoadSetting]
+		public ActionResult Configure(PayPalStandardPaymentSettings settings, int storeScope)
 		{
             var model = new PayPalStandardConfigurationModel();
-            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-            var settings = Services.Settings.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
-
             model.Copy(settings, true);
 
-			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
-				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
-				.ToList();
-
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
+			PrepareConfigurationModel(model, storeScope);
 
             return View(model);
 		}
 
 		[HttpPost, AdminAuthorize, ChildActionOnly]
-        public ActionResult Configure(PayPalStandardConfigurationModel model, FormCollection form)
+		public ActionResult Configure(PayPalStandardConfigurationModel model, FormCollection form)
 		{
-            if (!ModelState.IsValid)
-                return Configure();
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
+
+			if (!ModelState.IsValid)
+			{
+				return Configure(settings, storeScope);
+			}
 
 			ModelState.Clear();
-
-            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-            var settings = Services.Settings.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
-
-            model.Copy(settings, false);
+			model.Copy(settings, false);
 
 			using (Services.Settings.BeginScope())
 			{
 				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			}
 
-				// multistore context not possible, see IPN handling
+			using (Services.Settings.BeginScope())
+			{
+				// Multistore context not possible, see IPN handling.
 				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 			}
 
-            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-            return Configure();
+			return RedirectToConfiguration(PayPalStandardProvider.SystemName, false);
 		}
 
 		public ActionResult PaymentInfo()

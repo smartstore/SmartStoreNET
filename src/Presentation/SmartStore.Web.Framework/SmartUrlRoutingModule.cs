@@ -11,34 +11,58 @@ using System.IO;
 using System.Web.Hosting;
 using System.Reflection;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Events;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Web.Framework
 {
+	public class HttpModuleInitializedEvent
+	{
+		public HttpModuleInitializedEvent(HttpApplication application)
+		{
+			Application = application;
+		}
+
+		public HttpApplication Application { get; private set; }
+	}
+	
+	/// <remarks>
+	/// Request event sequence:
+	/// - BeginRequest
+	/// - AuthenticateRequest 
+	/// - PostAuthenticateRequest 
+	/// - AuthorizeRequest 
+	/// - PostAuthorizeRequest 
+	/// - ResolveRequestCache 
+	/// - PostResolveRequestCache 
+	/// - MapRequestHandler 
+	/// - PostMapRequestHandler 
+	/// - AcquireRequestState 
+	/// - PostAcquireRequestState
+	/// - PreRequestHandlerExecute 
+	/// - PostRequestHandlerExecute 
+	/// - ReleaseRequestState 
+	/// - PostReleaseRequestState 
+	/// - UpdateRequestCache 
+	/// - PostUpdateRequestCache  
+	/// - LogRequest 
+	/// - PostLogRequest  
+	/// - EndRequest  
+	/// - PreSendRequestHeaders  
+	/// - PreSendRequestContent
+	/// </remarks>
 	public class SmartUrlRoutingModule : IHttpModule
 	{
 		private static readonly object _contextKey = new object();
 		private static readonly ConcurrentBag<RoutablePath> _routes = new ConcurrentBag<RoutablePath>();
 
-		public void Init(HttpApplication application)
+		static SmartUrlRoutingModule()
 		{
-			if (application.Context.Items[_contextKey] == null)
-			{
-				application.Context.Items[_contextKey] = _contextKey;
-
-				if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
-				{
-					// Handle plugin static file in DevMode
-					application.PostAuthorizeRequest += (s, e) => PostAuthorizeRequest(new HttpContextWrapper(((HttpApplication)s).Context));
-					application.PreSendRequestHeaders += (s, e) => PreSendRequestHeaders(new HttpContextWrapper(((HttpApplication)s).Context));
-				}
-				
-				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
-
-				StopSubDirMonitoring();
-			}			
+			StopSubDirMonitoring();
 		}
 
-		private void StopSubDirMonitoring()
+		private static void StopSubDirMonitoring()
 		{
 			try
 			{
@@ -52,6 +76,29 @@ namespace SmartStore.Web.Framework
 				mi.Invoke(monitor, new object[] { });
 			}
 			catch { }
+		}
+
+		public void Init(HttpApplication application)
+		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
+			if (application.Context.Items[_contextKey] == null)
+			{
+				application.Context.Items[_contextKey] = _contextKey;
+
+				if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
+				{
+					// Handle plugin static file in DevMode
+					application.PostAuthorizeRequest += (s, e) => PostAuthorizeRequest(new HttpContextWrapper(((HttpApplication)s).Context));
+					application.PreSendRequestHeaders += (s, e) => PreSendRequestHeaders(new HttpContextWrapper(((HttpApplication)s).Context));
+				}
+				
+				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
+
+				// Publish event to give plugins the chance to register custom event handlers for the request lifecycle.
+				EngineContext.Current.Resolve<IEventPublisher>().Publish(new HttpModuleInitializedEvent(application));
+			}
 		}
 
 		/// <summary>

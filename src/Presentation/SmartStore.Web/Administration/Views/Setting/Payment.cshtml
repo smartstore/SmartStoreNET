@@ -1,0 +1,36 @@
+﻿@model PaymentSettingsModel
+@{
+    ViewBag.Title = T("Admin.Configuration.Payment").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="fa fa-credit-card"></i>
+            @T("Admin.Configuration.Payment")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+        </div>
+    </div>
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
+    @Html.ValidationSummary(false)
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CapturePaymentReason)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.CapturePaymentReason,
+					Html.DropDownListFor(model => model.CapturePaymentReason, Model.AvailableCapturePaymentReasons, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(model => model.CapturePaymentReason)
+			</td>
+		</tr>
+	</table>
+}

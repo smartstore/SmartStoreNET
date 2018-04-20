@@ -1,30 +1,12 @@
-﻿@model SearchModel
-@using SmartStore.Core.Domain.Forums;
+﻿@using SmartStore.Core.Domain.Forums;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
+@model SearchModel
 @{   
-    Layout = "_Layout";
-    Html.AddTitleParts(T("Forum.PageTitle.Search").Text);
+	Layout = "_Layout";
+	Html.AddTitleParts(T("Forum.PageTitle.Search").Text);
 }
-
-<script type="text/javascript">
-    $(function () {
-        toggleAdvancedSearch();
-        $('#adv').click(function () {
-            toggleAdvancedSearch();
-        });
-    });
-
-    function toggleAdvancedSearch() {
-        if ($('#adv').is(':checked')) {
-            $('#advanced-search-block').show();
-        }
-        else {
-            $('#advanced-search-block').hide();
-        }
-    }
-</script>
 
 <div class="page forum-search">
     <div class="forum-search-panel">
@@ -32,23 +14,24 @@
             <h1 class="fs-h2">@T("Forum.Search")</h1>
         </div>
 
-        <div class="search-input col-10 push-1 mt-4">
+        <div class="search-input col-10 mt-4 mb-5 justify-content-center">
             @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get))
-            {
-                
+            {                
                 <div class="input-group d-flex">
                     @Html.TextBox("searchterms", null, new { @class = "forum-search-text form-control" })
-                    <input type="submit" class="btn btn-primary input-group-addon" value="@T("Forum.SearchButton")" />
+					<div class="input-group-append">
+						<input type="submit" class="btn btn-primary" value="@T("Forum.SearchButton")" />
+					</div>
                 </div>
 
-                <div class="checkbox mt-2">
-                    <label class="form-check-label">
-                        @Html.CheckBox("adv", Model.ShowAdvancedSearch, new { @class = "check-box form-check-input" })
-                        @T("Forum.Search.AdvancedSearch")
-                    </label>
-                </div>
+				<div class="form-control-plaintext">
+					<div class="form-check" data-toggle="collapse" data-target="#advanced-search-block" aria-expanded="@Model.ShowAdvancedSearch">
+						@Html.CheckBox("adv", Model.ShowAdvancedSearch, new { @class = "form-check-input" })
+						<label class="form-check-label" for="adv">@T("Forum.Search.AdvancedSearch")</label>
+					</div>
+				</div>
                 
-                <div id="advanced-search-block" style="display: none;">
+                <div id="advanced-search-block" class="collapse@(Model.ShowAdvancedSearch ? " show" : "")" aria-expanded="@Model.ShowAdvancedSearch">
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">@T("Forum.Search.SearchInForum")</label>
                         <div class="col-sm-8">
@@ -69,10 +52,19 @@
                     </div>
                 </div>
             }
-        </div>
 
-        <div class="search-error">
-            @Model.Error
+			@if (Model.Error.HasValue())
+			{
+				<div class="alert alert-danger">
+					@Model.Error
+				</div>
+			}
+            @if (Model.NoResultsVisisble)
+            {
+				<div class="alert alert-info">
+					@T("Forum.SearchNoResultsText")
+				</div>
+            }
         </div>
 
         @{
@@ -98,13 +90,9 @@
 
         @pager
 
-        <div class="search-results">
-            @if (@Model.NoResultsVisisble == true)
-            {
-                <span class="result">@T("Forum.SearchNoResultsText")</span>
-            }
-            <div class="topics-group">
-                @if (@Model.SearchResultsVisible == true)
+        <div class="search-results mt-3">
+            <div class="topics-group table-responsive">
+                @if (Model.SearchResultsVisible)
                 {
                     <table class="table">
                         <thead>
@@ -123,7 +111,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        @foreach (var topic in @Model.ForumTopics)
+                        @foreach (var topic in Model.ForumTopics)
                         {
                             <tr class="topic">
                                 <td class="image">
@@ -158,12 +146,12 @@
                                     }
                                 </td>
                                 <td class="topic-name">
-                                    @if (!String.IsNullOrEmpty(@topicText))
+                                    @if (!String.IsNullOrEmpty(topicText))
                                     {
-                                        <span class="topictype">@Html.Raw(topicText)</span>
+                                        <span class="topictype" dir="auto">@Html.Raw(topicText)</span>
                                     }
                                     @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
-                                    @if (@topic.NumPosts > Model.PostsPageSize)
+                                    @if (topic.NumPosts > Model.PostsPageSize)
                                     {
                                         @(Html.SmartStore().Pager(topic.TotalPostPages)
                                             .HtmlAttributes(new { @class = "topics-pager" })
@@ -175,18 +163,22 @@
                                             .Size(PagerSize.Mini)
                                             .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                                     }
+
                                     <div class="topic-starter">
-                                        @if (@topic.CustomerId > 0)
-                                        {
-                                            if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
-                                            {
-                                                @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
-                                            }
-                                            else
-                                            {
-                                                @T("Forum.Author")<text>:</text> @topic.CustomerName
-                                            }
-                                        }
+										@if (topic.CustomerId > 0)
+										{
+											<div class="d-flex">
+												<span class="pr-1">@T("Forum.Author"):</span>
+												@if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+												{
+													<span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
+												}
+												else
+												{
+													<span>@topic.CustomerName</span>
+												}
+											</div>
+										}
                                     </div>
                                 </td>
                                 <td class="replies">

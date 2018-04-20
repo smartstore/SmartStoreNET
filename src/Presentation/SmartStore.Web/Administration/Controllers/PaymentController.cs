@@ -11,6 +11,8 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
@@ -22,8 +24,6 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
     public partial class PaymentController : AdminControllerBase
 	{
-		#region Fields
-
 		private readonly ICommonServices _services;
         private readonly IPaymentService _paymentService;
         private readonly PaymentSettings _paymentSettings;
@@ -34,12 +34,9 @@ namespace SmartStore.Admin.Controllers
 		private readonly IShippingService _shippingService;
 		private readonly ICountryService _countryService;
 		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly IStoreMappingService _storeMappingService;
 
-		#endregion
-
-		#region Constructors
-
-        public PaymentController(
+		public PaymentController(
 			ICommonServices services,
 			IPaymentService paymentService, 
 			PaymentSettings paymentSettings,
@@ -49,30 +46,34 @@ namespace SmartStore.Admin.Controllers
 			ICustomerService customerService,
 			IShippingService shippingService,
 			ICountryService countryService,
-			ILocalizedEntityService localizedEntityService)
+			ILocalizedEntityService localizedEntityService,
+			IStoreMappingService storeMappingService)
 		{
-			this._services = services;
-            this._paymentService = paymentService;
-            this._paymentSettings = paymentSettings;
-            this._pluginFinder = pluginFinder;
-			this._pluginMediator = pluginMediator;
-			this._languageService = languageService;
-			this._customerService = customerService;
-			this._shippingService = shippingService;
-			this._countryService = countryService;
-			this._localizedEntityService = localizedEntityService;
+			_services = services;
+            _paymentService = paymentService;
+            _paymentSettings = paymentSettings;
+            _pluginFinder = pluginFinder;
+			_pluginMediator = pluginMediator;
+			_languageService = languageService;
+			_customerService = customerService;
+			_shippingService = shippingService;
+			_countryService = countryService;
+			_localizedEntityService = localizedEntityService;
+			_storeMappingService = storeMappingService;
 		}
-
-		#endregion
 
 		#region Utilities
 
 		private void PreparePaymentMethodEditModel(PaymentMethodEditModel model, PaymentMethod paymentMethod)
 		{
 			var allFilters = _paymentService.GetAllPaymentMethodFilters();
+			var configUrls = allFilters
+				.Select(x => x.GetConfigurationUrl(model.SystemName))
+				.Where(x => x.HasValue())
+				.ToList();
 
-			model.FilterConfigurationUrls = allFilters
-				.Select(x => "'" + x.GetConfigurationUrl(model.SystemName) + "'")
+			model.FilterConfigurationUrls = configUrls
+				.Select(x => string.Concat("'", x, "'"))
 				.OrderBy(x => x)
 				.ToList();
 
@@ -80,7 +81,12 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Id = paymentMethod.Id;
 				model.FullDescription = paymentMethod.FullDescription;
+                model.RoundOrderTotalEnabled = paymentMethod.RoundOrderTotalEnabled;
+				model.LimitedToStores = paymentMethod.LimitedToStores;
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(paymentMethod);
 			}
+
+			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
 		#endregion
@@ -145,6 +151,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new PaymentMethodEditModel();
 			var providerModel = _pluginMediator.ToProviderModel<IPaymentMethod, ProviderModel>(provider, true);
+			var pageTitle = providerModel.FriendlyName;
 
 			model.SystemName = providerModel.SystemName;
 			model.IconUrl = providerModel.IconUrl;
@@ -156,6 +163,11 @@ namespace SmartStore.Admin.Controllers
 				locale.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata, languageId, false);
 				locale.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata, languageId, false);
 
+				if (pageTitle.IsEmpty() && languageId == _services.WorkContext.WorkingLanguage.Id)
+				{
+					pageTitle = locale.FriendlyName;
+				}
+
 				if (paymentMethod != null)
 				{
 					locale.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, languageId, false, false);
@@ -163,6 +175,8 @@ namespace SmartStore.Admin.Controllers
 			});
 
 			PreparePaymentMethodEditModel(model, paymentMethod);
+
+			ViewBag.Title = pageTitle;
 
 			return View(model);
 		}
@@ -186,11 +200,15 @@ namespace SmartStore.Admin.Controllers
 				paymentMethod = new PaymentMethod { PaymentMethodSystemName = systemName };
 
 			paymentMethod.FullDescription = model.FullDescription;
+            paymentMethod.RoundOrderTotalEnabled = model.RoundOrderTotalEnabled;
+			paymentMethod.LimitedToStores = model.LimitedToStores;
 
 			if (paymentMethod.Id == 0)
 				_paymentService.InsertPaymentMethod(paymentMethod);
 			else
 				_paymentService.UpdatePaymentMethod(paymentMethod);
+
+			_storeMappingService.SaveStoreMappings(paymentMethod, model.SelectedStoreIds);
 
 			foreach (var localized in model.Locales)
 			{

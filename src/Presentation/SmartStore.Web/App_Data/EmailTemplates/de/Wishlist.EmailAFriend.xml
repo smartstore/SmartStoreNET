@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Wishlist.To }}</To>
+	<ReplyTo>{% if Wishlist.From %}{{ Wishlist.From }}{% endif %}</ReplyTo>
+	<Subject>{{ Store.Name }} - Wunschliste von {{ Customer.FullName }}</Subject>
+	<ModelTypes>Customer, Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+
+<p class="text-center">
+  <b>{{ Customer.FullName }}</b> hat seine Wunschliste mit dir geteilt. Wirf doch mal einen Blick hinein:
+</p>
+
+<p class="text-center mt-4 mb-4">
+	<a class="btn btn-primary" href="{{ Customer.WishlistUrl }}">Zur Wunschliste</a>
+</p>
+
+{% if Wishlist.PersonalMessage %}
+<table class="w-100 brd bg-light mt-4">
+  <tbody>
+    <tr>
+    	<td class="p-3">
+        <h3>Nachricht</h3>
+        {{ Wishlist.PersonalMessage }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
+
+{% endblock %}]]></Body>
+</MessageTemplate>

@@ -1,23 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
+	public enum WindowSize
+	{
+		Small,
+		Medium,
+		Large,
+		Flex,
+		FlexSmall
+	}
 
-    public class Window : Component
+	public class Window : Component
     {
-
         public Window()
         {
-            this.Fade = true;
-            this.Modal = true;
-            this.Visible = true;
+			this.Size = WindowSize.Medium;
+			this.Fade = true;
+			this.Focus = true;
             this.BackDrop = true;
             this.ShowClose = true;
+			this.Show = true;
             this.CloseOnEscapePress = true;
+			this.CloseOnBackdropClick = true;
+			this.RenderAtPageEnd = true;
         }
 
         public override bool NameIsRequired
@@ -25,7 +32,9 @@ namespace SmartStore.Web.Framework.UI
             get { return true; }
         }
 
-        public string Title { get; set; }
+		public WindowSize Size { get; set; }
+
+		public string Title { get; set; }
 
         public HelperResult Content { get; set; }
 
@@ -33,22 +42,22 @@ namespace SmartStore.Web.Framework.UI
 
         public HelperResult FooterContent { get; set; }
 
-        public bool Modal { get; set; }
-
         public bool Fade { get; set; }
 
-        public bool BackDrop { get; set; }
+		public bool Focus { get; set; }
 
-        public bool Visible { get; set; }
+		public bool Show { get; set; }
+
+		public bool BackDrop { get; set; }
 
         public bool ShowClose { get; set; }
 
-        public bool CloseOnEscapePress { get; set; }
+		public bool CenterVertically { get; set; }
 
-        public int? Width { get; set; }
+		public bool CloseOnEscapePress { get; set; }
 
-        public int? Height { get; set; }
+		public bool CloseOnBackdropClick { get; set; }
 
-    }
-
+		public bool RenderAtPageEnd { get; set; }
+	}
 }

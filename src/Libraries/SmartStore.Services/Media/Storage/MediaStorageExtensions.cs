@@ -20,7 +20,7 @@ namespace SmartStore.Services.Media.Storage
 			var media = new MediaItem
 			{
 				Entity = picture,
-				Path = "",
+				Path = "Storage",
 				MimeType = picture.MimeType
 			};
 
@@ -83,13 +83,13 @@ namespace SmartStore.Services.Media.Storage
 
 				var baseEntity = media.Entity as BaseEntity;
 
-				var fileName = string.Format("{0}-0{1}",
-					baseEntity.Id.ToString("0000000"),
-					extension.EmptyNull().EnsureStartsWith(".")
-				);
+				var fileName = string.Concat(
+					baseEntity.Id.ToString(ImageCache.IdFormatString), 
+					extension.EmptyNull().EnsureStartsWith("."));
 
 				return fileName;
 			}
+
 			return null;
 		}
 	}

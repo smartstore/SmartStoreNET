@@ -235,8 +235,6 @@ namespace SmartStore.Services.DataExchange.Import
 			task.Alias = profile.Id.ToString();
 			_scheduleTaskService.UpdateTask(task);
 
-			_eventPublisher.EntityInserted(profile);
-
 			return profile;
 		}
 
@@ -246,8 +244,6 @@ namespace SmartStore.Services.DataExchange.Import
 				throw new ArgumentNullException("profile");
 
 			_importProfileRepository.Update(profile);
-
-			_eventPublisher.EntityUpdated(profile);
 		}
 
 		public virtual void DeleteImportProfile(ImportProfile profile)
@@ -262,8 +258,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(scheduleTaskId);
 			_scheduleTaskService.DeleteTask(scheduleTask);
-
-			_eventPublisher.EntityDeleted(profile);
 
 			if (System.IO.Directory.Exists(folder))
 			{

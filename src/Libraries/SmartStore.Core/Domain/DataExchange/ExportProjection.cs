@@ -187,5 +187,14 @@ namespace SmartStore.Core.Domain.DataExchange
 		}
 
 		#endregion
+
+		#region Shopping Cart Item
+
+		/// <summary>
+		/// Whether to export bundle products
+		/// </summary>
+		public bool NoBundleProducts { get; set; }
+
+		#endregion
 	}
 }

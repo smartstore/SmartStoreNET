@@ -1,0 +1,66 @@
+﻿@model EntityPickerModel
+
+@using SmartStore.Web.Models.Entity;
+
+@helper HighlightSearchTermInTitle(EntityPickerModel.SearchResultModel item)
+{
+	if (Model.HighligtSearchTerm && Model.SearchTerm.HasValue() && item.Title.HasValue())
+	{
+		@Html.Raw(item.Title.Replace(Model.SearchTerm, "<span class=\"highlight\">{0}</span>".FormatInvariant(Model.SearchTerm), StringComparison.OrdinalIgnoreCase))
+	}
+	else
+	{
+		@item.Title
+	}
+}
+
+@foreach (var item in Model.SearchResult ?? Enumerable.Empty<EntityPickerModel.SearchResultModel>())
+{
+	<div class="col-xl-3 col-lg-4 col-sm-6">
+        <div class="row flex-nowrap sm-gutters py-2 my-1 entpicker-item@(item.Disable ? " disabled" : "")@(item.Selected ? " selected" : "")" data-id="@item.Id" data-returnvalue="@item.ReturnValue">
+			<div class="col-auto">
+				<div class="entpicker-thumb">
+					@if (item.ImageUrl.HasValue())
+					{
+						<div class="img-center-container">
+							<img src="@item.ImageUrl" alt="" />
+						</div>
+					}
+				</div>
+			</div>
+            <div class="col text-truncate">
+				<div class="entpicker-data text-truncate">
+					<div class="title text-truncate" title="@item.Title">
+						@if (item.LabelText.HasValue())
+						{
+							<span class="badge @item.LabelClassName">@item.LabelText</span>
+						}
+						<span>@HighlightSearchTermInTitle(item)</span>
+					</div>
+					<div class="text-truncate">
+						@if (item.Published.HasValue)
+						{
+							<i class="published fa @(item.Published.Value ? "fa-globe" : "fa-eye-slash") xicon-active-@item.Published.Value.ToString().ToLower()" title="@(item.Published.Value ? T("Common.Published") : T("Common.Unpublished"))"></i>
+						}
+						<span class="summary" title="@item.SummaryTitle">@item.Summary</span>
+					</div>
+					
+				</div>             
+            </div>
+        </div>
+    </div>
+}
+<div class="col-12 py-2 text-center entpicker-list-footer">
+	@if (Model.SearchResult == null || Model.SearchResult.Count == 0)
+	{
+		<span class="text-muted">@T("Common.EntityPicker.NoMoreItemsFound")</span>
+	}
+	else if (Model.SearchResult.Count == Model.PageSize)
+	{
+        <span class="load-more">&nbsp;</span>
+	}
+	else if (Model.PageIndex > 0)
+	{
+		<span class="text-muted">@T("Common.EntityPicker.NoMoreItemsFound")</span>
+	}
+</div>

@@ -135,17 +135,13 @@ namespace SmartStore.Web.Framework.Theming
 
 			bool isExplicit = false;
 
-			string requestedThemeName;
-			string relativePath;
-			string query;
-
-			virtualPath = ThemeHelper.TokenizePath(virtualPath, out requestedThemeName, out relativePath, out query);
+			virtualPath = ThemeHelper.TokenizePath(virtualPath, out var requestedThemeName, out var relativePath, out var query);
 
 			Func<InheritedThemeFileResult> nullOrFile = () =>
 			{
 				if (isExplicit)
 				{
-					return new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath };
+					return new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath, Query = query };
 				}
 				return null;
 			};
@@ -177,9 +173,7 @@ namespace SmartStore.Web.Framework.Theming
 					using (_rwLock.GetWriteLock())
 					{
 						// ALWAYS begin the search with the current working theme's location!
-						string resultVirtualPath;
-						string resultPhysicalPath;
-						string actualLocation = LocateFile(currentTheme.ThemeName, relativePath, out resultVirtualPath, out resultPhysicalPath);
+						string actualLocation = LocateFile(currentTheme.ThemeName, relativePath, out var resultVirtualPath, out var resultPhysicalPath);
 
 						if (actualLocation != null)
 						{
@@ -190,7 +184,8 @@ namespace SmartStore.Web.Framework.Theming
 								ResultVirtualPath = resultVirtualPath,
 								ResultPhysicalPath = resultPhysicalPath,
 								OriginalThemeName = requestedThemeName,
-								ResultThemeName = actualLocation
+								ResultThemeName = actualLocation,
+								Query = query
 							};
 						}
 

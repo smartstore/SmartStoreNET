@@ -7,7 +7,6 @@
 
 		$("#@Html.FieldIdFor(model => model.ManageInventoryMethodId)").change(toggleManageStock);
 		$("#@Html.FieldIdFor(model => model.BackorderModeId)").change(toggleManageStock);
-		$("#@Html.FieldIdFor(model => model.DisplayStockAvailability)").click(toggleManageStock);
 
 		toggleManageStock();
 
@@ -103,7 +102,7 @@
 			@Html.SmartLabelFor(model => model.DisplayStockAvailability)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(model => model.DisplayStockAvailability)
+			@Html.CheckBoxFor(model => model.DisplayStockAvailability, new { data_toggler_for = "#pnlDisplayStockQuantity" })
 			@Html.ValidationMessageFor(model => model.DisplayStockAvailability)
 		</td>
 	</tr>
@@ -199,7 +198,7 @@
         </td>
     </tr>
 
-    @* TODO: comment in when dropdown was implemented *@
+    @* TODO: display when dropdown was implemented *@
     @* Can be hidden if HideQuantityControl == true *@
     <tr style="display:none">
         <td class="adminTitle">

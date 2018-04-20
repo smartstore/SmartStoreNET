@@ -19,7 +19,7 @@ namespace SmartStore.Services.Discounts
     public partial class DiscountService : IDiscountService
     {
         private const string DISCOUNTS_ALL_KEY = "SmartStore.discount.all-{0}-{1}";
-        private const string DISCOUNTS_PATTERN_KEY = "SmartStore.discount.";
+        private const string DISCOUNTS_PATTERN_KEY = "SmartStore.discount.*";
 
         private readonly IRepository<Discount> _discountRepository;
         private readonly IRepository<DiscountRequirement> _discountRequirementRepository;
@@ -104,9 +104,6 @@ namespace SmartStore.Services.Discounts
             _discountRepository.Delete(discount);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityDeleted(discount);
         }
 
         public virtual Discount GetDiscountById(int discountId)
@@ -172,9 +169,6 @@ namespace SmartStore.Services.Discounts
             _discountRepository.Insert(discount);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-
-            // event notification
-            _eventPublisher.EntityInserted(discount);
         }
 
         public virtual void UpdateDiscount(Discount discount)
@@ -185,9 +179,6 @@ namespace SmartStore.Services.Discounts
             _discountRepository.Update(discount);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(discount);
         }
 
         public virtual void DeleteDiscountRequirement(DiscountRequirement discountRequirement)
@@ -198,9 +189,6 @@ namespace SmartStore.Services.Discounts
             _discountRequirementRepository.Delete(discountRequirement);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityDeleted(discountRequirement);
         }
 
 		public virtual Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName, int storeId = 0)
@@ -332,9 +320,6 @@ namespace SmartStore.Services.Discounts
             _discountUsageHistoryRepository.Insert(discountUsageHistory);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityInserted(discountUsageHistory);
         }
 
         public virtual void UpdateDiscountUsageHistory(DiscountUsageHistory discountUsageHistory)
@@ -345,9 +330,6 @@ namespace SmartStore.Services.Discounts
             _discountUsageHistoryRepository.Update(discountUsageHistory);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityUpdated(discountUsageHistory);
         }
 
         public virtual void DeleteDiscountUsageHistory(DiscountUsageHistory discountUsageHistory)
@@ -358,9 +340,6 @@ namespace SmartStore.Services.Discounts
             _discountUsageHistoryRepository.Delete(discountUsageHistory);
 
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
-
-            //event notification
-            _eventPublisher.EntityDeleted(discountUsageHistory);
         }
     }
 }

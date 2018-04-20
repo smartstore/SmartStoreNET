@@ -1,30 +1,46 @@
 ﻿@using Telerik.Web.Mvc.UI
 
 @functions{
-    private int? Value
-    {
-        get
-        {
-            int? value = null;
-            if (ViewData.Model != null)
-            {
-                value = Convert.ToInt32(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
-            }
-            return value;
-        }
-    }
+	private int? Value
+	{
+		get
+		{
+			int? value = null;
+			if (ViewData.Model != null)
+			{
+				value = Convert.ToInt32(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+			}
+			return value;
+		}
+	}
+
+	private string Postfix
+	{
+		get
+		{
+			return ViewData["postfix"] as string;
+		}
+	}
 }
 
 @{
-    string additionalClass = string.Empty;
-    if (ViewData.ContainsKey("small")) {
-        additionalClass = ViewData["small"].Convert<bool>() ? "small" : "";   
-    }
+	string additionalClass = string.Empty;
+	//if (ViewData.ContainsKey("stretch"))
+	//{
+	//	additionalClass = ViewData["stretch"].Convert<bool>() ? "flex-grow-1" : "";
+	//}
 }
 
-@(Html.Telerik().IntegerTextBox()
-        .Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
-        .EmptyMessage(T("Common.EnterValue"))
-        .Value(Value)
-        .HtmlAttributes(new { @class = additionalClass })
-)
+<div class="numerictextbox-group flex-grow-1">
+	@(Html.Telerik().IntegerTextBox()
+			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+			.EmptyMessage(T("Common.EnterValue"))
+			.Value(Value)
+			.HtmlAttributes(new { @class = additionalClass })
+	)
+
+	@if (Postfix.HasValue())
+	{
+		<span class="numerictextbox-postfix">@Postfix</span>
+	}
+</div>

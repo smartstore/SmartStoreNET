@@ -8,6 +8,11 @@ namespace SmartStore.Core.IO
     public interface IFileSystem
     {
 		/// <summary>
+		/// Checks whether the underlying storage is remote, like 'Azure' for example. 
+		/// </summary>
+		bool IsCloudStorage { get; }
+
+		/// <summary>
 		/// Gets the root path
 		/// </summary>
 		string Root { get; }
@@ -16,8 +21,12 @@ namespace SmartStore.Core.IO
 		/// Retrieves the public URL for a given file within the storage provider.
 		/// </summary>
 		/// <param name="path">The relative path within the storage provider.</param>
+		/// <param name="forCloud">
+		/// If <c>true</c> and the storage is in the cloud, returns the actual remote cloud URL to the resource.
+		/// If <c>false</c>, retrieves an app relative URL to delegate further processing to the media middleware (which can handle remote files)
+		/// </param>
 		/// <returns>The public URL.</returns>
-		string GetPublicUrl(string path);
+		string GetPublicUrl(string path, bool forCloud = false);
 
 		/// <summary>
 		/// Retrieves the path within the storage provider for a given public url.
@@ -65,11 +74,23 @@ namespace SmartStore.Core.IO
 		IFolder GetFolderForFile(string path);
 
 		/// <summary>
+		/// Retrieves the count of files within a path.
+		/// </summary>
+		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
+		/// <param name="pattern">The file pattern to match</param>
+		/// <param name="predicate">Optional. Files matching the predicate are excluded.</param>
+		/// <param name="deep">Whether to count files in all subfolders also</param>
+		/// <returns>Total count of files.</returns>
+		long CountFiles(string path, string pattern, Func<string, bool> predicate, bool deep = true);
+
+		/// <summary>
 		/// Performs a deep search for files within a path.
 		/// </summary>
 		/// <param name="path">The relative path to the folder in which to process file search.</param>
+		/// <param name="pattern">The file pattern to match</param>
+		/// <param name="deep">Whether to search in all subfolders also</param>
 		/// <returns>Matching file names</returns>
-		IEnumerable<string> SearchFiles(string path, string pattern);
+		IEnumerable<string> SearchFiles(string path, string pattern, bool deep = true);
 
 		/// <summary>
 		/// Lists the files within a storage provider's path.

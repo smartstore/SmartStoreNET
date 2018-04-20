@@ -9,16 +9,28 @@
             @T("Admin.System.QueuedEmails.EditQueuedEmailDetails") @Html.ActionLink("(" + T("Admin.System.QueuedEmails.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-            <button type="submit" name="requeue" value="requeue" class="btn"><i class="fa fa-repeat"></i>&nbsp;@T("Admin.System.QueuedEmails.Requeue")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
+            <button type="submit" name="requeue" value="requeue" class="btn btn-secondary">
+				<i class="fa fa-repeat"></i>
+				<span>@T("Admin.System.QueuedEmails.Requeue")</span>
+			</button>
 			@if (Model.SendManually)
 			{
-				<button type="submit" name="sendnow" value="sendnow" class="btn btn-primary" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Common.SendNow")
+				<button type="submit" name="sendnow" value="sendnow" class="btn btn-primary" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
+					<i class="fa fa-envelope"></i>
+					<span>@T("Admin.Common.SendNow")</span>
 				</button>
 			}
-            <button id="queuedEmail-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            <button id="queuedEmail-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
+			</button>
         </div>
     </div>
 

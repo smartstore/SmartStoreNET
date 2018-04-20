@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
@@ -72,9 +73,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttribute");
 
 			_specificationAttributeRepository.Delete(specificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityDeleted(specificationAttribute);
 		}
 
 		public virtual void InsertSpecificationAttribute(SpecificationAttribute specificationAttribute)
@@ -83,9 +81,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttribute");
 
 			_specificationAttributeRepository.Insert(specificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityInserted(specificationAttribute);
 		}
 
 		public virtual void UpdateSpecificationAttribute(SpecificationAttribute specificationAttribute)
@@ -94,9 +89,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttribute");
 
 			_specificationAttributeRepository.Update(specificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityUpdated(specificationAttribute);
 		}
 
 		#endregion
@@ -121,15 +113,25 @@ namespace SmartStore.Services.Catalog
 			return specificationAttributeOptions;
 		}
 
-		public virtual void DeleteSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
+        public virtual Multimap<int, SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttributeIds(int[] specificationAttributeIds)
+        {
+            Guard.NotNull(specificationAttributeIds, nameof(specificationAttributeIds));
+
+            var options = _specificationAttributeOptionRepository.TableUntracked
+                .Where(x => specificationAttributeIds.Contains(x.SpecificationAttributeId))
+                .OrderBy(x => x.DisplayOrder)
+                .ToList();
+
+            var map = options.ToMultimap(x => x.SpecificationAttributeId, x => x);
+            return map;
+        }
+
+        public virtual void DeleteSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
 		{
 			if (specificationAttributeOption == null)
 				throw new ArgumentNullException("specificationAttributeOption");
 
 			_specificationAttributeOptionRepository.Delete(specificationAttributeOption);
-
-			//event notification
-			_eventPublisher.EntityDeleted(specificationAttributeOption);
 		}
 
 		public virtual void InsertSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
@@ -138,9 +140,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttributeOption");
 
 			_specificationAttributeOptionRepository.Insert(specificationAttributeOption);
-
-			//event notification
-			_eventPublisher.EntityInserted(specificationAttributeOption);
 		}
 
 		public virtual void UpdateSpecificationAttributeOption(SpecificationAttributeOption specificationAttributeOption)
@@ -149,9 +148,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("specificationAttributeOption");
 
 			_specificationAttributeOptionRepository.Update(specificationAttributeOption);
-
-			//event notification
-			_eventPublisher.EntityUpdated(specificationAttributeOption);
 		}
 
 		#endregion
@@ -164,9 +160,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("productSpecificationAttribute");
 
 			_productSpecificationAttributeRepository.Delete(productSpecificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityDeleted(productSpecificationAttribute);
 		}
 
 		public virtual IList<ProductSpecificationAttribute> GetProductSpecificationAttributesByProductId(int productId)
@@ -223,7 +216,24 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-		public virtual ProductSpecificationAttribute GetProductSpecificationAttributeById(int productSpecificationAttributeId)
+        public virtual Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds)
+        {
+            Guard.NotNull(productIds, nameof(productIds));
+
+            var query = _productSpecificationAttributeRepository.TableUntracked
+                .Expand(x => x.SpecificationAttributeOption)
+                .Expand(x => x.SpecificationAttributeOption.SpecificationAttribute)
+                .Where(x => productIds.Contains(x.ProductId));
+
+            var map = query
+                .OrderBy(x => x.DisplayOrder)
+                .ToList()
+                .ToMultimap(x => x.ProductId, x => x);
+
+            return map;
+        }
+
+        public virtual ProductSpecificationAttribute GetProductSpecificationAttributeById(int productSpecificationAttributeId)
 		{
 			if (productSpecificationAttributeId == 0)
 				return null;
@@ -238,9 +248,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("productSpecificationAttribute");
 
 			_productSpecificationAttributeRepository.Insert(productSpecificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityInserted(productSpecificationAttribute);
 		}
 
 		public virtual void UpdateProductSpecificationAttribute(ProductSpecificationAttribute productSpecificationAttribute)
@@ -249,9 +256,6 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("productSpecificationAttribute");
 
 			_productSpecificationAttributeRepository.Update(productSpecificationAttribute);
-
-			//event notification
-			_eventPublisher.EntityUpdated(productSpecificationAttribute);
 		}
 
 		#endregion

@@ -7,34 +7,31 @@
         @T("Admin.Catalog.Attributes.ProductAttributes")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<ProductAttributeModel>()
-					.Name("productattributes-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Name)
-							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-						columns.Bound(x => x.Alias);
-						columns.Bound(x => x.AllowFiltering)
-							.Width(200)
-							.ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
-							.Centered();
-						columns.Bound(x => x.OptionCount)
-							.Width(200)
-							.Centered();
-						columns.Bound(x => x.DisplayOrder)
-							.Width(200)
-							.Centered();
-					})
-					.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductAttribute"))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+
+<div>
+	@(Html.Telerik().Grid<ProductAttributeModel>()
+		.Name("productattributes-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Name)
+				.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+			columns.Bound(x => x.Alias);
+			columns.Bound(x => x.AllowFiltering)
+				.Width(200)
+				.ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
+				.Centered();
+			columns.Bound(x => x.DisplayOrder)
+				.Width(200)
+				.Centered();
+		})
+		.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductAttribute"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>   

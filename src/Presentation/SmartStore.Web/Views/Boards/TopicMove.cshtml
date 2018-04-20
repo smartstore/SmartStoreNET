@@ -20,9 +20,11 @@
             </div>
 
             <div class="options my-3">
-                <button type="submit" class="btn btn-primary">@T("Forum.Submit")</button>
-                <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = @Model.Id, slug = @Model.TopicSeName })')">
-                    @T("Forum.Cancel")
+                <button type="submit" class="btn btn-primary">
+					<span>@T("Forum.Submit")</span>
+				</button>
+                <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.Id, slug = Model.TopicSeName })')">
+                    <span>@T("Forum.Cancel")</span>
                 </button>
             </div>
         </div>

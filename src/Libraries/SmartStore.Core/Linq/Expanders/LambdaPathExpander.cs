@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Linq.Dynamic;
-using System.ComponentModel;
 using System.Reflection;
 using SmartStore.Utilities;
 
 namespace SmartStore.Linq
 {
-
     public class LambdaPathExpander : IPathExpander
     {
         private readonly IList<LambdaExpression> _expands;

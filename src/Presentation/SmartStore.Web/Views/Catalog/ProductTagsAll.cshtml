@@ -20,7 +20,7 @@
                         {
                             <li class="list-inline-item">
                                 <a href="@Url.RouteUrl("ProductsByTag", new { productTagId = item.Id, SeName = item.SeName })" class="color-body producttag" style="font-size:@(Model.GetFontSize(item))%;">
-                                    @item.Name
+                                    <span @Html.LanguageAttributes(item.Name)>@item.Name</span>
                                 </a>
                             </li>
                         }

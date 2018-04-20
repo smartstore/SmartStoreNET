@@ -1,0 +1,110 @@
+﻿@model MessageTemplatePreviewModel
+
+@using SmartStore.Admin.Models.Messages;
+@using System.Net.Mail;
+
+@{
+	Layout = "_AdminBareLayout";
+}
+
+@if (Model.Error.HasValue())
+{
+	<div class="m-3">
+		<div class="alert alert-danger">
+			@Model.Error
+		</div>
+	</div>
+	return;
+}
+
+@{ 
+	var from = new MailAddress(Model.From);
+	var to = new MailAddress(Model.To);
+	var replyTo = Model.ReplyTo.HasValue() ? new MailAddress(Model.ReplyTo) : (MailAddress)null;
+}
+
+<script>
+	function onTestMailSent(xhr) {
+		if (xhr && xhr.responseJSON && xhr.responseJSON.success) {
+			$('.testmail-message').removeClass('d-none');
+			$('.testmail-form').addClass('d-none');
+		}
+	}
+
+	$(function () {
+		// Preserve preview model
+		function preservePreviewModel() {
+			$.ajax({
+				url: '@Url.Action("PreservePreview", new { token = Model.Token })',
+				type: 'POST',
+				cache: false,
+				global: false,
+				complete: function () {
+					_.delay(preservePreviewModel, 45000);
+				}
+			});
+		}
+		_.delay(preservePreviewModel, 45000);
+
+		$('.testmail-toggle').on('click', function (e) {
+			$('.testmail-message').addClass('d-none');
+			$('.testmail-form').removeClass('d-none');
+		});
+	});
+</script>
+
+<div class="d-flex flex-column h-100">
+	<!-- Header -->
+	<div class="d-flex border-bottom py-3 align-items-center" style="background: #777">
+		<div class="col">
+			<div class="text-white">
+				<div class="form-row flex-nowrap">
+					<div class="col font-weight-medium" style="max-width: 100px">@T("Admin.MessageTemplate.Preview.From"):</div>
+					<div class="col text-truncate"><span title="@Model.From">@from.Address</span></div>
+				</div>
+				<div class="form-row flex-nowrap">
+					<div class="col font-weight-medium" style="max-width: 100px">@T("Admin.MessageTemplate.Preview.To"):</div>
+					<div class="col text-truncate"><span title="@Model.To">@to.Address</span></div>
+				</div>
+				@if (replyTo != null)
+				{
+					<div class="form-row flex-nowrap">
+						<div class="col font-weight-medium" style="max-width: 100px">@T("Admin.MessageTemplate.Preview.ReplyTo"):</div>
+						<div class="col text-truncate"><span title="@Model.ReplyTo">@replyTo.Address</span></div>
+					</div>
+				}
+				<div class="mt-2 fs-h6" style="opacity:0.7">@Model.Subject</div>
+			</div>
+		</div>
+		<div class="col-auto">
+			<div class="dropdown">
+				<button type="button" class="btn btn-lg btn-gray btn-flat btn-flat-light dropdown-toggle" data-toggle="dropdown">
+					<span>@T("Admin.MessageTemplate.Preview.SendTestMail")</span>
+				</button>
+				<div class="dropdown-menu dropdown-menu-right" style="width: 500px">
+					@using (Ajax.BeginForm("SendTestMail", "MessageTemplate", null, new AjaxOptions { HttpMethod = "POST", OnComplete = "onTestMailSent" }, new { @class = "px-4 py-3" }))
+					{
+						<div class="input-group testmail-form">
+							<input type="hidden" name="token" value="@Model.Token" />
+							<input type="email" class="form-control" name="to" placeholder="E-Mail" value="@Model.AccountEmail">
+							<div class="input-group-append">
+								<button type="submit" class="btn btn-secondary">
+									<i class="fa fa-send"></i>
+									<span>@T("Common.Send")</span>
+								</button>
+							</div>
+						</div>
+						<div class="form-control-plaintext text-success testmail-message d-none">
+							<i class="fa fa-check pr-2"></i>
+							<span>@T("Admin.MessageTemplate.Preview.TestMailSent")</span>
+							<a href="#" class="testmail-toggle pl-2">@T("Common.Back")</a>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Content -->
+	<iframe class="flex-grow-1 border-0" src="@Model.BodyUrl"></iframe>
+</div>

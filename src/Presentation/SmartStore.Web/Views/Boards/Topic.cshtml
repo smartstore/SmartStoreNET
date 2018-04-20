@@ -33,7 +33,7 @@
 			}
             @if (Model.IsCustomerAllowedToDeleteTopic)
 			{
-				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow" onclick='@(String.Format("return confirm('{0}');", T("Common.AreYouSure").Text))'>
+				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow" onclick='@(String.Format("return confirm({0});", T("Common.AreYouSure").JsText))'>
 					<i class="fa fa-trash-o"></i>
 					<span>@T("Forum.DeleteTopic")</span>
 				</a>
@@ -69,16 +69,18 @@
         .Alignment(PagerAlignment.Centered)
         .Route("TopicSlug", new RouteValues { id = Model.Id, slug = Model.SeName });
 
-    <div class="topic-options clearfix my-2">
-
-        <button class="btn btn-primary" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
-            <i class="fa fa-share"></i>
-            <span>@T("Forum.Reply")</span>
-        </button>
+    <div class="topic-options row my-2">
+		<div class="col">
+			<button class="btn btn-primary" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
+				<i class="fa fa-share"></i>
+				<span>@T("Forum.Reply")</span>
+			</button>
+		</div>
+        
 
         @if (Model.IsCustomerAllowedToSubscribe)
         {
-            <div class="float-right mt-3">
+            <div class="col col-auto mt-3">
                 <i class="fa fa-bookmark"></i>
                 @Ajax.ActionLink(Model.WatchTopicText,
                     "TopicWatch",

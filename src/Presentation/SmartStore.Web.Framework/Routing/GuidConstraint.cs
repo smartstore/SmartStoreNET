@@ -20,9 +20,7 @@ namespace SmartStore.Web.Framework.Routing
 
                 if (!string.IsNullOrEmpty(stringValue))
                 {
-                    Guid guidValue;
-
-                    return Guid.TryParse(stringValue, out guidValue) && 
+                    return Guid.TryParse(stringValue, out var guidValue) && 
                         (_allowEmpty || guidValue != Guid.Empty);
                 }
             }

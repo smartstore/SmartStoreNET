@@ -2,31 +2,36 @@
 @using SmartStore.Web.Models.Common;
 
 @{ 
-    var socialLinks = new List<Tuple<string, string>>();
-    if (Model.FacebookLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
-    }
+	var socialLinks = new List<Tuple<string, string>>();
+	if (Model.FacebookLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
+	}
 
-    if (Model.GooglePlusLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
-    }
+	if (Model.GooglePlusLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
+	}
 
-    if (Model.TwitterLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
-    }
+	if (Model.TwitterLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
+	}
 
-    if (Model.PinterestLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
-    }
+	if (Model.PinterestLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
+	}
 
-    if (Model.YoutubeLink.HasValue())
-    {
-        socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
-    }
+	if (Model.YoutubeLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
+	}
+
+	if (Model.InstagramLink.HasValue())
+	{
+		socialLinks.Add(new Tuple<string, string>(Model.InstagramLink, "instagram"));
+	}
 
 	var invserseFooter = GetThemeVariable<bool>("inverse-footer");
 }
@@ -89,7 +94,10 @@
 
 			<div class="col-md-3">
 				<nav class="footer-links nav-collapsible">
-					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-service" aria-controls="footer-service" aria-expanded="false">@T("Footer.Service")</h4>
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-service" aria-controls="footer-service" aria-expanded="false">
+                        <span class="d-none d-md-block">@T("Footer.Service")</span>
+                        <span class="d-md-none">@T("Footer.Service.Mobile")</span>
+                    </h4>
 					<div class="collapse nav-collapse" id="footer-service">
 						<ul class="list-unstyled">
 
@@ -125,7 +133,10 @@
 
 			<div class="col-md-3">
 				<nav class="footer-links company nav-collapsible">
-					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-company" aria-controls="footer-company" aria-expanded="false">@T("Footer.Company")</h4>
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-company" aria-controls="footer-company" aria-expanded="false">
+                        <span class="d-none d-md-block">@T("Footer.Company")</span>
+                        <span class="d-md-none">@T("Footer.Company.Mobile")</span>
+                    </h4>
 					<div class="collapse nav-collapse" id="footer-company">
 						<ul class="list-unstyled">
 
@@ -176,26 +187,28 @@
 									<span class="input-group-icon text-muted">
 										<i class="fa fa-envelope"></i>
 									</span>
-									<span class="input-group-btn">
+									<div class="input-group-append">
 										<button id="newsletter-subscribe-button" class="btn btn-primary btn-icon" title="@T("Newsletter.Button")">
 											<i class="fa fa-angle-right"></i>
 										</button>
-									</span>
+									</div>
 								</div>
 
 								<div class="d-none d-lg-block">
-									<div class="form-check form-check-inline">
-										<label class="form-check-label">
+									<div class="form-inline">
+										<div class="form-check form-check-inline">
 											<input class="form-check-input" type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
-											<span>@T("Newsletter.Subscribe")</span>
-										</label>
-									</div>
+											<label class="form-check-label" for="newsletter-subscribe">
+												<span>@T("Newsletter.Subscribe")</span>
+											</label>
+										</div>
 
-									<div class="form-check form-check-inline">
-										<label class="form-check-label">
+										<div class="form-check form-check-inline">
 											<input class="form-check-input" type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
-											<span>@T("Newsletter.Unsubscribe")</span>
-										</label>
+											<label class="form-check-label" for="newsletter-unsubscribe">
+												<span>@T("Newsletter.Unsubscribe")</span>
+											</label>
+										</div>
 									</div>
 								</div>
 
@@ -243,7 +256,7 @@
 			}
 
 			<div class="col text-sm-right">
-				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
+				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), Model.StoreName)
 			</div>
 		</div>
 	</div>

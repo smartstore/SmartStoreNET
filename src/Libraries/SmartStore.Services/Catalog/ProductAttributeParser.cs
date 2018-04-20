@@ -56,20 +56,29 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var xml in unfetched)
 			{
+				var valueIds = new HashSet<int>();
 				var map = DeserializeProductVariantAttributes(xml);
+				var attributes = _productAttributeService.GetProductVariantAttributesByIds(map.Keys);
 
-				// Get all value ids across all attributes
-				var valueIds = map.SelectMany(x => x.Value)
-					.Where(x => x.HasValue())
-					.Select(x => x.ToInt())
-					.Distinct()
-					.ToArray();
+				foreach (var attribute in attributes)
+				{
+					// Only types that have attribute values! Otherwise entered text is misinterpreted as an attribute value id.
+					if (!attribute.ShouldHaveValues())
+						continue;
+
+					var ids =
+						from id in map[attribute.Id]
+						where id.HasValue()
+						select id.ToInt();
+
+					valueIds.UnionWith(ids);
+				}
 
 				var info = new AttributeMapInfo
 				{
 					AttributesXml = xml,
 					DeserializedMap = map,
-					AllValueIds = valueIds
+					AllValueIds = valueIds.ToArray()
 				};
 
 				infos.Add(info);
@@ -87,12 +96,11 @@ namespace SmartStore.Services.Catalog
 			foreach (var info in infos)
 			{
 				var cachedValues = new List<ProductVariantAttributeValue>();
-				ProductVariantAttributeValue value;
 
 				// Ensure value id order in cached result list is correct
 				foreach (var id in info.AllValueIds)
 				{
-					if (attributeValues.TryGetValue(id, out value))
+					if (attributeValues.TryGetValue(id, out var value))
 					{
 						cachedValues.Add(value);
 					}
@@ -124,11 +132,16 @@ namespace SmartStore.Services.Catalog
 			{
 				var allValueIds = new HashSet<int>();
 				var attrMap = DeserializeProductVariantAttributes(attributeXml);
+				var attributes = _productAttributeService.GetProductVariantAttributesByIds(attrMap.Keys);
 
-				foreach (var attr in attrMap)
+				foreach (var attribute in attributes)
 				{
+					// Only types that have attribute values! Otherwise entered text is misinterpreted as an attribute value id.
+					if (!attribute.ShouldHaveValues())
+						continue;
+
 					var ids =
-						from id in attr.Value
+						from id in attrMap[attribute.Id]
 						where id.HasValue()
 						select id.ToInt();
 
@@ -159,8 +172,7 @@ namespace SmartStore.Services.Catalog
 					string sid = node1.Attribute("ID").Value;
 					if (sid.HasValue())
 					{
-						int id = 0;
-						if (int.TryParse(sid, out id))
+						if (int.TryParse(sid, out var id))
 						{
 							// ProductVariantAttributeValue/Value
 							foreach (var node2 in node1.Descendants("Value"))
@@ -229,8 +241,7 @@ namespace SmartStore.Services.Catalog
                     if (node1.Attributes != null && node1.Attributes["ID"] != null)
                     {
                         string str1 = node1.Attributes["ID"].InnerText.Trim();
-                        int id = 0;
-                        if (int.TryParse(str1, out id))
+                        if (int.TryParse(str1, out var id))
                         {
                             if (id == productVariantAttributeId)
                             {

@@ -3,11 +3,17 @@
 @using Telerik.Web.Mvc.UI;
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("blog-post-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("blog-post-edit").Style(TabsStyle.Material).Items(x =>
 {
-    x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
+    x.Add().Text(T("Admin.ContentManagement.Blog.BlogPosts.Info").Text)
+		.Content(TabInfo())
+		.Selected(true);
+
+    x.Add().Text(T("Admin.Common.SEO").Text)
+		.Content(TabSeo());
+
+	x.Add().Text(T("Admin.Common.Stores").Text)
+		.Content(TabStores());
 
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "blog-post-edit", this.Html, this.Model));
@@ -37,8 +43,8 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Body)
             </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.Body, Html.RichEditorFlavor())
+            <td class="adminData wide">
+                @Html.EditorFor(x => x.Body, "Html")
                 @Html.ValidationMessageFor(model => model.Body)
             </td>
         </tr>
@@ -62,15 +68,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnUtc)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CreatedOnUtc)
-                @Html.ValidationMessageFor(model => model.CreatedOnUtc)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.StartDate)
             </td>
             <td class="adminData">
@@ -87,6 +84,15 @@
                 @Html.ValidationMessageFor(model => model.EndDate)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CreatedOnUtc)
+			</td>
+			<td class="adminData">
+                @Html.EditorFor(model => model.CreatedOnUtc)
+                @Html.ValidationMessageFor(model => model.CreatedOnUtc)
+			</td>
+		</tr>
     </table>
 }
 @helper TabSeo()
@@ -119,7 +125,6 @@
                 @Html.ValidationMessageFor(model => model.MetaTitle)
             </td>
         </tr>
-
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SeName)
@@ -138,54 +143,5 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-
-            toggleStoreMapping();
-        });
-
-
-        function toggleStoreMapping() {
-            if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-                $('#pnl-available-stores').show();
-            }
-            else {
-                $('#pnl-available-stores').hide();
-            }
-        }
-
-    </script>
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitedToStores)
-                @Html.ValidationMessageFor(model => model.LimitedToStores)
-            </td>
-        </tr>
-        <tr id="pnl-available-stores">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores)
-            </td>
-            <td class="adminData">
-                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-                {
-                    foreach (var store in Model.AvailableStores)
-                    {
-					<label class="checkbox">
-						<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						<span>@store.Name</span>
-					</label>						
-                    }
-                }
-                else
-                {
-                    <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }</td>
-        </tr>
-    </table>
+	@Html.Partial("StoreSelector", Model)
 }

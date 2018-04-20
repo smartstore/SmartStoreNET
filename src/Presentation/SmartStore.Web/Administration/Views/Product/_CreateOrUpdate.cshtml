@@ -1,12 +1,9 @@
-﻿@model ProductModel
-
-@using SmartStore.Core.Domain.Catalog;
-@using Telerik.Web.Mvc.UI;
+﻿@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Framework.UI;
-
+@model ProductModel
 @{
-    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+	Html.AddCssFileParts(true, "~/Content/vendors/x-editable/bootstrap-editable.css");
+	Html.AppendScriptParts(true, "~/Content/vendors/x-editable/bootstrap-editable.js");
 }
 
 @Html.ValidationSummary(false)
@@ -18,9 +15,9 @@
 	}
 </script>
 
-@Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
+@Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
 {
-	x.Add().Text(T("Admin.Catalog.Products.Info").Text)
+	x.Add().Text(T("Admin.Catalog.Products.Info"))
 		.Icon("fa fa-pencil fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Info" })
 		.Content(Html.Partial("_CreateOrUpdate.Info", Model).ToHtmlString())
@@ -66,7 +63,7 @@
 	x.Add().Text(T("Admin.Catalog.Products.Discounts").Text)
 		.Name("tab-discounts")
 		.Visible(!(Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemPricing))
-		.Icon("fa fa-signal fa-lg fa-flip-horizontal fa-fw")
+		.Icon("fa fa-percent fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Discounts" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Discounts" })
 		.Ajax();

@@ -8,7 +8,9 @@
             @Html.SmartLabelFor(model => model.ProductName)
         </td>
         <td class="adminData">
-            @Html.ActionLink(Model.ProductName, "Edit", "Product", new { id = Model.ProductId }, new { })
+			<div class="form-control-plaintext">
+				@Html.ActionLink(Model.ProductName, "Edit", "Product", new { id = Model.ProductId }, new { })
+			</div>
         </td>
     </tr>
     <tr>
@@ -16,15 +18,17 @@
             @Html.SmartLabelFor(model => model.CustomerId)
         </td>
         <td class="adminData">
-            @Html.ActionLink(Model.CustomerName, "Edit", "Customer", new { id = Model.CustomerId }, new { })
-        </td>
+			<div class="form-control-plaintext">
+				@Html.ActionLink(Model.CustomerName, "Edit", "Customer", new { id = Model.CustomerId }, new { })
+			</div>
+		</td>
     </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.IpAddress)
         </td>
         <td class="adminData">
-            @Html.DisplayFor(model => model.IpAddress)
+            @Html.TextBoxFor(model => model.IpAddress, new { @readonly = "readonly", @class = "form-control-plaintext" })
         </td>
     </tr>
     <tr>
@@ -41,7 +45,7 @@
             @Html.SmartLabelFor(model => model.ReviewText)
         </td>
         <td class="adminData">
-            @Html.TextAreaFor(model => model.ReviewText, new { style = "Width: 500px; Height: 150px;" })
+            @Html.TextAreaFor(model => model.ReviewText, new { style = "height:150px" })
             @Html.ValidationMessageFor(model => model.ReviewText)
         </td>
     </tr>
@@ -50,7 +54,7 @@
             @Html.SmartLabelFor(model => model.Rating)
         </td>
         <td class="adminData">
-            @Html.DisplayFor(model => model.Rating)
+            @Html.TextBoxFor(model => model.Rating, new { @readonly = "readonly", @class = "form-control-plaintext" })
         </td>
     </tr>
     <tr>
@@ -67,7 +71,9 @@
             @Html.SmartLabelFor(model => model.CreatedOn)
         </td>
         <td class="adminData">
-            @Html.DisplayFor(model => model.CreatedOn)
+			<div class="form-control-plaintext">
+				@Html.DisplayFor(model => model.CreatedOn)
+			</div>
         </td>
     </tr>
 </table>

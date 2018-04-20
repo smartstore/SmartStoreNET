@@ -1,0 +1,133 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// FLEX MODAL
+// ------------------------------------
+
+.modal-backdrop.show {
+    opacity: 0.7;
+}
+
+.modal-backdrop.fade,
+.modal.fade {
+    transition: opacity 0.2s linear, transform 0.2s ease-out;
+}
+
+.modal.fade .modal-dialog {
+    transition: opacity 0.2s linear, transform 0.2s ease-out;
+    transform: translate(0, -75px) scale(0.9, 0.9);
+}
+
+.modal.show .modal-dialog {
+    transform: translate(0, 0);
+}
+
+.modal-content {
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 0;
+    border: none;
+
+	iframe {
+		width: 100%;
+	}
+}
+
+.modal-header {
+    //background-color: $gray-100;
+    //border-bottom: none;
+}
+
+.modal-title {
+	//font-weight: $font-weight-medium;
+	color: $gray-600;
+}
+
+.modal-dialog:not(.modal-flex) iframe {
+	min-height: 300px;
+}
+
+.modal-closer {
+	position: absolute;
+	display: none;
+	font-size: 2.5rem;
+	padding: 0.5rem;
+	padding-top: 0;
+	top: 0;
+	right: 0;
+	line-height: 1;
+	text-decoration: none !important;
+	z-index: $zindex-modal-backdrop + 1;
+	color: $gray-500;
+	transition: color 0.1s linear;
+
+	&:hover {
+		opacity: 1;
+		color: #fff;
+	}
+}
+
+.modal-dialog.modal-flex {
+	position: fixed;
+	margin: 0;
+	width: auto;
+	height: auto;
+	max-width: none;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 0;
+
+	@include media-breakpoint-up(md) {
+		left: 3%;
+		right: 3%;
+		top: 2%;
+		bottom: 2%;
+
+		&.modal-dialog-app {
+			right: 2.5rem;
+		}
+	}
+
+	@include media-breakpoint-up(xl) {
+		&.modal-dialog-app {
+			right: 3%;
+		}
+	}
+
+	&.modal-flex-sm {
+		@media (min-width: 800px) {
+			left: calc((100% / 2) - 400px);
+			right: calc((100% / 2) - 400px);
+		}
+	}
+
+	.modal-content {
+		max-height: none;
+		overflow-y: auto;
+		overflow-x: hidden;
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: column;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
+
+	.modal-body {
+		display: flex;
+		flex-basis: 0;
+		flex-grow: 1;
+		flex-direction: column;
+		overflow: auto;
+		max-width: 100%;
+		min-height: 1px;
+	}
+
+	.modal-flex-fill-area {
+		min-height: 100%;
+		flex: 1;
+	}
+}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
@@ -19,7 +20,41 @@ namespace SmartStore.Core.Domain.Catalog
     [DataContract]
 	public partial class Product : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
 	{
-        private ICollection<ProductCategory> _productCategories;
+		#region static
+
+		private static readonly HashSet<string> _visibilityAffectingProductProps = new HashSet<string>();
+
+		static Product()
+		{
+			AddPropsToSet(_visibilityAffectingProductProps,
+				x => x.AvailableEndDateTimeUtc,
+				x => x.AvailableStartDateTimeUtc,
+				x => x.Deleted,
+				x => x.LowStockActivityId,
+				x => x.LimitedToStores,
+				x => x.ManageInventoryMethodId,
+				x => x.MinStockQuantity,
+				x => x.Published,
+				x => x.SubjectToAcl,
+				x => x.VisibleIndividually);
+		}
+
+		static void AddPropsToSet(HashSet<string> props, params Expression<Func<Product, object>>[] lambdas)
+		{
+			foreach (var lambda in lambdas)
+			{
+				props.Add(lambda.ExtractPropertyInfo().Name);
+			}
+		}
+
+		public static HashSet<string> GetVisibilityAffectingPropertyNames()
+		{
+			return _visibilityAffectingProductProps;
+		}
+
+		#endregion
+
+		private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
         private ICollection<ProductPicture> _productPictures;
         private ICollection<ProductReview> _productReviews;
@@ -694,9 +729,23 @@ namespace SmartStore.Core.Domain.Catalog
 		[Index]
         public bool Deleted { get; set; }
 
-        /// <summary>
-        /// Gets or sets the date and time of product creation
-        /// </summary>
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is a system product.
+		/// </summary>
+		[DataMember]
+		[Index("Product_SystemName_IsSystemProduct", 2)]
+		public bool IsSystemProduct { get; set; }
+
+		/// <summary>
+		/// Gets or sets the product system name.
+		/// </summary>
+		[DataMember]
+		[Index("Product_SystemName_IsSystemProduct", 1)]
+		public string SystemName { get; set; }
+
+		/// <summary>
+		/// Gets or sets the date and time of product creation
+		/// </summary>
 		[DataMember]
 		public DateTime CreatedOnUtc { get; set; }
 
@@ -846,6 +895,12 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool BundlePerItemShoppingCart { get; set; }
 
 		/// <summary>
+		/// Gets or sets the main picture id
+		/// </summary>
+		[DataMember]
+		public int? MainPictureId { get; set; }
+
+		/// <summary>
 		/// Gets or sets the product type
 		/// </summary>
 		[DataMember]
@@ -868,7 +923,7 @@ namespace SmartStore.Core.Domain.Catalog
 				switch (ProductType)
 				{
 					case ProductType.SimpleProduct:
-						return "smnet-hide";
+						return "secondary d-none";
 					case ProductType.GroupedProduct:
 						return "success";
 					case ProductType.BundledProduct:

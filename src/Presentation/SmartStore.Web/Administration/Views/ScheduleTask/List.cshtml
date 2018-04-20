@@ -12,73 +12,78 @@
     </div>
 </div>
 
-<table class="table admin-table" id="schedule-tasks-grid">
-	<thead>
-		<tr>
-			<th>@T("Admin.System.ScheduleTasks.Name")</th>
-			<th>@T("Admin.System.ScheduleTasks.Enabled")</th>
-			<th>@T("Admin.System.ScheduleTasks.CronExpression")</th>
-			<th style="min-width: 150px">@T("Admin.System.ScheduleTasks.LastStart")</th>
-			<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
-			<th>@T("Admin.Common.Actions")</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var task in Model)
-        {
-			<tr data-task-id='@task.Id' style='@(task.Enabled ? "" : "background: #fafafa")'>
-				<td>
-					<a href='@task.EditUrl'>@task.Name</a>
-				</td>
-				<td>@Html.SymbolForBool(task.Enabled)</td>
-				<td>
-					<div>@task.CronExpression</div>
-					@if (task.CronDescription.HasValue())
-                    {
-						<div class="muted">@task.CronDescription</div>
-                    }
-				</td>
-				<!-- LastStart -->
-				<td style="min-width: 300px">
-					<div class="last-run-info">
-						@{ Html.RenderPartial("_LastRun", task); }
-					</div>
-				</td>
-				<!-- NextRun -->
-				<td style="min-width: 150px">
-					<div class="next-run-info">
-						@{ Html.RenderPartial("_NextRun", task); }
-					</div>
-					<div class='task-progress text-success@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
-				</td>
-				<!-- Actions -->
-				<td>
-					<a href='@task.EditUrl' class="btn btn-small" style="margin-bottom: 4px">@T("Common.Edit")</a>
-					<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-small btn-success btn-run-task@(task.IsRunning ? " hide" : "")' style="margin-bottom: 4px">
-						@T("Admin.System.ScheduleTasks.RunNow")
-					</a>
-					<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-small btn-danger btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');" style="margin-bottom: 4px">
-						@T("Common.Cancel")
-					</a>
-				</td>
+<div class="table-responsive">
+	<table class="table admin-table" id="schedule-tasks-grid">
+		<thead>
+			<tr>
+				<th>@T("Admin.System.ScheduleTasks.Name")</th>
+				<th>@T("Admin.System.ScheduleTasks.Enabled")</th>
+				<th>@T("Admin.System.ScheduleTasks.CronExpression")</th>
+				<th style="min-width: 150px">@T("Admin.System.ScheduleTasks.LastStart")</th>
+				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+				<th>&nbsp;</th>
 			</tr>
-		}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			@foreach (var task in Model)
+			{
+				<tr data-task-id='@task.Id' class='@(task.IsRunning ? "active-row" : "")@(task.Enabled ? "" : " table-light")'>
+					<td>
+						<a href='@task.EditUrl'>@task.Name</a>
+					</td>
+					<td>@Html.SymbolForBool(task.Enabled)</td>
+					<td>
+						<div>@task.CronExpression</div>
+						@if (task.CronDescription.HasValue())
+						{
+							<div class="muted">@task.CronDescription</div>
+						}
+					</td>
+					<!-- LastStart -->
+					<td style="min-width: 300px">
+						<div class="last-run-info">
+							@{ Html.RenderPartial("_LastRun", task); }
+						</div>
+					</td>
+					<!-- NextRun -->
+					<td style="min-width: 150px">
+						<div class="next-run-info">
+							@{ Html.RenderPartial("_NextRun", task); }
+						</div>
+						<div class='task-progress text-muted@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
+					</td>
+					<!-- Actions -->
+					<td class="omega text-truncate">
+						<a href='@task.EditUrl' class="btn btn-secondary btn-sm mb-1">@T("Common.Edit")</a>
+						<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-success btn-sm mb-1 btn-run-task@(task.IsRunning ? " hide" : "")'>
+							@T("Admin.System.ScheduleTasks.RunNow")
+						</a>
+						<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-danger btn-sm mb-1 btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
+							@T("Common.Cancel")
+						</a>
+					</td>
+				</tr>
+								}
+		</tbody>
+	</table>
+</div>
 
 <script>
 	$(function () {
-		Admin.TaskWatcher.startWatching({
+		SmartStore.Admin.TaskWatcher.startWatching({
 			context: $('#schedule-tasks-grid'),
 			elementsSelector: '.task-progress',
-			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			defaultProgressMessage: @T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText,
 			pollUrl: '@Url.Action("GetRunningTasks")',
 			onTaskStarted: function (task, el) {
-				el.closest('tr').find('.btn-run-task').addClass('hide').next().removeClass('hide');
-				el.closest('tr').find('.next-run-info').addClass('hide');
+				var tr = el.closest('tr');
+				tr.addClass('active-row');
+				tr.find('.btn-run-task').addClass('hide').next().removeClass('hide');
+				tr.find('.next-run-info').addClass('hide');
 			},
 			onTaskCompleted: function (taskId, el) {
-				el.closest('tr').find('.btn-run-task').removeClass('hide').next().addClass('hide');
+				var tr = el.closest('tr');
+				tr.removeClass('active-row').find('.btn-run-task').removeClass('hide').next().addClass('hide');
 				$.ajax({
 					cache: false,
 					global: false,
@@ -86,8 +91,8 @@
 					url: '@Url.Action("GetTaskRunInfo")',
 					data: { id: taskId },
 					success: function (data) {
-						el.closest('tr').find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
-						el.closest('tr').find('.last-run-info').html(data.lastRunHtml);
+						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						tr.find('.last-run-info').html(data.lastRunHtml);
 					}
 				});
 			}

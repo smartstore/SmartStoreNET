@@ -1,12 +1,10 @@
-﻿@{
-    Layout = "_AdminPopupLayout";
-}
-@model OrderModel.UploadLicenseModel
+﻿@model OrderModel.UploadLicenseModel
 @using Telerik.Web.Mvc.UI;
 @{    
-    //page title
-    ViewBag.Title = T("Admin.Orders.Products.License.UploadFile").Text;
+	Layout = "_AdminPopupLayout";
+	ViewBag.Title = T("Admin.Orders.Products.License.UploadFile").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -23,9 +21,11 @@
     @Html.HiddenFor(model => model.OrderId)
     @Html.HiddenFor(model => model.OrderItemId)
     @Html.EditorFor(model => model.LicenseDownloadId)
-    <input type="submit" name="uploadlicense" value="@T("Admin.Common.Save")" id="uploadlicense" class="btn" />
-    if (Model.LicenseDownloadId > 0)
-    {
-    <input type="submit" name="deletelicense" value="@T("Admin.Common.Delete")" id="deletelicense" class="btn" />    
+    
+	<input type="submit" name="uploadlicense" value="@T("Admin.Common.Save")" id="uploadlicense" class="btn btn-secondary" />
+
+	if (Model.LicenseDownloadId > 0)
+	{
+	    <input type="submit" name="deletelicense" value="@T("Admin.Common.Delete")" id="deletelicense" class="btn btn-secondary" />    
     }
 }

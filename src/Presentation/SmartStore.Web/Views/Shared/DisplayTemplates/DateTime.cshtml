@@ -1,0 +1,20 @@
+﻿@using System.Globalization;
+
+@functions{
+	private DateTime? Value
+	{
+		get
+		{
+			if (ViewData.Model != null)
+			{
+				return (DateTime)ViewData.Model;
+			}
+			return null;
+		}
+	}
+}
+
+@if (Value.HasValue)
+{
+	@Value.Value.ToNativeString(ViewContext.ViewData.ModelMetadata.DisplayFormatString, CultureInfo.CurrentCulture)
+}

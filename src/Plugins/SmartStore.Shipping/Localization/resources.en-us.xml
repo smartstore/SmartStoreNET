@@ -16,10 +16,15 @@
       <LocaleResource Name="AddNewRecordTitle">
         <Value>Add new record</Value>
       </LocaleResource>
-      <LocaleResource Name="SettingsTitle">
-        <Value>Settings</Value>
+	  <LocaleResource Name="AddNewRecord.Success">
+		<Value>The new record was successfully added.</Value>
+	  </LocaleResource>
+      <LocaleResource Name="TabTitleSettings">
+        <Value>Options</Value>
       </LocaleResource>
-
+      <LocaleResource Name="TabTitleGrid">
+		<Value>Shipping records</Value>
+	  </LocaleResource>
       <LocaleResource Name="Fields.Country">
         <Value>Country</Value>
       </LocaleResource>

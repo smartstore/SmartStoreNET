@@ -26,26 +26,27 @@
 
 			if (useUrl) {
 				i.removeClass('fa-upload').addClass('fa-globe');
-				el.find('.panel-upload').hide();
+				el.find('.panel-file').addClass('hide');
 				el.find('.panel-url').show();
-				el.find('.toggle-file').parent().removeClass("disabled");
-				el.find('.toggle-url').parent().addClass("disabled");
+				el.find('.toggle-file').removeClass("disabled");
+				el.find('.toggle-url').addClass("disabled");
 			}
 			else {
 				i.removeClass('fa-globe').addClass('fa-upload');
 				el.find('.panel-url').hide();
-				el.find('.panel-upload').show();
-				el.find('.toggle-file').parent().addClass("disabled");
-				el.find('.toggle-url').parent().removeClass("disabled");
+				el.find('.panel-file').removeClass('hide');
+				el.find('.toggle-file').addClass("disabled");
+				el.find('.toggle-url').removeClass("disabled");
 			}
 
 			el.data("use-url", useUrl);
 		};
 
 		this.init = function () {
-			var elHidden = el.find('.hidden'),
-				elRemove = el.find('.remove'),
+			var elRemove = el.find('.remove-download'),
 				elSaveUrl = el.find('.save-download-url');
+
+			//console.log(el);
 
 			// handle panel switcher buttons
 			el.find('.toggle-file, .toggle-url').on('click', function (e) {
@@ -53,38 +54,19 @@
 				self.togglePanel($(this).hasClass('toggle-url'));
 			});
 
-			// init file uploader
-			el.find('.fileupload').fileupload({
-				url: el.data('upload-url'),
-				dataType: 'json',
-
-				done: function (e, data) {
-					var result = data.result;
-					if (result.success) {
-						el.replaceWith($(result.html));
-					}
-				},
-
-				error: function (jqXHR, textStatus, errorThrown) {
-					if (errorThrown === 'abort') {
-						displayNotification('File Upload has been canceled');
-					}
-				}
-			});
-
 			el.find('.download-url-value').on('input propertychange paste', function (e) {
 				var txt = $(this);
 				var hasVal = !!(txt.val()) && txt.val() != txt.data('value');
-				var btn = txt.next();
-				btn.attr('disabled', hasVal ? null : "disabled");
-
-				var i = elSaveUrl.find('.fa');
-				i.toggleClass('fa-save', hasVal).toggleClass('fa-check', !hasVal);
+				var btn = txt.parent().find('.save-download-url');
+				if (hasVal)
+					btn.removeClass('disabled')
+				else
+					btn.addClass('disabled');
 
 			});
 
 			// Download removal (transient)
-			elRemove.click(function (e) {
+			elRemove.on('click', function (e) {
 				e.preventDefault();
 
 				$.ajax({
@@ -102,7 +84,7 @@
 			});
 
 			// Save download url
-			elSaveUrl.click(function (e) {
+			elSaveUrl.on('click', function (e) {
 				e.preventDefault();
 
 				var url = el.find('.download-url-value').val();

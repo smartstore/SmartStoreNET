@@ -13,91 +13,71 @@
     </div>
 </div>
 
-<table class="adminContent">
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.SearchId)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(model => Model.SearchId)
-		</td>
-	</tr>
+<div class="row mt-3 grid-filter">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SearchId)
+		@Html.TextBoxFor(model => Model.SearchId, new { @class = "form-control" })
+	</div>
 	@if (Model.AvailableStores.Count > 1)
 	{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchStoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"))
-			</td>
-		</tr>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchStoreId)
+			@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+		</div>
 	}
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.SearchReturnRequestStatusId)
-		</td>
-		<td class="adminData">
-			@Html.DropDownListFor(model => model.SearchReturnRequestStatusId, Model.AvailableReturnRequestStatus, T("Admin.Common.All"))
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			&nbsp;
-		</td>
-		<td class="adminData">
-			<button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-		</td>
-	</tr>
-</table>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SearchReturnRequestStatusId)
+		@Html.DropDownListFor(model => model.SearchReturnRequestStatusId, Model.AvailableReturnRequestStatus, T("Admin.Common.All"))
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		<label>&nbsp;</label>
+		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+			<span>@T("Admin.Common.Search")</span>
+		</button>
+	</div>
+</div>
 
-<p></p>
-
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<ReturnRequestModel>()
-					.Name("returnrequests-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.Centered()
-							.Width(80);
-						columns.Bound(x => x.ProductName)
-							.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-						columns.Bound(x => x.Quantity)
-							.Width(80)
-							.Centered();
-						columns.Bound(x => x.CustomerId)
-							.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerFullName #></a>");
-						columns.Bound(x => x.OrderId)
-							.Width(80)
-							.Centered()
-							.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
-							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\"><#= OrderId #></a>");
-						columns.Bound(x => x.ReturnRequestStatusStr)
-							.Width(180);
-						columns.Bound(x => x.CreatedOn)
-							.Width(180);
-						columns.Bound(x => x.StoreName)
-							.Hidden(Model.AvailableStores.Count <= 1);
-						columns.Bound(x => x.Id)
-							.Width(100)
-							.Centered()
-							.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-							.Title(T("Admin.Common.Edit").Text);
-					})
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ReturnRequest"))
-					.ClientEvents(events => events.OnDataBinding("returnRequestGrid_onDataBinding"))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div>
+	@(Html.Telerik().Grid<ReturnRequestModel>()
+			.Name("returnrequests-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.Centered()
+					.Width(80);
+				columns.Bound(x => x.ProductName)
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(x => x.Quantity)
+					.Width(80)
+					.Centered();
+				columns.Bound(x => x.CustomerId)
+					.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerFullName #></a>");
+				columns.Bound(x => x.OrderId)
+					.Width(80)
+					.Centered()
+					.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\"><#= OrderId #></a>");
+				columns.Bound(x => x.ReturnRequestStatusStr)
+					.Width(180);
+				columns.Bound(x => x.CreatedOn)
+					.Width(180);
+				columns.Bound(x => x.StoreName)
+					.Hidden(Model.AvailableStores.Count <= 1);
+				columns.Bound(x => x.Id)
+					.Width(100)
+					.Centered()
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+					.Title(T("Admin.Common.Edit").Text);
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ReturnRequest"))
+			.ClientEvents(events => events.OnDataBinding("returnRequestGrid_onDataBinding"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+</div>
 
 <script type="text/javascript">
     $(document).ready(function () {

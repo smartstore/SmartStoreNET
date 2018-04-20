@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -21,16 +22,22 @@ namespace SmartStore.Collections
 		}
 
 		public TreeNode(TValue value, IEnumerable<TValue> children)
+			: this(value)
 		{
-			Value = value;
-			AppendRange(children);
+			if (children != null && children.Any())
+			{
+				AppendRange(children);
+			}
 		}
 
 		public TreeNode(TValue value, IEnumerable<TreeNode<TValue>> children)
+			: this(value)
 		{
 			// for serialization
-			Value = value;
-			AppendRange(children);
+			if (children != null && children.Any())
+			{
+				AppendRange(children);
+			}	
 		}
 
 		public TValue Value
@@ -48,12 +55,32 @@ namespace SmartStore.Collections
 				value = ((ICloneable<TValue>)value).Clone();
 			}
 
-			return new TreeNode<TValue>(value);
+			var clonedNode = new TreeNode<TValue>(value);
+
+			// Assign or clone Metadata
+			if (_metadata != null && _metadata.Count > 0)
+			{
+				foreach (var kvp in _metadata)
+				{
+					var metadataValue = kvp.Value is ICloneable 
+						? ((ICloneable)kvp.Value).Clone() 
+						: kvp.Value;
+					clonedNode.SetMetadata(kvp.Key, metadataValue);
+				}
+			}
+
+			if (_id != null)
+			{
+				clonedNode._id = _id;
+			}
+
+			return clonedNode;
 		}
 
-		public TreeNode<TValue> Append(TValue value)
+		public TreeNode<TValue> Append(TValue value, object id = null)
 		{
 			var node = new TreeNode<TValue>(value);
+			node._id = id;
 			this.Append(node);
 			return node;
 		}
@@ -63,9 +90,17 @@ namespace SmartStore.Collections
 			values.Each(x => Append(x));
 		}
 
-		public TreeNode<TValue> Prepend(TValue value)
+		public void AppendRange(IEnumerable<TValue> values, Func<TValue, object> idSelector)
+		{
+			Guard.NotNull(idSelector, nameof(idSelector));
+
+			values.Each(x => Append(x, idSelector(x)));
+		}
+
+		public TreeNode<TValue> Prepend(TValue value, object id = null)
 		{
 			var node = new TreeNode<TValue>(value);
+			node._id = id;
 			this.Prepend(node);
 			return node;
 		}
@@ -115,6 +150,8 @@ namespace SmartStore.Collections
 
 			object objValue = null;
 			object objChildren = null;
+			string id = null;
+			Dictionary<string, object> metadata = null;
 
 			reader.Read();
 			while (reader.TokenType == JsonToken.PropertyName)
@@ -125,10 +162,20 @@ namespace SmartStore.Collections
 					reader.Read();
 					objValue = serializer.Deserialize(reader, valueType);
 				}
+				else if (string.Equals(a, "Metadata", StringComparison.OrdinalIgnoreCase))
+				{
+					reader.Read();
+					metadata = serializer.Deserialize<Dictionary<string, object>>(reader);
+				}
 				else if (string.Equals(a, "Children", StringComparison.OrdinalIgnoreCase))
 				{
 					reader.Read();
 					objChildren = serializer.Deserialize(reader, sequenceType);
+				}
+				if (string.Equals(a, "Id", StringComparison.OrdinalIgnoreCase))
+				{
+					reader.Read();
+					id = serializer.Deserialize<string>(reader);
 				}
 				else
 				{
@@ -138,25 +185,63 @@ namespace SmartStore.Collections
 				reader.Read();
 			}
 
-			var treeNode = Activator.CreateInstance(objectType, new object[] { objValue, objChildren });
+			var ctorParams = objChildren != null 
+				? new object[] { objValue, objChildren } 
+				: new object[] { objValue };
+
+			var treeNode = Activator.CreateInstance(objectType, ctorParams);
+
+			// Set Metadata
+			if (metadata != null && metadata.Count > 0)
+			{
+				var metadataProp = FastProperty.GetProperty(objectType, "Metadata", PropertyCachingStrategy.Cached);
+				metadataProp.SetValue(treeNode, metadata);
+
+				if (id.HasValue())
+				{
+					var idProp = FastProperty.GetProperty(objectType, "Id", PropertyCachingStrategy.Cached);
+					idProp.SetValue(treeNode, id);
+				}
+			}
 			
 			return treeNode;
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
-			var valueProp = FastProperty.GetProperty(value.GetType(), "Value", PropertyCachingStrategy.Cached);
-			var childrenProp = FastProperty.GetProperty(value.GetType(), "Children", PropertyCachingStrategy.Cached);
-
 			writer.WriteStartObject();
 			{
-				writer.WritePropertyName("Value");
-				serializer.Serialize(writer, valueProp.GetValue(value));
+				// Id
+				if (GetPropValue("Id", value) is object o)
+				{
+					writer.WritePropertyName("Id");
+					serializer.Serialize(writer, o);
+				}
 
-				writer.WritePropertyName("Children");
-				serializer.Serialize(writer, childrenProp.GetValue(value));
+				// Value
+				writer.WritePropertyName("Value");
+				serializer.Serialize(writer, GetPropValue("Value", value));
+
+				// Metadata
+				if (GetPropValue("Metadata", value) is IDictionary<string, object> dict && dict.Count > 0)
+				{
+					writer.WritePropertyName("Metadata");
+					serializer.Serialize(writer, dict);
+				}
+
+				// Children
+				if (GetPropValue("HasChildren", value) is bool b && b == true)
+				{
+					writer.WritePropertyName("Children");
+					serializer.Serialize(writer, GetPropValue("Children", value));
+				}
 			}
 			writer.WriteEndObject();
+		}
+
+		private object GetPropValue(string name, object instance)
+		{
+			return FastProperty.GetProperty(instance.GetType(), name, PropertyCachingStrategy.Cached).GetValue(instance);
 		}
 	}
 }

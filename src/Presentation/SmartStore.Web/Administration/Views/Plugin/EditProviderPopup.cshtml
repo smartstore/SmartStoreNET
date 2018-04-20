@@ -2,8 +2,8 @@
 @model SmartStore.Web.Framework.Plugins.ProviderModel
 
 @{
-    Layout = "_AdminPopupLayout";   
-    ViewBag.Title = T("Common.Edit") + ": " + Model.FriendlyName.Truncate(30, "...");
+	Layout = "_AdminPopupLayout";
+	ViewBag.Title = string.Concat(T("Common.Edit"), " - ", ((ViewBag.Title as string) ?? Model.SystemName).Truncate(30, "…"));
 }
 
 @using (Html.BeginForm())
@@ -13,15 +13,15 @@
 
             @if (Model.IconUrl.HasValue())
             {
-                <img src="@Url.Content(Model.IconUrl)" class="img-responsive" style="max-height: 32px; margin-right: 3px" alt="@Model.FriendlyName" />
+                <img src="@Url.Content(Model.IconUrl)" class="img-responsive" alt="@Model.FriendlyName" />
             }
 			
 			@ViewBag.Title
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary">
+            <button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-save"></i>
-				@T("Admin.Common.Save")
+				<span>@T("Admin.Common.Save")</span>
 			</button>
         </div>
     </div>
@@ -36,6 +36,9 @@
 				@Html.SmartLabelFor(model => model.Locales[item].FriendlyName)
 			</td>
 			<td class="adminData">
+				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
 				@Html.EditorFor(model => Model.Locales[item].FriendlyName)
 				@Html.ValidationMessageFor(model => model.Locales[item].FriendlyName)
 			</td>
@@ -47,11 +50,6 @@
 			<td class="adminData">
 				@Html.TextAreaFor(model => Model.Locales[item].Description)
 				@Html.ValidationMessageFor(model => model.Locales[item].Description)
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				@Html.HiddenFor(model => model.Locales[item].LanguageId)
 			</td>
 		</tr>
 	</table>

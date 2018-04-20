@@ -13,74 +13,57 @@
         <div class="options">
             <a href="@Url.Action("Create")" class="btn btn-primary">
                 <i class="fa fa-plus"></i>
-                @T("Admin.Common.AddNew")
+                <span>@T("Admin.Common.AddNew")</span>
             </a>
         </div>
     </div>
 
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ActivatedId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.ActivatedId, Model.ActivatedList, T("Admin.Common.All"))
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CouponCode)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.CouponCode)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-			</td>
-		</tr>
-	</table>
-
-	<p></p>
-
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<GiftCardModel>()
-						.Name("giftcards-grid")
-						.ClientEvents(events => events.OnDataBinding("onDataBinding"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.GiftCardCouponCode)
-								.Template(x => Html.ActionLink(x.GiftCardCouponCode, "Edit", new { id = x.Id }))
-								.ClientTemplate("<a href='Edit/<#= Id #>'><#= GiftCardCouponCode #></a>");
-							columns.Bound(x => x.AmountStr);
-							columns.Bound(x => x.RemainingAmountStr);
-                            columns.Bound(x => x.IsGiftCardActivated)
-                                .Template(item => @Html.SymbolForBool(item.IsGiftCardActivated))
-                                .ClientTemplate(@Html.SymbolForBool("IsGiftCardActivated"))
-                                .Centered()
-                                .Width(100);
-                            columns.Bound(x => x.CreatedOn);
-                            columns.Bound(x => x.Id)
-                                .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                                .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.Edit").Text))
-                                .Filterable(false);
-                        })
-                        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("GiftCardList", "GiftCard", Model))
-						.PreserveGridState()
-                        .EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.ActivatedId)
+			@Html.DropDownListFor(model => model.ActivatedId, Model.ActivatedList, T("Admin.Common.All"))
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CouponCode)
+			@Html.TextBoxFor(model => model.CouponCode, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.Search")</span>
+			</button>
+		</div>
+	</div>
+	
+	<div>
+		@(Html.Telerik().Grid<GiftCardModel>()
+			.Name("giftcards-grid")
+			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.GiftCardCouponCode)
+					.Template(x => Html.ActionLink(x.GiftCardCouponCode, "Edit", new { id = x.Id }))
+					.ClientTemplate("<a href='Edit/<#= Id #>'><#= GiftCardCouponCode #></a>");
+				columns.Bound(x => x.AmountStr);
+				columns.Bound(x => x.RemainingAmountStr);
+				columns.Bound(x => x.IsGiftCardActivated)
+					.Template(item => @Html.SymbolForBool(item.IsGiftCardActivated))
+					.ClientTemplate(@Html.SymbolForBool("IsGiftCardActivated"))
+					.Centered()
+					.Width(100);
+				columns.Bound(x => x.CreatedOn);
+				columns.Bound(x => x.Id)
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+					.Width(50)
+					.Title(String.Empty)
+					.HtmlAttributes(new { align = "right", @class = "omega" });
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("GiftCardList", "GiftCard", Model))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+	</div>
     
     <script type="text/javascript">
 

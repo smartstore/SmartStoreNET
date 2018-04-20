@@ -1,34 +1,42 @@
-﻿
+﻿@model dynamic
+
 @{
 	string dialogTitle = (string)Model.Title;
 	string dialogInfo = (string)Model.Info;
 }
 
 @{Html.SmartStore().Window()
-	.Name("uploadpackage-window")
-	.Title(dialogTitle)
-	.Content(@<text>
-		@using (Html.BeginForm("UploadPackage", "Packaging", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
-		{
+		.Name("uploadpackage-window")
+		.Title(dialogTitle)
+		.Size(WindowSize.Large)
+		.Content(@<text>
+		<form enctype="multipart/form-data" method="POST" action="@Url.Action("UploadPackage", "Packaging")">
 			<div class="alert alert-info">
 				@dialogInfo
 			</div>
-			<div class="control-group">
-				<label class="control-label" for="packagefile">@T("Admin.Packaging.Dialog.File"):</label>
-				<div class="controls">
-					<input type="file" id="packagefile" name="packagefile" />
+			<div class="adminContent">
+				<div class="adminRow">
+					<div class="adminTitle">
+						<div class="ctl-label">
+							<label class="control-label" for="packagefile">@T("Admin.Packaging.Dialog.File"):</label>
+						</div>
+					</div>
+					<div class="adminData">
+						<input type="file" id="packagefile" name="packagefile" class="form-control-plaintext" />
+					</div>
 				</div>
 			</div>
-		}
-
-	</text>)
-	.FooterContent(@<text>
-		<button id="uploadpackagesubmit" type="submit" class="btn btn-primary">@T("Admin.Packaging.Dialog.Upload")</button>
-		<a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
-	</text>)
-	.Modal(true)
-	.Visible(false)
-	.Render();
+		</form>
+		</text>)
+		.FooterContent(@<text>
+			<a href="#" class="btn btn-secondary btn-flat" data-dismiss="modal">
+				<span>@T("Common.Cancel")</span>
+			</a>
+			<button id="uploadpackagesubmit" type="submit" class="btn btn-primary">
+				<span>@T("Admin.Packaging.Dialog.Upload")</span>
+			</button>
+		</text>)
+	  .Render();
 }
 
 <script>

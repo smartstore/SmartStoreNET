@@ -6,7 +6,7 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
-@Html.SmartStore().TabStrip().Name("news-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
+@Html.SmartStore().TabStrip().Name("news-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
     x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
@@ -15,6 +15,7 @@
     //generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "news-edit", this.Html, this.Model));
 })
+
 @helper TabInfo()
 {
     <table class="adminContent">
@@ -40,7 +41,7 @@
                 @Html.SmartLabelFor(model => model.Short)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.Short, new { style = "Width: 500px; Height: 150px;" })
+                @Html.TextAreaFor(model => model.Short)
                 @Html.ValidationMessageFor(model => model.Short)
             </td>
         </tr>
@@ -48,8 +49,8 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Full)
             </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.Full, Html.RichEditorFlavor())
+            <td class="adminData wide">
+                @Html.EditorFor(x => x.Full, "Html")
                 @Html.ValidationMessageFor(model => model.Full)
             </td>
         </tr>
@@ -140,55 +141,6 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-
-            toggleStoreMapping();
-        });
-
-
-        function toggleStoreMapping() {
-            if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-                $('#pnl-available-stores').show();
-            }
-            else {
-                $('#pnl-available-stores').hide();
-            }
-        }
-
-    </script>
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitedToStores)
-                @Html.ValidationMessageFor(model => model.LimitedToStores)
-            </td>
-        </tr>
-        <tr id="pnl-available-stores">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores)
-            </td>
-            <td class="adminData">
-                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-                {
-                    foreach (var store in Model.AvailableStores)
-                    {
-					<label class="checkbox">
-						<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						<span>@store.Name</span>
-					</label>
-                    }
-                }
-                else
-                {
-                    <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }</td>
-        </tr>
-    </table>
+	@Html.Partial("StoreSelector", Model)
 }
 

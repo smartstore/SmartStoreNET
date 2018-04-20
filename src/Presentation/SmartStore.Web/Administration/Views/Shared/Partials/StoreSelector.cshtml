@@ -1,0 +1,37 @@
+﻿@model IStoreSelector
+
+<div class="adminContent">
+	<div class="adminRow">
+		<div class="adminTitle">
+			@Html.SmartLabelFor(model => model.LimitedToStores)
+		</div>
+		<div class="adminData">
+			@Html.CheckBoxFor(model => model.LimitedToStores, new { data_toggler_for = "#pnl-available-stores" })
+			@Html.ValidationMessageFor(model => model.LimitedToStores)
+		</div>
+	</div>
+	<div class="adminRow" id="pnl-available-stores">
+		<div class="adminTitle">
+			@Html.SmartLabelFor(model => model.AvailableStores)
+		</div>
+		<div class="adminData">
+			@if (Model.AvailableStores != null && Model.AvailableStores.Any())
+			{
+				foreach (var store in Model.AvailableStores)
+				{
+					<div class="custom-control custom-checkbox mb-1">
+						<input type="checkbox" name="SelectedStoreIds" id="store-@store.Value" class="custom-control-input"
+								value="@store.Value" @Html.Attr("checked", "checked", store.Selected) />
+						<label class="custom-control-label" for="store-@store.Value">@store.Text</label>
+					</div>
+				}
+			}
+			else
+			{
+				<div class="alert alert-warning">
+					@T("Admin.Configuration.Stores.NoStoresDefined")
+				</div>
+			}
+		</div>
+	</div>
+</div>

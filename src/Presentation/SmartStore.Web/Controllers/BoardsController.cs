@@ -187,6 +187,7 @@ namespace SmartStore.Web.Controllers
 			_breadcrumb.Track(new MenuItem
 			{
 				Text = T("Forum.Forums"),
+				Rtl = _workContext.WorkingLanguage.Rtl,
 				Url = Url.RouteUrl("Boards")
 			});
 
@@ -194,9 +195,11 @@ namespace SmartStore.Web.Controllers
 			group = group ?? forum?.ForumGroup ?? topic?.Forum?.ForumGroup;
 			if (group != null)
 			{
+				var groupName = group.GetLocalized(x => x.Name);
 				_breadcrumb.Track(new MenuItem
 				{
-					Text = group.GetLocalized(x => x.Name),
+					Text = groupName,
+					Rtl = groupName.CurrentLanguage.Rtl,
 					Url = Url.RouteUrl("ForumGroupSlug", new { id = group.Id, slug = group.GetSeName() })
 				});
 			}
@@ -205,9 +208,11 @@ namespace SmartStore.Web.Controllers
 			forum = forum ?? topic?.Forum;
 			if (forum != null)
 			{
+				var forumName = group.GetLocalized(x => x.Name);
 				_breadcrumb.Track(new MenuItem
 				{
-					Text = forum.GetLocalized(x => x.Name),
+					Text = forumName,
+					Rtl = forumName.CurrentLanguage.Rtl,
 					Url = Url.RouteUrl("ForumSlug", new { id = forum.Id, slug = forum.GetSeName() })
 				});
 			}
@@ -218,6 +223,7 @@ namespace SmartStore.Web.Controllers
 				_breadcrumb.Track(new MenuItem
 				{
 					Text = topic.Subject,
+					Rtl = _workContext.WorkingLanguage.Rtl,
 					Url = Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() })
 				});
 			}
@@ -421,7 +427,7 @@ namespace SmartStore.Web.Controllers
         }
 
 		[Compress]
-        public ActionResult ForumRss(int id)
+        public ActionResult ForumRss(int id = 0)
         {
             if (!_forumSettings.ForumsEnabled)
 				return HttpNotFound();
@@ -444,7 +450,7 @@ namespace SmartStore.Web.Controllers
 			if (forum == null)
 				return new RssActionResult { Feed = feed };
 
-			feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(_storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name, language.Id)));
+			feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(_storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name, language)));
 
 			var items = new List<SyndicationItem>();
 			var topics = _forumService.GetAllTopics(id, 0, string.Empty, ForumSearchType.All, 0, 0, _forumSettings.ForumFeedCount);
@@ -595,9 +601,9 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = post.Customer;
-                        string avatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
+                        string avatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
                         if (String.IsNullOrEmpty(avatarUrl) && _customerSettings.DefaultAvatarEnabled)
-                            avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
+                            avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
                         forumPostModel.CustomerAvatarUrl = avatarUrl;
                     }
 

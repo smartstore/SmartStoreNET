@@ -49,8 +49,8 @@ namespace SmartStore.Data.Setup
 		{
 			this._ctx = context;
 
-			this._sampleImagesPath = CommonHelper.MapPath("~/content/samples/");
-			this._sampleDownloadsPath = CommonHelper.MapPath("~/content/samples/");
+			this._sampleImagesPath = CommonHelper.MapPath("~/App_Data/Samples/");
+			this._sampleDownloadsPath = CommonHelper.MapPath("~/App_Data/Samples/");
 		}
 
 		#region Mandatory data creators
@@ -3862,254 +3862,6 @@ namespace SmartStore.Data.Setup
 			return entities;
 		}
 
-		public IList<MessageTemplate> MessageTemplates()
-		{
-			var eaGeneral = this.EmailAccounts().FirstOrDefault(x => x.Email != null);
-
-			string cssString = @"<style type=""text/css"">address, blockquote, center, del, dir, div, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ins, isindex, menu, noframes, noscript, ol, p, pre, table{ margin:0px; } body, td, p{ font-size: 13px;                        font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif; line-height: 18px; color: #163764; } body{ background:#efefef; } p{ margin-top: 0px; margin-bottom: 10px; } img{ border:0px; } th{ font-weight:bold; color: #ffffff; padding: 5px 0 5px 0; } ul{ list-style-type: square; } li{ line-height: normal; margin-bottom: 5px; } .template-body { width:720px; padding: 10px; border: 1px solid #ccc; } .attr-caption { font-weight: bold; text-align:right; } .attr-value { text-align:right; min-width:158px; width:160px; }</style>";
-			string templateHeader = cssString + "<center><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\" bgcolor=\"#ffffff\" class=\"template-body\"><tbody><tr><td>";
-			string templateFooter = "</td></tr></tbody></table></center>";
-
-			var entities = new List<MessageTemplate>()
-			{
-				new MessageTemplate
-					{
-						Name = "Blog.BlogComment",
-						Subject = "%Store.Name%. New blog comment.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />A new blog comment has been created for blog post \"%BlogComment.BlogPostTitle%\".</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Customer.BackInStock",
-						Subject = "%Store.Name%. Back in stock notification",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />Hello %Customer.FullName%, <br />Product \"%BackInStockSubscription.ProductName%\" is in stock.</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Customer.EmailValidationMessage",
-						Subject = "%Store.Name%. Email validation",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><br /><br />To activate your account <a href=\"%Customer.AccountActivationURL%\">click here</a>.     <br />  <br />  %Store.Name%" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Customer.NewPM",
-						Subject = "%Store.Name%. You have received a new private message",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />You have received a new private message.</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Customer.PasswordRecovery",
-						Subject = "%Store.Name%. Password recovery",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2>  <br />  <br />  To change your password <a href=\"%Customer.PasswordRecoveryURL%\">click here</a>.     <br />  <br />  %Store.Name%" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Customer.WelcomeMessage",
-						Subject = "Welcome to %Store.Name%",
-						Body = templateHeader + "We welcome you to <a href=\"%Store.URL%\"> %Store.Name%</a>.<br /><br />You can now take part in the various services we have to offer you. Some of these services include:<br /><br />Permanent Cart - Any products added to your online cart remain there until you remove them, or check them out.<br />Address Book - We can now deliver your products to another address other than yours! This is perfect to send birthday gifts direct to the birthday-person themselves.<br />Order History - View your history of purchases that you have made with us.<br />Products Reviews - Share your opinions on products with our other customers.<br /><br />For help with any of our online services, please email the store-owner: <a href=\"mailto:%Store.Email%\">%Store.Email%</a>.<br /><br />Note: This email address was provided on our registration page. If you own the email and did not register on our site, please send an email to <a href=\"mailto:%Store.Email%\">%Store.Email%</a>." + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Forums.NewForumPost",
-						Subject = "%Store.Name%. New Post Notification.",
-						Body = templateHeader + "<p><a href=\"%Store.URL%\">%Store.Name%</a> <br /><br />A new post has been created in the topic <a href=\"%Forums.TopicURL%\">\"%Forums.TopicName%\"</a> at <a href=\"%Forums.ForumURL%\">\"%Forums.ForumName%\"</a> forum.<br /><br />Click <a href=\"%Forums.TopicURL%\">here</a> for more info.<br /><br /><b>Post author:</b> %Forums.PostAuthor%<br /><b>Post body:</b> %Forums.PostBody%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Forums.NewForumTopic",
-						Subject = "%Store.Name%. New Topic Notification.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />A new topic <a href=\"%Forums.TopicURL%\">\"%Forums.TopicName%\"</a> has been created at <a href=\"%Forums.ForumURL%\">\"%Forums.ForumName%\"</a> forum.<br /><br />Click <a href=\"%Forums.TopicURL%\">here</a> for more info.</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "GiftCard.Notification",
-						Subject = "%GiftCard.SenderName% has sent you a gift card for %Store.Name%",
-						Body = templateHeader + "<p>You have received a gift card for %Store.Name%</p><p>Dear %GiftCard.RecipientName%, <br /><br />%GiftCard.SenderName% (%GiftCard.SenderEmail%) has sent you a %GiftCard.Amount% gift cart for <a href=\"%Store.URL%\"> %Store.Name%</a></p><p>You gift card code is %GiftCard.CouponCode%</p><p>%GiftCard.Message%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "NewCustomer.Notification",
-						Subject = "%Store.Name%. New customer registration",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />A new customer registered with your store. Below are the customer's details:<br /><b>Full name:</b> %Customer.FullName%<br /><b>Email:</b> %Customer.Email%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "NewReturnRequest.StoreOwnerNotification",
-						Subject = "%Store.Name%. New return request.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%Customer.FullName% has just submitted a new return request. Details are below:<br /><b>Request ID:</b> %ReturnRequest.ID%<br /><b>Product:</b> %ReturnRequest.Product.Quantity% x <b>Product:</b> %ReturnRequest.Product.Name%<br /><b>Reason for return:</b> %ReturnRequest.Reason%<br /><b>Requested action:</b> %ReturnRequest.RequestedAction%<br /><b>Customer comments:</b><br />%ReturnRequest.CustomerComment%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "News.NewsComment",
-						Subject = "%Store.Name%. New news comment.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />A new news comment has been created for news \"%NewsComment.NewsTitle%\".</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "NewsLetterSubscription.ActivationMessage",
-						Subject = "%Store.Name%. Subscription activation message.",
-						Body = templateHeader + "<p><a href=\"%NewsLetterSubscription.ActivationUrl%\">Click here to confirm your subscription to our list.</a></p><p>If you received this email by mistake, simply delete it.</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "NewsLetterSubscription.DeactivationMessage",
-						Subject = "%Store.Name%. Subscription deactivation message.",
-						Body = templateHeader + "<p><a href=\"%NewsLetterSubscription.DeactivationUrl%\">Click here to unsubscribe from our newsletter list.</a></p><p>If you received this email by mistake, simply delete it.</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "NewVATSubmitted.StoreOwnerNotification",
-						Subject = "%Store.Name%. New VAT number is submitted.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%Customer.FullName% (%Customer.Email%) has just submitted a new VAT number. Details are below:<br /><b>VAT number:</b> %Customer.VatNumber%<br /><b>VAT number status:</b> %Customer.VatNumberStatus%<br /><b>Received name:</b> %VatValidationResult.Name%<br /><b>Received address:</b> %VatValidationResult.Address%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "OrderCancelled.CustomerNotification",
-						Subject = "%Store.Name%. Your order cancelled",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />Hello %Order.CustomerFullName%, <br />Your order has been cancelled. Below is the summary of the order. <br /><br /><b>Order Number:</b> %Order.OrderNumber%<br /><b>Order Details:</b> <a target=\"_blank\" href=\"%Order.OrderURLForCustomer%\">%Order.OrderURLForCustomer%</a><br /><b>Date Ordered:</b> %Order.CreatedOn%<br /><br /><br /><br /><b>Billing Address</b><br />%Order.BillingFirstName% %Order.BillingLastName%<br />%Order.BillingAddress1%<br />%Order.BillingCity% %Order.BillingZipPostalCode%<br />%Order.BillingStateProvince% %Order.BillingCountry%<br /><br /><br /><br /><b>Shipping Address</b><br />%Order.ShippingFirstName% %Order.ShippingLastName%<br />%Order.ShippingAddress1%<br />%Order.ShippingCity% %Order.ShippingZipPostalCode%<br />%Order.ShippingStateProvince% %Order.ShippingCountry%<br /><br /><b>Shipping Method</b>: %Order.ShippingMethod%<br /><b>Payment Method:</b> %Order.PaymentMethod%<br /><br />%Order.Product(s)%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "OrderCompleted.CustomerNotification",
-						Subject = "%Store.Name%. Your order completed",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />Hello %Order.CustomerFullName%, <br />Your order has been completed. Below is the summary of the order. <br /><br /><b>Order Number:</b> %Order.OrderNumber%<br /><b>Order Details:</b> <a target=\"_blank\" href=\"%Order.OrderURLForCustomer%\">%Order.OrderURLForCustomer%</a><br /><b>Date Ordered:</b> %Order.CreatedOn%<br /><br /><br /><br /><b>Billing Address</b><br />%Order.BillingFirstName% %Order.BillingLastName%<br />%Order.BillingAddress1%<br />%Order.BillingCity% %Order.BillingZipPostalCode%<br />%Order.BillingStateProvince% %Order.BillingCountry%<br /><br /><br /><br /><b>Shipping Address</b><br />%Order.ShippingFirstName% %Order.ShippingLastName%<br />%Order.ShippingAddress1%<br />%Order.ShippingCity% %Order.ShippingZipPostalCode%<br />%Order.ShippingStateProvince% %Order.ShippingCountry%<br /><br /><b>Shipping Method:</b> %Order.ShippingMethod%<br /><b>Payment Method:</b> %Order.PaymentMethod%<br /><br />%Order.Product(s)%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "ShipmentDelivered.CustomerNotification",
-						Subject = "Your order from %Store.Name% has been delivered.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />Hello %Order.CustomerFullName%, <br /> Good news! You order has been delivered. <br /> <b>Order Number:</b> %Order.OrderNumber%<br /> <b>Order Details:</b> <a href=\"%Order.OrderURLForCustomer%\" target=\"_blank\">%Order.OrderURLForCustomer%</a><br /> <b>Date Ordered:</b> %Order.CreatedOn%<br /> <br /> <br /> <br /> <b>Billing Address</b><br /> %Order.BillingFirstName% %Order.BillingLastName%<br /> %Order.BillingAddress1%<br /> %Order.BillingCity% %Order.BillingZipPostalCode%<br /> %Order.BillingStateProvince% %Order.BillingCountry%<br /> <br /> <br /> <br /> <b>Shipping Address</b><br /> %Order.ShippingFirstName% %Order.ShippingLastName%<br /> %Order.ShippingAddress1%<br /> %Order.ShippingCity% %Order.ShippingZipPostalCode%<br /> %Order.ShippingStateProvince% %Order.ShippingCountry%<br /> <br /> <b>Shipping Method:</b> %Order.ShippingMethod% <br /><b>Payment Method:</b> %Order.PaymentMethod%<br /><br /><b>Delivered Products:</b><br /><br />%Shipment.Product(s)%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-
-				new MessageTemplate
-					{
-						Name = "OrderPlaced.CustomerNotification",
-						Subject = "Order receipt from %Store.Name%.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />Hello %Order.CustomerFullName%, <br />Thanks for buying from <a href=\"%Store.URL%\">%Store.Name%</a>. Below is the summary of the order. <br /><br /><b>Order Number:</b> %Order.OrderNumber%<br /><b>Order Details:</b> <a target=\"_blank\" href=\"%Order.OrderURLForCustomer%\">%Order.OrderURLForCustomer%</a><br /><b>Date Ordered:</b> %Order.CreatedOn%<br /><br /><br /><br /><b>Billing Address</b><br />%Order.BillingFirstName% %Order.BillingLastName%<br />%Order.BillingAddress1%<br />%Order.BillingCity% %Order.BillingZipPostalCode%<br />%Order.BillingStateProvince% %Order.BillingCountry%<br /><br /><br /><br /><b>Shipping Address</b><br />%Order.ShippingFirstName% %Order.ShippingLastName%<br />%Order.ShippingAddress1%<br />%Order.ShippingCity% %Order.ShippingZipPostalCode%<br />%Order.ShippingStateProvince% %Order.ShippingCountry%<br /><br /><b>Shipping Method:</b>&nbsp;%Order.ShippingMethod%<br /><b>Payment Method:</b> %Order.PaymentMethod%<br /><br />%Order.Product(s)%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "OrderPlaced.StoreOwnerNotification",
-						Subject = "%Store.Name%. Purchase Receipt for Order #%Order.OrderNumber%",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%Order.CustomerFullName% (%Order.CustomerEmail%) has just placed an order from your store. Below is the summary of the order. <br /><br /><b>Order Number:</b> %Order.OrderNumber%<br /><b>Date Ordered:</b> %Order.CreatedOn%<br /><br /><br /><br /><b>Billing Address</b><br />%Order.BillingFirstName% %Order.BillingLastName%<br />%Order.BillingAddress1%<br />%Order.BillingCity% %Order.BillingZipPostalCode%<br />%Order.BillingStateProvince% %Order.BillingCountry%<br /><br /><br /><br /><b>Shipping Address</b><br />%Order.ShippingFirstName% %Order.ShippingLastName%<br />%Order.ShippingAddress1%<br />%Order.ShippingCity% %Order.ShippingZipPostalCode%<br />%Order.ShippingStateProvince% %Order.ShippingCountry%<br /><br /><b>Shipping Method:</b>&nbsp;%Order.ShippingMethod%<br /><b>Payment Method:</b> %Order.PaymentMethod%<br /><br />%Order.Product(s)%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "ShipmentSent.CustomerNotification",
-						Subject = "Your order from %Store.Name% has been shipped.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />Hello %Order.CustomerFullName%!, <br />Good news! You order has been shipped. <br /><b>Order Number:</b> %Order.OrderNumber%<br /><b>Order Details:</b> <a href=\"%Order.OrderURLForCustomer%\" target=\"_blank\">%Order.OrderURLForCustomer%</a><br /><b>Date Ordered:</b> %Order.CreatedOn%<br /><br /><br /><br /><b>Billing Address</b><br />%Order.BillingFirstName% %Order.BillingLastName%<br />%Order.BillingAddress1%<br />%Order.BillingCity% %Order.BillingZipPostalCode%<br />%Order.BillingStateProvince% %Order.BillingCountry%<br /><br /><br /><br /><b>Shipping Address</b><br />%Order.ShippingFirstName% %Order.ShippingLastName%<br />%Order.ShippingAddress1%<br />%Order.ShippingCity% %Order.ShippingZipPostalCode%<br />%Order.ShippingStateProvince% %Order.ShippingCountry%<br /><br /><b>Shipping Method:</b> %Order.ShippingMethod%<br /><b>Payment Method:</b> %Order.PaymentMethod% <br /> <br /> <b>Shipped Products:</b> <br /> <br /> %Shipment.Product(s)%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Product.ProductReview",
-						Subject = "%Store.Name%. New product review.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />A new product review has been written for product \"%ProductReview.ProductName%\".</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "QuantityBelow.StoreOwnerNotification",
-						Subject = "%Store.Name%. Quantity below notification. %Product.Name%",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%Product.Name% (<b>ID:</b> %Product.ID%, <b>SKU:</b> %Product.Sku%) low quantity. <br /><br /><b>Quantity:</b> %Product.StockQuantity%<br /></p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "ReturnRequestStatusChanged.CustomerNotification",
-						Subject = "%Store.Name%. Return request status was changed.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p> <br /><br />Hello %Customer.FullName%,<br />Your return request #%ReturnRequest.ID% status has been changed: %ReturnRequest.Status%</p>"  + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Service.EmailAFriend",
-						Subject = "%Store.Name%. Referred Item",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%EmailAFriend.Email% was shopping on %Store.Name% and wanted to share the following item with you. <br /><br /><b><a target=\"_blank\" href=\"%Product.ProductURLForCustomer%\">%Product.Name%</a></b> <br />%Product.ShortDescription% <br /><br />For more info click <a target=\"_blank\" href=\"%Product.ProductURLForCustomer%\">here</a> <br /><br /><br />%EmailAFriend.PersonalMessage%<br /><br />%Store.Name%</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Wishlist.EmailAFriend",
-						Subject = "%Store.Name%. Wishlist",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%Wishlist.Email% was shopping on %Store.Name% and wanted to share a wishlist with you. <br /><br /><br />For more info click <a target=\"_blank\" href=\"%Wishlist.URLForCustomer%\">here</a> <br /><br /><br />%Wishlist.PersonalMessage%<br /><br />%Store.Name%</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Customer.NewOrderNote",
-						Subject = "%Store.Name%. New order note has been added",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />Hello %Customer.FullName%, <br />New order note has been added to your account:<br />\"%Order.NewNoteText%\".<br /><a target=\"_blank\" href=\"%Order.OrderURLForCustomer%\">%Order.OrderURLForCustomer%</a></p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "RecurringPaymentCancelled.StoreOwnerNotification",
-						Subject = "%Store.Name%. Recurring payment cancelled",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p><br /><br />%Customer.FullName% (%Customer.Email%) has just cancelled a recurring payment ID=%RecurringPayment.ID%.</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-				new MessageTemplate
-					{
-						Name = "Product.AskQuestion",
-						Subject = "%Store.Name% - Question concerning '%Product.Name%' from %ProductQuestion.SenderName%",
-						Body = templateHeader + "<p>%ProductQuestion.Message%</p><p><strong>SKU:</strong> %Product.Sku%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Phone: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter,
-						IsActive = true,
-						EmailAccountId = eaGeneral.Id,
-					},
-			};
-			this.Alter(entities);
-			return entities;
-		}
-
 		public IList<Topic> Topics()
 		{
 			var entities = new List<Topic>()
@@ -4265,9 +4017,6 @@ namespace SmartStore.Data.Setup
 				{
 					BaseDimensionId = _ctx.Set<MeasureDimension>().Where(m => m.SystemKeyword == "inch").Single().Id,
 					BaseWeightId = _ctx.Set<MeasureWeight>().Where(m => m.SystemKeyword == "lb").Single().Id,
-				},
-				new MessageTemplatesSettings()
-				{
 				},
 				new ShoppingCartSettings()
 				{
@@ -14581,8 +14330,8 @@ namespace SmartStore.Data.Setup
 				{
 					x.ParentGroupedProductId = productGamingAccessoriesId;
 
-					_ctx.Set<Product>().Attach(x);
-					_ctx.Entry(x).State = System.Data.Entity.EntityState.Modified;
+					//_ctx.Set<Product>().Attach(x);
+					//_ctx.Entry(x).State = System.Data.Entity.EntityState.Modified;
 				});
 
 			_ctx.SaveChanges();			
@@ -14646,6 +14395,7 @@ namespace SmartStore.Data.Setup
 		#endregion Forums
 
 		#region Discounts
+
 		public IList<Discount> Discounts()
 		{
 			var sampleDiscountWithCouponCode = new Discount()
@@ -14656,7 +14406,7 @@ namespace SmartStore.Data.Setup
 					UsePercentage = false,
 					DiscountAmount = 10,
 					RequiresCouponCode = true,
-					CouponCode = "123",
+					CouponCode = "123"
 				};
 			var sampleDiscounTwentyPercentTotal = new Discount()
 				{
@@ -14668,7 +14418,7 @@ namespace SmartStore.Data.Setup
 					StartDateUtc = new DateTime(2013, 1, 1),
 					EndDateUtc = new DateTime(2020, 1, 1),
 					RequiresCouponCode = true,
-					CouponCode = "456",
+					CouponCode = "456"
 				};
 
 			var entities = new List<Discount>
@@ -14679,6 +14429,7 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
+
 		#endregion Discounts
 
 		#region Deliverytimes

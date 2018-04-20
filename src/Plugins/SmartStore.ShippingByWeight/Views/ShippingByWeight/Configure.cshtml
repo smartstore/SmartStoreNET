@@ -6,211 +6,25 @@
 	Layout = "";
 }
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<ShippingByWeightModel>()
-                    .Name("Grid")
-                    .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
-                    .Columns(columns =>
-                    {
-						columns.Bound(x => x.StoreName).ReadOnly();
-                        columns.Bound(x => x.CountryName).ReadOnly();
-                        columns.Bound(x => x.Zip);
-                        columns.Bound(x => x.ShippingMethodName).ReadOnly();
-						columns.Bound(x => x.From)
-							.Format("{0:0.00}");
-						columns.Bound(x => x.To)
-							.Format("{0:0.00}");
-                        columns.Bound(x => x.UsePercentage)
-                            .Centered()
-                            .Template(item => @Html.SymbolForBool(item.UsePercentage))
-                            .ClientTemplate(@Html.SymbolForBool("UsePercentage"));
-						columns.Bound(x => x.ShippingChargePercentage)
-							.Format("{0:0.00}");
-						columns.Bound(x => x.ShippingChargeAmount)
-							.Format("{0:0.00}");
-						columns.Bound(x => x.SmallQuantitySurcharge)
-							.Format("{0:0.00}");
-						columns.Bound(x => x.SmallQuantityThreshold)
-							.Format("{0:0.00}");
-                        columns.Command(commands =>
-                        {
-                            commands.Edit();
-                            commands.Delete();
-                        }).Width(180);
-
-                    })
-                    .Editable(x =>
-                    {
-                        x.Mode(GridEditMode.InLine);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-                            .Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } })
-                            .Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } })
-                            .Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } });
-                    })
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
-<p></p>
+<div class="plugin-actions">
+	<button type="submit" name="save" value="save" class="btn btn-warning">
+		<i class="fa fa-check"></i>
+		<span>@T("Admin.Common.Save")</span>
+	</button>
+</div>
 
 @using (Html.BeginForm())
-{    
-    <script type="text/javascript">
-        $(document).ready(function () {
+{
+	@Html.SmartStore().TabStrip().Name("shipping-by-weight-edit").Style(TabsStyle.Material).Items(x =>
+	{
+		x.Add().Text(T("Plugins.Shipping.ByWeight.TabTitleGrid").Text).Content(TabGrid()).Selected(true);
+		x.Add().Text(T("Plugins.Shipping.ByWeight.TabTitleSettings").Text).Content(TabSettings());
+	})
+}
 
-            $("#@Html.FieldIdFor(model => model.AddUsePercentage)").click(toggleAddUsePercentage);
-            toggleAddUsePercentage();
-        });
-
-        function toggleAddUsePercentage() {
-            if ($('#@Html.FieldIdFor(model => model.AddUsePercentage)').is(':checked')) {
-                $('#pnlAddShippingChargePercentage').show();
-                $('#pnlAddShippingChargeAmount').hide();
-            }
-            else {
-                $('#pnlAddShippingChargePercentage').hide();
-                $('#pnlAddShippingChargeAmount').show();
-            }
-        }
-    </script>
-	
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Plugins.Shipping.ByWeight.AddNewRecordTitle")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddStoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
-				@Html.ValidationMessageFor(model => model.AddStoreId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddCountryId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries)
-				@Html.ValidationMessageFor(model => model.AddCountryId)
-			</td>
-		</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.AddZip)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.AddZip)
-					@Html.ValidationMessageFor(model => model.AddZip)
-				</td>
-			</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddShippingMethodId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
-				@Html.ValidationMessageFor(model => model.AddShippingMethodId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddFrom)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AddFrom) [@Model.BaseWeightIn]
-				@Html.ValidationMessageFor(model => model.AddFrom)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddTo)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AddTo) [@Model.BaseWeightIn]
-				@Html.ValidationMessageFor(model => model.AddTo)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddUsePercentage)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AddUsePercentage)
-				@Html.ValidationMessageFor(model => model.AddUsePercentage)
-			</td>
-		</tr>
-		<tr id="pnlAddShippingChargePercentage">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddShippingChargePercentage)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AddShippingChargePercentage)
-				@Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
-			</td>
-		</tr>
-		<tr id="pnlAddShippingChargeAmount">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddShippingChargeAmount)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AddShippingChargeAmount) [@Model.PrimaryStoreCurrencyCode]
-				@Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
-			</td>
-		</tr>
-
-		<tr id="pnlSmallQuantitySurcharge">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SmallQuantitySurcharge) [@Model.PrimaryStoreCurrencyCode]
-				@Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
-			</td>
-		</tr>
-		<tr id="pnlSmallQuantityThreshold">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SmallQuantityThreshold)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SmallQuantityThreshold)
-				@Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
-			</td>
-		</tr>
-
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" name="addshippingbyweightrecord" value="addshippingbyweightrecord" class="btn btn-primary">
-					<i class="fa fa-plus"></i>
-					@T("Common.AddNew")
-				</button>
-			</td>
-		</tr>
-	</table>
-
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Plugins.Shipping.ByWeight.SettingsTitle")</div>
-				</div>
-			</td>
-		</tr>
+@helper TabSettings()
+{	
+	<table class="adminContent mb-5">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.CalculatePerWeightUnit)
@@ -238,15 +52,243 @@
 				@Html.ValidationMessageFor(model => model.IncludeWeightOfFreeShippingProducts)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" name="savegeneralsettings" value="savegeneralsettings" class="btn btn-primary">
-					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-				</button>
-			</td>
-		</tr>
 	</table>
+}
+
+@helper TabGrid()
+{
+	<div>
+		@(Html.Telerik().Grid<ShippingByWeightModel>()
+			.Name("shipping-byweight-grid")
+			.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.StoreName)
+					.Width("8%")
+					.ReadOnly();
+				columns.Bound(x => x.CountryName)
+					.Width("8%")
+					.ReadOnly();
+				columns.Bound(x => x.Zip)
+					.Width("8%");
+				columns.Bound(x => x.ShippingMethodName)
+					.Width("8%")
+					.ReadOnly();
+				columns.Bound(x => x.From)
+					.Width("8%")
+					.Format("{0:0.00}");
+				columns.Bound(x => x.To)
+					.Width("8%")
+					.Format("{0:0.00}");
+				columns.Bound(x => x.UsePercentage)
+					.Width("8%")
+					.Centered()
+					.Template(item => @Html.SymbolForBool(item.UsePercentage))
+					.ClientTemplate(@Html.SymbolForBool("UsePercentage"));
+				columns.Bound(x => x.ShippingChargePercentage)
+					.Width("8%")
+					.Format("{0:0.00}");
+				columns.Bound(x => x.ShippingChargeAmount)
+					.Width("8%")
+					.Format("{0:0.00}");
+				columns.Bound(x => x.SmallQuantitySurcharge)
+					.Width("8%")
+					.Format("{0:0.00}");
+				columns.Bound(x => x.SmallQuantityThreshold)
+					.Width("8%")
+					.Format("{0:0.00}");
+				columns.Command(commands =>
+				{
+					commands.Edit();
+					commands.Delete();
+				}).Width("12%").HtmlAttributes(new { align = "right" });
+
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } })
+					.Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } })
+					.Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } });
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.Editable(x => x.Mode(GridEditMode.InLine))
+			.ToolBar(commands => commands.Template(ShippingByWeightGridCommands))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+	</div>
+}
+
+@helper ShippingByWeightGridCommands(Grid<ShippingByWeightModel> grid)
+{
+	<a href="#addrecord-window" id="addrecord-button" data-toggle="modal" class="t-button t-button-primary">
+		<i class="fa fa-plus"></i>
+		<span>@T("Plugins.Shipping.ByTotal.AddNewRecordTitle")</span>
+	</a>
+}
+
+<script type="text/javascript">
+	$(function () {
+		$("#@Html.FieldIdFor(model => model.AddUsePercentage)").on("click", toggleAddUsePercentage);
+		toggleAddUsePercentage();
+
+		$('#addshippingbyweightrecord').on("click", function (e) {
+			e.preventDefault();
+
+			var form = $("#addrecord-window").find("form");
+
+			$.ajax({
+				cache: false,
+				type: 'POST',
+				url: '@Url.Action("AddShippingByWeightRecord")',
+				data: form.serialize(),
+				dataType: 'json',
+				success: function (data) {
+					var shippingByTotalGrid = $("#shipping-byweight-grid");
+					shippingByTotalGrid.data('tGrid').ajaxRequest();
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					alert('Failed to add record.');
+				},
+				complete: function () {
+					$('#addrecord-window').modal('hide');
+				}
+			});
+			return false;
+		});
+	});
+
+	function toggleAddUsePercentage() {
+		if ($('#@Html.FieldIdFor(model => model.AddUsePercentage)').is(':checked')) {
+			$('#pnlAddShippingChargePercentage').show();
+			$('#pnlAddShippingChargeAmount').hide();
+		}
+		else {
+			$('#pnlAddShippingChargePercentage').hide();
+			$('#pnlAddShippingChargeAmount').show();
+		}
+	}
+</script>
+
+@{Html.SmartStore().Window()
+	.Name("addrecord-window")
+	.Size(WindowSize.Large)
+	.Title(T("Plugins.Shipping.ByWeight.AddNewRecordTitle"))
+	.Content(
+	@<text>
+		<form method="post">
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddStoreId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
+						@Html.ValidationMessageFor(model => model.AddStoreId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddCountryId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries)
+						@Html.ValidationMessageFor(model => model.AddCountryId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddZip)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddZip)
+						@Html.ValidationMessageFor(model => model.AddZip)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddShippingMethodId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
+						@Html.ValidationMessageFor(model => model.AddShippingMethodId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddFrom)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddFrom, new { postfix = Model.BaseWeightIn })
+						@Html.ValidationMessageFor(model => model.AddFrom)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddTo)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddTo, new { postfix = Model.BaseWeightIn })
+						@Html.ValidationMessageFor(model => model.AddTo)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddUsePercentage)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddUsePercentage)
+						@Html.ValidationMessageFor(model => model.AddUsePercentage)
+					</td>
+				</tr>
+				<tr id="pnlAddShippingChargePercentage">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddShippingChargePercentage)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddShippingChargePercentage)
+						@Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
+					</td>
+				</tr>
+				<tr id="pnlAddShippingChargeAmount">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddShippingChargeAmount)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddShippingChargeAmount, new { postfix = Model.PrimaryStoreCurrencyCode })
+						@Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
+					</td>
+				</tr>
+
+				<tr id="pnlSmallQuantitySurcharge">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.SmallQuantitySurcharge, new { postfix = Model.PrimaryStoreCurrencyCode })
+						@Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
+					</td>
+				</tr>
+				<tr id="pnlSmallQuantityThreshold">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.SmallQuantityThreshold)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.SmallQuantityThreshold)
+						@Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
+					</td>
+				</tr>
+			</table>
+		</form>
+	</text>)
+	.FooterContent(@<text>
+		<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+		<button id="addshippingbyweightrecord" type="submit" class="btn btn-primary">
+			<i class="fa fa-check"></i>
+			<span>@T("Common.AddNew")</span>
+		</button>
+	</text>)
+	.Render();
 }

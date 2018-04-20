@@ -12,139 +12,121 @@
             @T("Admin.System.QueuedEmails")
         </div>
         <div class="options">
-            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.QueuedEmails.DeleteSelected")
+			<div class="input-group d-inline-flex mr-3" style="width: 400px">
+				@Html.TextBoxFor(model => Model.GoDirectlyToNumber, new { @class = "form-control", placeholder = T("Admin.System.QueuedEmails.List.GoDirectlyToNumber") })
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-secondary" id="go-to-email-by-number" name="go-to-email-by-number" value="go-to-email-by-number" title="@T("Admin.System.QueuedEmails.List.GoDirectlyToNumber.Hint")">
+						<i class="fa fa-search"></i>
+					</button>
+					<button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+						<i class="fa fa-filter"></i>
+						<span>@T("Common.Filter")</span>
+						<i class="fa fa-angle-double-down"></i>
+					</button>
+				</div>
+			</div>		
+
+            <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary btn-to-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.System.QueuedEmails.DeleteSelected")</span>
 			</button>
-			<button type="submit" id="delete-all" name="delete-all" value="delete-all" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteAll")
+			<button type="submit" id="delete-all" name="delete-all" value="delete-all" class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.DeleteAll")</span>
 			</button>
+
         </div>
     </div>
-	
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchStartDate)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SearchStartDate)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchEndDate)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchEndDate)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchFromEmail)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchFromEmail)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchToEmail)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchToEmail)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchLoadNotSent)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchLoadNotSent)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchSendManually)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchSendManually)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchMaxSentTries)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchMaxSentTries)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.GoDirectlyToNumber)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.GoDirectlyToNumber)
-				<button type="submit" name="go-to-email-by-number" value="go-to-email-by-number" class="btn">
-					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
-				</button>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-			</td>
-		</tr>
-	</table>
 
-    <p></p>
-	
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<QueuedEmailModel>()
-					.Name("queuedEmails-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Id #></a>");
-						columns.Bound(x => x.AttachmentsCount)
-							.HeaderTemplate(@<span class='t-link' title='@T("Admin.System.QueuedEmails.List.AttachmentsCount")'><i class='fa fa-paperclip'></i></span>)
-							.Width(20);
-						columns.Bound(x => x.Subject);
-						columns.Bound(x => x.Priority)
-							.Centered();
-						columns.Bound(x => x.From)
-							.ClientTemplate("<#= FromName #> (<#= From #>)");
-						columns.Bound(x => x.SendManually)
-							.ClientTemplate(@Html.SymbolForBool("SendManually"))
-							.Centered();
-						columns.Bound(x => x.SentTries)
-							.Centered();
-						columns.Bound(x => x.SentOn);
-						columns.Bound(x => x.CreatedOn);
-					})
-					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("QueuedEmailList", "QueuedEmail"))
-					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
-					.PreserveGridState()
-					.EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
-    
+	<div class="row mt-3 grid-filter" style="display: none">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchStartDate)
+			@Html.EditorFor(model => Model.SearchStartDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchEndDate)
+			@Html.EditorFor(model => Model.SearchEndDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchFromEmail)
+			@Html.EditorFor(model => Model.SearchFromEmail)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchToEmail)
+			@Html.EditorFor(model => Model.SearchToEmail)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchSendManually)
+			@Html.EditorFor(model => Model.SearchSendManually)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchMaxSentTries)
+			@Html.EditorFor(model => Model.SearchMaxSentTries)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchLoadNotSent)
+			<div class="mt-2">
+				<label class="switch">
+					@Html.EditorFor(model => Model.SearchLoadNotSent)
+					<span class="switch-toggle" data-on="An" data-off="Aus"></span>
+				</label>
+			</div>
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
+
+	<div>
+		@(Html.Telerik().Grid<QueuedEmailModel>()
+			.Name("queuedEmails-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
+				columns.Bound(x => x.Id)
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Id #></a>");
+				columns.Bound(x => x.AttachmentsCount)
+					.HeaderTemplate(@<span class='t-link' title='@T("Admin.System.QueuedEmails.List.AttachmentsCount")'><i class='fa fa-paperclip'></i></span>)
+					.Width(20);
+				columns.Bound(x => x.Subject);
+				columns.Bound(x => x.Priority)
+					.Centered();
+				columns.Bound(x => x.From)
+					.ClientTemplate("<#= From #>");
+				columns.Bound(x => x.SendManually)
+					.ClientTemplate(@Html.SymbolForBool("SendManually"))
+					.Centered();
+				columns.Bound(x => x.SentTries)
+					.Centered();
+				columns.Bound(x => x.SentOn);
+				columns.Bound(x => x.CreatedOn);
+			})
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("QueuedEmailList", "QueuedEmail"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
+			.PreserveGridState()
+			.EnableCustomBinding(true))
+	</div>
+
     <script type="text/javascript">
+
+		// Filter toggler
+		$('.btn-toggle-filter').on('click', function (e) {
+			$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+		});
+
         var selectedIds = [];
 
         $(document).ready(function () {
-
+			
             //search button
             $('#btnSearch').click(function () {
                 //search
@@ -214,39 +196,40 @@
             });
         });
 
-    function onDataBinding(e) {
-        var searchModel = {
-			SearchStartDate: $('#@Html.FieldIdFor(model => model.SearchStartDate)').val(),
-			SearchEndDate: $('#@Html.FieldIdFor(model => model.SearchEndDate)').val(),
-			SearchFromEmail: $('#@Html.FieldIdFor(model => model.SearchFromEmail)').val(),
-			SearchToEmail: $('#@Html.FieldIdFor(model => model.SearchToEmail)').val(),
-			SearchLoadNotSent: $('#@Html.FieldIdFor(model => model.SearchLoadNotSent)').is(':checked'),
-        	SearchSendManually: $('#@Html.FieldIdFor(model => model.SearchSendManually)').val(),
-			SearchMaxSentTries: $('#@Html.FieldIdFor(model => model.SearchMaxSentTries)').val()
-		};
-        e.data = searchModel;
-    }
+		function onDataBinding(e) {
 
-    function onDataBound(e) {
-        $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-            var currentId = $(this).val();
-            var checked = jQuery.inArray(currentId, selectedIds);
-            //set checked based on if current checkbox's value is in selectedIds.  
-            $(this).attr('checked', checked > -1);
-        });
+			var searchModel = {
+				SearchStartDate: $('#@Html.FieldIdFor(model => model.SearchStartDate)').val(),
+				SearchEndDate: $('#@Html.FieldIdFor(model => model.SearchEndDate)').val(),
+				SearchFromEmail: $('#@Html.FieldIdFor(model => model.SearchFromEmail)').val(),
+				SearchToEmail: $('#@Html.FieldIdFor(model => model.SearchToEmail)').val(),
+				SearchLoadNotSent: $('#@Html.FieldIdFor(model => model.SearchLoadNotSent)').is(':checked'),
+        		SearchSendManually: $('#@Html.FieldIdFor(model => model.SearchSendManually)').val(),
+				SearchMaxSentTries: $('#@Html.FieldIdFor(model => model.SearchMaxSentTries)').val()
+			};
+			e.data = searchModel;
+		}
 
-        updateMasterCheckbox();
-    }
+		function onDataBound(e) {
+			$('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+				var currentId = $(this).val();
+				var checked = jQuery.inArray(currentId, selectedIds);
+				//set checked based on if current checkbox's value is in selectedIds.  
+				$(this).attr('checked', checked > -1);
+			});
 
-    function onRowDataBound(e) {
-    	if (e.dataItem.SentOn)
-    		$(e.row).find('td').wrapInner('<span class="muted" />');
-    }
+			updateMasterCheckbox();
+		}
+
+		function onRowDataBound(e) {
+    		if (e.dataItem.SentOn)
+    			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
     
-    function updateMasterCheckbox() {
-        var numChkBoxes = $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').length;
-        var numChkBoxesChecked = $('#queuedEmails-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-        $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-    }
+		function updateMasterCheckbox() {
+			var numChkBoxes = $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').length;
+			var numChkBoxesChecked = $('#queuedEmails-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+		}
     </script>   
 }

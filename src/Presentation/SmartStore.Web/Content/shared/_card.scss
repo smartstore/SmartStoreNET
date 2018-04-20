@@ -1,0 +1,118 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// Cards
+// ==============================================================
+
+.card-deck {
+    .card {
+        margin-bottom: $card-deck-margin * 2;
+    }
+}
+
+.card-shadow {
+	//box-shadow: 1px 1px 2px rgba(#000, 0.07); 
+	box-shadow: 0 0 3px rgba(#000, .1);
+}
+
+.card-body > p:last-child {
+    margin-bottom:  0;
+}
+
+.card-footer .btn {
+    font-weight: 400;
+}
+
+.card-body > *:last-child {
+    margin-bottom: 0 !important;
+}
+
+
+// "Real" responsive card decks & groups
+// Remove this, once BS4 natively supports responsive card decks & groups
+// ======================================================================
+
+@mixin card-deck-responsive($breakpoint) {
+    $m: $card-deck-margin * 2;
+    .card-deck {
+        &.card-cols-#{$breakpoint}-1 .card {
+            -ms-flex: 1 0 100% !important;
+            flex: 1 0 calc(100% - #{$m}) !important;
+            max-width: calc(100% - #{$m});
+        }
+        &.card-cols-#{$breakpoint}-2 .card {
+            -ms-flex: 0 0 50% !important;
+            flex: 0 0 calc(50% - #{$m}) !important;
+            max-width: calc(50% - #{$m});
+        }
+        &.card-cols-#{$breakpoint}-3 .card { 
+            -ms-flex: 0 0 33.333% !important; 
+            flex: 0 0 calc(33.333% - #{$m}) !important;
+            max-width: calc(33.333% - #{$m});
+        }
+        &.card-cols-#{$breakpoint}-4 .card {
+            -ms-flex: 0 0 25% !important;
+            flex: 0 0 calc(25% - #{$m}) !important;
+            max-width: calc(25% - #{$m});
+        }
+        &.card-cols-#{$breakpoint}-5 .card {
+            -ms-flex: 0 0 20% !important;
+            flex: 0 0 calc(20% - #{$m}) !important;
+            max-width: calc(20% - #{$m});
+        }
+        &.card-cols-#{$breakpoint}-6 .card {
+            -ms-flex: 0 0 16.666% !important;
+            flex: 0 0 calc(16.666% - #{$m}) !important;
+            max-width: calc(16.666% - #{$m});
+        }   
+    }
+}
+
+@mixin card-group-responsive($breakpoint) {
+    .card-group {
+        &.card-cols-#{$breakpoint}-1 .card {
+            flex: 1 0 100% !important;
+            max-width: 100%;
+        }
+        &.card-cols-#{$breakpoint}-2 .card {
+            flex: 0 0 50% !important;
+            max-width: 50%;
+        }
+        &.card-cols-#{$breakpoint}-3 .card {
+            flex: 0 0 33.333% !important;
+            max-width: 33.333%;
+        }
+        &.card-cols-#{$breakpoint}-4 .card {
+            flex: 0 0 25% !important;
+            max-width: 25%;
+        }
+        &.card-cols-#{$breakpoint}-5 .card {
+            flex: 0 0 20% !important;
+            max-width: 20%;
+        }  
+        &.card-cols-#{$breakpoint}-6 .card {
+            flex: 0 0 16.666% !important;
+            max-width: 16.666%;
+        }  
+    }
+}
+
+@mixin card-columns-responsive($breakpoint) {
+    .card-columns {
+        @each $x in (1, 2, 3, 4, 5, 6) {
+            &.card-cols-#{$breakpoint}-#{$x} {
+                column-count: #{$x};
+            }
+        } 
+    }
+}
+
+@each $breakpoint in (sm, md, lg, xl) {
+    @include media-breakpoint-up($breakpoint) {
+        @include card-deck-responsive($breakpoint); 
+        @include card-group-responsive($breakpoint);
+        @include card-columns-responsive($breakpoint);       
+    }
+}

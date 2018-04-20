@@ -25,7 +25,6 @@ namespace SmartStore.Admin.Models.Settings
         
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.TaxDisplayType")]
         public TaxDisplayType TaxDisplayType { get; set; }
-		public SelectList TaxDisplayTypeValues { get; set; }
         
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DisplayTaxSuffix")]
         public bool DisplayTaxSuffix { get; set; }
@@ -52,7 +51,6 @@ namespace SmartStore.Admin.Models.Settings
 		
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.TaxBasedOn")]
         public TaxBasedOn TaxBasedOn { get; set; }
-		public SelectList TaxBasedOnValues { get; set; }
         
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.DefaultTaxAddress")]
         public AddressModel DefaultTaxAddress { get; set; }
@@ -81,7 +79,6 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.AuxiliaryServicesTaxingType")]
 		public AuxiliaryServicesTaxType AuxiliaryServicesTaxingType { get; set; }
-		public SelectList AvailableAuxiliaryServicesTaxTypes { get; set; }
 
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEnabled")]

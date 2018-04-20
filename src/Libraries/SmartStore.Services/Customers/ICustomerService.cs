@@ -109,7 +109,7 @@ namespace SmartStore.Services.Customers
         Customer GetCustomerByEmail(string email);
         
         /// <summary>
-        /// Get customer by system role
+        /// Get customer by system name
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Customer</returns>
@@ -152,20 +152,22 @@ namespace SmartStore.Services.Customers
         /// <param name="customer">Customer</param>
         void UpdateCustomer(Customer customer);
 
-        /// <summary>
-        /// Reset data required for checkout
-        /// </summary>
-        /// <param name="customer">Customer</param>
+		/// <summary>
+		/// Reset data required for checkout
+		/// </summary>
+		/// <param name="customer">Customer</param>
 		/// <param name="storeId">Store identifier</param>
-        /// <param name="clearCouponCodes">A value indicating whether to clear coupon code</param>
-        /// <param name="clearCheckoutAttributes">A value indicating whether to clear selected checkout attributes</param>
-        /// <param name="clearRewardPoints">A value indicating whether to clear "Use reward points" flag</param>
-        /// <param name="clearShippingMethod">A value indicating whether to clear selected shipping method</param>
-        /// <param name="clearPaymentMethod">A value indicating whether to clear selected payment method</param>
+		/// <param name="clearCouponCodes">A value indicating whether to clear coupon code</param>
+		/// <param name="clearCheckoutAttributes">A value indicating whether to clear selected checkout attributes</param>
+		/// <param name="clearRewardPoints">A value indicating whether to clear "Use reward points" flag</param>
+		/// <param name="clearShippingMethod">A value indicating whether to clear selected shipping method</param>
+		/// <param name="clearPaymentMethod">A value indicating whether to clear selected payment method</param>
+		/// <param name="clearCreditBalance">A value indicating whether to clear credit balance.</param>
 		void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
             bool clearRewardPoints = false, bool clearShippingMethod = true,
-            bool clearPaymentMethod = true);
+            bool clearPaymentMethod = true,
+			bool clearCreditBalance = false);
 
         /// <summary>
         /// Delete guest customer records

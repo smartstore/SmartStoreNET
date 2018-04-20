@@ -3,8 +3,8 @@
 
 <div class="forum-group">
     <div class="group-title">
-        <h3 class="fs-h3">
-            @Html.RouteLink(Model.Name, "ForumGroupSlug", new { id = Model.Id, slug = Model.SeName })
+        <h3 class="fs-h3" @Html.LanguageAttributes(Model.Name)>
+            @Html.RouteLink(Model.Name.Value, "ForumGroupSlug", new { id = Model.Id, slug = Model.SeName })
         </h3>
     </div>
 
@@ -36,9 +36,9 @@
                 </td>
                 <td class="forum-name">
                     <div class="forum-title">
-                        @Html.RouteLink(@forum.Name, "ForumSlug", new { id = @forum.Id, slug = @forum.SeName })
+                        @Html.RouteLink(forum.Name, "ForumSlug", new { id = forum.Id, slug = forum.SeName })
                     </div>
-                    <div class="forum-description">
+                    <div class="forum-description" @Html.LanguageAttributes(forum.Description)>
                         @forum.Description
                     </div>
                 </td>
@@ -49,9 +49,10 @@
                     @forum.NumPosts
                 </td>
                 <td class="last-post d-none d-md-table-cell">
-                    @{ Html.RenderAction("LastPost", new { forumPostId = @forum.LastPostId, showTopic = true }); }
+                    @{ Html.RenderAction("LastPost", new { forumPostId = forum.LastPostId, showTopic = true }); }
                 </td>
             </tr>            
         }
     </table>
+
 </div>

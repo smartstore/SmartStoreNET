@@ -1,0 +1,585 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+$btn-wide-padding-x: 1.8rem;
+$btn-wide-padding-x-lg: 2.5rem;
+$btn-wide-padding-x-sm: 1.2rem;
+
+$btn-size: $input-height;
+$btn-size-lg: $input-height-lg;
+$btn-size-sm: $input-height-sm;
+
+@mixin btn-padding($p) {
+	padding-left: $p;
+	padding-right: $p;
+}
+
+@mixin btn-square($size) {
+	width: $size;
+	height: $size;
+	line-height: $size;
+
+	> i {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate3d(-50%, -50%, 0);
+		vertical-align: middle;
+	}
+}
+
+
+// General
+// --------------------------------------------------
+
+.btn-secondary.hover {
+	@extend .btn-secondary:hover;
+}
+
+.btn-primary.hover {
+	@extend .btn-primary:hover;
+}
+
+.btn-warning.hover {
+	@extend .btn-warning:hover;
+}
+
+.btn-danger.hover {
+	@extend .btn-danger:hover;
+}
+
+.btn-info.hover {
+	@extend .btn-info:hover;
+}
+
+.btn-success.hover {
+	@extend .btn-success:hover;
+}
+
+
+// Make icon font-size 13px in small buttons
+// (looks ugly otherwise)
+// -----------------------------------------------------
+
+.btn-sm > .fa {
+	font-size: 14px;
+}
+
+
+// btn-(outline-)(secondary|light)
+// looks really shitty in BS4, style it decently.
+// -----------------------------------------------------
+
+@if $enable-lightbtn-tweak {
+	.btn-outline-secondary,
+	.btn-outline-light {
+		color: $yiq-text-dark;
+		border-color: $input-border-color;
+
+		&:not([disabled]):not(.disabled):hover,
+		&:not([disabled]):not(.disabled).hover {
+			border-color: darken($input-border-color, 8%);
+		}
+
+		&.disabled,
+		&[disabled] {
+			color: $yiq-text-dark;
+			border-color: $input-border-color;
+		}
+
+		&:not([disabled]):not(.disabled):active,
+		&:not([disabled]):not(.disabled).active,
+		.show > &.dropdown-toggle {
+			background-color: darken($secondary, 5%);
+			border-color: darken($input-border-color, 5%);
+		}
+	}
+
+	.btn-outline-secondary {
+		color: $yiq-text-dark;
+	}
+
+	.btn-outline-light {
+		color: $gray-600;
+	}
+}
+
+
+
+// Input groups
+// Light addon buttons without border look shitty
+// -----------------------------------------------------
+
+.input-group > .input-group-append > .btn-secondary,
+.input-group > .input-group-append > .btn-light,
+.input-group > .input-group-prepend > .btn-secondary,
+.input-group > .input-group-prepend > .btn-light {
+	border-color: $input-border-color;
+}
+
+
+// btn-icon, btn-circle
+// --------------------------------------------------
+
+.btn.btn-icon,
+.btn.btn-circle {
+	padding: 0;
+	text-align: center;
+	vertical-align: middle;
+	position: relative;
+	@include btn-square($btn-size);
+
+	&.btn-lg {
+		@include btn-square($btn-size-lg);
+	}
+
+	&.btn-sm {
+		@include btn-square($btn-size-sm);
+	}
+
+	// Move caret to bottom right corner
+	&.dropdown-toggle:after {
+		position: absolute;
+		right: 2px;
+		bottom: 0.4em;
+	}
+}
+
+.btn.btn-circle {
+	border-radius: 50%;
+}
+
+
+// btn-flat
+// --------------------------------------------------
+
+.btn-flat {
+	color: $yiq-text-dark;
+	background-image: none;
+	background-color: transparent;
+	border-color: transparent;
+	box-shadow: none;
+
+	&.disabled,
+	&[disabled] {
+		color: $yiq-text-dark;
+		background-image: none;
+		background-color: transparent;
+		border-color: transparent;
+	}
+}
+
+.btn-flat-light {
+	color: rgba(#fff, 0.8);
+
+	&.disabled,
+	&[disabled] {
+		color: rgba(#fff, 0.8);
+	}
+
+	&:not([disabled]):not(.disabled):hover,
+	&:not([disabled]):not(.disabled).hover,
+	&:active,
+	&.active,
+	.show > &.dropdown-toggle {
+		border-color: rgba(#fff, 1);
+	}
+
+	&:focus,
+	&.focus {
+		box-shadow: 0 0 0 2px rgba(#fff, .25);
+	}
+}
+
+// btn-clear
+// --------------------------------------------------
+.btn.btn-clear {
+	color: $yiq-text-light;
+	background: rgba(#fff, 0);
+	border-color: rgba(#fff, 0.6);
+	box-shadow: none;
+
+	&:hover,
+	&.hover {
+		color: $yiq-text-light;
+		background: rgba(#fff, 0.15);
+	}
+
+	&:focus,
+	&.focus {
+		border-color: #fff;
+		box-shadow: 0 0 0 2px rgba(#fff, .25);
+	}
+
+	&.disabled,
+	&[disabled] {
+		background: rgba(#fff, 0);
+		border-color: rgba(#fff, 0.6);
+	}
+
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		color: $yiq-text-light;
+		border-color: #fff;
+		box-shadow: none;
+	}
+}
+
+.btn.btn-clear-dark {
+	color: $yiq-text-dark;
+	background: transparent;
+	border-color: rgba(#000, 0.15);
+	box-shadow: none;
+
+	&:hover,
+	&.hover {
+		color: darken($yiq-text-dark, 8%);
+		background: rgba(#000, 0.06);
+		border-color: rgba(#000, 0.2);
+	}
+
+	&:focus,
+	&.focus {
+		border-color: rgba(#000, 0.2);
+		box-shadow: 0 0 0 3px rgba(#000, .05);
+	}
+
+	&.disabled,
+	&[disabled] {
+		background: transparent;
+		border-color: rgba(#000, 0.15);
+		box-shadow: none;
+	}
+
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		color: darken($yiq-text-dark, 8%);
+		box-shadow: inset 0 3px 5px rgba(#000, 0.125) !important;
+	}
+}
+
+// btn-labeled
+// --------------------------------------------------
+.btn.btn-labeled {
+	$w-md: $input-height-inner * 0.85;
+	$w-sm: $input-height-inner-sm * 0.85;
+	$w-lg: $input-height-inner-lg * 0.85;
+	position: relative;
+	padding-left: $w-md + $input-btn-padding-x;
+
+	> b {
+		position: absolute;
+		display: block;
+		width: $w-md;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		background-color: rgba(0,0,0, .12);
+
+		> i {
+			position: relative;
+			vertical-align: middle;
+			//transform: translate(0, 50%);
+			line-height: $btn-size;
+		}
+	}
+
+	&.btn-lg {
+		padding-left: $w-lg + $input-btn-padding-x-lg;
+
+		> b {
+			width: $w-lg;
+
+			> i {
+				line-height: $btn-size-lg;
+			}
+		}
+	}
+
+	&.btn-sm {
+		padding-left: $w-sm + $input-btn-padding-x-sm;
+
+		> b {
+			width: $w-sm;
+
+			> i {
+				line-height: $btn-size-sm;
+			}
+		}
+	}
+
+	&.icon-right {
+		padding-left: $input-btn-padding-x;
+		padding-right: $w-md + $input-btn-padding-x;
+
+		> b {
+			left: auto;
+			right: 0;
+		}
+	}
+}
+
+// btn-animate
+// --------------------------------------------------
+
+.btn.btn-animate {
+	position: relative;
+	overflow: hidden;
+	padding-left: $input-btn-padding-x * 1.5;
+	padding-right: $input-btn-padding-x * 1.5;
+	transition: all 0.2s ease-out;
+
+	> span {
+		display: block;
+		width: 100%;
+		height: 100%;
+		transition: transform 0.2s ease-out;
+		transform: translateX(0);
+
+		> i {
+			position: absolute;
+			display: inline-block;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 1.4em;
+			text-align: left;
+			opacity: 0;
+			line-height: $line-height-base;
+			transition: opacity 0.2s ease-out;
+			transform: translateX(-100%);
+
+			&:before {
+				vertical-align: middle;
+			}
+		}
+	}
+
+	&:hover > span {
+		transform: translateX(10px);
+
+		> i {
+			opacity: 1;
+		}
+	}
+
+	&.btn-lg {
+		padding-left: $input-btn-padding-x-lg * 1.5;
+		padding-right: $input-btn-padding-x-lg * 1.5;
+	}
+
+	&.btn-sm {
+		padding-left: $input-btn-padding-x-sm * 1.5;
+		padding-right: $input-btn-padding-x-sm * 1.5;
+	}
+}
+
+.btn-animate.btn-animate-right {
+	> span > i {
+		left: auto;
+		right: 0;
+		text-align: right;
+		transform: translateX(100%);
+	}
+
+	&:hover > span {
+		transform: translateX(-10px);
+	}
+}
+
+.btn-animate.btn-animate-down {
+	> span {
+		text-align: center;
+	}
+
+	> span > i {
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 100%;
+		text-align: center;
+		vertical-align: middle;
+		transform: translateY(-150%);
+	}
+
+	&:hover > span {
+		transform: translateY(150%);
+	}
+}
+
+.btn-animate.btn-animate-down.btn-lg {
+	> span > i {
+		font-size: 1.5rem;
+		line-height: 1.5rem;
+	}
+}
+
+// btn-to-[danger|primary]
+// --------------------------------------------------
+.btn.btn-to-danger,
+.btn.btn-to-primary {
+	transition: box-shadow .15s ease-in-out;
+}
+
+.btn.btn-to-danger {
+	&:not([disabled]):not(.disabled):hover,
+	&:not([disabled]):not(.disabled).hover {
+		@extend .btn-danger:hover;
+		> i { opacity: 1; }
+	}
+
+	&:focus,
+	&.focus {
+		@extend .btn-danger:focus;
+		> i { opacity: 1; }
+	}
+
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		@extend .btn-danger:active;
+		> i { opacity: 1; }
+	}
+}
+
+.btn.btn-to-primary {
+	&:not([disabled]):not(.disabled):hover,
+	&:not([disabled]):not(.disabled).hover {
+		@extend .btn-primary:hover;
+	}
+
+	&:focus,
+	&.focus {
+		@extend .btn-primary:focus;
+	}
+
+	&:not([disabled]):not(.disabled):active,
+	&:not([disabled]):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		@extend .btn-primary:active;
+	}
+}
+
+// btn-no-border
+// --------------------------------------------------
+.btn-no-border {
+	border-color: transparent !important;
+}
+
+
+// .mf-dropdown (Mobile Friendly dropdown)
+// --------------------------------------------------
+.mf-dropdown {
+	display: inline-block;
+	position: relative;
+
+	.btn {
+		border-radius: 0;
+		position: relative;
+	}
+
+	.btn > em {
+		font-style: normal;
+		font-variant: normal;
+		font-weight: normal;
+		color: $text-muted;
+		font-size: $font-size-sm;
+		font-size: 0.85em; // make it smaller
+	}
+
+	.btn > em > span {
+		font-weight: $font-weight-medium;
+		font-size: 1.166666em; // make it regular again
+		color: $body-color;
+	}
+
+	.btn.has-caret {
+		text-align: left;
+		padding-right: $input-btn-padding-x * 2;
+
+		&.btn-sm {
+			padding-right: $input-btn-padding-x-sm * 2;
+		}
+
+		&.btn-lg {
+			padding-right: $input-btn-padding-x-lg * 2;
+		}
+
+		> em,
+		> span {
+			display: block;
+			margin-bottom: 1px; // equalizes button heights
+			@include text-truncate();
+		}
+	}
+
+	.btn.has-caret:after {
+		@include fontawesome("\f0d7");
+		position: absolute;
+		display: block;
+		right: $input-btn-padding-x;
+		line-height: 1;
+		top: 50%;
+		transform: translate3d(50%, -50%, 0);
+	}
+
+	.btn-sm.has-caret:after {
+		right: $input-btn-padding-x-sm;
+	}
+
+	.btn-lg.has-caret:after {
+		right: $input-btn-padding-x-lg;
+	}
+
+	select {
+		position: absolute;
+		opacity: 0;
+		left: 0;
+		width: 100%;
+		top: 0;
+		bottom: 0;
+		cursor: pointer;
+	}
+}
+
+
+// Social buttons
+// --------------------------------------------------
+
+@if $enable-social-buttons {
+	.btn-brand-facebook {
+		@include button-variant($clr-brand-facebook, $clr-brand-facebook);
+	}
+
+	.btn-brand-twitter {
+		@include button-variant($clr-brand-twitter, $clr-brand-twitter);
+	}
+
+	.btn-brand-youtube {
+		@include button-variant($clr-brand-youtube, $clr-brand-youtube);
+	}
+
+	.btn-brand-pinterest {
+		@include button-variant($clr-brand-pinterest, $clr-brand-pinterest);
+	}
+
+	.btn-brand-google-plus  {
+		@include button-variant($clr-brand-googleplus , $clr-brand-googleplus);
+	}
+
+	.btn-brand-instagram {
+		@include button-variant($clr-brand-instagram, $clr-brand-instagram);
+	}
+
+	.btn-brand-linkedin {
+		@include button-variant($clr-brand-linkedin, $clr-brand-linkedin);
+	}
+
+	.btn-brand-xing {
+		@include button-variant($clr-brand-xing, $clr-brand-xing);
+	}
+}

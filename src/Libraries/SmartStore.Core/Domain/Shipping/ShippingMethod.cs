@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Shipping
 {
@@ -9,10 +8,8 @@ namespace SmartStore.Core.Domain.Shipping
 	/// Represents a shipping method (used for offline shipping rate computation methods)
 	/// </summary>
 	[DataContract]
-	public partial class ShippingMethod : BaseEntity, ILocalizedEntity
-    {
-        private ICollection<Country> _restrictedCountries;
-
+	public partial class ShippingMethod : BaseEntity, ILocalizedEntity, IStoreMappingSupported
+	{
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -31,17 +28,16 @@ namespace SmartStore.Core.Domain.Shipping
 		[DataMember]
 		public int DisplayOrder { get; set; }
 
+		/// <summary>
+		/// Gets or sets whether to ignore charges
+		/// </summary>
 		[DataMember]
 		public bool IgnoreCharges { get; set; }
 
-        /// <summary>
-        /// Gets or sets the restricted countries
-        /// </summary>
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
 		[DataMember]
-		public virtual ICollection<Country> RestrictedCountries
-        {
-			get { return _restrictedCountries ?? (_restrictedCountries = new HashSet<Country>()); }
-            protected set { _restrictedCountries = value; }
-        }
+		public bool LimitedToStores { get; set; }
     }
 }

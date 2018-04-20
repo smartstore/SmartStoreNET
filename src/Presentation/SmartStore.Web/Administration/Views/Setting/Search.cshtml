@@ -11,7 +11,10 @@
             @T("Search.Title")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
@@ -25,13 +28,13 @@
 				@Html.SmartLabelFor(model => model.SearchMode)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.SearchMode)
-				@Html.DropDownListFor(model => model.SearchMode, Model.AvailableSearchModes)
+				@Html.SettingEditorFor(model => model.SearchMode, Html.DropDownListFor(model => model.SearchMode, Model.AvailableSearchModes))
 				@Html.ValidationMessageFor(model => model.SearchMode)
 			</td>
 		</tr>
 		<tr id="WildcardNote" class="hide">
-			<td colspan="2">
+			<td class="adminTitle"></td>
+			<td class="adminData">
 				<div class="alert alert-warning">
 					@T("Admin.Configuration.Settings.Search.WildcardSearchNote")
 				</div>
@@ -44,19 +47,20 @@
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.SearchFields,
 					 new MultiSelectList(Model.AvailableSearchFields, "Value", "Text"),
-					 new { multiple = "multiple", @class = "control-xlarge" })
+					 new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.SearchFields)
 			</td>
 		</tr>
 		@if (Model.SearchFieldsNote.HasValue())
 		{
-		<tr>
-			<td colspan="2">
-				<div class="alert alert-info">
-					@Html.Raw(Model.SearchFieldsNote)
-				</div>
-			</td>
-		</tr>
+			<tr>
+				<td></td>
+				<td>
+					<div class="alert alert-info">
+						@Html.Raw(Model.SearchFieldsNote)
+					</div>
+				</td>
+			</tr>
 		}
 		<tr>
 			<td colspan="2">
@@ -70,44 +74,45 @@
 				@Html.SmartLabelFor(model => model.InstantSearchEnabled)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.InstantSearchEnabled)
+				@Html.SettingEditorFor(model => model.InstantSearchEnabled, Html.CheckBoxFor(model => model.InstantSearchEnabled, new { data_toggler_for = "#pnlInstantSearch" }))
 				@Html.ValidationMessageFor(model => model.InstantSearchEnabled)
 			</td>
 		</tr>
-		<tr class="instant-search-setting">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowProductImagesInInstantSearch)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowProductImagesInInstantSearch)
-				@Html.ValidationMessageFor(model => model.ShowProductImagesInInstantSearch)
-			</td>
-		</tr>
-		<tr class="instant-search-setting">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.InstantSearchNumberOfProducts)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.InstantSearchNumberOfProducts, null, new { small = true })
-				@Html.ValidationMessageFor(model => model.InstantSearchNumberOfProducts)
-			</td>
-		</tr>
-		<tr class="instant-search-setting">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.InstantSearchTermMinLength)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.InstantSearchTermMinLength, null, new { small = true })
-				@Html.ValidationMessageFor(model => model.InstantSearchTermMinLength)
-			</td>
-		</tr>
+		<tbody id="pnlInstantSearch">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ShowProductImagesInInstantSearch)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.ShowProductImagesInInstantSearch)
+					@Html.ValidationMessageFor(model => model.ShowProductImagesInInstantSearch)
+				</td>
+			</tr>
+			<tr class="instant-search-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.InstantSearchNumberOfProducts)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.InstantSearchNumberOfProducts)
+					@Html.ValidationMessageFor(model => model.InstantSearchNumberOfProducts)
+				</td>
+			</tr>
+			<tr class="instant-search-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.InstantSearchTermMinLength)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.InstantSearchTermMinLength)
+					@Html.ValidationMessageFor(model => model.InstantSearchTermMinLength)
+				</td>
+			</tr>
+		</tbody>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DefaultSortOrder)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.DefaultSortOrder)
-                @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes)
+				@Html.SettingEditorFor(model => model.DefaultSortOrder, Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes))
                 @Html.ValidationMessageFor(model => model.DefaultSortOrder)
             </td>
         </tr>
@@ -120,61 +125,63 @@
 		</tr>
 	</table>
 
-@Html.SmartStore().TabStrip().Name("common-facets-settings").Style(TabsStyle.Tabs).Position(TabsPosition.Left).Items(x =>
-{
-	x.Add()
-		.Text(T("Search.Facet.Category").Text)
-		.Content(Html.Partial("Partials/CommonFacet", Model.CategoryFacet, CreateFacetViewData("CategoryFacet")).ToHtmlString())
-		.Selected(true);
-
-	x.Add()
-		.Text(T("Search.Facet.Manufacturer").Text)
-		.Content(Html.Partial("Partials/CommonFacet", Model.BrandFacet, CreateFacetViewData("BrandFacet")).ToHtmlString());
-
-	x.Add()
-		.Text(T("Search.Facet.Price").Text)
-		.Content(Html.Partial("Partials/CommonFacet", Model.PriceFacet, CreateFacetViewData("PriceFacet")).ToHtmlString());
-
-	x.Add()
-		.Text(T("Search.Facet.Rating").Text)
-		.Content(Html.Partial("Partials/CommonFacet", Model.RatingFacet, CreateFacetViewData("RatingFacet")).ToHtmlString());
-
-	x.Add()
-		.Text(T("Search.Facet.DeliveryTime").Text)
-		.Content(Html.Partial("Partials/CommonFacet", Model.DeliveryTimeFacet, CreateFacetViewData("DeliveryTimeFacet")).ToHtmlString());
-
-	x.Add()
-		.Text(T("Search.Facet.Availability").Text)
-		.Content(Html.Partial("Partials/CommonFacet", Model.AvailabilityFacet, CreateFacetViewData("AvailabilityFacet")).ToHtmlString());
-
-	x.Add()
-		.Text(T("Search.Facet.NewArrivals").Text)
-		.Content(Html.Partial("Partials/CommonFacet", Model.NewArrivalsFacet, CreateFacetViewData("NewArrivalsFacet")).ToHtmlString());
-})
-	<p></p>
 	<table class="adminContent">
 		@if (Model.IsMegaSearchInstalled)
 		{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.FilterMinHitCount)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.FilterMinHitCount, null, new { small = true })
-				@Html.ValidationMessageFor(model => model.FilterMinHitCount)
-			</td>
-		</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.FilterMinHitCount)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.FilterMinHitCount)
+					@Html.ValidationMessageFor(model => model.FilterMinHitCount)
+				</td>
+			</tr>
 		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.FilterMaxChoicesCount)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.FilterMaxChoicesCount, null, new { small = true })
+				@Html.SettingEditorFor(model => model.FilterMaxChoicesCount)
 				@Html.ValidationMessageFor(model => model.FilterMaxChoicesCount)
 			</td>
 		</tr>
 	</table>
+
+	<div class="mt-5">
+		@Html.SmartStore().TabStrip().Name("common-facets-settings").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
+		{
+			x.Add()
+				.Text(T("Search.Facet.Category").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.CategoryFacet, CreateFacetViewData("CategoryFacet")).ToHtmlString())
+				.Selected(true);
+
+			x.Add()
+				.Text(T("Search.Facet.Manufacturer").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.BrandFacet, CreateFacetViewData("BrandFacet")).ToHtmlString());
+
+			x.Add()
+				.Text(T("Search.Facet.Price").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.PriceFacet, CreateFacetViewData("PriceFacet")).ToHtmlString());
+
+			x.Add()
+				.Text(T("Search.Facet.Rating").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.RatingFacet, CreateFacetViewData("RatingFacet")).ToHtmlString());
+
+			x.Add()
+				.Text(T("Search.Facet.DeliveryTime").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.DeliveryTimeFacet, CreateFacetViewData("DeliveryTimeFacet")).ToHtmlString());
+
+			x.Add()
+				.Text(T("Search.Facet.Availability").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.AvailabilityFacet, CreateFacetViewData("AvailabilityFacet")).ToHtmlString());
+
+			x.Add()
+				.Text(T("Search.Facet.NewArrivals").Text)
+				.Content(Html.Partial("Partials/CommonFacet", Model.NewArrivalsFacet, CreateFacetViewData("NewArrivalsFacet")).ToHtmlString());
+		})
+	</div>
 }
 
 @functions
@@ -192,16 +199,8 @@
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
-
-		// toggle wildcard note
 		$('#@(Html.FieldIdFor(x => x.SearchMode))').change(function () {
 			$('#WildcardNote').toggle($(this).val() === '@((int)SearchMode.Contains)');
-		}).trigger('change');
-
-		// show/hide instant search settings
-		$('#@(Html.FieldIdFor(x => x.InstantSearchEnabled))').change(function () {
-			$('#SearchSettingsTable').find('.instant-search-setting').toggle($(this).is(':checked'));
-		}).trigger('change');
-
+		}).trigger('change');		
 	});
 </script>

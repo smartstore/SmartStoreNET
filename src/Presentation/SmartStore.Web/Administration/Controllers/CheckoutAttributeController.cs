@@ -118,14 +118,12 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			model.AvailableStores = _services.StoreService.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
-
 			if (!excludeProperties)
 			{
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(checkoutAttribute);
 			}
+
+			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
         #endregion

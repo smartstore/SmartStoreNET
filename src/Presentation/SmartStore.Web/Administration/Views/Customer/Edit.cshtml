@@ -13,16 +13,28 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before");}
 
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
 
-            <a href="#sendemail-window" data-toggle="modal" class="btn">
-				<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Customers.Customers.SendEmail")
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
+
+            <a href="#sendemail-window" data-toggle="modal" class="btn btn-secondary">
+				<i class="fa fa-envelope"></i>
+				<span>@T("Admin.Customers.Customers.SendEmail")</span>
 			</a>
-            <a href="#sendprivatemessage-window" data-toggle="modal" class="btn">
-				<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Customers.Customers.SendPM")
+            <a href="#sendprivatemessage-window" data-toggle="modal" class="btn btn-secondary">
+				<i class="fa fa-envelope"></i>
+				<span>@T("Admin.Customers.Customers.SendPM")</span>
 			</a>
-            <button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+
+            <button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
+			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
@@ -31,98 +43,94 @@
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("customer-delete")
-@*send email form*@
+
 @{Html.SmartStore().Window()
     .Name("sendemail-window")
-    .Title(T("Admin.Customers.Customers.SendEmail").Text)
+    .Title(T("Admin.Customers.Customers.SendEmail"))
     .Content(@<text>
-        @using (Html.BeginForm("SendEmail", "Customer", new { id = Model.Id }))
-        {
-            <table style="text-align: left;">
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.SendEmail.Subject)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.SendEmail.Subject)
-                        @Html.ValidationMessageFor(model => model.SendEmail.Subject)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.SendEmail.Body)
-                    </td>
-                    <td class="adminData">
-                        @Html.TextAreaFor(model => model.SendEmail.Body, new { style = "Width: 450px; Height: 350px;" })
-                        @Html.ValidationMessageFor(model => model.SendEmail.Body)
-                    </td>
-                </tr>
-            </table>
-        }
+		<form method="POST" action="@Url.Action("SendEmail", "Customer", new { id = Model.Id })">
+			<table class="adminContent p-0">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.SendEmail.Subject)
+					</td>
+					<td class="adminData wide">
+						@Html.EditorFor(model => model.SendEmail.Subject)
+						@Html.ValidationMessageFor(model => model.SendEmail.Subject)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.SendEmail.Body)
+					</td>
+					<td class="adminData wide">
+						@Html.TextAreaFor(model => model.SendEmail.Body, new { style = "height: 250px;" })
+						@Html.ValidationMessageFor(model => model.SendEmail.Body)
+					</td>
+				</tr>
+			</table>
+		</form>
         </text>)
     .FooterContent(@<text>
-        <button class="btn" data-dismiss="modal" aria-hidden="true">@T("Common.Close")</button>
-        <button id="sendemail" type="button" class="btn btn-primary">@T("Admin.Customers.Customers.SendEmail")</button>
+        <button class="btn btn-secondary btn-flat" data-dismiss="modal" aria-hidden="true">
+			<span>@T("Common.Close")</span>
+		</button>
+        <button id="sendemail" type="button" class="btn btn-primary">
+			<span>@T("Admin.Customers.Customers.SendEmail")</span>
+		</button>
     </text>)
-    .Width(600)
-    .Height(460)
-    .Modal(true)
-    .Visible(false)
     .Render();
 }
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#sendemail").click(function (e) {
-            e.preventDefault();
-            $("#sendemail-window").find("form").submit();
-        });
-    });
-</script>
 
 @*send PM form*@
 @{Html.SmartStore().Window()
         .Name("sendprivatemessage-window")
-        .Title(T("Admin.Customers.Customers.SendPM").Text)
+        .Title(T("Admin.Customers.Customers.SendPM"))
         .Content(@<text>
-    @using (Html.BeginForm("SendPm", "Customer", new { id = Model.Id }))
-    {
-        <table style="text-align: left;">
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SendPm.Subject)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.SendPm.Subject)
-                    @Html.ValidationMessageFor(model => model.SendPm.Subject)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SendPm.Message)
-                </td>
-                <td class="adminData">
-                    @Html.TextAreaFor(model => model.SendPm.Message, new { style = "Width: 350px; Height: 250px;" })
-                    @Html.ValidationMessageFor(model => model.SendPm.Message)
-                </td>
-            </tr>
-        </table>
-    }
-    </text>)
-    .FooterContent(@<text>
-        <button class="btn" data-dismiss="modal" aria-hidden="true">@T("Common.Close")</button>
-        <button id="sendprivatemessage" type="button" class="btn btn-primary">@T("Admin.Customers.Customers.SendPM")</button>
-    </text>)
-        .Width(600)
-        .Height(460)
-        .Modal(true)
-        .Visible(false)
-        .Render();
+			<form method="POST" action="@Url.Action("SendPm", "Customer", new { id = Model.Id })">
+				<table class="adminContent p-0">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.SendPm.Subject)
+						</td>
+						<td class="adminData wide">
+							@Html.EditorFor(model => model.SendPm.Subject)
+							@Html.ValidationMessageFor(model => model.SendPm.Subject)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.SendPm.Message)
+						</td>
+						<td class="adminData wide">
+							@Html.TextAreaFor(model => model.SendPm.Message, new { style = "height: 250px;" })
+							@Html.ValidationMessageFor(model => model.SendPm.Message)
+						</td>
+					</tr>
+				</table>
+			</form>
+		</text>)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal" aria-hidden="true">
+			<span>@T("Common.Close")</span>
+		</button>
+		<button id="sendprivatemessage" type="button" class="btn btn-primary">
+			<span>@T("Admin.Customers.Customers.SendPM")</span>
+		</button>
+	</text>)
+	.Render();
 }
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#sendprivatemessage").click(function (e) {
-            e.preventDefault();
-            $("#sendprivatemessage-window").find("form").submit();
-        });
-    });
+	$(document).ready(function () {
+
+		$("#sendemail").click(function (e) {
+			e.preventDefault();
+			$("#sendemail-window").find("form").submit();
+		});
+
+		$("#sendprivatemessage").click(function (e) {
+			e.preventDefault();
+			$("#sendprivatemessage-window").find("form").submit();
+		});
+	});
 </script>

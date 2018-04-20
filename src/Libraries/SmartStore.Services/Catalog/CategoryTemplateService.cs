@@ -24,9 +24,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("categoryTemplate");
 
             _categoryTemplateRepository.Delete(categoryTemplate);
-
-            //event notification
-            _eventPublisher.EntityDeleted(categoryTemplate);
         }
 
         public virtual IList<CategoryTemplate> GetAllCategoryTemplates()
@@ -53,9 +50,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("categoryTemplate");
 
             _categoryTemplateRepository.Insert(categoryTemplate);
-
-            //event notification
-            _eventPublisher.EntityInserted(categoryTemplate);
         }
 
         public virtual void UpdateCategoryTemplate(CategoryTemplate categoryTemplate)
@@ -64,9 +58,6 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("categoryTemplate");
 
             _categoryTemplateRepository.Update(categoryTemplate);
-
-            //event notification
-            _eventPublisher.EntityUpdated(categoryTemplate);
         }
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Registrierung bestätigen</Subject>
+	<ModelTypes>Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hallo {{ Customer.FullName }},
+</h1>
+<p>
+  bitte bestätigen Sie Ihre Registrierung mit einem Klick auf folgenden Link:
+</p>
+
+<p class="text-center mt-4 mb-4">
+  <a class="btn btn-primary" href="{{ Customer.AccountActivationURL }}">Registrierung bestätigen</a>
+</p>
+
+<p>
+	Wenn der Link nicht geöffnet werden kann, kopieren Sie folgende Addresse und fügen Sie sie in die Addresszeile ihres Browsers ein: 
+</p>
+
+<a href="{{ Customer.AccountActivationURL }}">{{ Customer.AccountActivationURL }}</a>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

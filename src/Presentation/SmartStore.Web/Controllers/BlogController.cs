@@ -46,7 +46,6 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerContentService _customerContentService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
@@ -71,7 +70,6 @@ namespace SmartStore.Web.Controllers
 			ILocalizationService localizationService,
             ICustomerContentService customerContentService,
 			IDateTimeHelper dateTimeHelper,
-            IWorkflowMessageService workflowMessageService,
 			IWebHelper webHelper,
             ICacheManager cacheManager,
 			ICustomerActivityService customerActivityService,
@@ -91,7 +89,6 @@ namespace SmartStore.Web.Controllers
             this._localizationService = localizationService;
             this._customerContentService = customerContentService;
             this._dateTimeHelper = dateTimeHelper;
-            this._workflowMessageService = workflowMessageService;
             this._webHelper = webHelper;
             this._cacheManager = cacheManager;
             this._customerActivityService = customerActivityService;
@@ -127,7 +124,9 @@ namespace SmartStore.Web.Controllers
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
-            model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel { Name = x, SeName = SeoHelper.GetSeName(x,
+            model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel
+			{ Name = x,
+				SeName = SeoHelper.GetSeName(x,
                 _seoSettings.ConvertNonWesternChars,
                 _seoSettings.AllowUnicodeCharsInUrls,
                 _seoSettings.SeoNameCharConversion)
@@ -157,9 +156,9 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.AllowCustomersToUploadAvatars)
                     {
                         var customer = bc.Customer;
-                        string avatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
+                        string avatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
                         if (String.IsNullOrEmpty(avatarUrl) && _customerSettings.DefaultAvatarEnabled)
-                            avatarUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.AvatarPictureSize, PictureType.Avatar);
+                            avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
                         commentModel.CustomerAvatarUrl = avatarUrl;
                     }
 
@@ -229,18 +228,24 @@ namespace SmartStore.Web.Controllers
             return View("List", model);
         }
 
-        public ActionResult BlogByTag(BlogPagingFilteringModel command)
+        public ActionResult BlogByTag(string tag, BlogPagingFilteringModel command)
         {
-            if (!_blogSettings.Enabled)
+			// INFO: param 'tag' redunadant, because OutputCache does not include
+			// complex type params in cache key computing
+
+			if (!_blogSettings.Enabled)
 				return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
         }
 
-        public ActionResult BlogByMonth(BlogPagingFilteringModel command)
+        public ActionResult BlogByMonth(string month, BlogPagingFilteringModel command)
         {
-            if (!_blogSettings.Enabled)
+			// INFO: param 'month' redunadant, because OutputCache does not include
+			// complex type params in cache key computing
+
+			if (!_blogSettings.Enabled)
 				return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
@@ -248,8 +253,10 @@ namespace SmartStore.Web.Controllers
         }
 
 		[Compress]
-        public ActionResult ListRss(int languageId)
+        public ActionResult ListRss(int? languageId)
         {
+			languageId = languageId ?? _workContext.WorkingLanguage.Id;
+
 			DateTime? maxAge = null;
 			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
 			var selfLink = Url.RouteUrl("BlogRSS", new { languageId = languageId }, protocol);
@@ -258,19 +265,23 @@ namespace SmartStore.Web.Controllers
 			var title = "{0} - Blog".FormatInvariant(_storeContext.CurrentStore.Name);
 
 			if (_blogSettings.MaxAgeInDays > 0)
+			{
 				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
+			}
 
-			var language = _languageService.GetLanguageById(languageId);
+			var language = _languageService.GetLanguageById(languageId.Value);
 			var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
 
 			feed.AddNamespaces(false);
 			feed.Init(selfLink, language);
 
 			if (!_blogSettings.Enabled)
+			{
 				return new RssActionResult { Feed = feed };
+			}
 
 			var items = new List<SyndicationItem>();
-			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge);
+			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId.Value, null, null, 0, int.MaxValue, false, maxAge);
 
 			foreach (var blogPost in blogPosts)
 			{
@@ -349,7 +360,7 @@ namespace SmartStore.Web.Controllers
 
                 //notify a store owner
                 if (_blogSettings.NotifyAboutNewBlogComments)
-                    _workflowMessageService.SendBlogCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
+                    Services.MessageFactory.SendBlogCommentNotificationMessage(comment, _localizationSettings.DefaultAdminLanguageId);
 
                 //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddBlogComment", _localizationService.GetResource("ActivityLog.PublicStore.AddBlogComment"));

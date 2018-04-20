@@ -10,36 +10,46 @@
     </div>
 </div>
 
-<div class="about-page">
+<style>
+	.work-list li {
+		margin: 10px 0 15px 0;
+	}
+
+	.work-list li .name {
+		font-weight: 600;
+	}
+</style>
+
+<div class="x-about-page" style="max-width: 1000px">
 
 	<p>
 		Version @SmartStore.Core.SmartStoreVersion.CurrentFullVersion<br />
-		Copyright &copy; 1999-2014 SmartStore AG<br />
-		<a href="http://www.smartstore.com/" target="AboutTargetWin">www.smartstore.com</a>,
+		Copyright &copy; 1999-2018 SmartStore AG<br />
+		<a href="https://www.smartstore.com/" target="AboutTargetWin">www.smartstore.com</a>,
 		<a href="https://github.com/smartstoreag/SmartStoreNET" target="AboutTargetWin">github.com/smartstoreag/SmartStoreNET</a>
 	</p>
 
-	<p style="margin-top: 32px;">
+	<p class="mt-5">
 		@Html.Raw(T("Admin.Help.OtherWorkNote"))
 	</p>
 
 	<p>
-		<ul class="work-list">
+		<ul class="work-list list-unstyled">
 			<li>
 				<div class="name">
 					<a href="http://www.antlr.org/" rel="nofollow" target="AboutTargetWin">ANTLR</a>
 				</div>
 				<div class="copyright">
-					Copyright ANTLR / Terence Parr 2014
+					Copyright ANTLR / Terence Parr 2018
 				</div>
 				@BSDLicense()
 			</li>
 			<li>
 				<div class="name">
-					<a href="http://aspnet.codeplex.com/wikipage?title=MVC&referringTitle=Home" rel="nofollow" target="AboutTargetWin">ASP.NET MVC</a>
+					<a href="https://github.com/aspnet/AspNetWebStack" rel="nofollow" target="AboutTargetWin">ASP.NET MVC</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2008-2011 Microsoft Corporation
+					Copyright &copy; 2008-2018 Microsoft Corporation
 				</div>
 				@MVCEULA()
 			</li>
@@ -48,7 +58,7 @@
 					<a href="http://autofac.org" rel="nofollow" target="AboutTargetWin">Autofac</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2014 <a href="http://autofac.readthedocs.org/en/latest/contributors.html" rel="nofollow" target="AboutTargetWin">Autofac Contributors</a>
+					Copyright &copy; 2013 <a href="http://autofac.readthedocs.io/en/latest/contributors.html" rel="nofollow" target="AboutTargetWin">Autofac Contributors</a>
 				</div>
 				@MITLicense()
 			</li>
@@ -57,40 +67,40 @@
 					<a href="http://automapper.org/" rel="nofollow" target="AboutTargetWin">AutoMapper</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2008-2013 Jimmy Bogard and other contributors
+					Copyright &copy; 2008-2018 Jimmy Bogard and other contributors
 				</div>
 				@MITLicense()
 			</li>
 			<li>
 				<div class="name">
-					<a href=" https://bundletransformer.codeplex.com" rel="nofollow" target="AboutTargetWin">Bundle Transformer</a>
+					<a href=" https://github.com/Taritsyn/BundleTransformer" rel="nofollow" target="AboutTargetWin">Bundle Transformer</a>
 				</div>
 				<div class="copyright">
-					Copyright Andrey Taritsyn 2014
+					Copyright Andrey Taritsyn 2018
 				</div>
 				@Apache2License()
 			</li>
 			<li>
 				<div class="name">
-					<a href="http://ckeditor.com/" rel="nofollow" target="AboutTargetWin">CKEditor</a>
+					<a href="https://summernote.org/" rel="nofollow" target="AboutTargetWin">summernote</a>
 				</div>
 				<div class="copyright">
-					&copy 2014 CKSource - Frederico Knabben
+					&copy 2015~ Summernote Team (https://github.com/orgs/summernote/people)
 				</div>
-				@LGPLLicense()
+				@MITLicense()
 			</li>
 			<li>
 				<div class="name">
 					<a href="http://dotnetopenauth.net/" rel="nofollow" target="AboutTargetWin">DotNetOpenAuth</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2011, Outercurve Foundation
+					Copyright &copy; 2018, Outercurve Foundation
 				</div>
 				@MSPLLicense()
 			</li>
 			<li>
 				<div class="name">
-					<a href="http://dotnetzip.codeplex.com/" rel="nofollow" target="AboutTargetWin">DotNetZip</a>
+					<a href="https://archive.codeplex.com/?p=dotnetzip" rel="nofollow" target="AboutTargetWin">DotNetZip</a>
 				</div>
 				<div class="copyright">
 					
@@ -99,19 +109,19 @@
 			</li>
 			<li>
 				<div class="name">
-					<a href="https://entityframework.codeplex.com" rel="nofollow" target="AboutTargetWin">Entity Framework</a>
+					<a href="https://github.com/aspnet/EntityFramework6" rel="nofollow" target="AboutTargetWin">Entity Framework</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2012-2014 Microsoft Corporation
+					Copyright &copy; 2012-2018 Microsoft Corporation
 				</div>
 				@Apache2License()
 			</li>
 			<li>
 				<div class="name">
-					<a href="https://epplus.codeplex.com/" rel="nofollow" target="AboutTargetWin">EPPlus</a>
+					<a href="https://github.com/JanKallman/EPPlus" rel="nofollow" target="AboutTargetWin">EPPlus</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2011 Jan Källman
+					Copyright &copy; 2018 Jan Källman
 				</div>
 				@LGPLLicense()
 			</li>
@@ -120,7 +130,7 @@
 					<a href="https://github.com/JeremySkinner/FluentValidation/" rel="nofollow" target="AboutTargetWin">Fluent Validation</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; Jeremy Skinner 2008-2014
+					Copyright &copy; Jeremy Skinner 2008-2018
 				</div>
 				@Apache2License()
 			</li>
@@ -129,25 +139,25 @@
 					<a href="https://github.com/Glimpse/Glimpse" rel="nofollow" target="AboutTargetWin">Glimpse</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2014 <a href="http://getglimpse.com/Community" rel="nofollow" target="AboutTargetWin">Glimpse contributors</a>
+					Copyright &copy; 2018 <a href="http://getglimpse.com/Community" rel="nofollow" target="AboutTargetWin">Glimpse contributors</a>
 				</div>
 				@Apache2License()
 			</li>
 			<li>
 				<div class="name">
-					<a href="https://imageresizing.net/" rel="nofollow" target="AboutTargetWin">ImageResizer.NET</a>
+					<a href="http://imageprocessor.org/" rel="nofollow" target="AboutTargetWin">ImageProcessor</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2012 Imazen
+					Copyright &copy; 2018 James Jackson-South
 				</div>
-				@FreedomLicense()
+				@Apache2License()
 			</li>
 			<li>
 				<div class="name">
 					<a href="https://github.com/Taritsyn/JavaScriptEngineSwitcher" rel="nofollow" target="AboutTargetWin">JavaScriptEngineSwitcher</a>
 				</div>
 				<div class="copyright">
-					Copyright Andrey Taritsyn 2014
+					Copyright Andrey Taritsyn 2018
 				</div>
 				@Apache2License()
 			</li>
@@ -162,15 +172,6 @@
 			</li>
 			<li>
 				<div class="name">
-					<a href="http://api.jqueryui.com/" rel="nofollow" target="AboutTargetWin">jQuery UI (Core)</a>
-				</div>
-				<div class="copyright">
-					Copyright &copy; 2015 <a href="http://jqueryui.com/about/#jquery-ui-team" rel="nofollow" target="AboutTargetWin">jQuery UI Team</a>
-				</div>
-				@MITLicense()
-			</li>
-			<li>
-				<div class="name">
 					<a href="https://github.com/flesler/jquery.scrollTo" rel="nofollow" target="AboutTargetWin">jQuery ScrollTo</a>
 				</div>
 				<div class="copyright">
@@ -180,7 +181,7 @@
 			</li>
 			<li>
 				<div class="name">
-					<a href="http://james.newtonking.com/" rel="nofollow" target="AboutTargetWin">JSON.NET</a>
+					<a href="https://www.newtonsoft.com/json" rel="nofollow" target="AboutTargetWin">Json.NET</a>
 				</div>
 				<div class="copyright">
 					Copyright &copy; 2007 James Newton-King
@@ -192,7 +193,7 @@
 					<a href="http://www.maxmind.com" rel="nofollow" target="AboutTargetWin">GeoLite Free by MaxMind</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2014 Maxmind
+					Copyright &copy; 2018 Maxmind
 				</div>
 				@CreativeCommonsLicense()
 			</li>
@@ -201,7 +202,7 @@
 					<a href="https://linearicons.com" rel="nofollow" target="AboutTargetWin">Linearicons by Perxis</a>
 				</div>
 				<div class="copyright">
-					Copyright (c) 2015 Linearicons.com
+					Copyright (c) 2018 Linearicons.com
 				</div>
 				@CreativeCommonsLicense()
 			</li>
@@ -210,7 +211,7 @@
 					<a href="http://blogs.msdn.com/b/sqlservercompact/archive/2011/01/12/microsoft-sql-server-compact-4-0-is-available-for-download.aspx" rel="nofollow" target="AboutTargetWin">Microsoft SQL Server Compact 4.0</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2011 Microsoft Corporation
+					Copyright &copy; 2018 Microsoft Corporation
 				</div>
 				@SqlCeEULA()
 			</li>
@@ -237,13 +238,13 @@
 					<a href="https://github.com/NuGet/Home" rel="nofollow" target="AboutTargetWin">NuGet</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2015 <a href="http://www.dotnetfoundation.org/" rel="nofollow" target="AboutTargetWin">.NET Foundation</a>
+					Copyright &copy; 2018 <a href="http://www.dotnetfoundation.org/" rel="nofollow" target="AboutTargetWin">.NET Foundation</a>
 				</div>
 				@Apache2License()
 			</li>
 			<li>
 				<div class="name">
-					<a href="http://www.nunit.org/index.php" rel="nofollow" target="AboutTargetWin">nUnit</a>
+					<a href="http://www.nunit.org" rel="nofollow" target="AboutTargetWin">nUnit</a>
 				</div>
 				<div class="copyright">
 					Copyright &copy; 2002-2007 NUnit.org<br />
@@ -256,7 +257,7 @@
 					<a href="http://photoswipe.com/" rel="nofollow" target="AboutTargetWin">PhotoSwipe</a>
 				</div>
 				<div class="copyright">
-					Copyright (c) 2014-2016 Dmitry Semenov, <a href="http://dimsemenov.com">http://dimsemenov.com</a>
+					Copyright (c) 2014-2018 Dmitry Semenov, <a href="http://dimsemenov.com">http://dimsemenov.com</a>
 				</div>
 				@MITLicense()
 			</li>
@@ -265,7 +266,7 @@
 					<a href="http://kenwheeler.github.io/slick/" rel="nofollow" target="AboutTargetWin">slick carousel</a>
 				</div>
 				<div class="copyright">
-					Copyright (c) 2014 Ken Wheeler
+					Copyright (c) 2018 Ken Wheeler
 				</div>
 				@MITLicense()
 			</li>
@@ -283,7 +284,7 @@
 					<a href="http://getbootstrap.com/" rel="nofollow" target="AboutTargetWin">Twitter Bootstrap</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2012 Twitter, Inc.
+					Copyright &copy; 2018 Twitter, Inc.
 				</div>
 				@Apache2License()
 			</li>
@@ -292,7 +293,7 @@
 					<a href="https://github.com/ua-parser/uap-csharp" rel="nofollow" target="AboutTargetWin">ua_parser</a>
 				</div>
 				<div class="copyright">
-					Copyright 2012 Søren Enemærke
+					Copyright 2018 Søren Enemærke
 				</div>
 				@Apache2License()
 			</li>
@@ -301,7 +302,7 @@
 					<a href="http://underscorejs.org/" rel="nofollow" target="AboutTargetWin">underscore.js</a>
 				</div>
 				<div class="copyright">
-					Copyright &copy; 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+					Copyright &copy; 2009-2018 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 				</div>
 				@MITLicense()
 			</li>
@@ -321,83 +322,83 @@
 @helper MPL20License() 
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://en.wikipedia.org/wiki/Mozilla_Public_License" rel="nofollow" target="AboutTargetWin">Mozilla Public License 2.0 (MPL-2.0)</a>
+		<span>@T("Common.License"):</span> <a href="http://en.wikipedia.org/wiki/Mozilla_Public_License" rel="nofollow" target="AboutTargetWin">Mozilla Public License 2.0 (MPL-2.0)</a>
 	</div>
 }
 
 @helper BSDLicense()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://en.wikipedia.org/wiki/BSD_licenses" rel="nofollow" target="AboutTargetWin">BSD</a>
+		<span>@T("Common.License"):</span> <a href="http://en.wikipedia.org/wiki/BSD_licenses" rel="nofollow" target="AboutTargetWin">BSD</a>
 	</div>
 }
 
 @helper MVCEULA()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://go.microsoft.com/fwlink/?LinkID=207621" rel="nofollow" target="AboutTargetWin">MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA</a>
+		<span>@T("Common.License"):</span> <a href="http://go.microsoft.com/fwlink/?LinkID=207621" rel="nofollow" target="AboutTargetWin">MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA</a>
 	</div>
 }
 
 @helper MITLicense()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://en.wikipedia.org/wiki/MIT_License" rel="nofollow" target="AboutTargetWin">MIT</a>
+		<span>@T("Common.License"):</span> <a href="http://en.wikipedia.org/wiki/MIT_License" rel="nofollow" target="AboutTargetWin">MIT</a>
 	</div>
 }
 
 @helper Apache2License()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://en.wikipedia.org/wiki/Apache_License" rel="nofollow" target="AboutTargetWin">Apache License 2.0</a>
+		<span>@T("Common.License"):</span> <a href="http://en.wikipedia.org/wiki/Apache_License" rel="nofollow" target="AboutTargetWin">Apache License 2.0</a>
 	</div>
 }
 
 @helper MSPLLicense()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://opensource.org/licenses/MS-PL" rel="nofollow" target="AboutTargetWin">MS-PL</a>
+		<span>@T("Common.License"):</span> <a href="http://opensource.org/licenses/MS-PL" rel="nofollow" target="AboutTargetWin">MS-PL</a>
 	</div>
 }
 
 @helper LGPLLicense()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License" rel="nofollow" target="AboutTargetWin">GNU Lesser General Public License (LGPL)</a>
+		<span>@T("Common.License"):</span> <a href="http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License" rel="nofollow" target="AboutTargetWin">GNU Lesser General Public License (LGPL)</a>
 	</div>
 }
 
 @helper FreedomLicense()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> Freedom License
+		<span>@T("Common.License"):</span> Freedom License
 	</div>
 }
 
 @helper zlibLicense()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://nunit.org/index.php?p=license&amp;r=2.4" rel="nofollow" target="AboutTargetWin">Derived from zlib</a>
+		<span>@T("Common.License"):</span> <a href="http://nunit.org/index.php?p=license&amp;r=2.4" rel="nofollow" target="AboutTargetWin">Derived from zlib</a>
 	</div>
 }
 
 @helper GPLv3License()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License" rel="nofollow" target="AboutTargetWin">GPL 3.0</a>
+		<span>@T("Common.License"):</span> <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License" rel="nofollow" target="AboutTargetWin">GPL 3.0</a>
 	</div>
 }
 
 @helper CreativeCommonsLicense()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="nofollow" target="AboutTargetWin">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>
+		<span>@T("Common.License"):</span> <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="nofollow" target="AboutTargetWin">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>
 	</div>
 }
 
 @helper SqlCeEULA()
 {
 	<div class="license">
-		<span>@T("Admin.Common.License"):</span> <a href="http://www.microsoft.com/web/webpi/eula/SQLCE_EULA_ENU.rtf" rel="nofollow" target="AboutTargetWin">Custom EULA</a>
+		<span>@T("Common.License"):</span> <a href="http://www.microsoft.com/web/webpi/eula/SQLCE_EULA_ENU.rtf" rel="nofollow" target="AboutTargetWin">Custom EULA</a>
 	</div>
 }

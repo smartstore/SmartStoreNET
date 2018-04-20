@@ -39,7 +39,7 @@ namespace SmartStore.Services.Tests.Messages
 			_services = MockRepository.GenerateMock<ICommonServices>();
 			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
 
-			_settingService = new ConfigFileSettingService(null, null, null);
+			_settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
 
 			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _settingService, ProviderManager);
@@ -56,14 +56,11 @@ namespace SmartStore.Services.Tests.Messages
 				Body = "Body",
 				CC = "cc1@mail.com;cc2@mail.com",
 				CreatedOnUtc = DateTime.UtcNow,
-				From = "from@mail.com",
-				FromName = "FromName",
+				From = "FromName <from@mail.com>",
 				Priority = 10,
-				ReplyTo = "replyto@mail.com",
-				ReplyToName = "ReplyToName",
+				ReplyTo = "ReplyToName <replyto@mail.com>",
 				Subject = "Subject",
-				To = "to@mail.com",
-				ToName = "ToName"
+				To = "ToName <to@mail.com>"
 			};
 
 			// load attachment file resource and save as file
@@ -124,8 +121,9 @@ namespace SmartStore.Services.Tests.Messages
 			Assert.IsNotNull(msg.From);
 
 			Assert.AreEqual(msg.ReplyTo.Count, 1);
-			Assert.AreEqual(qe.ReplyTo, msg.ReplyTo.First().Address);
-			Assert.AreEqual(qe.ReplyToName, msg.ReplyTo.First().DisplayName);
+
+			var replyToAddress = new EmailAddress("replyto@mail.com", "ReplyToName");
+			Assert.AreEqual(replyToAddress.ToString(), msg.ReplyTo.First().ToString());
 
 			Assert.AreEqual(msg.Cc.Count, 2);
 			Assert.AreEqual(msg.Cc.First().Address, "cc1@mail.com");

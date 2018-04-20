@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -11,11 +12,11 @@ namespace SmartStore.Web.Framework.Modelling
         {
 			var modelType = bindingContext.ModelType;
 
-			if (bindingContext.ModelType == typeof(CustomPropertiesDictionary))
+			if (modelType == typeof(CustomPropertiesDictionary))
 			{
 				return BindCustomPropertiesDictioary(controllerContext, bindingContext);
 			}
-			
+
 			var model = base.BindModel(controllerContext, bindingContext);
 
             if (model is ModelBase)

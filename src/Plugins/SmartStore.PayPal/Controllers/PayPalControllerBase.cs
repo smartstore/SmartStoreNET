@@ -10,6 +10,7 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
+using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -17,7 +18,19 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalControllerBase<TSetting> : PaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
+	public abstract class PayPalPaymentControllerBase : PaymentControllerBase
+	{
+		protected void PrepareConfigurationModel(ApiConfigurationModel model, int storeScope)
+		{
+			var store = storeScope == 0
+				? Services.StoreContext.CurrentStore
+				: Services.StoreService.GetStoreById(storeScope);
+
+			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
+		}
+	}
+
+	public abstract class PayPalControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
 	{
 		public PayPalControllerBase(
 			string systemName,

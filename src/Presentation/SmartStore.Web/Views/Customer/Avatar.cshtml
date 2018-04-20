@@ -1,110 +1,53 @@
-﻿@model CustomerAvatarModel
-
-@using SmartStore.Web.Models.Customer;
-@using SmartStore.Utilities;
+﻿@using SmartStore.Web.Models.Customer;
 @using SmartStore.Web.Framework.UI;
-@using SmartStore.Core.Infrastructure;
-
+@model CustomerAvatarModel
 @{
-	Html.AddTitleParts(T("PageTitle.Account").Text);
-
-	Html.AddScriptParts("~/bundles/fileupload");
-	Html.AddCssFileParts("~/css/fileupload");
-
-	var random = CommonHelper.GenerateRandomInteger();
-	var clientId = "picture" + random;
-	var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
-
 	Layout = "_MyAccount";
 	ViewBag.PageClassToken = "avatar";
 	ViewBag.PageTitle = T("Account.Avatar").Text;
+
+	Html.AddTitleParts(T("PageTitle.Account").Text);
 }
 
-@using (Html.BeginForm("Avatar", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@if (!ViewData.ModelState.IsValid)
 {
-    <div id="@clientId" class="fileupload">
-        @if (!ViewData.ModelState.IsValid)
-        {
-            @Html.ValidationSummary(true)
-        }
-
-        @if (!Model.AvatarUrl.HasValue())
-        {
-            <div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
-        }
-
-        <img src="@(Model.AvatarUrl + "?" + random)" class="img-thumbnail @(Model.AvatarUrl.HasValue() ? "" : "d-none")" alt="avatar" style="max-width:120px" />
-
-        <button class="btn btn-secondary btn-to-danger remove" @Html.Attr("style", "display:none", String.IsNullOrEmpty(Model.AvatarUrl))>
-            <i class="fa fa-trash-o"></i>
-            <span>@T("Admin.Picture.RemovePicture")</span>
-        </button>
-
-        <span class="btn btn-primary fileinput-button">
-            <i class="fa fa-upload"></i>
-            <span>@T("Common.Fileuploader.Upload")</span>
-            <input name="uploadedFile" id="uploadedFile" type="file" class="pull-left" />
-        </span>
-
-        <button class="btn btn-warning cancel">
-            <i class="fa fa-times"></i>
-            <span>@T("Common.Fileuploader.Cancel")</span>
-        </button>
-
-        <!-- The global progress information -->
-        <div class="fileupload-progress fade collapse mt-2 col-6">
-            <!-- The global progress bar -->
-            <div class="progress active">
-                <div class="progress-bar bg-success progress-bar-striped" style="width:0%;" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <!-- The extended global progress information -->
-            <div class="progress-extended">&nbsp;</div>
-        </div>
-    </div>
-
-    <div class="mt-4">
-        <button type="submit" name="upload-avatar" value="upload-avatar" class="btn btn-success upload-avatar-button">
-            <i class="fa fa-save"></i>
-            <span>@T("Common.Save")</span>
-        </button>
-    </div>
+	@Html.ValidationSummary(true)
 }
+
+<div id="AvatarUploadContainer">
+	@if (!Model.AvatarUrl.HasValue())
+	{
+		<div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
+	}
+
+	<div class="mb-2">
+		<img src="@(Model.AvatarUrl.NullEmpty() ?? Model.PictureFallbackUrl)" class="img-thumbnail@(Model.AvatarUrl.HasValue() ? "" : " xd-none")" alt="Avatar" style="max-width: 120px;" />
+	</div>
+
+	@(Html.SmartStore().FileUploader()
+		.Name("uploadedFile")
+		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
+		.AcceptedFileTypes("gif|jpe?g|png")
+		.ShowRemoveButton(Model.AvatarUrl.HasValue())
+		.ShowRemoveButtonAfterUpload(true)
+		.UploadText(T("Common.FileUploader.Upload"))
+		.OnUploadCompletedHandlerName("onAvatarUploaded")
+		.OnFileRemoveHandlerName("onAvatarRemoved")
+	)
+</div>
 
 <script type="text/javascript">
     $(function () {
-        var el = $('#@clientId'),
-            img = el.find('img'),
-            elHidden = el.find('.hidden'),
-            elRemove = el.find('.remove'),
-            elFile = el.find('.uploaded-file');
+		window['onAvatarUploaded'] = function (e, el, data) {
+			var result = data.result;
+			if (result.success) {
+				$('#AvatarUploadContainer img').attr('src', result.avatarUrl).show();
+			}
+		};
 
-        $('#@clientId').fileupload({
-            url: '@(Url.Content("~/Admin/Picture/AsyncUpload"))',
-            dataType: 'json',
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-            replaceFileInput: false,
-            done: function (e, data) {
-                var result = data.result;
-                if (result.success) {
-                    img.removeClass("d-none");
-                    img.attr('src', result.imageUrl);
-                    elHidden.val(result.pictureId);
-                    elRemove.show();
-                }
-            },
-
-            error: function (jqXHR, textStatus, errorThrown) {
-                if (errorThrown === 'abort') {
-                    alert('File Upload has been canceled');
-                }
-            }
-        });
-
-        elRemove.click(function (e) {
-            img.attr('src', '@pictureService.GetDefaultPictureUrl()');
-            elHidden.val(0);
-            $(this).hide();
-            e.preventDefault();
-        });
+		window['onAvatarRemoved'] = function (e, el) {
+			$.post('@Url.Action("RemoveAvatar", "Customer")');
+			$('#AvatarUploadContainer img').attr('src', '@Html.Raw(Model.PictureFallbackUrl)');
+		}
     });
 </script>

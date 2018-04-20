@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ NewsLetterSubscription.Email }}</To>
+	<Subject>{{ Store.Name }}. Newsletter-Abmeldung</Subject>
+	<ModelTypes>NewsLetterSubscription</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hallo {{ Customer.FullName }},
+</h1>
+
+<p>
+  um sich von unserem Newsletter abzumelden, klicken Sie bitte auf den folgenden Link:
+</p>
+
+<p class="text-center mt-4 mb-4">
+  <a class="btn btn-danger" href="{{ NewsLetterSubscription.DeactivationUrl }}">Abmeldung bestätigen</a>
+</p>
+
+<p>
+	Wenn der Link nicht geöffnet werden kann, kopieren Sie folgende Addresse und fügen Sie sie in die Addresszeile ihres Browsers ein: 
+</p>
+
+<p>
+	<a href="{{ NewsLetterSubscription.DeactivationUrl }}">{{ NewsLetterSubscription.DeactivationUrl }}</a> 
+</p>
+{% endblock %}]]></Body>
+</MessageTemplate>

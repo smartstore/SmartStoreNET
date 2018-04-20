@@ -37,15 +37,15 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.AppendDescriptionText")]
 		[AllowHtml]
-		public string AppendDescriptionText { get; set; }
-		public string SerializedAppendDescriptionText { get; set; }
+		public string[] AppendDescriptionText { get; set; }
+		public MultiSelectList AvailableAppendDescriptionTexts { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.RemoveCriticalCharacters")]
 		public bool RemoveCriticalCharacters { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.CriticalCharacters")]
-		public string CriticalCharacters { get; set; }
-		public string SerializedCriticalCharacters { get; set; }
+		public string[] CriticalCharacters { get; set; }
+		public MultiSelectList AvailableCriticalCharacters { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.PriceType")]
 		public PriceDisplayType? PriceType { get; set; }
@@ -92,6 +92,13 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.OrderStatusChange")]
 		public int OrderStatusChangeId { get; set; }
 		public SelectList AvailableOrderStatusChange { get; set; }
+
+		#endregion
+
+		#region Shopping Cart Item
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NoBundleProducts")]
+		public bool NoBundleProducts { get; set; }
 
 		#endregion
 	}

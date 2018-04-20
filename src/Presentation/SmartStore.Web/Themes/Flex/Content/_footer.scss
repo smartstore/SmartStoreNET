@@ -1,12 +1,14 @@
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 //
 // Footer Styles
 // --------------------------------------------------
 
 #footer {
-    border-top: 1px solid rgba(0,0,0, 0.1);
+    border-top: 1px solid rgba(#000, 0.1);
     background: $footer-bg;
     margin-top: 1.5rem;
 }
@@ -61,6 +63,7 @@
         padding-left: 0 !important;
         padding-right: 0 !important;
         width: 100% !important;
+		max-width: none;
     }
 
     .footer-bottom {
@@ -77,6 +80,10 @@
     .footer-inverse .nav-collapsible {
         border-top-color: lighten($footer-bg, 10%);
         border-bottom-color: lighten($footer-bg, 10%);
+    }
+
+    .footer-main .footer-title {
+        margin-bottom: 0;
     }
 }
 

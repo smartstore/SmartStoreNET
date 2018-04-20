@@ -1,0 +1,290 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+//
+// Bidi
+// --------------------------------------------------
+
+[dir=rtl] {
+	direction: rtl;
+	text-align: right;
+
+	body {
+		text-align: right;
+	}
+
+	// Opposite/mixed
+	[dir=ltr] {
+		direction: ltr;
+		// INFO: "right" is correct!
+		text-align: right;
+	}
+}
+
+
+//
+// Grid stuff
+// --------------------------------------------------
+
+.sm-gutters {
+	$gw: 0.5rem;
+	margin-right: $gw * -1;
+	margin-left: $gw * -1;
+
+	> .col, 
+	> [class*="col-"] {
+		padding-right: $gw;
+		padding-left: $gw;
+	}
+}
+
+.xs-gutters {
+	$gw: 0.25rem;
+	margin-right: $gw * -1;
+	margin-left: $gw * -1;
+
+	> .col, 
+	> [class*="col-"] {
+		padding-right: $gw;
+		padding-left: $gw;
+	}
+}
+
+.container-fluid {
+	padding-left: 6%;
+	padding-right: 6%;
+}
+
+
+//
+// Some Flex utils
+// ------------------------------------------------------
+
+.flex-grow-0 {
+	flex-grow: 0 !important;
+}
+
+.flex-grow-1 {
+	flex-grow: 1 !important;
+}
+
+
+//
+// Count badge
+// --------------------------------------------------
+
+.has-count[data-count]:after {
+	content: "(" attr(data-count) ")";
+	position: relative;
+	display: inline-block;
+	opacity: 0.6;
+	padding-left: 0.2rem;
+	font-weight: 400;
+}
+
+
+//
+// Icon margins
+// ------------------------------------------------------
+
+.btn,
+.nav-link,
+.menubar-link {
+	> i + span:not(:empty),
+	> i + em:not(:empty) {
+		padding-left: 0.5em;
+	}
+
+	> span:not(:empty) + i,
+	> em:not(:empty) + i {
+		margin-left: 0.5em;
+	}
+}
+
+
+// Data binding 3d rotate
+// ------------------------------------------------------
+@keyframes data-binding {
+	0% {
+		transform: rotateY(0deg);
+	}
+
+	50% {
+		transform: rotateY(180deg);
+		color: transparent;
+	}
+
+	100% {
+		transform: rotateY(360deg);
+	}
+}
+
+.data-binding {
+	animation: data-binding 0.5s ease-in-out;
+}
+
+
+//
+// Fontastic utils (ensure crisp icons with 20/40...px)
+// ------------------------------------------------------
+
+.icm {
+	font-size: 20px;
+	display: inline-block;
+}
+
+.icm-2x {
+	font-size: 40px;
+}
+
+.icm-3x {
+	font-size: 60px;
+}
+
+.icm-4x {
+	font-size: 80px;
+}
+
+.icm-5x {
+	font-size: 100px;
+}
+
+
+// Imaging
+// ------------------------------------------------------
+
+.img-center-container {
+	display: block;
+	position: relative;
+	height: 0;
+	width: 100%;
+	padding-top: 100%;
+	text-decoration: none !important;
+	outline: none !important;
+
+	> img {
+		position: absolute;
+		max-width: 100%;
+		max-height: 100%;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+	}
+}
+
+// apply img-fluid to all images within html editor content
+.html-editor-content img {
+	max-width: 100%;
+	// TBD: WATCH!!!!
+	height: auto !important;
+}
+
+
+//
+// Bootstrap overrides and tweaks
+// --------------------------------------------------
+
+.dropdown .badge {
+	font-size: $font-size-xs;
+}
+
+.dropdown-item {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.popover-title {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	font-weight: $font-weight-medium;
+}
+
+.tooltip {
+	font-size: $font-size-sm;
+}
+
+.badge {
+	border: 1px solid #fff;
+}
+
+.badge:not(.badge-pill) {
+	border-radius: $border-radius-sm;
+}
+
+table th {
+	font-weight: $font-weight-medium;
+}
+
+
+//
+// Bootstrap List group tweaks
+// ------------------------------------------------------
+
+.list-group {
+	.list-group-item {
+		overflow: hidden;
+	}
+
+	.list-group-item.active {
+		&:before {
+			@include active-list-item($size: 3px);
+		}
+	}
+
+	&.has-icons {
+		.list-group-item {
+			display: inline-flex;
+			align-items: baseline;
+		}
+
+		.list-group-item-icon {
+			margin-right: 0.75rem;
+		}
+	}
+}
+
+
+//
+// Some shims
+// ------------------------------------------------------
+
+.hide {
+	display: none;
+}
+
+.muted {
+	@extend .text-muted;
+}
+
+//
+// Profiler sucks on small screens
+// ------------------------------------------------------
+
+@include media-breakpoint-down(sm) {
+	.profiler-results {
+		display: none !important;
+	}
+}
+
+
+// JQUERY UI STUFF
+// -------------------------
+
+.ui-effects-transfer,
+.transfer {
+	border: 2px dotted $gray-700 !important;
+	background: transparent;
+	z-index: 100000;
+}
+
+
+// Misc utils
+// -------------------------
+
+.last-mb-0:last-child {
+	margin-bottom: 0 !important;
+}

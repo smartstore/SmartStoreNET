@@ -1,65 +1,68 @@
 ﻿@model AutoUpdateOrderItemModel
 
-<div id="AutoUpdateOrderItemModal" class="modal hide fade" tabindex="-1">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
-		<h4 class="caption">@Model.Caption</h4>
-	</div>
-    <div class="modal-body">
+@{Html.SmartStore().Window()
+		.Name("AutoUpdateOrderItemModal")
+		.Title(Model.Caption)
+		.Content(
+			@<text>
+			<form id="AutoUpdateOrderItemForm" method="POST" action="@(Model.PostUrl ?? "#")">
+				<input type="hidden" name="Id" value="@Model.Id" />
+				<input type="hidden" name="NewQuantity" />
+				<input type="hidden" name="NewUnitPriceInclTax" />
+				<input type="hidden" name="NewUnitPriceExclTax" />
+				<input type="hidden" name="NewTaxRate" />
+				<input type="hidden" name="NewDiscountInclTax" />
+				<input type="hidden" name="NewDiscountExclTax" />
+				<input type="hidden" name="NewPriceInclTax" />
+				<input type="hidden" name="NewPriceExclTax" />
 
-		<form id="AutoUpdateOrderItemForm" method="POST" action="@(Model.PostUrl ?? "#")">
-			<input type="hidden" name="Id" value="@Model.Id" />
-			<input type="hidden" name="NewQuantity" />
-			<input type="hidden" name="NewUnitPriceInclTax" />
-			<input type="hidden" name="NewUnitPriceExclTax" />
-			<input type="hidden" name="NewTaxRate" />
-			<input type="hidden" name="NewDiscountInclTax" />
-			<input type="hidden" name="NewDiscountExclTax" />
-			<input type="hidden" name="NewPriceInclTax" />
-			<input type="hidden" name="NewPriceExclTax" />
-
-			<div>
-				<table class="adminContent">
-					<tr>
-						<td class="adminTitle" style="width: 50%;">
-							@Html.SmartLabelFor(model => model.AdjustInventory)
-						</td>
-						<td class="adminData">
-							@Html.EditorFor(model => model.AdjustInventory)
-							@Html.ValidationMessageFor(model => model.AdjustInventory)
-						</td>
-					</tr>
-					@if(Model.ShowUpdateRewardPoints)
-					{
+				<div>
+					<table class="adminContent">
 						<tr>
-							<td class="adminTitle">
-								@Html.SmartLabelFor(model => model.UpdateRewardPoints)
+							<td class="adminTitle" style="width: 50%;">
+								@Html.SmartLabelFor(model => model.AdjustInventory)
 							</td>
 							<td class="adminData">
-								@Html.EditorFor(model => model.UpdateRewardPoints)
-								@Html.ValidationMessageFor(model => model.UpdateRewardPoints)
+								@Html.EditorFor(model => model.AdjustInventory)
+								@Html.ValidationMessageFor(model => model.AdjustInventory)
 							</td>
 						</tr>
-					}
-					@if(Model.ShowUpdateTotals)
-					{
-						<tr>
-							<td class="adminTitle">
-								@Html.SmartLabelFor(model => model.UpdateTotals)
-							</td>
-							<td class="adminData">
-								@Html.EditorFor(model => model.UpdateTotals)
-								@Html.ValidationMessageFor(model => model.UpdateTotals)
-							</td>
-						</tr>
-					}
-				</table>
-			</div>
-		</form>
-
-	</div>
-    <div class="modal-footer">
-		<button id="AutoUpdateOrderItemSubmit" class="btn btn-primary" data-dismiss="modal" onclick="$('#AutoUpdateOrderItemForm').submit();">@T("Common.OK")</button>
-		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-    </div>
-</div>
+						@if (Model.ShowUpdateRewardPoints)
+						{
+							<tr>
+								<td class="adminTitle">
+									@Html.SmartLabelFor(model => model.UpdateRewardPoints)
+								</td>
+								<td class="adminData">
+									@Html.EditorFor(model => model.UpdateRewardPoints)
+									@Html.ValidationMessageFor(model => model.UpdateRewardPoints)
+								</td>
+							</tr>
+						}
+						@if (Model.ShowUpdateTotals)
+						{
+							<tr>
+								<td class="adminTitle">
+									@Html.SmartLabelFor(model => model.UpdateTotals)
+								</td>
+								<td class="adminData">
+									@Html.EditorFor(model => model.UpdateTotals)
+									@Html.ValidationMessageFor(model => model.UpdateTotals)
+								</td>
+							</tr>
+						}
+					</table>
+				</div>
+			</form>
+			</text>)
+		.FooterContent(
+			@<text>
+				<button class="btn btn-secondary btn-flat" data-dismiss="modal">
+					<span>@T("Common.Cancel")</span>
+				</button>
+				<button id="AutoUpdateOrderItemSubmit" class="btn btn-primary" data-dismiss="modal" onclick="$('#AutoUpdateOrderItemForm').submit();">
+					<span>@T("Common.OK")</span>
+				</button>
+			</text>)
+		.Render();
+	}

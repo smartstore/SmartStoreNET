@@ -12,13 +12,20 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-			<button type="submit" name="preview" value="preview" onclick="javascript:openPopup('@Url.RouteUrl("Category", new { SeName = Model.SeName })', true); return false;" class="btn">
-				<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
+			<button type="submit" name="preview" value="preview" onclick="javascript:openPopup('@Url.RouteUrl("Category", new { SeName = Model.SeName })', true); return false;" class="btn btn-secondary">
+				<i class="fa fa-eye"></i>
+				<span>@T("Admin.Common.Preview")</span>
 			</button>
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-            <button type="submit" id="category-delete" value="category-delete" class="btn btn-danger" data-toggle="modal" data-target="#DeleteCategoryModal">
-                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
+            <button type="button" id="category-delete" value="category-delete" class="btn btn-danger" data-toggle="modal" data-target="#DeleteCategoryModal">
+                <i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
             </button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
@@ -28,33 +35,37 @@
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
 
-<div id="DeleteCategoryModal" class="modal hide fade" tabindex="-1">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
-		<h4 class="caption">@T("Admin.Catalog.Categories.Delete.Caption")</h4>
-	</div>
-    <div class="modal-body">
-
+@{Html.SmartStore().Window()
+	.Name("DeleteCategoryModal")
+	.Title(T("Admin.Catalog.Categories.Delete.Caption"))
+	.Size(WindowSize.Medium)
+	.Content(@<text>
 		<form id="DeleteCategoryForm" method="POST" action="@Url.Action("Delete", "Category")">
 			<input type="hidden" name="id" value="@Model.Id" />
 
 			<p>@T("Admin.Catalog.Categories.Delete.Hint")</p>
 
-			<div class="clearfix">
-				<label for="deleteType_1" class="radio pull-left">
-					<input type="radio" id="deleteType_1" name="deleteType" value="resetparent" checked="checked" /> @T("Admin.Catalog.Categories.Delete.ResetParentOfChilds")
+			<div class="form-check">
+				<input type="radio" class="form-check-input" id="deleteType_1" name="deleteType" value="resetparent" checked="checked" />
+				<label for="deleteType_1" class="form-check-label">
+					@T("Admin.Catalog.Categories.Delete.ResetParentOfChilds")
 				</label>
 			</div>
-			<div class="clearfix">
-				<label for="deleteType_2" class="radio pull-left">
-					<input type="radio" id="deleteType_2" name="deleteType" value="deletechilds" /> @T("Admin.Catalog.Categories.Delete.DeleteChilds")
+			<div class="form-check mt-1">
+				<input type="radio" class="form-check-input" id="deleteType_2" name="deleteType" value="deletechilds" />
+				<label for="deleteType_2" class="form-check-label">
+					@T("Admin.Catalog.Categories.Delete.DeleteChilds")
 				</label>
 			</div>
 		</form>
-
-	</div>
-    <div class="modal-footer">
-		<button class="btn btn-primary" data-dismiss="modal" onclick="$('#DeleteCategoryForm').submit();">@T("Common.OK")</button>
-		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-    </div>
-</div>
+	</text>)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary" data-dismiss="modal">
+			<span>@T("Common.Cancel")</span>
+		</button>
+		<button class="btn btn-primary" data-dismiss="modal" onclick="$('#DeleteCategoryForm').submit();">
+			<span>@T("Common.OK")</span>
+		</button>
+	</text>)
+	.Render();
+}

@@ -1,12 +1,11 @@
 ﻿@using SmartStore.Web.Models.Checkout;
-
+@using SmartStore.AmazonPay;
 @model SmartStore.AmazonPay.Models.AmazonPayViewModel
-
 @{
-    Layout = "_Checkout";
+	Layout = "_Checkout";
 
-    Html.AddTitleParts(T("PageTitle.Checkout").Text);
-    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
+	Html.AddTitleParts(T("PageTitle.Checkout").Text);
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
 }
 
 @section orderProgress{
@@ -27,7 +26,7 @@
         }
 
 		<div class="amazon-pay-widget clearfix">
-			<div id="@Model.GetWidgetId"></div>
+			<div id="amazon-pay-address-book-widget"></div>
 		</div>
 
 		@{ Html.RenderWidget("checkout_shipping_address_middle"); }
@@ -38,7 +37,8 @@
                 <span>@T("Common.Back")</span>
 			</a>
 
-			<a id="AmazonPayNextCheckoutStep" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })" class="btn btn-warning btn-lg new-address-next-step-button hide">
+			<a id="AmazonPayNextCheckoutStep" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })" aria-disabled="true"
+			   class="btn btn-warning btn-lg new-address-next-step-button disabled">
 				<span>@T("Checkout.NextButton")</span>
                 <i class="fa fa-angle-right"></i>
 			</a>
@@ -49,24 +49,56 @@
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function () {
+	window.onAmazonLoginReady = function() {
+		try {
+			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
+		}
+		catch (e) {
+			console.log(e);
+			displayNotification(e, 'error');
+		}
+	};
+
+	window.onAmazonPaymentsReady = function () {
 		try {
 			new OffAmazonPayments.Widgets.AddressBook({
 				sellerId: '@Model.SellerId',
-				amazonOrderReferenceId: '@Model.OrderReferenceId',
+				scope: 'payments:shipping_address payments:billing_address',
+				onOrderReferenceCreate: function (orderReference) {
+					var orderReferenceId = orderReference.getAmazonOrderReferenceId();
+					if (orderReferenceId !== '@Model.OrderReferenceId.EmptyNull()') {
+						$.ajax({
+							cache: false,
+							type: 'POST',
+							data: {	"orderReferenceId": orderReferenceId },
+							url: '@Url.Action("OrderReferenceCreated", "AmazonPayCheckout", new { area = AmazonPayPlugin.SystemName })',
+							success: function (response) {
+								if (!response.success) {
+									displayNotification(response.error, 'error');
+								}
+							},
+							error: function (objXml) {
+								if (objXml != null && objXml.responseText != null && objXml.responseText !== '') {
+									displayNotification(objXml.responseText, 'error');
+								}
+							}
+						});
+					}
+				},
 				onAddressSelect: function (orderReference) {
-					$('#AmazonPayNextCheckoutStep').fadeIn();
+					$('#AmazonPayNextCheckoutStep').removeClass('disabled');
 				},
 				design: {
-					size: { width: '@(Model.AddressWidgetWidth)px', height: '@(Model.AddressWidgetHeight)px' }
+					designMode: 'responsive'
 				},
 				onError: function (e) {
-					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+					console.log(e.getErrorCode() + ': ' + e.getErrorMessage());
 				}
-			}).bind('@Model.GetWidgetId');
+			}).bind('amazon-pay-address-book-widget');
 		}
 		catch (e) {
-			alert(e.description);
+			console.log(e);
 		}
-	});
+	};
 </script>
+<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

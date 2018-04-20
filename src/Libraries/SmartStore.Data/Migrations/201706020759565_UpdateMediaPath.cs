@@ -1,4 +1,4 @@
-namespace SmartStore.Data.Migrations
+ï»¿namespace SmartStore.Data.Migrations
 {
 	using System.Data.Entity.Migrations;
 	using System.Web.Hosting;
@@ -60,12 +60,12 @@ WHERE
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-			builder.AddOrUpdate("Common.For", "For: {0}", "Für: {0}");
+			builder.AddOrUpdate("Common.For", "For: {0}", "FÃ¼r: {0}");
 			builder.AddOrUpdate("Products.Sorting.Featured", "Featured", "Empfehlung");
 
 			builder.AddOrUpdate("Common.AdditionalShippingSurcharge",
 				"Plus <b>{0}</b> shipping surcharge",
-				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr");
+				"zzgl. <b>{0}</b> zusÃ¤tzlicher VersandgebÃ¼hr");
 
             builder.AddOrUpdate("Address.Fields.Salutation", "Salutation", "Anrede");
             builder.AddOrUpdate("Address.Fields.Title", "Title", "Titel");
@@ -75,7 +75,7 @@ WHERE
                 "Salutations",
                 "Anreden",
                 "Comma separated list of salutations (e.g. Mr., Mrs). Define the entries which will populate the dropdown list for salutation when entering addresses.",
-                "Komma getrennte Liste (z.B. Herr, Frau). Bestimmen Sie die Einträge für die Auswahl der Anrede, bei der Adresserfassung.");
+                "Komma getrennte Liste (z.B. Herr, Frau). Bestimmen Sie die EintrÃ¤ge fÃ¼r die Auswahl der Anrede, bei der Adresserfassung.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled",
                 "'Salutation' enabled",
@@ -97,17 +97,17 @@ WHERE
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.SkipShippingIfSingleOption",
                 "Display shipping options during checkout process only if more then one option is available",
-                "Versandartauswahl nur anzeigen, wenn mehr als eine Versandart zur Verfügung steht",
+                "Versandartauswahl nur anzeigen, wenn mehr als eine Versandart zur VerfÃ¼gung steht",
                 "Display shipping options during the checkout process only if more then one shipping option is available.",
-                "Legt fest, ob die Versandartauswahl nur im Checkout-Prozess angezeigt wird, wenn mehr als eine Versandart zur Verfügung steht");
+                "Legt fest, ob die Versandartauswahl nur im Checkout-Prozess angezeigt wird, wenn mehr als eine Versandart zur VerfÃ¼gung steht");
 
             builder.AddOrUpdate("Admin.DataExchange.Export.Projection.OnlyIndividuallyVisibleAssociated",
                 "Only individually visible products",
                 "Nur individuell sichtbare Produkte",
                 "Specifies whether to only export individually visible associated products.",
-                "Legt fest, ob nur individuell sichtbare, verknüpfte Produkte exportiert werden sollen.");
+                "Legt fest, ob nur individuell sichtbare, verknÃ¼pfte Produkte exportiert werden sollen.");
 
-			builder.AddOrUpdate("Product.ThumbTitle", "{0}, Picture {1} large", "{0}, Bild {1} groß");
+			builder.AddOrUpdate("Product.ThumbTitle", "{0}, Picture {1} large", "{0}, Bild {1} groÃŸ");
 			builder.AddOrUpdate("Product.ThumbAlternateText", "{0}, Picture {1}", "{0}, Bild {1}");
 		}
 	}

@@ -3,33 +3,17 @@
     ViewBag.Title = T("Admin.Configuration.Settings.Shipping").Text;
 }
 @using (Html.BeginForm())
-{    
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#@Html.FieldIdFor(model => model.FreeShippingOverXEnabled)").click(toggleFreeShippingOverX);
-            
-        toggleFreeShippingOverX();
-    });
-
-    function toggleFreeShippingOverX() {
-        if ($('#@Html.FieldIdFor(model => model.FreeShippingOverXEnabled)').is(':checked')) {
-            $('#pnlValueOfX').show();
-            $('#pnlValueOfXincltax').show();
-        }
-        else {
-            $('#pnlValueOfX').hide();
-            $('#pnlValueOfXincltax').hide();
-        }
-    }
-</script>
-    
+{       
     <div class="section-header">
         <div class="title">
             <i class="fa fa-truck"></i>
             @T("Admin.Configuration.Settings.Shipping")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
@@ -43,28 +27,30 @@
                 @Html.SmartLabelFor(model => model.FreeShippingOverXEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.FreeShippingOverXEnabled)
+				@Html.SettingEditorFor(model => model.FreeShippingOverXEnabled, Html.CheckBoxFor(model => model.FreeShippingOverXEnabled, new { data_toggler_for = "#pnlFreeShipping" }))
                 @Html.ValidationMessageFor(model => model.FreeShippingOverXEnabled)
             </td>
         </tr>
-        <tr id="pnlValueOfX">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.FreeShippingOverXValue)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.FreeShippingOverXValue)
-                @Html.ValidationMessageFor(model => model.FreeShippingOverXValue)
-            </td>
-        </tr>
-        <tr id="pnlValueOfXincltax">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.FreeShippingOverXIncludingTax)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.FreeShippingOverXIncludingTax)
-                @Html.ValidationMessageFor(model => model.FreeShippingOverXIncludingTax)
-            </td>
-        </tr>
+		<tbody id="pnlFreeShipping">
+			<tr id="pnlValueOfX">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.FreeShippingOverXValue)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.FreeShippingOverXValue, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+					@Html.ValidationMessageFor(model => model.FreeShippingOverXValue)
+				</td>
+			</tr>
+			<tr id="pnlValueOfXincltax">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.FreeShippingOverXIncludingTax)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.FreeShippingOverXIncludingTax)
+					@Html.ValidationMessageFor(model => model.FreeShippingOverXIncludingTax)
+				</td>
+			</tr>
+		</tbody>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EstimateShippingEnabled)
@@ -92,19 +78,24 @@
                 @Html.ValidationMessageFor(model => model.SkipShippingIfSingleOption)
             </td>
         </tr>
-
-		<tr class="adminGroup">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ChargeOnlyHighestProductShippingSurcharge)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ChargeOnlyHighestProductShippingSurcharge)
+                @Html.ValidationMessageFor(model => model.ChargeOnlyHighestProductShippingSurcharge)
+            </td>
+        </tr>
+		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ShippingOriginAddress)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ShippingOriginAddress, "#pnlShippingOriginAddress")
+				@Html.SettingEditorFor(model => Model.ShippingOriginAddress, @<div>
+					@Html.EditorFor(model => model.ShippingOriginAddress, "Address")
+				</div>)
 			</td>
 		</tr>
-        <tr>
-            <td id="pnlShippingOriginAddress" colspan="2">
-                @Html.EditorFor(model => model.ShippingOriginAddress, "Address")
-            </td>
-        </tr>        
     </table>
 }

@@ -12,7 +12,7 @@
 			@for (int i = 0; i < Model.StoreLicenses.Count; ++i)
 			{
 				var storeLicense = Model.StoreLicenses[i];
-				var keyAttributes = new RouteValueDictionary(new { @class = "input-large", autocomplete = "off" });
+				var keyAttributes = new RouteValueDictionary(new { autocomplete = "off" });
 				if (storeLicense.LicenseLabel.LicenseState == LicensingState.Licensed && string.IsNullOrWhiteSpace(storeLicense.LicenseKey) && !storeLicense.LicenseLabel.HideLabel)
 				{
 					keyAttributes.Add("disabled", "disabled");
@@ -20,11 +20,11 @@
 				<tr>
 					<td colspan="2">
 						<div class="admin-config-group@(i==0 ? "" : " mt-2")">
-							<div class="title">
+							<div class="title fs-h6">
 								<span>
 									@storeLicense.StoreName
 								</span>
-								<span class="license-label pull-right">
+								<span class="license-label float-right">
 									@Html.Partial("Partials/LicenseLabel", storeLicense.LicenseLabel)
 								</span>
 							</div>
@@ -42,16 +42,18 @@
 					</td>
 				</tr>
 				<tr>
-					<td>
-						&nbsp;
+					<td class="adminTitle">
+						<div class="ctl-label">
+							<label>@T("Common.For", "")</label>
+						</div>
 					</td>
-					<td>
-						<span class="help-inline">
-							@T("Common.For", storeLicense.StoreUrl)
+					<td class="adminData">
+						<div class="form-control-plaintext">
+							<span>@storeLicense.StoreUrl</span>
 							<a href="@Url.Action("Edit", "Store", new { id = storeLicense.StoreId })">
 								@T("Admin.Common.Change")
 							</a>
-						</span>
+						</div>
 					</td>
 				</tr>
 			}
@@ -63,7 +65,7 @@
 			<p>@T("Admin.Configuration.Plugins.LicensingInvalidStoreUrl")</p>
 			<div>
 				<a href="@Url.Action("Edit", "Store", new { id = Model.InvalidDataStoreId })" class="btn btn-warning">
-					@T("Admin.Common.Change")
+					<span>@T("Admin.Common.Change")</span>
 				</a>
 			</div>
 		</div>

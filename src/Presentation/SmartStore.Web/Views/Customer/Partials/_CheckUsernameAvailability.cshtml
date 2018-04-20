@@ -1,6 +1,6 @@
 ﻿<script type="text/javascript">
     $(function () {
-    	$('#Username').closest(".input-group-btn").after(createCircularSpinner(24).attr('id', 'cua-loader').css('margin-left', '10px'));
+    	$('#Username').closest(".input-group-append").after(createCircularSpinner(24).attr('id', 'cua-loader').css('margin-left', '10px'));
     	$('#Username').on('input propertychange paste', function (e) {
     		$('#username-availabilty').text('');
     		$('#check-availability-button')
@@ -47,7 +47,7 @@
     });
 </script>
 
-<span class="input-group-btn">
+<span class="input-group-append">
 	<button type="button" id="check-availability-button" class="btn btn-secondary check-username-availability-button tooltip-toggle" title="@T("Account.CheckUsernameAvailability.Button")">
 		<i class="fa fa-question-circle"></i>
 	</button>

@@ -1,8 +1,9 @@
 ﻿@model CampaignModel
+
 @{
-    //page title
     ViewBag.Title = T("Admin.Promotions.Campaigns.EditCampaignDetails").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -10,12 +11,51 @@
             @T("Admin.Promotions.Campaigns.EditCampaignDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Promotions.Campaigns.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-            <button type="submit" name="campaign-delete" id="campaign-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+			@if (Model.Id > 0)
+			{
+				<button type="submit" id="send-mass-email" name="send-mass-email" value="send-mass-email" class="btn btn-outline-secondary btn-to-primary px-5 mr-3">
+					<i class="fa fa-send"></i>
+					<span>@T("Common.Send")</span>
+				</button>
+
+				<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", "MessageTemplate", new { id = Model.Id, isCampaign = true })">
+					<i class="fa fa-eye"></i>
+					<span>@T("Admin.Common.Preview")</span>
+				</a>
+			}
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
+            <button type="submit" name="campaign-delete" id="campaign-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
+			</button>
         </div>
     </div>
 
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("campaign-delete")
+
+<script>
+	$(function () {
+		$('#btn-preview-template').on('click', function (e) {
+			e.preventDefault();
+			openPopup($(this).attr('href'), false /* large */, true /* flex */);
+			return false;
+		});
+
+		$('#send-mass-email').on('click', function (e) {
+			if (!confirm(@T("Common.AreYouSure").JsText)) {
+				e.preventDefault();
+				return false;
+			}
+
+			return true;
+		});
+	});
+</script>

@@ -1,12 +1,13 @@
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="shared/_mixins.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 //
 // InstantSearch Box & Drop Styles
 // --------------------------------------------------
 
-$facet-selection-color:             darken($brand-success, 15%);
+$facet-selection-color:             darken($success, 15%);
 
 .instasearch-form {
     position: relative;
@@ -43,15 +44,15 @@ $facet-selection-color:             darken($brand-success, 15%);
 }
 
 .instasearch-button {
-    position: absolute;
+    position: absolute !important;
     z-index: 1;
     top: 0;
     right: 0;
     bottom: 0;
-    border-left-color: transparent;
-    height: initial;
+    border-left-width: 0;
+    height: initial !important;
     font-size: 1.2rem;
-    padding: 0 0.25rem;
+    padding: 0 0.25rem !important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     box-shadow: none;
@@ -95,7 +96,7 @@ $facet-selection-color:             darken($brand-success, 15%);
     margin: 0 20px;
     padding-bottom: 0.3rem;
     font-size: 22px; // rem gets too small on mobile
-    color: $brand-info;
+    color: $info;
     font-weight: $font-weight-light;
 
     ~ .instasearch-group-header {
@@ -136,7 +137,8 @@ $facet-selection-color:             darken($brand-success, 15%);
 }
 
 .instasearch-hit {
-    display: block;
+    display: inline-flex;
+	align-items: baseline;
     position: relative;
     width: 100%;
     padding: 8px 20px;
@@ -184,7 +186,7 @@ $facet-selection-color:             darken($brand-success, 15%);
 // --------------------------------------------------
 
 .search-term {
-    color: $brand-danger;
+    color: $danger;
 }
 
 .search-hitcount {
@@ -260,8 +262,6 @@ $facet-selection-color:             darken($brand-success, 15%);
 //
 // Facetes (Check/Radio)
 // --------------------------------------------------
-
-$facet-control-size:        20px;
 
 .facet-control-ui {
     position: absolute;
@@ -359,8 +359,8 @@ $facet-control-size:        20px;
     position: relative;
     display: block;
     padding-left: $facet-control-size + ($facet-control-size / 1.5);
-    padding-top: 1px;
     padding-right: 8px;
+	padding-top: 1px;
 
     .facet-control-native:checked ~ & {
         font-weight: $font-weight-medium;

@@ -1,6 +1,5 @@
 ﻿@model ProductModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Catalog.Products.AddNew").Text;
 }
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "product-form" }))
@@ -13,10 +12,10 @@
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary entity-commit-trigger" data-commit-type="product" data-commit-action="insert" data-commit-id="@Model.Id">
                 <i class="fa fa-check"></i>
-                @T("Admin.Common.Save")
+                <span>@T("Admin.Common.Save")</span>
             </button>
-            <button type="submit" name="save" value="save-continue" class="btn entity-commit-trigger" data-commit-type="product" data-commit-action="insert" data-commit-id="@Model.Id">
-                @T("Admin.Common.SaveContinue")
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary entity-commit-trigger" data-commit-type="product" data-commit-action="insert" data-commit-id="@Model.Id">
+                <span>@T("Admin.Common.SaveContinue")</span>
             </button>
         </div>
     </div>

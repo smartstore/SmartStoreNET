@@ -24,7 +24,7 @@ namespace SmartStore.PayPal
 {
 	[SystemName("Payments.PayPalStandard")]
     [FriendlyName("PayPal Standard")]
-    [DisplayOrder(2)]
+    [DisplayOrder(1)]
 	public partial class PayPalStandardProvider : PaymentPluginBase, IConfigurable
 	{
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
@@ -411,7 +411,7 @@ namespace SmartStore.PayPal
             var order = postProcessPaymentRequest.Order;
             var lst = new List<PayPalLineItem>();
 
-			// order items... checkout attributes are included in order total
+			// Order items... checkout attributes are included in order total
 			foreach (var orderItem in order.OrderItems)
             {
                 var item = new PayPalLineItem
@@ -426,7 +426,7 @@ namespace SmartStore.PayPal
                 cartTotal += orderItem.PriceExclTax;
             }
 
-            // shipping
+            // Shipping
             if (order.OrderShippingExclTax > decimal.Zero)
             {
                 var item = new PayPalLineItem
@@ -441,7 +441,7 @@ namespace SmartStore.PayPal
                 cartTotal += order.OrderShippingExclTax;
             }
 
-            // payment fee
+            // Payment fee
             if (order.PaymentMethodAdditionalFeeExclTax > decimal.Zero)
             {
                 var item = new PayPalLineItem
@@ -456,7 +456,7 @@ namespace SmartStore.PayPal
                 cartTotal += order.PaymentMethodAdditionalFeeExclTax;
             }
 
-            // tax
+            // Tax
             if (order.OrderTax > decimal.Zero)
             {
                 var item = new PayPalLineItem

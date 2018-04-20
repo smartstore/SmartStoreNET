@@ -10,15 +10,15 @@
 }
 
 <div class="page page-order-details">
-    <div class="clearfix mb-3">
-        <div class="page-title mb-3 float-sm-left">
+    <div class="row mb-3">
+        <div class="page-title mb-3 col">
             <h1 class="h2 mb-0">
 				@T("Order.OrderDetails")
 				<small class="text-muted"><small>@Model.OrderNumber</small></small>
 			</h1>
         </div>
 
-        <div class="print-buttons float-sm-right">
+        <div class="print-buttons col col-auto">
             <a href="@Url.Action("print", new { id = Model.Id, pdf = false })" target="print" class="btn btn-secondary btn-sm print-order-button" rel="nofollow">
                 <i class="fa fa-print"></i>
                 <span>@T("Order.Print")</span>
@@ -39,7 +39,7 @@
 		<div class="row mb-3">
 			<div class="col-6 col-sm-auto pb-3">
 				<h5 class="text-muted">@T("Order.OrderDate")</h5>
-				<div>@Model.CreatedOn.ToShortDateString()</div>
+				<div>@Model.CreatedOn.ToShortDateString().ReplaceNativeDigits()</div>
 			</div>
 			<div class="col-6 col-sm-auto pb-3">
 				<h5 class="text-muted">@T("Order.Order#")</h5>
@@ -66,7 +66,7 @@
 
         @{ Html.RenderWidget("orderdetails_page_overview"); }
        
-		<div class="card card-block order-details-box">
+		<div class="card card-body order-details-box">
 			<div class="row">
 				<div class="col-md-8">
 					<div class="row">
@@ -241,6 +241,20 @@
 										<td class="cart-summary-value">@Model.RedeemedRewardPointsAmount</td>
 									</tr>
 								}
+								@if (Model.CreditBalance.HasValue())
+								{
+									<tr class="cart-summary-credit-balance cart-summary-pos">
+										<td class="cart-summary-label">@T("ShoppingCart.Totals.CreditBalance"):</td>
+										<td class="cart-summary-value">@Model.CreditBalance</td>
+									</tr>
+								}
+                                @if (Model.OrderTotalRounding.HasValue())
+                                {
+                                    <tr class="cart-summary-totalrounding cart-summary-pos">
+                                        <td class="cart-summary-label">@T("ShoppingCart.Totals.Rounding"):</td>
+                                        <td class="cart-summary-value">@Model.OrderTotalRounding</td>
+                                    </tr>
+                                }
 								<tr class="cart-summary-total">
 									<td class="cart-summary-label">@T("Order.OrderTotal"):</td>
 									<td class="cart-summary-value">@Model.OrderTotal</td>
@@ -288,8 +302,8 @@
 					@T("Order.Shipments")
 				</h4>
 
-				<div class="shipments-box">
-					<table class="table table-responsive mb-0">
+				<div class="shipments-box table-responsive">
+					<table class="table mb-0">
 						<thead>
 							<tr>
 								<th>@T("Order.Shipments.ID")</th>
@@ -311,7 +325,7 @@
 									<td>
 										@if (item.ShippedDate.HasValue)
 										{
-											@item.ShippedDate.Value.ToString("D")
+											@item.ShippedDate.Value.ToNativeString("D")
 										}
 										else
 										{
@@ -321,7 +335,7 @@
 									<td>
 										@if (item.DeliveryDate.HasValue)
 										{
-											@item.DeliveryDate.Value.ToString("D")
+											@item.DeliveryDate.Value.ToNativeString("D")
 										}
 										else
 										{
@@ -343,8 +357,8 @@
 					@T("Order.Notes")
 				</h4>
 
-				<div class="ordernotes-box">
-					<table class="table table-responsive mb-0">
+				<div class="ordernotes-box table-responsive">
+					<table class="table mb-0">
 						<thead>
 							<tr>
 								<th>@T("Order.Notes.CreatedOn")</th>
@@ -356,7 +370,7 @@
 							{
 								<tr>
 									<td class="text-nowrap">@item.FriendlyCreatedOn</td>
-									<td>@Html.Raw(item.Note)</td>
+									<td dir="auto">@Html.Raw(item.Note)</td>
 								</tr>
 							}
 						</tbody>
@@ -374,42 +388,8 @@
 
 @helper RenderAddress(AddressModel address)
 {
-	var cityStateZip = address.GetFormattedCityStateZip();
-
 	<div class="mb-2">
-		@if (address.CompanyEnabled && address.Company.HasValue())
-		{
-			<div class="company">
-				@address.Company
-			</div>
-		}
-		<div class="name">
-			@address.GetFormattedName()
-		</div>
-		@if (address.StreetAddressEnabled && address.Address1.HasValue())
-		{
-			<div class="address1">
-				@address.Address1
-			</div>
-		}
-		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
-		{
-			<div class="address2">
-				@address.Address2
-			</div>
-		}
-		@if (cityStateZip.HasValue())
-		{
-			<div class="city-state-zip">
-				@Html.Raw(cityStateZip)
-			</div>
-		}
-		@if (address.CountryEnabled && address.CountryName.HasValue())
-		{
-			<div class="country">
-				@address.CountryName
-			</div>
-		}
+		@Html.Raw(address.FormattedAddress)
 	</div>
 
 	<div class="email">
@@ -441,7 +421,7 @@
 					</div>
 				}
 				<div class="col">
-					<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+					<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
 					@if (Model.ShowSku && item.Sku.HasValue())
 					{
 						<div class="cart-item-sku small">
@@ -490,11 +470,11 @@
 							}
 							@if (item.VisibleIndividually)
 							{
-								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" dir="auto">@item.ProductName</a>
 							}
 							else
 							{
-								<span class="cart-item-link">@item.ProductName</span>
+								<span class="cart-item-link" dir="auto">@item.ProductName</span>
 							}
 							@if (item.AttributeInfo.HasValue())
 							{

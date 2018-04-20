@@ -1,18 +1,50 @@
-﻿@using Telerik.Web.Mvc.UI
-@model CheckoutAttributeListModel
+﻿@model CheckoutAttributeListModel
+@using Telerik.Web.Mvc.UI
 @{
     ViewBag.Title = T("Admin.Catalog.Attributes.CheckoutAttributes").Text;
 }
+
 <div class="section-header">
     <div class="title">
         @T("Admin.Catalog.Attributes.CheckoutAttributes")
     </div>
     <div class="options">
         <a href="@Url.Action("Create")" class="btn btn-primary">
-			<i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
 		</a>
     </div>
 </div>
+
+<div>
+	@(Html.Telerik().Grid<CheckoutAttributeModel>()
+		.Name("checkoutattributes-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Name)
+				.Width(500)
+				.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+			columns.Bound(x => x.TextPrompt);
+			columns.Bound(x => x.AttributeControlTypeName);
+			columns.Bound(x => x.IsActive)
+				.ClientTemplate(@Html.SymbolForBool("IsActive"))
+				.Centered();
+			columns.Bound(x => x.IsRequired)
+				.ClientTemplate(@Html.SymbolForBool("IsRequired"))
+				.Centered();
+			columns.Bound(x => x.DisplayOrder)
+				.Centered();
+			columns.Bound(x => x.LimitedToStores)
+				.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+				.Hidden(Model.AvailableStores.Count <= 1)
+				.Centered();
+		})
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CheckoutAttribute"))
+		.ClientEvents(events => events.OnRowDataBound("checkoutAttributesGrid_onRowDataBound"))
+		.EnableCustomBinding(true))
+</div>
+
 <script>
 	function checkoutAttributesGrid_onRowDataBound(e) {
 		if (!e.dataItem.IsActive) {
@@ -20,35 +52,3 @@
 		}
 	}
 </script>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<CheckoutAttributeModel>()
-				.Name("checkoutattributes-grid")
-				.Columns(columns =>
-				{
-					columns.Bound(x => x.Name)
-						.Width(500)
-						.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-					columns.Bound(x => x.TextPrompt);
-					columns.Bound(x => x.AttributeControlTypeName);
-					columns.Bound(x => x.IsActive)
-						.ClientTemplate(@Html.SymbolForBool("IsActive"))
-						.Centered();
-					columns.Bound(x => x.IsRequired)
-						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
-						.Centered();
-					columns.Bound(x => x.DisplayOrder)
-						.Centered();
-					columns.Bound(x => x.LimitedToStores)
-						.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-						.Hidden(Model.AvailableStores.Count <= 1)
-						.Centered();
-				})
-				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CheckoutAttribute"))
-				.ClientEvents(events => events.OnRowDataBound("checkoutAttributesGrid_onRowDataBound"))
-				.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>

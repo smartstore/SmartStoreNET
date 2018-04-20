@@ -1,0 +1,125 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Mixins
+// ========================================================================
+
+@mixin bubble($direction: "left", $alignment: "near", $size: 10, $backgroundColor: #fff, $borderColor: $card-border-color, $offset: 24px) {
+    // defaults for direction = left
+    $elemAlignment: "right";
+    $firstBorder: "top";
+    $secondBorder: "bottom";
+
+    @if $direction == "right" {
+        $elemAlignment: "left";
+    } @else if $direction == "top" {
+        $elemAlignment: "bottom";
+        $firstBorder: "left";
+        $secondBorder: "right";
+    } @else if $direction == "bottom" {
+        $elemAlignment: "top";
+        $firstBorder: "left";
+        $secondBorder: "right";
+    }
+
+    &:before, &:after {
+        content: '' !important;
+        display: inline-block;
+        position: absolute;
+    }
+
+    &:before {
+        border-#{$firstBorder}: #{$size}px solid transparent;
+        border-#{$secondBorder}: #{$size}px solid transparent;
+        border-#{$elemAlignment}: #{$size}px solid $borderColor;
+        //border-#{$elemAlignment}-color: rgba(0, 0, 0, 0.2);
+        #{$direction}: -#{$size}px;
+
+        @if $alignment == "near" {
+            #{$firstBorder}: $offset;
+        } @else if $alignment == "center" {
+            #{$firstBorder}: 50%;
+            margin-#{$firstBorder}: -#{$size + 1}px;
+        } @else if $alignment == "far" {
+            #{$secondBorder}: $offset;
+        }
+    }
+
+    &:after {
+        border-#{$firstBorder}: #{$size - 1}px solid transparent;
+        border-#{$secondBorder}: #{$size - 1}px solid transparent;
+        border-#{$elemAlignment}: #{$size - 1}px solid $backgroundColor;
+        #{$direction}: -#{$size - 1}px;
+
+        @if $alignment == "near" {
+            #{$firstBorder}: $offset+1px;
+        } @else if $alignment == "center" {
+            #{$firstBorder}: 50%;
+            margin-#{$firstBorder}: -#{$size}px;
+        } @else if $alignment == "far" {
+            #{$secondBorder}: $offset+1px;
+        }
+    }
+}
+
+@mixin fontastic($content, $size: 20px) {
+    display: inline-block;
+    font: normal normal normal 16px/1 'fontastic';
+    font-size: $size;
+    speak: none;
+    text-transform: none;
+    content: $content;
+}
+
+@mixin fontawesome($content, $size: inherit) {
+    display: inline-block;
+    font: normal normal normal 16px/1 'FontAwesome';
+    font-size: $size;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: $content;
+}
+
+@mixin active-list-item($size: 4px, $color: theme-color("warning")) {
+    position: absolute;
+    display: block;
+    content: ' ';
+    left: -1px;
+    top: -1px;
+    bottom: -1px;
+    width: $size;
+    background: $color;
+}
+
+@mixin font-inherit() {
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	color: inherit;
+	font-size: inherit;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+@mixin smaller() {
+    font-size: $font-size-sm !important;
+}
+
+
+// Functions
+// ===============================================
+
+@function color-yiq-ex($color, $text-dark: $yiq-text-dark, $text-light: $yiq-text-light) {
+	$r: red($color);
+	$g: green($color);
+	$b: blue($color);
+
+	$yiq: (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+
+	@if ($yiq >= $yiq-contrasted-threshold) {
+		@return $text-dark;
+	}
+	@else {
+		@return $text-light;
+	}
+}

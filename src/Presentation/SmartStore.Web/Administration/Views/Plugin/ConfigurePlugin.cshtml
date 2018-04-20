@@ -6,7 +6,7 @@
 
 <script>
 	$(function () {
-		Admin.movePluginActionButtons();
+		SmartStore.Admin.movePluginActionButtons();
 	});
 </script>
 
@@ -17,9 +17,9 @@
 		<a href='@Url.Action("List")'>(@T("Admin.Common.BackToList"))</a>
 	</div>
 	<div class="options">	
-		<a class="btn" href='@Url.Action("UpdateStringResources", new { systemName = Model.SystemName, returnUrl = Request.RawUrl })'>
+		<a class="btn btn-secondary" href='@Url.Action("UpdateStringResources", new { systemName = Model.SystemName, returnUrl = Request.RawUrl })'>
 			<i class="fa fa-refresh"></i>
-			@T("Admin.Configuration.Plugins.Resources.Update")
+			<span>@T("Admin.Configuration.Plugins.Resources.Update")</span>
 		</a>
 	</div>
 </div>
@@ -33,7 +33,7 @@
 		}
 		catch (Exception exception)
 		{
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				@T("Admin.Configuration.Plugins.UnknownError")
 			</div>
 

@@ -10,8 +10,8 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Orders
 {
     [Validator(typeof(CheckoutAttributeValidator))]
-    public class CheckoutAttributeModel : EntityModelBase, ILocalizedModel<CheckoutAttributeLocalizedModel>
-    {
+    public class CheckoutAttributeModel : EntityModelBase, ILocalizedModel<CheckoutAttributeLocalizedModel>, IStoreSelector
+	{
         public CheckoutAttributeModel()
         {
             Locales = new List<CheckoutAttributeLocalizedModel>();
@@ -55,9 +55,7 @@ namespace SmartStore.Admin.Models.Orders
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
+		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 	}
 

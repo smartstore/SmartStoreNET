@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
+	<Subject>{{ Store.Name }}. Neuer News Kommentar</Subject>
+	<ModelTypes>NewsComment</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Neuer News Kommentar,
+</h1>
+
+<p class="text-lg">
+  der News-Eintrag <a href="{{ NewsComment.NewsUrl }}">{{ NewsComment.NewsTitle }}</a> wurde von <a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a> kommentiert.
+</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="mb-3">
+        {{ NewsComment.Title }}
+      </h3>
+      <p class="message">
+        "{{ NewsComment.Text | Truncate: 400 }}"
+      </p>
+    </td>
+  </tr> 
+</table>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

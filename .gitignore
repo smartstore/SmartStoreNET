@@ -278,6 +278,7 @@ $RECYCLE.BIN/
 /src/Plugins/*-sym
 /src/Tests/*-sym
 /src/Presentation/SmartStore.Web/Themes/*-sym
+/src/Presentation/SmartStore.Web/Themes/HP
 
 
 ###########
@@ -319,3 +320,4 @@ Kopie von*
 
 src/SmartStoreNET.Packager.sln
 Log.txt
+src/Presentation/SmartStore.Web/Themes/FlexMuseo/

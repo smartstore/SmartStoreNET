@@ -14,14 +14,14 @@
 {
     using (Html.BeginForm())
     {
-        <div class="recurring-payments">
+        <div class="recurring-payments mb-3">
             <div class="section-title">
                 @T("Account.CustomerOrders.RecurringOrders")
             </div>
 
             <div><hr /></div>
 
-            <div class="recurring-payments-box">
+            <div class="recurring-payments-box table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
@@ -113,13 +113,13 @@
     @foreach (var order in Model.Orders)
     {
         <div class="card card-shadow order-item">
-			<div class="card-block">
+			<div class="card-body">
 				<h4 class="card-title mb-4">@T("Order.Order#"): @order.OrderNumber</h4>
 				<dl class="row mb-0">
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderStatus")</dt>
 					<dd class="col-sm-9">@order.OrderStatus</dd>
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderDate")</dt>
-					<dd class="col-sm-9">@order.CreatedOn.ToString()</dd>
+					<dd class="col-sm-9">@order.CreatedOn.ToNativeString()</dd>
 					<dt class="col-sm-3 font-weight-400 text-muted">@T("Order.OrderTotal")</dt>
 					<dd class="col-sm-9 price">@order.OrderTotal</dd>
 				</dl>

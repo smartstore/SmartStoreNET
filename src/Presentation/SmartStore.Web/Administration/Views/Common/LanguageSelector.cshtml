@@ -7,28 +7,31 @@
         @Html.Hidden("customerlanguage", Model.CurrentLanguage.Id)
     }
     
-    <div class="btn-group toppad pull-right">
-        <button class="btn dropdown-toggle navbar-tool" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
-			<i class="fa fa-language"></i>
-			<span>@Model.CurrentLanguage.UniqueSeoCode.ToUpper()</span>
-        </button>
-        <ul id="language-selector" class="dropdown-menu">
+    <li class="nav-item dropdown d-none d-md-block">
+        <a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
+			<i class="icm icm-earth navbar-icon"></i>
+			<span class="pl-2">@Model.CurrentLanguage.UniqueSeoCode.ToUpper()</span>
+        </a>
+        <div id="language-selector" class="dropdown-menu dropdown-menu-right">
             @foreach (var language in Model.AvailableLanguages)
             {
-                <li @Html.Css("disabled", language.Id == Model.CurrentLanguage.Id)>
-                    <a href="javascript:void(0)" data-lang-id='@language.Id'>
-                        <img src='@Url.Content("~/Content/Images/flags/" + @language.FlagImageFileName)' alt="@language.Name" />
-                        @language.Name
-                    </a>
-                </li>
+                <a href="javascript:void(0)" data-lang-id='@language.Id' class="dropdown-item@(language.Id == Model.CurrentLanguage.Id ? " disabled" : "")">
+                    <img src='@Url.Content("~/Content/Images/flags/" + @language.FlagImageFileName)' alt="@language.Name" />
+                    @language.Name
+                </a>
             }
-        </ul>
-    </div>
+
+			<div class="dropdown-divider"></div>
+
+			<a href="@Url.Action("List", "Language")" class="dropdown-item manage-languages">
+				@T("Admin.Configuration.ManageLanguages")
+			</a>
+        </div>
+    </li>
     
     <script>
         $(document).ready(function () {
-
-            $("#language-selector > li:not(.disabled) > a").click(function () {
+			$("#language-selector > .dropdown-item:not(.disabled, .manage-languages)").on('click', function () {
                 var el = $(this);
                 var langId = el.data("lang-id");
                 $("#customerlanguage").val(langId);

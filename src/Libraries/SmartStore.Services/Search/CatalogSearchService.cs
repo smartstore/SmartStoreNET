@@ -105,6 +105,11 @@ namespace SmartStore.Services.Search
 						using (_services.Chronometer.Step(stepPrefix + "Count"))
 						{
 							totalCount = searchEngine.Count();
+							// Fix paging boundaries
+							if (searchQuery.Skip > 0 && searchQuery.Skip >= totalCount)
+							{
+								searchQuery.Slice((totalCount / searchQuery.Take) * searchQuery.Take, searchQuery.Take);
+							}
 						}
 
 						using (_services.Chronometer.Step(stepPrefix + "Hits"))
@@ -183,7 +188,7 @@ namespace SmartStore.Services.Search
 
 		protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
 		{
-			if (facets == null | facets.Count == 0)
+			if (facets == null || facets.Count == 0)
 			{
 				return;
 			}

@@ -10,5 +10,8 @@ namespace SmartStore.FacebookAuth.Models
 
         [SmartResourceDisplayName("Plugins.ExternalAuth.Facebook.ClientSecret")]
         public string ClientSecret { get; set; }
-    }
+
+		[SmartResourceDisplayName("Plugins.ExternalAuth.Facebook.RedirectUri")]
+		public string RedirectUrl { get; set; }
+	}
 }

@@ -30,12 +30,12 @@ namespace SmartStore.Shipping.Controllers
 			AdminAreaSettings adminAreaSettings,
 			ICommonServices services)
         {
-            this._shippingService = shippingService;
-            this._shippingByTotalService = shippingByTotalService;
-            this._shippingByTotalSettings = shippingByTotalSettings;
-            this._countryService = countryService;
-			this._adminAreaSettings = adminAreaSettings;
-			this._services = services;
+            _shippingService = shippingService;
+            _shippingByTotalService = shippingByTotalService;
+            _shippingByTotalSettings = shippingByTotalSettings;
+            _countryService = countryService;
+			_adminAreaSettings = adminAreaSettings;
+			_services = services;
         }
 
         public ActionResult Configure()
@@ -148,22 +148,26 @@ namespace SmartStore.Shipping.Controllers
                 BaseCharge = model.AddBaseCharge,
                 MaxCharge = model.AddMaxCharge
             };
+
             _shippingByTotalService.InsertShippingByTotalRecord(shippingByTotalRecord);
 
-            return Json(new { Result = true });
+			NotifySuccess(T("Plugins.Shipping.ByTotal.AddNewRecord.Success"));
+
+			return Json(new { Result = true });
         }
 
         [HttpPost]
-        public ActionResult SaveGeneralSettings(ByTotalListModel model)
+        public ActionResult Configure(ByTotalListModel model)
         {
-            //save settings
             _shippingByTotalSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
             _shippingByTotalSettings.SmallQuantityThreshold = model.SmallQuantityThreshold;
             _shippingByTotalSettings.SmallQuantitySurcharge = model.SmallQuantitySurcharge;
 
             _services.Settings.SaveSetting(_shippingByTotalSettings);
 
-            return Json(new { Result = true });
-        }
+			NotifySuccess(T("Admin.Configuration.Updated"));
+
+			return Configure();
+		}
     }
 }

@@ -1,15 +1,13 @@
-﻿@{
-    Layout = "";
-}
-@model SmartStore.FacebookAuth.Models.ConfigurationModel
+﻿@model SmartStore.FacebookAuth.Models.ConfigurationModel
 @using SmartStore.Web.Framework;
+@{
+	Layout = "";
+}
 
-<div class="debitoor-instructions alert alert-info">
-	<button class="close" data-dismiss="alert">×</button>
+<div class="alert alert-info alert-dismissible">
 	@Html.Raw(T("Plugins.ExternalAuth.Facebook.AdminInstruction"))
+	<button class="close" data-dismiss="alert">&times;</button>
 </div>
-
-<div class="clear"></div>
 
 @{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
 
@@ -18,8 +16,9 @@
 @using (Html.BeginForm())
 {
 	<div class="plugin-actions">
-		<button type="submit" name="save" value="save" class="btn btn-primary">
-			<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+		<button type="submit" name="save" value="save" class="btn btn-warning">
+			<i class="fa fa-check"></i>
+			<span>@T("Admin.Common.Save")</span>
 		</button>
 	</div>
 	<table class="adminContent">
@@ -39,6 +38,14 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ClientSecret)
                 @Html.ValidationMessageFor(model => model.ClientSecret)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RedirectUrl)
+            </td>
+            <td class="adminData wide">
+				@Html.TextBoxFor(model => model.RedirectUrl, new { @readonly = "readonly", @class = "form-control-plaintext" })
             </td>
         </tr>
     </table>

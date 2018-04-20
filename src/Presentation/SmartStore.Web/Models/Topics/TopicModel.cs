@@ -1,4 +1,5 @@
-﻿using SmartStore.Web.Framework.Modelling;
+﻿using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Topics
 {
@@ -10,9 +11,9 @@ namespace SmartStore.Web.Models.Topics
 
         public bool IsPasswordProtected { get; set; }
 
-        public string Title { get; set; }
+        public LocalizedValue<string> Title { get; set; }
 
-        public string Body { get; set; }
+        public LocalizedValue<string> Body { get; set; }
 
         public string MetaKeywords { get; set; }
 

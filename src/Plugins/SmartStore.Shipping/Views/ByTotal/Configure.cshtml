@@ -1,103 +1,140 @@
-﻿@{
-    Layout = "";
-}
-@model ByTotalListModel
-
+﻿@model ByTotalListModel
 @using SmartStore.Shipping.Models;
 @using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI
+@{
+	Layout = "";
+}
 
-<a href="#addrecord-window" id="addrecord-button" data-toggle="modal" class="btn btn-primary hide">
-    <i class="fa fa-plus"></i>
-    @T("Plugins.Shipping.ByTotal.AddNewRecordTitle")
-</a>
-
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<ByTotalModel>()
-                    .Name("shipping-bytotal-grid")
-                    .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
-                    .DataBinding(dataBinding => dataBinding
-                        .Ajax()
-							.Select("RatesList", "ByTotal", new RouteValueDictionary() { { "area", "SmartStore.Shipping" } })
-                            .Update("RateUpdate", "ByTotal", new RouteValueDictionary() { { "area", "SmartStore.Shipping" } })
-                            .Delete("RateDelete", "ByTotal", new RouteValueDictionary() { { "area", "SmartStore.Shipping" } })
-                    )
-                    .Columns(columns =>
-                    {
-						columns.Bound(x => x.StoreName).ReadOnly();
-                        columns.Bound(x => x.CountryName).ReadOnly();
-                        columns.Bound(x => x.StateProvinceName).ReadOnly();
-                        columns.Bound(x => x.Zip);
-                        columns.Bound(x => x.ShippingMethodName).ReadOnly();
-						columns.Bound(x => x.From)
-							.Format("{0:0.00}");
-						columns.Bound(x => x.To)
-							.Format("{0:0.00}");
-                        columns.Bound(x => x.UsePercentage)
-                            .Centered()
-                            .Template(item => @Html.SymbolForBool(item.UsePercentage))
-                            .ClientTemplate(@Html.SymbolForBool("UsePercentage"));
-                        columns.Bound(x => x.ShippingChargePercentage)
-							.Format("{0:0.00}");
-						columns.Bound(x => x.ShippingChargeAmount)
-							.Format("{0:0.00}");
-						columns.Bound(x => x.BaseCharge)
-							.Format("{0:0.00}");
-                        columns.Bound(x => x.MaxCharge)
-							.Format("{0:0.00}");
-                        columns.Command(commands =>
-                        {
-                            commands.Edit().Localize(T);
-                            commands.Delete().Localize(T);
-                        }).Width(190);
-                    })
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                    .Editable(x => x.Mode(GridEditMode.InLine))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
-
-<script type="text/javascript">
-     $(function() {
-
-         $("#addrecord-button").appendTo($(".section-header .options")).removeClass("hide");
-
-         $("#@Html.FieldIdFor(model => model.AddCountryId)").change(function () {
-                var selectedItem = $(this).val();
-                var ddlStates = $("#@Html.FieldIdFor(model => model.AddStateProvinceId)")
-                $.ajax({
-                    cache:false,
-                    type: "GET",
-                    url: "@(Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }))",
-                    data: { "countryId": selectedItem, "addAsterisk": "false" },
-                    success: function (data) {
-                        ddlStates.html('');
-                        ddlStates.append($('<option></option>'));
-                        $.each(data, function(id, option) {
-                            ddlStates.append($('<option></option>').val(option.id).html(option.name));
-                        });
-                        ddlStates.trigger("change");
-                    },
-                    error:function (xhr, ajaxOptions, thrownError){
-                        alert('Failed to retrieve states.')
-                    }  
-                });
-            });
-        });
-</script>
+<div class="plugin-actions">
+	<button type="submit" name="save" value="save" class="btn btn-warning">
+		<i class="fa fa-check"></i>
+		<span>@T("Admin.Common.Save")</span>
+	</button>
+</div>
 
 @using (Html.BeginForm())
-{       
-    <script type="text/javascript">
-        $(function () {
-            $("#@Html.FieldIdFor(model => model.AddUsePercentage)").click(toggleAddUsePercentage);
-            toggleAddUsePercentage();
-        });
+{
+	@Html.SmartStore().TabStrip().Name("shipping-by-weight-edit").Style(TabsStyle.Material).Items(x =>
+	{
+		x.Add().Text(T("Plugins.Shipping.ByTotal.TabTitleGrid").Text).Content(TabGrid()).Selected(true);
+		x.Add().Text(T("Plugins.Shipping.ByTotal.TabTitleSettings").Text).Content(TabSettings());
+	})
+}
+
+@helper TabSettings()
+{
+	<table class="adminContent mb-5">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SmallQuantityThreshold)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SmallQuantityThreshold, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SmallQuantitySurcharge, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LimitMethodsToCreated)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.LimitMethodsToCreated)
+				@Html.ValidationMessageFor(model => model.LimitMethodsToCreated)
+			</td>
+		</tr>
+	</table>
+}
+
+@helper TabGrid()
+{
+	<div>
+		@(Html.Telerik().Grid<ByTotalModel>()
+		.Name("shipping-bytotal-grid")
+		.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
+		.DataBinding(dataBinding => dataBinding
+			.Ajax()
+				.Select("RatesList", "ByTotal", new RouteValueDictionary() { { "area", "SmartStore.Shipping" } })
+				.Update("RateUpdate", "ByTotal", new RouteValueDictionary() { { "area", "SmartStore.Shipping" } })
+				.Delete("RateDelete", "ByTotal", new RouteValueDictionary() { { "area", "SmartStore.Shipping" } })
+		)
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.StoreName)
+				.Width("7.33%")
+				.ReadOnly();
+			columns.Bound(x => x.CountryName)
+				.Width("7.33%")
+				.ReadOnly();
+			columns.Bound(x => x.StateProvinceName)
+				.Width("7.33%")
+				.ReadOnly();
+			columns.Bound(x => x.Zip)
+				.Width("7.33%");
+			columns.Bound(x => x.ShippingMethodName)
+				.Width("7.33%")
+				.ReadOnly();
+			columns.Bound(x => x.From)
+				.Width("7.33%")
+				.Format("{0:0.00}");
+			columns.Bound(x => x.To)
+				.Width("7.33%")
+				.Format("{0:0.00}");
+			columns.Bound(x => x.UsePercentage)
+				.Centered()
+				.Width("7.33%")
+				.Template(item => @Html.SymbolForBool(item.UsePercentage))
+				.ClientTemplate(@Html.SymbolForBool("UsePercentage"));
+			columns.Bound(x => x.ShippingChargePercentage)
+				.Width("7.33%")
+				.Format("{0:0.00}");
+			columns.Bound(x => x.ShippingChargeAmount)
+				.Width("7.33%")
+				.Format("{0:0.00}");
+			columns.Bound(x => x.BaseCharge)
+				.Width("7.33%")
+				.Format("{0:0.00}");
+			columns.Bound(x => x.MaxCharge)
+				.Width("7.33%")
+				.Format("{0:0.00}");
+			columns.Command(commands =>
+			{
+				commands.Edit().Localize(T);
+				commands.Delete().Localize(T);
+			}).Width("12%").HtmlAttributes(new { align = "right" });
+		})
+		.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		.Editable(x => x.Mode(GridEditMode.InLine))
+		.ToolBar(commands => commands.Template(ShippingByTotalGridCommands))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+	</div>
+}
+
+@helper ShippingByTotalGridCommands(Grid<ByTotalModel> grid)
+{
+	<a href="#addrecord-window" id="addrecord-button" data-toggle="modal" class="t-button t-button-primary">
+		<i class="fa fa-plus"></i>
+		<span>@T("Plugins.Shipping.ByTotal.AddNewRecordTitle")</span>
+	</a>
+}
+
+<script type="text/javascript">
+	$(function () {
+        
+        $("#@Html.FieldIdFor(model => model.AddUsePercentage)").click(toggleAddUsePercentage);
+        toggleAddUsePercentage();
+
         function toggleAddUsePercentage() {
             if ($('#@Html.FieldIdFor(model => model.AddUsePercentage)').is(':checked')) {
                 $('#pnlAddShippingChargePercentage').show();
@@ -111,221 +148,172 @@
                 $('#pnlAddMaxCharge').hide();
                 $('#pnlAddShippingChargeAmount').show();
             }
-        }
-        $(function () {
-            $('#addshippingbytotalrecord').click(function (e) {
-                e.preventDefault();
+		}
+		 
+        $('#addshippingbytotalrecord').click(function (e) {
+            e.preventDefault();
 
-                $.ajax({
-                    cache: false,
-                    type: 'POST',
-                    url: '@Url.Action("AddShippingRate")',
-                    data: $(this.form).serialize(),
-                    dataType: 'json',
-                    success: function (data) {
-                        var shippingByTotalGrid = $("#shipping-bytotal-grid");
-                        shippingByTotalGrid.data('tGrid').ajaxRequest();
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        alert('Failed to add record.');
-                    },
-                    complete: function () {
-                        $('#addrecord-window').data('modal').hide();
-                    }
-                });
-                return false;
-            });
-        });
+			var form = $("#addrecord-window").find("form");
+				
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '@Url.Action("AddShippingRate")',
+				data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    var shippingByTotalGrid = $("#shipping-bytotal-grid");
+                    shippingByTotalGrid.data('tGrid').ajaxRequest();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Failed to add record.');
+                },
+                complete: function () {
+                    $('#addrecord-window').modal('hide');
+                }
+			});
 
-        $(function () {
-            $('#savegeneralsettings').click(function () {
-                $.ajax({
-                    cache: false,
-                    type: 'POST',
-                    url: '@Url.Action("SaveGeneralSettings")',
-                    data: $(this.form).serialize(),
-                    dataType: 'json',
-                    success: function (data) {
-                    	EventBroker.publish('message', { title: '@T("Admin.Common.DataEditSuccess")', type: 'success' });
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        alert('Failed to add record.');
-                    }
-                });
-                return false;
-            });
+            return false;
         });
-    </script>
+	});
+</script>
     
-    {Html.SmartStore().Window()
-        .Name("addrecord-window")
-        .Title(T("Plugins.Shipping.ByTotal.AddNewRecordTitle"))
-        .Content(
-        @<text>
-            <table class="adminContent">
-			    <tr>
-				    <td class="adminTitle">
-					    @Html.SmartLabelFor(model => model.AddStoreId)
-				    </td>
-				    <td class="adminData">
-					    @Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
-					    @Html.ValidationMessageFor(model => model.AddStoreId)
-				    </td>
-			    </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddCountryId)
-                    </td>
-                    <td class="adminData">
-                        @Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries, "*")
-                        @Html.ValidationMessageFor(model => model.AddCountryId)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddStateProvinceId)
-                    </td>
-                    <td class="adminData">
-                        @Html.DropDownListFor(model => model.AddStateProvinceId, Model.AvailableStates, "*")
-                        @Html.ValidationMessageFor(model => model.AddStateProvinceId)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddZip)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddZip)
-                        @Html.ValidationMessageFor(model => model.AddZip)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddShippingMethodId)
-                    </td>
-                    <td class="adminData">
-                        @Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
-                        @Html.ValidationMessageFor(model => model.AddShippingMethodId)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddFrom)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddFrom) [@Model.PrimaryStoreCurrencyCode]
-                        @Html.ValidationMessageFor(model => model.AddFrom)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddTo)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddTo) [@Model.PrimaryStoreCurrencyCode]
-                        @Html.ValidationMessageFor(model => model.AddTo)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddUsePercentage)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddUsePercentage)
-                        @Html.ValidationMessageFor(model => model.AddUsePercentage)
-                    </td>
-                </tr>
-                <tr id="pnlAddShippingChargePercentage">
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddShippingChargePercentage)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddShippingChargePercentage)
-                        @Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
-                    </td>
-                </tr>
-                <tr id="pnlAddBaseCharge">
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddBaseCharge)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddBaseCharge) [@Model.PrimaryStoreCurrencyCode]
-                        @Html.ValidationMessageFor(model => model.AddBaseCharge)
-                    </td>
-                </tr>
-                <tr id="pnlAddMaxCharge">
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddMaxCharge)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddMaxCharge) [@Model.PrimaryStoreCurrencyCode]
-                        @Html.ValidationMessageFor(model => model.AddMaxCharge)
-                    </td>
-                </tr>
-                <tr id="pnlAddShippingChargeAmount">
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.AddShippingChargeAmount)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.AddShippingChargeAmount) [@Model.PrimaryStoreCurrencyCode]
-                        @Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
-                    </td>
-                </tr>
-            </table>  
-        </text>)
-        .FooterContent(@<text>
-            <button id="addshippingbytotalrecord" type="button" class="btn btn-primary">
-				<i class="fa fa-ok"></i>&nbsp;@T("Common.AddNew")
-			</button>
-            <button type="button" class="btn" data-dismiss="modal">@T("Admin.Common.Cancel")</button>
-        </text>)
-        .Modal(true)
-        .Visible(false)
-        .Render();
-    }
-   
-    <br />
-    
-    <fieldset>
-        <legend><span>@T("Plugins.Shipping.ByTotal.SettingsTitle")</span></legend>
-        <table class="adminContent">
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SmallQuantityThreshold)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.SmallQuantityThreshold) [@Model.PrimaryStoreCurrencyCode]
-                    @Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.SmallQuantitySurcharge) [@Model.PrimaryStoreCurrencyCode]
-                    @Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.LimitMethodsToCreated)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.LimitMethodsToCreated)
-                    @Html.ValidationMessageFor(model => model.LimitMethodsToCreated)
-                </td>
-            </tr>
-            <tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-                    <button type="button" id="savegeneralsettings" class="btn btn-primary">
-                        <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-                    </button>
-                </td>
-            </tr>
-        </table>
-    </fieldset>
+@{Html.SmartStore().Window()
+    .Name("addrecord-window")
+	.Size(WindowSize.Large)
+    .Title(T("Plugins.Shipping.ByTotal.AddNewRecordTitle"))
+    .Content(
+    @<text>
+		<form method="post">
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddStoreId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddStoreId, Model.AvailableStores)
+						@Html.ValidationMessageFor(model => model.AddStoreId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddCountryId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownList("CountryId", Model.AvailableCountries, "*",
+						new
+						{
+							@class = "form-control country-input country-selector",
+							data_region_control_selector = "#AddStateProvinceId",
+							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }),
+							data_addAsterisk = "true",
+							data_addEmptyStateIfRequired = "false"
+						})
+
+						@Html.ValidationMessageFor(model => model.AddCountryId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddStateProvinceId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddStateProvinceId, Model.AvailableStates, "*")
+						@Html.ValidationMessageFor(model => model.AddStateProvinceId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddZip)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddZip)
+						@Html.ValidationMessageFor(model => model.AddZip)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddShippingMethodId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
+						@Html.ValidationMessageFor(model => model.AddShippingMethodId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddFrom)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddFrom, new { postfix = Model.PrimaryStoreCurrencyCode })
+						@Html.ValidationMessageFor(model => model.AddFrom)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddTo)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddTo, new { postfix = Model.PrimaryStoreCurrencyCode })
+						@Html.ValidationMessageFor(model => model.AddTo)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddUsePercentage)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddUsePercentage)
+						@Html.ValidationMessageFor(model => model.AddUsePercentage)
+					</td>
+				</tr>
+				<tr id="pnlAddShippingChargePercentage">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddShippingChargePercentage)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddShippingChargePercentage)
+						@Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
+					</td>
+				</tr>
+				<tr id="pnlAddBaseCharge">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddBaseCharge)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddBaseCharge, new { postfix = Model.PrimaryStoreCurrencyCode })
+						@Html.ValidationMessageFor(model => model.AddBaseCharge)
+					</td>
+				</tr>
+				<tr id="pnlAddMaxCharge">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddMaxCharge)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddMaxCharge, new { postfix = Model.PrimaryStoreCurrencyCode })
+						@Html.ValidationMessageFor(model => model.AddMaxCharge)
+					</td>
+				</tr>
+				<tr id="pnlAddShippingChargeAmount">
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddShippingChargeAmount)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddShippingChargeAmount, new { postfix = Model.PrimaryStoreCurrencyCode })
+						@Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
+					</td>
+				</tr>
+			</table>
+		</form>
+	</text>)
+    .FooterContent(@<text>
+        <button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+		<button id="addshippingbytotalrecord" type="submit" class="btn btn-primary">
+			<i class="fa fa-check"></i>
+			<span>@T("Common.AddNew")</span>
+		</button>
+    </text>)
+    .Render();
 }

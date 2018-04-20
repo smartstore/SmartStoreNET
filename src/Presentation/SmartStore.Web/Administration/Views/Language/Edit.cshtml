@@ -1,74 +1,149 @@
 ﻿@model LanguageModel
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Languages.EditLanguageDetails").Text;
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
+            <i class="fa fa-language"></i>
             @T("Admin.Configuration.Languages.EditLanguageDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Configuration.Languages.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-            <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn">@T("Admin.Configuration.Languages.Export")</a>
-            <a href="#importxml-window" data-toggle="modal" class="btn">@T("Admin.Configuration.Languages.Import")</a>
-            <button type="submit" id="language-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+                <i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+            </button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+                <span>@T("Admin.Common.SaveContinue")</span>
+            </button>
+            <a href="@Url.Action("ExportXml", new { id = Model.Id })" class="btn btn-secondary" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
+                <i class="fa fa-upload"></i>
+				<span>@T("Admin.Configuration.Languages.Export")</span>
+            </a>
+            <a href="#importxml-window" data-toggle="modal" class="btn btn-secondary">
+                <i class="fa fa-download"></i>
+				<span>@T("Admin.Configuration.Languages.Import")</span>
+            </a>
+            <button type="submit" id="language-delete" class="btn btn-danger">
+                <i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
+            </button>
         </div>
     </div>
 
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("language-delete")
-@*import resources form*@
-@{Html.SmartStore().Window()
-        .Name("importxml-window")
-        .Title(T("Admin.Configuration.Languages.Import").Text)
-        .Content(@<text>
-    @using (Html.BeginForm("ImportXml", "Language", new { id = Model.Id }, FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        <div style="margin-bottom: 8px">
-            <strong>@T("Admin.Configuration.Languages.XmlFile"):</strong> <input type="file" id="importxmlfile" name="importxmlfile" />
-        </div>
 
-        <label class="radio">
-            @Html.RadioButton("mode", "3", true, new { id = "importxmlmode_3" })
-            @T("Admin.Configuration.Languages.Import.InsertUpdate")
-        </label>
-        <label class="radio">
-            @Html.RadioButton("mode", "1", false, new { id = "importxmlmode_1" })
-            @T("Admin.Configuration.Languages.Import.Insert")
-        </label>
-        <label class="radio">
-            @Html.RadioButton("mode", "2", false, new { id = "importxmlmode_2" })
-            @T("Admin.Configuration.Languages.Import.Update")
-        </label>
-        <hr />
-        <label class="checkbox">
-            @Html.CheckBox("updatetouched", false, new { id = "importxmlupdatetouched" })
-            <span class="caption">@T("Admin.Configuration.Languages.Import.UpdateTouched")</span>
-        </label>
-        
-    }
+@*Import resources dialog*@
+@{Html.SmartStore().Window()
+    .Name("importxml-window")
+    .Title(T("Admin.Configuration.Languages.Import"))
+    .Content(@<text>
+
+	<form enctype="multipart/form-data" method="POST" action="@Url.Action("ImportXml", "Language", new { id = Model.Id })">
+
+        @Html.SmartStore().TabStrip().Name("language-import-tab").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
+        {
+            x.Add().Text(T("Admin.Configuration.Languages.XmlFile").Text).Content(TabImportXmlFile()).Selected(true);
+            x.Add().Text(T("Common.Download").Text).Content(TabImportDownload());
+            EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "language-import-tab", this.Html, this.Model));
+        })
+		
+        <div class="mt-3">
+			<div class="form-check">
+				@Html.RadioButton("mode", "3", true, new { id = "importxmlmode_3", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlmode_3">@T("Admin.Configuration.Languages.Import.InsertUpdate")</label>
+			</div>
+			<div class="form-check">
+				@Html.RadioButton("mode", "1", false, new { id = "importxmlmode_1", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlmode_1">@T("Admin.Configuration.Languages.Import.Insert")</label>
+			</div>
+			<div class="form-check">
+				@Html.RadioButton("mode", "2", false, new { id = "importxmlmode_2", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlmode_2">@T("Admin.Configuration.Languages.Import.Update")</label>
+			</div>
+			<hr />
+			<div class="form-check">
+				@Html.CheckBox("updatetouched", false, new { id = "importxmlupdatetouched", @class = "form-check-input" })
+				<label class="form-check-label" for="importxmlupdatetouched">@T("Admin.Configuration.Languages.Import.UpdateTouched")</label>
+			</div>
+        </div>
+    </form>
     </text>)
     .FooterContent(@<text>
-        <button id="importxmlsubmit" type="button" class="btn btn-primary">@T("Admin.Configuration.Languages.Import")</button>
-        <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+        <a href="#" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Common.Cancel")</span>
+		</a>
+		<button id="importxmlsubmit" type="button" class="btn btn-primary">
+			<i class="fa fa-download"></i>
+			<span>@T("Admin.Configuration.Languages.Import")</span>
+		</button>
     </text>)
-        .Width(400)
-        .Modal(true)
-        .Visible(false)
-        .Render();
+    .Size(WindowSize.Large)
+    .Render();
 }
+
+@helper TabImportXmlFile()
+{
+    <div class="form-group">
+        <input type="file" id="importxmlfile" name="importxmlfile" class="form-control-file" accept=".xml" />
+    </div>
+}
+
+@helper TabImportDownload()
+{
+    <div>
+        @if (Model.AvailableDownloadLanguages.Any())
+        {
+            <table class="adminContent">
+                <tr class="wide">
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.AvailableLanguageSetId)
+                    </td>
+                    <td class="adminData">
+                        <select id="@Html.FieldIdFor(x => x.AvailableLanguageSetId)" name="@Html.FieldNameFor(x => x.AvailableLanguageSetId)" 
+                                class="form-control form-control-lg select-customtemplate drop-customtemplate" data-placeholder="@T("Common.Unspecified")">
+                            <option></option>
+                            @foreach (var item in Model.AvailableDownloadLanguages.OrderBy(x => x.DisplayOrder))
+                            {
+                                var translated = T("Admin.Configuration.Languages.TranslatedPercentage", item.TranslatedPercentage.ToString("G29"));
+                                if (item.TranslatedPercentageAtLastImport.HasValue)
+                                {
+                                    translated = string.Concat(
+                                        translated,
+                                        ". ",
+                                        T("Admin.Configuration.Languages.TranslatedPercentageAtLastImport", item.TranslatedPercentageAtLastImport.Value.ToString("G29")));
+                                }
+                                <option value="@item.Id" data-imagename="@item.FlagImageFileName" data-translated="@(translated).">@item.Name</option>
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.AvailableLanguageSetId)
+                    </td>
+                </tr>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                @T("Admin.Configuration.Languages.NoAvailableLanguagesFound", SmartStoreVersion.CurrentFullVersion)
+            </div>
+        }
+    </div>
+}
+
 <script type="text/javascript">
     $(document).ready(function () {
+
+        // Submit resources import form
         $("#importxmlsubmit").click(function (e) {
             e.preventDefault();
             $('#importxml-window').find("form").submit();
         });
 
+        // Import mode changed
         $("#importxml-window input[name=mode]").on("change", function (e) {
             var id = $(this).attr("id");
             var chk = $("#importxmlupdatetouched");
@@ -79,6 +154,42 @@
                 chk.removeAttr("disabled").parent().find(">span").removeClass("muted");
             }
         });
-    });
 
+        //
+        $('#@Html.FieldIdFor(x => x.AvailableLanguageSetId)').selectWrapper({
+            allowClear: true,
+            minimumResultsForSearch: 16,
+            templateResult: availableLanguagesSelectItemFormatting,
+            templateSelection: availableLanguagesSelectItemFormatting
+        });
+
+        function availableLanguagesSelectItemFormatting(item) {
+            try {
+                var option = $(item.element);
+
+                if (option.length === 0) {
+                    option = $('#@Html.FieldIdFor(x => x.AvailableLanguageSetId)').find('option[value="' + item.id + '"]');
+                }
+
+				var html = '<div class="form-row flex-nowrap align-items-center">',
+                    imageName = option.attr('data-imagename');
+
+                if (imageName.length > 0) {
+					//html += '<img src="@Url.Content("~/Content/Images/flags/")' + imageName + '" style="float: left; margin-top: 3px;" />';
+					html += '<div class="col" style="max-width:48px; width:48px"><div class="img-center-container"><img class="img-fluid" src="@Url.Content("~/Content/Images/flags/")' + imageName + '" /></div></div>';
+				}
+
+				html += '<div class="col">';
+				html += '<div class="fs-xs font-weight-medium">' + item.text + '</div>';
+				html += '<div class="text-muted fs-xs">' + option.attr('data-translated') + '</div>';
+                html += '</div>';
+                html += '</div>';
+
+                return $(html);
+            }
+            catch (e) { }
+
+            return item.text;
+        }
+    });
 </script>

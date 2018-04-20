@@ -54,7 +54,7 @@
 				}
 			}
 
-			<h3 class="art-name">
+			<h3 @Html.LanguageAttributes(Model.Name) class="art-name">
 				<a href="@artDetailUrl" title="@Model.Name">
 					<span>@Model.Name</span>
 				</a>
@@ -62,8 +62,8 @@
 
 			@if (list.ShowDescription)
 			{
-				<div class="art-description" title="@Model.ShortDescription">
-					@Html.Raw(Model.ShortDescription.Truncate(160, "..."))
+				<div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription">
+					@Html.Raw(Model.ShortDescription.Value.Truncate(160, "..."))
 				</div>
 			}
 
@@ -73,21 +73,21 @@
 					@if (list.ShowSku && Model.Sku.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Sku"):</td>
+							<td>@T("Products.Sku")</td>
 							<td>@Model.Sku</td>
 						</tr>
 					}
 					@if (list.ShowWeight && Model.Weight.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Weight"):</td>
+							<td>@T("Products.Weight")</td>
 							<td>@Model.Weight</td>
 						</tr>
 					}
 					@if (list.ShowDimensions && Model.Dimensions.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</td>
+							<td>@T("Products.Dimensions") <span class="lrm">(@Model.DimensionMeasureUnit)</span></td>
 							<td>@Model.Dimensions</td>
 						</tr>
 					}
@@ -107,7 +107,7 @@
 			@if (list.ShowLegalInfo)
 			{
 				<div class="art-legalinfo">
-					* @Html.Raw(Model.LegalInfo)
+					<span>*</span> <span>@Html.Raw(Model.LegalInfo)</span>
 				</div>
 			}
 		</div>

@@ -1,0 +1,9 @@
+.CodeMirror {
+	border: 1px solid rgba(0,0,0, 0.25);
+	height: 500px;
+	text-align: left;
+}
+
+.CodeMirror pre {
+	font-size: 13px;
+}

@@ -11,7 +11,7 @@
 			@Html.SmartLabelFor(model => model.Id)
 		</td>
 		<td class="adminData">
-			@Html.DisplayFor(model => model.Id)
+			@Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
 		</td>
 	</tr>
 	<tr>

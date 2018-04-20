@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ GiftCard.RecipientName }} &lt;{{ GiftCard.RecipientEmail }}&gt;</To>
+	<ReplyTo>{{ GiftCard.RecipientName }} &lt;{{ GiftCard.RecipientEmail }}&gt;</ReplyTo>
+	<Subject>{{ GiftCard.SenderName }} hat Ihnen einen Geschenkgutschein für {{ Store.Name }} geschickt</Subject>
+	<ModelTypes>GiftCard, GiftCard.PurchasedWithOrderItem, GiftCard.PurchasedWithOrderItem.Product, GiftCard.PurchasedWithOrderItem.Order.Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hallo {{ GiftCard.RecipientName }},
+</h1>
+
+<p>
+	Sie haben einen Geschenkgutschein in Höhe von <b class="text-success text-lg">{{ GiftCard.Amount }}</b> für den Online-Shop <a href="{{ Store.Url }}">{{ Store.Name }}</a> erhalten.
+</p>
+
+<table class="w-100">
+	<tr>
+  	<td class="bg-success text-white p-3 text-center">
+        <b>Ihr Gutschein Code:</b><br />
+  			<b class="text-xl">{{ GiftCard.CouponCode }}</b>
+    </td>
+  </tr> 
+</table>
+<p>&nbsp;</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="mb-3">
+        Persönliche Nachricht
+      </h3>
+      <p>
+        {{ GiftCard.Message }}
+      </p>
+    </td>
+  </tr> 
+</table>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

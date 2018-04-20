@@ -1,57 +1,19 @@
 ﻿@model ProductModel
-
 @using Telerik.Web.Mvc.UI;
 
 @if (Model.Id > 0)
 {
-    <div>
-        @(Html.Telerik().Grid<ProductModel.ProductPictureModel>()
-            .Name("productpictures-grid")
-            .DataKeys(x =>
-            {
-                x.Add(y => y.Id).RouteKey("Id");
-            })
-            .Columns(columns =>
-            {
-                columns.Bound(x => x.PictureUrl)
-                    .Width(400)
-                    .Centered()
-                    .ClientTemplate("<a href='<#= PictureUrl #>' target='_blank'><img alt='<#= PictureId #>' src='<#= PictureUrl #>' class='img-polaroid' style='max-height: 100px' /><a/>")
-                    .ReadOnly();
-                columns.Bound(x => x.DisplayOrder).Width(100);
-                columns.Command(commands =>
-                {
-                    commands.Edit().Localize(T);
-                    commands.Delete().Localize(T);
-                }).Width(180);
-
-            })
-            .Editable(x =>
-            {
-                x.Mode(GridEditMode.InLine);
-            })
-            .DataBinding(dataBinding =>
-            {
-                dataBinding.Ajax().Select("ProductPictureList", "Product", new { productId = Model.Id })
-                    .Update("ProductPictureUpdate", "Product")
-                    .Delete("ProductPictureDelete", "Product");
-            })
-            .EnableCustomBinding(true))
-    </div>
-
-    <script type="text/javascript">
+	<script type="text/javascript">
 		$(document).ready(function () {
-
-            $('#addProductPicture').click(function () {
+            $('#add-product-picture').on('click', function () {
                 var pictureId = $("#@Html.FieldIdFor(model => model.AddPictureModel.PictureId)").val();
                 var displayOrder = $("#@Html.FieldIdFor(model => model.AddPictureModel.DisplayOrder)").val();
 
                 if (pictureId == 0) {
-                	alert('@T("Admin.Catalog.Products.Pictures.UploadFirst")');
+                	alert(@T("Admin.Catalog.Products.Pictures.UploadFirst").JsText);
                     return;
                 }
 
-                $('#addProductPicture').attr('disabled', true);
                 $.ajax({
                     cache:false,
                     type: "POST",
@@ -60,55 +22,92 @@
                     success: function (data) {
                          var productpicturesGrid = $("#productpictures-grid");
                          productpicturesGrid.data('tGrid').ajaxRequest();
-                         $('#addProductPicture').attr('disabled', false);
+						 $('#add-product-picture').attr('disabled', 'disabled');
+
+						 window.displayNotification(data.message, "success");
                     },
                     error:function (xhr, ajaxOptions, thrownError){
-                    	alert('@T("Admin.Catalog.Products.Pictures.AddFailed")')
-                        $('#addProductPicture').attr('disabled', false);
+                    	alert(@T("Admin.Catalog.Products.Pictures.AddFailed").JsText)
+						//$('#add-product-picture').removeAttr('disabled');
                     }
                 });
             });
         });
-    </script>
+	</script>
 
-    <table class="adminContent">
+	<table class="adminContent mb-5">
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
-					<div class="title">@T("Admin.Catalog.Products.Pictures.AddNew")</div>
+					<div class="head">@T("Admin.Catalog.Products.Pictures.AddNew")</div>
 				</div>
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddPictureModel.PictureId)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddPictureModel.PictureId, new { transientUpload = true })
-                @Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddPictureModel.DisplayOrder)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddPictureModel.DisplayOrder)
-                @Html.ValidationMessageFor(model => model.AddPictureModel.DisplayOrder)
-            </td>
-        </tr>
-        <tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddPictureModel.PictureId)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AddPictureModel.PictureId, new { transientUpload = true })
+				@Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddPictureModel.DisplayOrder)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AddPictureModel.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.AddPictureModel.DisplayOrder)
+			</td>
+		</tr>
+		<tr>
 			<td class="adminTitle">
 				&nbsp;
 			</td>
 			<td class="adminData">
-				<button type="button" name="addProductPicture" id="addProductPicture" class="btn btn-warning">
+				<button type="button" name="add-product-picture" id="add-product-picture" class="btn btn-primary" disabled>
 					<i class="fa fa-plus"></i>
-					@T("Admin.Catalog.Products.Pictures.AddButton")
+					<span>@T("Admin.Catalog.Products.Pictures.AddButton")</span>
 				</button>
 			</td>
-        </tr>
-    </table>
+		</tr>
+	</table>
+
+    <div>
+        @(Html.Telerik().Grid<ProductModel.ProductPictureModel>()
+			.Name("productpictures-grid")
+			.DataKeys(x =>
+			{
+				x.Add(y => y.Id).RouteKey("Id");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.PictureUrl)
+					.Width(400)
+					.Centered()
+					.ClientTemplate("<a href='<#= PictureUrl #>' target='_blank'><img alt='<#= PictureId #>' src='<#= PictureUrl #>' style='max-height: 100px' /><a/>")
+					.ReadOnly();
+				columns.Bound(x => x.DisplayOrder).Width(100).Centered();
+				columns.Command(commands =>
+				{
+					commands.Edit().Localize(T);
+					commands.Delete().Localize(T);
+				}).Width(180).HtmlAttributes(new { align = "right" });
+
+			})
+			.Editable(x =>
+			{
+				x.Mode(GridEditMode.InLine);
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax().Select("ProductPictureList", "Product", new { productId = Model.Id })
+					.Update("ProductPictureUpdate", "Product", new { productId = Model.Id })
+					.Delete("ProductPictureDelete", "Product", new { productId = Model.Id });
+			})
+			.EnableCustomBinding(true))
+    </div>
 }
 else
 {

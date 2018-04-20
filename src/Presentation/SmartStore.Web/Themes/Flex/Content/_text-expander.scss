@@ -1,5 +1,7 @@
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 .more-less {
     display: block;
@@ -10,6 +12,7 @@
 
     .btn-text-expander {
         display: none;
+		align-items: center;
         position: absolute;
         font-weight: $font-weight-medium;
         left: 0;
@@ -17,8 +20,6 @@
         bottom: 0;
         z-index: 2;
         text-decoration: none !important;
-
-        .fa { padding-right: 0.4rem }
     }
 
     .btn-text-expander--expand::after {
@@ -38,11 +39,11 @@
     }
 
     &.collapsed {
-        .btn-text-expander--expand { display: block; }
+        .btn-text-expander--expand { display: flex; }
     }
 
     &.expanded {
         max-height: none !important;
-        .btn-text-expander--collapse { display: block; }
+        .btn-text-expander--collapse { display: flex; }
     }
 }

@@ -69,7 +69,7 @@
 
 @if (pageable.TotalPages > 1)
 {
-	<div class="artlist-action artlist-action--pager">
+	<div class="artlist-action artlist-action--pager d-flex flex-nowrap">
 		@if (pageable.PageNumber > 1)
 		{
 			<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber - 1))' class="btn btn-secondary btn-pager-prev pull-xs-left" data-toggle="tooltip" title="@T("Pager.PageX", pageable.PageNumber - 1)">
@@ -79,7 +79,7 @@
 
 		<div class="mf-dropdown">
 			<button class="btn btn-secondary btn-artlist-action">
-				<em class="d-md-none"><span>@pageable.PageNumber</span>/<span>@pageable.TotalPages</span></em>
+				<em class="d-sm-none"><span>@pageable.PageNumber</span>/<span>@pageable.TotalPages</span></em>
 				<em class="d-none d-sm-inline d-md-none">@T("Pager.PageXOfYShort", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
 				<em class="d-none d-md-inline">@T("Pager.PageXOfY", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
 				<i class="fa fa-caret-down"></i>

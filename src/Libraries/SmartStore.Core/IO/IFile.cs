@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -6,11 +7,46 @@ namespace SmartStore.Core.IO
 {
     public interface IFile
     {
-        string Path { get; }
-        string Name { get; }
+		/// <summary>
+		/// The path relative to the storage root
+		/// </summary>
+		string Path { get; }
+
+		/// <summary>
+		/// The path without the file part, but with trailing slash
+		/// </summary>
+		string Directory { get; }
+
+		/// <summary>
+		/// File name including extension
+		/// </summary>
+		string Name { get; }
+
+		/// <summary>
+		/// File name excluding extension
+		/// </summary>
+		string Title { get; }
+
+		/// <summary>
+		/// Size in bytes
+		/// </summary>
 		long Size { get; }
+
+		/// <summary>
+		/// Expressed as UTC time
+		/// </summary>
 		DateTime LastUpdated { get; }
-		string FileType { get; }
+
+		/// <summary>
+		/// File extension including dot
+		/// </summary>
+		string Extension { get; }
+
+		/// <summary>
+		/// Dimensions, if the file is an image.
+		/// </summary>
+		Size Dimensions { get; }
+
 		bool Exists { get; }
 
 		/// <summary>

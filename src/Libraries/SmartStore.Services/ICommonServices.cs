@@ -11,100 +11,33 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Helpers;
 using Autofac;
+using SmartStore.Services.Media;
+using SmartStore.Services.Messages;
 
 namespace SmartStore.Services
 {	
 	public interface ICommonServices
 	{
-		IComponentContext Container
-		{
-			get;
-		}
-
-		IApplicationEnvironment ApplicationEnvironment
-		{
-			get;
-		}
-
-		ICacheManager Cache 
-		{ 
-			get;
-		}
-
-		IRequestCache RequestCache
-		{
-			get;
-		}
-
-		IDisplayControl DisplayControl
-		{
-			get;
-		}
-
-		IDbContext DbContext
-		{
-			get;
-		}
-
-		IStoreContext StoreContext
-		{
-			get;
-		}
-
-		IWebHelper WebHelper
-		{
-			get;
-		}
-
-		IWorkContext WorkContext
-		{
-			get;
-		}
-
-		IEventPublisher EventPublisher
-		{
-			get;
-		}
-
-		ILocalizationService Localization
-		{
-			get;
-		}
-
-		ICustomerActivityService CustomerActivity
-		{
-			get;
-		}
-
-		INotifier Notifier
-		{
-			get;
-		}
-
-		IPermissionService Permissions
-		{
-			get;
-		}
-
-		ISettingService Settings
-		{
-			get;
-		}
-
-		IStoreService StoreService
-		{
-			get;
-		}
-
-		IDateTimeHelper DateTimeHelper
-		{
-			get;
-		}
-
-		IChronometer Chronometer
-		{
-			get;
-		}
+		IComponentContext Container { get; }
+		IApplicationEnvironment ApplicationEnvironment { get; }
+		ICacheManager Cache { get; }
+		IRequestCache RequestCache { get; }
+		IDisplayControl DisplayControl { get; }
+		IDbContext DbContext { get; }
+		IStoreContext StoreContext { get; }
+		IWebHelper WebHelper { get; }
+		IWorkContext WorkContext { get; }
+		IEventPublisher EventPublisher { get; }
+		ILocalizationService Localization { get; }
+		ICustomerActivityService CustomerActivity { get; }
+		IPictureService PictureService { get; }
+		INotifier Notifier { get; }
+		IPermissionService Permissions { get; }
+		ISettingService Settings { get; }
+		IStoreService StoreService { get; }
+		IDateTimeHelper DateTimeHelper { get; }
+		IChronometer Chronometer { get; }
+		IMessageFactory MessageFactory { get; }
 	}
 
 	public static class ICommonServicesExtensions

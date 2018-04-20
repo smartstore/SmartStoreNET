@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartStore.Net.WebApi
+﻿namespace SmartStore.Net.WebApi
 {
-	public class WebApiConsumerResponse
+    public class WebApiConsumerResponse
 	{
 		public string Status { get; set; }
 		public string Headers { get; set; }
 		public string Content { get; set; }
-	}
+        public string ContentType { get; set; }
+        public long ContentLength { get; set; }
+    }
 
 	public class Customer
 	{

@@ -1,7 +1,8 @@
 ﻿@model MessageTemplateModel
 @{
-    ViewBag.Title = T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails").Text;
+	ViewBag.Title = T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -11,20 +12,42 @@
         </div>
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
-
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-            <button type="submit" name="message-template-copy" id="message-template-copy" class="btn" value="@T("Admin.ContentManagement.MessageTemplates.Copy")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-                <i class="fa fa-files-o"></i>&nbsp;@T("Admin.ContentManagement.MessageTemplates.Copy")
+			
+			@* CAUTION: saving a template to XML overwrites the original raw content *@
+			@*<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i><span>Save as XML</span></button>*@
+			<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id, isCampaign = false })">
+				<i class="fa fa-eye"></i>
+				<span>@T("Admin.Common.Preview")</span>
+			</a>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">@T("Admin.Common.SaveContinue")</button>
+            <button type="submit" name="message-template-copy" id="message-template-copy" class="btn btn-secondary" value="@T("Admin.ContentManagement.MessageTemplates.Copy")" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
+                <i class="fa fa-files-o"></i>
+				<span>@T("Admin.ContentManagement.MessageTemplates.Copy")</span>
             </button>
 			<button type="submit" name="message-template-delete" id="message-template-delete" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
 			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 
-    Html.RenderPartial("_CreateOrUpdate", Model);
+	Html.RenderPartial("_CreateOrUpdate", Model);
 }
+
 @Html.DeleteConfirmation("message-template-delete")
+
+<script>
+	$(function () {
+		$('#btn-preview-template').on('click', function (e) {
+			e.preventDefault();
+			openPopup($(this).attr('href'), false /* large */, true /* flex */);
+			return false;
+		});
+	});
+</script>

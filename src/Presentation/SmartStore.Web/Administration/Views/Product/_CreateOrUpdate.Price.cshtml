@@ -8,9 +8,6 @@
 	var fieldBasePriceBaseAmount;
 
 	$(function () {
-		$("#@Html.FieldIdFor(model => model.CustomerEntersPrice)").click(toggleCustomerEntersPrice);
-		$("#@Html.FieldIdFor(model => model.BasePriceEnabled)").click(toggleBasePrice);
-
 		fieldBasePriceMeasureUnit = $("#@Html.FieldIdFor(model => model.BasePriceMeasureUnit)");
 		fieldBasePriceAmount = $("#@Html.FieldIdFor(model => model.BasePriceAmount)");
 		fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePriceBaseAmount)");
@@ -19,13 +16,11 @@
 		fieldBasePriceAmount.on("blur", getCurrentBasePrice);
 		fieldBasePriceBaseAmount.on("blur", getCurrentBasePrice);
 
-		toggleCustomerEntersPrice();
 		getCurrentBasePrice();
-		toggleBasePrice();
 
 		function getCurrentBasePrice() {
-			var basePriceAmount = Globalize.parseFloat(fieldBasePriceAmount.val());
-			var basePriceBaseAmount = Globalize.parseInt(fieldBasePriceBaseAmount.val());
+			var basePriceAmount = SmartStore.globalization.parseFloat(fieldBasePriceAmount.val());
+			var basePriceBaseAmount = SmartStore.globalization.parseInt(fieldBasePriceBaseAmount.val());
 			if (basePriceAmount > 0 && basePriceBaseAmount > 0) {
 				$.ajax({
 					cache:false,
@@ -47,256 +42,247 @@
 			}
 			return false;
 		}
-
-		function toggleBasePrice() {
-			if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
-				$('#pnlBasePriceBaseAmount').show();
-				$('#pnlBasePriceAmount').show();
-				$('#pnlBasePriceAmountHint').show();
-			}
-			else {
-				$('#pnlBasePriceBaseAmount').hide();
-				$('#pnlBasePriceAmount').hide();
-				$('#pnlBasePriceAmountHint').hide();
-			}
-		}
-
-		function toggleCustomerEntersPrice() {
-			var src = $('#@Html.FieldIdFor(model => model.CustomerEntersPrice)');
-			if (src.is(':checked')) {
-				$('#pnlMinimumCustomerEnteredPrice').show();
-				$('#pnlMaximumCustomerEnteredPrice').show();
-			}
-			else {
-				$('#pnlMinimumCustomerEnteredPrice').hide();
-				$('#pnlMaximumCustomerEnteredPrice').hide();
-			}
-		}
 	})
 </script>
 
 <div id="group-prices">
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
+    <div class="adminContent">
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.Price)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Price) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.Price, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.Price)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.OldPrice)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.OldPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.OldPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.OldPrice)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductCost)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.ProductCost) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.ProductCost, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.ProductCost)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.SpecialPrice)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.SpecialPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.SpecialPrice)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.SpecialPriceStartDateTimeUtc)
-            </td>
-            <td class="adminData">
+            </div>
+            <div class="adminData">
                 @Html.EditorFor(model => model.SpecialPriceStartDateTimeUtc, new { pickTime = true })
                 @Html.ValidationMessageFor(model => model.SpecialPriceStartDateTimeUtc)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.SpecialPriceEndDateTimeUtc)
-            </td>
-            <td class="adminData">
+            </div>
+            <div class="adminData">
                 @Html.EditorFor(model => model.SpecialPriceEndDateTimeUtc, new { pickTime = true })
                 @Html.ValidationMessageFor(model => model.SpecialPriceEndDateTimeUtc)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisableBuyButton)
-            </td>
-            <td class="adminData">
+            </div>
+            <div class="adminData">
                 @Html.EditorFor(model => model.DisableBuyButton)
                 @Html.ValidationMessageFor(model => model.DisableBuyButton)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisableWishlistButton)
-            </td>
-            <td class="adminData">
+            </div>
+            <div class="adminData">
                 @Html.EditorFor(model => model.DisableWishlistButton)
                 @Html.ValidationMessageFor(model => model.DisableWishlistButton)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.AvailableForPreOrder)
-            </td>
-            <td class="adminData">
+            </div>
+            <div class="adminData">
                 @Html.EditorFor(model => model.AvailableForPreOrder)
                 @Html.ValidationMessageFor(model => model.AvailableForPreOrder)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.CallForPrice)
-            </td>
-            <td class="adminData">
+            </div>
+            <div class="adminData">
                 @Html.EditorFor(model => model.CallForPrice)
                 @Html.ValidationMessageFor(model => model.CallForPrice)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerEntersPrice)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CustomerEntersPrice)
+            </div>
+            <div class="adminData">
+                @Html.CheckBoxFor(model => model.CustomerEntersPrice, new { data_toggler_for = "#pnlCustomerEntersPrice" })
                 @Html.ValidationMessageFor(model => model.CustomerEntersPrice)
-            </td>
-        </tr>
-        <tr id="pnlMinimumCustomerEnteredPrice">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MinimumCustomerEnteredPrice)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
-                @Html.ValidationMessageFor(model => model.MinimumCustomerEnteredPrice)
-            </td>
-        </tr>
-        <tr id="pnlMaximumCustomerEnteredPrice">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MaximumCustomerEnteredPrice)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
-                @Html.ValidationMessageFor(model => model.MaximumCustomerEnteredPrice)
-            </td>
-        </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
-                <hr />
-            </td>
-        </tr>
+            </div>
+        </div>
+		<div id="pnlCustomerEntersPrice">
+			<div class="adminRow">
+				<div class="adminTitle">
+					@Html.SmartLabelFor(model => model.MinimumCustomerEnteredPrice)
+				</div>
+				<div class="adminData">
+					@Html.EditorFor(model => model.MinimumCustomerEnteredPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
+					@Html.ValidationMessageFor(model => model.MinimumCustomerEnteredPrice)
+				</div>
+			</div>
+			<div class="adminRow">
+				<div class="adminTitle">
+					@Html.SmartLabelFor(model => model.MaximumCustomerEnteredPrice)
+				</div>
+				<div class="adminData">
+					@Html.EditorFor(model => model.MaximumCustomerEnteredPrice, new { postfix = Model.PrimaryStoreCurrencyCode })
+					@Html.ValidationMessageFor(model => model.MaximumCustomerEnteredPrice)
+				</div>
+			</div>
+		</div>
+        <div class="adminSeparator">
+			<hr />
+        </div>
         <!-- PAnGV -->
-        <tr class="base-price">
-            <td class="adminTitle">
+        <div class="adminRow">
+            <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.BasePriceEnabled)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.BasePriceEnabled)
+            </div>
+            <div class="adminData">
+                @Html.CheckBoxFor(model => model.BasePriceEnabled, new { data_toggler_for = "#pnlBasePriceEnabled" })
                 @Html.ValidationMessageFor(model => model.BasePriceEnabled)
-            </td>
-        </tr>
-        <tr id="pnlBasePriceBaseAmount" class="base-price">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.BasePriceBaseAmount)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.BasePriceBaseAmount, new { small = true })
-                @Html.DropDownListFor(model => model.BasePriceMeasureUnit, Model.AvailableMeasureUnits, new { @class = "autowidth", style = "width:100px" })
-            </td>
-        </tr>
-        <tr id="pnlBasePriceAmount" class="base-price">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.BasePriceAmount)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.BasePriceAmount, new { small = true })
-                <span id="BasePriceAmountInfo" class="muted">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
-            </td>
-        </tr>
-        <tr id="pnlBasePriceAmountHint" class="base-price">
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <div class="alert alert-info">
-                    @T("Admin.Products.BasePrice.Hint")
-                </div>
-            </td>
-        </tr>
-        
-    </table>
+            </div>
+        </div>
+		<div id="pnlBasePriceEnabled">
+			<div class="adminRow">
+				<div class="adminTitle">
+					@Html.SmartLabelFor(model => model.BasePriceBaseAmount)
+				</div>
+				<div class="adminData">
+					<div class="form-row">
+						<div class="col">
+							@Html.EditorFor(model => model.BasePriceBaseAmount)
+						</div>
+						<div class="col-auto" style="width: 120px">
+							@Html.DropDownListFor(model => model.BasePriceMeasureUnit, Model.AvailableMeasureUnits)
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="adminRow">
+				<div class="adminTitle">
+					@Html.SmartLabelFor(model => model.BasePriceAmount)
+				</div>
+				<div class="adminData">
+					@Html.EditorFor(model => model.BasePriceAmount)
+					<span id="BasePriceAmountInfo" class="d-inline-block text-muted pt-2">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
+				</div>
+			</div>
+			<div class="adminRow">
+				<div class="adminTitle">
+					&nbsp;
+				</div>
+				<div class="adminData">
+					<div class="alert alert-info">
+						@T("Admin.Products.BasePrice.Hint")
+					</div>
+				</div>
+			</div>
+		</div>   
+    </div>
 
-    <div id="TierPriceContainer" style="margin-top:30px;">
-        <h3>@T("Admin.Catalog.Products.TierPrices")</h3>
+    <div id="TierPriceContainer">
+        <h4 class="mb-4">@T("Admin.Catalog.Products.TierPrices")</h4>
 
         @if (Model.Id > 0)
         {
             <script>
 				function onTierPriceEdit(e) {
-                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
-                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
-                    $(e.form).find('#CalculationMethod').select2('val', e.dataItem['CalculationMethodId']);
+					if (e.mode == "edit") {
+						$('#Store')
+							.data('select-selected-id', e.dataItem['StoreId'])
+							.data('select-init-text', e.dataItem['Store'])
+							.val(e.dataItem['StoreId'])
+							.trigger('change');
+
+						$('#CustomerRole')
+							.data('select-selected-id', e.dataItem['CustomerRoleId'])
+							.data('select-init-text', e.dataItem['CustomerRole'])
+							.val(e.dataItem['CustomerRoleId'])
+							.trigger('change');
+
+						$('#CalculationMethod')
+							.data('select-selected-id', e.dataItem['CalculationMethodId'])
+							.data('select-init-text', e.dataItem['CalculationMethod'])
+							.val(e.dataItem['CalculationMethodId'])
+							.trigger('change');
+					}
                 }
             </script>
 			
 			@(Html.Telerik().Grid<ProductModel.TierPriceModel>()
-            .Name("tierprices-grid")
-            .DataKeys(keys =>
-            {
-                keys.Add(x => x.Id);
-            })
-            .DataBinding(dataBinding =>
-            {
-                dataBinding.Ajax()
-                    .Select("TierPriceList", "Product", new { productId = Model.Id })
-                    .Insert("TierPriceInsert", "Product", new { productId = Model.Id })
-                    .Update("TierPriceUpdate", "Product")
-                    .Delete("TierPriceDelete", "Product");
-            })
-            .Columns(columns =>
-            {
-                columns.Bound(x => x.Quantity)
-                    .Centered()
-                    .Width(120);
-                columns.Bound(x => x.Price1)
-                    .Format("{0:0.00}")
-                    .Width(120)
-                    .RightAlign();
-                columns.Bound(x => x.CalculationMethod);
-                columns.Bound(x => x.Store);
-                columns.Bound(x => x.CustomerRole);
-                columns.Command(commands =>
-                {
-                    commands.Edit().Localize(T);
-                    commands.Delete().Localize(T);
-                })
-                .Width(180);
-            })
-            .ToolBar(commands => commands.Insert())
-            .ClientEvents(events => events.OnEdit("onTierPriceEdit"))
-            .EnableCustomBinding(true))
-
-            <script type="text/javascript">
-                function onTierPriceEdit(e) {
-                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
-                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
-                    $(e.form).find('#CalculationMethod').select2('val', e.dataItem['CalculationMethodId']);
-                }
-            </script>
+				.Name("tierprices-grid")
+				.DataKeys(keys =>
+				{
+					keys.Add(x => x.Id);
+				})
+				.DataBinding(dataBinding =>
+				{
+					dataBinding.Ajax()
+						.Select("TierPriceList", "Product", new { productId = Model.Id })
+						.Insert("TierPriceInsert", "Product", new { productId = Model.Id })
+						.Update("TierPriceUpdate", "Product")
+						.Delete("TierPriceDelete", "Product");
+				})
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Quantity)
+						.Centered()
+						.Width(80);
+					columns.Bound(x => x.Price1)
+						.Format("{0:0.00}")
+						.Width(120)
+						.RightAlign();
+					columns.Bound(x => x.CalculationMethod).Width("20%");
+					columns.Bound(x => x.Store).Width("25%");
+					columns.Bound(x => x.CustomerRole).Width("20%");
+					columns.Command(commands =>
+					{
+						commands.Edit().Localize(T);
+						commands.Delete().Localize(T);
+					})
+					//.Width(180)
+					.HtmlAttributes(new { align = "right" });
+				})
+				.ToolBar(commands => commands.Insert())
+				.ClientEvents(events => events.OnEdit("onTierPriceEdit"))
+				.EnableCustomBinding(true))
         }
         else
         {

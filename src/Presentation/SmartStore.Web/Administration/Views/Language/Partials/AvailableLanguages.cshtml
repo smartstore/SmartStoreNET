@@ -1,0 +1,97 @@
+﻿@using SmartStore.Admin.Models.Localization;
+@model AvailableLanguageListModel
+
+@if (Model.Languages.Any())
+{
+    <div class="alert alert-info">
+        @Html.Raw(T("Admin.Configuration.Languages.AvailableLanguages.Note"))
+    </div>
+
+	<div class="table-responsive">
+		<table class="table admin-table available-languages-list language-list">
+			<thead>
+				<tr>
+					<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
+					<th class="text-center">@T("Common.Published")</th>
+					<th class="text-center">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
+					<th class="text-center">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
+					<th class="text-center">@T("Common.Translated")</th>
+					<th>@T("Admin.Common.Updated")</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var language in Model.Languages
+				.OrderByDescending(x => x.Published)
+				.ThenBy(x => x.IsInstalled)
+				.ThenBy(x => x.DisplayOrder))
+				{
+					<tr class="@(language.Published ? "" : "disabled")" data-id="@language.Id">
+						<td>
+							<div>
+								@if (language.FlagImageFileName.HasValue())
+								{
+									<img src="@Url.Content("~/Content/images/flags/" + language.FlagImageFileName)" class="flag-icon mr-1 mb-1" />
+								}
+								@language.Name
+							</div>
+							@if (language.Type.HasValue())
+							{
+								<div class="muted">@T("Admin.Configuration.Languages.OfType", language.Type)</div>
+							}
+						</td>
+						<td class="text-center">
+							@Html.SymbolForBool(language.Published)
+						</td>
+						<td class="text-center">
+							@language.LanguageCulture
+						</td>
+						<td class="text-center">
+							@language.UniqueSeoCode
+						</td>
+						<td class="text-center">
+							@if (Model.ResourceCount == 0)
+							{
+								<div class="muted">0 %</div>
+							}
+							else
+							{
+								string title = T("Admin.Configuration.Languages.NumberOfTranslatedResources", language.TranslatedCount.ToString("N0"), Model.ResourceCount.ToString("N0")).Text;
+								<div @Html.Attr("title", title, title.HasValue())>@language.TranslatedPercentage.ToString("G29")%</div>
+							}
+							@if (language.TranslatedPercentageAtLastImport.HasValue)
+							{
+								<div>@T("Admin.Configuration.Languages.TranslatedPercentageAtLastImport", language.TranslatedPercentageAtLastImport.Value.ToString("G29"))</div>
+							}
+						</td>
+						<td>
+							@language.UpdatedOnString
+						</td>
+						<td class="text-right" style="width: 200px;">
+							@if (language.Published)
+							{
+								<a href="@Url.Action("Download", new { setId = language.Id })"
+								   @Html.Attr("disabled", "disabled", language.IsInstalled)
+								   class="btn btn-sm btn-primary download-language@(language.IsDownloadRunning ? " d-none" : "")"
+								   onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
+									<i class="fa fa-download"></i>
+									<span>@T("Common.Download")</span>
+								</a>
+								<div class="task-progress text-muted@(language.IsDownloadRunning ? "" : " d-none")"
+									 data-task-id="@language.Id" data-running="@(language.IsDownloadRunning ? "true" : "false")"></div>
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+	</div>
+}
+else
+{
+    <div class="alert alert-warning">
+        @T("Admin.Configuration.Languages.NoAvailableLanguagesFound", SmartStoreVersion.CurrentFullVersion)
+    </div>
+}
+

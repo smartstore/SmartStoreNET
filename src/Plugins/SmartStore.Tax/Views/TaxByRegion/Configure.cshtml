@@ -1,144 +1,161 @@
-﻿@using SmartStore.Web.Framework;
+﻿@model ByRegionTaxRateListModel
+@using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Tax.Models;
-
-@model ByRegionTaxRateListModel
 @{
 	Layout = "";
 }
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<ByRegionTaxRateModel>(Model.TaxRates)
-				.Name("Grid")
-				.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
-				.Columns(columns =>
-				{
-					columns.Bound(x => x.CountryName)
-						.ReadOnly();
-					columns.Bound(x => x.StateProvinceName)
-						.ReadOnly();
-					columns.Bound(x => x.Zip)
-						.Width(140);
-					columns.Bound(x => x.TaxCategoryName)
-						.ReadOnly();
-					columns.Bound(x => x.Percentage)
-						.Width(140)
-						.Format("{0:0.00}");
-					columns.Command(commands =>
-					{
-						commands.Edit();
-						commands.Delete();
-					}).Width(180);
+<div>
+	@(Html.Telerik().Grid<ByRegionTaxRateModel>(Model.TaxRates)
+		.Name("tax-byregion-grid")
+		.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.CountryName)
+				.Width("30%")
+				.ReadOnly();
+			columns.Bound(x => x.StateProvinceName)
+				.Width("30%")
+				.ReadOnly();
+			columns.Bound(x => x.Zip)
+				.Width("10%");
+			columns.Bound(x => x.TaxCategoryName)
+				.Width("10%")
+				.ReadOnly();
+			columns.Bound(x => x.Percentage)
+				.Width("8%")
+				.Format("{0:0.00}");
+			columns.Command(commands =>
+			{
+				commands.Edit();
+				commands.Delete();
+			}).Width("12%")
+			.HtmlAttributes(new { align = "right", @class = "omega" }); 
+		})
+		.DataBinding(dataBinding =>
+		{
+			dataBinding.Ajax()
+				.Select("RatesList", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
+				.Update("RateUpdate", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
+				.Delete("RateDelete", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } });
+		})
+		.Editable(x => { x.Mode(GridEditMode.InLine); })
+		.ToolBar(commands => commands.Template(TaxByRegionGridCommands))
+		.EnableCustomBinding(true))
+</div>
 
-				})
-				.Editable(x =>
-				{
-					x.Mode(GridEditMode.InLine);
-				})
-				.DataBinding(dataBinding =>
-				{
-					dataBinding.Ajax()
-						.Select("RatesList", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
-						.Update("RateUpdate", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
-						.Delete("RateDelete", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } });
-				})
-				.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
-
-<p></p>
+@helper TaxByRegionGridCommands(Grid<ByRegionTaxRateModel> grid)
+{
+	<a href="#addrecord-window" id="addrecord-button" data-toggle="modal" class="t-button t-button-primary">
+		<i class="fa fa-plus"></i>
+		<span>@T("Plugins.Tax.CountryStateZip.AddRecord.Hint")</span>
+	</a>
+}
 
 <script type="text/javascript">
      $(function() {
-            $("#@Html.FieldIdFor(model => model.AddCountryId)").change(function() {
-                var selectedItem = $(this).val();
-                var ddlStates = $("#@Html.FieldIdFor(model => model.AddStateProvinceId)")
-                $.ajax({
-                    cache:false,
-                    type: "GET",
-                    url: "@(Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }))",
-                    data: { "countryId": selectedItem, "addAsterisk": "true" },
-                    success: function (data) {
-                        ddlStates.html('');
-                        $.each(data, function(id, option) {
-                            ddlStates.append($('<option></option>').val(option.id).html(option.name));
-                        });
-                    },
-                    error:function (xhr, ajaxOptions, thrownError){
-                        alert('Failed to retrieve states.')
-                    }  
-                });
-            });
+
+			$('#addtaxbyregionrecord').on("click", function (e) {
+				e.preventDefault();
+
+				var form = $("#addrecord-window").find("form");
+
+				$.ajax({
+					cache: false,
+					type: 'POST',
+					url: '@Url.Action("AddTaxByRegionRecord")',
+					data: form.serialize(),
+					dataType: 'json',
+					success: function (data) {
+						var shippingByTotalGrid = $("#tax-byregion-grid");
+						shippingByTotalGrid.data('tGrid').ajaxRequest();
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert('Failed to add record.');
+					},
+					complete: function () {
+						$('#addrecord-window').modal('hide');
+					}
+				});
+				return false;
+			});
+
         });
 </script>
-@using (Html.BeginForm())
-{	
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Plugins.Tax.CountryStateZip.AddRecord.Hint")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddCountryId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries)
-				@Html.ValidationMessageFor(model => model.AddCountryId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddStateProvinceId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.AddStateProvinceId, Model.AvailableStates)
-				@Html.ValidationMessageFor(model => model.AddStateProvinceId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddZip)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AddZip)
-				@Html.ValidationMessageFor(model => model.AddZip)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddTaxCategoryId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.AddTaxCategoryId, Model.AvailableTaxCategories)
-				@Html.ValidationMessageFor(model => model.AddTaxCategoryId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AddPercentage)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.AddPercentage)
-				@Html.ValidationMessageFor(model => model.AddPercentage)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" name="addtaxrate" value="addtaxrate" class="btn btn-primary">
-					<i class="fa fa-plus"></i>&nbsp;
-					@T("Plugins.Tax.CountryStateZip.AddRecord")
-				</button>
-			</td>
-		</tr>
-	</table>
+
+@{Html.SmartStore().Window()
+	.Name("addrecord-window")
+	.Size(WindowSize.Large)
+	.Title(T("Plugins.Tax.CountryStateZip.AddRecord.Hint"))
+	.Content(
+	@<text>
+		<form method="post">
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddCountryId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownList("CountryId", Model.AvailableCountries,
+						new
+						{
+							@class = "form-control country-input country-selector",
+							data_region_control_selector = "#AddStateProvinceId",
+							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }),
+							data_addAsterisk = "true",
+							data_addEmptyStateIfRequired = "false"
+						})
+						@Html.ValidationMessageFor(model => model.AddCountryId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddStateProvinceId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddStateProvinceId, Model.AvailableStates)
+						@Html.ValidationMessageFor(model => model.AddStateProvinceId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddZip)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddZip)
+						@Html.ValidationMessageFor(model => model.AddZip)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddTaxCategoryId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.AddTaxCategoryId, Model.AvailableTaxCategories)
+						@Html.ValidationMessageFor(model => model.AddTaxCategoryId)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddPercentage)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddPercentage)
+						@Html.ValidationMessageFor(model => model.AddPercentage)
+					</td>
+				</tr>
+			</table>
+		</form>
+	</text>)
+	.FooterContent(@<text>
+		<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+		<button id="addtaxbyregionrecord" name="addtaxrate" value="addtaxrate"  type="submit" class="btn btn-primary">
+			<i class="fa fa-check"></i>
+			<span>@T("Common.AddNew")</span>
+		</button>
+	</text>)
+	.Render();
 }

@@ -13,7 +13,6 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Tax.Controllers
 {
-
 	[AdminAuthorize]
     public class TaxFixedRateController : PluginControllerBase
     {

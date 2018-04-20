@@ -15,12 +15,19 @@
 	<LocaleResource Name="AdminInstruction">
 		<Value>
 			<![CDATA[<ul>
-<li>Either the GTIN (such as UPC, EAN, etc.) or manufacturer and manufacturer part number (MPN) are required for product identification. Google recommends that all three pieces of information be specified.</li>
-<li>Specify default tax and shipping values in your Google Merchant Center account settings.</li>
-<li>In order to get more info about required fields look at the following article <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=188494" target="_blank">Product feed specification</a>.</li>
-<li>You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.</li>
-</ul>]]>
+			<li>Either the GTIN (such as UPC, EAN, etc.) or manufacturer and manufacturer part number (MPN) are required for product identification. Google recommends that all three pieces of information be specified.</li>
+			<li>Specify default tax and shipping values in your Google Merchant Center account settings.</li>
+			<li>In order to get more info about required fields look at the following article <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=188494" target="_blank">Product feed specification</a>.</li>
+			<li>You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.</li>
+			</ul>]]>
 		</Value>
+	</LocaleResource>
+
+	<LocaleResource Name="TabTitleGrid">
+		<Value>Product data</Value>
+	</LocaleResource>
+	<LocaleResource Name="TabTitleProfiles">
+		<Value>Export profiles</Value>
 	</LocaleResource>
   <LocaleResource Name="GeneralSettings">
     <Value>General settings</Value>
@@ -164,7 +171,7 @@
 		<Value>Not edited yet</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays">
-		<Value>Expires in days</Value>
+		<Value>Expires in</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays.Hint">
 		<Value>Number of days after products should expire or no longer appear. A value of 0 causes that no expiry date will be exported.</Value>

@@ -1,23 +1,32 @@
-﻿@model CurrencyModel
-
+﻿@using SmartStore.Core.Domain.Directory;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
-
+@model CurrencyModel
 @{
     var availableDomainEndings = Model.AvailableDomainEndings.Select(x => x.Value).ToArray();
-    for (int i = 0; i < availableDomainEndings.Length; i++)
+    for (var i = 0; i < availableDomainEndings.Length; i++)
     {
         availableDomainEndings[i] = availableDomainEndings[i].EncodeJsString();
     }
-    ViewBag.SerializedDomainEndings = String.Join(",", availableDomainEndings);
+    ViewBag.SerializedDomainEndings = string.Join(",", availableDomainEndings);
 }
 
-@Html.ValidationSummary(true)
-@Html.HiddenFor(model => model.Id)
-@Html.SmartStore().TabStrip().Name("currency-edit").Items(x =>
+@if (!ViewData.ModelState.IsValid)
 {
-	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
-	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
+    @Html.ValidationSummary(false)
+}
+
+@Html.HiddenFor(model => model.Id)
+@Html.SmartStore().TabStrip().Name("currency-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
+{
+	x.Add().Text(T("Admin.Common.Info").Text)
+		//.Icon("fa fa-pencil fa-lg fa-fw")
+		.Content(TabInfo())
+		.Selected(true);
+
+	x.Add().Text(T("Admin.Common.Stores").Text)
+		//.Icon("fa fa-globe fa-lg fa-fw")
+		.Content(TabStores());
 
     //generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "currency-edit", this.Html, this.Model));
@@ -27,44 +36,48 @@
 {
     <script type="text/javascript">
         $(document).ready(function () {
+			
+            $('#@(Html.FieldIdFor(x => x.RoundOrderItemsEnabled))').change(function () {
+                $('tr.round-order-items').toggle($(this).is(':checked'));
+            }).trigger('change');
 
-            var domainEndings = $("#@Html.FieldIdFor(x => x.DomainEndings)");
-            domainEndings.select2({ tags: [@(Html.Raw(ViewBag.SerializedDomainEndings))] });
+            $('#@(Html.FieldIdFor(x => x.RoundOrderTotalEnabled))').change(function () {
+                $('tr.round-order-total').toggle($(this).is(':checked'));
+            }).trigger('change');
 
         });
     </script>
 
     var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures).ToList();
     @(Html.LocalizedEditor<CurrencyModel, CurrencyLocalizedModel>("currency-info-localized",
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => Model.Locales[item].Name)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-                        </td>
-                    </tr>
-                </table>
-                ,
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Name)
-                            @Html.ValidationMessageFor(model => model.Name)
-                        </td>
-                    </tr>
-                </table>
-            ))
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Locales[item].Name)
+                </td>
+                <td class="adminData">
+					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+                    @Html.EditorFor(model => Model.Locales[item].Name)
+                    @Html.ValidationMessageFor(model => model.Locales[item].Name)
+                </td>
+            </tr>
+        </table>
+        ,
+        @<table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.Name)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.Name)
+                    @Html.ValidationMessageFor(model => model.Name)
+                </td>
+            </tr>
+        </table>
+    ))
+
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -108,7 +121,7 @@
             @Html.SmartLabelFor(model => model.DomainEndings)
         </td>
         <td class="adminData">
-            @Html.HiddenFor(model => model.DomainEndings)
+			@Html.ListBoxFor(model => model.DomainEndings, Model.AvailableDomainEndings, new { multiple = "multiple", data_tags = "true" })
             @Html.ValidationMessageFor(model => model.DomainEndings)
         </td>
     </tr>
@@ -130,17 +143,21 @@
             @Html.ValidationMessageFor(model => model.DisplayOrder)
         </td>
     </tr>
-    @if (Model.Id > 0)
-    {
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOn)
-            </td>
-            <td class="adminData">
-                @Html.DisplayFor(model => model.CreatedOn)
-            </td>
-        </tr>
-    }
+    
+	@if (Model.Id > 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CreatedOn)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Html.DisplayFor(model => model.CreatedOn)
+				</div>
+			</td>
+		</tr>
+	}
+
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.PrimaryStoreCurrencyStores)
@@ -155,7 +172,9 @@
 			}
 			else
 			{
-				<span class="muted">@T("Common.Unspecified")</span>
+				<div class="form-control-plaintext">
+					@T("Common.Unspecified")
+				</div>
 			}
 		</td>
 	</tr>
@@ -173,63 +192,102 @@
 			}
 			else
 			{
-				<span class="muted">@T("Common.Unspecified")</span>
+				<div class="form-control-plaintext">
+					@T("Common.Unspecified")
+				</div>
 			}
 		</td>
 	</tr>
 </table>
+
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Common.Round")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderItemsEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundOrderItemsEnabled)
+                @Html.ValidationMessageFor(model => model.RoundOrderItemsEnabled)
+            </td>
+        </tr>
+        <tr class="round-order-items">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundNumDecimals)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundNumDecimals)
+                @Html.ValidationMessageFor(model => model.RoundNumDecimals)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalEnabled)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.RoundOrderTotalEnabled)
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalEnabled)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalDenominator)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.RoundOrderTotalDenominator, new List<SelectListItem>
+                {
+                    new SelectListItem { Text = 0.05.ToString("F"), Value = 0.05.ToString("F") },
+                    new SelectListItem { Text = 0.10.ToString("F"), Value = 0.10.ToString("F") },
+                    new SelectListItem { Text = 0.50.ToString("F"), Value = 0.50.ToString("F") },
+                    new SelectListItem { Text = 1.00.ToString("F"), Value = 1.00.ToString("F") }
+                }, new { @class = "autowidth", @style = "width: 150px" })
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalDenominator)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundOrderTotalRule)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.RoundOrderTotalRule, Model.RoundOrderTotalRule.ToSelectList())
+                @Html.ValidationMessageFor(model => model.RoundOrderTotalRule)
+            </td>
+        </tr>
+        <tr class="round-order-total">
+            <td class="adminTitle">
+            </td>
+            <td class="adminData">
+                
+                @if (Model.RoundOrderTotalPaymentMethods.Any())
+                {
+                    <div class="alert alert-info">
+                        <span>@T("Admin.Configuration.Currencies.PaymentMethodsEnabledRoundingList"):</span>
+                        @foreach (var paymentMethod in Model.RoundOrderTotalPaymentMethods)
+                        {
+                            <span class="pr-1">
+                                <a href="@Url.Action("Edit", "Payment", new { systemName = paymentMethod.Key })">@paymentMethod.Value</a>
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        @Html.Raw(T("Admin.Configuration.Currencies.NoPaymentMethodsEnabledRounding").Text.FormatInvariant(Url.Action("Providers", "Payment")))
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
 }
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-            toggleStoreMapping();
-
-        });
-
-
-        function toggleStoreMapping() {
-            if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-                $('#pnl-available-stores').show();
-            }
-            else {
-                $('#pnl-available-stores').hide();
-            }
-        }
-
-    </script>
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitedToStores)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitedToStores)
-                @Html.ValidationMessageFor(model => model.LimitedToStores)
-            </td>
-        </tr>
-        <tr id="pnl-available-stores">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AvailableStores)
-            </td>
-            <td class="adminData">
-                @if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
-                {
-                    foreach (var store in Model.AvailableStores)
-                    {
-					<label class="checkbox">
-						<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						<span>@store.Name</span>
-					</label>
-                    }
-                }
-                else
-                {
-                    <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }</td>
-        </tr>
-    </table>
+	@Html.Partial("StoreSelector", Model)
 }

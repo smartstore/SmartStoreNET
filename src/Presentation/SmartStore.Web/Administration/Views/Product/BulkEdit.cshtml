@@ -5,6 +5,7 @@
     
     ViewBag.Title = T("Admin.Catalog.BulkEdit").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -20,193 +21,160 @@
         @T("Admin.Catalog.BulkEdit.Info")
     </div>
 
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchProductName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchProductName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchProductTypeId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, allString)
-			</td>
-		</tr>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductName)
+			@Html.TextBoxFor(model => Model.SearchProductName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductTypeId)
+			@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, allString)
+		</div>
 		@if (Model.AvailableStores.Count > 1)
 		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SearchStoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownList("SearchStoreId", Model.AvailableStores, allString)
-				</td>
-			</tr>
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+				@Html.DropDownListFor(model => model.SearchStoreId, Model.AvailableStores, T("Admin.Common.All"), new { @class = "form-control" })
+			</div>
 		}
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchCategoryId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("SearchCategoryId", Model.AvailableCategories, allString)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchManufacturerId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, allString)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-			</td>
-		</tr>
-	</table>
-	
-    <p></p>
-	
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<BulkEditProductModel>()
-					.Name("products-grid")
-					.DataKeys(keys =>
-					{
-						keys.Add(p => p.Id);
-					})
-					.ToolBar(commands =>
-					{
-						commands.SubmitChanges();
-					})
-					.DataBinding(dataBinding =>
-						dataBinding.Ajax()
-							.Select("BulkEditSelect", "Product")
-							.Update("BulkEditSave", "Product")
-					)
-					.Columns(columns =>
-					{
-						columns.Bound(p => p.Name)
-							.ReadOnly()
-							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-						columns.Bound(p => p.Sku)
-							.Width(150);
-						columns.Bound(p => p.Price)
-							.Format("{0:0.00}")
-							.RightAlign()
-							.Width(120);
-						columns.Bound(p => p.OldPrice)
-							.Format("{0:0.00}")
-							.RightAlign()
-							.Width(120);
-						columns.Bound(p => p.ManageInventoryMethod)
-							.ReadOnly();
-						columns.Bound(p => p.StockQuantity)
-							.Centered()
-							.Width(80);
-						columns.Bound(p => p.Published)
-							.Width(80)
-							.Template(item => @Html.SymbolForBool(item.Published))
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-						columns.Bound(x => x.Id)
-							.ReadOnly()
-							.Sortable(false)
-							.Width(90)
-							.Centered()
-							.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-							.Title(T("Admin.Common.Edit").Text);
-						columns.Command(
-							commands => commands.Delete().Localize(T)
-						).Width(90);
-					})
-					.Sortable(x =>
-					{
-						x.AllowUnsort(true);
-						x.SortMode(GridSortMode.SingleColumn);
-					})
-					.ClientEvents(events => events.OnDataBinding("Grid_onDataBinding").OnError("Grid_onError").OnSubmitChanges("Grid_onSubmitChanges"))
-					.Editable(editing => editing.Mode(GridEditMode.InCell))
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                )
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchCategoryId)
+			@Html.DropDownList("SearchCategoryId", Model.AvailableCategories, allString)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchManufacturerId)
+			@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, allString)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="search-products" value="search-products" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
 
-                <script type="text/javascript">
+	<div>
+        @(Html.Telerik().Grid<BulkEditProductModel>()
+			.Name("products-grid")
+			.DataKeys(keys => { keys.Add(p => p.Id); })
+			.ToolBar(commands => {  commands.SubmitChanges(); })
+			.DataBinding(dataBinding =>
+				dataBinding.Ajax()
+					.Select("BulkEditSelect", "Product")
+					.Update("BulkEditSave", "Product")
+			)
+			.Columns(columns =>
+			{
+				columns.Bound(p => p.Name)
+					.ReadOnly()
+					.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.Width("35%")
+					.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+				columns.Bound(p => p.Sku)
+					.Width(200);
+				columns.Bound(p => p.Price)
+					.Format("{0:0.00}")
+					.Width(120);
+				columns.Bound(p => p.OldPrice)
+					.Format("{0:0.00}")
+					.Width(120);
+				columns.Bound(p => p.ManageInventoryMethod)
+					.Width(200)
+					.HtmlAttributes(new { nowrap = "nowrap" })
+					.ReadOnly();
+				columns.Bound(p => p.StockQuantity)
+					.Width(80);
+				columns.Bound(p => p.Published)
+					.Width(80)
+					.Template(item => @Html.SymbolForBool(item.Published))
+					.Centered()
+					.ClientTemplate(@Html.SymbolForBool("Published"));
+				columns.Bound(x => x.Id)
+					.ReadOnly()
+					.Sortable(false)
+					.Width(90)
+					.Centered()
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+					.Title(T("Admin.Common.Edit").Text);
+				columns.Command(
+					commands => commands.Delete().Localize(T)
+				).Width(90);
+			})
+			.Sortable(x =>
+			{
+				x.AllowUnsort(true);
+				x.SortMode(GridSortMode.SingleColumn);
+			})
+			.ClientEvents(events => events.OnDataBinding("Grid_onDataBinding").OnError("Grid_onError").OnSubmitChanges("Grid_onSubmitChanges"))
+			.Editable(editing => editing.Mode(GridEditMode.InCell))
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+        )
+	</div>
 
-                    $(document).ready(function () {
-                        $('#search-products').click(function () {
-                            var grid = $('#products-grid').data('tGrid');
-                            grid.currentPage = 1; //new search. Set page size to 1
-                            grid.ajaxRequest();
-                            return false;
-                        });
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#search-products').click(function () {
+                var grid = $('#products-grid').data('tGrid');
+                grid.currentPage = 1; //new search. Set page size to 1
+                grid.ajaxRequest();
+                return false;
+            });
         
-                        $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
-                            if (event.keyCode == 13) {
-                                $("#search-products").click();
-                                return false;
-                            }
+            $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
+                if (event.keyCode == 13) {
+                    $("#search-products").click();
+                    return false;
+                }
+            });
+        });
+
+        function Grid_onError(args) {
+            if (args.textStatus == "modelstateerror" && args.modelState) {
+                var message = "Errors:\n";
+                $.each(args.modelState, function (key, value) {
+                    if ('errors' in value) {
+                        $.each(value.errors, function () {
+                            message += this + "\n";
                         });
-                    });
-
-                    function Grid_onError(args) {
-                        if (args.textStatus == "modelstateerror" && args.modelState) {
-                            var message = "Errors:\n";
-                            $.each(args.modelState, function (key, value) {
-                                if ('errors' in value) {
-                                    $.each(value.errors, function () {
-                                        message += this + "\n";
-                                    });
-                                }
-                            });
-                            args.preventDefault();
-                            alert(message);
-                        }
                     }
+                });
+                args.preventDefault();
+                alert(message);
+            }
+        }
 
-                    function Grid_onDataBinding(e) {
-                        var loadData = true;
-                        var grid = $(this).data('tGrid');
-                        if (grid.hasChanges()) {
-                            if (!confirm('@T("Admin.Common.LoseUnsavedChanges")')) {
-                                e.preventDefault();
-                                loadData = false;
-                            }
-                        }
+        function Grid_onDataBinding(e) {
+            var loadData = true;
+            var grid = $(this).data('tGrid');
+            if (grid.hasChanges()) {
+                if (!confirm(@T("Admin.Common.LoseUnsavedChanges").JsText)) {
+                    e.preventDefault();
+                    loadData = false;
+                }
+            }
         
-                        if (loadData) {
-                            var searchModel = {
-                            	SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
-                            	SearchStoreId: $('#SearchStoreId').val(),
-                                SearchCategoryId: $('#SearchCategoryId').val(),
-                                SearchManufacturerId: $('#SearchManufacturerId').val(),
-                                SearchProductTypeId: $('#SearchProductTypeId').val()
-                            };
-                            e.data = searchModel;
-                        }
-                    }
+            if (loadData) {
+                var searchModel = {
+                    SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
+                    SearchStoreId: $('#SearchStoreId').val(),
+                    SearchCategoryId: $('#SearchCategoryId').val(),
+                    SearchManufacturerId: $('#SearchManufacturerId').val(),
+                    SearchProductTypeId: $('#SearchProductTypeId').val()
+                };
+                e.data = searchModel;
+            }
+        }
 
-                    function Grid_onSubmitChanges(e) {
-                        //Pass search parameters
-                    	e.values["SearchProductName"] = $('#@Html.FieldIdFor(model => model.SearchProductName)').val();
-						e.values["SearchStoreId"] = $('#SearchStoreId').val();
-                        e.values["SearchCategoryId"] = $('#SearchCategoryId').val();
-                        e.values["SearchManufacturerId"] = $('#SearchManufacturerId').val();
-                        e.values["SearchProductTypeId"] = $('#SearchProductTypeId').val();
-                    }
-                </script>
-            </td>
-        </tr>
-    </table>
+        function Grid_onSubmitChanges(e) {
+            //Pass search parameters
+            e.values["SearchProductName"] = $('#@Html.FieldIdFor(model => model.SearchProductName)').val();
+			e.values["SearchStoreId"] = $('#SearchStoreId').val();
+            e.values["SearchCategoryId"] = $('#SearchCategoryId').val();
+            e.values["SearchManufacturerId"] = $('#SearchManufacturerId').val();
+            e.values["SearchProductTypeId"] = $('#SearchProductTypeId').val();
+        }
+    </script>
+
 }

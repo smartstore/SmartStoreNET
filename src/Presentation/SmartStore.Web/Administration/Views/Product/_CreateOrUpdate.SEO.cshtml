@@ -7,7 +7,10 @@
                 @Html.SmartLabelFor(model => model.Locales[item].MetaKeywords)
             </td>
             <td class="adminData">
-                @Html.TextBoxFor(model => model.Locales[item].MetaKeywords, new { @class = "input-large" })
+				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+                @Html.TextBoxFor(model => model.Locales[item].MetaKeywords)
                 @Html.ValidationMessageFor(model => model.Locales[item].MetaKeywords)
             </td>
         </tr>
@@ -16,7 +19,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].MetaDescription)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.Locales[item].MetaDescription, new { @class = "input-large" })
+                @Html.TextAreaFor(model => model.Locales[item].MetaDescription)
                 @Html.ValidationMessageFor(model => model.Locales[item].MetaDescription)
             </td>
         </tr>
@@ -25,7 +28,7 @@
                 @Html.SmartLabelFor(model => model.Locales[item].MetaTitle)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.Locales[item].MetaTitle, new { @class = "input-large" })
+                @Html.TextAreaFor(model => model.Locales[item].MetaTitle)
                 @Html.ValidationMessageFor(model => model.Locales[item].MetaTitle)
             </td>
         </tr>
@@ -34,13 +37,8 @@
                 @Html.SmartLabelFor(model => model.Locales[item].SeName)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.Locales[item].SeName, new { @class = "input-large" })
+                @Html.TextAreaFor(model => model.Locales[item].SeName)
                 @Html.ValidationMessageFor(model => model.Locales[item].SeName)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                @Html.HiddenFor(model => model.Locales[item].LanguageId)
             </td>
         </tr>
     </table>
@@ -51,7 +49,7 @@
                 @Html.SmartLabelFor(model => model.MetaKeywords)
             </td>
             <td class="adminData">
-                @Html.TextBoxFor(x => x.MetaKeywords, new { @class = "input-large" })
+                @Html.TextBoxFor(x => x.MetaKeywords)
                 @Html.ValidationMessageFor(model => model.MetaKeywords)
             </td>
         </tr>
@@ -60,7 +58,7 @@
                 @Html.SmartLabelFor(model => model.MetaDescription)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(x => x.MetaDescription, new { @class = "input-large" })
+                @Html.TextAreaFor(x => x.MetaDescription)
                 @Html.ValidationMessageFor(model => model.MetaDescription)
             </td>
         </tr>
@@ -69,7 +67,7 @@
                 @Html.SmartLabelFor(model => model.MetaTitle)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(x => x.MetaTitle, new { @class = "input-large" })
+                @Html.TextAreaFor(x => x.MetaTitle)
                 @Html.ValidationMessageFor(model => model.MetaTitle)
             </td>
         </tr>
@@ -78,7 +76,7 @@
                 @Html.SmartLabelFor(model => model.SeName)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(x => x.SeName, new { @class = "input-large" })
+                @Html.TextAreaFor(x => x.SeName)
 				@if (Model.Id != 0)
                 {
                     @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Product", entityId = @Model.Id })

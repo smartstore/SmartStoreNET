@@ -93,9 +93,6 @@ namespace SmartStore.Services.Messages
 					}
 				}
 			}
-
-			// event notification
-			_services.EventPublisher.EntityInserted(queuedEmail);
         }
 
         public virtual void UpdateQueuedEmail(QueuedEmail queuedEmail)
@@ -103,9 +100,6 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 
 			_queuedEmailRepository.Update(queuedEmail);
-
-            // event notification
-			_services.EventPublisher.EntityUpdated(queuedEmail);
         }
 
         public virtual void DeleteQueuedEmail(QueuedEmail queuedEmail)
@@ -113,9 +107,6 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 
             _queuedEmailRepository.Delete(queuedEmail);
-
-            // event notification
-			_services.EventPublisher.EntityDeleted(queuedEmail);
         }
 
 		public virtual int DeleteAllQueuedEmails()
@@ -234,14 +225,14 @@ namespace SmartStore.Services.Messages
 			// 'internal' for testing purposes
 
 			var msg = new EmailMessage(
-				new EmailAddress(qe.To, qe.ToName),
-				qe.Subject,
+				new EmailAddress(qe.To),
+				qe.Subject.Replace("\r\n", string.Empty),
 				qe.Body,
-				new EmailAddress(qe.From, qe.FromName));
+				new EmailAddress(qe.From));
 
 			if (qe.ReplyTo.HasValue())
 			{
-				msg.ReplyTo.Add(new EmailAddress(qe.ReplyTo, qe.ReplyToName));
+				msg.ReplyTo.Add(new EmailAddress(qe.ReplyTo));
 			}
 
 			AddEmailAddresses(qe.CC, msg.Cc);
@@ -321,8 +312,6 @@ namespace SmartStore.Services.Messages
 			}
 
 			_queuedEmailAttachmentRepository.Delete(attachment);
-
-			_services.EventPublisher.EntityDeleted(attachment);
 		}
 
 		public virtual byte[] LoadQueuedEmailAttachmentBinary(QueuedEmailAttachment attachment)

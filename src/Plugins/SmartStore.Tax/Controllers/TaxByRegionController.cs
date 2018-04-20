@@ -15,7 +15,6 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Tax.Controllers
 {
-
 	[AdminAuthorize]
     public class TaxByRegionController : PluginControllerBase
     {
@@ -58,7 +57,7 @@ namespace SmartStore.Tax.Controllers
             model.TaxRates = _taxRateService.GetAllTaxRates()
                 .Select(x =>
                 {
-					var m = new ByRegionTaxRateModel()
+					var m = new ByRegionTaxRateModel
                     {
                         Id = x.Id,
                         TaxCategoryId = x.TaxCategoryId,
@@ -138,9 +137,14 @@ namespace SmartStore.Tax.Controllers
             return RatesList(command);
         }
 
-        [HttpPost, ActionName("Configure")]
-        [FormValueRequired("addtaxrate")]
-		public ActionResult AddTaxRate(ByRegionTaxRateListModel model)
+		[HttpPost]
+		public ActionResult Configure(ByRegionTaxRateListModel model)
+		{
+			return Configure();
+		}
+
+		[HttpPost]
+		public ActionResult AddTaxByRegionRecord(ByRegionTaxRateListModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -155,10 +159,12 @@ namespace SmartStore.Tax.Controllers
                 Zip = model.AddZip,
                 Percentage = model.AddPercentage
             };
+
             _taxRateService.InsertTaxRate(taxRate);
 
-            return Configure();
-        }
+			NotifySuccess(T("Plugins.Tax.CountryStateZip.AddNewRecord.Success"));
 
+			return Json(new { Result = true });
+		}
     }
 }

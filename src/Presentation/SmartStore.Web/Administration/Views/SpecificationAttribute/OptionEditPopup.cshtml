@@ -1,10 +1,7 @@
-﻿@{
-    Layout = "_AdminPopupLayout";
-}
-@model SpecificationAttributeOptionModel
-@{    
-    //page title
-    ViewBag.Title = T("Admin.Catalog.Attributes.SpecificationAttributes.Options.EditOptionDetails").Text;
+﻿@model SpecificationAttributeOptionModel
+@{        
+	ViewBag.Title = T("Admin.Catalog.Attributes.SpecificationAttributes.Options.EditOptionDetails").Text;
+	Layout = "_AdminPopupLayout";
 }
 @using (Html.BeginForm())
 {
@@ -13,7 +10,10 @@
             @T("Admin.Catalog.Attributes.SpecificationAttributes.Options.EditOptionDetails")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" id="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 

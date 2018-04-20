@@ -121,7 +121,7 @@ namespace SmartStore.Admin.Controllers
 			deployment.HttpTransmissionType = model.HttpTransmissionType;
 			deployment.FileSystemPath = model.FileSystemPath;
 			deployment.SubFolder = model.SubFolder;
-			deployment.EmailAddresses = model.EmailAddresses;
+			deployment.EmailAddresses = string.Join(",", model.EmailAddresses ?? new string[0]);
 			deployment.EmailSubject = model.EmailSubject;
 			deployment.EmailAccountId = model.EmailAccountId;
 			deployment.PassiveMode = model.PassiveMode;
@@ -284,7 +284,7 @@ namespace SmartStore.Admin.Controllers
 				HttpTransmissionType = deployment.HttpTransmissionType,
 				FileSystemPath = deployment.FileSystemPath,
 				SubFolder = deployment.SubFolder,
-				EmailAddresses = deployment.EmailAddresses,
+				EmailAddresses = deployment.EmailAddresses.SplitSafe(","),
 				EmailSubject = deployment.EmailSubject,
 				EmailAccountId = deployment.EmailAccountId,
 				PassiveMode = deployment.PassiveMode,
@@ -300,8 +300,7 @@ namespace SmartStore.Admin.Controllers
 				model.CreateZip = profile.CreateZipArchive;
 				model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
 				model.AvailableHttpTransmissionTypes = ExportHttpTransmissionType.SimplePost.ToSelectList(false).ToList();
-
-				model.SerializedEmailAddresses = string.Join(",", deployment.EmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
+				model.AvailableEmailAddresses = new MultiSelectList(model.EmailAddresses);
 
 				model.AvailableEmailAccounts = allEmailAccounts
 					.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
@@ -380,17 +379,18 @@ namespace SmartStore.Admin.Controllers
 			model.BatchSize = (profile.BatchSize == 0 ? (int?)null : profile.BatchSize);
 			model.PerStore = profile.PerStore;
 			model.EmailAccountId = profile.EmailAccountId;
-			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
+			model.CompletedEmailAddresses = profile.CompletedEmailAddresses.SplitSafe(",");
 			model.CreateZipArchive = profile.CreateZipArchive;
 			model.Cleanup = profile.Cleanup;
+			model.PrimaryStoreCurrencyCode = Services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
 			model.FileNamePatternExample = profile.ResolveFileNamePattern(store, 1, _dataExchangeSettings.MaxFileNameLength);
 
 			model.AvailableEmailAccounts = allEmailAccounts
 				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
 				.ToList();
-
-			model.SerializedCompletedEmailAddresses = string.Join(",", profile.CompletedEmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
+			
+			model.AvailableCompletedEmailAddresses = new MultiSelectList(profile.CompletedEmailAddresses.SplitSafe(","));
 
 			// projection
 			model.Projection = new ExportProjectionModel
@@ -402,9 +402,9 @@ namespace SmartStore.Admin.Controllers
 				NumberOfPictures = projection.NumberOfPictures,
 				DescriptionMergingId = projection.DescriptionMergingId,
 				DescriptionToPlainText = projection.DescriptionToPlainText,
-				AppendDescriptionText = projection.AppendDescriptionText,
+				AppendDescriptionText = projection.AppendDescriptionText.SplitSafe(","),
 				RemoveCriticalCharacters = projection.RemoveCriticalCharacters,
-				CriticalCharacters = projection.CriticalCharacters,
+				CriticalCharacters = projection.CriticalCharacters.SplitSafe(","),
 				PriceType = projection.PriceType,
 				ConvertNetToGrossPrices = projection.ConvertNetToGrossPrices,
 				Brand = projection.Brand,
@@ -416,7 +416,8 @@ namespace SmartStore.Admin.Controllers
 				AttributeCombinationValueMergingId = projection.AttributeCombinationValueMergingId,
 				NoGroupedProducts = projection.NoGroupedProducts,
 				OnlyIndividuallyVisibleAssociated = projection.OnlyIndividuallyVisibleAssociated,
-				OrderStatusChangeId = projection.OrderStatusChangeId
+				OrderStatusChangeId = projection.OrderStatusChangeId,
+				NoBundleProducts = projection.NoBundleProducts
 			};
 
 			if (profile.Projection.IsEmpty())
@@ -468,7 +469,8 @@ namespace SmartStore.Admin.Controllers
 				PaymentStatusIds = filter.PaymentStatusIds,
 				ShippingStatusIds = filter.ShippingStatusIds,
 				CustomerRoleIds = filter.CustomerRoleIds,
-				IsActiveSubscriber = filter.IsActiveSubscriber
+				IsActiveSubscriber = filter.IsActiveSubscriber,
+				ShoppingCartTypeId = filter.ShoppingCartTypeId
 			};
 
 			model.Filter.AvailableStores = allStores
@@ -503,8 +505,6 @@ namespace SmartStore.Admin.Controllers
 
 				if (model.Provider.EntityType == ExportEntityType.Product)
 				{
-					var allCategories = _categoryService.GetAllCategories(showHidden: true);
-					var mappedCategories = allCategories.ToDictionary(x => x.Id);
 					var allManufacturers = _manufacturerService.GetAllManufacturers(true);
 					var allProductTags = _productTagService.GetAllProductTags();
 
@@ -516,14 +516,15 @@ namespace SmartStore.Admin.Controllers
 						.ToSelectList(false)
 						.Where(x => x.Value != ((int)PriceDisplayType.Hide).ToString())
 						.ToList();
-
-					model.Projection.SerializedAppendDescriptionText = string.Join(",", projection.AppendDescriptionText.SplitSafe(",").Select(x => x.EncodeJsString()));
-					model.Projection.SerializedCriticalCharacters = string.Join(",", projection.CriticalCharacters.SplitSafe(",").Select(x => x.EncodeJsString()));
+					
+					model.Projection.AvailableAppendDescriptionTexts = new MultiSelectList(projection.AppendDescriptionText.SplitSafe(","));
+					model.Projection.AvailableCriticalCharacters = new MultiSelectList(projection.CriticalCharacters.SplitSafe(","));
 
 					model.Filter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 
-					model.Filter.AvailableCategories = allCategories
-						.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
+					model.Filter.AvailableCategories = _categoryService.GetCategoryTree(includeHidden: true)
+						.FlattenNodes(false)
+						.Select(x => new SelectListItem { Text = x.GetCategoryNameIndented(), Value = x.Id.ToString() })
 						.ToList();
 
 					model.Filter.AvailableManufacturers = allManufacturers
@@ -546,7 +547,7 @@ namespace SmartStore.Admin.Controllers
 						.ToList();
 
 					model.Filter.AvailableCountries = allCountries
-						.Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name, language.Id, true, false), Value = x.Id.ToString() })
+						.Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name, language, true, false), Value = x.Id.ToString() })
 						.ToList();
 				}
 				else if (model.Provider.EntityType == ExportEntityType.Order)
@@ -556,6 +557,17 @@ namespace SmartStore.Admin.Controllers
 					model.Filter.AvailableOrderStates = OrderStatus.Pending.ToSelectList(false).ToList();
 					model.Filter.AvailablePaymentStates = PaymentStatus.Pending.ToSelectList(false).ToList();
 					model.Filter.AvailableShippingStates = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+				}
+				else if (model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
+				{
+					var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+
+					model.Filter.AvailableCustomerRoles = allCustomerRoles
+						.OrderBy(x => x.Name)
+						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+						.ToList();
+
+					model.Filter.AvailableShoppingCartTypes = ShoppingCartType.ShoppingCart.ToSelectList(false).ToList();
 				}
 
 				try
@@ -792,7 +804,7 @@ namespace SmartStore.Admin.Controllers
 			profile.Limit = model.Limit ?? 0;
 			profile.BatchSize = model.BatchSize ?? 0;
 			profile.PerStore = model.PerStore;
-			profile.CompletedEmailAddresses = model.CompletedEmailAddresses;
+			profile.CompletedEmailAddresses = string.Join(",", model.CompletedEmailAddresses ?? new string[0]);
 			profile.EmailAccountId = model.EmailAccountId ?? 0;
 			profile.CreateZipArchive = model.CreateZipArchive;
 			profile.Cleanup = model.Cleanup;
@@ -815,9 +827,9 @@ namespace SmartStore.Admin.Controllers
 					NumberOfPictures = model.Projection.NumberOfPictures,
 					DescriptionMergingId = model.Projection.DescriptionMergingId,
 					DescriptionToPlainText = model.Projection.DescriptionToPlainText,
-					AppendDescriptionText = model.Projection.AppendDescriptionText,
+					AppendDescriptionText = string.Join(",", model.Projection.AppendDescriptionText ?? new string[0]),	
 					RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters,
-					CriticalCharacters = model.Projection.CriticalCharacters,
+					CriticalCharacters = string.Join(",", model.Projection.CriticalCharacters ?? new string[0]),
 					PriceType = model.Projection.PriceType,
 					ConvertNetToGrossPrices = model.Projection.ConvertNetToGrossPrices,
 					Brand = model.Projection.Brand,
@@ -829,7 +841,8 @@ namespace SmartStore.Admin.Controllers
 					AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
 					NoGroupedProducts = model.Projection.NoGroupedProducts,
 					OnlyIndividuallyVisibleAssociated = model.Projection.OnlyIndividuallyVisibleAssociated,
-					OrderStatusChangeId = model.Projection.OrderStatusChangeId
+					OrderStatusChangeId = model.Projection.OrderStatusChangeId,
+					NoBundleProducts = model.Projection.NoBundleProducts
 				};
 
 				profile.Projection = XmlHelper.Serialize(projection);
@@ -869,7 +882,8 @@ namespace SmartStore.Admin.Controllers
 					PaymentStatusIds = model.Filter.PaymentStatusIds,
 					ShippingStatusIds = model.Filter.ShippingStatusIds,
 					CustomerRoleIds = model.Filter.CustomerRoleIds,
-					IsActiveSubscriber = model.Filter.IsActiveSubscriber
+					IsActiveSubscriber = model.Filter.IsActiveSubscriber,
+					ShoppingCartTypeId = model.Filter.ShoppingCartTypeId
 				};
 
 				profile.Filtering = XmlHelper.Serialize(filter);
@@ -971,171 +985,185 @@ namespace SmartStore.Admin.Controllers
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
 				NotifyAccessDenied();
-
 				return new JsonResult { Data = Enumerable.Empty<ExportPreviewProductModel>() };
 			}
 
 			ExportProfile profile = null;
 			Provider<IExportProvider> provider = null;
 
-			if ((profile = _exportService.GetExportProfileById(id)) != null &&
-				(provider = _exportService.LoadProvider(profile.ProviderSystemName)) != null &&
-				!provider.Metadata.IsHidden)
+			if ((profile = _exportService.GetExportProfileById(id)) == null ||
+				(provider = _exportService.LoadProvider(profile.ProviderSystemName)) == null ||
+				provider.Metadata.IsHidden)
 			{
-				var productModel = new List<ExportPreviewProductModel>();
-				var orderModel = new List<ExportPreviewOrderModel>();
-				var categoryModel = new List<ExportPreviewCategoryModel>();
-				var manuModel = new List<ExportPreviewManufacturerModel>();
-				var customerModel = new List<ExportPreviewCustomerModel>();
-				var subscriberModel = new List<ExportPreviewNewsLetterSubscriptionModel>();
+				return new JsonResult { Data = Enumerable.Empty<ExportPreviewProductModel>() };
+			}
 
-				object gridData = null;
-				Dictionary<int, Category> allCategories = null;
-				IList<Store> allStores = null;
+			var request = new DataExportRequest(profile, provider);
+			var normalizedTotal = profile.Limit > 0 && totalRecords > profile.Limit
+				? profile.Limit
+				: totalRecords;
+			var pageIndex = command.Page - 1;
+			object gridData = null;
 
-				var request = new DataExportRequest(profile, provider);
-				var normalizedTotal = totalRecords;
+			if (provider.Value.EntityType == ExportEntityType.Product)
+			{
+				var models = new List<ExportPreviewProductModel>();
+				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				if (profile.Limit > 0 && normalizedTotal > profile.Limit)
-					normalizedTotal = profile.Limit;
-
-				var data = _dataExporter.Preview(request, command.Page - 1, totalRecords);
-
-				foreach (dynamic item in data)
+				foreach (var item in items)
 				{
-					if (provider.Value.EntityType == ExportEntityType.Product)
-					{
-						var product = item.Entity as Product;
-
-						productModel.Add(new ExportPreviewProductModel
-						{
-							Id = product.Id,
-							ProductTypeId = product.ProductTypeId,
-							ProductTypeName = product.GetProductTypeLabel(Services.Localization),
-							ProductTypeLabelHint = product.ProductTypeLabelHint,
-							Name = item.Name,
-							Sku = item.Sku,
-							Price = item.Price,
-							Published = product.Published,
-							StockQuantity = product.StockQuantity,
-							AdminComment = item.AdminComment
-						});
-					}
-					else if (provider.Value.EntityType == ExportEntityType.Order)
-					{
-						orderModel.Add(new ExportPreviewOrderModel
-						{
-							Id = item.Id,
-							HasNewPaymentNotification = item.HasNewPaymentNotification,
-							OrderNumber = item.OrderNumber,
-							OrderStatus = item.OrderStatus,
-							PaymentStatus = item.PaymentStatus,
-							ShippingStatus = item.ShippingStatus,
-							CustomerEmail = item.Customer.Email,
-							StoreName = (item.Store == null ? "".NaIfEmpty() : item.Store.Name),
-							CreatedOn = _dateTimeHelper.ConvertToUserTime(item.CreatedOnUtc, DateTimeKind.Utc),
-							OrderTotal = item.OrderTotal
-						});
-					}
-					else if (provider.Value.EntityType == ExportEntityType.Category)
-					{
-						var category = item.Entity as Category;
-
-						if (allCategories == null)
-						{
-							allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false)
-								.ToDictionary(x => x.Id);
-						}
-
-						categoryModel.Add(new ExportPreviewCategoryModel
-						{
-							Id = category.Id,
-							Breadcrumb = category.GetCategoryBreadCrumb(_categoryService, allCategories),
-							FullName = item.FullName,
-							Alias = item.Alias,
-							Published = category.Published,
-							DisplayOrder = category.DisplayOrder,
-							LimitedToStores = category.LimitedToStores
-						});
-                    }
-					else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
-					{
-						manuModel.Add(new ExportPreviewManufacturerModel
-						{
-							Id = item.Id,
-							Name = item.Name,
-							Published = item.Published,
-							DisplayOrder = item.DisplayOrder,
-							LimitedToStores = item.LimitedToStores
-						});
-					}
-					else if (provider.Value.EntityType == ExportEntityType.Customer)
-					{
-						var customer = item.Entity as Customer;
-						var customerRoles = item.CustomerRoles as List<dynamic>;
-						var customerRolesString = string.Join(", ", customerRoles.Select(x => x.Name));
-
-						customerModel.Add(new ExportPreviewCustomerModel
-						{
-							Id = customer.Id,
-							Active = customer.Active,
-							CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
-							CustomerRoleNames = customerRolesString,
-							Email = customer.Email,
-							FullName = item._FullName,
-							LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
-							Username = customer.Username
-						});
-					}
-					else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
-					{
-						var subscription = item.Entity as NewsLetterSubscription;
-
-						if (allStores == null)
-							allStores = Services.StoreService.GetAllStores();
-
-						var store = allStores.FirstOrDefault(x => x.Id == subscription.StoreId);
-
-						subscriberModel.Add(new ExportPreviewNewsLetterSubscriptionModel
-						{
-							Id = subscription.Id,
-							Active = subscription.Active,
-							CreatedOn = _dateTimeHelper.ConvertToUserTime(subscription.CreatedOnUtc, DateTimeKind.Utc),
-							Email = subscription.Email,
-							StoreName = (store == null ? "".NaIfEmpty() : store.Name)
-						});
-					}
-                }
-
-				if (provider.Value.EntityType == ExportEntityType.Product)
-				{
-					gridData = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = normalizedTotal };
+					var product = item.Entity as Product;
+					var model = new ExportPreviewProductModel();
+					model.Id = product.Id;
+					model.ProductTypeId = product.ProductTypeId;
+					model.ProductTypeName = product.GetProductTypeLabel(Services.Localization);
+					model.ProductTypeLabelHint = product.ProductTypeLabelHint;
+					model.Name = item.Name;
+					model.Sku = item.Sku;
+					model.Price = item.Price;
+					model.Published = product.Published;
+					model.StockQuantity = product.StockQuantity;
+					model.AdminComment = item.AdminComment;
+					models.Add(model);
 				}
-				else if (provider.Value.EntityType == ExportEntityType.Order)
-				{
-					gridData = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.Category)
-				{
-					gridData = new GridModel<ExportPreviewCategoryModel> { Data = categoryModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
-				{
-					gridData = new GridModel<ExportPreviewManufacturerModel> { Data = manuModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.Customer)
-				{
-					gridData = new GridModel<ExportPreviewCustomerModel> { Data = customerModel, Total = normalizedTotal };
-				}
-				else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
-				{
-					gridData = new GridModel<ExportPreviewNewsLetterSubscriptionModel> { Data = subscriberModel, Total = normalizedTotal };
-				}
+				gridData = new GridModel<ExportPreviewProductModel> { Data = models, Total = normalizedTotal };
+			}
+			else if (provider.Value.EntityType == ExportEntityType.Order)
+			{
+				var models = new List<ExportPreviewOrderModel>();
+				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				return new JsonResult { Data = gridData };
-            }
+				foreach (var item in items)
+				{
+					var model = new ExportPreviewOrderModel();
+					model.Id = item.Id;
+					model.HasNewPaymentNotification = item.HasNewPaymentNotification;
+					model.OrderNumber = item.OrderNumber;
+					model.OrderStatus = item.OrderStatus;
+					model.PaymentStatus = item.PaymentStatus;
+					model.ShippingStatus = item.ShippingStatus;
+					model.CustomerId = item.CustomerId;
+					model.CreatedOn = _dateTimeHelper.ConvertToUserTime(item.CreatedOnUtc, DateTimeKind.Utc);
+					model.OrderTotal = item.OrderTotal;
+					model.StoreName = (string)item.Store.Name;
+					models.Add(model);
+				}
+				gridData = new GridModel<ExportPreviewOrderModel> { Data = models, Total = normalizedTotal };
+			}
+			else if (provider.Value.EntityType == ExportEntityType.Category)
+			{
+				var models = new List<ExportPreviewCategoryModel>();
+				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-			return new JsonResult { Data = Enumerable.Empty<ExportPreviewProductModel>() };
+				foreach (var item in items)
+				{
+					var category = item.Entity as Category;
+					var model = new ExportPreviewCategoryModel();
+					model.Id = category.Id;
+					model.Breadcrumb = ((ICategoryNode)category).GetCategoryPath(_categoryService, withAlias: true);
+					model.FullName = item.FullName;
+					model.Alias = item.Alias;
+					model.Published = category.Published;
+					model.DisplayOrder = category.DisplayOrder;
+					model.LimitedToStores = category.LimitedToStores;
+					models.Add(model);
+				}
+				gridData = new GridModel<ExportPreviewCategoryModel> { Data = models, Total = normalizedTotal };
+			}
+			else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
+			{
+				var models = new List<ExportPreviewManufacturerModel>();
+				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
+
+				foreach (var item in items)
+				{
+					var model = new ExportPreviewManufacturerModel();
+					model.Id = item.Id;
+					model.Name = item.Name;
+					model.Published = item.Published;
+					model.DisplayOrder = item.DisplayOrder;
+					model.LimitedToStores = item.LimitedToStores;
+					models.Add(model);
+				}
+				gridData = new GridModel<ExportPreviewManufacturerModel> { Data = models, Total = normalizedTotal };
+			}
+			else if (provider.Value.EntityType == ExportEntityType.Customer)
+			{
+				var models = new List<ExportPreviewCustomerModel>();
+				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
+
+				foreach (var item in items)
+				{
+					var customer = item.Entity as Customer;
+					var customerRoles = item.CustomerRoles as List<dynamic>;
+					var customerRolesString = string.Join(", ", customerRoles.Select(x => x.Name));
+
+					var model = new ExportPreviewCustomerModel();
+					model.Id = customer.Id;
+					model.Active = customer.Active;
+					model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
+					model.CustomerRoleNames = customerRolesString;
+					model.Email = customer.Email;
+					model.FullName = item._FullName;
+					model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
+					model.Username = customer.Username;
+					models.Add(model);
+				}
+				gridData = new GridModel<ExportPreviewCustomerModel> { Data = models, Total = normalizedTotal };
+			}
+			else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
+			{
+				var models = new List<ExportPreviewNewsLetterSubscriptionModel>();
+				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
+
+				foreach (var item in items)
+				{
+					var subscription = item.Entity as NewsLetterSubscription;
+					var model = new ExportPreviewNewsLetterSubscriptionModel();
+					model.Id = subscription.Id;
+					model.Active = subscription.Active;
+					model.CreatedOn = _dateTimeHelper.ConvertToUserTime(subscription.CreatedOnUtc, DateTimeKind.Utc);
+					model.Email = subscription.Email;
+					model.StoreName = (string)item.Store.Name;
+					models.Add(model);
+				}
+				gridData = new GridModel<ExportPreviewNewsLetterSubscriptionModel> { Data = models, Total = normalizedTotal };
+			}
+			else if (provider.Value.EntityType == ExportEntityType.ShoppingCartItem)
+			{
+				var guest = T("Admin.Customers.Guest").Text;
+				var cartTypeName = ShoppingCartType.ShoppingCart.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+				var wishlistTypeName = ShoppingCartType.Wishlist.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+
+				var models = new List<ExportPreviewShoppingCartItemModel>();
+				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
+
+				foreach (var item in items)
+				{
+					var cartItem = item.Entity as ShoppingCartItem;
+					var model = new ExportPreviewShoppingCartItemModel();
+					model.Id = cartItem.Id;
+					model.ShoppingCartTypeId = cartItem.ShoppingCartTypeId;
+					model.ShoppingCartTypeName = cartItem.ShoppingCartType == ShoppingCartType.Wishlist ? wishlistTypeName : cartTypeName;
+					model.CustomerId = cartItem.CustomerId;
+					model.CustomerEmail = cartItem.Customer.IsGuest() ? guest : cartItem.Customer.Email;
+					model.ProductTypeId = cartItem.Product.ProductTypeId;
+					model.ProductTypeName = cartItem.Product.GetProductTypeLabel(Services.Localization);
+					model.ProductTypeLabelHint = cartItem.Product.ProductTypeLabelHint;
+					model.Name = cartItem.Product.Name;
+					model.Sku = cartItem.Product.Sku;
+					model.Price = cartItem.Product.Price;
+					model.Published = cartItem.Product.Published;
+					model.StockQuantity = cartItem.Product.StockQuantity;
+					model.AdminComment = cartItem.Product.AdminComment;
+					model.CreatedOn = _dateTimeHelper.ConvertToUserTime(cartItem.CreatedOnUtc, DateTimeKind.Utc);
+					model.StoreName = (string)item.Store.Name;
+					models.Add(model);
+				}
+				gridData = new GridModel<ExportPreviewShoppingCartItemModel> { Data = models, Total = normalizedTotal };
+			}
+
+			return new JsonResult { Data = gridData ?? Enumerable.Empty<ExportPreviewProductModel>() };
 		}
 
 		[HttpPost]
@@ -1270,7 +1298,7 @@ namespace SmartStore.Admin.Controllers
 					}
 					catch (IOException)
 					{
-						NotifyWarning(T("Admin.Common.FileInUse"));
+						message = T("Admin.Common.FileInUse");
 					}
 				}
 			}

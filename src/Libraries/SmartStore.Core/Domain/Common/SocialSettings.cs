@@ -11,6 +11,8 @@ namespace SmartStore.Core.Domain.Common
 			GooglePlusLink = "#";
 			TwitterLink = "#";
 			PinterestLink = "#";
+			//YoutubeLink = "#";
+			//InstagramLink = "#";
 		}
 		
 		/// <summary>
@@ -42,5 +44,10 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets the youtube link
         /// </summary>
         public string YoutubeLink { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets the instagram link
+		/// </summary>
+		public string InstagramLink { get; set; }
+	}
 }

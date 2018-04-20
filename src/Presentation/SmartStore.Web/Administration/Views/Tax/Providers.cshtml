@@ -1,6 +1,5 @@
 ﻿@model IEnumerable<TaxProviderModel>
 @{    
-    //page title
     ViewBag.Title = T("Admin.Configuration.Tax.Providers").Text;
 }
 <div class="section-header">
@@ -8,21 +7,19 @@
         @T("Admin.Configuration.Tax.Providers")
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-			@Html.ProviderList(Model, 
-				@<a href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn@(item.IsPrimaryTaxProvider ? " btn-info" : "")" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider)>
-					@if (item.IsPrimaryTaxProvider)
-					{
-						<i class="fa fa-check"></i>
-						@T("Admin.Configuration.Tax.Providers.Fields.IsPrimaryTaxProvider")
-					}
-					else
-					{
-						@T("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider")
-					}
-				</a>)
-        </td>
-    </tr>
-</table>
+
+<div>
+	@Html.ProviderList(Model,
+	@<a style="min-width: 250px" href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn@(item.IsPrimaryTaxProvider ? " btn-success" : " btn-secondary btn-to-danger")" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider)>
+		@if (item.IsPrimaryTaxProvider)
+		{
+			<i class="fa fa-check"></i>
+			<span>@T("Admin.Configuration.Tax.Providers.Fields.IsPrimaryTaxProvider")</span>
+		}
+		else
+		{
+			<span>@T("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider")</span>
+		}
+	</a>)
+</div>
+			

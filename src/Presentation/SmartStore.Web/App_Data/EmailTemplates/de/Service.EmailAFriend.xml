@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Message.To }}</To>
+	<ReplyTo>{% if Message.From %}{{ Message.From }}{% endif %}</ReplyTo>
+	<Subject>{{ Store.Name }} - Empfehlung von {{ Customer.FullName }}</Subject>
+	<ModelTypes>Customer, Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+
+<p>
+  <b>{{ Customer.FullName }}</b> möchte dir einen Artikel bei <a href="{{ Store.Url }}">{{ Store.Name }}</a> empfehlen:
+</p>
+
+<table class="w-100" cellpadding="10">
+  <tbody>
+    <tr>
+    	<td align="center">
+					{% if Product.ThumbnailLg %}
+						{% assign thumb = Product.ThumbnailLg %}
+            <a href="{{ Product.Url }}">
+              <img src="{{ thumb.Src }}" alt="{{ thumb.Alt }}"
+                   {% if thumb.Width %}width="{{ thumb.Width }}"{% endif %}
+                   {% if thumb.Height %}height="{{ thumb.Height }}"{% endif %} />       			
+            </a>
+					{% endif %}
+      </td>
+      <td width="100%">
+        <a href="{{ Product.Url }}">{{ Product.Name }}</a><br/>
+        <span class="text-muted" style="line-height: 1.3">{{ Product.Description }}</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+{% if Message.Body %}
+<p>&nbsp;</p>
+<table class="w-100 brd bg-light">
+  <tbody>
+    <tr>
+    	<td class="p-3">
+        <h3>Nachricht</h3>
+        {{ Message.Body }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
+
+{% endblock %}]]></Body>
+</MessageTemplate>

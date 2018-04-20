@@ -1,22 +1,23 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
 
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.OfflinePayment" AppendRootKey="false">
+    <Value>Offline payment methods</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.OfflinePayment" AppendRootKey="false">
+    <Value>Provides offline payment methods, e.g. direct debit, credit card, invoice, prepayment, cash on delivery etc.</Value>
+  </LocaleResource>
+
   <LocaleResource Name="DescriptionText">
     <Value>Description</Value>
   </LocaleResource>
   <LocaleResource Name="DescriptionText.Hint">
     <Value>Enter info that will be shown to customers during checkout.</Value>
   </LocaleResource>
-  <LocaleResource Name="AdditionalFee">
-    <Value>Additional fee</Value>
+  <LocaleResource Name="PaymentMethodLogo">
+	<Value>Logo</Value>
   </LocaleResource>
-  <LocaleResource Name="AdditionalFee.Hint">
-    <Value>Determines the additional fee.</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFeePercentage">
-    <Value>Additional fee. Use percentage</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdditionalFeePercentage.Hint">
-    <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+  <LocaleResource Name="PaymentMethodLogo.Hint">
+	<Value>Upload an image which will be displayed as thumbnail of the payment method on the payment selection page.</Value>
   </LocaleResource>
 
   <!-- CashOnDelivery -->
@@ -114,6 +115,13 @@
           <![CDATA[ ]]>
         </Value>
       </LocaleResource>
+	  <LocaleResource Name="PaymentInfoDescription">
+		<Value>
+		  <![CDATA[
+            Once your order is placed, you will be contacted by our staff to confirm the order.
+          ]]>
+		</Value>
+	  </LocaleResource>
       <LocaleResource Name="Fields.TransactMode">
         <Value>Payment status after order completion</Value>
       </LocaleResource>

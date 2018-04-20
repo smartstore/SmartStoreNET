@@ -21,7 +21,8 @@ namespace SmartStore.Core.Domain.Customers
         private ICollection<ShoppingCartItem> _shoppingCartItems;
         private ICollection<Order> _orders;
         private ICollection<RewardPointsHistory> _rewardPointsHistory;
-        private ICollection<ReturnRequest> _returnRequests;
+		private ICollection<WalletHistory> _walletHistory;
+		private ICollection<ReturnRequest> _returnRequests;
         private ICollection<Address> _addresses;
         private ICollection<ForumTopic> _forumTopics;
         private ICollection<ForumPost> _forumPosts;
@@ -202,6 +203,22 @@ namespace SmartStore.Core.Domain.Customers
             protected set { _rewardPointsHistory = value; }            
         }
 
+		/// <summary>
+		/// Gets or sets the wallet history.
+		/// </summary>
+		[DataMember]
+		public virtual ICollection<WalletHistory> WalletHistory
+		{
+			get
+			{
+				return _walletHistory ?? (_walletHistory = new HashSet<WalletHistory>());
+			}
+			protected set
+			{
+				_walletHistory = value;
+			}
+		}
+
         /// <summary>
         /// Gets or sets return request of this customer
         /// </summary>
@@ -251,56 +268,66 @@ namespace SmartStore.Core.Domain.Customers
 			get { return _forumPosts ?? (_forumPosts = new HashSet<ForumPost>()); }
             protected set { _forumPosts = value; }
         }
-        
-        #endregion
 
-        #region Addresses
+		#endregion
 
-        public virtual void RemoveAddress(Address address)
-        {
+		#region Utils
+
+
+		/// <summary>
+		/// Gets a string identifier for the customer's roles by joining all role ids
+		/// </summary>
+		/// <param name="onlyActiveCustomerRoles"><c>true</c> ignores all inactive roles</param>
+		/// <returns>The identifier</returns>
+		public string GetRolesIdent(bool onlyActiveCustomerRoles = true)
+		{
+			return string.Join(",", this.CustomerRoles.Where(x => !onlyActiveCustomerRoles || x.Active).Select(x => x.Id));
+		}
+
+		public virtual void RemoveAddress(Address address)
+		{
 			if (this.Addresses.Contains(address))
-            {
-                if (this.BillingAddress == address) this.BillingAddress = null;
-                if (this.ShippingAddress == address) this.ShippingAddress = null;
+			{
+				if (this.BillingAddress == address) this.BillingAddress = null;
+				if (this.ShippingAddress == address) this.ShippingAddress = null;
 
-                this.Addresses.Remove(address);
-            }
-        }
+				this.Addresses.Remove(address);
+			}
+		}
 
-        #endregion
+		public void AddRewardPointsHistoryEntry(
+			int points, 
+			string message = "",
+			Order usedWithOrder = null, 
+			decimal usedAmount = 0M)
+		{
+			int newPointsBalance = this.GetRewardPointsBalance() + points;
 
-        #region Reward points
+			var rewardPointsHistory = new RewardPointsHistory()
+			{
+				Customer = this,
+				UsedWithOrder = usedWithOrder,
+				Points = points,
+				PointsBalance = newPointsBalance,
+				UsedAmount = usedAmount,
+				Message = message,
+				CreatedOnUtc = DateTime.UtcNow
+			};
 
-        public void AddRewardPointsHistoryEntry(int points, string message = "",
-            Order usedWithOrder = null, decimal usedAmount = 0M)
-        {
-            int newPointsBalance = this.GetRewardPointsBalance() + points;
+			this.RewardPointsHistory.Add(rewardPointsHistory);
+		}
 
-            var rewardPointsHistory = new RewardPointsHistory()
-            {
-                Customer = this,
-                UsedWithOrder = usedWithOrder,
-                Points = points,
-                PointsBalance = newPointsBalance,
-                UsedAmount = usedAmount,
-                Message = message,
-                CreatedOnUtc = DateTime.UtcNow
-            };
+		/// <summary>
+		/// Gets reward points balance
+		/// </summary>
+		public int GetRewardPointsBalance()
+		{
+			int result = 0;
+			if (this.RewardPointsHistory.Count > 0)
+				result = this.RewardPointsHistory.OrderByDescending(rph => rph.CreatedOnUtc).ThenByDescending(rph => rph.Id).FirstOrDefault().PointsBalance;
+			return result;
+		}
 
-            this.RewardPointsHistory.Add(rewardPointsHistory);
-        }
-
-        /// <summary>
-        /// Gets reward points balance
-        /// </summary>
-        public int GetRewardPointsBalance()
-        {
-            int result = 0;
-            if (this.RewardPointsHistory.Count > 0)
-                result = this.RewardPointsHistory.OrderByDescending(rph => rph.CreatedOnUtc).ThenByDescending(rph => rph.Id).FirstOrDefault().PointsBalance;
-            return result;
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

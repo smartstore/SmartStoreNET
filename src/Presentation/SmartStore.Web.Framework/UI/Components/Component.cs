@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Mvc;
-using System.Web.UI;
-using System.IO;
 using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI 
@@ -14,7 +9,6 @@ namespace SmartStore.Web.Framework.UI
         protected Component()
         {
             this.HtmlAttributes = new RouteValueDictionary();
-			this.ComponentVersion = BootstrapVersion.V2;
         }
 
         public string Id
@@ -52,12 +46,5 @@ namespace SmartStore.Web.Framework.UI
                 return false;
             }
         }
-
-		public BootstrapVersion ComponentVersion
-		{
-			get;
-			set;
-		}
 	}
-
 }

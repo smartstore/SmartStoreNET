@@ -24,12 +24,12 @@
     <div class="page-body">
         @{ Html.RenderWidget("newslist_page_before_items"); }
 
-        <div class="news-items mb-6">
+        <div class="news-items mb-5">
             @foreach (var item in Model.NewsItems)
             {
 				<div class="news-item mb-5">
 					<div class="text-muted small">
-						@item.CreatedOn.ToString("D")
+						@item.CreatedOn.ToNativeString("D")
 					</div>
 					<h4 class="news-title">
 						<a class="fs-h5 color-body" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">

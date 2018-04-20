@@ -14,13 +14,14 @@ namespace SmartStore.Admin.Models.DataExchange
 {
 	[Validator(typeof(ExportProfileValidator))]
 	public partial class ExportProfileModel : EntityModelBase
-	{
+	{	
 		public int StoreCount { get; set; }
 		public string AllString { get; set; }
 		public string UnspecifiedString { get; set; }
 		public bool LogFileExists { get; set; }
 		public bool HasActiveProvider { get; set; }
 		public string[] FileNamePatternDescriptions { get; set; }
+		public string PrimaryStoreCurrencyCode { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Name")]
 		public string Name { get; set; }
@@ -68,9 +69,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		public List<SelectListItem> AvailableEmailAccounts { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.CompletedEmailAddresses")]
-		public string CompletedEmailAddresses { get; set; }
-		public string SerializedCompletedEmailAddresses { get; set; }
-
+		public string[] CompletedEmailAddresses { get; set; }
+		public MultiSelectList AvailableCompletedEmailAddresses { get; set; }
+		
 		[SmartResourceDisplayName("Admin.DataExchange.Export.CreateZipArchive")]
 		public bool CreateZipArchive { get; set; }
 

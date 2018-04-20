@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
@@ -41,13 +42,13 @@ namespace SmartStore.Web.Models.Catalog
 			}
 		}
 
-        public string Name { get; set; }
-        public string ShortDescription { get; set; }
-        public string FullDescription { get; set; }
+        public LocalizedValue<string> Name { get; set; }
+        public LocalizedValue<string> ShortDescription { get; set; }
+        public LocalizedValue<string> FullDescription { get; set; }
         public string ProductTemplateViewPath { get; set; }
-        public string MetaKeywords { get; set; }
-        public string MetaDescription { get; set; }
-        public string MetaTitle { get; set; }
+        public LocalizedValue<string> MetaKeywords { get; set; }
+        public LocalizedValue<string> MetaDescription { get; set; }
+        public LocalizedValue<string> MetaTitle { get; set; }
         public string SeName { get; set; }
 		public ProductType ProductType { get; set; }
 		public bool VisibleIndividually { get; set; }
@@ -101,7 +102,7 @@ namespace SmartStore.Web.Models.Catalog
         public string DeliveryTimeName { get; set; }
         public string DeliveryTimeHexValue { get; set; }
 		public bool DisplayDeliveryTime { get; set; }
-        public string QuantityUnitName { get; set; }
+        public LocalizedValue<string> QuantityUnitName { get; set; }
         public bool DisplayProductReviews { get; set; }
 		public bool IsShipEnabled { get; set; }
 		public bool DisplayDeliveryTimeAccordingToStock { get; set; }
@@ -166,7 +167,7 @@ namespace SmartStore.Web.Models.Catalog
 
             public int MinOrderAmount { get; set; }
             public int MaxOrderAmount { get; set; }
-			public string QuantityUnitName { get; set; }
+			public LocalizedValue<string> QuantityUnitName { get; set; }
             public int QuantityStep { get; set; }
             public bool HideQuantityControl { get; set; }
             public QuantityControlType QuantiyControlType { get; set; }
@@ -231,7 +232,6 @@ namespace SmartStore.Web.Models.Catalog
 		public partial class TierPriceModel : ModelBase
 		{
 			public string Price { get; set; }
-
 			public int Quantity { get; set; }
 		}
 

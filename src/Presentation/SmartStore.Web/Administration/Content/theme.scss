@@ -1,0 +1,129 @@
+/// <reference path="../../Content/bs4/scss/bootstrap.scss" />
+
+// Theme: SmartStore.NET Admin
+// ========================================
+
+
+//
+// Bootstrap 4
+// --------------------------------------------------
+
+@import "_variables.scss";
+@import "../../Content/bs4/scss/bootstrap.scss"; 
+
+
+//
+// Vendors
+// --------------------------------------------------
+
+@import "../../Content/vendors/select2/scss/core.scss";
+@import "../../Content/vendors/colorpicker/scss/_colorpicker.scss";
+@import "../../Content/vendors/datetimepicker/scss/_tempusdominus.scss";
+
+
+// Button tweaks:
+// Must come BEFORE custom button import because of
+// css specificity.
+// -----------------------------------------------------
+
+@each $color, $value in $theme-colors {
+	*:not(.show) > .btn-#{$color},
+	*:not(.show) > .btn-outline-#{$color} {
+		&:not(:active):not(.active):focus,
+		&:not(:active):not(.active).focus {
+			@if $color == "secondary" or $color == "light" {
+				box-shadow: 0 0 0 0.2em rgba($primary, .15);
+			}
+			@else {
+				box-shadow: 0 0 0 0.2em rgba($value, .4);
+			}
+		}
+	}
+}
+
+.btn-secondary {
+	@include button-variant($secondary, $secondary, $secondary, rgba(#000, 0.15), darken($secondary, 10%), rgba(#000, 0.2));
+}
+
+.btn-light {
+	@include button-variant($light, $light, $light, rgba(#000, 0.15), darken($light, 10%), rgba(#000, 0.2));
+}
+
+.btn-secondary,
+.btn-light {
+	&:focus, &.focus {
+		border-color: rgba(#000, 0.2);
+	}
+}
+
+// Light button icons lighter (looks nice)
+// -----------------------------------------------------
+
+.btn-secondary,
+.btn-light {
+	> i {
+		transition: opacity .05s ease-in-out;
+	}
+
+	&:not(:hover):not(.hover):not(:active):not(.active):not(:focus):not(.focus):not([disabled]):not(.disabled) {
+		> i {
+			//opacity: 0.6;
+			color: lighten($body-color, 20%);
+		}
+	}
+}
+
+//
+// Global / Shared
+// --------------------------------------------------
+
+@import '../../Content/shared/_variables-shared.scss';
+@import '../../Content/shared/_mixins.scss';
+@import '../../Content/shared/_typo.scss';
+@import '../../Content/shared/_alert.scss';
+@import '../../Content/shared/_buttons.scss';
+@import '../../Content/shared/_card.scss';
+@import '../../Content/shared/_forms.scss';
+@import '../../Content/shared/_pagination.scss';
+@import '../../Content/shared/_nav.scss';
+@import "../../Content/shared/_modal.scss"; 
+@import '../../Content/shared/_dropdown.scss';
+@import "../../Content/shared/_throbber.scss";
+@import "../../Content/shared/_spinner.scss";
+@import '../../Content/shared/_animate.scss';
+@import "../../Content/shared/_sortable-grip.scss";
+@import "../../Content/shared/_entity-picker.scss";
+@import '../../Content/shared/_choice.scss';
+@import '../../Content/shared/_switch.scss';
+@import "../../Content/shared/_utils.scss";
+
+//
+// Skinning
+// --------------------------------------------------
+
+@import "../../Content/skinning/_select2.scss";
+@import "../../Content/skinning/_pnotify.scss";
+@import "../../Content/skinning/_fileupload.scss";
+
+
+//
+// Main styles
+// --------------------------------------------------
+
+@import "_admin.scss";
+
+
+//
+// Custom imports from plugins
+// --------------------------------------------------
+
+@import '~/.app/moduleimports.scss';
+
+
+//
+// Telerik adaptation:
+// Must come latest because of css
+// specificity.
+// --------------------------------------------------
+
+@import "_telerik.scss";

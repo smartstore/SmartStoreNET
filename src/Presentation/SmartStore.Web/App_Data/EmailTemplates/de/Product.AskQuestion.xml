@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<ReplyTo>{% if Message.SenderEmail %}{{ Message.SenderName }} &lt;{{ Message.SenderEmail }}&gt;{% endif %}</ReplyTo>
+	<Subject>{{ Store.Name }} - Frage zu '{{ Product.Name | Truncate:30 }}' von {{ Message.SenderName }}</Subject>
+	<ModelTypes>Customer, Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Produktanfrage,
+</h1>
+
+<p>
+  {% if Customer.IsRegistered %}
+  	<b>{{ Customer.FullName }}</b>
+  {% elsif Message.SenderName %}
+  	<b>{{ Message.SenderName }}</b>
+  {% else %}
+  	<b>{{ Message.SenderEmail }}</b>
+  {% endif %}
+  hat eine Frage zum Produkt <a href="{{ Product.Url }}">{{ Product.Name }}</a>.
+</p>
+
+<p>
+  <b>E-Mail:</b><br />
+  <a href="mailto:{{ Message.SenderEmail }}">{{ Message.SenderEmail }}</a>
+</p>
+
+{% if Message.SenderPhone %}
+<p>
+  <b>Telefonnr.:</b><br />
+  <span>{{ Message.SenderPhone }}</span>
+</p>
+{% endif %}
+
+<table class="w-100 brd bg-light p-3">
+  <tr>
+  	<td>
+  		{{ Message.Message }}
+    </td>
+  </tr>
+</table>
+
+{% if Customer.IsRegistered %}
+  <p class="mt-4 mb-4 text-center">
+    <a class="btn btn-primary" href="{{ Customer.Url }}">Zum Kundenprofil</a>
+  </p>
+{% endif %}
+
+{% endblock %}]]></Body>
+</MessageTemplate>

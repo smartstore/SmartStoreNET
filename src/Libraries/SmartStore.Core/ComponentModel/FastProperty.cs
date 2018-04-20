@@ -224,9 +224,7 @@ namespace SmartStore.ComponentModel
 			Guard.NotNull(type, nameof(type));
 			Guard.NotEmpty(propertyName, nameof(propertyName));
 
-			FastProperty fastProperty = null;
-
-			if (TryGetCachedProperty(type, propertyName, cachingStrategy == PropertyCachingStrategy.EagerCached, out fastProperty))
+			if (TryGetCachedProperty(type, propertyName, cachingStrategy == PropertyCachingStrategy.EagerCached, out var fastProperty))
 			{
 				return fastProperty;
 			}
@@ -254,9 +252,7 @@ namespace SmartStore.ComponentModel
 		{
 			Guard.NotNull(propertyInfo, nameof(propertyInfo));
 
-			FastProperty fastProperty = null;
-
-			if (TryGetCachedProperty(propertyInfo.ReflectedType, propertyInfo.Name, cachingStrategy == PropertyCachingStrategy.EagerCached, out fastProperty))
+			if (TryGetCachedProperty(propertyInfo.ReflectedType, propertyInfo.Name, cachingStrategy == PropertyCachingStrategy.EagerCached, out var fastProperty))
 			{
 				return fastProperty;
 			}
@@ -446,27 +442,34 @@ namespace SmartStore.ComponentModel
 		///      instance, then a copy
 		///  is returned.
 		///  </summary>
+		///  <param name="keySelector">Key selector</param>
+		///  <param name="deep">When true, converts all nested objects to dictionaries also</param>
 		///  <remarks>
 		///  The implementation of FastProperty will cache the property accessors per-type. This is
 		///  faster when the the same type is used multiple times with ObjectToDictionary.
 		///  </remarks>
-		public static IDictionary<string, object> ObjectToDictionary(object value, Func<string, string> keySelector = null)
+		public static IDictionary<string, object> ObjectToDictionary(object value, Func<string, string> keySelector = null, bool deep = false)
 		{
-			var dictionary = value as IDictionary<string, object>;
-			if (dictionary != null)
+			if (value is IDictionary<string, object> dictionary)
 			{
 				return new Dictionary<string, object>(dictionary, StringComparer.OrdinalIgnoreCase);
 			}
-
-			keySelector = keySelector ?? new Func<string, string>(key => key);
 
 			dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
 			if (value != null)
 			{
+				keySelector = keySelector ?? new Func<string, string>(key => key);
+
 				foreach (var prop in GetProperties(value).Values)
 				{
-					dictionary[keySelector(prop.Name)] = prop.GetValue(value);
+					var propValue = prop.GetValue(value);
+					if (deep && propValue != null && prop.Property.PropertyType.IsPlainObjectType())
+					{
+						propValue = ObjectToDictionary(propValue, deep: true);
+					}
+
+					dictionary[keySelector(prop.Name)] = propValue;
 				}
 			}
 
@@ -536,8 +539,7 @@ namespace SmartStore.ComponentModel
 			ConcurrentDictionary<Type, IDictionary<string, FastProperty>> allPropertiesCache,
 			ConcurrentDictionary<Type, IDictionary<string, FastProperty>> visiblePropertiesCache)
 		{
-			IDictionary<string, FastProperty> result;
-			if (visiblePropertiesCache.TryGetValue(type, out result))
+			if (visiblePropertiesCache.TryGetValue(type, out var result))
 			{
 				return result;
 			}
@@ -617,18 +619,17 @@ namespace SmartStore.ComponentModel
 			// part of the sequence of properties returned by this method.
 			type = Nullable.GetUnderlyingType(type) ?? type;
 
-			IDictionary<string, FastProperty> fastProperties;
-			if (!cache.TryGetValue(type, out fastProperties))
-			{
-				var candidates = GetCandidateProperties(type);
-				fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-				cache.TryAdd(type, fastProperties);
-			}
+			return cache.GetOrAdd(type, Get);
 
-			return fastProperties;
+			IDictionary<string, FastProperty> Get(Type t)
+			{
+				var candidates = GetCandidateProperties(t);
+				var fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+				return fastProperties;
+			}
 		}
 
-		private static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
+		internal static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
 		{
 			// We avoid loading indexed properties using the Where statement.
 			var properties = type.GetRuntimeProperties().Where(IsCandidateProperty);

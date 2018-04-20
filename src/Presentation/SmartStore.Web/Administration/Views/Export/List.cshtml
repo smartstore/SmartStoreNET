@@ -9,8 +9,16 @@
 
 <div class="section-header">
     <div class="title">
-		<i class="fa fa-upload"></i>&nbsp;@T("Common.Export")
+		<i class="fa fa-upload"></i>
+		<span>@T("Common.Export")</span>
     </div>
+
+	<div class="options">
+		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-primary export-profile-button">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.DataExchange.AddNewProfile")</span>
+		</a>
+	</div>
 </div>
 
 <div id="ExportProfileListContainer">
@@ -20,28 +28,25 @@
     }
 </div>
 
-<div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-		<h4 class="caption"></h4>
-	</div>
-	<div class="modal-body"></div>
-	<div class="modal-footer">
-		<button class="btn btn-primary">@T("Common.OK")</button>
-		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-	</div>
-</div>
+@{Html.SmartStore().Window()
+	.Name("export-profile-dialog")
+	.Size(WindowSize.Large)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal"><span>@T("Common.Cancel")</span></button>
+		<button class="btn btn-primary"><span>@T("Common.OK")</span></button>
+	</text>)
+	.Render();
+}
 
-<div id="export-profile-file-dialog" class="modal modal-xlarge hide fade" tabindex="-1">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-		<h4 class="caption">@T("Admin.DataExchange.Export.ExportFiles")</h4>
-	</div>
-	<div class="modal-body"></div>
-	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-	</div>
-</div>
+@{Html.SmartStore().Window()
+	.Name("export-profile-file-dialog")
+	.Title(T("Admin.DataExchange.Export.ExportFiles"))
+	.Size(WindowSize.FlexSmall)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal"><span>@T("Common.Cancel")</span></button>
+	</text>)
+	.Render();
+}
 
 <script type="text/javascript">
 
@@ -53,7 +58,7 @@
 			e.preventDefault();
 
 			dialog.find('.modal-body').empty();
-			dialog.find('.caption').text(dialog.attr('data-profile') + ' - ' + $.trim($(this).text()));
+			dialog.find('.modal-title').text(dialog.attr('data-profile') + ' - ' + $.trim($(this).text()));
 			showPrimaryButton(false);
 
 			$(this).doAjax({
@@ -62,19 +67,19 @@
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
 
-					$('select[name="ProviderSystemName"]').select2({
+					$('select[name="ProviderSystemName"]').selectWrapper({
 						minimumResultsForSearch: 16,
-						formatResult: providerSelectItemFormatting,
-						formatSelection: providerSelectItemFormatting
+						templateResult: providerSelectItemFormatting,
+						templateSelection: providerSelectItemFormatting
 					});
 
 					toggleProviderDescription();
 
-					$('select[name="CloneProfileId"]').select2({
+					$('select[name="CloneProfileId"]').selectWrapper({
 						allowClear: true,
 						minimumResultsForSearch: 16,
-						formatResult: profileSelectItemFormatting,
-						formatSelection: profileSelectItemFormatting
+						templateResult: profileSelectItemFormatting,
+						templateSelection: profileSelectItemFormatting
 					});
 				},
 				callbackComplete: function () {
@@ -143,19 +148,19 @@
 					option = $('select[name="ProviderSystemName"]').find('option[value="' + item.id + '"]');
 				}
 
-				var html = '<div class="large-select2-item">',
+				var html = '<div class="form-row flex-nowrap align-items-center">',
 					imageUrl = option.data('imageurl');
 
 				if (imageUrl)
-					html += '<img src="' + imageUrl + '" />';
+					html += '<div class="col" style="max-width:48px; width:48px"><div class="img-center-container"><img class="img-fluid" src="' + imageUrl + '" /></div></div>';
 
-				html += '<div>';
-				html += '<span>' + item.text + '</span>';
-				html += '<span class="muted">' + option.attr('value') + '</span>';
+				html += '<div class="col">';
+				html += '<div class="fs-xs font-weight-medium" style="line-height:1.2">' + item.text + '</div>';
+				html += '<div class="text-muted fs-xs">' + option.attr('value') + '</div>';
 				html += '</div>';
 				html += '</div>';
 
-				return html;
+				return $(html);
 			}
 			catch (e) { }
 
@@ -171,19 +176,22 @@
 					option = $('select[name="CloneProfileId"]').find('option[value="' + item.id + '"]');
 				}
 
-				var html = '<div class="large-select2-item">',
+				var html = '<div class="form-row flex-nowrap align-items-center h-100">',
 					imageUrl = option.data('imageurl');
 
 				if (imageUrl)
-					html += '<img src="' + imageUrl + '" />';
+					html += '<div class="col" style="max-width:48px; width:48px"><div class="img-center-container"><img class="img-fluid" src="' + imageUrl + '" /></div></div>';
 
-				html += '<div>';
-				html += '<span>' + item.text + '</span>';
-				html += '<span class="muted">' + option.attr('data-systemname') + '</span>';
+				html += '<div class="col">';
+				html += '<div class="fs-xs font-weight-medium" style="line-height:1.2">' + item.text + '</div>';
+				if (option.attr('data-systemname')) {
+					html += '<div class="text-muted fs-xs">' + option.attr('data-systemname') + '</div>';
+				}
+				
 				html += '</div>';
 				html += '</div>';
 
-				return html;
+				return $(html);
 			}
 			catch (e) { }
 
@@ -195,15 +203,15 @@
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed")'
+				ask: @T("Admin.Common.AskToProceed").JsText
 			});
 			return false;
 		});
 
-		Admin.TaskWatcher.startWatching({
+		SmartStore.Admin.TaskWatcher.startWatching({
 			context: $('#ExportProfileListContainer'),
 			elementsSelector: '.task-progress',
-			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			defaultProgressMessage: @T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText,
 			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
 			onTaskStarted: function (task, el) {
 				var tr = el.closest('tr');
@@ -213,7 +221,7 @@
 				tr.find('.btn-log').addClass('hide');
 				tr.find('.next-run-info').addClass('hide');
 				
-				$('body').animate({ scrollTop: tr.offset().top }, 'slow');
+				$('body, html').animate({ scrollTop: tr.offset().top - 70 }, 'slow');
 			},
 			onTaskCompleted: function (taskId, el) {
 				var tr = el.closest('tr'),

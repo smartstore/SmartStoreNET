@@ -68,7 +68,7 @@ namespace SmartStore.ComponentModel
 
 		public override bool CanConvertTo(Type type)
 		{
-			Console.WriteLine("NullableConverter can convert to {0}: {1}".FormatInvariant(type.Name, UnderlyingTypeConverter.CanConvertTo(type)));
+			//Console.WriteLine("NullableConverter can convert to {0}: {1}".FormatInvariant(type.Name, UnderlyingTypeConverter.CanConvertTo(type)));
 
 			if (type == this.UnderlyingType)
 			{

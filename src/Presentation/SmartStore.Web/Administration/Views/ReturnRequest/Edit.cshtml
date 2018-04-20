@@ -11,24 +11,37 @@
         <div class="options">
 			@if (Model.CanAccept)
             {
-				<button type="button" name="accept" class="btn accept-return-request-button" data-toggle="modal" data-target="#AutoUpdateOrderItemModal">
-					<i class="fa fa-check"></i>&nbsp;@T("Admin.ReturnRequests.Accept")
+				<button type="button" name="accept" class="btn btn-secondary btn-to-danger accept-return-request-button" data-toggle="modal" data-target="#AutoUpdateOrderItemModal">
+					<i class="fa fa-check"></i>
+					<span>@T("Admin.ReturnRequests.Accept")</span>
 				</button>
             }
 
 			@if (Model.CanSendEmailToCustomer)
             {
-				<button type="submit" name="notify-customer" value="notify-customer" class="btn"><i class="fa fa-envelope"></i>&nbsp;@T("Admin.ReturnRequests.NotifyCustomer")</button>
+				<button type="submit" name="notify-customer" value="notify-customer" class="btn btn-secondary btn-to-danger">
+					<i class="fa fa-envelope"></i>
+					<span>@T("Admin.ReturnRequests.NotifyCustomer")</span>
+				</button>
             }
 
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-            <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-            <button type="submit" name="returnrequest-delete" value="returnrequest-delete" id="returnrequest-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
+            <button type="submit" name="returnrequest-delete" value="returnrequest-delete" id="returnrequest-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
+			</button>
         </div>
     </div>
 
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
+
 @Html.DeleteConfirmation("returnrequest-delete")
 
 @{ Html.RenderPartial("~/Administration/Views/Order/_AutoUpdateOrderItem.cshtml", Model.AutoUpdateOrderItem); }

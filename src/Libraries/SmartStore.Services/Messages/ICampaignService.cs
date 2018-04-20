@@ -40,17 +40,15 @@ namespace SmartStore.Services.Messages
         /// Sends a campaign to specified emails
         /// </summary>
         /// <param name="campaign">Campaign</param>
-        /// <param name="emailAccount">Email account</param>
         /// <param name="subscriptions">Subscriptions</param>
         /// <returns>Total emails sent</returns>
-        int SendCampaign(Campaign campaign, EmailAccount emailAccount, IEnumerable<NewsLetterSubscription> subscriptions);
+        int SendCampaign(Campaign campaign, IEnumerable<NewsLetterSubscription> subscriptions);
 
-        /// <summary>
-        /// Sends a campaign to specified email
-        /// </summary>
-        /// <param name="campaign">Campaign</param>
-        /// <param name="emailAccount">Email account</param>
-        /// <param name="email">Email</param>
-        void SendCampaign(Campaign campaign, EmailAccount emailAccount, string email);
-    }
+		/// <summary>
+		/// Creates a campaign email without sending it for previewing and testing purposes.
+		/// </summary>
+		/// <param name="campaign">The campaign to preview</param>
+		/// <returns>The preview result</returns>
+		CreateMessageResult Preview(Campaign campaign);
+	}
 }

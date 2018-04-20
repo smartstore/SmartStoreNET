@@ -3,18 +3,29 @@
 @using Telerik.Web.Mvc.UI;
 
 <div>
-    <h3>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes")</h3>
+    <h4 class="mb-4">@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes")</h4>
 
     @if (Model.Id > 0)
 	{
 		if (Model.NumberOfAvailableProductAttributes > 0)
 		{
-			<script type="text/javascript">
+			<script>
 				function onProductVariantAttributeEdit(e) {
-					var id = parseInt(e.dataItem['Id']);
+					if (e.mode == "edit") {
+						$('#AttributeControlType')
+							.data('select-selected-id', e.dataItem['AttributeControlTypeId'])
+							.data('select-init-text', e.dataItem['AttributeControlType'])
+							.val(e.dataItem['AttributeControlTypeId'])
+							.trigger('change');
 
-					$(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
-					$(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+						$('#ProductAttribute')
+							.data('select-selected-id', e.dataItem['ProductAttributeId'])
+							.data('select-init-text', e.dataItem['ProductAttribute'])
+							.val(e.dataItem['ProductAttributeId'])
+							.trigger('change');
+					}
+
+					var id = parseInt(e.dataItem['Id']);
 
 					if (id === 0) {
 						$(e.form).find('#IsRequired').prop('checked', true);
@@ -55,25 +66,23 @@
 				.Columns(columns =>
 				{
 					columns.Bound(x => x.ProductAttribute)
-						.Width(150);
+						.Width("16%");
+					columns.Bound(x => x.AttributeControlType)
+						.Width("16%");
 					columns.Bound(x => x.TextPrompt)
-						.Width(150)
-						.Centered();
+						.Width("16%");
 					columns.Bound(x => x.IsRequired)
-						.Width(100)
+						.Width("10%")
 						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
 						.Centered();
-					columns.Bound(x => x.AttributeControlType)
-						.Width(150)
-						.Centered();
 					columns.Bound(x => x.DisplayOrder1)
-						.Width(100)
+						.Width("10%")
 						.Centered();
 					columns.Bound(x => x.ViewEditUrl)
-						.Width(200)
+						.Width("16%")
 						.ClientTemplate(
-							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>'><#= ViewEditText #></a>" +
-							"<div id='OptionsSetsContainer<#= Id #>' class='hide'><select id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
+							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>' class='text-truncate'><#= ViewEditText #></a>" +
+							"<div id='OptionsSetsContainer<#= Id #>' style='display:none'><select class='form-control' id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
 						)
 						.ReadOnly()
 						.Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text);
@@ -82,9 +91,10 @@
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
 					})
-					.Width(160);
+					.Width("20%")
+					.HtmlAttributes(new { align = "right" });
 				})
-				.ToolBar(commands => commands.Insert())
+				.ToolBar(commands => commands.Insert() )
 				.ClientEvents(events =>
 				{
 					events.OnEdit("onProductVariantAttributeEdit");
@@ -107,8 +117,8 @@
     }
 </div>
 
-<div style="margin-top:30px;">
-    <h3>@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations")</h3>
+<div class="mt-5">
+    <h4 class="mb-4">@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations")</h4>
 
     @if (Model.Id > 0)
     {
@@ -118,28 +128,10 @@
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
-            <div class="clearfix" style="margin-bottom: 15px">
-                <button class="btn btn-warning btn-above add-new-combination">
-                    <i class="fa fa-plus"></i>
-                    @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
-                </button>
+            <div class="mb-3">
 
-				<div class="pull-right">
-					<button type="button" id="btnCreateAllCombinations" class="btn" data-url='@Url.Action("CreateAllAttributeCombinations", new { productId = Model.Id })'
-						data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToCombineAll")">
-						<i class="fa fa-tasks"></i>
-						@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations")
-					</button>
-
-					<button type="button" id="btnDeleteAllCombinations" class="btn" data-url='@Url.Action("DeleteAllAttributeCombinations", new { productId = Model.Id })'
-						data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToDeleteAll")">
-						<i class="fa fa-trash-o"></i>
-						@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.DeleteAllCombinations")
-					</button>
-				</div>
-
-                <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="hide" />
-                <script type="text/javascript">
+                <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="d-none" />
+                <script>
                     $(document).ready(function () {
                         $('.add-new-combination').on('click', function (e) {
                         	openPopup('@(Url.Action("AttributeCombinationCreatePopup", "Product", new { productId = Model.Id }))&btnId=btnRefreshCombinations&formId=product-form');
@@ -169,7 +161,7 @@
 				<script>
 					function onRowDataBound_Combinations(e) {
 						if (!e.dataItem.IsActive) {
-							$(e.row).find('td').wrapInner('<span class="muted" />');
+							$(e.row).find('td').wrapInner('<span class="text-muted" />');
 						}
 					}
 				</script>
@@ -205,7 +197,7 @@
 							.Centered();
 						columns.Bound(x => x.AllowOutOfStockOrders)
 							.Width(60)
-							.HeaderTemplate("<i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i>")
+							.HeaderTemplate("<span class='t-link'><i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i></span>")
 							.Template(item => @Html.SymbolForBool(item.AllowOutOfStockOrders))
 							.ClientTemplate(@Html.SymbolForBool("AllowOutOfStockOrders"))
 							.Centered();
@@ -218,6 +210,7 @@
 						{
 							commands.Delete().Localize(T);
 						})
+						.HtmlAttributes(new { align = "right" })
 						.Width(90);
 					})
 					.Pageable(settings => settings.PageSize(100).Position(GridPagerPosition.Both))
@@ -228,14 +221,8 @@
 							.Delete("ProductVariantAttributeCombinationDelete", "Product");
 					})
 					.ClientEvents(events => events.OnRowDataBound("onRowDataBound_Combinations"))
+					.ToolBar(commands => commands.Template(AttributeCombinationsGridCommands))
 					.EnableCustomBinding(true))
-            </div>
-
-            <div>
-                <button class="btn btn-warning btn-below add-new-combination">
-                    <i class="fa fa-plus"></i>
-                    @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
-                </button>
             </div>
         }
         else
@@ -252,3 +239,22 @@
         </div>
     }
 </div>
+
+@helper AttributeCombinationsGridCommands(Grid<ProductVariantAttributeCombinationModel> grid)
+{
+	<button class="t-button t-grid-add add-new-combination">
+		@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
+	</button>
+
+	<button type="button" id="btnCreateAllCombinations" class="t-button ml-auto" data-url='@Url.Action("CreateAllAttributeCombinations", new { productId = Model.Id })'
+			data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToCombineAll")">
+		<i class="fa fa-tasks"></i>
+		<span>@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CreateAllCombinations")</span>
+	</button>
+
+	<button type="button" id="btnDeleteAllCombinations" class="t-button t-grid-cancel-changes" data-url='@Url.Action("DeleteAllAttributeCombinations", new { productId = Model.Id })'
+			data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToDeleteAll")">
+		<i class="fa fa-trash-o"></i>
+		<span>@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.DeleteAllCombinations")</span>
+	</button>
+}

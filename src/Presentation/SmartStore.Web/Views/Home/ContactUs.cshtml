@@ -64,11 +64,13 @@
 
                     <div class="form-group row">
                         @Html.LabelFor(model => model.PrivacyAgreement, new { @class = "col-sm-3 col-form-label required", @for = "PrivacyAgreement" })
-                        <div class="col-sm-9">
-                            <label class="mb-0 form-check-label">
-                                @Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })
-                                @Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })))
-                            </label>
+                        <div class="col-sm-9 form-control-plaintext">
+							<div class="form-check">
+								@Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })
+								<label class="form-check-label" for="@Html.IdFor(model => model.PrivacyAgreement)">
+									@Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })))
+								</label>
+							</div>
                             @Html.ValidationMessageFor(model => model.PrivacyAgreement)
                         </div>
                     </div>
@@ -77,7 +79,7 @@
                 if (Model.DisplayCaptcha)
                 {
 					<div class="form-group row">
-						<div class="col-sm-offset-2 col-sm-10 captcha-box">
+						<div class="col col-sm-auto offset-sm-3 captcha-box">
 							@Html.Raw(Html.GenerateCaptcha())
 						</div>
 					</div>

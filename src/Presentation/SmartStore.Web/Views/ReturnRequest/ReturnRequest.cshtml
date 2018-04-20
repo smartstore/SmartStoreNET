@@ -46,7 +46,7 @@
 							{
 								<div class="cart-row">
 									<div class="cart-col cart-col-main">
-										<a class="cart-item-link fs-h6" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+										<a class="cart-item-link fs-h6" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
 										@if (item.AttributeInfo.HasValue())
 										{
 											<div class="cart-item-attrs text-muted">

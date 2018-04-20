@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Collections;
 
 namespace SmartStore
 {
@@ -25,13 +26,12 @@ namespace SmartStore
 	        return null;
         }
 
-        public static bool IsSequenceType(this Type seqType)
+        public static bool IsSequenceType(this Type type)
         {
-            return (
-                (((seqType != typeof(string))
-                && (seqType != typeof(byte[])))
-                && (seqType != typeof(char[])))
-                && (FindIEnumerable(seqType) != null));
+			if (type == typeof(string))
+				return false;
+
+			return type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         public static bool IsPredefinedSimpleType(this Type type)
@@ -40,6 +40,7 @@ namespace SmartStore
             {
                 return true;
             }
+
             if (type.IsEnum)
             {
                 return true;
@@ -54,6 +55,7 @@ namespace SmartStore
             {
                 return !type.IsPredefinedSimpleType();
             }
+
             return false;
         }
 
@@ -81,7 +83,12 @@ namespace SmartStore
             return true;
         }
 
-        public static bool IsInteger(this Type type)
+		public static bool IsPlainObjectType(this Type type)
+		{
+			return type.IsClass && !type.IsSequenceType() && !type.IsPredefinedType();
+		}
+
+		public static bool IsInteger(this Type type)
         {
             switch (Type.GetTypeCode(type))
             {
@@ -99,9 +106,16 @@ namespace SmartStore
             }
         }
 
-        public static bool IsNullable(this Type type)
+        public static bool IsNullable(this Type type, out Type wrappedType)
         {
-            return type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+			wrappedType = null;
+
+			if (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				wrappedType = type.GetGenericArguments()[0];
+			}
+
+			return false;
         }
 
         public static bool IsConstructable(this Type type)
@@ -133,6 +147,7 @@ namespace SmartStore
                     }
                 }
             }
+
             return false;
         }
 
@@ -209,11 +224,12 @@ namespace SmartStore
         /// </summary>
         public static Type GetNonNullableType(this Type type)
         {
-            if (!IsNullable(type))
+            if (!IsNullable(type, out var wrappedType))
             {
                 return type;
             }
-            return type.GetGenericArguments()[0];
+
+            return wrappedType;
         }
 
 		/// <summary>
@@ -341,8 +357,10 @@ namespace SmartStore
         {
             if (seqType == null || seqType == typeof(string))
                 return null;
+
             if (seqType.IsArray)
                 return typeof(IEnumerable<>).MakeGenericType(seqType.GetElementType());
+
             if (seqType.IsGenericType)
             {
 				var args = seqType.GetGenericArguments();
@@ -353,6 +371,7 @@ namespace SmartStore
                         return ienum;
                 }
             }
+
             Type[] ifaces = seqType.GetInterfaces();
             if (ifaces.Length > 0)
             {
@@ -363,8 +382,10 @@ namespace SmartStore
                         return ienum;
                 }
             }
+
             if (seqType.BaseType != null && seqType.BaseType != typeof(object))
                 return FindIEnumerable(seqType.BaseType);
+
             return null;
         }
     }

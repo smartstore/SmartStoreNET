@@ -17,8 +17,8 @@ namespace SmartStore.Admin.Models.Catalog
             Locales = new List<ProductAttributeLocalizedModel>();
         }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
-        public string Alias { get; set; }
+        [AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
+		public string Alias { get; set; }
         
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]
         [AllowHtml]
@@ -26,29 +26,31 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Description")]
         [AllowHtml]
-        public string Description {get;set;}
+        public string Description {get; set;}
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering")]
 		public bool AllowFiltering { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
+        public int DisplayOrder { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint")]
 		public FacetTemplateHint FacetTemplateHint { get; set; }
 
-		[SmartResourceDisplayName("Common.DisplayOrder")]
-		public int DisplayOrder { get; set; }
+        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.IndexOptionNames")]
+        public bool IndexOptionNames { get; set; }
 
-		[SmartResourceDisplayName("Common.Options.Count")]
-		public int OptionCount { get; set; }
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings")]
+		public string ExportMappings { get; set; }
 
 		public IList<ProductAttributeLocalizedModel> Locales { get; set; }
-
     }
 
     public class ProductAttributeLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
+		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
 		public string Alias { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]

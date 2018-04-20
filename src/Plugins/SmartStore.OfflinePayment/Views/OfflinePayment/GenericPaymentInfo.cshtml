@@ -4,6 +4,18 @@
 	Layout = "";
 }
 
-<div class="text-muted">
-	@Html.Raw(Model.DescriptionText)
-</div>
+@if (Model.ThumbnailUrl.HasValue())
+{
+	<div class="media">
+		<img class="media-object img-fluid pr-2" src="@Model.ThumbnailUrl">
+		<div class="media-body">
+				@Html.Raw(Model.DescriptionText)
+		</div>
+	</div>
+}
+else
+{
+	<div class="text-muted">
+		@Html.Raw(Model.DescriptionText)
+	</div>
+}

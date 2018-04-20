@@ -15,10 +15,15 @@
       <LocaleResource Name="AddNewRecordTitle">
         <Value>Neue Versandbedingung hinzufügen</Value>
       </LocaleResource>
-      <LocaleResource Name="SettingsTitle">
+	  <LocaleResource Name="AddNewRecord.Success">
+		<Value>Die neue Versandbedingung wurde erfolgreich zugefügt.</Value>
+	  </LocaleResource>
+      <LocaleResource Name="TabTitleSettings">
         <Value>Optionen</Value>
       </LocaleResource>
-
+	  <LocaleResource Name="TabTitleGrid">
+		<Value>Versandbedingungen</Value>
+	  </LocaleResource>
       <LocaleResource Name="Fields.Country">
         <Value>Land</Value>
       </LocaleResource>

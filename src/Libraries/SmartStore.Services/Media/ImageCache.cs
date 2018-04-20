@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
-using ImageResizer;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
@@ -15,27 +14,28 @@ namespace SmartStore.Services.Media
 {
 	public class ImageCache : IImageCache
     {
-        private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
+		public const string IdFormatString = "0000000";
+		internal const int MaxDirLength = 4;
 
-        private readonly MediaSettings _mediaSettings;
+		private readonly MediaSettings _mediaSettings;
 		private readonly string _thumbsRootDir;
 		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
 		private readonly IMediaFileSystem _fileSystem;
-		private readonly IImageResizerService _imageResizerService;
+		private readonly IImageProcessor _imageProcessor;
 
 		public ImageCache(
 			MediaSettings mediaSettings, 
 			IStoreContext storeContext, 
 			HttpContextBase httpContext,
 			IMediaFileSystem fileSystem,
-			IImageResizerService imageResizerService)
+			IImageProcessor imageProcessor)
         {
             _mediaSettings = mediaSettings;
 			_storeContext = storeContext;
 			_httpContext = httpContext;
 			_fileSystem = fileSystem;
-			_imageResizerService = imageResizerService;
+			_imageProcessor = imageProcessor;
 
 			_thumbsRootDir = "Thumbs/";
 
@@ -48,75 +48,41 @@ namespace SmartStore.Services.Media
 			set;
 		}
 
-		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize)
+		public void Put(CachedImageResult cachedImage, byte[] buffer)
 		{
-			byte[] result;
-
-			if (targetSize == 0)
+			if (PreparePut(cachedImage, buffer))
 			{
-				AddImageToCache(cachedImage, source);
-				result = source;
-			}
-			else
-			{
-				var sourceStream = new MemoryStream(source);
-				using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
-				{
-					result = resultStream.GetBuffer();
-					AddImageToCache(cachedImage, result);
-				}
-			}
+				var path = BuildPath(cachedImage.Path);
 
-			cachedImage.Exists = true;
+				_fileSystem.WriteAllBytes(path, buffer);
 
-			return result;
+				cachedImage.Exists = true;
+				cachedImage.File = _fileSystem.GetFile(path);
+			}
 		}
 
-		public async Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, int targetSize)
+		public Task PutAsync(CachedImageResult cachedImage, byte[] buffer)
 		{
-			byte[] result;
+			if (PreparePut(cachedImage, buffer))
+			{
+				var path = BuildPath(cachedImage.Path);
 
-			if (targetSize == 0)
-			{
-				await AddImageToCacheAsync(cachedImage, source);
-				result = source;
-			}
-			else
-			{
-				var sourceStream = new MemoryStream(source);
-				using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
+				// save file
+				var t = _fileSystem.WriteAllBytesAsync(path, buffer);
+				t.ContinueWith(x =>
 				{
-					result = resultStream.GetBuffer();
-					await AddImageToCacheAsync(cachedImage, result);
-				}
-			}
+					// Refresh info
+					cachedImage.Exists = true;
+					cachedImage.File = _fileSystem.GetFile(path);
+				});
 
-			cachedImage.Exists = true;
-
-			return result;
-		}
-
-		public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)
-        {
-			if (PrepareAddImageToCache(cachedImage, buffer))
-			{
-				// save file
-				_fileSystem.WriteAllBytes(BuildPath(cachedImage.Path), buffer);
-			}
-        }
-
-		public Task AddImageToCacheAsync(CachedImageResult cachedImage, byte[] buffer)
-		{
-			if (PrepareAddImageToCache(cachedImage, buffer))
-			{
-				// save file
-				return _fileSystem.WriteAllBytesAsync(BuildPath(cachedImage.Path), buffer);
+				return t;
 			}
 
 			return Task.FromResult(false);
 		}
 
-		private bool PrepareAddImageToCache(CachedImageResult cachedImage, byte[] buffer)
+		private bool PreparePut(CachedImageResult cachedImage, byte[] buffer)
 		{
 			Guard.NotNull(cachedImage, nameof(cachedImage));
 
@@ -140,73 +106,70 @@ namespace SmartStore.Services.Media
 			return true;
 		}
 
-        public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null)
+        public virtual CachedImageResult Get(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
-            var imagePath = this.GetCachedImagePath(pictureId, seoFileName, extension, ImageResizerUtil.CreateResizeSettings(settings));
+			Guard.NotEmpty(extension, nameof(extension));
 
-            var result = new CachedImageResult
-            {
-                Path = imagePath, //"Media/Thumbs/" + imagePath,
-                FileName = System.IO.Path.GetFileName(imagePath),
-                Extension = GetCleanFileExtension(imagePath),
-				Exists = _fileSystem.FileExists(BuildPath(imagePath))
-            };
+			extension = query?.GetResultExtension() ?? extension.TrimStart('.').ToLower();
+			var imagePath = GetCachedImagePath(pictureId, seoFileName, extension, query);
 
+			var file = _fileSystem.GetFile(BuildPath(imagePath));
+
+			var result = new CachedImageResult(file)
+			{
+				Path = imagePath,
+				Extension = extension,
+				IsRemote = _fileSystem.IsCloudStorage
+			};
+			
             return result;
         }
 
-		public virtual Stream OpenCachedImage(CachedImageResult cachedImage)
+		public virtual CachedImageResult Get(IFile file, ProcessImageQuery query)
+		{
+			Guard.NotNull(file, nameof(file));
+			Guard.NotNull(query, nameof(query));
+
+			var imagePath = GetCachedImagePath(file, query);
+			var thumbFile = _fileSystem.GetFile(BuildPath(imagePath));
+
+			var result = new CachedImageResult(thumbFile)
+			{
+				Path = imagePath,
+				Extension = file.Extension.TrimStart('.'),
+				IsRemote = _fileSystem.IsCloudStorage
+			};
+
+			return result;
+		}
+
+		public virtual Stream Open(CachedImageResult cachedImage)
 		{
 			Guard.NotNull(cachedImage, nameof(cachedImage));
 
 			return _fileSystem.GetFile(BuildPath(cachedImage.Path)).OpenRead();
 		}
 
-        public virtual string GetImageUrl(string imagePath, string storeLocation = null)
+        public virtual string GetPublicUrl(string imagePath)
         {
 			if (imagePath.IsEmpty())
                 return null;
 
-			var publicUrl = _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
-			if (publicUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || publicUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-			{
-				// absolute url
-				return publicUrl;
-			}
-
-			var root = storeLocation;
-
-			if (root.IsEmpty())
-			{
-				var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
-				if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
-				{
-					root = cdnUrl;
-				}
-			}
-
-			if (root.IsEmpty())
-			{
-				// relative url must start with a slash
-				return publicUrl.EnsureStartsWith("/");
-			}
-
-			if (HostingEnvironment.IsHosted)
-			{
-				// strip out app path from public url if needed but do not strip away leading slash from publicUrl
-				var appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
-				if (appPath.Length > 0 && appPath != "/")
-				{
-					publicUrl = publicUrl.Substring(appPath.Length + 1);
-				}
-			}
-
-			return root.TrimEnd('/', '\\') + publicUrl.EnsureStartsWith("/");
+			return _fileSystem.GetPublicUrl(BuildPath(imagePath), true).EmptyNull();
 		}
 
-		public virtual void DeleteCachedImages(Picture picture)
+		public virtual void RefreshInfo(CachedImageResult cachedImage)
+		{
+			Guard.NotNull(cachedImage, nameof(cachedImage));
+			
+			var file = _fileSystem.GetFile(cachedImage.File.Path);
+			cachedImage.File = file;
+			cachedImage.Exists = file.Exists;
+		}
+
+		public virtual void Delete(Picture picture)
         {
-            var filter = string.Format("{0}*.*", picture.Id.ToString("0000000"));
+            var filter = string.Format("{0}*.*", picture.Id.ToString(IdFormatString));
 
 			var files = _fileSystem.SearchFiles(_thumbsRootDir, filter);
 			foreach (var file in files)
@@ -215,7 +178,19 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-        public virtual void DeleteCachedImages()
+		public virtual void Delete(IFile file)
+		{
+			// TODO: (mc) this could lead to more thumbs getting deleted as desired. But who cares? :-)
+			var filter = string.Format("{0}*.*", file.Title);
+
+			var files = _fileSystem.SearchFiles(BuildPath(file.Directory), filter);
+			foreach (var f in files)
+			{
+				_fileSystem.DeleteFile(f);
+			}
+		}
+
+		public virtual void Clear()
         {
             for (int i = 0; i < 10; i++)
             {
@@ -256,24 +231,24 @@ namespace SmartStore.Services.Media
 			totalSize = _fileSystem.ListFolders(_thumbsRootDir).Sum(x => x.Size);
         }
 
-        #region Utils
+		#region Utils
 
-        /// <summary>
-        /// Returns the file name with the subfolder (when multidirs are enabled)
-        /// </summary>
-        /// <param name="picture"></param>
-        /// <param name="settings"></param>
-        /// <returns></returns>
-        internal string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ResizeSettings settings = null)
+		/// <summary>
+		/// Returns the file name with the subfolder (when multidirs are enabled)
+		/// </summary>
+		/// <param name="pictureId"></param>
+		/// <param name="seoFileName">File name without extension</param>
+		/// <param name="extension">Dot-less file extension</param>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		private string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ProcessImageQuery query = null)
         {
-            Guard.NotEmpty(extension, nameof(extension));
-
             string imageFileName = null;
 
             string firstPart = "";
             if (pictureId.GetValueOrDefault() > 0)
             {
-                firstPart = pictureId.Value.ToString("0000000") + (seoFileName.IsEmpty() ? "" : "-");
+                firstPart = pictureId.Value.ToString(IdFormatString) + (seoFileName.IsEmpty() ? "" : "-");
             }
 
             if (firstPart.IsEmpty() && seoFileName.IsEmpty())
@@ -283,64 +258,55 @@ namespace SmartStore.Services.Media
             }
 
             seoFileName = seoFileName.EmptyNull();
-            extension = extension.TrimStart('.');
 
-            if (!NeedsProcessing(settings))
+            if (query == null || !query.NeedsProcessing())
             {
-                imageFileName = "{0}{1}.{2}".FormatInvariant(firstPart, seoFileName, extension);
+                imageFileName = String.Concat(firstPart, seoFileName);
             }
             else
             {
-                string hashedProps = CreateSettingsHash(settings);
-                imageFileName = "{0}{1}-{2}.{3}".FormatInvariant(firstPart, seoFileName, hashedProps, extension);
-            }
+				imageFileName = String.Concat(firstPart, seoFileName, query.CreateHash());
+			}
 
-            if (_mediaSettings.MultipleThumbDirectories)
+            if (_mediaSettings.MultipleThumbDirectories && imageFileName != null && imageFileName.Length > MaxDirLength)
             {
-                // get the first four letters of the file name
-                var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(imageFileName);
-                if (fileNameWithoutExtension != null && fileNameWithoutExtension.Length > MULTIPLE_THUMB_DIRECTORIES_LENGTH)
-                {
-                    var subDirectoryName = fileNameWithoutExtension.Substring(0, MULTIPLE_THUMB_DIRECTORIES_LENGTH);
-                    imageFileName = subDirectoryName + "/" + imageFileName;
-                }
+                // Get the first four letters of the file name
+                var subDirectoryName = imageFileName.Substring(0, MaxDirLength);
+                imageFileName = String.Concat(subDirectoryName, "/", imageFileName);
             }
 
-            return imageFileName;
+            return String.Concat(imageFileName, ".", extension);
         }
 
-        private string CreateSettingsHash(ResizeSettings settings)
-        {
-            if (settings.Count == 2 && settings.MaxWidth > 0 && settings.MaxWidth == settings.MaxHeight)
-            {
-                return settings.MaxWidth.ToString();
-            }
-			return settings.ToString().Hash(Encoding.ASCII);
-        }
+		/// <summary>
+		/// Returns the images thumb path as is plus query (required for uploaded images)
+		/// </summary>
+		/// <param name="file">Image file to get thumbnail for</param>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		private string GetCachedImagePath(IFile file, ProcessImageQuery query)
+		{
+			if (!_imageProcessor.IsSupportedImage(file.Name))
+			{
+				throw new InvalidOperationException("Thumbnails for '{0}' files are not supported".FormatInvariant(file.Extension));
+			}
+			
+			// TODO: (mc) prevent creating thumbs for thumbs AND check equality of source and target
 
-        private bool NeedsProcessing(ResizeSettings settings)
-        {
-            return settings != null && settings.Count > 0;
-        }
+			var imageFileName = String.Concat(file.Title, query.CreateHash());
+			var extension = (query.GetResultExtension() ?? file.Extension).EnsureStartsWith(".").ToLower();
+			var path = _fileSystem.Combine(file.Directory, imageFileName + extension);
+
+			return path.TrimStart('/', '\\');
+		}
 
 		private string BuildPath(string imagePath)
 		{
 			if (imagePath.IsEmpty())
 				return null;
 
-			return _thumbsRootDir + imagePath;
+			return String.Concat(_thumbsRootDir, imagePath);
 		}
-
-		private static string GetCleanFileExtension(string url)
-        {
-            var extension = System.IO.Path.GetExtension(url);
-            if (extension != null)
-            {
-                return extension.Replace(".", "").ToLower();
-            }
-
-            return string.Empty;
-        }
 
         #endregion
 

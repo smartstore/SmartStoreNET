@@ -18,6 +18,8 @@
 		$('#@Html.FieldIdFor(model => model.SpentAmount)').on('input', function (e) {
 			$('#' + prefix + '_SpentAmountVal').val($(this).val());
 		});
+
+		applyCommonPlugins(".discount-rule-wrapper");
 	});
 </script>
 
@@ -25,9 +27,9 @@
 	   data-discount-id='@Model.DiscountId'
 	   data-requirement-id='@Model.RequirementId'
 	   data-action-url='@Url.Action("HadSpentAmount")'
-	   data-fail-msg='@T("Admin.Promotions.Discounts.Requirements.FailedToSave").Text.EncodeJsString()'
-	   data-success-msg='@T("Admin.Promotions.Discounts.Requirements.Saved").Text.EncodeJsString()'>
-	<tr>
+	   data-fail-msg=@T("Admin.Promotions.Discounts.Requirements.FailedToSave").JsText
+	   data-success-msg=@T("Admin.Promotions.Discounts.Requirements.Saved").JsText>
+	<tr class="wide">
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.SpentAmount)
 		</td>
@@ -37,7 +39,7 @@
 			@Html.ValidationMessageFor(model => model.SpentAmount)
 		</td>
 	</tr>
-	<tr>
+	<tr class="wide">
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.LimitToCurrentBasketSubTotal)
 		</td>
@@ -46,14 +48,14 @@
 			@Html.ValidationMessageFor(model => model.LimitToCurrentBasketSubTotal)
 		</td>
 	</tr>
-	<tr>
+	<tr class="wide">
 		<td class="adminTitle">
 			&nbsp;
 		</td>
 		<td class="adminData">
-			<button type="button" class="btn btn-save-discount-rule">
-				<i class="fa fa-check"></i>
-				@T("Admin.Common.Save")
+			<button type="button" class="btn @(Model.RequirementId == 0 ? "btn-primary btn-block btn-lg" : "btn-warning") btn-save-discount-rule">
+				<i class="fa fa-@(Model.RequirementId == 0 ? "plus" : "check")"></i>
+				<span>@T(Model.RequirementId == 0 ? "Common.AddNew" : "Admin.Common.Save")</span>
 			</button>
 		</td>
 	</tr>

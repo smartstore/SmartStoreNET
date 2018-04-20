@@ -16,7 +16,7 @@ namespace SmartStore.Services.Localization
     public partial class LanguageService : ILanguageService
     {
         private const string LANGUAGES_COUNT = "SmartStore.language.count-{0}";
-        private const string LANGUAGES_PATTERN_KEY = "SmartStore.language.";
+        private const string LANGUAGES_PATTERN_KEY = "SmartStore.language.*";
 
         private readonly IRepository<Language> _languageRepository;
 		private readonly IStoreMappingService _storeMappingService;
@@ -39,23 +39,22 @@ namespace SmartStore.Services.Localization
 			IStoreService storeService,
 			IStoreContext storeContext)
         {
-            this._requestCache = requestCache;
-			this._cache = cache;
-            this._languageRepository = languageRepository;
-            this._settingService = settingService;
-            this._localizationSettings = localizationSettings;
-            this._eventPublisher = eventPublisher;
-			this._storeMappingService = storeMappingService;
-			this._storeService = storeService;
-			this._storeContext = storeContext;
+            _requestCache = requestCache;
+			_cache = cache;
+            _languageRepository = languageRepository;
+            _settingService = settingService;
+            _localizationSettings = localizationSettings;
+            _eventPublisher = eventPublisher;
+			_storeMappingService = storeMappingService;
+			_storeService = storeService;
+			_storeContext = storeContext;
         }
 
         public virtual void DeleteLanguage(Language language)
         {
-            if (language == null)
-                throw new ArgumentNullException("language");
-            
-            //update default admin area language (if required)
+			Guard.NotNull(language, nameof(language));
+
+            // Update default admin area language (if required)
             if (_localizationSettings.DefaultAdminLanguageId == language.Id)
             {
                 foreach (var activeLanguage in GetAllLanguages())
@@ -72,11 +71,7 @@ namespace SmartStore.Services.Localization
             _languageRepository.Delete(language);
 
             // cache
-            _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);	
-
-			//event notification
-			_eventPublisher.EntityDeleted(language);
+            _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);	
         }
 
 		public virtual IList<Language> GetAllLanguages(bool showHidden = false, int storeId = 0)
@@ -152,10 +147,6 @@ namespace SmartStore.Services.Localization
 
             // cache
             _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);
-
-			//event notification
-			_eventPublisher.EntityInserted(language);
         }
 
         public virtual void UpdateLanguage(Language language)
@@ -168,10 +159,6 @@ namespace SmartStore.Services.Localization
 
             //cache
             _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
-			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);
-
-			//event notification
-			_eventPublisher.EntityUpdated(language);
         }
 
 		public virtual bool IsPublishedLanguage(string seoCode, int storeId = 0)
@@ -239,7 +226,7 @@ namespace SmartStore.Services.Localization
 		/// <returns>A map of store languages where key is the store id and values are tuples of language ids and seo codes</returns>
 		protected virtual Multimap<int, MinifiedLanguage> GetStoreLanguageMap()
 		{
-			var result = _cache.Get(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY, () =>
+			var result = _cache.Get(ServiceCacheBuster.STORE_LANGUAGE_MAP_KEY, () =>
 			{
 				var map = new Multimap<int, MinifiedLanguage>();
 

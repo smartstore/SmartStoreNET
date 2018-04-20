@@ -1,5 +1,4 @@
 ﻿@model CatalogSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
 	ViewBag.Title = T("Admin.Configuration.Settings.Catalog").Text;
 }
@@ -11,164 +10,73 @@
             @T("Admin.Configuration.Settings.Catalog")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
-    <script type="text/javascript">
-        $(function () {
-
-            $("#@Html.FieldIdFor(model => model.ShowCategoryProductNumber)").click(toggleShowCategoryProductNumberIncludingSubcategories);
-            $("#@Html.FieldIdFor(model => model.EmailAFriendEnabled)").click(toggleEmailAFriend);
-            $("#@Html.FieldIdFor(model => model.RecentlyViewedProductsEnabled)").click(toggleRecentlyViewedProducts);
-            $("#@Html.FieldIdFor(model => model.RecentlyAddedProductsEnabled)").click(toggleRecentlyAddedProducts);
-            $("#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)").click(toggleBestsellersOnHomepage);
-            $("#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)").click(toggleManufacturersOnHomepage);
-            $("#@Html.FieldIdFor(model => model.ShowManufacturersInOffCanvas)").click(toggleManufacturersInOffCanvas);
-        	$("#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)").click(toggleProductsAlsoPurchasedNumber);
-            $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
-            $("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
-            $("#@Html.FieldIdFor(model => model.ShowManufacturerInProductDetail)").click(toggleManufacturerPictures);
-            $("#@Html.FieldIdFor(model => model.ShowShareButton)").click(togglePageShareCode);
-
-            toggleShowCategoryProductNumberIncludingSubcategories();
-            toggleEmailAFriend();
-            toggleRecentlyViewedProducts();
-            toggleRecentlyAddedProducts();
-            toggleBestsellersOnHomepage();
-            toggleProductsAlsoPurchasedNumber();
-            toggleCompareProducts();
-            toggleHtmlTextCollapsedHeight();
-            toggleManufacturersOnHomepage();
-            toggleManufacturersInOffCanvas();
-            toggleManufacturerPictures();
-            togglePageShareCode();
-        });
-
-        function toggleShowCategoryProductNumberIncludingSubcategories() {
-            if ($('#@Html.FieldIdFor(model => model.ShowCategoryProductNumber)').is(':checked')) {
-                $('#pnlShowCategoryProductNumberIncludingSubcategories').show();
-            }
-            else {
-                $('#pnlShowCategoryProductNumberIncludingSubcategories').hide();
-            }
-        }
-
-        function toggleEmailAFriend() {
-            if ($('#@Html.FieldIdFor(model => model.EmailAFriendEnabled)').is(':checked')) {
-                $('.pnlAllowAnonymousUsersToEmailAFriend').show();
-            }
-            else {
-                $('.pnlAllowAnonymousUsersToEmailAFriend').hide();
-            }
-        }
-
-        function toggleRecentlyViewedProducts() {
-            if ($('#@Html.FieldIdFor(model => model.RecentlyViewedProductsEnabled)').is(':checked')) {
-                $('#pnlRecentlyViewedProductsNumber').show();
-            }
-            else {
-                $('#pnlRecentlyViewedProductsNumber').hide();
-            }
-        }
-
-        function toggleRecentlyAddedProducts() {
-            if ($('#@Html.FieldIdFor(model => model.RecentlyAddedProductsEnabled)').is(':checked')) {
-                $('#pnlRecentlyAddedProductsNumber').show();
-            }
-            else {
-                $('#pnlRecentlyAddedProductsNumber').hide();
-            }
-        }
-
-        function toggleBestsellersOnHomepage() {
-            if ($('#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)').is(':checked')) {
-                $('#pnlNumberOfBestsellersOnHomepage').show();
-            }
-            else {
-                $('#pnlNumberOfBestsellersOnHomepage').hide();
-            }
-        }
-
-        function toggleManufacturersOnHomepage() {
-            if ($('#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)').is(':checked')) {
-                $('#pnlManufacturerItemsToDisplayOnHomepage').show();
-            }
-            else {
-                $('#pnlManufacturerItemsToDisplayOnHomepage').hide();
-            }
-        }
-
-        function toggleManufacturersInOffCanvas() {
-            if ($('#@Html.FieldIdFor(model => model.ShowManufacturersInOffCanvas)').is(':checked')) {
-                $('#pnlManufacturerItemsToDisplayInOffCanvas').show();
-            }
-            else {
-                $('#pnlManufacturerItemsToDisplayInOffCanvas').hide();
-            }
-        }
-
-        function toggleProductsAlsoPurchasedNumber() {
-            if ($('#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)').is(':checked')) {
-                $('#pnlProductsAlsoPurchasedNumber').show();
-            }
-            else {
-                $('#pnlProductsAlsoPurchasedNumber').hide();
-            }
-        }
-
-        function toggleCompareProducts() {
-            if ($('#@Html.FieldIdFor(model => model.CompareProductsEnabled)').is(':checked')) {
-                $('#pnlIncludeShortDescriptionInCompareProducts').show();
-                $('#pnlIncludeFullDescriptionInCompareProducts').show();
-            } else {
-                $('#pnlIncludeShortDescriptionInCompareProducts').hide();
-                $('#pnlIncludeFullDescriptionInCompareProducts').hide();
-            }
-        }
-
-        function toggleHtmlTextCollapsedHeight() {
-            if ($('#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)').is(':checked')) {
-                $('#pnlHtmlTextCollapsedHeight').show();
-            }
-            else {
-                $('#pnlHtmlTextCollapsedHeight').hide();
-            }
-        }
-
-        function toggleManufacturerPictures() {
-            if ($('#@Html.FieldIdFor(model => model.ShowManufacturerInProductDetail)').is(':checked')) {
-                $('.manufacturer-pictures').show();
-            }
-            else {
-                $('.manufacturer-pictures').hide();
-            }
-        }
-
-        function togglePageShareCode() {
-            if ($('#@Html.FieldIdFor(model => model.ShowShareButton)').is(':checked')) {
-                $('.pnlPageShareCode').show();
-            }
-            else {
-                $('.pnlPageShareCode').hide();
-            }
-        }
-    </script>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting"); 
 
     @Html.ValidationSummary(false)
 
-    @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>
+    @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Style(TabsStyle.Material).Items(x =>
 	{
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.MiscSettings").Text).Content(@TabMiscSettings()).Selected(true);
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductListSettings").Text).Content(@TabProductListSettings());
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductDetailSettings").Text).Content(@TabProductDetailSettings());
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.UserSettings").Text).Content(@TabUserSettings());
+        x.Add().Text(T("Admin.Catalog.Manufacturers").Text).Content(@TabBrandsSettings());
 	}))
     
 @helper TabMiscSettings()
 {
     <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="head">@T("Admin.CatalogSettings.Homepage")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowBestsellersOnHomepage)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowBestsellersOnHomepage, Html.CheckBoxFor(model => model.ShowBestsellersOnHomepage, new { data_toggler_for = "#pnlNumberOfBestsellersOnHomepage" }))
+                @Html.ValidationMessageFor(model => model.ShowBestsellersOnHomepage)
+            </td>
+        </tr>
+        <tr id="pnlNumberOfBestsellersOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NumberOfBestsellersOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.NumberOfBestsellersOnHomepage)
+                @Html.ValidationMessageFor(model => model.NumberOfBestsellersOnHomepage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowPopularProductTagsOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowPopularProductTagsOnHomepage)
+                @Html.ValidationMessageFor(model => model.ShowPopularProductTagsOnHomepage)
+            </td>
+        </tr>
+    </table>
+
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Admin.CatalogSettings.ProductDisplay")</div>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowProductSku)
@@ -226,115 +134,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IgnoreDiscounts)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.IgnoreDiscounts)
-                @Html.ValidationMessageFor(model => model.IgnoreDiscounts)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ApplyTierPricePercentageToAttributePriceAdjustments)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ApplyTierPricePercentageToAttributePriceAdjustments)
-                @Html.ValidationMessageFor(model => model.ApplyTierPricePercentageToAttributePriceAdjustments)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IgnoreFeaturedProducts)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.IgnoreFeaturedProducts)
-                @Html.ValidationMessageFor(model => model.IgnoreFeaturedProducts)
-            </td>
-        </tr>
-		<tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CompareProductsEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CompareProductsEnabled)
-                @Html.ValidationMessageFor(model => model.CompareProductsEnabled)
-            </td>
-        </tr>
-        <tr id="pnlIncludeShortDescriptionInCompareProducts">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IncludeShortDescriptionInCompareProducts)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.IncludeShortDescriptionInCompareProducts)
-                @Html.ValidationMessageFor(model => model.IncludeShortDescriptionInCompareProducts)
-            </td>
-        </tr>
-        <tr id="pnlIncludeFullDescriptionInCompareProducts">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.IncludeFullDescriptionInCompareProducts)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.IncludeFullDescriptionInCompareProducts)
-                @Html.ValidationMessageFor(model => model.IncludeFullDescriptionInCompareProducts)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowBestsellersOnHomepage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowBestsellersOnHomepage)
-                @Html.ValidationMessageFor(model => model.ShowBestsellersOnHomepage)
-            </td>
-        </tr>
-        <tr id="pnlNumberOfBestsellersOnHomepage">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.NumberOfBestsellersOnHomepage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.NumberOfBestsellersOnHomepage)
-                @Html.ValidationMessageFor(model => model.NumberOfBestsellersOnHomepage)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.HideCategoryDefaultPictures)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.HideCategoryDefaultPictures)
-				@Html.ValidationMessageFor(model => model.HideCategoryDefaultPictures)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.HideProductDefaultPictures)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.HideProductDefaultPictures)
-				@Html.ValidationMessageFor(model => model.HideProductDefaultPictures)
-			</td>
-		</tr>
-
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EnableHtmlTextCollapser)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.EnableHtmlTextCollapser)
-                @Html.ValidationMessageFor(model => model.EnableHtmlTextCollapser)
-            </td>
-        </tr>
-        <tr id="pnlHtmlTextCollapsedHeight">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.HtmlTextCollapsedHeight)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.HtmlTextCollapsedHeight)
-                @Html.ValidationMessageFor(model => model.HtmlTextCollapsedHeight)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowDefaultQuantityUnit)
             </td>
             <td class="adminData">
@@ -351,357 +150,406 @@
                 @Html.ValidationMessageFor(model => model.ShowDefaultDeliveryTime)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DeliveryTimeIdForEmptyStock)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DeliveryTimeIdForEmptyStock, @Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified")))
+				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowPopularProductTagsOnHomepage)
+                @Html.SmartLabelFor(model => model.HideProductDefaultPictures)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowPopularProductTagsOnHomepage)
-                @Html.ValidationMessageFor(model => model.ShowPopularProductTagsOnHomepage)
+                @Html.SettingEditorFor(model => model.HideProductDefaultPictures)
+                @Html.ValidationMessageFor(model => model.HideProductDefaultPictures)
             </td>
         </tr>
     </table>
 
     <table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Admin.Catalog.Manufacturers")</div>
-				</div>
-			</td>
-		</tr>
-
-        <tr id="pnlShowManufacturersOnHomepage">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowManufacturersOnHomepage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowManufacturersOnHomepage)
-                @Html.ValidationMessageFor(model => model.ShowManufacturersOnHomepage)
-            </td>
-        </tr>
-        <tr id="pnlManufacturerItemsToDisplayOnHomepage">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayOnHomepage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayOnHomepage)
-                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayOnHomepage)
-            </td>
-        </tr>
-
-        <tr id="pnlShowManufacturersInOffCanvas">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowManufacturersInOffCanvas)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowManufacturersInOffCanvas)
-                @Html.ValidationMessageFor(model => model.ShowManufacturersInOffCanvas)
-            </td>
-        </tr>
-        
-        <tr id="pnlManufacturerItemsToDisplayInOffCanvas">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
-                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
-            </td>
-        </tr>
-
-        <tr id="pnlShowManufacturerPictures">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowManufacturerPictures)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowManufacturerPictures)
-                @Html.ValidationMessageFor(model => model.ShowManufacturerPictures)
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Admin.CatalogSettings.Prices")</div>
+                </div>
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.HideManufacturerDefaultPictures)
+                @Html.SmartLabelFor(model => model.IgnoreDiscounts)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.HideManufacturerDefaultPictures)
-                @Html.ValidationMessageFor(model => model.HideManufacturerDefaultPictures)
+                @Html.SettingEditorFor(model => model.IgnoreDiscounts)
+                @Html.ValidationMessageFor(model => model.IgnoreDiscounts)
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SortManufacturersAlphabetically)
+                @Html.SmartLabelFor(model => model.ApplyTierPricePercentageToAttributePriceAdjustments)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.SortManufacturersAlphabetically)
-                @Html.ValidationMessageFor(model => model.SortManufacturersAlphabetically)
+                @Html.SettingEditorFor(model => model.ApplyTierPricePercentageToAttributePriceAdjustments)
+                @Html.ValidationMessageFor(model => model.ApplyTierPricePercentageToAttributePriceAdjustments)
             </td>
         </tr>
+    </table>
 
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Admin.CatalogSettings.CompareProducts")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CompareProductsEnabled)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.CompareProductsEnabled, Html.CheckBoxFor(model => model.CompareProductsEnabled, new { data_toggler_for = "#pnlCompareProducts" }))
+                @Html.ValidationMessageFor(model => model.CompareProductsEnabled)
+            </td>
+        </tr>
+		<tbody id="pnlCompareProducts">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IncludeShortDescriptionInCompareProducts)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.IncludeShortDescriptionInCompareProducts)
+					@Html.ValidationMessageFor(model => model.IncludeShortDescriptionInCompareProducts)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IncludeFullDescriptionInCompareProducts)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.IncludeFullDescriptionInCompareProducts)
+					@Html.ValidationMessageFor(model => model.IncludeFullDescriptionInCompareProducts)
+				</td>
+			</tr>
+		</tbody>
+    </table>
+    
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Common.Misc")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EnableHtmlTextCollapser)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.EnableHtmlTextCollapser, Html.CheckBoxFor(model => model.EnableHtmlTextCollapser, new { data_toggler_for = "#pnlHtmlTextCollapsedHeight" }))
+                @Html.ValidationMessageFor(model => model.EnableHtmlTextCollapser)
+            </td>
+        </tr>
+        <tr id="pnlHtmlTextCollapsedHeight">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HtmlTextCollapsedHeight)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.HtmlTextCollapsedHeight, null, new { postfix = T("Common.Pixel").Text })
+                @Html.ValidationMessageFor(model => model.HtmlTextCollapsedHeight)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaxItemsToDisplayInCatalogMenu)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaxItemsToDisplayInCatalogMenu)
+                @Html.ValidationMessageFor(model => model.MaxItemsToDisplayInCatalogMenu)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IgnoreFeaturedProducts)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.IgnoreFeaturedProducts)
+                @Html.ValidationMessageFor(model => model.IgnoreFeaturedProducts)
+            </td>
+        </tr>
     </table>
 }
-        
+
 @helper TabProductListSettings()
 {
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="head">@T("Common.Navigation")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowProductsFromSubcategories)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowProductsFromSubcategories)
-				@Html.ValidationMessageFor(model => model.ShowProductsFromSubcategories)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.IncludeFeaturedProductsInNormalLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.IncludeFeaturedProductsInNormalLists)
-				@Html.ValidationMessageFor(model => model.IncludeFeaturedProductsInNormalLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowCategoryProductNumber)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowCategoryProductNumber)
-				@Html.ValidationMessageFor(model => model.ShowCategoryProductNumber)
-			</td>
-		</tr>
-		<tr id="pnlShowCategoryProductNumberIncludingSubcategories">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
-				@Html.ValidationMessageFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CategoryBreadcrumbEnabled)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.CategoryBreadcrumbEnabled)
-				@Html.ValidationMessageFor(model => model.CategoryBreadcrumbEnabled)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SubCategoryDisplayType)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.SubCategoryDisplayType)
-				@Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes)
-				@Html.ValidationMessageFor(model => model.SubCategoryDisplayType)
-			</td>
-		</tr>
-	</table>
-    
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Common.List")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AllowProductSorting)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AllowProductSorting)
-				@Html.ValidationMessageFor(model => model.AllowProductSorting)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DefaultViewMode)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.DefaultViewMode)
-				@Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
-				@Html.ValidationMessageFor(model => model.DefaultViewMode)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.GridStyleListColumnSpan)
-			</td>
-			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.GridStyleListColumnSpan)
-				@Html.ValidationMessageFor(model => model.GridStyleListColumnSpan)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DefaultSortOrder)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.DefaultSortOrder)
-				@Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes)
-				@Html.ValidationMessageFor(model => model.DefaultSortOrder)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.AllowProductViewModeChanging)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AllowProductViewModeChanging)
-				@Html.ValidationMessageFor(model => model.AllowProductViewModeChanging)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DefaultProductListPageSize)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.DefaultProductListPageSize)
-				@Html.ValidationMessageFor(model => model.DefaultProductListPageSize)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DefaultPageSizeOptions)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.DefaultPageSizeOptions)
-				@Html.ValidationMessageFor(model => model.DefaultPageSizeOptions)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PriceDisplayType)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.PriceDisplayType)
-				@Html.DropDownListFor(model => model.PriceDisplayType, Model.AvailablePriceDisplayTypes)
-				@Html.ValidationMessageFor(model => model.PriceDisplayType)
-			</td>
-		</tr>
-	</table>
-    
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Admin.Catalog.Products")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowShortDescriptionInGridStyleLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowShortDescriptionInGridStyleLists)
-				@Html.ValidationMessageFor(model => model.ShowShortDescriptionInGridStyleLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowDeliveryTimesInProductLists)
-				@Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowManufacturerInGridStyleLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowManufacturerInGridStyleLists)
-				@Html.ValidationMessageFor(model => model.ShowManufacturerInGridStyleLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowManufacturerLogoInLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowManufacturerLogoInLists)
-				@Html.ValidationMessageFor(model => model.ShowManufacturerLogoInLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowBasePriceInProductLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowBasePriceInProductLists)
-				@Html.ValidationMessageFor(model => model.ShowBasePriceInProductLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowProductOptionsInLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowProductOptionsInLists)
-				@Html.ValidationMessageFor(model => model.ShowProductOptionsInLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowColorSquaresInLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowColorSquaresInLists)
-				@Html.ValidationMessageFor(model => model.ShowColorSquaresInLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.HideBuyButtonInLists)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.HideBuyButtonInLists)
-				@Html.ValidationMessageFor(model => model.HideBuyButtonInLists)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.LabelAsNewForMaxDays)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.LabelAsNewForMaxDays)
-				@Html.ValidationMessageFor(model => model.LabelAsNewForMaxDays)
-			</td>
-		</tr>
-	</table>
-    
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Admin.Catalog.ProductTags")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.NumberOfProductTags)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.NumberOfProductTags)
-				@Html.ValidationMessageFor(model => model.NumberOfProductTags)
-			</td>
-		</tr>
-	</table>
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="head">@T("Common.Navigation")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductsFromSubcategories)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductsFromSubcategories)
+                @Html.ValidationMessageFor(model => model.ShowProductsFromSubcategories)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.IncludeFeaturedProductsInNormalLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.IncludeFeaturedProductsInNormalLists)
+                @Html.ValidationMessageFor(model => model.IncludeFeaturedProductsInNormalLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HideCategoryDefaultPictures)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.HideCategoryDefaultPictures)
+                @Html.ValidationMessageFor(model => model.HideCategoryDefaultPictures)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowCategoryProductNumber)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowCategoryProductNumber, Html.CheckBoxFor(model => model.ShowCategoryProductNumber, new { data_toggler_for = "#pnlShowCategoryProductNumberIncludingSubcategories" }))
+                @Html.ValidationMessageFor(model => model.ShowCategoryProductNumber)
+            </td>
+        </tr>
+        <tr id="pnlShowCategoryProductNumberIncludingSubcategories">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
+                @Html.ValidationMessageFor(model => model.ShowCategoryProductNumberIncludingSubcategories)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CategoryBreadcrumbEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CategoryBreadcrumbEnabled)
+                @Html.ValidationMessageFor(model => model.CategoryBreadcrumbEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SubCategoryDisplayType)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.SubCategoryDisplayType, @Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes))
+                @Html.ValidationMessageFor(model => model.SubCategoryDisplayType)
+            </td>
+        </tr>
+    </table>
+
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Common.List")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowProductSorting)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowProductSorting)
+                @Html.ValidationMessageFor(model => model.AllowProductSorting)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultViewMode)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.DefaultViewMode, @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes))
+                @Html.ValidationMessageFor(model => model.DefaultViewMode)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.GridStyleListColumnSpan)
+            </td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.GridStyleListColumnSpan)
+                @Html.ValidationMessageFor(model => model.GridStyleListColumnSpan)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultSortOrder)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.DefaultSortOrder, @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes))
+                @Html.ValidationMessageFor(model => model.DefaultSortOrder)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowProductViewModeChanging)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowProductViewModeChanging)
+                @Html.ValidationMessageFor(model => model.AllowProductViewModeChanging)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultProductListPageSize)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DefaultProductListPageSize)
+                @Html.ValidationMessageFor(model => model.DefaultProductListPageSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultPageSizeOptions)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DefaultPageSizeOptions)
+                @Html.ValidationMessageFor(model => model.DefaultPageSizeOptions)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PriceDisplayType)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.PriceDisplayType, @Html.DropDownListFor(model => model.PriceDisplayType, Model.AvailablePriceDisplayTypes))
+                @Html.ValidationMessageFor(model => model.PriceDisplayType)
+            </td>
+        </tr>
+    </table>
+
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Admin.Catalog.Products")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowShortDescriptionInGridStyleLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowShortDescriptionInGridStyleLists)
+                @Html.ValidationMessageFor(model => model.ShowShortDescriptionInGridStyleLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDeliveryTimesInProductLists)
+                @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturerInGridStyleLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturerInGridStyleLists)
+                @Html.ValidationMessageFor(model => model.ShowManufacturerInGridStyleLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturerLogoInLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturerLogoInLists)
+                @Html.ValidationMessageFor(model => model.ShowManufacturerLogoInLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowBasePriceInProductLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowBasePriceInProductLists)
+                @Html.ValidationMessageFor(model => model.ShowBasePriceInProductLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductOptionsInLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductOptionsInLists)
+                @Html.ValidationMessageFor(model => model.ShowProductOptionsInLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowColorSquaresInLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowColorSquaresInLists)
+                @Html.ValidationMessageFor(model => model.ShowColorSquaresInLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HideBuyButtonInLists)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.HideBuyButtonInLists)
+                @Html.ValidationMessageFor(model => model.HideBuyButtonInLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LabelAsNewForMaxDays)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.LabelAsNewForMaxDays, null, new { postfix = T("Time.Days").Text })
+                @Html.ValidationMessageFor(model => model.LabelAsNewForMaxDays)
+            </td>
+        </tr>
+    </table>
+
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <div class="admin-config-group">
+                    <div class="title">@T("Admin.Catalog.ProductTags")</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NumberOfProductTags)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.NumberOfProductTags)
+                @Html.ValidationMessageFor(model => model.NumberOfProductTags)
+            </td>
+        </tr>
+    </table>
 }
 
 @helper TabUserSettings()
@@ -766,31 +614,33 @@
                 @Html.SmartLabelFor(model => model.EmailAFriendEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.EmailAFriendEnabled)
+				@Html.SettingEditorFor(model => model.EmailAFriendEnabled, Html.CheckBoxFor(model => model.EmailAFriendEnabled, new { data_toggler_for = "#pnlAllowAnonymousUsersToEmailAFriend" }))
                 @Html.ValidationMessageFor(model => model.EmailAFriendEnabled)
             </td>
         </tr>
-        <tr class="pnlAllowAnonymousUsersToEmailAFriend">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowAnonymousUsersToEmailAFriend)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AllowAnonymousUsersToEmailAFriend)
-                @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailAFriend)
-            </td>
-        </tr>
-        <tr class="pnlAllowAnonymousUsersToEmailAFriend">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
-                @Html.ValidationMessageFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
-            </td>
-        </tr>
+		<tbody id="pnlAllowAnonymousUsersToEmailAFriend">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AllowAnonymousUsersToEmailAFriend)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.AllowAnonymousUsersToEmailAFriend)
+					@Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailAFriend)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
+					@Html.ValidationMessageFor(model => model.AllowDifferingEmailAddressForEmailAFriend)
+				</td>
+			</tr>
+		</tbody>
     </table>
 }
-    
+
 @helper TabProductDetailSettings()
 {
     <table class="adminContent">
@@ -799,7 +649,7 @@
                 @Html.SmartLabelFor(model => model.RecentlyViewedProductsEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.RecentlyViewedProductsEnabled)
+				@Html.SettingEditorFor(model => model.RecentlyViewedProductsEnabled, Html.CheckBoxFor(model => model.RecentlyViewedProductsEnabled, new { data_toggler_for = "#pnlRecentlyViewedProductsNumber" }))
                 @Html.ValidationMessageFor(model => model.RecentlyViewedProductsEnabled)
             </td>
         </tr>
@@ -817,7 +667,7 @@
                 @Html.SmartLabelFor(model => model.RecentlyAddedProductsEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.RecentlyAddedProductsEnabled)
+				@Html.SettingEditorFor(model => model.RecentlyAddedProductsEnabled, Html.CheckBoxFor(model => model.RecentlyAddedProductsEnabled, new { data_toggler_for = "#pnlRecentlyAddedProductsNumber" }))
                 @Html.ValidationMessageFor(model => model.RecentlyAddedProductsEnabled)
             </td>
         </tr>
@@ -835,7 +685,7 @@
                 @Html.SmartLabelFor(model => model.ProductsAlsoPurchasedEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductsAlsoPurchasedEnabled)
+				@Html.SettingEditorFor(model => model.ProductsAlsoPurchasedEnabled, Html.CheckBoxFor(model => model.ProductsAlsoPurchasedEnabled, new { data_toggler_for = "#pnlProductsAlsoPurchasedNumber" }))
                 @Html.ValidationMessageFor(model => model.ProductsAlsoPurchasedEnabled)
             </td>
         </tr>
@@ -862,19 +712,19 @@
                 @Html.SmartLabelFor(model => model.ShowManufacturerInProductDetail)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowManufacturerInProductDetail)
+				@Html.SettingEditorFor(model => model.ShowManufacturerInProductDetail, Html.CheckBoxFor(model => model.ShowManufacturerInProductDetail, new { data_toggler_for = "#pnlManufacturerPictures" }))
                 @Html.ValidationMessageFor(model => model.ShowManufacturerInProductDetail)
             </td>
         </tr>
-		<tr class="manufacturer-pictures">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowManufacturerPicturesInProductDetail)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowManufacturerPicturesInProductDetail)
-				@Html.ValidationMessageFor(model => model.ShowManufacturerPicturesInProductDetail)
-			</td>
-		</tr>
+        <tr id="pnlManufacturerPictures">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturerPicturesInProductDetail)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturerPicturesInProductDetail)
+                @Html.ValidationMessageFor(model => model.ShowManufacturerPicturesInProductDetail)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductDetail)
@@ -884,16 +734,6 @@
                 @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductDetail)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.DeliveryTimeIdForEmptyStock)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.DeliveryTimeIdForEmptyStock)
-				@Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
-				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
-			</td>
-		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableDynamicPriceUpdate)
@@ -903,15 +743,15 @@
                 @Html.ValidationMessageFor(model => model.EnableDynamicPriceUpdate)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.BundleItemShowBasePrice)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.BundleItemShowBasePrice)
-				@Html.ValidationMessageFor(model => model.BundleItemShowBasePrice)
-			</td>
-		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BundleItemShowBasePrice)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.BundleItemShowBasePrice)
+                @Html.ValidationMessageFor(model => model.BundleItemShowBasePrice)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowVariantCombinationPriceAdjustment)
@@ -944,19 +784,88 @@
                 @Html.SmartLabelFor(model => model.ShowShareButton)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowShareButton)
+				@Html.SettingEditorFor(model => model.ShowShareButton, Html.CheckBoxFor(model => model.ShowShareButton, new { data_toggler_for = "#pnlPageShareCode" }))
                 @Html.ValidationMessageFor(model => model.ShowShareButton)
             </td>
         </tr>
-        <tr class="pnlPageShareCode">
+        <tr id="pnlPageShareCode">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PageShareCode)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.PageShareCode, new { @class = "input-large", style = "height:150px" })
+                @Html.TextAreaFor(model => model.PageShareCode, new { style = "height:150px" })
                 @Html.ValidationMessageFor(model => model.PageShareCode)
             </td>
         </tr>
     </table>
-}    
+}
+
+@helper TabBrandsSettings()
+{
+    <table class="adminContent">
+        <tr id="pnlShowManufacturersOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturersOnHomepage)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowManufacturersOnHomepage, Html.CheckBoxFor(model => model.ShowManufacturersOnHomepage, new { data_toggler_for = "#pnlManufacturerItemsToDisplayOnHomepage" }))
+                @Html.ValidationMessageFor(model => model.ShowManufacturersOnHomepage)
+            </td>
+        </tr>
+        <tr id="pnlManufacturerItemsToDisplayOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayOnHomepage)
+                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayOnHomepage)
+            </td>
+        </tr>
+        <tr id="pnlShowManufacturersInOffCanvas">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturersInOffCanvas)
+            </td>
+            <td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowManufacturersInOffCanvas, Html.CheckBoxFor(model => model.ShowManufacturersInOffCanvas, new { data_toggler_for = "#pnlManufacturerItemsToDisplayInOffCanvas" }))
+                @Html.ValidationMessageFor(model => model.ShowManufacturersInOffCanvas)
+            </td>
+        </tr>
+        <tr id="pnlManufacturerItemsToDisplayInOffCanvas">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+                @Html.ValidationMessageFor(model => model.ManufacturerItemsToDisplayInOffCanvasMenu)
+            </td>
+        </tr>
+        <tr id="pnlShowManufacturerPictures">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturerPictures)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturerPictures)
+                @Html.ValidationMessageFor(model => model.ShowManufacturerPictures)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HideManufacturerDefaultPictures)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.HideManufacturerDefaultPictures)
+                @Html.ValidationMessageFor(model => model.HideManufacturerDefaultPictures)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SortManufacturersAlphabetically)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SortManufacturersAlphabetically)
+                @Html.ValidationMessageFor(model => model.SortManufacturersAlphabetically)
+            </td>
+        </tr>
+    </table>
+}
 }

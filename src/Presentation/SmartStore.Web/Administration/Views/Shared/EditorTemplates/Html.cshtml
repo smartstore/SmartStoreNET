@@ -1,0 +1,66 @@
+﻿@model String
+@using SmartStore.Web.Framework.UI;
+@{
+	Html.AddScriptParts("~/bundles/codemirror");
+	Html.AddCssFileParts("~/css/codemirror");
+
+	Html.AddScriptParts("~/bundles/summernote");
+	Html.AppendCssFileParts(true, "~/Content/editors/summernote/summernote-bs4.css");
+
+	var lazy = ViewData["lazy"].Convert<bool?>() ?? true;
+	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+	var html = ((string)ViewData.TemplateInfo.FormattedModelValue);
+	var htmlIsEmpty = !html.HasValue() || html == "<p></p>" || html == "<p>&nbsp;</p>" || html == "<p><br></p>";
+
+	// Find summernote localization file
+	string culture = null;
+	var locFile = base.ResolveLocalizationFile(WorkContext.WorkingLanguage.LanguageCulture, "~/Content/editors/summernote/lang", "summernote-*.js", null);
+	if (locFile != null)
+	{
+		culture = locFile.Culture;
+		Html.AddScriptParts(true, locFile.VirtualPath);
+	}
+
+	// Find custom plugins localization file
+	locFile = base.ResolveLocalizationFile(WorkContext.WorkingLanguage.LanguageCulture, "~/Content/editors/summernote/plugins/lang", "*.js", null);
+	if (locFile != null)
+	{
+		Html.AddScriptParts(true, locFile.VirtualPath);
+	}
+}
+
+@if (lazy)
+{
+	<div class="note-editor-preview@(htmlIsEmpty ? " empty" : "")" data-target="#@id" @Html.Attr("data-lang", culture, culture != null)>
+		@if (htmlIsEmpty)
+		{
+			<div>
+				<i class="fa fa-html5 mr-1"></i>
+				<span class="text-muted">@T("HtmlEditor.ClickToEdit")</span>
+			</div>
+		}
+		else
+		{
+			@Html.Raw(html)
+		}
+	</div>
+}
+
+
+@Html.TextArea(string.Empty, /* Name suffix */
+	html, /* Initial value */
+	new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { area = "admin" }) }
+)
+
+<script>
+	summernote_image_upload_url = '@Html.Raw(Url.Action("ProcessRequest", "RoxyFileManager"))';
+	@if (!lazy)
+	{
+		<text>
+			$(function () {
+				$('#@id').summernote($.extend(true, {}, summernote_global_config, { lang: @Html.Raw(culture != null ? "'" + culture + "'" : "null") }));
+			});
+		</text>
+	}
+
+</script>

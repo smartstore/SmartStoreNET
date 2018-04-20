@@ -1,0 +1,47 @@
+﻿
+// ---------------------------------------------------------------------------------------------------------------------
+// If your shop is multilingual, you can define font families on language level in this file.
+// You have to upload the font files to your webserver yourself, unless you include a web font, e.g. from Google.
+// 
+// The examples below are for clarification only, customize or add any section you wish.
+// ----------------------------------------------------------------------------------------------------------------------
+
+
+// Arabic
+// --------------------------------------------------
+/*
+html[lang="ar"] {
+	@font-face {
+		font-family: 'Cairo';
+		src:url('https://fonts.googleapis.com/css?family=Cairo');
+	}
+	body {
+		font-family: 'Cairo', sans-serif;
+	}
+}
+*/
+
+// Chinese
+// --------------------------------------------------
+/*
+html[lang="cn"] {
+	body {
+		font-family: Tahoma, Helvetica, Arial, "Microsoft Yahei","微软雅黑", STXihei, "华文细黑", sans-serif;
+	}
+}
+*/
+
+// Persian 
+// --------------------------------------------------
+/*
+html[lang="fa"] {
+	@font-face {
+		font-family: 'Iranian Sans';
+		src:url('../../../Content/Fonts/irsans.ttf');
+		src:url('../../../Content/Fonts/irsansb.ttf');
+	}
+	body {
+		font-family: 'Iranian Sans';
+	}
+}
+*/

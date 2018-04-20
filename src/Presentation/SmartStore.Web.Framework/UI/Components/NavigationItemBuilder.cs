@@ -127,7 +127,13 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
-        public TBuilder Icon(string value)
+		public TBuilder ImageId(int? value)
+		{
+			this.Item.ImageId = value;
+			return (this as TBuilder);
+		}
+
+		public TBuilder Icon(string value)
         {
             this.Item.Icon = value;
             return (this as TBuilder);
@@ -145,7 +151,7 @@ namespace SmartStore.Web.Framework.UI
 			return (this as TBuilder);
 		}
 
-		public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Default, bool condition = true)
+		public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Secondary, bool condition = true)
         {
             if (condition)
             {

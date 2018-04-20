@@ -14,7 +14,7 @@
 
 	int firstItemIndex = 0;
 	int lastItemIndex = 0;
-	if (Model.SearchResult.TotalHitsCount > 0)
+	if (Model.SearchResult.TotalHitsCount > 0) 
 	{
 		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
 		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
@@ -49,7 +49,7 @@
 				</div>
 				<div class="art-genericname">
 					<a href="@url" title="@item.Name">
-						<span>@item.Name</span>
+						<span @Html.LanguageAttributes(item.Name)>@item.Name</span>
 					</a>
 				</div>
 			</article>
@@ -66,12 +66,17 @@
 
 <div class="page category-page">
     <div class="page-title">
-        <h1 class="h3">
-			@(Model.FullName.HasValue() ? Model.FullName : Model.Name)
+		@{ 
+			var categoryName = Model.FullName.Value.HasValue() ? Model.FullName : Model.Name;
+		}
+        <h1 @Html.LanguageAttributes(categoryName) class="h3">
+			@categoryName
 		</h1>
 		@if (Model.SearchResult.TotalHitsCount > 0)
 		{
-			<h5 class="search-hitcount">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.SearchResult.TotalHitsCount.ToString("N0"))</h5>
+			var pageIndex = "<span class='lrm'>{0}-{1}</span>".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0"));
+			var pageSize = "<span class='lrm'>" + Model.SearchResult.TotalHitsCount.ToString("N0") + "</span>";
+			<h5 class="search-hitcount">@Html.Raw(T("Search.PagingInfo", pageIndex, pageSize))</h5>
 		}
     </div>
 
@@ -79,9 +84,9 @@
         @{ Html.RenderWidget("categorydetails_top");}
 
         @* Description *@
-        @if (!String.IsNullOrWhiteSpace(Model.Description))
+        @if (!String.IsNullOrWhiteSpace(Model.Description.Value))
         {
-            <div class="category-description lead hide-on-active-filter html-editor-content">
+            <div @Html.LanguageAttributes(Model.Description) class="category-description lead hide-on-active-filter html-editor-content">
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
         }
@@ -120,9 +125,9 @@
             }
         </div>
 
-        @if (Model.BottomDescription.HasValue())
+        @if (Model.BottomDescription.Value.HasValue())
         {
-            <div class="category-description lead html-editor-content">
+            <div @Html.LanguageAttributes(Model.BottomDescription) class="category-description lead html-editor-content">
                 @Html.Raw(Html.CollapsedText(Model.BottomDescription))
             </div>
         }

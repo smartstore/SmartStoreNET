@@ -32,6 +32,7 @@ namespace SmartStore.Data.Mapping.Catalog
 			this.Property(p => p.RequiredProductIds).HasMaxLength(1000);
 			this.Property(p => p.AllowedQuantities).HasMaxLength(1000);
 			this.Property(p => p.CustomsTariffNumber).HasMaxLength(30);
+			this.Property(p => p.SystemName).HasMaxLength(400);
 
 			this.HasOptional(p => p.DeliveryTime)
 				.WithMany()

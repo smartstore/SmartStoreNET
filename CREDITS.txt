@@ -1,10 +1,7 @@
 SmartStore.NET
-Copyright 1999-2014 SmartStore AG
+Copyright 1999-2018 SmartStore AG
 http://www.smartstore.com | https://github.com/smartstoreag/SmartStoreNET
 
-
-SmartStore.NET is a fork of the ASP.NET open source e-commerce solution 
-nopCommerce (http://www.nopcommerce.com).
 
 SmartStore.NET includes works distributed under the licenses listed below. 
 Please refer to the specific resources for more detailed information about the authors, 
@@ -14,7 +11,7 @@ copyright notices, and licenses.
 51Degrees
 ---------------------------------------------
 WebSite:      http://51degrees.mobi/
-Copyright:    Copyright 2010 - 2013 51Degrees.mobi Limited
+Copyright:    Copyright 2010 - 2018 51Degrees.mobi Limited
 License:      Mozilla Public License 2.0 (MPL-2.0)
 
 
@@ -28,7 +25,7 @@ License:      BSD License
 
 ASP.NET MVC
 ---------------------------------------------
-Website:      http://aspnet.codeplex.com/wikipage?title=MVC&referringTitle=Home
+Website:      https://github.com/aspnet/AspNetWebStack
 Copyright:    Copyright (c) 2008-2011 Microsoft Corporation
 License:      MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA
               http://go.microsoft.com/fwlink/?LinkID=207621
@@ -36,31 +33,30 @@ License:      MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA
 
 Autofac
 ---------------------------------------------
-Website:      http://code.google.com/p/autofac/
-Copyright:    Copyright (c) 2007-2014 Autofac Contributors
-              http://code.google.com/p/autofac/wiki/Contributing
+Website:      https://autofac.org/
+Copyright:    Copyright (c) 2007-2018 Autofac Contributors
 License:      MIT
 
 
 AutoMapper
 ---------------------------------------------
 WebSite:      http://www.automapper.org
-Copyright:    Copyright © 2008-2013 Jimmy Bogard and other contributors
+Copyright:    Copyright © 2008-2018 Jimmy Bogard and other contributors
 License:      MIT
 
 
 Bundle Transformer 
 ---------------------------------------------
-Website:      https://bundletransformer.codeplex.com
+Website:      https://github.com/Taritsyn/BundleTransformer
 Copyright:    Copyright Andrey Taritsyn 2014
 License:      Apache License 2.0 (Apache)
 
 
-CKEditor
+summernote
 ---------------------------------------------
-WebSite:      http://ckeditor.com/
-Copyright:    &copy 2014 CKSource - Frederico Knabben
-License:      GNU Library General Public License (LGPL)
+WebSite:      https://summernote.org/
+Copyright:    Copyright (c) 2015~ Summernote Team (https://github.com/orgs/summernote/people)
+License:      MIT
 
 
 DotNetOpenAuth
@@ -72,28 +68,28 @@ License:      MS-PL
 
 DotNetZip
 ---------------------------------------------
-Website:      http://dotnetzip.codeplex.com/
+Website:      https://archive.codeplex.com/?p=dotnetzip
 Copyright:    
 License:      MS-PL
 
 
 Entity Framework
 ---------------------------------------------
-Website:      https://entityframework.codeplex.com
-Copyright:    Copyright (c) 2012-2014 Microsoft Corporation
+Website:      https://github.com/aspnet/EntityFramework6
+Copyright:    Copyright (c) 2012-2018 Microsoft Corporation
 License:      Apache License 2.0 (Apache)
 
 
 EPPlus
 ---------------------------------------------
-Website:      https://epplus.codeplex.com/
+Website:      https://github.com/JanKallman/EPPlus
 Copyright:    Copyright (C) 2011  Jan Källman
 License:      GNU Library General Public License (LGPL)
 
 
 Fluent Validation
 ---------------------------------------------
-Website:      https://fluentvalidation.codeplex.com/
+Website:      https://github.com/JeremySkinner/FluentValidation
 License:      Apache License 2.0 (Apache)
 
 
@@ -104,11 +100,11 @@ Copyright:    Copyright (C) 2014  Glimpse contributors (http://getglimpse.com/Co
 License:      Apache License 2.0 (Apache)
 
 
-ImageResizer.NET
+ImageProcessor
 ---------------------------------------------
-Website:      https://imageresizing.net/
-Copyright:    Copyright (c) 2012 Imazen
-License:      Freedom License
+Website:      http://imageprocessor.org/
+Copyright:    Copyright (c) 2018 James Jackson-South
+License:      Apache License 2.0 (Apache)
 
 
 JavaScriptEngineSwitcher
@@ -132,16 +128,9 @@ Copyright:    Copyright (c) 2007-2009 Ariel Flesler
 License:      MIT
 
 
-jQuery UI (Core)
+Json.NET
 ---------------------------------------------
-Website:      http://docs.jquery.com/UI
-Copyright:    Copyright (c) 2010 lib/jquery.ui/AUTHORS.txt (http://jqueryui.com/about)
-License:      MIT
-
-
-JSON.NET
----------------------------------------------
-Website:      http://james.newtonking.com/
+Website:      https://www.newtonsoft.com/json
 Copyright:    Copyright (c) 2007 James Newton-King
 License:      MIT
 
@@ -181,30 +170,30 @@ License:      MIT
 
 NuGet
 ---------------------------------------------
-Website:      http://nuget.codeplex.com
-Copyright:    Copyright 2010-2011 Outercurve Foundation
+Website:      https://github.com/nuget/home
+Copyright:    Copyright 2010-2018 Outercurve Foundation
 License:      Apache Software Foundation License 2.0
 
 
 nUnit
 ---------------------------------------------
-Website:      http://www.nunit.org/index.php
+Website:       http://nunit.org/
 Copyright:    Copyright (c) 2002-2007 NUnit.org
-              Portions Copyright (c) 2002-2008 Charlie Poole or Copyright (c) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov or Copyright (c) 2000-2002 Philip A. Craig
+              Portions Copyright (c) 2002-2018 Charlie Poole or Copyright (c) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov or Copyright (c) 2000-2002 Philip A. Craig
 License:      Derived from zlib: http://nunit.org/index.php?p=license&r=2.4
 
 
 PhotoSwipe
 ---------------------------------------------
 Website:      http://photoswipe.com/
-Copyright:    Copyright (c) 2014-2016 Dmitry Semenov, http://dimsemenov.com
+Copyright:    Copyright (c) 2014-2018 Dmitry Semenov, http://dimsemenov.com
 License:      MIT
 
 
 slick carousel
 ---------------------------------------------
 Website:      http://kenwheeler.github.io/slick/
-Copyright:    Copyright (c) 2014 Ken Wheeler
+Copyright:    Copyright (c) 2018 Ken Wheeler
 License:      MIT
 
 
@@ -216,7 +205,7 @@ License:      GPL v3.0
 
 Twitter Bootstrap
 ---------------------------------------------
-Website:      http://twitter.github.io/bootstrap/
+Website:      https://getbootstrap.com/
 License:      Apache License v2.0
 
 

@@ -1,38 +1,11 @@
-﻿@model SmartStore.GoogleMerchantCenter.Models.GoogleProductModel
-
+﻿@using SmartStore.GoogleMerchantCenter;
+@model SmartStore.GoogleMerchantCenter.Models.GoogleProductModel
 @{
 	Layout = "";
 }
 
-<script>
-	$(function () {
-		var googleCategories;
-
-		$('#@Html.IdFor(m => m.Taxonomy)').typeahead({
-			items: 18,
-			source: function (query, process) {
-				if (googleCategories === undefined) {
-					return $.ajax({
-						dataType: "json",
-						url: '@Url.Action("GoogleCategories")',
-						type: 'POST',
-						success: function (json) {
-							googleCategories = json;
-							process(json);
-						},
-					});
-				}
-				else {
-					process(googleCategories);
-				}
-			}
-		});
-	});
-</script>
-
 @* VERY IMPORTANT for proper model binding *@
 @Html.Hidden("__Type__", Model.GetType().AssemblyQualifiedName)
-
 @Html.HiddenFor(m => m.ProductId)
 
 <table id="GmcData" class="adminContent">
@@ -49,8 +22,8 @@
 		<td class="adminTitle">
 			@Html.SmartLabelFor(m => m.Taxonomy)
 		</td>
-		<td class="adminData">
-			@Html.TextBoxFor(m => m.Taxonomy, new { data_provide = "typeahead", placeholder = ViewBag.DefaultCategory, style = "width: 97%", autocomplete = "off" })
+		<td class="adminData wide">
+			@Html.DropDownListFor(model => model.Taxonomy, (IEnumerable<SelectListItem>)ViewBag.AvailableCategories, new { autocomplete = "off" })
 			@Html.ValidationMessageFor(m => m.Taxonomy)
 		</td>
 	</tr>
@@ -190,3 +163,43 @@
 		</td>
 	</tr>
 </table>
+
+<script type="text/javascript">
+	$(function () {
+
+		$('#@Html.FieldIdFor(model => model.Taxonomy)').select2({
+			width: 'style',
+			dropdownAutoWidth: true,
+			allowClear: true,
+			theme: 'bootstrap',
+			closeOnSelect: true,
+			placeholder: '@Html.Raw(ViewBag.DefaultCategory)',
+			language: '@ViewBag.LanguageSeoCode',
+			ajax: {
+				delay: 300,
+				cache: true,
+				dataType: 'json',
+				type: 'GET',
+				url: '@Url.Action("GetGoogleCategories", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })',
+				data: function (params) {
+					var query = {
+						search: params.term,
+						page: params.page || 1
+					}
+					return query;
+				},
+				processResults: function (data, params) {
+					params.page = params.page || 1;
+
+					return {
+						results: data.results,
+						pagination: {
+							more: data.hasMoreItems
+						}
+					};
+				}
+			}
+		});
+
+	});
+</script>

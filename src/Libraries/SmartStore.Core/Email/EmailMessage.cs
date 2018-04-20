@@ -8,10 +8,8 @@ using System.Net;
 
 namespace SmartStore.Core.Email
 {
-
     public class EmailMessage : ICloneable<EmailMessage>
     {
-
 		public EmailMessage()
 		{
 			this.BodyFormat = MailBodyFormat.Html;

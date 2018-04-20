@@ -1,7 +1,4 @@
 ﻿@model QueuedEmailModel
-           
-
-@using Telerik.Web.Mvc.UI;
 
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
@@ -27,29 +24,11 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.FromName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.FromName)
-            @Html.ValidationMessageFor(model => model.FromName)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.To)
         </td>
         <td class="adminData">
             @Html.EditorFor(model => model.To)
             @Html.ValidationMessageFor(model => model.To)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ToName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ToName)
-            @Html.ValidationMessageFor(model => model.ToName)
         </td>
     </tr>
     <tr>
@@ -75,7 +54,7 @@
             @Html.SmartLabelFor(model => model.Subject)
         </td>
         <td class="adminData">
-            @Html.TextBoxFor(model => model.Subject, new { @class = "input-large" })
+            @Html.TextBoxFor(model => model.Subject)
             @Html.ValidationMessageFor(model => model.Subject)
         </td>
     </tr>
@@ -88,7 +67,7 @@
 			<td class="adminData">
 				@foreach (var attach in Model.Attachments)
 				{
-					<span style="margin-right: 12px">
+					<span class="mr-3">
 						<i class="fa fa-paperclip"></i>
 						<a href='@Url.Action("DownloadAttachment", new { id = attach.Id })'>@attach.Name</a>
 					</span>
@@ -100,8 +79,8 @@
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Body)
         </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Body, Html.RichEditorFlavor())
+        <td class="adminData wide">
+            @Html.EditorFor(model => model.Body, "Html")
             @Html.ValidationMessageFor(model => model.Body)
         </td>
     </tr>
@@ -130,11 +109,13 @@
         <td class="adminData">
             @if (Model.SentOn.HasValue)
             {
-                @Html.DisplayFor(model => model.SentOn)
-            }
-            else
-            {
-				@("".NaIfEmpty())
+				<div class="form-control-plaintext">
+					@Html.DisplayFor(model => model.SentOn)
+				</div>
+			}
+			else
+			{
+				<div class="form-control-plaintext">@("".NaIfEmpty())</div>
             }
         </td>
     </tr>
@@ -143,7 +124,7 @@
             @Html.SmartLabelFor(model => model.EmailAccountName)
         </td>
         <td class="adminData">
-            @Html.DisplayFor(model => model.EmailAccountName)
+            @Html.TextBoxFor(model => model.EmailAccountName, new { @readonly = "readonly", @class = "form-control-plaintext" })
         </td>
     </tr>
     <tr>
@@ -151,7 +132,9 @@
             @Html.SmartLabelFor(model => model.CreatedOn)
         </td>
         <td class="adminData">
-            @Html.DisplayFor(model => model.CreatedOn)
+			<div class="form-control-plaintext">
+				@Html.DisplayFor(model => model.CreatedOn)
+			</div>
         </td>
     </tr>
 </table>

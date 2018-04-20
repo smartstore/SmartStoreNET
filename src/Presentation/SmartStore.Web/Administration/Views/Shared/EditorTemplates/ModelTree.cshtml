@@ -1,0 +1,157 @@
+﻿@model TreeNode<ModelTreeMember>
+
+@using Telerik.Web.Mvc.UI;
+@using Telerik.Web.Mvc.UI.Fluent;
+@using SmartStore.Collections;
+@using SmartStore.Services.Messages;
+
+@helper TokenSelector()
+{
+	<a id="btn-choosetoken" href="#addtoken-window" data-toggle="modal" class="btn btn-primary">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.Common.ChooseToken")</span>
+	</a>
+}
+
+@{Html.SmartStore().Window()
+	.Name("addtoken-window")
+	.Size(WindowSize.FlexSmall)
+	.Title(T("Admin.Common.ChooseToken"))
+	.Content(
+	@<text>
+		@(Html.Telerik().TreeView()
+		.Name("token-treeview")
+		.Items(tv =>
+		{
+			AddItemsToModelTree(tv, Model);
+		})
+		.ShowLines(true)
+		.ClientEvents(events =>
+		{
+			if (Model != null)
+			{
+				events.OnSelect("onNodeSelect");
+			}
+		})
+		.DragAndDrop(false))
+	</text>)
+	.FooterContent(@<text>
+		<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+			<span>@T("Admin.Common.Cancel")</span>
+		</button>
+		<button id="btn-addtoken" type="submit" class="btn btn-primary disabled">
+			<i class="fa fa-check"></i>
+			<span>@T("Common.AddNew")</span>
+		</button>
+	</text>)
+	.Render();
+}
+
+@functions {
+	public static void AddItemsToModelTree(TreeViewItemFactory tv, TreeNode<ModelTreeMember> root)
+	{
+		if (root != null)
+		{
+			foreach (var node in root.Children)
+			{
+
+				List<string> tokens = new List<string>();
+				var curNode = node;
+				while (!curNode.IsRoot)
+				{
+					tokens.Insert(0, curNode.Value.Name);
+					curNode = curNode.Parent;
+				}
+
+				tv.Add()
+				.Text(node.Value.Name)
+				.Value(String.Join(".", tokens))
+				//.HtmlAttributes(new { _data-leaf = node.IsLeaf.ToString() })
+				.HtmlAttributes(new { isleaf = node.IsLeaf.ToString().ToLower() })
+				.Items(tvc =>
+				{
+
+					if (!node.IsLeaf)
+					{
+						AddItemsToModelTree(tvc, node);
+					}
+				});
+			}
+		}
+	}
+}
+
+@if (Model == null || !Model.HasChildren)
+{
+	<div class="text-muted">
+		@T("Admin.ContentManagement.MessageTemplates.NoModelTree")
+	</div>
+}
+else
+{
+	@TokenSelector()
+
+	<script>
+		var lastSelectedNode;
+
+		function getEditor() {
+			var editor = $("#messagetemplate-localized .tab-pane.active .summernote-editor");
+			if (editor.length) {
+				return editor;
+			}
+			else {
+				return $('.summernote-editor').first();
+			}
+		}
+
+		$(document).on("mousedown", "#btn-choosetoken", function () {
+			var editor = getEditor();
+			editor.summernote('editor.saveRange');
+		});
+
+		$(document).on("click", "#btn-addtoken", function () {
+			pasteTokenIntoEditor(lastSelectedNode);
+		});
+
+		$(document).on("dblclick", ".t-item", function (e) {
+			e.stopPropagation();
+			pasteTokenIntoEditor(lastSelectedNode);
+		});
+
+
+		function pasteTokenIntoEditor(e) {
+			var treeview = $('#token-treeview').data("tTreeView");
+			var token = treeview.getItemValue(e.item);
+			var isLeaf = $(e.item).attr("isleaf");
+			
+			if (!token || !isLeaf)
+				return false;
+
+			var editor = getEditor();
+			editor.summernote('editor.restoreRange');
+			editor.summernote('editor.insertText', '{{ ' + token + ' }}');
+
+			$("#addtoken-window").modal("hide");
+
+			return false;
+		}
+
+		function onNodeSelect(e) {
+			e.preventDefault();
+
+			lastSelectedNode = e;
+
+			// disable button if elem is branch
+			var isLeaf = ($(e.item).attr("isleaf") == "true");
+			var btn = $("#btn-addtoken");
+			var isBtnDisabled = btn.hasClass("disabled");
+			
+			if (isLeaf == true) {
+				btn.removeClass("disabled");
+			}
+			else if (!isBtnDisabled) {
+				btn.addClass("disabled");
+			}
+		}
+	</script>
+}

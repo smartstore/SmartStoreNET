@@ -1,0 +1,17 @@
+<p class="mb-2 text-sm">
+{{ address | FormatAddress | NewlineToBr }}
+</p>
+
+{% if address.Email or address.Phone or address.Fax %}
+<div class="mb-2 text-sm">
+	{% if address.Email  %}
+		<div>{{ address.Email }}</div>
+	{% endif %}
+	{% if address.Phone  %}
+		<div>{{ 'Order.Phone' | T }}: {{ address.Phone }}</div>
+	{% endif %}
+	{% if address.Fax  %}
+		<div>{{ 'Order.Fax' | T }}: {{ address.Fax }}</div>
+	{% endif %}
+</div>
+{% endif %}

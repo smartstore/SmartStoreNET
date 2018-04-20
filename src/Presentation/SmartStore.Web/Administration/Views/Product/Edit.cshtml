@@ -16,23 +16,24 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-			<button type="submit" name="preview" value="preview" onclick="javascript:openWindow('@Model.ProductUrl', 1000, 600, true); return false;" class="btn">
+			<button type="submit" name="preview" value="preview" onclick="javascript:openWindow('@Model.ProductUrl', 1000, 600, true); return false;" class="btn btn-secondary">
                 <i class="fa fa-eye"></i>
-                @T("Admin.Common.Preview")
+                <span>@T("Admin.Common.Preview")</span>
             </button>
-			<button type="submit" value="save" class="btn btn-primary entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
+			<button type="submit" value="save" class="btn btn-warning entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
 				<i class="fa fa-check"></i>
-				@T("Admin.Common.Save")
+				<span>@T("Admin.Common.Save")</span>
 			</button>
-			<button type="submit" value="save-continue" class="btn entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
+			<button type="submit" value="save-continue" class="btn btn-secondary entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
 				@T("Admin.Common.SaveContinue")
 			</button>
-			<a href="#copyproduct-window" data-toggle="modal" class="btn">
-				<i class="fa fa-files-o"></i>&nbsp;@T("Admin.Catalog.Products.Copy")
+			<a href="#copyproduct-window" data-toggle="modal" class="btn btn-secondary">
+				<i class="fa fa-files-o"></i>
+				<span>@T("Admin.Catalog.Products.Copy")</span>
 			</a>
 			<button type="submit" id="product-delete" class="btn btn-danger">
 				<i class="fa fa-trash-o"></i>
-				@T("Admin.Common.Delete")
+				<span>@T("Admin.Common.Delete")</span>
 			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
@@ -43,56 +44,58 @@
 }
 @Html.DeleteConfirmation("product-delete")
 
-@*copy product form*@
 @{Html.SmartStore().Window()
 		.Name("copyproduct-window")
-		.Title(T("Admin.Catalog.Products.Copy").Text)
+		.Title(T("Admin.Catalog.Products.Copy"))
+		.Size(WindowSize.Large)
 		.Content(@<text>
-    @using (Html.BeginForm("CopyProduct", "Product", FormMethod.Post, new { style = "margin:0;" })) {
-        @Html.HiddenFor(model => Model.CopyProductModel.Id)
-
-		<div class="dialog-content-container">
-			<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.Name)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.Name)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.Published)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.Published)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CopyProductModel.CopyImages)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => Model.CopyProductModel.CopyImages)
-				</td>
-			</tr>
-			</table>
-		</div>
-	}
-    </text>)
-    .FooterContent(@<text>
-        <button id="copyproduct" type="button" class="btn btn-primary">
-            <i class="fa fa-files-o"></i>
-            @T("Admin.Catalog.Products.Copy")
-        </button>
-    </text>)
-		.Width(500)
-        .Height(500)
-		.Modal(true)
-		.Visible(false)
-		.Render();
+			<form method="POST" action="@Url.Action("CopyProduct", "Product")">
+				@Html.HiddenFor(model => Model.CopyProductModel.Id)
+				<table class="adminContent">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.NumberOfCopies)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.NumberOfCopies)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.Name)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.Name)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.Published)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.Published)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CopyProductModel.CopyImages)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => Model.CopyProductModel.CopyImages)
+						</td>
+					</tr>
+				</table>
+			</form>
+		</text>)
+	.FooterContent(@<text>
+		<button id="copyproduct" type="button" class="btn btn-primary">
+			<i class="fa fa-files-o"></i>
+			<span>@T("Admin.Catalog.Products.Copy")</span>
+		</button>
+	</text>)
+	.Render();
 }
+
 <script type="text/javascript">
 	$(document).ready(function () {
 		// Copy product
@@ -144,7 +147,7 @@
         function bundlePerItemPricing(isActive) {
         	$('#TierPriceContainer').toggle(!isActive);
         	$('#group-prices').find('.base-price').toggle(!isActive);
-        	$('a[href=#tab-discounts]').parent().toggle(!isActive);
+        	$('a[href="#tab-discounts"]').parent().toggle(!isActive);
         }
 
 		// Bundle per item in shopping cart
@@ -155,22 +158,19 @@
 		bundlePerItemShoppingCart(@((Model.ProductTypeId == (int)ProductType.BundledProduct && Model.BundlePerItemShoppingCart).ToString().ToLower()));
 
         function bundlePerItemShoppingCart(isActive) {
-        	$('a[href=#tab-inventory]').parent().toggle(!isActive);
+        	$('a[href="#tab-inventory"]').parent().toggle(!isActive);
         }
 
     });
 </script>
 
-@* Copy attribute options dialog. Must not be placed inside another form. *@
 @if (Model.Id != 0 && Model.NumberOfAvailableProductAttributes > 0)
 {
-	<div id="CopyAttributeOptionsDialog" class="modal hide fade" tabindex="-1">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-			<h4 class="caption">@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptions")</h4>
-		</div>
-		<div class="modal-body">
-
+	Html.SmartStore().Window()
+		.Name("CopyAttributeOptionsDialog")
+		.Title(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptions"))
+		.Size(WindowSize.Large)
+		.Content(@<text>
 			<form id="CopyOptionsForm" method="POST" action="@Url.Action("CopyAttributeOptions", "Product")">
 				<input type="hidden" name="productVariantAttributeId" value="" />
 				<input type="hidden" name="optionsSetId" value="" />
@@ -180,25 +180,28 @@
 
 				<div>
 					<p>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AskExistingValues")</p>
-					<div class="radio">
-						<label>
-							<input type="radio" name="deleteExistingValues" value="false" checked="checked" />
+					<div class="form-check">
+						<input type="radio" class="form-check-input" name="deleteExistingValues" id="deleteExistingValues_1" value="false" checked="checked" />
+						<label class="form-check-label" for="deleteExistingValues_1">
 							@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.MergeExistingValues")
 						</label>
 					</div>
-					<div class="radio">
-						<label>
-							<input type="radio" name="deleteExistingValues" value="true" />
+					<div class="form-check">
+						<input type="radio" class="form-check-input" name="deleteExistingValues" id="deleteExistingValues_2" value="true" />
+						<label class="form-check-label" for="deleteExistingValues_2">
 							@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.DeleteExistingValues")
 						</label>
 					</div>
 				</div>
 			</form>
-
-		</div>
-		<div class="modal-footer">
-			<button id="btnCopyAttributeOptions" class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
-			<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-		</div>
-	</div>
+		</text>)
+		.FooterContent(@<text>
+			<button class="btn btn-secondary btn-flat" data-dismiss="modal">
+				<span>@T("Common.Cancel")</span>
+			</button>
+			<button id="btnCopyAttributeOptions" class="btn btn-primary" data-dismiss="modal">
+				<span>@T("Common.OK")</span>
+			</button>
+		</text>)
+		.Render();
 }

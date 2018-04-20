@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.Order
 {
@@ -67,6 +68,8 @@ namespace SmartStore.Web.Models.Order
         public string OrderTotalDiscount { get; set; }
         public int RedeemedRewardPoints { get; set; }
         public string RedeemedRewardPointsAmount { get; set; }
+		public string CreditBalance { get; set; }
+		public string OrderTotalRounding { get; set; }
         public string OrderTotal { get; set; }
         public string CustomerComment { get; set; }
 
@@ -89,7 +92,7 @@ namespace SmartStore.Web.Models.Order
 
             public string Sku { get; set; }
             public int ProductId { get; set; }
-            public string ProductName { get; set; }
+            public LocalizedValue<string> ProductName { get; set; }
             public string ProductSeName { get; set; }
 			public string ProductUrl { get; set; }
 			public ProductType ProductType { get; set; }

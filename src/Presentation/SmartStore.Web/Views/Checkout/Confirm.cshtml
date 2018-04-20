@@ -40,34 +40,27 @@
                         $(document).ready(function () {
                             $("#terms-of-service-trigger").on("click", function (event) {
                                 event.preventDefault();
-                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" />');
+                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" class="h-100" />');
                             });
                             $("#disclaimer-trigger").on("click", function (event) {
                                 event.preventDefault();
-                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" />');
+								$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" class="h-100" />');
                             });
                         });
                     </script>
-                    <div class="checkbox">
-                        <label class="mb-0 form-check-label">
-                            <input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
-                            @Html.Raw(terms)
-                        </label>
+                    <div class="form-check">
+						<input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
+                        <label class="mb-0 form-check-label" for="termsofservice">@Html.Raw(terms)</label>
                     </div>
 
                     <!-- Terms of service -->
                     @using (Html.BeginZoneContent("end", key: "terms-of-service-modal"))
-                    {
-                        <div id="terms-of-service-modal" class="modal modal-flex fade" tabindex="-1">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-body p-0"></div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+					{
+						Html.SmartStore().Window()
+							.Name("terms-of-service-modal")
+							.Size(WindowSize.FlexSmall)
+							.FooterContent(@<text><button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button></text>)
+							.Render();
                     }
                 </div>
 			}
@@ -148,7 +141,7 @@
                 {
 					<text>
                     if (!$('#termsofservice').is(':checked')) {
-                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString('"', false)', "error");
+                        displayNotification(@T("Checkout.TermsOfService.PleaseAccept").JsText, "error");
                         termOfServiceOk = false;
                         $.scrollTo($('#termsofservice'), 800, { offset: -70 });
                     }

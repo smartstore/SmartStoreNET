@@ -30,8 +30,8 @@ namespace SmartStore.Admin.Controllers
 
 		private static readonly Dictionary<LogLevel, string> s_logLevelHintMap = new Dictionary<LogLevel, string> 
         { 
-            { LogLevel.Fatal, "inverse" },
-            { LogLevel.Error, "important" },
+            { LogLevel.Fatal, "dark" },
+            { LogLevel.Error, "danger" },
             { LogLevel.Warning, "warning" },
             { LogLevel.Information, "info" },
             { LogLevel.Debug, "default" }
@@ -103,7 +103,7 @@ namespace SmartStore.Admin.Controllers
 						FullMessage = x.FullMessage,
 						IpAddress = x.IpAddress,
 						CustomerId = x.CustomerId,
-						CustomerEmail = x.Customer != null ? x.Customer.Email : null,
+						CustomerEmail = x.Customer?.Email,
 						PageUrl = x.PageUrl,
 						ReferrerUrl = x.ReferrerUrl,
 						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
@@ -163,7 +163,7 @@ namespace SmartStore.Admin.Controllers
 				FullMessage = log.FullMessage,
 				IpAddress = log.IpAddress,
 				CustomerId = log.CustomerId,
-				CustomerEmail = log.Customer != null ? log.Customer.Email : null,
+				CustomerEmail = log.Customer?.Email,
 				PageUrl = log.PageUrl,
 				ReferrerUrl = log.ReferrerUrl,
 				CreatedOn = _dateTimeHelper.ConvertToUserTime(log.CreatedOnUtc, DateTimeKind.Utc),

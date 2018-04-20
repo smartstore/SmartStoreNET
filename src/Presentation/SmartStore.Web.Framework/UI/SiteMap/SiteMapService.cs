@@ -31,7 +31,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public TreeNode<MenuItem> GetCurrentNode(string mapName, ControllerContext controllerContext)
 		{
-			if (_currentNode != null)
+			if (_currentNode == null)
 			{
 				var map = GetSiteMap(mapName);
 				_currentNode = map.Root.SelectNode(x => x.Value.IsCurrent(controllerContext), true) ?? map.Root;

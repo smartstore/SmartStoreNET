@@ -76,15 +76,13 @@ namespace SmartStore.Admin.Models.Common
 
         [SmartResourceDisplayName("Admin.Address")]
         public string AddressHtml { get; set; }
-
-
-
+		
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
 
+		public string FormattedAddress { get; set; }
 
-
-        public bool FirstNameEnabled { get; set; }
+		public bool FirstNameEnabled { get; set; }
         public bool FirstNameRequired { get; set; }
         public bool LastNameEnabled { get; set; }
         public bool LastNameRequired { get; set; }

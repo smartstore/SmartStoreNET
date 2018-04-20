@@ -9,14 +9,10 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Seo;
-using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
@@ -66,7 +62,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			var templateViewPaths = _categoryTemplateService.GetAllCategoryTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
-			using (var scope = new DbContextScope(ctx: context.Services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			using (var scope = new DbContextScope(ctx: context.Services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.DataSegmenter;
 
@@ -186,7 +182,6 @@ namespace SmartStore.Services.Catalog.Importer
 			IEnumerable<ImportRow<Category>> batch,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
-			Picture picture = null;
 			var equalPictureId = 0;
 
 			foreach (var row in batch)
@@ -217,16 +212,24 @@ namespace SmartStore.Services.Catalog.Importer
 
 								if (pictureBinary != null && pictureBinary.Length > 0)
 								{
-									if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
-										currentPictures.Add(picture);
+									var pictureId = category.PictureId ?? 0;
+									if (pictureId != 0)
+									{
+										var picture = _pictureRepository.TableUntracked.Expand(x => x.MediaStorage).FirstOrDefault(x => x.Id == pictureId);
+										if (picture != null)
+										{
+											currentPictures.Add(picture);
+										}
+									}
 
 									var size = Size.Empty;
-									pictureBinary = _pictureService.ValidatePicture(pictureBinary, out size);
+									pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)
 									{
-										if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false)) != null)
+										var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
+										if (picture != null)
 										{
 											category.PictureId = picture.Id;
 											_categoryRepository.Update(category);
@@ -336,8 +339,6 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			_categoryRepository.AutoCommitEnabled = true;
 
-			Category lastInserted = null;
-			Category lastUpdated = null;
 			var defaultTemplateId = templateViewPaths["CategoryTemplate.ProductsInGridOrLines"];
 
 			foreach (var row in batch)
@@ -425,12 +426,10 @@ namespace SmartStore.Services.Catalog.Importer
 				if (row.IsTransient)
 				{
 					_categoryRepository.Insert(category);
-					lastInserted = category;
 				}
 				else
 				{
 					_categoryRepository.Update(category);
-					lastUpdated = category;
 				}
 			}
 
@@ -444,17 +443,6 @@ namespace SmartStore.Services.Catalog.Importer
 
 				if (id != 0 && srcToDestId.ContainsKey(id))
 					srcToDestId[id].DestinationId = row.Entity.Id;
-			}
-
-			// Perf: notify only about LAST insertion and update
-			if (lastInserted != null)
-			{
-				_services.EventPublisher.EntityInserted(lastInserted);
-			}
-
-			if (lastUpdated != null)
-			{
-				_services.EventPublisher.EntityUpdated(lastUpdated);
 			}
 
 			return num;

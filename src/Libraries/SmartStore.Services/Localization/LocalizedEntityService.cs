@@ -20,7 +20,7 @@ namespace SmartStore.Services.Localization
 		/// </summary>
 		const string LOCALIZEDPROPERTY_SEGMENT_KEY = "localizedproperty:{0}-lang-{1}";
 		const string LOCALIZEDPROPERTY_SEGMENT_PATTERN = "localizedproperty:{0}";
-		const string LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN = "localizedproperty:";
+		const string LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN = "localizedproperty:*";
 
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly ICacheManager _cacheManager;
@@ -43,10 +43,7 @@ namespace SmartStore.Services.Localization
 			Guard.NotEmpty(localeKeyGroup, nameof(localeKeyGroup));
 			Guard.NotEmpty(localeKey, nameof(localeKey));
 
-			int minEntityId = 0;
-			int maxEntityId = 0;
-
-			var segmentKey = GetSegmentKey(localeKeyGroup, localeKey, entityId, out minEntityId, out maxEntityId);
+			var segmentKey = GetSegmentKey(localeKeyGroup, localeKey, entityId, out var minEntityId, out var maxEntityId);
 			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
 
 			// TODO: (MC) skip caching product.fulldescription (?), OR
@@ -101,9 +98,7 @@ namespace SmartStore.Services.Localization
 
 			var props = GetCachedPropertySegment(localeKeyGroup, localeKey, entityId, languageId);
 
-			string val = null;
-
-			if (!props.TryGetValue(entityId, out val))
+			if (!props.TryGetValue(entityId, out var val))
 			{
 				return string.Empty;
 			}
@@ -289,10 +284,7 @@ namespace SmartStore.Services.Localization
 
 		private string GetSegmentKey(string localeKeyGroup, string localeKey, int entityId)
 		{
-			int minId = 0;
-			int maxId = 0;
-
-			return GetSegmentKey(localeKeyGroup, localeKey, entityId, out minId, out maxId);
+			return GetSegmentKey(localeKeyGroup, localeKey, entityId, out var minId, out var maxId);
 		}
 
 		private string GetSegmentKey(string localeKeyGroup, string localeKey, int entityId, out int minId, out int maxId)

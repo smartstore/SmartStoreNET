@@ -17,12 +17,12 @@ namespace SmartStore.Services.Search
 		{
 		}
 
-		public CatalogSearchQuery(string field, string term, SearchMode mode = SearchMode.StartsWith, bool escape = true, bool isFuzzySearch = false)
+		public CatalogSearchQuery(string field, string term, SearchMode mode = SearchMode.Contains, bool escape = true, bool isFuzzySearch = false)
 			: base(field.HasValue() ? new[] { field } : null, term, mode, escape, isFuzzySearch)
 		{
 		}
 
-		public CatalogSearchQuery(string[] fields, string term, SearchMode mode = SearchMode.StartsWith, bool escape = true, bool isFuzzySearch = false)
+		public CatalogSearchQuery(string[] fields, string term, SearchMode mode = SearchMode.Contains, bool escape = true, bool isFuzzySearch = false)
 			: base(fields, term, mode, escape, isFuzzySearch)
 		{
 		}

@@ -19,12 +19,12 @@
             <div class="card-header h5">
                 <span>@T("Common.Options")</span>
             </div>
-            <div class="card-block">
+            <div class="card-body">
                 @if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
                 {
                     <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="checkbox" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+						<input type="checkbox" id="SubscribeToNewsLetter" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+                        <label class="form-check-label" for="SubscribeToNewsLetter">
                             <span>@T("Checkout.SubscribeToNewsLetter")</span>
                         </label>
                     </div>
@@ -32,8 +32,8 @@
                 @if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
                 {
                     <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="checkbox" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+						<input type="checkbox" id="AcceptThirdPartyEmailHandOver" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+                        <label class="form-check-label" for="AcceptThirdPartyEmailHandOver">
                             <span>@Model.ThirdPartyEmailHandOverLabel</span>
                         </label>
                     </div>
@@ -190,17 +190,12 @@
 {
     using (Html.BeginZoneContent("end", key: "user-agreement-modal"))
     {
-        <div id="user-agreement-modal" class="modal modal-flex fade" tabindex="-1">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-body p-3"></div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
+		Html.SmartStore().Window()
+			.Name("user-agreement-modal")
+			.Size(WindowSize.FlexSmall)
+			.FooterContent(@<text><button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button></text>)
+			.Render();
+	}
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -256,7 +251,7 @@
                 success: function (response) {
 
                     if (response.cartItemCount == 0) {
-                        orderSummary.html('<div class="alert alert-warning fade show">@T("ShoppingCart.CartIsEmpty")</div>');
+                        orderSummary.html('<div class="alert alert-warning fade show">' + @T("ShoppingCart.CartIsEmpty").JsText + '</div>');
                     }
 
                     var cartBody = $(".cart-body");

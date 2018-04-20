@@ -10,52 +10,27 @@
             @T("Admin.Configuration.Settings.ShoppingCart")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
+
     <script type="text/javascript">
         $(document).ready(function () {
-
-            $("#@Html.FieldIdFor(model => model.MiniShoppingCartEnabled)").click(toggleMiniShoppingCartEnabled);
-            $("#@Html.FieldIdFor(model => model.EmailWishlistEnabled)").click(toggleEmailWishlistEnabled);
-
-            toggleMiniShoppingCartEnabled();
-            toggleEmailWishlistEnabled();
-
         	// toggle third party email hand over label text
         	$('#@Html.FieldIdFor(model => model.ThirdPartyEmailHandOver)').change(function () {
         		$('#ThirdPartyEmailHandOverTextLocalized').toggle($(this).val() !== '0');
         	}).trigger('change');
-
         });
-
-        function toggleMiniShoppingCartEnabled() {
-            if ($('#@Html.FieldIdFor(model => model.MiniShoppingCartEnabled)').is(':checked')) {
-                $('#pnlMiniShoppingCartProductNumber').show();
-                $('#pnlShowProductImagesInMiniShoppingCart').show();
-            }
-            else {
-                $('#pnlMiniShoppingCartProductNumber').hide();
-                $('#pnlShowProductImagesInMiniShoppingCart').hide();
-            }
-        }
-
-        function toggleEmailWishlistEnabled() {
-            if ($('#@Html.FieldIdFor(model => model.EmailWishlistEnabled)').is(':checked')) {
-                $('#pnlAllowAnonymousUsersToEmailWishlist').show();
-            }
-            else {
-                $('#pnlAllowAnonymousUsersToEmailWishlist').hide();
-            }
-        }
-        
     </script>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
     @Html.ValidationSummary(false)
     
-    @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>
+    @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Style(TabsStyle.Material).Items(x =>
      {
          x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.CartSettings").Text).Content(@TabCartSettings()).Selected(true);
          x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.Checkout").Text).Content(@TabCheckoutSettings());
@@ -159,29 +134,20 @@
                 @Html.SmartLabelFor(model => model.MiniShoppingCartEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.MiniShoppingCartEnabled)
+				@Html.SettingEditorFor(model => model.MiniShoppingCartEnabled, Html.CheckBoxFor(model => model.MiniShoppingCartEnabled, new { data_toggler_for = "#pnlShowProductImagesInMiniShoppingCart" }))
                 @Html.ValidationMessageFor(model => model.MiniShoppingCartEnabled)
             </td>
         </tr>
-        <tr id="pnlMiniShoppingCartProductNumber">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MiniShoppingCartProductNumber)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MiniShoppingCartProductNumber)
-                @Html.ValidationMessageFor(model => model.MiniShoppingCartProductNumber)
-            </td>
-        </tr>
-        <tr id="pnlShowProductImagesInMiniShoppingCart">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowProductImagesInMiniShoppingCart)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowProductImagesInMiniShoppingCart)
-                @Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
-            </td>
-        </tr>
-
+		<tr id="pnlShowProductImagesInMiniShoppingCart">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowProductImagesInMiniShoppingCart)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowProductImagesInMiniShoppingCart)
+				@Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
+			</td>
+		</tr>
+	
         <tr>
 			<td class="adminSeparator" colspan="2">
 				<hr />
@@ -213,15 +179,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.CrossSellsNumber)
                 @Html.ValidationMessageFor(model => model.CrossSellsNumber)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RoundPricesDuringCalculation)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.RoundPricesDuringCalculation)
-                @Html.ValidationMessageFor(model => model.RoundPricesDuringCalculation)
             </td>
         </tr>
     </table>
@@ -280,7 +237,7 @@
                 @Html.SmartLabelFor(model => model.EmailWishlistEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.EmailWishlistEnabled)
+				@Html.SettingEditorFor(model => model.EmailWishlistEnabled, Html.CheckBoxFor(model => model.EmailWishlistEnabled, new { data_toggler_for = "#pnlAllowAnonymousUsersToEmailWishlist" }))
                 @Html.ValidationMessageFor(model => model.EmailWishlistEnabled)
             </td>
         </tr>
@@ -298,7 +255,7 @@
 
 @helper TabCheckoutSettings()
 {
-    <table class="adminContent">
+    <table class="adminContent mb-3">
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -320,8 +277,7 @@
 				@Html.SmartLabelFor(model => model.NewsLetterSubscription)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.NewsLetterSubscription)
-				@Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions)
+				@Html.SettingEditorFor(model => model.NewsLetterSubscription, Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions))
 				@Html.ValidationMessageFor(model => model.NewsLetterSubscription)
 			</td>
 		</tr>
@@ -348,16 +304,13 @@
 				@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOver)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ThirdPartyEmailHandOver)
-				@Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver)
+				@Html.SettingEditorFor(model => model.ThirdPartyEmailHandOver, Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver))
 				@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOver)
 			</td>
 		</tr>
     </table>
 
 	<div id="ThirdPartyEmailHandOverTextLocalized">
-		<p></p>
-
 		@(Html.LocalizedEditor<ShoppingCartSettingsModel, ShoppingCartSettingsLocalizedModel>("setting-shopping-cart-localized",
 		@<table class="adminContent">
 			<tr>
@@ -365,13 +318,11 @@
 					@Html.SmartLabelFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
 				</td>
 				<td class="adminData">
-					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
-					@Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
+					@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
 					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel)
+					@Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
 				</td>
 			</tr>
 		</table>
@@ -382,7 +333,7 @@
 					@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOverLabel)
 				</td>
 				<td class="adminData">
-					@Html.TextAreaFor(model => model.ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
+					@Html.TextAreaFor(model => model.ThirdPartyEmailHandOverLabel)
 					@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOverLabel)
 				</td>
 			</tr>

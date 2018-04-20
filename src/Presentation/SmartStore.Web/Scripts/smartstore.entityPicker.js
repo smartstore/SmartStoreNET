@@ -10,7 +10,7 @@
 			options = normalizeOptions(options, this);
 
 			return this.each(function () {
-				loadDialog(options);
+				loadDialog(this, options);
 			});
 		},
 
@@ -38,41 +38,50 @@
 	};
 
 	$.entityPicker = function () {
-		return main.apply($('.entity-picker:first'), arguments);
+		return main.apply($('.entpicker:first'), arguments);
 	};
 
 
 	function main(method) {
-		if (methods[method])
+		if (methods[method]) {
 			return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+		}
 
-		if (typeof method === 'object' || !method)
-			return methods.init.apply(this, arguments);
+		if (typeof method === 'object' || !method) {
+			var btn = this;
+			$(btn).on('click', function (e) {
+				if (!btn.is('.disabled')) {
+					loadDialog(btn, normalizeOptions(method, btn));
+				}
+			});
+
+			return null;
+		}		
 
 		EventBroker.publish("message", { title: 'Method "' + method + '" does not exist on jQuery.entityPicker', type: "error" });
 		return null;
 	}
 
 	function normalizeOptions(options, context) {
-		var self = $(context),
-			selector = self.selector;
-
+		var self = $(context);
+		
 		var defaults = {
 			url: '',
-			entity: 'product',
+			entityType: 'product',
 			caption: '&nbsp;',
 			disableIf: '',
 			disableIds: '',
 			thumbZoomer: false,
 			highligtSearchTerm: true,
 			returnField: 'id',
-			returnValueDelimiter: ',',
-			returnSelector: '',
-			appendValue: true,
-			maxReturnValues: 0,
-			onLoadDialogBefore: null,
-			onLoadDialogComplete: null,
-			onOkClicked: null
+			delim: ',',
+			targetInput: null,
+			preselectedIds: null,
+			appendMode: true,
+			maxItems: 0,
+			onDialogLoading: null,
+			onDialogLoaded: null,
+			onSelectionCompleted: null
 		};
 
 		options = $.extend({}, defaults, options);
@@ -82,11 +91,26 @@
 		}
 
 		if (_.isEmpty(options.url)) {
-			console.log('entityPicker cannot find the url for entity picker!');
+			console.error('EntityPicker cannot find the url for entity picker!');
 		}
 
-		if (_.isString(selector) && !_.isEmpty(selector) && $(selector).is('input')) {
-			options.returnSelector = selector;
+		if (!options.targetInput && self.data('target')) {
+			options.targetInput = $(self.data('target')).first();
+		}
+
+		if (options.targetInput && !_.isArray(options.preselectedIds)) {
+			var val = $(options.targetInput).val();
+			if (val.length > 0) {
+				options.preselectedIds = _.map(val.split(options.delim), function (x) {
+					var result = x.trim();
+					if (options.returnField.toLowerCase() === 'id') result = toInt(result);
+					return result;
+				});
+			}
+		}
+
+		if (!_.isArray(options.preselectedIds)) {
+			options.preselectedIds = [];
 		}
 
 		return options;
@@ -107,19 +131,20 @@
 		footerNote.find('.' + (noteClass || 'default')).show();
 	}
 
-	function loadDialog(opt) {
-		var dialog = $('#entity-picker-' + opt.entity + '-dialog');
+	function loadDialog(context /* button */, opt) {
+		var btn = $(context);
+		var dialog = $('#entpicker-' + opt.entityType + '-dialog');
 
 		function showAndFocusDialog() {
-			dialog = $('#entity-picker-' + opt.entity + '-dialog');
-			dialog.find('.caption').html(opt.caption || '&nbsp;');
+			dialog = $('#entpicker-' + opt.entityType + '-dialog');
+			dialog.find('.modal-title').html(opt.caption || '&nbsp;');
 			dialog.data('entitypicker', opt);
 			dialog.modal('show');
 
 			fillList(dialog, { append: false });
 
 			setTimeout(function () {
-				dialog.find('.modal-body :input:visible:enabled:first').focus();
+				dialog.find('.modal-header :input:visible:enabled:first').focus();
 			}, 800);
 		}
 
@@ -131,17 +156,19 @@
 				cache: false,
 				type: 'GET',
 				data: {
-					"Entity": opt.entity,
+					"EntityType": opt.entityType,
 					"HighligtSearchTerm": opt.highligtSearchTerm,
 					"ReturnField": opt.returnField,
-					"MaxReturnValues": opt.maxReturnValues,
+					"MaxItems": opt.maxItems,
+					"PreselectedEntityIds": opt.preselectedIds.join(),
 					"DisableIf": opt.disableIf,
 					"DisableIds": opt.disableIds
 				},
 				url: opt.url,
 				beforeSend: function () {
-					if (_.isFunction(opt.onLoadDialogBefore)) {
-						return opt.onLoadDialogBefore();
+					btn.addClass('disabled').prop('disabled', true);
+					if (_.isFunction(opt.onDialogLoading)) {
+						return opt.onDialogLoading(dialog);
 					}
 				},
 				success: function (response) {
@@ -149,8 +176,9 @@
 					showAndFocusDialog();
 				},
 				complete: function () {
-					if (_.isFunction(opt.onLoadDialogComplete)) {
-						opt.onLoadDialogComplete();
+					btn.prop('disabled', false).removeClass('disabled');
+					if (_.isFunction(opt.onDialogLoaded)) {
+						opt.onDialogLoaded(dialog);
 					}
 				},
 				error: ajaxErrorHandler
@@ -172,11 +200,11 @@
 
 		// toggle filters
 		dialog.find('button[name=FilterEntities]').click(function () {
-			dialog.find('.entity-picker-filter').slideToggle();
+			dialog.find('.entpicker-filter').slideToggle(200);
 		});
 
 		// hit enter or key up starts searching
-		dialog.find('input.entity-picker-searchterm').keydown(function (e) {
+		dialog.find('input.entpicker-searchterm').keydown(function (e) {
 			if (e.keyCode == 13) {
 				e.preventDefault();
 				return false;
@@ -204,7 +232,7 @@
 		});
 
 		// filter change starts searching
-		dialog.find('.entity-picker-filter .item').change(function () {
+		dialog.find('.entpicker-filter .form-control').on('change', function () {
 			fillList(this, { append: false });
 		});
 
@@ -216,65 +244,79 @@
 		});
 
 		// item select and item hover
-		dialog.find('.entity-picker-list').on('click', '.item', function (e) {
+		dialog.find('.entpicker-list').on('click', '.entpicker-item', function (e) {
 			var item = $(this);
 
-			if (item.hasClass('disable'))
+			if (item.hasClass('disabled'))
 				return false;
 
-			var dialog = item.closest('.entity-picker'),
-				list = item.closest('.entity-picker-list'),
+			var dialog = item.closest('.entpicker'),
+				list = item.closest('.entpicker-list'),
 				data = dialog.data('entitypicker');
 
-			if (data.maxReturnValues === 1) {
-				list.find('.item').removeClass('selected');
+			if (data.maxItems === 1) {
+				list.find('.entpicker-item').removeClass('selected');
 				item.addClass('selected');
 			}
 			else if (item.hasClass('selected')) {
 				item.removeClass('selected');
 			}
-			else if (data.maxReturnValues === 0 || list.find('.selected').length < data.maxReturnValues) {
+			else if (data.maxItems === 0 || list.find('.selected').length < data.maxItems) {
 				item.addClass('selected');
 			}
 
 			dialog.find('.modal-footer .btn-primary').prop('disabled', list.find('.selected').length <= 0);
 		}).on({
 			mouseenter: function () {
-				if ($(this).hasClass('disable'))
-					showStatus($(this).closest('.entity-picker'), 'not-selectable');
+				if ($(this).hasClass('disabled'))
+					showStatus($(this).closest('.entpicker'), 'not-selectable');
 			},
 			mouseleave: function () {
-				if ($(this).hasClass('disable'))
-					showStatus($(this).closest('.entity-picker'));
+				if ($(this).hasClass('disabled'))
+					showStatus($(this).closest('.entpicker'));
 			}
-		}, '.item');
+		}, '.entpicker-item');
 
 		// return value(s)
-		dialog.find('.modal-footer .btn-primary').click(function () {
-			var dialog = $(this).closest('.entity-picker'),
-				items = dialog.find('.entity-picker-list .selected'),
-				data = dialog.data('entitypicker'),
+		dialog.find('.modal-footer .btn-primary').on('click', function () {
+			var dialog = $(this).closest('.entpicker'),
+				items = dialog.find('.entpicker-list .selected'),
+				opts = dialog.data('entitypicker'),
 				result = '';
 
 			items.each(function (index, elem) {
 				var val = $(elem).attr('data-returnvalue');
 				if (!_.isEmpty(val)) {
-					result = (_.isEmpty(result) ? val : (result + data.returnValueDelimiter + val));
+					result = (_.isEmpty(result) ? val : (result + opts.delim + val));
 				}
 			});
 
-			if (!_.isEmpty(data.returnSelector)) {
-				var existingValue = $(data.returnSelector).val();
+			var selectedItems = _.map(items, function (val) {
+				return {
+					id: $(val).data('returnvalue'),
+					name: $(val).find('.title').attr('title')
+				};
+			});
 
-				if (data.appendValue && !_.isEmpty(existingValue) && !_.isEmpty(result)) {
-					result = existingValue + (_.str.endsWith(existingValue, data.returnValueDelimiter) ? '' : data.returnValueDelimiter) + result;
-				}
+			var selectedIds = _.uniq(_.map(selectedItems, function (x) {
+				var result = x.id;
+				if (opts.returnField.toLowerCase() === 'id' && !_.isNumber(result)) result = toInt(result);
+				return result;
+			}));
 
-				$(data.returnSelector).val(result).focus().blur();
+			if (opts.appendMode && _.isArray(opts.preselectedIds)) {
+				selectedIds = _.union(opts.preselectedIds, selectedIds);
 			}
 
-			if (_.isFunction(data.onOkClicked)) {
-				if (data.onOkClicked(result)) {
+			if (opts.targetInput) {
+				$(opts.targetInput)
+					.val(selectedIds.join(opts.delim))
+					.focus()
+					.blur();
+			}
+
+			if (_.isFunction(opts.onSelectionCompleted)) {
+				if (opts.onSelectionCompleted(selectedIds, selectedItems, dialog)) {
 					dialog.modal('hide');
 				}
 			}
@@ -285,16 +327,16 @@
 
 		// cancel
 		dialog.find('button[class=btn][data-dismiss=modal]').click(function () {
-			dialog.find('.entity-picker-list').empty();
+			dialog.find('.entpicker-list').empty();
 			dialog.find('.footer-note span').hide();
 			dialog.find('.modal-footer .btn-primary').prop('disabled', true);
 		});
 	}
 
 	function fillList(context, opt) {
-		var dialog = $(context).closest('.entity-picker');
+		var dialog = $(context).closest('.entpicker');
 
-		if (_.isTrue(opt.append)) {
+		if (opt.append) {
 			var pageElement = dialog.find('input[name=PageIndex]'),
 				pageIndex = parseInt(pageElement.val());
 
@@ -310,11 +352,11 @@
 			data: dialog.find('form:first').serialize(),
 			url: dialog.find('form:first').attr('action'),
 			beforeSend: function () {
-				if (_.isTrue(opt.append)) {
+				if (opt.append) {
 				    dialog.find('.load-more').addClass('loading');
 				}
 				else {
-					dialog.find('.entity-picker-list').empty();
+					dialog.find('.entpicker-list').empty();
 					dialog.find('.modal-footer .btn-primary').prop('disabled', true);
 				}
 
@@ -322,18 +364,18 @@
 				dialog.find('.load-more').append(createCircularSpinner(20, true));
 			},
 			success: function (response) {
-				var list = dialog.find('.entity-picker-list'),
+				var list = dialog.find('.entpicker-list'),
 					data = dialog.data('entitypicker');
 
 				list.stop().append(response);
 
-				if (_.isFalse(opt.append)) {
-					dialog.find('.entity-picker-filter').slideUp();
+				if (!opt.append) {
+					//dialog.find('.entpicker-filter').slideUp(200);
 					showStatus(dialog);
 				}
 
 				if (list.thumbZoomer && _.isTrue(data.thumbZoomer)) {
-					list.find('.thumb img:not(.zoomable-thumb)').addClass('zoomable-thumb');
+					list.find('.entpicker-thumb > img:not(.zoomable-thumb)').addClass('zoomable-thumb');
 					list.thumbZoomer();
 				}
 

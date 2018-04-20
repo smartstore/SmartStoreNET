@@ -1,8 +1,7 @@
 ﻿@model LogModel
 @{
-    //page title
-    ViewBag.Title = T("Admin.System.Log.ViewLogDetails").Text;
-    Html.AddScriptParts("//google-code-prettify.googlecode.com/svn/loader/run_prettify.js");
+	Html.AddScriptParts("https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js");
+	ViewBag.Title = T("Admin.System.Log.ViewLogDetails").Text;
 }
 
 @using (Html.BeginForm())
@@ -13,26 +12,30 @@
             @T("Admin.System.Log.ViewLogDetails") @Html.ActionLink("(" + T("Admin.System.Log.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" id="log-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            <button type="submit" id="log-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
+			</button>
         </div>
     </div>
     
-    @Html.ValidationSummary(true)
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LogLevel)
             </td>
             <td class="adminData">
-                <span class='label label-@Model.LogLevelHint'>@Model.LogLevel</span>
-            </td>
+				<div class="form-control-plaintext">
+					<span class="badge badge-@Model.LogLevelHint">@Model.LogLevel</span>
+				</div>
+			</td>
         </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Logger)
 			</td>
 			<td class="adminData">
-				@Html.DisplayFor(model => model.Logger)
+				@Html.TextBoxFor(model => model.Logger, new { @readonly = "readonly", @class = "form-control-plaintext" })
 			</td>
 		</tr>
         <tr>
@@ -40,7 +43,9 @@
                 @Html.SmartLabelFor(model => model.ShortMessage)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.ShortMessage)
+				<div class="form-control-plaintext">
+					@Html.TextAreaFor(model => model.ShortMessage, new { @readonly = "readonly" })
+				</div>
             </td>
         </tr>
         <tr>
@@ -48,7 +53,7 @@
                 @Html.SmartLabelFor(model => model.IpAddress)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.IpAddress)
+				@Html.TextBoxFor(model => model.IpAddress, new { @readonly = "readonly", @class = "form-control-plaintext" })
             </td>
         </tr>
         <tr>
@@ -57,40 +62,46 @@
             </td>
             <td class="adminData">
                 @if (Model.CustomerId.HasValue)
-                {
-                    @Html.ActionLink(!String.IsNullOrEmpty(Model.CustomerEmail) ? Model.CustomerEmail : T("Admin.Customers.Guest").Text, "Edit", "Customer", new { id = Model.CustomerId }, new { })
-                }
-            </td>
+				{
+					<div class="form-control-plaintext">
+						@Html.ActionLink(!String.IsNullOrEmpty(Model.CustomerEmail) ? Model.CustomerEmail : T("Admin.Customers.Guest").Text, "Edit", "Customer", new { id = Model.CustomerId }, new { })
+					</div>
+				}
+			</td>
         </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.UserName)
 			</td>
 			<td class="adminData">
-				@Html.DisplayFor(model => model.UserName)
+				@Html.TextBoxFor(model => model.UserName, new { @readonly = "readonly", @class = "form-control-plaintext" })
 			</td>
 		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PageUrl)
             </td>
-            <td class="adminData">
+            <td class="adminData wide">
 				@if (Model.PageUrl.HasValue())
 				{
-					<span>@Model.HttpMethod </span>
-					<a href="@Model.PageUrl" target="_blank">@Model.PageUrl</a>
+					<div class="form-control-plaintext">
+						<span>@Model.HttpMethod </span>
+						<a href="@Model.PageUrl" target="_blank">@Model.PageUrl</a>
+					</div>
 				}
-            </td>
+			</td>
         </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ReferrerUrl)
             </td>
-            <td class="adminData">
+            <td class="adminData wide">
 				@if (Model.ReferrerUrl.HasValue())
 				{
-					<span>@Model.HttpMethod </span>
-					<a href="@Model.ReferrerUrl" target="_blank">@Model.ReferrerUrl</a>
+					<div class="form-control-plaintext">
+						<span>@Model.HttpMethod </span>
+						<a href="@Model.ReferrerUrl" target="_blank">@Model.ReferrerUrl</a>
+					</div>
 				}
             </td>
         </tr>
@@ -99,7 +110,9 @@
                 @Html.SmartLabelFor(model => model.CreatedOn)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.CreatedOn)
+				<div class="form-control-plaintext">
+					@Html.DisplayFor(model => model.CreatedOn)
+				</div>
             </td>
         </tr>
         @if (Model.FullMessage.HasValue())
@@ -108,12 +121,13 @@
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.FullMessage)
                 </td>
-                <td class="adminData">
+                <td class="adminData wide">
 					@*No whitespace within pre tag*@
-                    <pre>@Html.DisplayFor(model => model.FullMessage)</pre>
+					<pre class="prettyprint xlang-java" style="white-space: pre-wrap;">@Html.DisplayFor(model => model.FullMessage)</pre>
                 </td>
             </tr>
         }
     </table>
 }
+
 @Html.DeleteConfirmation("log-delete")

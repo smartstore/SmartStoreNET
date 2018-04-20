@@ -1,13 +1,11 @@
 ﻿@model StoreScopeConfigurationModel
 @using SmartStore.Core
 
-<div class="multi-store-scope well well-small">
-    <table class="adminContent">
+<div class="multi-store-scope well px-0 py-2">
+    <table class="adminContent adminContent-boxed">
     <tr>
         <td class="adminTitle">
-			<div class="ctl-label">
-				@T("Admin.Configuration.Settings.StoreScope")
-			</div>
+			@Html.SmartLabel("store-scope-configuration", T("Admin.Configuration.Settings.StoreScope"))
         </td>
         <td class="adminData">
 			@Html.DropDownList("store-scope-configuration", Model.AllStores, new { onchange = "setLocation(this.value);" })
@@ -16,13 +14,12 @@
     @if (Model.StoreId > 0)
 	{
 		<tr>
-			<td>&nbsp;</td>
-			<td>
-				<label class="checkbox">
-					<input type="checkbox" onclick="Admin.checkAllOverriddenStoreValue(this)">
-					<span>@T("Admin.Configuration.Settings.StoreScope.CheckAll")</span> 
-					<span class="hint">(@(T("Admin.Configuration.Settings.StoreScope.CheckAll.Hint")))</span>
-				</label>
+			<td class="adminTitle">&nbsp;</td>
+			<td class="adminData wide">
+				<div class="custom-control custom-checkbox">
+					<input type="checkbox" class="custom-control-input" id="override-settings" onclick="SmartStore.Admin.checkAllOverriddenStoreValue(this)">
+					<label class="custom-control-label" for="override-settings">@T("Admin.Configuration.Settings.StoreScope.CheckAll.Hint")</label>
+				</div>
 			</td>
 		</tr>
 	}

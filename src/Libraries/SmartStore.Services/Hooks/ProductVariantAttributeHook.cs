@@ -17,7 +17,7 @@ namespace SmartStore.Services.Hooks
 			_productAttributeService = productAttributeService;
 		}
 
-		protected override void OnDeleted(ProductVariantAttribute entity, HookedEntity entry)
+		protected override void OnDeleted(ProductVariantAttribute entity, IHookedEntity entry)
 		{
 			_toDelete.Add(entity.Id);
 		}

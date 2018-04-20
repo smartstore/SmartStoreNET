@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }} - New note for order '{{ Order.OrderNumber }}'</Subject>
+	<ModelTypes>OrderNote, OrderNote.Order, OrderNote.Order.Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hello {{ Customer.FullName }},
+</h1>
+
+<p>
+  a new note was added to your order with the order number <b>{{ Order.OrderNumber }}</b>:
+</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <p>
+        {{ OrderNote.Text }}
+      </p>
+      {% if Order.Url %}
+        <p class="text-center mt-4">
+          <a href="{{ Order.Url }}" class="btn btn-primary">Order details</a>
+        </p>
+      {% endif %}
+    </td>
+  </tr> 
+</table>
+{% endblock %}]]></Body>
+</MessageTemplate>

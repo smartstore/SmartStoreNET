@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using SmartStore.Core.Domain.Stores;
 using System.Runtime.Serialization;
 using System.Diagnostics;
+using System.Globalization;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Localization
 {
@@ -21,13 +22,13 @@ namespace SmartStore.Core.Domain.Localization
 		public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the language culture
+        /// Gets or sets the language culture (e.g. "en-US")
         /// </summary>
 		[DataMember]
 		public string LanguageCulture { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique SEO code
+        /// Gets or sets the unique SEO code (e.g. "en")
         /// </summary>
 		[DataMember]
 		public string UniqueSeoCode { get; set; }
@@ -71,5 +72,21 @@ namespace SmartStore.Core.Domain.Localization
             protected set { _localeStringResources = value; }
         }
 
+		public string GetTwoLetterISOLanguageName()
+		{
+			if (UniqueSeoCode.HasValue())
+			{
+				return UniqueSeoCode;
+			}
+
+			try
+			{
+				var ci = new CultureInfo(LanguageCulture);
+				return ci.TwoLetterISOLanguageName;
+			}
+			catch { }
+
+			return null;
+		}
     }
 }

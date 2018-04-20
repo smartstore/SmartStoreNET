@@ -1,0 +1,48 @@
+<!-- Shipment Items -->
+<table class="w-100 brd order-items" cellpadding="10">
+	<thead>
+		<tr>
+			<th style="padding-right: 0" colspan="2" nowrap>{{ 'Order.Product(s).Item' | T }}</th>
+			<th style="padding-right: 0" nowrap>{{ 'Order.Product(s).Quantity' | T }}</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for item in Shipment.Items %}
+			{% assign product = item.Product %}
+			<tr>
+				<td style="border-top: 1px solid #eceeef; padding-right: 0" align="center">
+					{% if product.Thumbnail %}
+						{% assign thumb = product.Thumbnail %}
+					    <img src="{{ thumb.Src }}" alt="{{ thumb.Alt }}"
+							{% if thumb.Width %}width="{{ thumb.Width }}"{% endif %}
+							{% if thumb.Height %}height="{{ thumb.Height }}"{% endif %}
+						/>
+					{% endif %}				
+				</td>
+				<td style="border-top: 1px solid #eceeef; padding-right: 0; line-height: 1.3em" width="70%">
+					<div class="mb-2">
+						<a class="order-item-link text-sm" href="{{ item.Product.Url }}">
+							{{ product.Name }}
+						</a>
+						{% if product.Sku %}
+							<div class="text-sm">
+								{{ 'Order.Product(s).SKU' | T }}: <span class="text-muted">{{ product.Sku }}</span>
+							</div>
+						{% endif %}						
+					</div>
+					{% if item.AttributeDescription %}
+						<div class="text-xs text-muted mt-2" style="line-height: 1.3">
+							{{ item.AttributeDescription }}
+						</div>
+					{% endif %}		
+				</td>
+				<td class="text-sm" style="border-top: 1px solid #eceeef; padding-right: 0" nowrap>
+					{{ item.Qty }}
+					{% if product.QtyUnit %}
+						<span class="text-sm">{{ product.QtyUnit }}</span>
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

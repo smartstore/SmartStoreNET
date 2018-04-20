@@ -105,11 +105,13 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("go-to-email-by-number")]
         public ActionResult GoToEmailByNumber(QueuedEmailListModel model)
         {
-            var queuedEmail = _queuedEmailService.GetQueuedEmailById(model.GoDirectlyToNumber);
-            if (queuedEmail != null)
-                return RedirectToAction("Edit", "QueuedEmail", new { id = queuedEmail.Id });
-            else
-                return List();
+            var queuedEmail = _queuedEmailService.GetQueuedEmailById(model.GoDirectlyToNumber ?? 0);
+			if (queuedEmail != null)
+			{
+				return RedirectToAction("Edit", "QueuedEmail", new { id = queuedEmail.Id });
+			}
+
+			return List();
         }
 
 		public ActionResult Edit(int id)
@@ -172,9 +174,7 @@ namespace SmartStore.Admin.Controllers
             {
                 Priority = queuedEmail.Priority,
                 From = queuedEmail.From,
-                FromName = queuedEmail.FromName,
                 To = queuedEmail.To,
-                ToName = queuedEmail.ToName,
                 CC = queuedEmail.CC,
                 Bcc = queuedEmail.Bcc,
                 Subject = queuedEmail.Subject,

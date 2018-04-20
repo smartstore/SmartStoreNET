@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Data</RootNamespace>
     <AssemblyName>SmartStore.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -67,16 +67,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.3\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.2.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -102,6 +102,9 @@
       <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -130,9 +133,11 @@
     <Compile Include="Caching\DbCacheExtensions.cs" />
     <Compile Include="Caching\QueryRegistrar.cs" />
     <Compile Include="Caching\SingletonQueries.cs" />
+    <Compile Include="Extensions\DbEntityEntryExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionsSetMap.cs" />
+    <Compile Include="Mapping\Customers\WalletHistoryMap.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
@@ -517,6 +522,58 @@
     <Compile Include="Migrations\201709141000226_V303Resources.Designer.cs">
       <DependentUpon>201709141000226_V303Resources.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709251538312_UpdateTrustedShopsTask.cs" />
+    <Compile Include="Migrations\201709251538312_UpdateTrustedShopsTask.Designer.cs">
+      <DependentUpon>201709251538312_UpdateTrustedShopsTask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201710102038287_CurrencyRounding.cs" />
+    <Compile Include="Migrations\201710102038287_CurrencyRounding.Designer.cs">
+      <DependentUpon>201710102038287_CurrencyRounding.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201710252016556_IndexOptionNames.cs" />
+    <Compile Include="Migrations\201710252016556_IndexOptionNames.Designer.cs">
+      <DependentUpon>201710252016556_IndexOptionNames.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711112331162_ProductMainPictureId.cs" />
+    <Compile Include="Migrations\201711112331162_ProductMainPictureId.Designer.cs">
+      <DependentUpon>201711112331162_ProductMainPictureId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711222311112_MoveFsMedia.cs" />
+    <Compile Include="Migrations\201711222311112_MoveFsMedia.Designer.cs">
+      <DependentUpon>201711222311112_MoveFsMedia.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711291017168_SyncStringResources.cs" />
+    <Compile Include="Migrations\201711291017168_SyncStringResources.Designer.cs">
+      <DependentUpon>201711291017168_SyncStringResources.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712081631552_Liquid.cs" />
+    <Compile Include="Migrations\201712081631552_Liquid.Designer.cs">
+      <DependentUpon>201712081631552_Liquid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712290151517_AddressFormat.cs" />
+    <Compile Include="Migrations\201712290151517_AddressFormat.Designer.cs">
+      <DependentUpon>201712290151517_AddressFormat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802081830029_ShippingMethodMultistore.cs" />
+    <Compile Include="Migrations\201802081830029_ShippingMethodMultistore.Designer.cs">
+      <DependentUpon>201802081830029_ShippingMethodMultistore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802270844034_ExportAttributeMappings.cs" />
+    <Compile Include="Migrations\201802270844034_ExportAttributeMappings.Designer.cs">
+      <DependentUpon>201802270844034_ExportAttributeMappings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804060721031_Wallet.cs" />
+    <Compile Include="Migrations\201804060721031_Wallet.Designer.cs">
+      <DependentUpon>201804060721031_Wallet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804090744324_ForceSslForAllPages.cs" />
+    <Compile Include="Migrations\201804090744324_ForceSslForAllPages.Designer.cs">
+      <DependentUpon>201804090744324_ForceSslForAllPages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804200835273_V310Resources.cs" />
+    <Compile Include="Migrations\201804200835273_V310Resources.Designer.cs">
+      <DependentUpon>201804200835273_V310Resources.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -524,7 +581,6 @@
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
     <Compile Include="Extensions\IDbContextExtensions.cs" />
-    <Compile Include="Extensions\BaseEntityExtensions.cs" />
     <Compile Include="Extensions\DataReaderExtensions.cs" />
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
@@ -645,6 +701,8 @@
     <Compile Include="SmartObjectContext.cs" />
     <Compile Include="EfRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\DataMigrator.cs" />
+    <Compile Include="Utilities\MessageTemplateConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -940,6 +998,45 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709141000226_V303Resources.resx">
       <DependentUpon>201709141000226_V303Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709251538312_UpdateTrustedShopsTask.resx">
+      <DependentUpon>201709251538312_UpdateTrustedShopsTask.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710102038287_CurrencyRounding.resx">
+      <DependentUpon>201710102038287_CurrencyRounding.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710252016556_IndexOptionNames.resx">
+      <DependentUpon>201710252016556_IndexOptionNames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711112331162_ProductMainPictureId.resx">
+      <DependentUpon>201711112331162_ProductMainPictureId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711222311112_MoveFsMedia.resx">
+      <DependentUpon>201711222311112_MoveFsMedia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711291017168_SyncStringResources.resx">
+      <DependentUpon>201711291017168_SyncStringResources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712081631552_Liquid.resx">
+      <DependentUpon>201712081631552_Liquid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712290151517_AddressFormat.resx">
+      <DependentUpon>201712290151517_AddressFormat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802081830029_ShippingMethodMultistore.resx">
+      <DependentUpon>201802081830029_ShippingMethodMultistore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802270844034_ExportAttributeMappings.resx">
+      <DependentUpon>201802270844034_ExportAttributeMappings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804060721031_Wallet.resx">
+      <DependentUpon>201804060721031_Wallet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804090744324_ForceSslForAllPages.resx">
+      <DependentUpon>201804090744324_ForceSslForAllPages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804200835273_V310Resources.resx">
+      <DependentUpon>201804200835273_V310Resources.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

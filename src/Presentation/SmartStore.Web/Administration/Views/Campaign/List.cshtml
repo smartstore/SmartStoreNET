@@ -8,30 +8,29 @@
         @T("Admin.Promotions.Campaigns")
     </div>
     <div class="options">
-		<a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+		<a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<CampaignModel>()
-                    .Name("campaigns-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.Subject);
-						columns.Bound(x => x.LimitedToStores)
-							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
-							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden((int)ViewData["StoreCount"] <= 1)
-							.Centered();
-                        columns.Bound(x => x.CreatedOn);
-                    })
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Campaign"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div>
+	@(Html.Telerik().Grid<CampaignModel>()
+		.Name("campaigns-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Name)
+				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+			columns.Bound(x => x.Subject);
+			columns.Bound(x => x.LimitedToStores)
+				.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+				.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+				.Hidden((int)ViewData["StoreCount"] <= 1)
+				.Centered();
+			columns.Bound(x => x.CreatedOn);
+		})
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Campaign"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>

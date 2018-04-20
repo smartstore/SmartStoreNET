@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Catalog;
 @if (Model.Tags.Count > 0)
 {
-    <div class="block block-popular-tags mb-6">
+    <div class="block block-popular-tags mb-5">
 		<div class="row">
 			<div class="col">
 				<div class="heading">
@@ -29,7 +29,9 @@
                     @foreach (var item in Model.Tags)
                     {
                         <li class="list-inline-item">
-                            <a class="color-body" href="@Url.RouteUrl("ProductsByTag", new { productTagId = item.Id, SeName = item.SeName })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>
+                            <a class="color-body" href="@Url.RouteUrl("ProductsByTag", new { productTagId = item.Id, SeName = item.SeName })" style="font-size:@(Model.GetFontSize(item))%;">
+								<span @Html.LanguageAttributes(item.Name)>@item.Name</span>
+							</a>
                         </li>
                     }
                 </ul>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
+	<Subject>{{ Store.Name }}. New VAT number submitted</Subject>
+	<ModelTypes>Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  New VAT number,
+</h1>
+
+<p>
+  <b>{{ Customer.FullName }}</b> (<a mailto:{{ Customer.Email }}>{{ Customer.Email }}</a>) has submitted a new VAT number.
+</p>
+
+<p class="mt-4 mb-4 text-center">
+  <a class="btn btn-primary" href="{{ Customer.EditUrl }}">View customer profile</a>
+</p>
+
+{% if Customer.VatNumber %}
+<p>
+  <b>VAT number:</b><br />
+  <span>{{ Customer.VatNumber }}</span>
+</p>
+{% endif %}
+
+{% if Customer.VatNumberStatus %}
+<p>
+  <b>Status:</b><br />
+  <span>{{ Customer.VatNumberStatus }}</span>
+</p>
+{% endif %}
+
+<p>
+  <b>Received by:</b><br />
+  <span>{{ VatValidationResult.Name }} - {{ VatValidationResult.Address }}</span>
+</p>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

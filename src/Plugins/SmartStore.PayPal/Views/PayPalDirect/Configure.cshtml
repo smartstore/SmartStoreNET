@@ -1,4 +1,5 @@
-﻿@using SmartStore.PayPal.Models;
+﻿@using SmartStore.PayPal.Settings;
+@using SmartStore.PayPal.Models;
 @using SmartStore.Web.Framework;
 @model PayPalDirectConfigurationModel
 @{
@@ -8,15 +9,16 @@
 
 <div class="plugin-actions">
 	<button type="submit" name="save" class="btn btn-primary" value="save">
-		<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+		<i class="fa fa-check"></i>
+		<span>@T("Admin.Common.Save")</span>
 	</button>
 </div>
 
 <div class="plugin-configuration">
 	<div>
-		<div class="alert alert-info">
-			<button class="close" data-dismiss="alert">×</button>
+		<div class="alert alert-info alert-dismissible">
 			@Html.Raw(T("Plugins.Payments.PayPalDirect.AdminInstruction"))
+			<button class="close" data-dismiss="alert">&times;</button>
 		</div>
 	</div>
 	<div>
@@ -36,18 +38,13 @@
                 @Html.SmartLabelFor(model => model.TransactMode)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.TransactMode)
-                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
+				@Html.SettingEditorFor(model => model.TransactMode, Html.DropDownListFor(model => model.TransactMode, new List<SelectListItem>
+				{
+					new SelectListItem { Text = T("Plugins.Payments.PayPalDirect.ModeAuth"), Value = TransactMode.Authorize.ToString(), Selected = Model.TransactMode == TransactMode.Authorize },
+					new SelectListItem { Text = T("Plugins.Payments.PayPalDirect.ModeAuthAndCapture"), Value = TransactMode.AuthorizeAndCapture.ToString(), Selected = Model.TransactMode == TransactMode.AuthorizeAndCapture }
+				}))
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SecurityProtocol)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
-			</td>
-		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.UseSandbox)
@@ -99,7 +96,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AdditionalFee)
+                @Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
         </tr>

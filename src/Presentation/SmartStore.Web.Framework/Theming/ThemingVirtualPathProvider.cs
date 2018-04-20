@@ -8,8 +8,6 @@ using System.Web.Caching;
 using System.Web.Hosting;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
-using SmartStore.Utilities;
-using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -39,7 +37,16 @@ namespace SmartStore.Web.Framework.Theming
 				}
 				else
 				{
-					virtualPath = result.OriginalVirtualPath;
+					if (result.Query.HasValue() && result.Query.IndexOf('.') >= 0)
+					{
+						// libSass tries to locate files by appending .[s]css extension to our querystring. Prevent this shit!
+						return false;
+					}
+					else
+					{
+						// Let system VPP check for this file
+						virtualPath = result.OriginalVirtualPath;
+					}
 				}
 			}
 

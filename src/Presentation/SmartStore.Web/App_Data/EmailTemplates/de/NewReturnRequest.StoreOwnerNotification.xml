@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Retouren-Anfrage von '{{ Customer.FullName }}'</Subject>
+	<ModelTypes>ReturnRequest, ReturnRequest.Customer, OrderItem, OrderItem.Order, OrderItem.Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Neue Retouren-Anfrage,
+</h1>
+
+<p>
+  <b>{{ Customer.FullName }}</b> hat eine Retouren-Anfrage geschickt.
+</p>
+
+<p class="mt-4 mb-4 text-center">
+  <a class="btn btn-primary" href="{{ ReturnRequest.Url }}">Anfrage bearbeiten</a>
+</p>
+
+<p>
+  <b>Produkt:</b><br />
+  <span>{{ ReturnRequest.Quantity }}</span> x <a href="{{ Product.Url }}">{{ Product.Name }}</a>
+</p>
+
+{% if ReturnRequest.Reason %}
+<p>
+  <b>Grund:</b><br />
+  <span>{{ ReturnRequest.Reason }}</span>
+</p>
+{% endif %}
+
+{% if ReturnRequest.RequestedAction %}
+<p>
+  <b>Gewünschte Aktion:</b><br />
+  <span>{{ ReturnRequest.RequestedAction }}</span>
+</p>
+{% endif %}
+
+{% if ReturnRequest.CustomerComments %}
+<table class="w-100 brd bg-light p-3">
+  <tr>
+  	<td>
+      <h3>Kommentar</h3>
+  		{{ ReturnRequest.CustomerComments }}
+    </td>
+  </tr>
+</table>
+{% endif %}
+
+{% endblock %}]]></Body>
+</MessageTemplate>

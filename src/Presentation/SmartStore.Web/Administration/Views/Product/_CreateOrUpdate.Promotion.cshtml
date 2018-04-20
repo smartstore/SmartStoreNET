@@ -2,65 +2,50 @@
 @using Telerik.Web.Mvc.UI;
 
 <div>
-    <h3>@T("Admin.Catalog.Products.RelatedProducts")</h3>
+    <h4>@T("Admin.Catalog.Products.RelatedProducts")</h4>
 
     @if (Model.Id > 0)
     {
-        <table class="adminContent">
-            <tr>
-                <td>
-                    @(Html.Telerik().Grid<ProductModel.RelatedProductModel>()
-                    .Name("relatedproducts-grid")
-                    .DataKeys(keys =>
-                    {
-                        keys.Add(x => x.Id);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-                            .Select("RelatedProductList", "Product", new { productId = Model.Id })
-                            .Update("RelatedProductUpdate", "Product")
-                            .Delete("RelatedProductDelete", "Product");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Product2Name)
-                            .ReadOnly()
-							.Width(520)
-							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
-                        columns.Bound(x => x.Product2Sku)
-                            .ReadOnly();
-                        columns.Bound(x => x.Product2Published)
-                            .ReadOnly()
-                            .ClientTemplate(@Html.SymbolForBool("Product2Published"))
-                            .Centered();
-                        columns.Bound(x => x.DisplayOrder)
-                            .Centered();
-                        columns.Command(commands =>
-                        {
-                            commands.Edit().Localize(T);
-                            commands.Delete().Localize(T);
-                        }).Width(220);
-                    })
-                    .EnableCustomBinding(true))
-
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <button type="button" id="AddRelatedProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
-                        <i class="fa fa-plus"></i>
-                        @T("Admin.Catalog.Products.RelatedProducts.AddNew")
-                    </button>
-
-					<button type="button" id="btnCreateMutuallyRelatedProducts" class="btn btn-below" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
-							data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
-						<i class="fa fa-random"></i>
-						@T("Admin.Common.CreateMutuallyAssociations")
-					</button>
-                </td>
-            </tr>
-        </table>
+        <div class="mt-4">
+            @(Html.Telerik().Grid<ProductModel.RelatedProductModel>()
+			.Name("relatedproducts-grid")
+			.DataKeys(keys =>
+			{
+				keys.Add(x => x.Id);
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("RelatedProductList", "Product", new { productId = Model.Id })
+					.Update("RelatedProductUpdate", "Product")
+					.Delete("RelatedProductDelete", "Product");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Product2Name)
+					.ReadOnly()
+					.Width("60%")
+					.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
+				columns.Bound(x => x.Product2Sku)
+					.Width(150)
+					.ReadOnly();
+				columns.Bound(x => x.Product2Published)
+					.ReadOnly()
+					.Width(100)
+					.ClientTemplate(@Html.SymbolForBool("Product2Published"))
+					.Centered();
+				columns.Bound(x => x.DisplayOrder)
+					.Width(100)
+					.Centered();
+				columns.Command(commands =>
+				{
+					commands.Edit().Localize(T);
+					commands.Delete().Localize(T);
+				}).HtmlAttributes(new { align = "right" });
+			})
+			.ToolBar(commands => commands.Template(CrossSellingGridCommands))
+			.EnableCustomBinding(true))
+        </div>
     }
     else
     {
@@ -70,61 +55,42 @@
     }
 </div>
 
-<p>&nbsp;</p>
-
-<div>
-    <h3>@T("Admin.Catalog.Products.CrossSells")</h3>
+<div class="mt-5">
+    <h4>@T("Admin.Catalog.Products.CrossSells")</h4>
 
     @if (Model.Id > 0)
     {
-        <table class="adminContent">
-            <tr>
-                <td>
-                    @(Html.Telerik().Grid<ProductModel.CrossSellProductModel>()
-                    .Name("crosssellproducts-grid")
-                    .DataKeys(keys =>
-                    {
-                        keys.Add(x => x.Id);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-                            .Select("CrossSellProductList", "Product", new { productId = Model.Id })
-                            .Delete("CrossSellProductDelete", "Product");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Product2Name)
-                            .ReadOnly()
-							.Width(520)
-							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
-                        columns.Bound(x => x.Product2Sku);
-                        columns.Bound(x => x.Product2Published)
-                            .ClientTemplate(@Html.SymbolForBool("Product2Published"))
-                            .Centered();
-                        columns.Command(commands =>
-                        {
-                            commands.Delete().Localize(T);
-                        }).Width(220);
-                    })
-                    .EnableCustomBinding(true))
-                </td>
-            </tr>
-            <tr>
-                <td>
-					<button type="button" id="AddCrossSellProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
-						<i class="fa fa-plus"></i>
-						@T("Admin.Catalog.Products.CrossSells.AddNew")
-					</button>
-
-					<button type="button" id="btnCreateMutuallyCrossSellProducts" class="btn btn-below" data-url="@Url.Action("CreateAllMutuallyCrossSellProducts", new { productId = Model.Id })"
-							data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
-						<i class="fa fa-random"></i>
-						@T("Admin.Common.CreateMutuallyAssociations")
-					</button>
-                </td>
-            </tr>
-        </table>
+		<div class="mt-4">
+			@(Html.Telerik().Grid<ProductModel.CrossSellProductModel>()
+			.Name("crosssellproducts-grid")
+			.DataKeys(keys =>
+			{
+				keys.Add(x => x.Id);
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("CrossSellProductList", "Product", new { productId = Model.Id })
+					.Delete("CrossSellProductDelete", "Product");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Product2Name)
+					.ReadOnly()
+					.Width("60%")
+					.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
+				columns.Bound(x => x.Product2Sku).Width(150);
+				columns.Bound(x => x.Product2Published).Width(100)
+					.ClientTemplate(@Html.SymbolForBool("Product2Published"))
+					.Centered();
+				columns.Command(commands =>
+				{
+					commands.Delete().Localize(T);
+				}).HtmlAttributes(new { align = "right" });
+			})
+			.ToolBar(commands => commands.Template(CheckoutSellingGridCommands))
+			.EnableCustomBinding(true))
+		</div>
     }
     else
     {
@@ -134,8 +100,63 @@
     }
 </div>
 
-<script type="text/javascript">
-	$(document).ready(function () {
+@helper CrossSellingGridCommands(Grid<ProductModel.RelatedProductModel> grid)
+{
+	@(Html.SmartStore().EntityPicker()
+		.IconCssClass("fa fa-plus")
+		.HtmlAttribute("class", "t-button t-grid-add")
+		.DialogTitle(T("Admin.Catalog.Products.RelatedProducts.AddNew").Text.EncodeJsString('\'', false))
+		.Caption(T("Common.AddNew").Text.EncodeJsString('\'', false))
+		.OnSelectionCompleted("PickRelatedProducts_Completed"))
+
+	<button type="button" id="btnCreateMutuallyRelatedProducts" class="t-button" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
+			data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
+		<i class="fa fa-random"></i>
+		<span>@T("Admin.Common.CreateMutuallyAssociations")</span>
+	</button>
+}
+
+@helper CheckoutSellingGridCommands(Grid<ProductModel.CrossSellProductModel> grid) {
+	@(Html.SmartStore().EntityPicker()
+		.IconCssClass("fa fa-plus")
+		.HtmlAttribute("class", "t-button t-grid-add")
+		.DialogTitle(T("Common.AddNew").Text.EncodeJsString('\'', false))
+		.Caption(T("Admin.Catalog.Products.CrossSells.AddNew").Text.EncodeJsString('\'', false))
+		.OnSelectionCompleted("PickCrossSellProducts_Completed"))
+
+	<button type="button" id="btnCreateMutuallyCrossSellProducts" class="t-button" data-url="@Url.Action("CreateAllMutuallyCrossSellProducts", new { productId = Model.Id })"
+			data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
+		<i class="fa fa-random"></i>
+		<span>@T("Admin.Common.CreateMutuallyAssociations")</span>
+	</button>
+}
+
+<script>
+	function PickRelatedProducts_Completed(ids) {
+		$({}).doAjax({
+			type: 'POST',
+			url: '@Url.Action("RelatedProductAdd")',
+			data: { "productId": @Model.Id, "selectedProductIds": ids },
+			callbackSuccess: function () {
+				$('#relatedproducts-grid').data('tGrid').ajaxRequest();
+			}
+		});
+		return true;
+	}
+
+	function PickCrossSellProducts_Completed(ids) {
+		$({}).doAjax({
+			type: 'POST',
+			url: '@Url.Action("CrossSellProductAdd")',
+			data: { "productId": @Model.Id, "selectedProductIds": ids },
+			callbackSuccess: function () {
+				$('#crosssellproducts-grid').data('tGrid').ajaxRequest();
+			}
+		});
+		return true;
+	}
+
+	$(function() {
 		// mutually create related or cross sell products
 		$('#btnCreateMutuallyRelatedProducts, #btnCreateMutuallyCrossSellProducts').click(function () {
 			$(this).doAjax({
@@ -144,56 +165,5 @@
 				}
 			});
 		});
-
-		// add related products
-		$(document).on('click', '#AddRelatedProductButton', function () {
-			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-				caption: '@T("Admin.Catalog.Products.RelatedProducts.AddNew")',
-				onLoadDialogBefore: function () {
-					$('#AddRelatedProductButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#AddRelatedProductButton').prop('disabled', false).button('reset');
-				},
-				onOkClicked: function (ids) {
-					$({}).doAjax({
-						type: 'POST',
-						url: '@Url.Action("RelatedProductAdd")',
-						data: { "productId": @Model.Id, "selectedProductIds": ids },
-						callbackSuccess: function () {
-							$('#relatedproducts-grid').data('tGrid').ajaxRequest();
-						}
-					});
-					return true;
-				}
-			});
-		});
-
-		// add cross sell products
-		$(document).on('click', '#AddCrossSellProductButton', function () {
-			$({}).entityPicker('loadDialog', {
-				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-				caption: '@T("Admin.Catalog.Products.CrossSells.AddNew")',
-				onLoadDialogBefore: function () {
-					$('#AddCrossSellProductButton').button('loading').prop('disabled', true);
-				},
-				onLoadDialogComplete: function () {
-					$('#AddCrossSellProductButton').prop('disabled', false).button('reset');
-				},
-				onOkClicked: function (ids) {
-					$({}).doAjax({
-						type: 'POST',
-						url: '@Url.Action("CrossSellProductAdd")',
-						data: { "productId": @Model.Id, "selectedProductIds": ids },
-						callbackSuccess: function () {
-							$('#crosssellproducts-grid').data('tGrid').ajaxRequest();
-						}
-					});
-					return true;
-				}
-			});
-		});
-
 	});
 </script>

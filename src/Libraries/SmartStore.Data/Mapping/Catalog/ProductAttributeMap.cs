@@ -7,10 +7,11 @@ namespace SmartStore.Data.Mapping.Catalog
     {
         public ProductAttributeMap()
         {
-            this.ToTable("ProductAttribute");
-            this.HasKey(pa => pa.Id);
-            this.Property(pa => pa.Alias).HasMaxLength(100);
-            this.Property(pa => pa.Name).IsRequired();
-        }
+            ToTable("ProductAttribute");
+            HasKey(pa => pa.Id);
+            Property(pa => pa.Alias).HasMaxLength(100);
+            Property(pa => pa.Name).IsRequired();
+			Property(pa => pa.ExportMappings).IsMaxLength();
+		}
     }
 }

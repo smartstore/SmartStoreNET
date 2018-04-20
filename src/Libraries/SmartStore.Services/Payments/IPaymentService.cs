@@ -41,13 +41,15 @@ namespace SmartStore.Services.Payments
 		/// Load payment provider by system name
 		/// </summary>
 		/// <param name="systemName">System name</param>
+		/// <param name="onlyWhenActive"><c>true</c> to load only active provider</param>
+		/// <param name="storeId">Load records allowed only in specified store; pass 0 to load all records</param>
 		/// <returns>Found payment provider</returns>
 		Provider<IPaymentMethod> LoadPaymentMethodBySystemName(string systemName, bool onlyWhenActive = false, int storeId = 0);
 
         /// <summary>
         /// Load all payment providers
         /// </summary>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
+		/// <param name="storeId">Load records allowed only in specified store; pass 0 to load all records</param>
         /// <returns>Payment providers</returns>
 		IEnumerable<Provider<IPaymentMethod>> LoadAllPaymentMethods(int storeId = 0);
 
@@ -55,8 +57,9 @@ namespace SmartStore.Services.Payments
 		/// <summary>
 		/// Gets all payment method extra data
 		/// </summary>
+		/// <param name="storeId">Load records allowed only in specified store; pass 0 to load all records</param>
 		/// <returns>List of payment method objects</returns>
-		IList<PaymentMethod> GetAllPaymentMethods();
+		IList<PaymentMethod> GetAllPaymentMethods(int storeId = 0);
 
 		/// <summary>
 		/// Gets payment method extra data by system name

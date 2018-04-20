@@ -1,9 +1,8 @@
 ﻿@model RewardPointsSettingsModel
-@using Telerik.Web.Mvc.UI;
-@using SmartStore.Core.Domain.Orders;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.RewardPoints").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -12,7 +11,10 @@
             @T("Admin.Configuration.Settings.RewardPoints")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
         </div>
     </div>
 
@@ -20,9 +22,9 @@
 
     @Html.ValidationSummary(false)
 
-	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">×</button>
+	<div class="alert alert-info alert-dismissible">
 		@T("Admin.Configuration.Settings.RewardPoints.Description")
+		<button class="close" data-dismiss="alert">&times;</button>
 	</div>
 
     <table class="adminContent">
@@ -31,97 +33,104 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.Enabled)
+				@Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlRewardPointSettings" }))
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ExchangeRate)
-            </td>
-            <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ExchangeRate)
-                @T("Admin.Configuration.Settings.RewardPoints.ExchangeRate.Hint2")
-                @Html.EditorFor(model => model.ExchangeRate, new { Small = true })
-                @Model.PrimaryStoreCurrencyCode
-                @Html.ValidationMessageFor(model => model.ExchangeRate)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.RoundDownRewardPoints)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.RoundDownRewardPoints)
-				@Html.ValidationMessageFor(model => model.RoundDownRewardPoints)
-			</td>
-		</tr>
-	</table>
+		<tbody id="pnlRewardPointSettings">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExchangeRate)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => Model.ExchangeRate, @<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="basic-addon1">@T("Admin.Configuration.Settings.RewardPoints.ExchangeRate.Hint2")</span>
+						</div>
+						@Html.SettingEditorFor(model => model.ExchangeRate, null, new { postfix = Model.PrimaryStoreCurrencyCode })   
+					</div>)
+					@Html.ValidationMessageFor(model => model.ExchangeRate)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.RoundDownRewardPoints)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.RoundDownRewardPoints)
+					@Html.ValidationMessageFor(model => model.RoundDownRewardPoints)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div class="admin-config-group">
+						<div class="title">@T("Admin.Configuration.Settings.RewardPoints.Earning")</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.PointsForRegistration)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.PointsForRegistration)
+					@Html.ValidationMessageFor(model => model.PointsForRegistration)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.PointsForProductReview)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.PointsForProductReview)
+					@Html.ValidationMessageFor(model => model.PointsForProductReview)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.PointsForPurchases_Amount)
+				</td>
+				<td class="adminData wide">
+					@Html.SettingEditorFor(model => Model.PointsForPurchases_Amount, @<div class="form-row flex-nowrap">
+						<div class="col-auto">
+							<div class="form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")</div>
+						</div>
+						<div class="col-auto">
+							@Html.EditorFor(model => model.PointsForPurchases_Amount, new { postfix = Model.PrimaryStoreCurrencyCode })
+						</div>
+						<div class="col-auto">
+							<div class=" form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint2")</div>
+						</div>
+						<div class="col-auto">
+							@Html.EditorFor(model => model.PointsForPurchases_Points)
+						</div>
+						<div class="col-auto">
+							<div class=" form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint3")</div>
+						</div>
+					</div>)
 
-	<table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Admin.Configuration.Settings.RewardPoints.Earning")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PointsForRegistration)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.PointsForRegistration)
-				@Html.EditorFor(model => model.PointsForRegistration, new { Small = true })
-				@Html.ValidationMessageFor(model => model.PointsForRegistration)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PointsForProductReview)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.PointsForProductReview)
-				@Html.EditorFor(model => model.PointsForProductReview, new { Small = true })
-				@Html.ValidationMessageFor(model => model.PointsForProductReview)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PointsForPurchases_Amount)
-			</td>
-			<td class="adminData" id="pnlPointsForPurchases">
-				@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_OverrideForStore, "#pnlPointsForPurchases")
-				@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")
-				@Html.EditorFor(model => model.PointsForPurchases_Amount, new { Small = true })
-				@Model.PrimaryStoreCurrencyCode
-				&nbsp;
-				@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint2")
-				@Html.EditorFor(model => model.PointsForPurchases_Points, new { Small = true })
-				@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint3")
-				@Html.ValidationMessageFor(model => model.PointsForPurchases_Amount)
-				@Html.ValidationMessageFor(model => model.PointsForPurchases_Points)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PointsForPurchases_Awarded)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Awarded)
-				@Html.DropDownListFor(model => model.PointsForPurchases_Awarded, ((OrderStatus)Model.PointsForPurchases_Awarded).ToSelectList())
-				@Html.ValidationMessageFor(model => model.PointsForPurchases_Awarded)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.PointsForPurchases_Canceled)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Canceled)
-				@Html.DropDownListFor(model => model.PointsForPurchases_Canceled, ((OrderStatus)Model.PointsForPurchases_Canceled).ToSelectList())
-				@Html.ValidationMessageFor(model => model.PointsForPurchases_Canceled)
-			</td>
-		</tr>
+					@Html.ValidationMessageFor(model => model.PointsForPurchases_Amount)
+					@Html.ValidationMessageFor(model => model.PointsForPurchases_Points)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.PointsForPurchases_Awarded)
+				</td>
+				<td class="adminData">
+					@Html.EnumSettingEditorFor(model => model.PointsForPurchases_Awarded)
+					@Html.ValidationMessageFor(model => model.PointsForPurchases_Awarded)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.PointsForPurchases_Canceled)
+				</td>
+				<td class="adminData">
+					@Html.EnumSettingEditorFor(model => model.PointsForPurchases_Canceled)
+					@Html.ValidationMessageFor(model => model.PointsForPurchases_Canceled)
+				</td>
+			</tr>
+		</tbody>
 	</table>
 }

@@ -5,11 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -18,7 +14,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     [DataContract]
 	[DebuggerDisplay("{Id}: {Name} (Parent: {ParentCategoryId})")]
-	public partial class Category : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IPagingOptions
+	public partial class Category : BaseEntity, ICategoryNode, IAuditable, ISoftDeletable, IPagingOptions
     {
         private ICollection<Discount> _appliedDiscounts;
 

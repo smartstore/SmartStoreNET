@@ -42,11 +42,16 @@ namespace SmartStore.Core.Plugins
         /// </summary>
 		public string PhysicalPath { get; set; }
 
-        /// <summary>
-        /// Gets the file name of the brand image (without path)
-        /// or an empty string if no image is specified
-        /// </summary>
-        public string BrandImageFileName
+		/// <summary>
+		/// The virtual path of the runtime plugin
+		/// </summary>
+		public string VirtualPath { get; set; }
+
+		/// <summary>
+		/// Gets the file name of the brand image (without path)
+		/// or an empty string if no image is specified
+		/// </summary>
+		public string BrandImageFileName
         {
             get
             {

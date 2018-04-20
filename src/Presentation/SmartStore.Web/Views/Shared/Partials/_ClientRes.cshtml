@@ -2,6 +2,11 @@
 	var clientResKeys = new[]
 	{
 		"Common.Notification",
+		"Common.Close",
+		"Common.On",
+		"Common.OK",
+		"Common.Cancel",
+		"Common.Off",
 		"Products.Longdesc.More",
 		"Products.Longdesc.Less",
 		"Jquery.Validate.Email",
@@ -27,7 +32,7 @@
 	window.Res = {
 		@foreach (var key in clientResKeys)
 		{
-			@Html.Raw("\"{0}\": {1},\n".FormatCurrentUI(key, T(key).Text.EncodeJsString()))
+			<text>"@(Html.Raw(key))": @(T(key).JsText),</text>
 		}
 	};
 </script>

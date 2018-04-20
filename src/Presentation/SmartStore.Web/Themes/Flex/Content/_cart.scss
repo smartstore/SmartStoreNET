@@ -1,6 +1,7 @@
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="shared/_mixins.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 // General
 // =================================
@@ -85,7 +86,7 @@
 
         .no-item-title, .no-item-icon { margin-bottom: 1rem; }
 
-        .no-item-title  { font-size: $font-size-h2; font-weight: 400; }
+        .no-item-title  { font-size: $h2-font-size; font-weight: 400; }
         .no-item-icon   { color: rgba(0,0,0, 0.15); }
         .no-item-info   { color: $text-muted; .fa { color: $body-color; } }
     }
@@ -93,7 +94,7 @@
 
 .offcanvas-cart-item {
     border-bottom: 1px solid rgba(#000, 0.15);
-    padding: $grid-gutter-width-base / 1.5;
+    padding: $grid-gutter-width / 1.5;
 
     &:last-child { border-width: 0; }
 
@@ -131,9 +132,9 @@
         }
     }
 
-        @media (max-width: 360px) {
-            .unit-price { font-size: 1rem; }
-        }
+    @media (max-width: 360px) {
+        .unit-price { font-size: 1rem; }
+    }
 }
 
 .offcanvas-cart-footer-row {
@@ -185,7 +186,7 @@
     width: 100%;
     max-width: 100%;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid $gray-lighter;
+    border-bottom: 1px solid $gray-300;
 }
 
 .cart-head {
@@ -199,7 +200,7 @@
 .cart-row {
     display: flex;
     flex-wrap: wrap;
-    border-top: 1px solid $gray-lighter;
+    border-top: 1px solid $gray-300;
 }
 
 .cart-row-actions {
@@ -224,7 +225,7 @@
     &:before {
         display: block;
         content: attr(data-caption);
-        font-size: $font-size-h5;
+        font-size: $h5-font-size;
         font-weight: $font-weight-medium;
         padding-bottom: 0.4rem;
     }
@@ -278,8 +279,8 @@
 }
 
 .cart-head {
-    .cart-row   { border-top: none; border-bottom: 1px solid $gray-lighter; }
-    .cart-col   { font-size: $font-size-h5; font-weight: $font-weight-medium; }   
+    .cart-row   { border-top: none; border-bottom: 1px solid $gray-300; }
+    .cart-col   { font-size: $h5-font-size; font-weight: $font-weight-medium; }   
 }
 
 .cart-body {
@@ -310,7 +311,7 @@
     .cart-col       { display: table-cell; }
 
     .cart-col {
-        border-top: 1px solid $gray-lighter;
+        border-top: 1px solid $gray-300;
     }
 
     .cart-col-main ~ .cart-col {
@@ -324,7 +325,7 @@
     }
 
     .cart-head {
-        .cart-col   { border-top: none; border-bottom: 1px solid $gray-lighter; }
+        .cart-col   { border-top: none; border-bottom: 1px solid $gray-300; }
     }
 
     .cart-row-child {
@@ -386,12 +387,12 @@
     }
 
     .cart-summary-pos {
-        color: $state-success-text;
+        color: theme-color-level(success, $alert-color-level);
         font-weight: $font-weight-medium;
     }
 
     .cart-summary-neg {
-        color: $state-danger-text;
+        color: theme-color-level(danger, $alert-color-level);
     }
 
     .cart-summary-total {

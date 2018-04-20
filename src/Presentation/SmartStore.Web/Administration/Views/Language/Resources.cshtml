@@ -1,90 +1,86 @@
 ﻿@model Telerik.Web.Mvc.GridModel<LanguageResourceModel>
 @using Telerik.Web.Mvc.UI;
-@using System.Linq;
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    //page title
     ViewBag.Title = T("Admin.Configuration.Languages.Localization").Text;
 }
 <div class="section-header">
     <div class="title">
-        @T("Admin.Configuration.Languages.Localization")
+        <i class="fa fa-language"></i>
+        @T("Admin.Configuration.Languages.Localization") - @Html.ActionLink("(" + T("Admin.Configuration.Languages.BackToList") + ")", "List")
     </div>
 </div>
+
 @if (ViewBag.AllLanguages != null)
 {
-    <table class="adminContent" style="margin-bottom: 10px;">
-        <tr>
-            <td class="adminTitle">
-                @T("Admin.Configuration.Languages.Select")
-            </td>
-            <td class="adminData">
+    <p>
+        <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabel("localeresource-language", T("Admin.Configuration.Languages.Select"))
+                </td>
+                <td class="adminData">
+                    @Html.DropDownList("localeresource-language", (IEnumerable<SelectListItem>)ViewBag.AllLanguages, new { onchange = "onLocaleResourceLanguageSelected(this.value);" })
 
-	            @Html.DropDownList("localeresource-language", (IEnumerable<SelectListItem>)ViewBag.AllLanguages, new { onchange = "onLocaleResourceLanguageSelected(this.value);" })
-
-                <script type="text/javascript">
-                    function onLocaleResourceLanguageSelected(languageid) {
-	                    window.location = '@(Url.Action("Resources") + "?languageId=")' + languageid;
-	                }
-                </script>
-            </td>
-        </tr>
-    </table>
+                    <script type="text/javascript">
+                        function onLocaleResourceLanguageSelected(languageid) {
+                            window.location = '@(Url.Action("Resources") + "?languageId=")' + languageid;
+                        }
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </p>
 }
-<table class="adminContent">
-    <tr>
-        <td>
-            <div class="alert alert-info fade in">
-                @T("Admin.Configuration.Languages.Resources.Description")
-                <button class="close" data-dismiss="alert">x</button>
-            </div>          
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<LanguageResourceModel>()
-					.Name("resources-grid")
-					.DataKeys(x =>
-					{
-						x.Add(y => y.Id).RouteKey("Id");
-						x.Add(y => y.LanguageId).RouteKey("languageId");
-					})
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.LanguageName)
-							.Width("10%")
-							.ReadOnly()
-							.Filterable(false);
-						columns.Bound(x => x.ResourceName).Width("30%");
-						columns.Bound(x => x.ResourceValue).EditorTemplateName("MultilineText").Width("60%");
-						columns.Command(commands =>
-						{
-							commands.Edit().Localize(T);
-							commands.Delete().Localize(T);
-						});
 
-					})
-					.ToolBar(x => x.Insert())
-					.Editable(x =>
-					{
-						x.Mode(GridEditMode.InLine);
-					})
-					.Filterable()
-					.Pageable(settings => settings.PageSize(gridPageSize).Total(Model.Total).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax().Select("Resources", "Language")
-							.Update("ResourceUpdate", "Language")
-							.Delete("ResourceDelete", "Language")
-							.Insert("ResourceAdd", "Language", new { id = ViewBag.LanguageId });
-					})
-					.EnableCustomBinding(true)
-					.PreserveGridState()
-					.ClientEvents(x => x.OnEdit("onResourceEdit"))
-					.ClientEvents(x => x.OnError("Grid_onError")))
-        </td>
-    </tr>
-</table>
+<div class="alert alert-info alert-dismissible">
+	@T("Admin.Configuration.Languages.Resources.Description")
+	<button type="button" class="close" data-dismiss="alert">&times;</button>
+</div>   
+
+<div>
+	@(Html.Telerik().Grid<LanguageResourceModel>()
+		.Name("resources-grid")
+		.DataKeys(x =>
+		{
+			x.Add(y => y.Id).RouteKey("Id");
+			x.Add(y => y.LanguageId).RouteKey("languageId");
+		})
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.LanguageName)
+				.Width("10%")
+				.ReadOnly()
+				.Filterable(false);
+			columns.Bound(x => x.ResourceName).Width("30%");
+			columns.Bound(x => x.ResourceValue).EditorTemplateName("MultilineText").Width("60%");
+			columns.Command(commands =>
+			{
+				commands.Edit().Localize(T);
+				commands.Delete().Localize(T);
+			});
+
+		})
+		.ToolBar(x => x.Insert())
+		.Editable(x =>
+		{
+			x.Mode(GridEditMode.InLine);
+		})
+		.Filterable()
+		.Pageable(settings => settings.PageSize(gridPageSize).Total(Model.Total).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding =>
+		{
+			dataBinding.Ajax().Select("Resources", "Language")
+				.Update("ResourceUpdate", "Language")
+				.Delete("ResourceDelete", "Language")
+				.Insert("ResourceAdd", "Language", new { id = ViewBag.LanguageId });
+		})
+		.EnableCustomBinding(true)
+		.PreserveGridState()
+		.ClientEvents(x => x.OnEdit("onResourceEdit"))
+		.ClientEvents(x => x.OnError("Grid_onError")))
+</div>
+
 <script type="text/javascript">
     function onResourceEdit(e) {
         if (e.mode == "insert") {

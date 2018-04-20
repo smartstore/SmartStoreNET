@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<Subject>{{ Store.Name }} - Neukunden Registrierung</Subject>
+	<ModelTypes>Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Neuer Kunde,
+</h1>
+<p>
+  ein neuer Kunde hat sich registriert.
+</p>
+
+<p>
+  <b>Name:</b><br />
+  <span>{{ Customer.FullName }}</span>
+</p>
+<p>
+  <b>E-Mail:</b><br />
+  <a href="mailto:{{ Customer.Email }}">{{ Customer.Email }}</span>
+</p>
+
+<p class="mt-4 mb-4 text-center">
+	<a class="btn btn-primary" href="{{ Customer.EditUrl }}">Zum Profil</a>  
+</p>
+{% endblock %}]]></Body>
+</MessageTemplate>

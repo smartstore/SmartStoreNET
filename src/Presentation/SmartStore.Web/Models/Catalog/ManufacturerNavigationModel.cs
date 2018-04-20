@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Catalog
@@ -21,10 +22,16 @@ namespace SmartStore.Web.Models.Catalog
 
     public partial class ManufacturerBriefInfoModel : EntityModelBase
     {
-        public string Name { get; set; }
+        public LocalizedValue<string> Name { get; set; }
 
         public string SeName { get; set; }
 
         public string PictureUrl { get; set; }
+
+		public int? PictureId { get; set; }
+
+		public bool HasPicture { get; set; }
+
+        public int DisplayOrder { get; set; }
     }
 }

@@ -5,62 +5,47 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Core.Events;
 using System.Collections.Generic;
+using SmartStore.Templating;
+using SmartStore.Services.Messages;
+using SmartStore.Core.Domain.Directory;
+using System.Globalization;
+using SmartStore.Core.Html;
 
 namespace SmartStore.Services.Common
 {
-    /// <summary>
-    /// Address service
-    /// </summary>
     public partial class AddressService : IAddressService
     {
-        #region Fields
-
         private readonly IRepository<Address> _addressRepository;
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
         private readonly AddressSettings _addressSettings;
+		private readonly ITemplateEngine _templateEngine;
+		private readonly IMessageModelProvider _messageModelProvider;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="addressRepository">Address repository</param>
-        /// <param name="countryService">Country service</param>
-        /// <param name="stateProvinceService">State/province service</param>
-        /// <param name="eventPublisher">Event publisher</param>
-        /// <param name="addressSettings">Address settings</param>
-        public AddressService(IRepository<Address> addressRepository,
-            ICountryService countryService, IStateProvinceService stateProvinceService,
-            IEventPublisher eventPublisher, AddressSettings addressSettings)
+		public AddressService(
+			IRepository<Address> addressRepository,
+            ICountryService countryService, 
+			IStateProvinceService stateProvinceService,
+			ICommonServices services, 
+			AddressSettings addressSettings,
+			ITemplateEngine templateEngine,
+			IMessageModelProvider messageModelProvider)
         {
-            this._addressRepository = addressRepository;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._eventPublisher = eventPublisher;
-            this._addressSettings = addressSettings;
+            _addressRepository = addressRepository;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _services = services;
+            _addressSettings = addressSettings;
+			_templateEngine = templateEngine;
+			_messageModelProvider = messageModelProvider;
         }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Deletes an address
-        /// </summary>
-        /// <param name="address">Address</param>
         public virtual void DeleteAddress(Address address)
         {
-            if (address == null)
-                throw new ArgumentNullException("address");
+			Guard.NotNull(address, nameof(address));
 
             _addressRepository.Delete(address);
-
-            //event notification
-            _eventPublisher.EntityDeleted(address);
         }
 
 		public virtual void DeleteAddress(int id)
@@ -70,11 +55,6 @@ namespace SmartStore.Services.Common
 				DeleteAddress(address);
 		}
 
-        /// <summary>
-        /// Gets total number of addresses by country identifier
-        /// </summary>
-        /// <param name="countryId">Country identifier</param>
-        /// <returns>Number of addresses</returns>
         public virtual int GetAddressTotalByCountryId(int countryId)
         {
             if (countryId == 0)
@@ -86,11 +66,6 @@ namespace SmartStore.Services.Common
             return query.Count();
         }
 
-        /// <summary>
-        /// Gets total number of addresses by state/province identifier
-        /// </summary>
-        /// <param name="stateProvinceId">State/province identifier</param>
-        /// <returns>Number of addresses</returns>
         public virtual int GetAddressTotalByStateProvinceId(int stateProvinceId)
         {
             if (stateProvinceId == 0)
@@ -102,11 +77,6 @@ namespace SmartStore.Services.Common
             return query.Count();
         }
 
-        /// <summary>
-        /// Gets an address by address identifier
-        /// </summary>
-        /// <param name="addressId">Address identifier</param>
-        /// <returns>Address</returns>
         public virtual Address GetAddressById(int addressId)
         {
             if (addressId == 0)
@@ -128,16 +98,11 @@ namespace SmartStore.Services.Common
 			return query.ToList();
 		}
 
-        /// <summary>
-        /// Inserts an address
-        /// </summary>
-        /// <param name="address">Address</param>
         public virtual void InsertAddress(Address address)
         {
-            if (address == null)
-                throw new ArgumentNullException("address");
+			Guard.NotNull(address, nameof(address));
 
-            address.CreatedOnUtc = DateTime.UtcNow;
+			address.CreatedOnUtc = DateTime.UtcNow;
 
             //some validation
             if (address.CountryId == 0)
@@ -146,43 +111,26 @@ namespace SmartStore.Services.Common
                 address.StateProvinceId = null;
 
             _addressRepository.Insert(address);
-
-            //event notification
-            _eventPublisher.EntityInserted(address);
         }
 
-        /// <summary>
-        /// Updates the address
-        /// </summary>
-        /// <param name="address">Address</param>
         public virtual void UpdateAddress(Address address)
         {
-            if (address == null)
-                throw new ArgumentNullException("address");
+			Guard.NotNull(address, nameof(address));
 
-            //some validation
-            if (address.CountryId == 0)
+			//some validation
+			if (address.CountryId == 0)
                 address.CountryId = null;
             if (address.StateProvinceId == 0)
                 address.StateProvinceId = null;
 
             _addressRepository.Update(address);
-
-            //event notification
-            _eventPublisher.EntityUpdated(address);
         }
 
-        /// <summary>
-        /// Gets a value indicating whether address is valid (can be saved)
-        /// </summary>
-        /// <param name="address">Address to validate</param>
-        /// <returns>Result</returns>
         public virtual bool IsAddressValid(Address address)
         {
-            if (address == null)
-                throw new ArgumentNullException("address");
+			Guard.NotNull(address, nameof(address));
 
-            if (String.IsNullOrWhiteSpace(address.FirstName))
+			if (String.IsNullOrWhiteSpace(address.FirstName))
                 return false;
 
             if (String.IsNullOrWhiteSpace(address.LastName))
@@ -254,6 +202,63 @@ namespace SmartStore.Services.Common
             return true;
         }
 
-        #endregion
-    }
+		public virtual string FormatAddress(CompanyInformationSettings settings, bool newLineToBr = false)
+		{
+			Guard.NotNull(settings, nameof(settings));
+
+			var address = new Address
+			{
+				Address1 = settings.Street,
+				Address2 = settings.Street2,
+				City = settings.City,
+				Company = settings.CompanyName,
+				FirstName = settings.Firstname,
+				LastName = settings.Lastname,
+				Salutation = settings.Salutation,
+				Title = settings.Title,
+				ZipPostalCode = settings.ZipCode,
+				CountryId = settings.CountryId,
+				Country = _countryService.GetCountryById(settings.CountryId)
+			};
+
+			return FormatAddress(address, newLineToBr);
+		}
+
+		public virtual string FormatAddress(Address address, bool newLineToBr = false)
+		{
+			Guard.NotNull(address, nameof(address));
+
+			var messageContext = new MessageContext
+			{
+				Language = _services.WorkContext.WorkingLanguage,
+				Store = _services.StoreContext.CurrentStore,
+				Model = new TemplateModel()
+			};
+			
+			_messageModelProvider.AddModelPart(address, messageContext, "Address");
+			var model = messageContext.Model["Address"];
+
+			var result = FormatAddress(model, address?.Country?.AddressFormat, messageContext.FormatProvider);
+
+			if (newLineToBr)
+			{
+				result = HtmlUtils.ConvertPlainTextToHtml(result);
+			}
+
+			return result;
+		}
+
+		public virtual string FormatAddress(object address, string template = null, IFormatProvider formatProvider = null)
+		{
+			Guard.NotNull(address, nameof(address));
+
+			template = template.NullEmpty() ?? Address.DefaultAddressFormat;
+
+			var result = _templateEngine
+				.Render(template, address, formatProvider ?? CultureInfo.CurrentCulture)
+				.Compact(true);
+
+			return result;
+		}
+	}
 }

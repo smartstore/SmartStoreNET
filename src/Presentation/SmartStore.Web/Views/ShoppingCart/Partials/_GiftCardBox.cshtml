@@ -21,7 +21,7 @@
         @if (Model.Message.HasValue())
         {
             <div class="alert @(Model.IsWarning ? "alert-danger" : "alert-success") fade show">
-                <button type="button" class="close" data-dismiss="alert">×</button>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
                 @Model.Message
             </div>
         }
@@ -29,7 +29,7 @@
         <div class="coupon-code form-group">
             <div class="input-group">
                 <input name="giftcardcouponcode" type="text" class="form-control gift-card-coupon-code" placeholder="@T("ShoppingCart.GiftCardCouponCode.Tooltip")" />
-				<span class="input-group-btn">
+				<span class="input-group-btn input-group-append">
 					<button type="submit"
 							class="btn btn-primary apply-gift-card-coupon-code-button"
 							name="applygiftcardcouponcode"

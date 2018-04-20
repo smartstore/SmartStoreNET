@@ -1,0 +1,275 @@
+/// <reference path="_variables.scss" />
+/// <reference path="../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../Content/shared/_mixins.scss" />
+/// <reference path="../../Content/bs4/scss/_functions.scss" />
+/// <reference path="../../Content/bs4/scss/_variables.scss" />
+/// <reference path="../../Content/bs4/scss/_mixins.scss" />
+
+// RTL support (right to left)
+// --------------------------------------------------
+
+[dir=rtl] {
+
+	// Layout
+	// ------
+
+	.section-header {
+		.title {
+			padding-right: 0;
+			padding-left: 5px;
+
+			> i {
+				margin-left: 0.5rem;
+				margin-right: initial;
+			}
+
+			> img {
+				margin-left: 5px;
+				margin-right: initial;
+			}
+		}
+
+		.options {
+			padding-right: 5px;
+			padding-left: 0;
+		}
+	}
+
+
+	// Main Menu
+	// ---------
+
+	#navbar #navbar-menu .nav-item > .dropdown-menu {
+		// Dropdown bubble
+		&:before	{ right: 10px; left: auto; }
+		&:after		{ right: 11px; left: auto; }
+	}
+
+
+	// Forms
+	// -----
+
+	.ctl-label {
+		padding-left: 2.5rem;
+		padding-right: initial;
+
+		> label {
+			padding-left: 0;
+			padding-right: initial;
+		}
+
+		> .hint {
+			left: 0;
+			right: auto;
+		}
+	}
+
+
+	// Form Grid
+	// ---------
+
+	.adminContent {
+		&:not(.adminContent-vertical) > tbody > tr:not(.wide),
+		&:not(.adminContent-vertical) > tr:not(.wide),
+		&:not(.adminContent-vertical) .adminRow:not(.wide) {
+			@include media-breakpoint-up(md) {
+				> .adminTitle {
+					text-align: left;
+					//padding-right: $grid-gutter-width/2 !important;
+					padding-left: 0 !important;
+				}
+
+				> .adminData {
+					//padding-left: $grid-gutter-width/2 !important;
+					padding-right: 0 !important;
+
+					&:not(.wide) {
+						//padding-right: $grid-gutter-width/2 !important;
+						padding-left: 0 !important;
+					}
+				}
+			}
+			/*@include media-breakpoint-up(lg) {
+				> .adminTitle {
+					flex-basis: 400px;
+					max-width: 40%;
+				}
+
+				> .adminData {
+					flex-basis: 600px;
+					max-width: 60%;
+
+					&.wide {
+						flex-grow: 1;
+						flex-basis: 0;
+						max-width: 100%;
+					}
+				}
+			}*/
+		}
+	}
+
+
+	// Themes
+	// ------
+
+	#theme-list .theme-broken-badge {
+		left: 0;
+		right: auto;
+	}
+
+	.theme-editor .themevar-chain-info {
+		margin-right: 0.75rem;
+		margin-left: initial;
+	}
+
+
+	// Dashboard
+	// ---------
+
+	.stats-today .stats-today-item {
+		text-align: right;
+		border-left: 1px solid $gray-300;
+		border-right-width: 0;
+
+		&:last-child {
+			border-left: none
+		}
+	}
+
+
+	//
+	// Locale Editor
+	// -------------
+
+	.locale-editor-content[data-rtl="false"] {
+		input,
+		textarea,
+		select,
+		.locale-editor-control,
+		.note-editable,
+		.note-editor-preview:not(.empty) {
+			direction: ltr;
+			text-align: left;
+		}
+	}
+
+
+	// Plugins & Providers
+	// -------------------
+
+	.module-icon {
+		padding-right: $content-padding-x;
+		padding-left: initial;
+	}
+
+	.module-badges {
+		margin-right: 0.4rem;
+		margin-left: initial;
+	}
+
+	.module-actions {
+		margin-right: auto;
+		margin-left: initial;
+	}
+
+	.module-info .attr-value {
+		padding-right: 0.15rem;
+		padding-left: initial;
+	}
+
+	.plugin-configuration > div:last-child {
+		padding-right: 2rem;
+		padding-left: initial;
+	}
+
+
+	// Misc
+	// ----
+
+	.color-container {
+		padding-left: 0.5rem;
+		padding-right: initial;
+	}
+
+
+	// HTML editors
+	// ------------
+
+	.note-editor .note-toolbar {
+		> .note-btn-group {
+			border-left-width: 2px;
+			border-right-width: 0;
+			padding-left: 5px;
+		}
+
+		> .note-btn-group:last-of-type {
+			border-left-width: 0;
+			padding-left: 0;
+		}
+
+		.dropdown-toggle:after {
+			margin-right: 0.5em;
+			margin-left: initial;
+		}
+
+		.dropdown-toggle:empty:after {
+			margin-right: 0;
+		}
+	}
+
+	.note-popover .popover-content .note-color .dropdown-toggle, 
+	.card-header.note-toolbar .note-color .dropdown-toggle {
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+
+
+	// Telerik
+	// -------
+
+	.t-numerictextbox {
+		&:after {
+			border-right-width: 1px;
+			border-left-width: 0;
+			left: 1px;
+			right: auto;
+		}
+
+		.t-input {
+			padding-left: $input-height-inner + 1rem !important;
+			padding-right: $input-padding-x !important;
+		}
+
+		.t-formatted-value {
+			right: 0;
+			left: auto;
+		}
+
+		.t-input ~ .t-icon {
+			left: 0;
+			right: auto;
+		}
+	}
+
+	.t-grid-header .t-header {
+		text-align: right;
+	}
+
+	.t-grid-edit-row .t-numerictextbox {
+		.t-input {
+			padding-right: 0.5rem !important;
+			padding-left: 1.75rem !important;
+		}
+
+		.t-formatted-value {
+			padding-right: 0.5rem !important;
+			padding-left: 1rem !important;
+		}
+	}
+
+	.numerictextbox-group .numerictextbox-postfix {
+		left: $input-height;
+		right: auto;
+	}
+}

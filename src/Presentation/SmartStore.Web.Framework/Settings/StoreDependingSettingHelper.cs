@@ -18,7 +18,7 @@ namespace SmartStore.Web.Framework.Settings
 			_viewData = viewData;
 		}
 
-		public static string ViewDataKey { get { return "StoreDependingSettingData"; } }
+		public static string ViewDataKey => "StoreDependingSettingData";
 
 		public StoreDependingSettingData Data
 		{
@@ -48,13 +48,18 @@ namespace SmartStore.Web.Framework.Settings
 
 		public void AddOverrideKey(object settings, string name)
 		{
+			if (Data == null)
+			{
+				throw new SmartException("You must call GetOverrideKeys or CreateViewDataObject before AddOverrideKey.");
+			}
+
 			var key = settings.GetType().Name + "." + name;
 			Data.OverrideSettingKeys.Add(key);
 		}
 
 		public void CreateViewDataObject(int activeStoreScopeConfiguration, string rootSettingClass = null)
 		{
-			_viewData[ViewDataKey] = new StoreDependingSettingData()
+			_viewData[ViewDataKey] = new StoreDependingSettingData
 			{
 				ActiveStoreScopeConfiguration = activeStoreScopeConfiguration,
 				RootSettingClass = rootSettingClass
@@ -94,25 +99,31 @@ namespace SmartStore.Web.Framework.Settings
 					continue;
 				}
 
-                var key = string.Empty;
-                var setting = string.Empty;
+				string key = null;
 
-                if (localized == null)
-                {
-                    key = settingName + "." + name;
-                    setting = settingService.GetSettingByKey<string>(key, storeId: storeId);
-                }
-                else
-                {
-					key = string.Concat("Locales[", index.ToString(), "].", name);
-                    setting = localizedEntityService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
-                }
+				if (localized == null)
+				{
+					key = settingName + "." + name;
 
-				if (!string.IsNullOrEmpty(setting))
+					if (settingService.GetSettingByKey<string>(key, storeId: storeId) == null)
+					{
+						key = null;
+					}
+				}
+				else
+				{
+					var value = localizedEntityService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
+					if (!string.IsNullOrEmpty(value))
+					{
+						key = string.Concat("Locales[", index.ToString(), "].", name);
+					}
+				}
+
+				if (key != null)
 				{
 					data.OverrideSettingKeys.Add(key);
 				}
-            }
+			}
 
             if (isRootModel)
             {
@@ -138,13 +149,14 @@ namespace SmartStore.Web.Framework.Settings
 				return;
 			}
 
-			var data = Data ?? new StoreDependingSettingData();
-			var setting = string.Empty;
+			var key = formKey;
 
 			if (localized == null)
 			{
-				var key = string.Concat(settings.GetType().Name, ".", settingName);
-				setting = settingService.GetSettingByKey<string>(key, storeId: storeId);
+				if (settingService.GetSettingByKey<string>(string.Concat(settings.GetType().Name, ".", settingName), storeId: storeId) == null)
+				{
+					key = null;
+				}
 			}
 			else
 			{
@@ -152,33 +164,57 @@ namespace SmartStore.Web.Framework.Settings
 				throw new ArgumentException("Localized override key not supported yet.");
 			}
 
-			if (!string.IsNullOrEmpty(setting))
+			if (key != null)
 			{
-				data.OverrideSettingKeys.Add(formKey);
+				var data = Data ?? new StoreDependingSettingData();
+				data.OverrideSettingKeys.Add(key);
 			}
 		}
 
-		public void UpdateSettings(object settings, FormCollection form, int storeId, ISettingService settingService, ILocalizedModelLocal localized = null)
+		/// <summary>
+		/// Updates settings for a store.
+		/// </summary>
+		/// <param name="settings">Settings class instance.</param>
+		/// <param name="form">Form value collection.</param>
+		/// <param name="storeId">Store identifier.</param>
+		/// <param name="settingService">Setting service.</param>
+		/// <param name="localized">Localized model.</param>
+		/// <param name="propertyNameMapper">Function to map property names. Return <c>null</c> to skip a property.</param>
+		public void UpdateSettings(
+			object settings,
+			FormCollection form,
+			int storeId,
+			ISettingService settingService,
+			ILocalizedModelLocal localized = null,
+			Func<string, string> propertyNameMapper = null)
         {
             var settingName = settings.GetType().Name;
             var properties = FastProperty.GetProperties(localized == null ? settings.GetType() : localized.GetType()).Values;
 
-			using (settingService.BeginScope())
+			foreach (var prop in properties)
 			{
-				foreach (var prop in properties)
-				{
-					var name = prop.Name;
-					var key = settingName + "." + name;
+				var name = prop.Name;
 
-					if (storeId == 0 || IsOverrideChecked(key, form))
-					{
-						dynamic value = prop.GetValue(localized == null ? settings : localized);
-						settingService.SetSetting(key, value == null ? "" : value, storeId, false);
-					}
-					else if (storeId > 0)
-					{
-						settingService.DeleteSetting(key, storeId);
-					}
+				if (propertyNameMapper != null)
+				{
+					name = propertyNameMapper(name);
+				}
+
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					continue;
+				}
+
+				var key = string.Concat(settingName, ".", name);
+
+				if (storeId == 0 || IsOverrideChecked(key, form))
+				{
+					dynamic value = prop.GetValue(localized == null ? settings : localized);
+					settingService.SetSetting(key, value == null ? "" : value, storeId, false);
+				}
+				else if (storeId > 0)
+				{
+					settingService.DeleteSetting(key, storeId);
 				}
 			}
         }

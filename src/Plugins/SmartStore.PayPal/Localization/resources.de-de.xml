@@ -68,9 +68,6 @@
   <LocaleResource Name="ExperienceProfileId.Hint">
     <Value>Legt die Experience Profil-ID fest. Das Profil beinhaltet globale Daten wie z.B. Shop-Name und -Logo. Ein Profil braucht nur einmalig angelegt werden. Über den Button können Sie ein neues Profil erstellen oder ein vorhandenes aktualisieren.</Value>
   </LocaleResource>
-  <LocaleResource Name="ExperienceProfileId">
-    <Value>Experience Profil-ID</Value>
-  </LocaleResource>
   <LocaleResource Name="WebhookId">
     <Value>Webhook-ID</Value>
   </LocaleResource>
@@ -98,12 +95,6 @@
       <LocaleResource Name="TransactMode.Hint">
         <Value>Bestimmen Sie den Transaktionsmodus.</Value>
       </LocaleResource>
-      <LocaleResource Name="SecurityProtocol">
-        <Value>Sicherheitsprotokoll</Value>
-      </LocaleResource>
-      <LocaleResource Name="SecurityProtocol.Hint">
-        <Value>Legt das mit der PayPal-API zu verwendende Sicherheitsprotokoll fest.</Value>
-      </LocaleResource>
       <LocaleResource Name="ApiAccountName">
         <Value>API Benutzername</Value>
       </LocaleResource>
@@ -122,18 +113,6 @@
       <LocaleResource Name="Signature.Hint">
         <Value>Geben Sie Ihre Signatur ein.</Value>
       </LocaleResource>
-      <LocaleResource Name="AdditionalFee">
-        <Value>Zusätzliche Gebühren</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFee.Hint">
-        <Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFeePercentage">
-        <Value>Zusätzliche Gebühren (prozentual)</Value>
-      </LocaleResource>
-      <LocaleResource Name="AdditionalFeePercentage.Hint">
-        <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-      </LocaleResource>
       <LocaleResource Name="UsePayPalAddress">
         <Value>PayPal Adresse anzeigen</Value>
       </LocaleResource>
@@ -148,9 +127,6 @@
       </LocaleResource>
       <LocaleResource Name="NoModuleLoading">
         <Value>Die Zahlart ist nicht aktiv ({0}).</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnLogInfo">
-        <Value>PayPal IPN. Wiederkehrende Zahlung.</Value>
       </LocaleResource>
       <LocaleResource Name="IpnOrderNotFound">
         <Value>PayPal IPN. Bestellung konnte nicht gefunden werden.</Value>
@@ -196,7 +172,7 @@
             <ol>
             <li>In Ihr Premier- oder Business-Konto einloggen.</li>
             <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+            <li>Unter <b>Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
             <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
             <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
             <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
@@ -270,7 +246,7 @@
           <ol>
           <li>In Ihr Premier- oder Business-Konto einloggen.</li>
           <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-          <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+          <li>Unter <b>Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
           <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
           <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
           <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
@@ -323,7 +299,7 @@
 	          <ol>
 	          <li>In Ihr Premier- oder Business-Konto einloggen.</li>
 	          <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+            <li>Unter <b>Sprach-Kodierung &gt; Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
 	          <li>Zurück zu <b>Mein Profil</b> und auf <b>Sofortige Zahlungsbestätigung</b> klicken.</li>
 	          <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
 	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>

@@ -1,16 +1,13 @@
 ﻿@model IList<OrderIncompleteReportLineModel>
-@using Telerik.Web.Mvc;
-@using Telerik.Web.Mvc.UI
 
-<div class="widget widget-table">
-    
-    <div class="widget-header">
-        <i class="fa fa-signal"></i>
-        <h3>@T("Admin.SalesReport.Incomplete")</h3>
-    </div>
-    
-	<div class="widget-content equalized-column">
-		<table class="table table-striped table-hover">
+<div class="card card-shadow mb-4">
+	<h6 class="card-header font-weight-medium border-bottom-0">
+		<i class="fa fa-signal pr-2"></i>
+		@T("Admin.SalesReport.Incomplete")
+	</h6>
+
+	<div class="table-responsive">
+		<table class="table table-striped m-0">
 			<thead>
 				<tr>
 					<th>@T("Admin.SalesReport.Incomplete.Item")</th>
@@ -44,8 +41,5 @@
 			</tbody>
 		</table>
 	</div>
-
-
-
 </div>
 

@@ -6,7 +6,7 @@
 
 @Html.HiddenFor(model => model.Id)
 
-@Html.SmartStore().TabStrip().Name("giftcard-edit").Items(x =>
+@Html.SmartStore().TabStrip().Style(TabsStyle.Material).Name("giftcard-edit").Items(x =>
 {
     x.Add().Text(T("Admin.GiftCards.Info").Text).Content(TabInfo()).Selected(true);
     if (Model.Id > 0)
@@ -70,7 +70,9 @@
                     @Html.SmartLabelFor(model => model.PurchasedWithOrderId)
                 </td>
                 <td class="adminData">
-                    <a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })">@Model.PurchasedWithOrderId.Value</a>
+					<div class="form-control-plaintext">
+						<a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })">@Model.PurchasedWithOrderId.Value</a>
+					</div>
                 </td>
             </tr>
         }
@@ -79,7 +81,7 @@
                 @Html.SmartLabelFor(model => model.Amount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Amount)  [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.Amount, new { postfix = Model.PrimaryStoreCurrencyCode }) 
                 @Html.ValidationMessageFor(model => model.Amount)
             </td>
         </tr>
@@ -90,7 +92,7 @@
                     @Html.SmartLabelFor(model => model.RemainingAmountStr)
                 </td>
                 <td class="adminData">
-                    @Model.RemainingAmountStr
+					@Html.TextBoxFor(model => model.RemainingAmountStr, new { @readonly = "readonly", @class = "form-control-plaintext" })
                 </td>
             </tr>
         }
@@ -108,12 +110,19 @@
                 @Html.SmartLabelFor(model => model.GiftCardCouponCode)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.GiftCardCouponCode)
-                @Html.ValidationMessageFor(model => model.GiftCardCouponCode)
 
-                <button type="button" name="generateCouponCode" id="generateCouponCode" class="btn">
-					<i class="fa fa-gear"></i>&nbsp;@T("Admin.GiftCards.Fields.GiftCardCouponCode.Generate")
-				</button>
+				<div class="input-group">
+					@Html.EditorFor(model => model.GiftCardCouponCode)
+
+					<div class="input-group-append">
+						<button type="button" name="generateCouponCode" id="generateCouponCode" class="btn btn-outline-secondary">
+							<i class="fa fa-gear"></i>
+							<span>@T("Admin.GiftCards.Fields.GiftCardCouponCode.Generate")</span>
+						</button>
+					</div>
+				</div>
+
+                @Html.ValidationMessageFor(model => model.GiftCardCouponCode)
             </td>
         </tr>
         <tr>
@@ -170,50 +179,55 @@
                 <td class="adminData">
 					@T(Model.IsRecipientNotified ? "Admin.Common.Yes" : "Admin.Common.No")
 					&nbsp;
-                    <button type="submit" name="notifyRecipient" value="notifyRecipient" class="btn">
-						<i class="fa fa-envelope"></i>&nbsp;@T("Admin.GiftCards.Fields.IsRecipientNotified.Notify")
+                    <button type="submit" name="notifyRecipient" value="notifyRecipient" class="btn btn-secondary">
+						<i class="fa fa-envelope"></i>
+						<span>@T("Admin.GiftCards.Fields.IsRecipientNotified.Notify")</span>
 					</button>
                 </td>
             </tr>
         }
         @if (Model.Id > 0)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.CreatedOn)
-                </td>
-                <td class="adminData">
-                    @Html.DisplayFor(model => model.CreatedOn)
-                </td>
-            </tr>
-        }
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CreatedOn)
+				</td>
+				<td class="adminData">
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.CreatedOn)
+					</div>
+				</td>
+			</tr>
+		}
     </table>
 }
-@helper TabHistory()
-    {
-        var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    @(Html.Telerik().Grid<GiftCardModel.GiftCardUsageHistoryModel>()
-                    .Name("usagehistory-grid")
-                    .DataKeys(x =>
-                    {
-                        x.Add(y => y.Id).RouteKey("Id");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.UsedValue).Width(200);
-                        columns.Bound(x => x.OrderId)
-                            .Width(100)
-                            .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\">" + T("Admin.Common.View").Text + "</a>");
-                        columns.Bound(x => x.CreatedOn).Width(200);
 
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax().Select("UsageHistoryList", "GiftCard", new { giftCardId = Model.Id });
-                    })
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
+@helper TabHistory()
+{
+    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+
+    @(Html.Telerik().Grid<GiftCardModel.GiftCardUsageHistoryModel>()
+        .Name("usagehistory-grid")
+        .DataKeys(x =>
+        {
+            x.Add(y => y.Id).RouteKey("Id");
+        })
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.UsedValue).Width(200);
+            columns.Bound(x => x.OrderId)
+                .Width(100)
+                .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
+                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\">" + T("Admin.Common.View").Text + "</a>");
+            columns.Bound(x => x.CreatedOn).Width(200);
+
+        })
+        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+        .DataBinding(dataBinding =>
+        {
+            dataBinding.Ajax().Select("UsageHistoryList", "GiftCard", new { giftCardId = Model.Id });
+        })
+		.PreserveGridState()
+        .EnableCustomBinding(true))
     
 }

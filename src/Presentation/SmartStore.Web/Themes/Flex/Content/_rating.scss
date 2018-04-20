@@ -1,5 +1,7 @@
-﻿/// <reference path="_variables.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 
 //
@@ -79,6 +81,7 @@
 }
 
 .review-meta {
+	display: flex;
     font-size: 0.8125em;
     .review-meta-label { font-weight: bold; }
     .review-meta-value + .review-meta-label { padding-left: 0.5rem; }
@@ -93,17 +96,15 @@
     font-size: 0.8125em;
     color: $text-muted;
 
-    .review-vote-label { padding-right: 0.5rem; }
     .review-vote-count { font-weight: bold; }
 
     .review-vote-link {
 	    text-decoration: none;
-	    margin-right: 0.3rem;
 	    padding: 0 0.3rem;
-	    &.review-vote-link-yes { color: $brand-success; }
-	    &.review-vote-link-yes:hover { background: $brand-success; color: #fff }
-	    &.review-vote-link-no { color: $brand-danger; }
-	    &.review-vote-link-no:hover { background: $brand-danger; color: #fff }
+	    &.review-vote-link-yes { color: $success; }
+	    &.review-vote-link-yes:hover { background: $success; color: #fff }
+	    &.review-vote-link-no { color: $danger; }
+	    &.review-vote-link-no:hover { background: $danger; color: #fff }
 
         .fa { font-size: $font-size-lg; }
     }   
@@ -115,6 +116,6 @@
 // --------------------------------------------------
 
 .write-review {
-    background-color: $gray-lightest;
+    background-color: $gray-100;
     padding: 2rem;
 }

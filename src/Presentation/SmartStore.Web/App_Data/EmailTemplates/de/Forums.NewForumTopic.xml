@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Benachrichtigung über ein neues Thema</Subject>
+	<ModelTypes>Customer, ForumTopic, ForumTopic.Forum</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hallo {{ Customer.FullName }},
+</h1>
+
+<p>
+  im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neues Thema erstellt:
+</p>
+
+<p class="mt-4 mb-4">
+  <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Thema</a>
+</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="mb-3">
+        {{ ForumTopic.Subject }}
+      </h3>
+      <p class="message">
+        "{{ ForumTopic.Body | Truncate: 400 }}"
+      </p>
+    </td>
+  </tr> 
+</table>
+
+{% endblock %}]]></Body>
+</MessageTemplate>

@@ -1,0 +1,255 @@
+﻿{
+	"WidgetZonesAreas": [
+		{
+			"name": "Admin.ContentManagement.Homepage",
+			"zones": [
+				"home_page_top",
+				"home_page_after_intro", 
+				"home_page_after_categories",
+				"home_page_after_products",
+				"home_page_after_bestsellers",
+				"home_page_after_manufacturers",
+				"home_page_after_tags",
+				"home_page_after_news",
+				"home_page_after_polls",
+				"home_page_bottom"
+			]
+		},
+		{
+			"name": "Global",
+			"zones": [
+				"main_column_before",
+				"main_column_after",
+				"body_start_html_tag_after",
+				"content_before",
+				"after_teaser",
+				"aside_left_before",
+				"aside_left_after",
+				"aside_right_before",
+				"aside_right_after",
+				"content_after",
+				"body_end_html_tag_before",
+				"head_html_tag"
+			]
+		},
+
+		{
+			"name": "Admin.ContentManagement.Blog",
+			"zones": [
+				"blogpost_page_before_body",
+				"blogpost_page_before_comments",
+				"blogpost_page_after_comments",
+				"bloglist_page_before_posts",
+				"bloglist_page_inside_post",
+				"bloglist_page_after_posts"
+			]
+		},
+		{
+			"name": "News",
+			"zones": [
+				"newslist_page_before_items",
+				"newslist_page_after_items",
+				"newsitem_page_before_body",
+				"newsitem_page_before_comments",
+				"newsitem_page_after_comments"
+			]
+		},
+		{
+			"name": "Admin.Catalog.Categories",
+			"zones": [
+				"categorydetails_top",
+				"categorydetails_before_subcategories",
+				"categorydetails_before_featured_products",
+				"categorydetails_before_product_list",
+				"categorydetails_bottom"
+			]
+		},
+		{
+			"name": "Admin.Catalog.Products",
+			"zones": [
+				"productbox_add_info",
+				"productreviews_page_inside_review",
+				"productsbytag_top",
+				"productsbytag_bottom",
+				"productdetails_add_info",
+				"productdetails_add_info_bundle",
+				"productdetails_top",
+				"productdetails_bottom",
+				"productdetails_pictures_top",
+				"productdetails_pictures_bottom",
+				"productdetails_info_top",
+				"productdetails_info_bottom",
+				"productdetails_attrs_top",
+				"productdetail_action_links_after",
+				"productdetail_tabs_after",
+				"productdetail_tags_after",
+				"productdetail_related_products_after",
+				"productdetail_also_purchased_after"
+			]
+		},
+		{
+			"name": "Navigation",
+			"zones": [
+				"header_menu_top",
+				"header_menu_before",
+				"header_menu_special_after",
+				"header_menu_after",
+				"header_menu_bottom",
+				"servicemenu_before",
+				"servicemenu_after",
+				"shopbar_tools_before",
+				"shopbar_tools_after",
+				"mainmenu_before_first_item",
+				"mainmenu_after_last_item",
+				"breadcrumb_before",
+				"breadcrumb_after",
+				"account_dropdown_before",
+				"account_dropdown_after",
+				"myaccount_menu_before",
+				"myaccount_menu_after",
+				"myaccount_menu_firstitem_before",
+				"myaccount_menu_lastitem_after"
+			]
+		},
+		{
+			"name": "PDF",
+			"zones": [
+				"invoice_footer_before",
+				"invoice_footer_after",
+				"invoice_header_before",
+				"invoice_header_after",
+				"invoice_header_right",
+				"invoice_top",
+				"invoice_orderinfo_top",
+				"invoice_orderinfotable_after",
+				"invoice_orderinfo_bottom",
+				"invoice_lines_before",
+				"invoice_checkoutattributes_before",
+				"invoice_ordertotals_before",
+				"invoice_ordernotes_before",
+				"invoice_bottom",
+				"pdfcatalog_cover_top",
+				"pdfcatalog_cover_logo_after",
+				"pdfcatalog_cover_storename_after",
+				"pdfcatalog_productdetail_top",
+				"pdfcatalog_productdetail_fulldescription_before",
+				"pdfcatalog_productdetail_picture_before",
+				"pdfcatalog_productdetail_specificationattributes_before",
+				"pdfcatalog_productdetail_bundleditems_before",
+				"pdfcatalog_productdetail_associatedproducts_before"
+			]
+		},
+		{
+			"name": "Admin.Catalog.Manufacturers",
+			"zones": [
+				"manufacturers_all_top",
+				"manufacturers_all_bottom",
+				"manufacturerdetails_top",
+				"manufacturerdetails_before_featured_products",
+				"manufacturerdetails_bottom"
+			]
+		},
+		{
+			"name": "Footer",
+			"zones": [
+				"footer_top",
+				"footer_bottom",
+				"footer_col_1_after",
+				"footer_col_1_before",
+				"footer_col_2_after",
+				"footer_col_2_before",
+				"footer_col_3_after",
+				"footer_col_3_before"
+			]
+		},
+		{
+			"name": "Common.Misc",
+			"zones": [
+				"compareproducts_row",
+				"contactus_top",
+				"contactus_bottom",
+				"searchbox",
+				"search_filters_before",
+				"search_filters_after",
+				"active_filters_before",
+				"active_filters_after",
+				"productreviews_page_top",
+				"productreviews_page_inside_review",
+				"productreviews_page_bottom",
+				"profile_page_info_userdetails",
+				"profile_page_info_userstats",
+				"notifications",
+				"shipmentdetails_top",
+				"shipmentdetails_orderinfo_top",
+				"shipmentdetails_orderinfotable_after",
+				"shipmentdetails_orderinfo_bottom",
+				"shipmentdetails_lines_before",
+				"recently_added_products_top",
+				"wishlist_items_top",
+				"offcanvas_wishlist_items_after",
+				"offcanvas_compare_items_after"
+			]
+		},
+		{
+			"name": "Admin.ContentManagement.News",
+			"zones": [
+				"newslist_page_before_items",
+				"newslist_page_inside_item",
+				"newslist_page_after_items",
+				"newsitem_page_before_body",
+				"newsitem_page_before_comments",
+				"newsitem_page_inside_comment",
+				"newsitem_page_after_comments"
+			]
+		},
+		{
+			"name": "Admin.Orders",
+			"zones": [
+				"orderdetails_page_top",
+				"orderdetails_page_overview",
+				"orderdetails_page_beforeproducts",
+				"orderdetails_page_afterproducts",
+				"orderdetails_page_aftertotal",
+				"orderdetails_page_bottom"
+			]
+		},
+		{
+			"name": "Admin.Configuration.Settings.ShoppingCart.Checkout",
+			"zones": [
+				"checkout_billing_address_top",
+				"checkout_billing_address_middle",
+				"checkout_billing_address_bottom",
+				"checkout_steps_before",
+				"checkout_steps_after",
+				"checkout_completed_top",
+				"checkout_completed_bottom",
+				"checkout_confirm_top",
+				"checkout_confirm_before_summary",
+				"checkout_confirm_bottom",
+				"checkout_payment_method_top",
+				"checkout_payment_method_bottom",
+				"checkout_shipping_address_top",
+				"checkout_shipping_address_middle",
+				"checkout_shipping_address_bottom",
+				"checkout_shipping_method_top",
+				"checkout_shipping_method_bottom"
+			]
+		},
+		{
+			"name": "Shoppingcart",
+			"zones": [
+				"offcanvas_cart_summary",
+				"offcanvas_cart_items_after",
+				"offcanvas_cart_footer_after",
+				"order_summary_content_before",
+				"order_summary_actions_before",
+				"order_summary_actions_after",
+				"order_summary_totals_before",
+				"order_summary_totals_after",
+				"order_summary_buttons_before",
+				"order_summary_buttons_after",
+				"order_summary_content_after"
+			]
+		}
+	]
+}

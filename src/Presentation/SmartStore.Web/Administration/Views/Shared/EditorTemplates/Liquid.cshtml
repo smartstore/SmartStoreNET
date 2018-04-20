@@ -1,0 +1,49 @@
+﻿
+@{ 
+	string templateName = ViewData["TemplateName"]?.Convert<string>();
+
+	Html.AddScriptParts("~/bundles/codemirror");
+	Html.AddCssFileParts("~/css/codemirror");
+}
+
+<script type="text/javascript">
+    $(function () {
+		if (window.CodeMirror !== undefined) {
+            var el = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)');
+            CodeMirror.fromTextArea(el[0], {
+				mode: "liquid-html",
+				theme: "eclipse",
+				lineNumbers: true,
+				lineWrapping: false,
+                tabSize: 2,
+				smartIndent: true,
+				matchTags: true,
+				matchBrackets: true,
+				autoCloseTags: true,
+				autoCloseBrackets: true,
+				styleActiveLine: true,
+				extraKeys: {
+					"'.'": CodeMirror.hint.completeAfter,
+					"'<'": CodeMirror.hint.completeAfter,
+					"'/'": CodeMirror.hint.completeIfAfterLt,
+					"' '": CodeMirror.hint.completeIfAfterSpace,
+					"'='": CodeMirror.hint.completeIfInTag,
+					"Ctrl-Space": "autocomplete",
+					"F11": function (cm) { cm.setOption("fullScreen", !cm.getOption("fullScreen")); },
+					"Esc": function (cm) { if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false); }
+				},
+				hintOptions: {
+					closeCharacters: /[\s()\[\]{};:>,.|%]/,
+					completeSingle: false,
+					templateName: @Html.Raw(templateName.HasValue() ? "'" + templateName + "'" : "null")
+				}
+			});
+        }
+    });
+</script>
+
+@Html.TextArea(string.Empty, /* Name suffix */
+			   (string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
+			   new { @class = "form-control", style = "max-width: initial;", rows = 20 }
+)
+

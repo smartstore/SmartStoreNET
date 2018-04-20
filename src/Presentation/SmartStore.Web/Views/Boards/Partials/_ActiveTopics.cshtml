@@ -37,8 +37,8 @@
         </div>
     </div>
 
-    <div class="active-discussionstopics clearfix">
-        <table class="table table-responsive">
+    <div class="active-discussionstopics table-responsive clearfix">
+        <table class="table">
             @if (Model.ForumTopics.Count > 0)
             {
                 <thead>
@@ -69,20 +69,24 @@
                     <td class="topic-name">
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
                         <div>
-                            <div class="topic-starter text-muted pull-left">
+                            <div class="topic-starter text-muted pull-left d-inline-flex">
                                 @if (topic.CustomerId > 0)
-                                {
-                                    var authorText = T("Forum.Author");
-                                    if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
-                                    {
-                                        @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
-                                    }
-                                    else
-                                    {
-                                        @T("Forum.Author")<text>:</text> @topic.CustomerName
+								{
+									<span class="pr-1">@T("Forum.Author"):</span>
+
+									var authorText = T("Forum.Author");
+
+									if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+									{
+										<span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
+									}
+									else
+									{
+										<span>@topic.CustomerName</span>
                                     }
                                 }
                             </div>
+
                             @if (@topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)

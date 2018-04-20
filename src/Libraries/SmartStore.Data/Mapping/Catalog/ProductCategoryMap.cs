@@ -14,7 +14,6 @@ namespace SmartStore.Data.Mapping.Catalog
                 .WithMany()
                 .HasForeignKey(pc => pc.CategoryId);
 
-
             this.HasRequired(pc => pc.Product)
                 .WithMany(p => p.ProductCategories)
                 .HasForeignKey(pc => pc.ProductId);

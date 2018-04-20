@@ -27,6 +27,7 @@ namespace SmartStore.Web.Models.Common
         public string TwitterLink { get; set; }
         public string PinterestLink { get; set; }
         public string YoutubeLink { get; set; }
+		public string InstagramLink { get; set; }
 
 		public Dictionary<string, string> TopicPageUrls { get; set; }
 	}

@@ -3,12 +3,10 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)@*otherwise we get a model state error*@
 
-<div class="well" style="margin-bottom:8px;">
+<div class="well">
 	@if (ViewBag.IsEdit)
     {
-		<div>
-			@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
-		</div>
+		@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
     }
     else
     {
@@ -23,7 +21,7 @@
 	<div id="CombinationExistenceNote">
 		@if (Model.Warnings.Count > 0)
 		{
-			<div class="alert alert-warning fade in">
+			<div class="alert alert-warning">
 				@foreach (var warning in Model.Warnings)
 				{
 					<p><i class="fa fa-exclamation-triangle"></i>&nbsp;@warning</p>
@@ -52,16 +50,14 @@
                 @Html.SmartLabelFor(model => model.AssignedPictureIds)
             </td>
             <td class="adminData">
-				<ul class="choice-box-group choice-box-group-xl" id="assigned-pictures" style="margin-bottom: 10px">
+				<ul class="choice-box-group choice-box-group-xl mb-1" id="assigned-pictures">
 					@foreach (var x in Model.AssignablePictures)
 					{
 						<li class="choice-box">
 							<label class="choice-box-label">
 								<input type="checkbox" class="choice-box-control-native" name="AssignedPictureIds" value="@x.Id" @Html.Attr("checked", "checked", x.IsAssigned)>
 								<span class="choice-box-content">
-									<span class="choice-box-element">
-										<img class="choice-box-img" src="@x.PictureUrl" alt="">
-									</span>
+									<span class="choice-box-element" style="background-image:url('@x.PictureUrl')"></span>
 								</span>
 							</label>
 						</li>
@@ -101,7 +97,7 @@
                 @Html.SmartLabelFor(model => model.Price)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Price)
+                @Html.EditorFor(model => model.Price, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.Price)
             </td>
         </tr>
@@ -140,7 +136,7 @@
                 @Html.SmartLabelFor(model => model.Length)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Length)
+                @Html.EditorFor(model => model.Length, new { postfix = Model.BaseDimensionIn })
                 @Html.ValidationMessageFor(model => model.Length)
             </td>
         </tr>
@@ -149,7 +145,7 @@
                 @Html.SmartLabelFor(model => model.Width)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Width)
+                @Html.EditorFor(model => model.Width, new { postfix = Model.BaseDimensionIn })
                 @Html.ValidationMessageFor(model => model.Width)
             </td>
         </tr>
@@ -158,7 +154,7 @@
                 @Html.SmartLabelFor(model => model.Height)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Height)
+                @Html.EditorFor(model => model.Height, new { postfix = Model.BaseDimensionIn })
                 @Html.ValidationMessageFor(model => model.Height)
             </td>
         </tr>

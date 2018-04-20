@@ -8,10 +8,10 @@ using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Product service
-	/// </summary>
-	public partial interface IProductService
+    /// <summary>
+    /// Product service
+    /// </summary>
+    public partial interface IProductService
     {
 		#region Products
 
@@ -42,17 +42,24 @@ namespace SmartStore.Services.Catalog
         /// <returns>Products</returns>
         IList<Product> GetProductsByIds(int[] productIds, ProductLoadFlags flags = ProductLoadFlags.None);
 
-        /// <summary>
-        /// Inserts a product
-        /// </summary>
-        /// <param name="product">Product</param>
-        void InsertProduct(Product product);
+		/// <summary>
+		/// Get product by system name.
+		/// </summary>
+		/// <param name="systemName">System name</param>
+		/// <returns>Product entity.</returns>
+		Product GetProductBySystemName(string systemName);
+
+		/// <summary>
+		/// Inserts a product
+		/// </summary>
+		/// <param name="product">Product</param>
+		void InsertProduct(Product product);
 
         /// <summary>
         /// Updates the product
         /// </summary>
         /// <param name="product">Product</param>
-		void UpdateProduct(Product product, bool publishEvent = true);
+		void UpdateProduct(Product product);
 
         /// <summary>
         /// Update product review totals
@@ -152,13 +159,6 @@ namespace SmartStore.Services.Catalog
 		/// <param name="productIds">Product identifiers</param>
 		/// <returns>Map of applied discounts</returns>
 		Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds);
-
-		/// <summary>
-		/// Get product specification attributes by product identifiers
-		/// </summary>
-		/// <param name="productIds">Product identifiers</param>
-		/// <returns>Map of product specification attributes</returns>
-		Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds);
 
         #endregion
 

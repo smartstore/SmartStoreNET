@@ -59,10 +59,7 @@ namespace SmartStore.PayPal
 
 		protected PayPalAPIAASoapBinding GetApiAaService(TSetting settings)
 		{
-			if (settings.SecurityProtocol.HasValue)
-			{
-				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
-			}
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 			var service = new PayPalAPIAASoapBinding();
 
@@ -75,10 +72,7 @@ namespace SmartStore.PayPal
 
 		protected PayPalAPISoapBinding GetApiService(TSetting settings)
 		{
-			if (settings.SecurityProtocol.HasValue)
-			{
-				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
-			}
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 			var service = new PayPalAPISoapBinding();
 

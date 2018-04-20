@@ -16,194 +16,161 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
+			<button type="button" class="btn btn-outline-secondary btn-toggle-filter" data-toggle="button" aria-pressed="false">
+				<i class="fa fa-filter"></i>
+				<span>@T("Common.Filter")</span>
+				<i class="fa fa-angle-double-down"></i>
+			</button>
+
 			<a href="@Url.Action("Create")" class="btn btn-primary">
-				<i class="fa fa-plus"></i> @T("Admin.Common.AddNew")
+				<i class="fa fa-plus"></i> 
+				<span>@T("Admin.Common.AddNew")</span>
 			</a>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
         </div>
     </div>
 
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchCustomerRoleIds)
-            </td>
-            <td class="adminData">
-                @foreach (var customerRole in Model.AvailableCustomerRoles)
-                {
-                    <label class="checkbox">
-                        <input type="checkbox" name="SearchCustomerRoleIds" value="@customerRole.Id"
-                        @if (Model.SearchCustomerRoleIds != null && Model.SearchCustomerRoleIds.Contains(customerRole.Id))
-                        {
-                            <text>checked="checked"</text>
-                        }
-                        /> @customerRole.Name
-                    </label>
-                }
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchEmail)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.SearchEmail)
-            </td>
-        </tr>
-        @if (Model.UsernamesEnabled)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SearchUsername)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => Model.SearchUsername)
-                </td>
-            </tr>
-        }
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchFirstName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.SearchFirstName)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchLastName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.SearchLastName)
-            </td>
-        </tr>
-        @if (Model.DateOfBirthEnabled)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SearchDayOfBirth)
-                </td>
-                <td class="adminData">
-                    @{
-						var monthOfBirthValues = new List<SelectListItem>();
-						for (int i = 1; i <= 12; i++)
-						{
-							monthOfBirthValues.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
-						}
+	<div class="row mt-3 grid-filter" style="display: none">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchEmail)
+			@Html.TextBoxFor(model => Model.SearchEmail, new { @class = "form-control" })
+		</div>
+		@if (Model.UsernamesEnabled)
+		{
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.SearchUsername)
+				@Html.TextBoxFor(model => Model.SearchUsername, new { @class = "form-control" })
+			</div>
+		}
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchFirstName)
+			@Html.TextBoxFor(model => Model.SearchFirstName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchLastName)
+			@Html.TextBoxFor(model => Model.SearchLastName, new { @class = "form-control" })
+		</div>
+		@if (Model.DateOfBirthEnabled)
+		{
+			var monthOfBirthValues = new List<SelectListItem>();
+			for (int i = 1; i <= 12; i++)
+			{
+				monthOfBirthValues.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
+			}
 
-						var dayOfBirthValues = new List<SelectListItem>();
-						for (int i = 1; i <= 31; i++)
-						{
-							dayOfBirthValues.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
-						}
-                    }
-                    @Html.DropDownListFor(model => Model.SearchMonthOfBirth, monthOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text, new { @class = "autowidth" })
-                    @Html.DropDownListFor(model => Model.SearchDayOfBirth, dayOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Day").Text, new { @class = "autowidth" })
-                </td>
-            </tr>
-        }
-        
-        @if (Model.CompanyEnabled)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SearchCompany)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => Model.SearchCompany)
-                </td>
-            </tr>
-        }        
-        @if (Model.PhoneEnabled)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SearchPhone)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => Model.SearchPhone)
-                </td>
-            </tr>
-        }
-        @if (Model.ZipPostalCodeEnabled)
-        {
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.SearchZipPostalCode)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => Model.SearchZipPostalCode)
-                </td>
-            </tr>
-        } 
-        <tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="search-customers" name="search-customers" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-            </td>
-        </tr>
-    </table>
+			var dayOfBirthValues = new List<SelectListItem>();
+			for (int i = 1; i <= 31; i++)
+			{
+				dayOfBirthValues.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
+			}
 
-    <p></p>
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				<div>
+					@Html.SmartLabelFor(model => model.SearchMonthOfBirth)
+				</div>
+				<div class="form-row">
+					<div class="col">
+						@Html.DropDownListFor(model => Model.SearchMonthOfBirth, monthOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text)
+					</div>
+					<div class="col">
+						@Html.DropDownListFor(model => Model.SearchDayOfBirth, dayOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Day").Text)
+					</div>
+				</div>
+			</div>
+		}
+		@if (Model.CompanyEnabled)
+		{
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.SearchCompany)
+				@Html.TextBoxFor(model => Model.SearchCompany, new { @class = "form-control" })
+			</div>
+		}
+		@if (Model.PhoneEnabled)
+		{
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.SearchPhone)
+				@Html.TextBoxFor(model => Model.SearchPhone, new { @class = "form-control" })
+			</div>
+		}
+		@if (Model.ZipPostalCodeEnabled)
+		{
+			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+				@Html.SmartLabelFor(model => model.SearchZipPostalCode)
+				@Html.TextBoxFor(model => Model.SearchZipPostalCode, new { @class = "form-control" })
+			</div>
+		}
+		
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchCustomerRoleIds)
+			@*@Html.DropDownListFor(model => model.SearchCustomerRoleIds, Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })*@
+			@Html.DropDownList("SearchCustomerRoleIds", Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })
+		</div>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<CustomerModel>(Model.Customers.Data)
-                    .Name("customers-grid")
-                    .ClientEvents(events => events
-                        .OnDataBinding("onDataBinding")
-                        .OnDataBound("onDataBound"))
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Id)
-							.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
-                        columns.Bound(x => x.Id);
-                        columns.Bound(x => x.Email)
-                            .Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
-                        columns.Bound(x => x.Username)
-                            .Visible(Model.UsernamesEnabled);
-                        columns.Bound(x => x.FullName);
-						columns.Bound(x => x.CustomerRoleNames);
-                        columns.Bound(x => x.Company)
-                            .Visible(Model.CompanyEnabled);
-                        columns.Bound(x => x.Phone)
-                            .Visible(Model.PhoneEnabled);
-                        columns.Bound(x => x.ZipPostalCode)
-                            .Visible(Model.ZipPostalCodeEnabled);
-                        columns.Bound(x => x.Active)
-                             .Template(item => @Html.SymbolForBool(item.Active))
-                             .ClientTemplate(@Html.SymbolForBool("Active"))
-                             .Centered();
-                        columns.Bound(x => x.CreatedOn);
-                        columns.Bound(x => x.LastActivityDate);
-                        columns.Bound(x => x.Id)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .Pageable(settings => settings.Total(Model.Customers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerList", "Customer"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
-    
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+			<label>&nbsp;</label>
+			<button type="submit" id="search-customers" name="search-customers" class="btn btn-warning btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
+
+
+    @(Html.Telerik().Grid<CustomerModel>(Model.Customers.Data)
+		.Name("customers-grid")
+		.ClientEvents(events => events
+			.OnDataBinding("onDataBinding")
+			.OnDataBound("onDataBound"))
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Id)
+				.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
+				.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+				.Title("<input id='mastercheckbox' type='checkbox'/>")
+				.HtmlAttributes(new { style = "text-align:center" })
+				.HeaderHtmlAttributes(new { style = "text-align:center" });
+			columns.Bound(x => x.Id);
+			columns.Bound(x => x.Email)
+				.Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id }, new { }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+			columns.Bound(x => x.Username)
+				.Visible(Model.UsernamesEnabled);
+			columns.Bound(x => x.FullName);
+			columns.Bound(x => x.CustomerRoleNames);
+			columns.Bound(x => x.Company)
+				.Visible(Model.CompanyEnabled);
+			columns.Bound(x => x.Phone)
+				.Visible(Model.PhoneEnabled);
+			columns.Bound(x => x.ZipPostalCode)
+				.Visible(Model.ZipPostalCodeEnabled);
+			columns.Bound(x => x.Active)
+					.Template(item => @Html.SymbolForBool(item.Active))
+					.ClientTemplate(@Html.SymbolForBool("Active"))
+					.Centered();
+			columns.Bound(x => x.CreatedOn);
+			columns.Bound(x => x.LastActivityDate);
+			columns.Bound(x => x.Id)
+				.Centered()
+				.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+				.Title(String.Empty)
+				.HtmlAttributes(new { align = "right", @class = "omega" });
+		})
+		.Pageable(settings => settings.Total(Model.Customers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerList", "Customer"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+
     <script type="text/javascript">
 		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
 		var selectedIds = [];
 
 		$(document).ready(function () {
+
+			// Filter toggler
+			$('.btn-toggle-filter').on('click', function (e) {
+				$('.grid-filter').slideToggle({ duration: 200, easing: 'ease-in-out' });
+			});
 
 			//search button
 			$('#search-customers').click(function () {
@@ -302,13 +269,8 @@
 		}
 
 		function onDataBinding(e) {
-			var customerRoleIds = [];
-			$('[name=SearchCustomerRoleIds]:checked').each(function () {
-				customerRoleIds.push($(this).val());
-			});
-
 			var searchModel = {
-				SearchCustomerRoleIds: customerRoleIds.join(","),
+				SearchCustomerRoleIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.SearchCustomerRoleIds)').val()).join(),
 				SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val(),
 				SearchUsername: $('#@Html.FieldIdFor(model => model.SearchUsername)').val(),
 				SearchFirstName: $('#@Html.FieldIdFor(model => model.SearchFirstName)').val(),

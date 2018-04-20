@@ -59,17 +59,17 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Orders.Fields.ShippingStatus")]
 		public string ShippingStatus { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.CustomerEmail")]
-		public string CustomerEmail { get; set; }
+		[SmartResourceDisplayName("Common.CustomerId")]
+		public int CustomerId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
-		public string StoreName { get; set; }
+		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
+		public decimal OrderTotal { get; set; }
 
 		[SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
-		public decimal OrderTotal { get; set; }
+		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
+		public string StoreName { get; set; }
 	}
 
 	public class ExportPreviewCategoryModel : EntityModelBase
@@ -143,6 +143,26 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool Active { get; set; }
 
 		[SmartResourceDisplayName("Admin.Promotions.NewsLetterSubscriptions.Fields.CreatedOn")]
+		public DateTime CreatedOn { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store")]
+		public string StoreName { get; set; }
+	}
+
+	public class ExportPreviewShoppingCartItemModel : ExportPreviewProductModel
+	{
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShoppingCartTypeId")]
+		public int ShoppingCartTypeId { get; set; }
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShoppingCartTypeId")]
+		public string ShoppingCartTypeName { get; set; }
+
+		[SmartResourceDisplayName("Common.CustomerId")]
+		public int CustomerId { get; set; }
+
+		[SmartResourceDisplayName("Admin.CurrentCarts.Customer")]
+		public string CustomerEmail { get; set; }
+
+		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store")]

@@ -5,15 +5,15 @@
 @{
     Layout = "_Layout";
 
-    Html.AddTitleParts(Model.ProductName);
+    Html.AddTitleParts(Model.ProductName.Value);
     Html.AddTitleParts(T("PageTitle.ProductReviews").Text);
 }
 
 <div class="page product-reviews-page">
     <div class="page-title">
-        <h1 class="h3">
-			@T("Reviews.ProductReviewsFor")
-			<small>
+        <h1 class="h3 d-flex align-items-baseline">
+			<span class="pr-2">@T("Reviews.ProductReviewsFor")</span>
+			<small @Html.LanguageAttributes(Model.ProductName)>
 				<a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" style="text-decoration: none;">@Model.ProductName</a>
 			</small>	
 		</h1>
@@ -25,7 +25,9 @@
         @if(Model.SuccessfullyAdded && Model.Result.HasValue())
         {
             <div class="alert alert-success">
-                <button type="button" class="close" data-dismiss="alert">×</button>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
                 @Model.Result
             </div>
 		}
@@ -41,7 +43,7 @@
 				{
 					@Html.AntiForgeryToken()
                     <div class="form-group row">
-                        @Html.LabelFor(model => model.Rating, new { @class = "form-control-label col-md-3" })
+                        @Html.LabelFor(model => model.Rating, new { @class = "form-control-label col-form-label col-md-3" })
                         <div class="col-md-9 star-rating-parent">
                             <div class="review-rating star-rating star-rating-large">
                                 @{
@@ -56,14 +58,14 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        @Html.LabelFor(model => model.Title, new { @class = "form-control-label col-md-3" })
+                        @Html.LabelFor(model => model.Title, new { @class = "form-control-label col-form-label col-md-3" })
 						<div class="col-md-9">
 							@Html.TextBoxFor(model => model.Title, Model.CanCurrentCustomerLeaveReview ? (object)(new { @class = "form-control" }) : (object)(new { @class = "form-control", disabled = "disabled" }))
 							@Html.ValidationMessageFor(model => model.Title, null)
 						</div>
                     </div>
                     <div class="form-group row">
-                        @Html.LabelFor(model => model.ReviewText, new { @class = "form-control-label col-md-3" })
+                        @Html.LabelFor(model => model.ReviewText, new { @class = "form-control-label col-form-label col-md-3" })
 						<div class="col-md-9">
 							@Html.TextAreaFor(model => model.ReviewText, 4, 1, Model.CanCurrentCustomerLeaveReview ? (object)(new { @class = "form-control" }) : (object)(new { @class = "form-control", disabled = "disabled" }))
 							@Html.ValidationMessageFor(model => model.ReviewText, null)
@@ -72,15 +74,15 @@
 
                     if (Model.DisplayCaptcha)
                     {
-                        <div class="captcha-box form-group row">
-							<div class="col-md-9 push-md-3">
+                        <div class="captcha-box form-group row justify-content-end">
+							<div class="col-md-9">
 								@Html.Raw(Html.GenerateCaptcha())
 							</div>
                         </div>
                     }
 
-                    <div class="form-group row m-b-0">
-						<div class="col-md-9 push-md-3">
+                    <div class="form-group row m-b-0 justify-content-end">
+						<div class="col-md-9">
 							<button type="submit" name="add-review" value="add-review" class="btn btn-primary write-product-review-button">
 								<span>@T("Reviews.SubmitButton")</span>
 							</button>
@@ -94,7 +96,10 @@
         {
             <div class="block">
                 <div class="block-title">
-                    <h3>@T("Reviews.ExistingReviews") <small class="text-muted">(@Model.Items.Count)</small></h3>
+                    <h3 class="d-flex align-items-center">
+						<span>@T("Reviews.ExistingReviews")</span> 
+						<small class="text-muted pl-2 lrm">(@Model.Items.Count)</small>
+					</h3>
                 </div>
                 <div class="block-body pt-3">
 					@{ Html.RenderPartial("Product.Reviews", Model); }

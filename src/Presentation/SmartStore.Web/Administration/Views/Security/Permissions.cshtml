@@ -11,8 +11,9 @@
             @T("Admin.Configuration.ACL")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary">
-				<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+            <button type="submit" name="save" value="save" class="btn btn-warning">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
 			</button>
         </div>
     </div>
@@ -34,43 +35,61 @@
                 }
                 else
                 {
-                    <div class="t-widget t-grid">
-                        <table class="table table-hover" cellspacing="0" rules="all" border="0">
-                            <thead  class="t-grid-header">
-                                <tr>
-                                    <th class="t-header" scope="col">
-                                        <span class="t-link">@T("Admin.Configuration.ACL.Permission")</span>
-                                    </th>
-                                    @foreach (var cr in Model.AvailableCustomerRoles)
-                                    {
-                                        <th class="t-header" scope="col" style="text-align:center">
-                                            <span class="t-link">@cr.Name</span>
-                                        </th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var pr in Model.AvailablePermissions)
-                                {
-                                    <tr>
-                                        <td>
-											<span class="label label-smnet @pr.CategoryLabel">@Inflector.Titleize(pr.Category).NaIfEmpty()</span>
-                                            <span>@pr.Name</span>
-                                        </td>
-                                        @foreach (var cr in Model.AvailableCustomerRoles)
-                                        {
-                                            var allowed = Model.Allowed.ContainsKey(pr.SystemName) && Model.Allowed[pr.SystemName][cr.Id];
-                                            <td align="center">
-                                                <input id="allow_@(cr.Id)" class="allow_@(cr.Id)" type="checkbox" value="@(pr.SystemName)" name="allow_@(cr.Id)" @(allowed ? " checked=checked" : null) />
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+					<div class="table-responsive">
+						<table class="table admin-table table-hover">
+							<thead>
+								<tr>
+									<th class="xt-header align-top" scope="col">
+										<span class="t-link">@T("Admin.Configuration.ACL.Permission")</span>
+									</th>
+									@foreach (var cr in Model.AvailableCustomerRoles)
+									{
+										<th class="xt-header text-center" scope="col" data-id="@cr.Id">
+											<span class="t-link">
+												<span class="d-block">@cr.Name</span>
+												<span class="d-block"><input type="checkbox" class="master-checkbox" /></span>
+											</span>
+										</th>
+									}
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var pr in Model.AvailablePermissions)
+								{
+									<tr>
+										<td>
+											<span class="badge @pr.CategoryLabel">@Inflector.Titleize(pr.Category).NaIfEmpty()</span>
+											<span>@pr.Name</span>
+										</td>
+										@foreach (var cr in Model.AvailableCustomerRoles)
+										{
+											var allowed = Model.Allowed.ContainsKey(pr.SystemName) && Model.Allowed[pr.SystemName][cr.Id];
+											<td align="center">
+												<input id="allow_@(cr.Id)" class="allow_@(cr.Id)" type="checkbox" value="@(pr.SystemName)" name="allow_@(cr.Id)" @(allowed ? " checked=checked" : null) />
+											</td>
+										}
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
                 }
             </td>
         </tr>
     </table>
 }
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		// Toggle all checkboxes of a column.
+		$('input[type=checkbox].master-checkbox').click(function (e) {
+			var id = $(this).closest('th').attr('data-id'),
+				isChecked = $(this).is(':checked');
+
+			$(this).closest('table').find('input[type=checkbox][id=allow_' + id + ']').attr('checked', isChecked);
+		});
+
+	});
+</script>

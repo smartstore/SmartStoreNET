@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ NewsLetterSubscription.Email }}</To>
+	<Subject>{{ Store.Name }}. Newsletter-Anmeldung</Subject>
+	<ModelTypes>NewsLetterSubscription</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hallo {{ Customer.FullName }},
+</h1>
+
+<p>
+  um Ihre Newsletter-Anmeldung zu bestätigen, klicken Sie bitte auf den folgenden Link:
+</p>
+
+<p class="text-center mt-4 mb-4">
+  <a class="btn btn-success" href="{{ NewsLetterSubscription.ActivationUrl }}">Anmeldung bestätigen</a>
+</p>
+
+<p>
+	Wenn der Link nicht geöffnet werden kann, kopieren Sie folgende Addresse und fügen Sie sie in die Addresszeile ihres Browsers ein: 
+</p>
+
+<p>
+	<a href="{{ NewsLetterSubscription.ActivationUrl }}">{{ NewsLetterSubscription.ActivationUrl }}</a> 
+</p>
+
+<p>
+	Sollten Sie diese E-Mail fälschlicherweise erhalten haben, löschen Sie sie bitte.
+</p>
+{% endblock %}]]></Body>
+</MessageTemplate>

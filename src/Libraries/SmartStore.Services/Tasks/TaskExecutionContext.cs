@@ -93,7 +93,7 @@ namespace SmartStore.Services.Tasks
 				try // dont't let this abort the task on failure
 				{
 					var dbContext = _componentContext.Resolve<IDbContext>();
-					dbContext.ChangeState(_originalTask, System.Data.Entity.EntityState.Modified);
+					//dbContext.ChangeState(_originalTask, System.Data.Entity.EntityState.Modified);
 					dbContext.SaveChanges();
 				}
 				catch { }

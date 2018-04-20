@@ -19,6 +19,7 @@ namespace SmartStore.Core
 
 		private List<T> _list;
 
+		/// <param name="pageIndex">The 0-based page index</param>
 		public PagedList(IEnumerable<T> source, int pageIndex, int pageSize)
 		{
 			Guard.NotNull(source, "source");
@@ -26,6 +27,7 @@ namespace SmartStore.Core
 			Init(source.AsQueryable(), pageIndex, pageSize, null);
 		}
 
+		/// <param name="pageIndex">The 0-based page index</param>
 		public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
         {
             Guard.NotNull(source, "source");

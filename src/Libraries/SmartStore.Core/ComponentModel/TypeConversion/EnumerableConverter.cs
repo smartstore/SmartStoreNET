@@ -122,9 +122,8 @@ namespace SmartStore.ComponentModel
 			if (to == typeof(string))
 			{
 				string result = string.Empty;
-				var enumerable = value as IEnumerable<T>;
 
-				if (enumerable != null)
+				if (value is IEnumerable<T> enumerable)
 				{
 					// we don't use string.Join() because it doesn't support invariant culture
 					foreach (var token in enumerable)

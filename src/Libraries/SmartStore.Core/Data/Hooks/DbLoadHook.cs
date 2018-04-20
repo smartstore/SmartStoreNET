@@ -6,6 +6,7 @@ namespace SmartStore.Core.Data.Hooks
 	{
 		public virtual void OnLoaded(BaseEntity entity)
 		{
+			throw new NotImplementedException();
 		}
 	}
 }

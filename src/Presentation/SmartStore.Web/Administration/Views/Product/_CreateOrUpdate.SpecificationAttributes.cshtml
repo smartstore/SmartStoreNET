@@ -11,7 +11,7 @@
     {
         <script type="text/javascript">
             $(function() {
-                $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)").change(function() {
+                $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)").on('change', function() {
 
                     var selectedItem = $(this).val();
                     var ddlSpecOptions = $("#@Html.FieldIdFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeOptionId)")
@@ -66,7 +66,7 @@
             });
         </script>
 
-        <table class="adminContent">
+        <table class="adminContent mb-5">
 			<tr>
 				<td colspan="2">
 					<div class="admin-config-group">
@@ -124,22 +124,16 @@
 					&nbsp;
 				</td>
 				<td class="adminData">
-					<button type="button" name="addProductSpec" id="addProductSpec" class="btn btn-warning">
+					<button type="button" name="addProductSpec" id="addProductSpec" class="btn btn-primary">
 						<i class="fa fa-plus"></i>
-						@T("Admin.Catalog.Products.SpecificationAttributes.AddButton")
+						<span>@T("Admin.Catalog.Products.SpecificationAttributes.AddButton")</span>
 					</button>
 				</td>
             </tr>
         </table>
-        
-		<p>&nbsp;</p>
-	
+    
         <div>
             <script type="text/javascript">
-                $(function() {
-                    $.fn.editable.defaults.mode = 'inline';
-                });
-
                 function OnCommand(e) {
                     var link = $(e.row).find(".spec-attr-opt");
                     if(e.name == "edit") {
@@ -157,48 +151,59 @@
                     initXEditable(link);
                 }
 
-                function initXEditable(link){
+                function initXEditable(link) {
+                	if (!$.fn.editable)
+                		return;
+
+					var optionsUrl = link.data('options-url'),
+						initText = link.text(),
+						selectedId = link.data('value');
 
                     link.editable({
-                        type: 'select2',
-                        url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
-                        unsavedclass: null,
-                        placement: "center",
-                        autotext: 'auto',
-                        select2: {
-                            minimumResultsForSearch: 8,
-                            data: link.data("options") || [],
-                            initSelection: function (el, fn) {
-                                var id = $(el).val();
-                                if (id !== "") {
-                                    fn({ id: link.data("value"), text: link.text() });
-                                }
-                            }
-                        },
-                        success: function (response, newValue)
-                        {                       	
-                        	if (response.success) {
-                        		// we have to overwrite grid data so the correct values are displayed when a value was saved with xeditable
-                        		// else the data that initialy populated the client template would be displayed
-                        		var grid = $('#specificationattributes-grid').data('tGrid');
+						type: 'select2',
+						url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
+						unsavedclass: null,
+						inputclass: 'form-control form-control-sm',
+						mode: 'popup',
+						placement: 'right',
+						autotext: 'auto',
+						select2: {
+							lazy: {
+								url: optionsUrl
+							},
+							init: {
+								id: selectedId,
+								text: initText
+							}
+						},
+						display: function (value, sourceData) {
+							// ABS4: display new value, otherwise always 'empty' is displayed.
+							if (sourceData && sourceData.success) {
+								$(this).html(sourceData.name);
+							}
+						},
+						success: function (response, newValue) {
+							if (response.success) {
+								// we have to overwrite grid data so the correct values are displayed when a value was saved with x-editable
+								// else the data that initialy populated the client template would be displayed
+								var grid = $('#specificationattributes-grid').data('tGrid');
 
-                        		// get the index of the tr holding the updated value because the data is stored in an array
-                        		var index = link.closest("tr").index();
-                        		var data = grid.data[index];
+								// get the index of the tr holding the updated value because the data is stored in an array
+								var index = link.closest("tr").index();
+								var data = grid.data[index];
 
-                        		// overwrite data of option id and name
-                        		data.SpecificationAttributeOptionId = newValue;
-                        		data.SpecificationAttributeOptionName = response.name;                        		
-                        	}
-                        	else {
-                        		displayNotification(response.message, 'warning');
+								// overwrite data of option id and name
+								data.SpecificationAttributeOptionId = newValue;
+								data.SpecificationAttributeOptionName = response.name;
+							}
+							else {
+								displayNotification(response.message, 'warning');
+								$("#specificationattributes-grid").data('tGrid').ajaxRequest();
+							}
+						}
+					});
 
-                        		$("#specificationattributes-grid").data('tGrid').ajaxRequest();
-                        	}
-                        }
-                    });
-
-                }
+				}
             </script>
 
             @(Html.Telerik().Grid<ProductSpecificationAttributeModel>()
@@ -213,7 +218,7 @@
 						.Width(200)
 						.ReadOnly();
 					columns.Bound(x => x.SpecificationAttributeOptionName)
-						.ClientTemplate("<a href='#' data-options='<#= SpecificationAttributeOptionsJsonString #>' data-pk='<#= SpecificationAttributeOptionAttributeId #>' data-value='<#= SpecificationAttributeOptionId #>' id='<#= Id #>' class='editable editable-click spec-attr-opt'><#= SpecificationAttributeOptionName #></a>")
+						.ClientTemplate("<a href='#' data-options-url='<#= SpecificationAttributeOptionsUrl #>' data-pk='<#= SpecificationAttributeId #>' data-value='<#= SpecificationAttributeOptionId #>' id='<#= Id #>' class='editable editable-click spec-attr-opt'><#= SpecificationAttributeOptionName #></a>")
 						.ReadOnly()
 						.Width(300);
 					columns.Bound(x => x.AllowFiltering)
@@ -231,7 +236,7 @@
 					{
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
-					}).Width(180);
+					}).Width(180).HtmlAttributes(new { align = "right" });
 				})
 				.ClientEvents(e =>
 				{

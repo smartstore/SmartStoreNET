@@ -222,5 +222,68 @@ namespace SmartStore.Core.IO
 			return true;
 		}
 
+		/// <summary>
+		/// Checks whether the name of the file is unique within its directory.
+		/// When given file exists, this method appends [1...n] to the file title until
+		/// the check returns false.
+		/// </summary>
+		/// <param name="path">The path of file to check</param>
+		/// <param name="uniqueFile">An <see cref="IFile"/> object containing the unique file's info, or <c>null</c> if method returns <c>false</c></param>
+		/// <returns>
+		/// <c>false</c> when <paramref name="path"/> does not exist yet. <c>true</c> otherwise.
+		/// </returns>
+		public static bool CheckFileUniqueness(this IFileSystem fileSystem, string path, out IFile uniqueFile)
+		{
+			Guard.NotEmpty(path, nameof(path));
+
+			uniqueFile = null;
+
+			var file = fileSystem.GetFile(path);
+			if (!file.Exists)
+			{
+				return false;
+			}
+
+			var pattern = string.Concat(file.Title, "-*", file.Extension);
+			var dir = file.Directory;
+			var files = new HashSet<string>(fileSystem.SearchFiles(dir, pattern, false).Select(x => Path.GetFileName(x)));
+
+			int i = 1;
+			while (true)
+			{
+				var newFileName = string.Concat(file.Title, "-", i, file.Extension);
+				if (!files.Contains(newFileName))
+				{
+					// Found our gap
+					uniqueFile = fileSystem.GetFile(string.Concat(dir, newFileName));
+					return true;
+				}
+
+				i++;
+			}
+		}
+
+		/// <summary>
+		/// Retrieves the count of files within a path.
+		/// </summary>
+		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
+		/// <param name="pattern">The file pattern to match</param>
+		/// <param name="deep">Whether to count files in all subfolders also</param>
+		/// <returns>Total count of files.</returns>
+		public static long CountFiles(this IFileSystem fileSystem, string path, string pattern, bool deep = true)
+		{
+			return fileSystem.CountFiles(path, pattern, null, deep);
+		}
+
+		/// <summary>
+		/// Retrieves the count of files within a path.
+		/// </summary>
+		/// <param name="path">The relative path to the folder in which to retrieve file count.</param>
+		/// <param name="deep">Whether to count files in all subfolders also</param>
+		/// <returns>Total count of files.</returns>
+		public static long CountFiles(this IFileSystem fileSystem, string path, bool deep = true)
+		{
+			return fileSystem.CountFiles(path, "*", null, deep);
+		}
 	}
 }

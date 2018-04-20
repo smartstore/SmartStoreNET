@@ -14,28 +14,25 @@
     <div class="options">
     </div>
 </div>
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<OnlineCustomerModel>()
-                    .Name("onlinecustomers-grid")
-                    .BindTo(Model.Data)
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.CustomerInfo)
-                            .Template(x => Html.ActionLink(x.CustomerInfo, "Edit", "Customer", new { id = x.Id }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= CustomerInfo #></a>");
-                        columns.Bound(x => x.LastIpAddress);
-                        columns.Bound(x => x.Location)
-                            .Width(150);
-                        columns.Bound(x => x.LastActivityDate)
-                            .Width(150);
-                        columns.Bound(x => x.LastVisitedPage);
-                    })
-                    .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "OnlineCustomer"))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+
+<div>
+	@(Html.Telerik().Grid<OnlineCustomerModel>()
+		.Name("onlinecustomers-grid")
+		.BindTo(Model.Data)
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.CustomerInfo)
+				.Template(x => Html.ActionLink(x.CustomerInfo, "Edit", "Customer", new { id = x.Id }, new { }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= CustomerInfo #></a>");
+			columns.Bound(x => x.LastIpAddress);
+			columns.Bound(x => x.Location)
+				.Width(150);
+			columns.Bound(x => x.LastActivityDate)
+				.Width(150);
+			columns.Bound(x => x.LastVisitedPage);
+		})
+		.Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "OnlineCustomer"))
+		.PreserveGridState()
+		.EnableCustomBinding(true))
+</div>

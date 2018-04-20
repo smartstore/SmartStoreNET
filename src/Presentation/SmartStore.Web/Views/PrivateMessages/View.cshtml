@@ -21,20 +21,20 @@
         </div>
         <div class="row my-1">
             <label class="col-sm-3">@T("PrivateMessages.View.Subject")</label>
-            <div class="col-sm-9">@Model.Subject</div>
+            <div class="col-sm-9" dir="auto">@Model.Subject</div>
         </div>
         <div class="row mt-1 mb-3">
             <label class="col-sm-3">@T("PrivateMessages.View.Message")</label>
             <div class="col-sm-9">
                 <div class="card">
-                    <div class="card-block">
+                    <div class="card-body" dir="auto">
                         @Html.Raw(Model.Message)
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-9 push-sm-3">
+        <div class="row justify-content-end">
+            <div class="col-sm-9">
                 <a class="btn btn-secondary" href='@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })' rel="nofollow">
                     <i class="fa fa-angle-left"></i>
                     <span>@T("PrivateMessages.View.BackButton")</span>

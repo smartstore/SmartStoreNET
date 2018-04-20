@@ -34,6 +34,12 @@ namespace SmartStore.Core.Domain.Stores
 		public string SecureUrl { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether all pages will be forced to use SSL (no matter of a specified [RequireHttpsByConfigAttribute] attribute)
+		/// </summary>
+		[DataMember]
+		public bool ForceSslForAllPages { get; set; }
+
+		/// <summary>
 		/// Gets or sets the comma separated list of possible HTTP_HOST values
 		/// </summary>
 		[DataMember]
@@ -104,7 +110,49 @@ namespace SmartStore.Core.Domain.Stores
 					return HttpSecurityMode.Ssl;
 				}
 			}
+
 			return HttpSecurityMode.Unsecured;
+		}
+
+		private string _secureHost;
+		private string _unsecureHost;
+
+		/// <summary>
+		/// Gets the store host name
+		/// </summary>
+		/// <param name="secure">
+		/// If <c>false</c>, returns the default unsecured url.
+		/// If <c>true</c>, returns the secure url, but only if SSL is enabled for the store.
+		/// </param>
+		/// <returns>The host name</returns>
+		public string GetHost(bool secure)
+		{
+			return secure
+				? _secureHost ?? (_secureHost = GetHostInternal(true))
+				: _unsecureHost ?? (_unsecureHost = GetHostInternal(false));
+		}
+
+		private string GetHostInternal(bool secure)
+		{
+			var host = string.Empty;
+
+			if (secure && SslEnabled)
+			{
+				if (SecureUrl.HasValue())
+				{
+					host = SecureUrl;
+				}
+				else
+				{
+					host = Url.Replace("http:/", "https:/");
+				}
+			}
+			else
+			{
+				host = Url;
+			}
+
+			return host.EnsureEndsWith("/");
 		}
 	}
 }

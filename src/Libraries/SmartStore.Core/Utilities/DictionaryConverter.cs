@@ -9,7 +9,6 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore.Utilities
 {
-
     [Serializable]
     public class ConvertProblem
     {
@@ -76,7 +75,6 @@ namespace SmartStore.Utilities
 
     public static class DictionaryConverter
     {
-
         public static bool CanCreateType(Type itemType)
         {
             return itemType.IsClass && itemType.GetConstructor(Type.EmptyTypes) != null;
@@ -248,9 +246,9 @@ namespace SmartStore.Utilities
                         return;
                     }
 
-                    if (pi.PropertyType.IsNullable())
+                    if (pi.PropertyType.IsNullable(out var wrappedType))
                     {
-                        destType = pi.PropertyType.GetGenericArguments()[0];
+                        destType = wrappedType;
                     }
 
                     prop.SetValue(item, value.Convert(destType));

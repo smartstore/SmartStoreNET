@@ -11,11 +11,11 @@
 	}
 	if (activatable.IsActive)
 	{
-		<span class="label label-success">@T("Common.Active")</span>
+		<span class="badge badge-success">@T("Common.Active")</span>
 	}
 	else
 	{
-		<span class="label label">@T("Common.Inactive")</span>
+		<span class="badge badge-secondary">@T("Common.Inactive")</span>
 	}
 }
 
@@ -41,16 +41,16 @@
 		return activatable.IsActive;
 	}
 	
-	private string GetColumnWidth()
+	private string GetColClass()
 	{
-		return "{0}%".FormatInvariant(100 / (Model.ExtraColumns.Count + 1));
+		return "col-" + (12 / (Model.ExtraColumns.Count + 1));
 	}
 }
 
 <div class="module-list@(Model.Data.Any(x => x.IsEditable) ? " sortable-list" : "")">
 	@foreach (var item in Model.Data)
 	{
-		<div class='module-item sortable-item clearfix@(!IsActive(item) ? " inactive" : "")' data-system-name="@item.SystemName" data-friendly-name="@item.FriendlyName">
+		<div class='module-item sortable-item@(!IsActive(item) ? " inactive" : "")' data-system-name="@item.SystemName" data-friendly-name="@item.FriendlyName">
 			@if (item.IsEditable)
 			{
 				<div class="sortable-grip"></div>
@@ -58,62 +58,72 @@
 			<div class="module-icon">
 				<img class="icon img-responsive" src="@Url.Content(item.IconUrl)" />
 			</div>
-			<div class="module-data module-data-cols-@(Model.ExtraColumns.Count + 1) clearfix">
+			<div class="module-data row">
 				<!-- General -->
-				<div class="module-col">
-					<div>
-						<span class="module-name">@item.FriendlyName</span>
-						@ActiveLabel(item)
-					</div>
-					<div class="module-info">
-						@{
-							string tip = item.ProvidingPluginFriendlyName.HasValue() ? T("Admin.Providers.ProvidingPlugin") + ": " + item.ProvidingPluginFriendlyName : "";
-						}
-						<span class="attr-name">@T("Common.SystemName"):</span>
-						<span class="attr-value" @Html.Attr("title", tip, tip.HasValue())>@item.SystemName</span>
-
-					</div>
-					@if (item.Description.HasValue())
-					{
-						<div class="module-description">
-							@item.Description
-						</div>					
-					}
-					@if (item.IsEditable || item.IsConfigurable)
-					{
-						<div class="module-actions">
-							<div class="btn-group">
-								@if (item.IsEditable)
-								{
-									if (item.IsPaymentMethod)
-									{
-										<a class="btn btn-small" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
-											<i class="fa fa-pencil-square-o"></i>
-											@T("Admin.Common.Edit")
-										</a>
-									}
-									else
-									{
-										<a class="btn btn-small module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
-											<i class="fa fa-pencil-square-o"></i>
-											@T("Admin.Common.Edit")
-										</a>
-									}
-								}
-								@if (item.IsConfigurable)
-								{
-									<a class="btn btn-small module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
-										<i class="fa fa-cog"></i>
-										@T("Admin.Common.Configure")
-									</a>
-								}
+				<div class="module-col @GetColClass()">
+					<div class="module-heading">
+						<div>
+							<div class="module-title">
+								<div class="module-name">@item.FriendlyName</div>
+								<div class="module-badges">
+									@ActiveLabel(item)
+								</div>
 							</div>
-						</div>						
-					}
+							@if (item.Description.HasValue())
+							{
+								<div class="module-description">
+									@item.Description
+								</div>
+							}
+							<div class="module-info">
+								@{
+									string tip = item.ProvidingPluginFriendlyName.HasValue() ? T("Admin.Providers.ProvidingPlugin") + ": " + item.ProvidingPluginFriendlyName : "";
+								}
+								<span class="attr">
+									<span class="attr-name">@T("Common.SystemName"):</span>
+									<span class="attr-value" @Html.Attr("title", tip, tip.HasValue())>@item.SystemName</span>
+								</span>
+							</div>
+						</div>
+						@if (item.IsEditable || item.IsConfigurable)
+						{
+							<div class="module-actions dropdown">
+								<button class="btn btn-outline-secondary btn-icon dropdown-toggle no-chevron" type="button" data-toggle="dropdown">
+									<i class="fa fa-cog"></i>
+								</button>
+								<div class="dropdown-menu">
+									@if (item.IsEditable)
+									{
+										if (item.IsPaymentMethod)
+										{
+											<a class="dropdown-item" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
+												<i class="fa fa-pencil-square-o"></i>
+												<span>@T("Admin.Common.Edit")</span>
+											</a>
+										}
+										else
+										{
+											<a class="dropdown-item module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
+												<i class="fa fa-pencil-square-o"></i>
+												<span>@T("Admin.Common.Edit")</span>
+											</a>
+										}
+									}
+									@if (item.IsConfigurable)
+									{
+										<a class="dropdown-item module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
+											<i class="fa fa-cog"></i>
+											<span>@T("Admin.Common.Configure")</span>
+										</a>
+									}
+								</div>
+							</div>
+						}
+					</div>
 				</div>
 				@foreach (var col in Model.ExtraColumns)
 				{
-					<div class="module-col">
+					<div class="module-col @GetColClass()">
 						@RenderTemplate(col(item))
 					</div>
 				}
@@ -122,7 +132,7 @@
 	}
 </div>
 
-<button type="button" id="btnRefresh" class="hide"></button>
+<button type="button" id="btnRefresh" class="d-none"></button>
 
 <script>
 	$(function () {

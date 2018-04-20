@@ -1,20 +1,17 @@
-﻿﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
 using System.Web.Mvc;
-using SmartStore.Web.Framework.UI;
-using System.Collections.Generic;
-using SmartStore.Services.Stores;
-using SmartStore.Services.Common;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Collections;
-using System.Text;
-using System;
+using SmartStore.Services.Common;
+using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 #pragma warning disable 1573
 
 namespace SmartStore.Web.Framework.Controllers
 {
-    public static class ContollerExtensions
+	public static class ContollerExtensions
     {
         /// <summary>
         /// Render partial view to string
@@ -65,7 +62,7 @@ namespace SmartStore.Web.Framework.Controllers
 	    /// <param name="controller"></param>
 	    /// <param name="viewName">View name</param>
 	    /// <param name="model">Model</param>
-	    /// <param name="additionalViewData">Additional ViewData</param>
+	    /// <param name="additionalViewData">Additional view data</param>
 	    /// <returns>Result</returns>
 	    public static string RenderPartialViewToString(this ControllerBase controller, string viewName, object model, object additionalViewData)
         {
@@ -77,6 +74,12 @@ namespace SmartStore.Web.Framework.Controllers
 			if (additionalViewData != null)
 			{
 				controller.ViewData.AddRange(CommonHelper.ObjectToDictionary(additionalViewData));
+
+				var vdd = additionalViewData as ViewDataDictionary;
+				if (vdd != null)
+				{
+					controller.ViewData.TemplateInfo.HtmlFieldPrefix = vdd.TemplateInfo.HtmlFieldPrefix;
+				}
 			}
 
             using (var sw = new StringWriter())
@@ -183,7 +186,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <param name="storeService">Store service</param>
 		/// <param name="workContext">Work context</param>
 		/// <returns>Store ID; 0 if we are in a shared mode</returns>
-		public static int GetActiveStoreScopeConfiguration(this Controller controller, IStoreService storeService, IWorkContext workContext)
+		public static int GetActiveStoreScopeConfiguration(this IController controller, IStoreService storeService, IWorkContext workContext)
 		{
 			//ensure that we have 2 (or more) stores
 			if (storeService.GetAllStores().Count < 2)

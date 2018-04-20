@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
-using System.Web.Optimization;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Configuration;
@@ -12,6 +10,7 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Themes;
 using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework.Theming
@@ -21,14 +20,6 @@ namespace SmartStore.Web.Framework.Theming
 		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
 		{
 			return InnerTranslateAsset<SassTranslator>("SassTranslator", asset, transformer, isDebugMode);
-		}
-	}
-
-	public class LessCssHttpHandler : CssHttpHandlerBase
-	{
-		protected override IAsset TranslateAssetCore(IAsset asset, ITransformer transformer, bool isDebugMode)
-		{
-			return InnerTranslateAsset<LessTranslator>("LessTranslator", asset, transformer, isDebugMode);
 		}
 	}
 

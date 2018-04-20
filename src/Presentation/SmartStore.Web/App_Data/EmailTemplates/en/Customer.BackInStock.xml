@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Product '{{ Product.Name | Truncate: 40 }}' is back in stock</Subject>
+	<ModelTypes>Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hello {{ Customer.FullName }},
+</h1>
+<p>
+  the product <b>{{ Product.Name }}</b> is back in stock.
+</p>
+<p class="mt-4">
+	<a href="{{ Product.Url }}" class="btn btn-primary">View product page</a>
+</p>
+{% endblock %}]]></Body>
+</MessageTemplate>

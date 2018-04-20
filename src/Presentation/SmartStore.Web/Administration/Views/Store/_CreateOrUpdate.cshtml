@@ -3,24 +3,6 @@
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 
-<script type="text/javascript">
-    $(document).ready(function () {
-
-        $("#@Html.FieldIdFor(model => model.SslEnabled)").click(toggleSslEnabled);
-        
-        toggleSslEnabled();
-    });
-
-    function toggleSslEnabled() {
-        if ($('#@Html.FieldIdFor(model => model.SslEnabled)').is(':checked')) {
-            $('#pnlSecureUrl').show();
-        }
-        else {
-            $('#pnlSecureUrl').hide();
-        }
-    }
-</script>
-
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -54,7 +36,7 @@
 			@Html.SmartLabelFor(model => model.Hosts)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(model => model.Hosts, new { @class = "input-large" })
+			@Html.TextBoxFor(model => model.Hosts)
 			@Html.ValidationMessageFor(model => model.Hosts)
 		</td>
 	</tr>
@@ -90,19 +72,30 @@
 			@Html.SmartLabelFor(model => model.SslEnabled)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(model => model.SslEnabled)
+			@Html.CheckBoxFor(model => model.SslEnabled, new { data_toggler_for = "#pnlSecureUrl" })
 			@Html.ValidationMessageFor(model => model.SslEnabled)
 		</td>
 	</tr>
-	<tr id="pnlSecureUrl">
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.SecureUrl)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(model => model.SecureUrl)
-			@Html.ValidationMessageFor(model => model.SecureUrl)
-		</td>
-	</tr>
+	<tbody id="pnlSecureUrl">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SecureUrl)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SecureUrl)
+				@Html.ValidationMessageFor(model => model.SecureUrl)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ForceSslForAllPages)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.ForceSslForAllPages)
+				@Html.ValidationMessageFor(model => model.ForceSslForAllPages)
+			</td>
+		</tr>
+	</tbody>
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.HtmlBodyId)
@@ -128,7 +121,7 @@
                 @Html.SmartLabelFor(model => model.Id)
             </td>
             <td class="adminData">
-                <span>@Model.Id</span>
+                @Html.TextBoxFor(model => model.Id, new { @readonly = "readonly", @class = "form-control-plaintext" })
             </td>
         </tr>
     }

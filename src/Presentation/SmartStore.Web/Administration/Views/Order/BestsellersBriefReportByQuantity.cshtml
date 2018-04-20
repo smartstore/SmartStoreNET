@@ -1,15 +1,13 @@
 ﻿@model IList<BestsellersReportLineModel>
-@using Telerik.Web.Mvc.UI
 
-<div class="widget widget-table">
-    
-    <div class="widget-header">
-        <i class="fa fa-star"></i>
-        <h3>@T("Admin.SalesReport.BestSellers.ByQuantity")</h3>
-    </div>
-    
-	<div class="widget-content equalized-column">
-		<table class="table table-striped table-hover">
+<div class="card card-shadow mb-4">
+	<h6 class="card-header font-weight-medium border-bottom-0">
+		<i class="fa fa-star pr-2"></i>
+		@T("Admin.SalesReport.BestSellers.ByQuantity")
+	</h6>
+
+	<div class="table-responsive">
+		<table class="table table-striped m-0">
 			<thead>
 				<tr>
 					<th>@T("Admin.SalesReport.Bestsellers.Fields.Name")</th>
@@ -31,7 +29,4 @@
 			</tbody>
 		</table>
 	</div>
-
-
-
 </div>

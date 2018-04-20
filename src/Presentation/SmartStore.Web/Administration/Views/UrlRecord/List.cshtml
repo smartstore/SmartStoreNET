@@ -14,109 +14,81 @@
         </div>
         <div class="options">
 			<button type="submit" id="delete-selected" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteSelected")
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.DeleteSelected")</span>
 			</button>
         </div>
     </div>
 
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SeName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.SeName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.EntityName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.EntityName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.EntityId)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.EntityId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.IsActive)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.IsActive)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.LanguageId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(x => x.LanguageId, Model.AvailableLanguages, T("Common.Unspecified"))
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="button" id="btnSearch" class="btn">
-					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-				</button>
-			</td>
-		</tr>
-	</table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SeName)
+			@Html.TextBoxFor(model => Model.SeName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.EntityName)
+			@Html.TextBoxFor(model => model.EntityName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.EntityId)
+			@Html.TextBoxFor(model => model.EntityId, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.IsActive)
+			@Html.EditorFor(model => model.IsActive, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.LanguageId)
+			@Html.DropDownListFor(x => x.LanguageId, Model.AvailableLanguages, T("Common.Unspecified"))
+		</div>
 
-	<p></p>
-	
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<UrlRecordModel>()
-					.Name("urlrecord-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-							.Title("<input id='mastercheckbox' type='checkbox'/>")
-							.Width(50)
-							.HtmlAttributes(new { style = "text-align:center" })
-							.HeaderHtmlAttributes(new { style = "text-align:center" });
-						columns.Bound(x => x.Id)
-							.Width(100)
-							.Centered();
-						columns.Bound(x => x.Slug)
-							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Slug #></a>");
-						columns.Bound(x => x.SlugsPerEntity)
-							.Centered()
-							.Width(180)
-							.ClientTemplate("<a href='javascript:void(0)' onclick='filterPerEntity(\"<#= EntityName #>\", <#= EntityId #>)'><#= SlugsPerEntity #></a>");
-						columns.Bound(x => x.EntityName)
-							.Width(200);
-						columns.Bound(x => x.EntityId)
-							.Width(140)
-							.Centered()
-							.ClientTemplate("<a href='<#= EntityUrl #>'><#= EntityId #></a>");
-						columns.Bound(x => x.IsActive)
-							.Template(item => @Html.SymbolForBool(item.IsActive))
-							.ClientTemplate(@Html.SymbolForBool("IsActive"))
-							.Width(100)
-							.Centered();
-						columns.Bound(x => x.Language)
-							.Width(200);
-					})
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "UrlRecord"))
-					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
-					.EnableCustomBinding(true))
-            </td>
-        </tr>
-    </table>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
+
+	<div>
+		@(Html.Telerik().Grid<UrlRecordModel>()
+			.Name("urlrecord-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Id)
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+					.Title("<input id='mastercheckbox' type='checkbox'/>")
+					.Width(50)
+					.HtmlAttributes(new { style = "text-align:center" })
+					.HeaderHtmlAttributes(new { style = "text-align:center" });
+				columns.Bound(x => x.Id)
+					.Width(100)
+					.Centered();
+				columns.Bound(x => x.Slug)
+					.ClientTemplate("<a href='Edit/<#= Id #>'><#= Slug #></a>");
+				columns.Bound(x => x.SlugsPerEntity)
+					.Centered()
+					.Width(180)
+					.ClientTemplate("<a href='javascript:void(0)' onclick='filterPerEntity(\"<#= EntityName #>\", <#= EntityId #>)'><#= SlugsPerEntity #></a>");
+				columns.Bound(x => x.EntityName)
+					.Width(200);
+				columns.Bound(x => x.EntityId)
+					.Width(140)
+					.Centered()
+					.ClientTemplate("<a href='<#= EntityUrl #>'><#= EntityId #></a>");
+				columns.Bound(x => x.IsActive)
+					.Template(item => @Html.SymbolForBool(item.IsActive))
+					.ClientTemplate(@Html.SymbolForBool("IsActive"))
+					.Width(100)
+					.Centered();
+				columns.Bound(x => x.Language)
+					.Width(200);
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "UrlRecord"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
+			.EnableCustomBinding(true))
+	</div>
 }
 
 <script type="text/javascript">
@@ -147,7 +119,7 @@
 		$('#delete-selected').click(function (e) {
 			e.preventDefault();
 
-			if (confirm('@T("Admin.Common.AreYouSure")')) {
+			if (confirm(@T("Admin.Common.AreYouSure").JsText)) {
 				var postData = {
 					selectedIds: selectedIds
 				};

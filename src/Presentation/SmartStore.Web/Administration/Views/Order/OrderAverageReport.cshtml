@@ -1,53 +1,42 @@
 ﻿@model IList<OrderAverageReportLineSummaryModel>
-@using Telerik.Web.Mvc;
-@using Telerik.Web.Mvc.UI
 
-<div class="widget stats-today">
-    <div class="widget-content">
+<div class="stats-today row mb-4">
+	<div class="col">
+		<h1 class="stats-today-title display-4 m-0">@T("Admin.SalesReport.Average.SumTodayOrders")</h1>
+	</div>
 
-        <div class="stats-today-title" style="">
-            @T("Admin.SalesReport.Average.SumTodayOrders")
-        </div>
-
-        @{
-            var list = Model.Reverse().ToList();
-            var length = Model.Count;
-        }
-        @for (int i = 0; i < list.Count(); ++i )
-        {
-            var x = list[i];
-            <div class='stats-today-item@(i == 0 ? " omega" : "")@(i == length - 1 ? " alpha" : "")'>
-                <div class="stats-today-item-label">@x.OrderStatus</div>
-                <div class="stats-today-item-value">@x.SumTodayOrders</div>
-            </div>
-        }
-
-    </div>
+	@for (int i = 0; i < Model.Count; ++i)
+	{
+		var x = Model[i];
+		<div class='col-auto stats-today-item@(i == 0 ? " ml-auto" : "")'>
+			<div class="stats-today-item-label">@x.OrderStatus</div>
+			<div class="stats-today-item-value@(x.SumTodayOrdersRaw > 0 ? " active" : "")">@x.SumTodayOrders</div>
+		</div>
+	}
 </div>
 
-<div class="widget widget-table">
-    
-    <div class="widget-header">
-        <i class="fa fa-signal"></i>
-        <h3>@T("Admin.SalesReport.Average")</h3>
-    </div>
-    
-    <div class="widget-content">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>@T("Admin.SalesReport.Average.OrderStatus")</th>
-                    <th>@T("Admin.SalesReport.Average.SumThisWeekOrders")</th>
-                    <th>@T("Admin.SalesReport.Average.SumThisMonthOrders")</th>
-                    <th>@T("Admin.SalesReport.Average.SumThisYearOrders")</th>
-                    <th>@T("Admin.SalesReport.Average.SumAllTimeOrders")</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var x in Model)
-                {
-                    <tr>
-                        <td>
+<div class="card card-shadow mb-4"> 
+    <h6 class="card-header font-weight-medium border-bottom-0">
+		<i class="fa fa-signal pr-2"></i>
+		@T("Admin.SalesReport.Average")
+    </h6>
+
+	<div class="table-responsive">
+		<table class="table table-striped m-0">
+			<thead>
+				<tr>
+					<th>@T("Admin.SalesReport.Average.OrderStatus")</th>
+					<th>@T("Admin.SalesReport.Average.SumThisWeekOrders")</th>
+					<th>@T("Admin.SalesReport.Average.SumThisMonthOrders")</th>
+					<th>@T("Admin.SalesReport.Average.SumThisYearOrders")</th>
+					<th>@T("Admin.SalesReport.Average.SumAllTimeOrders")</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var x in Model)
+				{
+					<tr>
+						<td>
 							@if (x.Url.HasValue())
 							{
 								<a href="@x.Url">@x.OrderStatus</a>
@@ -57,15 +46,14 @@
 								@x.OrderStatus
 							}
 						</td>
-                        <td>@x.SumThisWeekOrders</td>
-                        <td>@x.SumThisMonthOrders</td>
-                        <td>@x.SumThisYearOrders</td>
-                        <td>@x.SumAllTimeOrders</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
+						<td>@x.SumThisWeekOrders</td>
+						<td>@x.SumThisMonthOrders</td>
+						<td>@x.SumThisYearOrders</td>
+						<td>@x.SumAllTimeOrders</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
 </div>
 

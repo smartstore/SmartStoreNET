@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. - Benachrichtigung über einen neuen Beitrag</Subject>
+	<ModelTypes>Customer, ForumPost, ForumPost.ForumTopic, ForumPost.ForumTopic.Forum</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Hallo {{ Customer.FullName }},
+</h1>
+
+<p>
+  im Forum <a href="{{ Forum.Url }}">{{ Forum.Name }}</a> wurde ein neuer Beitrag von <strong>{{ ForumPost.Author }}</strong> erstellt:
+</p>
+
+<p class="mt-4 mb-4">
+  <a href="{{ ForumTopic.Url }}" class="btn btn-primary">Zum Beitrag</a>
+</p>
+
+<table class="w-100 brd bg-light">
+	<tr>
+  	<td class="p-3">
+      <h3 class="mb-3">
+        {{ ForumTopic.Subject }}
+      </h3>
+      <p class="message">
+        "{{ ForumPost.Body | Truncate: 400 }}"
+      </p>
+    </td>
+  </tr> 
+</table>
+
+{% endblock %}
+          ]]></Body>
+</MessageTemplate>

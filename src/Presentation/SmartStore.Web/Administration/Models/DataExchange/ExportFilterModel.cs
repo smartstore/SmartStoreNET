@@ -128,5 +128,13 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool? IsActiveSubscriber { get; set; }
 
 		#endregion
+
+		#region Shopping Cart Items
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShoppingCartTypeId")]
+		public int? ShoppingCartTypeId { get; set; }
+		public List<SelectListItem> AvailableShoppingCartTypes { get; set; }
+
+		#endregion
 	}
 }

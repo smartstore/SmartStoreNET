@@ -5,25 +5,24 @@ using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
-using SmartStore.Core.Events;
+using SmartStore.Data.Setup;
+using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
 {
-	/// <summary>
-	/// Object context
-	/// </summary>
 	[DbConfigurationType(typeof(SmartDbConfiguration))]
     public abstract partial class ObjectContextBase : DbContext, IDbContext
     {
 		private static bool? s_isSqlServer2012OrHigher = null;
+		
+		// Instance of the internal ObjectStateManager.TransactionManager
+		// required for detecting if EF performs change detection
+		private object _transactionManager;
 
 		/// <summary>
 		/// Parameterless constructor for tooling support, e.g. EF Migrations.
@@ -41,9 +40,9 @@ namespace SmartStore.Data
             this.Alias = null;
 			this.DbHookHandler = NullDbHookHandler.Instance;
 
-			if (DataSettings.DatabaseIsInstalled())
+			if (DataSettings.DatabaseIsInstalled() && !DbSeedingMigrator<SmartObjectContext>.IsMigrating)
 			{
-				// listen to 'ObjectMaterialized' for load hooking
+				//// listen to 'ObjectMaterialized' for load hooking
 				((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
 			}
 		}
@@ -57,7 +56,10 @@ namespace SmartStore.Data
 			var hookHandler = this.DbHookHandler;
 			var importantHooksOnly = !this.HooksEnabled && hookHandler.HasImportantLoadHooks();
 
-			hookHandler.TriggerLoadHooks(entity, importantHooksOnly);
+			if (IsHookableEntityType(entity.GetUnproxiedType()))
+			{
+				hookHandler.TriggerLoadHooks(entity, importantHooksOnly);
+			}	
 		}
 
 		public bool HooksEnabled
@@ -206,135 +208,80 @@ namespace SmartStore.Data
 
             if (timeout.HasValue)
             {
-                //Set previous timeout back
+                // Set previous timeout back
                 ((IObjectContextAdapter)this).ObjectContext.CommandTimeout = previousTimeout;
             }
 
             return result;
         }
 
-		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
-		public int ExecuteSqlThroughSmo(string sql)
+		/// <summary>
+		/// Checks whether the underlying ORM mapper is currently in the process of detecting changes.
+		/// </summary>
+		/// <returns></returns>
+		public virtual bool IsDetectingChanges()
 		{
-			Guard.NotEmpty(sql, "sql");
-
-			int result = 0;
-
-			try
+			if (_transactionManager == null && DataSettings.DatabaseIsInstalled())
 			{
-				bool isSqlServer = DataSettings.Current.IsSqlServer;
-
-				if (!isSqlServer)
+				var stateManager = ((IObjectContextAdapter)this).ObjectContext.ObjectStateManager;
+				if (stateManager != null)
 				{
-					result = ExecuteSqlCommand(sql);
-				}
-				else
-				{
-					using (var sqlConnection = new SqlConnection(GetConnectionString()))
-					{
-						var serverConnection = new ServerConnection(sqlConnection);
-						var server = new Server(serverConnection);
-
-						result = server.ConnectionContext.ExecuteNonQuery(sql);
-					}
+					// Get the internal TransactionManager property instance from ObjectStateManager
+					_transactionManager = FastProperty.GetProperty(stateManager.GetType(), "TransactionManager")?.GetValue(stateManager);
 				}
 			}
-			catch (Exception)
-			{
-				// remove the GO statements
-				sql = Regex.Replace(sql, @"\r{0,1}\n[Gg][Oo]\r{0,1}\n", "\n");
 
-				result = ExecuteSqlCommand(sql);
+			if (_transactionManager != null)
+			{
+				// Get the "IsDetectChanges" property of the internal TransactionManager
+				var prop = FastProperty.GetProperty(_transactionManager.GetType(), "IsDetectChanges");
+				if (prop != null)
+				{
+					return (bool)prop.GetValue(_transactionManager);
+				}
 			}
-			return result;
+
+			return false;
+		}
+
+		public void DetectChanges()
+		{
+			base.ChangeTracker.DetectChanges();
 		}
 
         public bool HasChanges
         {
             get
             {
-                return this.ChangeTracker.Entries()
-                           .Where(x => x.State > System.Data.Entity.EntityState.Unchanged)
-                           .Any();
+                return GetChangedEntries().Any();
             }
         }
 
+		public virtual bool IsModified(BaseEntity entity)
+		{
+			Guard.NotNull(entity, nameof(entity));
+
+			var entry = this.Entry((object)entity);
+			return entry.HasChanges(this);
+		}
+
+		public bool TryGetModifiedProperty(BaseEntity entity, string propertyName, out object originalValue)
+		{
+			Guard.NotNull(entity, nameof(entity));
+
+			if (entity.IsTransientRecord())
+			{
+				originalValue = null;
+				return false;
+			}				
+
+			var entry = this.Entry((object)entity);
+			return entry.TryGetModifiedProperty(this, propertyName, out originalValue);
+		}
+
 		public IDictionary<string, object> GetModifiedProperties(BaseEntity entity)
 		{
-			return GetModifiedProperties(this.Entry(entity));
-		}
-
-		private IDictionary<string, object> GetModifiedProperties(DbEntityEntry entry)
-		{
-			var props = new Dictionary<string, object>();
-
-			// be aware of the entity state. you cannot get modified properties for detached entities.
-			if (entry.State == System.Data.Entity.EntityState.Modified)
-			{
-				var detectChangesEnabled = this.Configuration.AutoDetectChangesEnabled;
-				var mergeable = entry.Entity as IMergedData;
-				var mergedProps = mergeable?.MergedDataValues;
-				var ignoreMerge = false;
-
-				if (mergeable != null)
-				{
-					ignoreMerge = mergeable.MergedDataIgnore;
-					mergeable.MergedDataIgnore = true;
-				}
-
-				try
-				{
-					var modifiedProperties = from p in entry.CurrentValues.PropertyNames
-											 let prop = entry.Property(p)
-											 // prop.IsModified seems to return true even if values are equal
-											 where PropIsModified(prop, detectChangesEnabled, mergedProps)
-											 select prop;
-
-					foreach (var prop in modifiedProperties)
-					{
-						props.Add(prop.Name, prop.OriginalValue);
-					}
-				}
-				finally
-				{
-					if (mergeable != null)
-						mergeable.MergedDataIgnore = ignoreMerge;
-				}
-			}
-
-			//System.Diagnostics.Debug.WriteLine("GetModifiedProperties: " + String.Join(", ", props.Select(x => x.Key)));
-
-			return props;
-		}
-
-		private static bool PropIsModified(DbPropertyEntry prop, bool detectChangesEnabled, IDictionary<string, object> mergedProps)
-		{
-			var propIsModified = prop.IsModified;
-
-			if (detectChangesEnabled && !propIsModified)
-				return false; // Perf
-
-			if (propIsModified && mergedProps != null && mergedProps.ContainsKey(prop.Name))
-			{
-				// EF "thinks" that prop has changed because merged value differs
-				return false;
-			}
-
-			// INFO: "CurrentValue" cannot be used for entities in the Deleted state.
-			// INFO: "OriginalValues" cannot be used for entities in the Added state.
-			return detectChangesEnabled 
-				? propIsModified
-				: !AreEqual(prop.CurrentValue, prop.OriginalValue);
-		}
-
-		private static bool AreEqual(object cur, object orig)
-		{
-			if (cur == null && orig == null)
-				return true;
-
-			return orig != null 
-				? orig.Equals(cur)
-				: cur.Equals(orig);
+			return this.Entry((object)entity).GetModifiedProperties(this);
 		}
 
         // required for UoW implementation
@@ -405,6 +352,14 @@ namespace SmartStore.Data
 			this.Database.UseTransaction(transaction);
 		}
 
+		private IEnumerable<IMergedData> GetMergeableEntitiesFromChangeTracker()
+		{
+			return base.ChangeTracker.Entries()
+				.Where(x => x.State > EfState.Detached)
+				.Select(x => x.Entity)
+				.OfType<IMergedData>();
+		}
+
         #endregion
 
         #region Utils
@@ -472,7 +427,7 @@ namespace SmartStore.Data
 
         public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-			this.Entry(entity).State = System.Data.Entity.EntityState.Detached;
+			this.Entry(entity).State = EfState.Detached;
         }
 
 		public int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class
@@ -486,10 +441,10 @@ namespace SmartStore.Data
 
 			Func<DbEntityEntry, bool> predicate2 = x =>
 			{
-				if (x.State > System.Data.Entity.EntityState.Detached && predicate(x.Entity))
+				if (x.State > EfState.Detached && predicate(x.Entity))
 				{
 					return unchangedEntitiesOnly 
-						? x.State == System.Data.Entity.EntityState.Unchanged
+						? x.State == EfState.Unchanged
 						: true;
 				}
 
@@ -497,33 +452,27 @@ namespace SmartStore.Data
 			};
 
 			var attachedEntities = this.ChangeTracker.Entries().Where(predicate2).ToList();
-			attachedEntities.Each(entry => entry.State = System.Data.Entity.EntityState.Detached);
+			attachedEntities.Each(entry => entry.State = EfState.Detached);
 			return attachedEntities.Count;
 		}
 
-		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity
+		public void ChangeState<TEntity>(TEntity entity, EfState requestedState) where TEntity : BaseEntity
 		{
 			//Console.WriteLine("ChangeState ORIGINAL");
-			this.Entry(entity).State = newState;
+			var entry = this.Entry(entity);
+
+			if (entry.State != requestedState)
+			{
+				// Only change state when requested state differs,
+				// because EF internally sets all properties to modified
+				// if necessary, even when requested state equals current state.
+				entry.State = requestedState;
+			}
 		}
 
 		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
 		{
-			var entry = this.Entry(entity);
-
-			try
-			{
-				entry.Reload();
-			}
-			catch
-			{
-				// Can occur when entity has been detached in the meantime (for whatever fucking reasons)
-				if (entry.State == System.Data.Entity.EntityState.Detached)
-				{
-					entry.State = System.Data.Entity.EntityState.Unchanged;
-					entry.Reload();
-				}
-			}
+			this.Entry((object)entity).ReloadEntity();
 		}
 
 		#endregion

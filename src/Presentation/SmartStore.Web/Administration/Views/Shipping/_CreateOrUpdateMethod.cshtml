@@ -4,10 +4,11 @@
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
 
-@Html.SmartStore().TabStrip().Name("shipping-method-edit").Items(x =>
+@Html.SmartStore().TabStrip().Name("shipping-method-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
 	x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "shipping-method-edit", this.Html, this.Model));
 })
@@ -21,6 +22,9 @@
 				@Html.SmartLabelFor(model => model.Locales[item].Name)
 			</td>
 			<td class="adminData">
+				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
 				@Html.EditorFor(model => Model.Locales[item].Name)
 				@Html.ValidationMessageFor(model => model.Locales[item].Name)
 			</td>
@@ -29,14 +33,9 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Locales[item].Description)
 			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
+			<td class="adminData wide">
+				@Html.EditorFor(model => model.Locales[item].Description, "Html")
 				@Html.ValidationMessageFor(model => model.Locales[item].Description)
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				@Html.HiddenFor(model => model.Locales[item].LanguageId)
 			</td>
 		</tr>
 	</table>
@@ -55,8 +54,8 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Description)
 			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.Description, Html.RichEditorFlavor())
+			<td class="adminData wide">
+				@Html.EditorFor(model => model.Description, "Html")
 				@Html.ValidationMessageFor(model => model.Description)
 			</td>
 		</tr>
@@ -105,6 +104,11 @@
 	</div>
 }
 
+@helper TabStores()
+{
+	@Html.Partial("StoreSelector", Model)
+}
+
 <script type="text/javascript">
 	$(document).ready(function () {
 		var configUrls = [@Html.Raw(string.Join(", ", Model.FilterConfigurationUrls))],
@@ -121,8 +125,10 @@
 				dataType: 'html',
 				success: function (html) {
 					container.append(html);
-					if (++i < configUrls.length)
+					if (++i < configUrls.length) {
 						getFilterConfiguration(configUrls[i], container);
+					}
+					applyCommonPlugins(container);
 				}
 			});
 		}

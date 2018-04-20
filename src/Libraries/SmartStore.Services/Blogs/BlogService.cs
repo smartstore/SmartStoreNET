@@ -63,9 +63,6 @@ namespace SmartStore.Services.Blogs
                 throw new ArgumentNullException("blogPost");
 
             _blogPostRepository.Delete(blogPost);
-
-            //event notification
-            _services.EventPublisher.EntityDeleted(blogPost);
         }
 
         /// <summary>
@@ -226,9 +223,6 @@ namespace SmartStore.Services.Blogs
                 throw new ArgumentNullException("blogPost");
 
             _blogPostRepository.Insert(blogPost);
-
-            //event notification
-            _services.EventPublisher.EntityInserted(blogPost);
         }
 
         /// <summary>
@@ -241,9 +235,6 @@ namespace SmartStore.Services.Blogs
                 throw new ArgumentNullException("blogPost");
 
             _blogPostRepository.Update(blogPost);
-
-            //event notification
-            _services.EventPublisher.EntityUpdated(blogPost);
         }
         
         /// <summary>

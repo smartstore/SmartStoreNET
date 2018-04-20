@@ -5,8 +5,7 @@ using System.Web.Routing;
 using SmartStore.Services.Pdf;
 
 namespace SmartStore.Web.Framework.Pdf
-{
-	
+{	
 	public class PdfRouteContent : PdfUrlContent
 	{
 		public PdfRouteContent(string routeName, ControllerContext controllerContext)
@@ -39,8 +38,5 @@ namespace SmartStore.Web.Framework.Pdf
 			//	throw Error.InvalidOperation("Either 'routeName' or 'action' must be set");
 			//}
 		}
-
-
 	}
-
 }

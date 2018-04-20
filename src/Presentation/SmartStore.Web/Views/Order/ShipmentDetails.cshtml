@@ -17,7 +17,7 @@
     </div>
 
     <div class="page-body">
-		<div class="card card-block shipment-box mb-4">
+		<div class="card card-body shipment-box mb-4">
 			<div class="row">
 				<div class="col-6 col-md-4">
 					<h5>@T("Order.Shipments.Order#")</h5>
@@ -29,7 +29,7 @@
 					<p>
 						@if (Model.ShippedDate.HasValue)
 						{
-							@Model.ShippedDate.Value.ToString("D")
+							@Model.ShippedDate.Value.ToNativeString("D")
 						}
 						else
 						{
@@ -41,7 +41,7 @@
 					<p>
 						@if (Model.DeliveryDate.HasValue)
 						{
-							@Model.DeliveryDate.Value.ToString("D")
+							@Model.DeliveryDate.Value.ToNativeString("D")
 						}
 						else
 						{
@@ -109,7 +109,7 @@
                                         <td>@item.Sku</td>
                                     }
                                     <td>
-                                        <div><a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a></div>
+                                        <div><a href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a></div>
                                         @if (item.AttributeInfo.HasValue())
                                         {
                                             <div class="attributes text-muted mt-1">
@@ -153,7 +153,7 @@
                                     <td>
                                         @if (item.Date.HasValue)
                                         {
-                                            @item.Date.Value.ToString("D")
+                                            @item.Date.Value.ToNativeString("D")
                                         }
                                     </td>
                                 </tr>
@@ -172,54 +172,25 @@
 	var cityStateZip = address.GetFormattedCityStateZip();
 
 	<div class="mb-2">
-		@if (address.CompanyEnabled && address.Company.HasValue())
-		{
-			<div class="company">
-				@address.Company
-			</div>
-		}
-		<div class="name">
-			@address.GetFormattedName()
-		</div>
-		@if (address.StreetAddressEnabled && address.Address1.HasValue())
-		{
-			<div class="address1">
-				@address.Address1
-			</div>
-		}
-		@if (address.StreetAddress2Enabled && address.Address2.HasValue())
-		{
-			<div class="address2">
-				@address.Address2
-			</div>
-		}
-		@if (cityStateZip.HasValue())
-		{
-			<div class="city-state-zip">
-				@Html.Raw(cityStateZip)
-			</div>
-		}
-		@if (address.CountryEnabled && address.CountryName.HasValue())
-		{
-			<div class="country">
-				@address.CountryName
-			</div>
-		}
+		@Html.Raw(address.FormattedAddress)
 	</div>
 
 	<div class="email">
-		@T("Order.Email"): @address.Email
+		<span class="pr-1">@T("Order.Email"):</span>
+		<span>@address.Email</span>
 	</div>
 	if (address.PhoneEnabled && address.PhoneNumber.HasValue())
 	{
 		<div class="phone">
-			@T("Order.Phone"): @address.PhoneNumber
+			<span class="pr-1">@T("Order.Phone"):</span>
+			<span>@address.PhoneNumber</span>
 		</div>
 	}
 	if (address.FaxEnabled && address.FaxNumber.HasValue())
 	{
 		<div class="fax">
-			@T("Order.Fax"): @address.FaxNumber
+			<span class="pr-1">@T("Order.Fax"):</span>
+			<span>@address.FaxNumber</span>
 		</div>
 	}
 }

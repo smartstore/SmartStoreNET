@@ -157,10 +157,10 @@ namespace SmartStore.Web.Framework.Security
             var dirsToCheck = new List<string>();
             dirsToCheck.Add(Path.Combine(rootDir, "App_Data"));
 			dirsToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName));
+			dirsToCheck.Add(Path.Combine(rootDir, "App_Data", "Tenants", DataSettings.Current.TenantName, "Media"));
 			dirsToCheck.Add(Path.Combine(rootDir, "bin"));
             dirsToCheck.Add(Path.Combine(rootDir, "content"));
 			dirsToCheck.Add(Path.Combine(rootDir, "Exchange"));
-			dirsToCheck.Add(Path.Combine(rootDir, "Media"));
 			dirsToCheck.Add(Path.Combine(rootDir, "plugins"));
             dirsToCheck.Add(Path.Combine(rootDir, "plugins\\bin"));
             return dirsToCheck;

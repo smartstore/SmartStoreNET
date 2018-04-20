@@ -10,41 +10,40 @@
     <div class="options">
 		@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			<span>@T("Admin.Common.AddNew")</span>
+		</a>
 
 		@{ Html.RenderWidget("admin_button_toolbar_after"); }
     </div>
 </div>
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<DiscountModel>(Model.Data)
-					.Name("discounts-grid")
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Name)
-							.Width(400)
-							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.UsePercentage)
-							.Width(120)
-							.Template(item => @Html.SymbolForBool(item.UsePercentage))
-							.ClientTemplate(@Html.SymbolForBool("UsePercentage"))
-							.Centered();
-						columns.Bound(x => x.FormattedDiscountPercentage)
-							.Width(120)
-							.Centered();
-						columns.Bound(x => x.FormattedDiscountAmount)
-							.Width(120)
-							.RightAlign();
-						columns.Bound(x => x.StartDateUtc)
-							.Width(120);
-						columns.Bound(x => x.EndDateUtc)
-							.Width(120);
-					})
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Discount"))
-					.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+<div>
+	@(Html.Telerik().Grid<DiscountModel>(Model.Data)
+		.Name("discounts-grid")
+		.Columns(columns =>
+		{
+			columns.Bound(x => x.Name)
+				.Width(400)
+				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+			columns.Bound(x => x.StartDateUtc)
+				.Width(120);
+			columns.Bound(x => x.EndDateUtc)
+				.Width(120);
+			columns.Bound(x => x.UsePercentage)
+				.Width(120)
+				.Template(item => @Html.SymbolForBool(item.UsePercentage))
+				.ClientTemplate(@Html.SymbolForBool("UsePercentage"))
+				.Centered();
+			columns.Bound(x => x.FormattedDiscountPercentage)
+				.Width(120)
+				.Centered();
+			columns.Bound(x => x.FormattedDiscountAmount)
+				.Width(120)
+				.RightAlign();
+		})
+		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Discount"))
+		.EnableCustomBinding(true))
+</div>

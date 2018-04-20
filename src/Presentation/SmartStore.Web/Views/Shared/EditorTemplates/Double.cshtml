@@ -13,21 +13,37 @@
 			return value;
 		}
 	}
+
+	private string Postfix
+	{
+		get
+		{
+			return ViewData["postfix"] as string;
+		}
+	}
 }
 
 
 @{
-    string additionalClass = string.Empty;
-    if (ViewData.ContainsKey("small")) {
-        additionalClass = ViewData["small"].Convert<bool>() ? "small" : "";   
-    }
+	string additionalClass = string.Empty;
+	//if (ViewData.ContainsKey("stretch"))
+	//{
+	//	additionalClass = ViewData["stretch"].Convert<bool>() ? "flex-grow-1" : "";
+	//}
 }
 
-@(Html.Telerik().NumericTextBox()
-		.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
-		.EmptyMessage(T("Common.EnterValue"))
-		.Value(Value)
-		.HtmlAttributes(new { @class = additionalClass })
-		.DecimalDigits(4)   //always display 4 digits
-)
+<div class="numerictextbox-group flex-grow-1">
+	@(Html.Telerik().NumericTextBox<double>()
+			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+			.EmptyMessage(T("Common.EnterValue"))
+			.Value(Value)
+			.HtmlAttributes(new { @class = additionalClass })
+			.DecimalDigits(4)   //always display 4 digits
+	)
+
+	@if (Postfix.HasValue())
+	{
+		<span class="numerictextbox-postfix">@Postfix</span>
+	}
+</div>
 

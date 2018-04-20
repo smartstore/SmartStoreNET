@@ -20,7 +20,7 @@
 				@Html.SmartLabelFor(model => model.DisplayOrder)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.DisplayOrder, null, new { small = true })
+				@Html.SettingEditorFor(model => model.DisplayOrder)
 				@Html.ValidationMessageFor(model => model.DisplayOrder)
 			</td>
 		</tr>
@@ -67,14 +67,13 @@ else
 				@Html.SmartLabelFor(model => model.Locales[item].Alias)
 			</td>
 			<td class="adminData">
+				@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
 				@Html.EditorFor(model => Model.Locales[item].Alias)
 				@Html.ValidationMessageFor(model => model.Locales[item].Alias)
 			</td>
 		</tr>
-		<tr>
-			<td colspan="2">
-				@Html.HiddenFor(model => model.Locales[item].LanguageId)
-			</td>
-		</tr>
-	</table>, null))
+	</table>
+	, null))
 }

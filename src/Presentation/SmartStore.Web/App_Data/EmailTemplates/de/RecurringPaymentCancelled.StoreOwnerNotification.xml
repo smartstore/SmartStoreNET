@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<Subject>{{ Store.Name }}. Abo storniert</Subject>
+	<ModelTypes>RecurringPayment, RecurringPayment.InitialOrder, RecurringPayment.InitialOrder.Customer</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+<h1>
+  Abo storniert,
+</h1>
+
+<p>
+  <b>{{ Customer.FullName }}</b> hat ein Zahlungs-Abo storniert.
+</p>
+
+<p class="mt-4 mb-4 text-center">
+  <a class="btn btn-primary" href="{{ RecurringPayment.Url }}">Abo aufrufen</a>
+</p>
+
+<p>
+  <b>ID / Kunde:</b><br />
+  <span>{{ RecurringPayment.Id }}</span> /
+  {% if Customer.EditUrl %}
+  	<a href="{{ Customer.EditUrl }}">{{ Customer.FullName }}</a>
+  {% else %}
+  	<span>{{ Customer.FullName }}</span>
+  {% endif %}
+</p>
+
+<p>
+  <b>Gestartet am:</b><br />
+  <span>{{ RecurringPayment.StartedOn }}</span>
+</p>
+
+<p>
+  <b>Nächste Fälligkeit:</b><br />
+  <span>{{ RecurringPayment.NextOn }}</span>
+</p>
+
+<p>
+  <b>Häufigkeit:</b><br />
+  <span>{{ RecurringPayment.CyclePeriod }}</span>
+</p>
+
+<p>
+  <b>Noch verbleibende Zahlungen:</b><br />
+  <span>{{ RecurringPayment.CyclesRemaining }}</span>
+</p>
+
+
+
+{% endblock %}]]></Body>
+</MessageTemplate>

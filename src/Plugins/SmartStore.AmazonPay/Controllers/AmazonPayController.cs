@@ -70,6 +70,12 @@ namespace SmartStore.AmazonPay.Controllers
 				return Configure(settings);
 
 			ModelState.Clear();
+
+			model.AccessKey = model.AccessKey.TrimSafe();
+			model.ClientId = model.ClientId.TrimSafe();
+			model.SecretKey = model.SecretKey.TrimSafe();
+			model.SellerId = model.SellerId.TrimSafe();
+
 			MiniMapper.Map(model, settings);
 
 			using (Services.Settings.BeginScope())
@@ -81,10 +87,6 @@ namespace SmartStore.AmazonPay.Controllers
 			{
 				Services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
 				Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
-				Services.Settings.SaveSetting(settings, x => x.AccessKey.TrimSafe(), 0, false);
-				Services.Settings.SaveSetting(settings, x => x.ClientId.TrimSafe(), 0, false);
-				Services.Settings.SaveSetting(settings, x => x.SecretKey.TrimSafe(), 0, false);
-				Services.Settings.SaveSetting(settings, x => x.SellerId.TrimSafe(), 0, false);
 			}
 
 			var task = _scheduleTaskService.Value.GetTaskByType<DataPollingTask>();

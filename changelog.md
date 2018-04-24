@@ -4,6 +4,7 @@
 ### New Features
 
 ### Improvements
+Added double opt in feature for newsletter subscriptions during checkout (confirm order)
 
 ### Bugfixes
 

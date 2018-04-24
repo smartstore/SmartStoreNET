@@ -12,15 +12,18 @@ namespace SmartStore.Services.Messages
         private readonly IEventPublisher _eventPublisher;
         private readonly IDbContext _context;
         private readonly IRepository<NewsLetterSubscription> _subscriptionRepository;
+		private readonly ICommonServices _services;
 
-        public NewsLetterSubscriptionService(IDbContext context,
+		public NewsLetterSubscriptionService(IDbContext context,
 			IRepository<NewsLetterSubscription> subscriptionRepository,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			ICommonServices services)
         {
             _context = context;
             _subscriptionRepository = subscriptionRepository;
             _eventPublisher = eventPublisher;
-        }
+			_services = services;
+		}
 
         /// <summary>
         /// Inserts a newsletter subscription
@@ -127,7 +130,10 @@ namespace SmartStore.Services.Messages
 				{
 					if (add)
 					{
-						newsletter.Active = true;
+						if (!newsletter.Active)
+						{
+							_services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(newsletter, _services.WorkContext.WorkingLanguage.Id);
+						}
 						UpdateNewsLetterSubscription(newsletter);
 						result = true;
 					}
@@ -145,10 +151,13 @@ namespace SmartStore.Services.Messages
 						{
 							NewsLetterSubscriptionGuid = Guid.NewGuid(),
 							Email = email,
-							Active = true,
+							Active = false,
 							CreatedOnUtc = DateTime.UtcNow,
 							StoreId = storeId
 						});
+
+						_services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(newsletter, _services.WorkContext.WorkingLanguage.Id);
+
 						result = true;
 					}
 				}

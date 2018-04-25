@@ -40,11 +40,11 @@
                         $(document).ready(function () {
                             $("#terms-of-service-trigger").on("click", function (event) {
                                 event.preventDefault();
-                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" class="h-100" />');
+                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("Topic", new { SystemName = "conditionsofuse", popup = true })" frameBorder="0" class="h-100" />');
                             });
                             $("#disclaimer-trigger").on("click", function (event) {
                                 event.preventDefault();
-								$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" class="h-100" />');
+								$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("Topic", new { SystemName = "disclaimer", popup = true })" frameBorder="0" class="h-100" />');
                             });
                         });
                     </script>

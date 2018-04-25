@@ -3,42 +3,39 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Topics;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Core.Domain.Seo;
+using System.Web.Routing;
 
 namespace SmartStore.Web.Controllers
 {
     public partial class TopicController : PublicControllerBase
     {
-        #region Fields
-
         private readonly ITopicService _topicService;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly ILocalizationService _localizationService;
         private readonly ICacheManager _cacheManager;
+		private readonly SeoSettings _seoSettings;
 
-        #endregion
-
-        #region Constructors
-
-        public TopicController(ITopicService topicService,
+		public TopicController(
+			ITopicService topicService,
             ILocalizationService localizationService,
             IWorkContext workContext,
 			IStoreContext storeContext,
-			ICacheManager cacheManager)
+			ICacheManager cacheManager,
+			SeoSettings seoSettings)
         {
-            this._topicService = topicService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._localizationService = localizationService;
-            this._cacheManager = cacheManager;
+            _topicService = topicService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _localizationService = localizationService;
+            _cacheManager = cacheManager;
+			_seoSettings = seoSettings;
         }
-
-        #endregion
-
-        #region Utilities
 
         [NonAction]
         protected TopicModel PrepareTopicModel(string systemName)
@@ -76,37 +73,57 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-        #endregion
-
-        #region Methods
-
-        public ActionResult TopicDetails(string systemName)
-        {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
-            var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
-
-			if (cacheModel == null || (cacheModel.RenderAsWidget))
+		/// <summary>
+		/// Redirects old (prior V3.1.5) topic URL pattern "t/[SystemName]" to "[SeName]"
+		/// </summary>
+		public ActionResult TopicDetailsLegacy(string systemName, bool popup = false)
+		{
+			if (!_seoSettings.RedirectLegacyTopicUrls)
 				return HttpNotFound();
 
-            return View("TopicDetails", cacheModel);
-        }
-
-        public ActionResult TopicDetailsPopup(string systemName)
-        {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
-            var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
-
-            if (cacheModel == null)
+			var topic = _topicService.GetTopicBySystemName(systemName);
+			if (topic == null)
 				return HttpNotFound();
 
-            ViewBag.IsPopup = true;
-            return View("TopicDetails", cacheModel);
+			var routeValues = new RouteValueDictionary { ["SeName"] = topic.GetSeName() };
+			if (popup)
+				routeValues["popup"] = true;
+
+			return RedirectToRoutePermanent("Topic", routeValues);
+		}
+
+		public ActionResult TopicDetails(int topicId, bool popup = false)
+		{
+			//var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+			//var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
+
+			//if (cacheModel == null || (!popup && cacheModel.RenderAsWidget))
+			//	return HttpNotFound();
+
+			//ViewBag.IsPopup = popup;
+
+			//return View("TopicDetails", cacheModel);
+
+			return null;
+		}
+
+		public ActionResult TopicDetails(string systemName, bool popup = false)
+        {
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+            var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
+
+			if (cacheModel == null || (!popup && cacheModel.RenderAsWidget))
+				return HttpNotFound();
+
+			ViewBag.IsPopup = popup;
+
+			return View("TopicDetails", cacheModel);
         }
 
         [ChildActionOnly]
         public ActionResult TopicBlock(string systemName, bool bodyOnly = false, bool isLead = false)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
             if (cacheModel == null)
@@ -149,7 +166,5 @@ namespace SmartStore.Web.Controllers
             }
             return Json(new { Authenticated = authResult, Title = title, Body = body, Error = error });
         }
-
-        #endregion
     }
 }

@@ -82,7 +82,7 @@ namespace SmartStore.Web.Controllers
 		{
             var topic = _topicService.Value.GetTopicBySystemName("ContactUs", _services.StoreContext.CurrentStore.Id);
 
-            var model = new ContactUsModel()
+            var model = new ContactUsModel
 			{
 				Email = _services.WorkContext.CurrentCustomer.Email,
 				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),

@@ -44,7 +44,7 @@ namespace SmartStore.Services.Topics
             return _topicRepository.GetById(topicId);
         }
 
-		public virtual Topic GetTopicBySystemName(string systemName, int storeId)
+		public virtual Topic GetTopicBySystemName(string systemName, int storeId = 0)
         {
 			Guard.NotEmpty(systemName, nameof(systemName));
 
@@ -57,7 +57,7 @@ namespace SmartStore.Services.Topics
 			return topic;
         }
 
-		public virtual IList<Topic> GetAllTopics(int storeId)
+		public virtual IList<Topic> GetAllTopics(int storeId = 0)
         {
 			var query = _topicRepository.Table;
 

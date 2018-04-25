@@ -1,7 +1,12 @@
 ﻿using System.Web.Mvc;
+using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Media;
+using SmartStore.Services.Topics;
+using SmartStore.Services.Seo;
+using System.Web.Routing;
 
 namespace SmartStore.Web.Framework
 {
@@ -44,6 +49,27 @@ namespace SmartStore.Web.Framework
 		{
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
 			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
+		}
+
+		public static string TopicUrl(this UrlHelper urlHelper, string systemName, bool popup = false)
+		{
+			var workContext = EngineContext.Current.Resolve<IWorkContext>();
+			var cache = EngineContext.Current.Resolve<ICacheManager>();
+
+			var cacheKey = "Hallo";
+			var seName = cache.Get(cacheKey, () => 
+			{
+				var topicService = EngineContext.Current.Resolve<ITopicService>();
+				var topic = topicService.GetTopicBySystemName(systemName);
+
+				return topic?.GetSeName() ?? string.Empty;
+			});
+
+			var routeValues = new RouteValueDictionary { ["SeName"] = seName };
+			if (popup)
+				routeValues["popup"] = true;
+
+			return urlHelper.RouteUrl("Topic", routeValues);
 		}
 	}
 }

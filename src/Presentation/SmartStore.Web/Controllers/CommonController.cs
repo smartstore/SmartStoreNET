@@ -449,20 +449,10 @@ namespace SmartStore.Web.Controllers
                 DisplayLoginLink = _customerSettings.UserRegistrationType == UserRegistrationType.Disabled
             };
 
-			model.TopicPageUrls = allTopics
-				.Where(x => !x.RenderAsWidget)
-				.GroupBy(x => x.SystemName)
-				.ToDictionary(x => x.Key.EmptyNull().ToLower(), x =>
-				{
-					if (x.Key.IsCaseInsensitiveEqual("contactus"))
-						return Url.RouteUrl("ContactUs");
-
-					return Url.RouteUrl("Topic", new { SystemName = x.Key });
-				});
-
-			if (model.TopicPageUrls.ContainsKey("shippinginfo"))
+			var shippingInfoUrl = Url.TopicUrl("shippinginfo");
+			if (shippingInfoUrl.HasValue())
 			{
-				model.LegalInfo = T("Tax.LegalInfoFooter", taxInfo, model.TopicPageUrls["shippinginfo"]);
+				model.LegalInfo = T("Tax.LegalInfoFooter", taxInfo, shippingInfoUrl);
 			}
 			else
 			{
@@ -528,17 +518,6 @@ namespace SmartStore.Web.Controllers
                 ForumEnabled = _forumSettings.ForumsEnabled,
                 ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers(String.Empty, 0, 0).TotalCount > 0
             };
-
-            model.TopicPageUrls = allTopics
-                .Where(x => !x.RenderAsWidget)
-                .GroupBy(x => x.SystemName)
-                .ToDictionary(x => x.Key.EmptyNull().ToLower(), x =>
-                {
-                    if (x.Key.IsCaseInsensitiveEqual("contactus"))
-                        return Url.RouteUrl("ContactUs");
-
-                    return Url.RouteUrl("Topic", new { SystemName = x.Key });
-                });
 
             return PartialView(model);
         }

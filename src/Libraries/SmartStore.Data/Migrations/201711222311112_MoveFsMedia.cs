@@ -48,7 +48,7 @@ namespace SmartStore.Data.Migrations
 			}
 
 			// What a huge, fucking hack! > IMediaFileSystem is defined in an
-			// assembly which we don't reference from here. But it also implements
+			// assembly which we don't reference from here. But luckily it also implements
 			// IFileSystem, which we can cast to.
 			var fsType = Type.GetType("SmartStore.Services.Media.IMediaFileSystem, SmartStore.Services");
 			var fs = EngineContext.Current.Resolve(fsType) as IFileSystem;

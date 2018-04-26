@@ -140,8 +140,15 @@
 					<div class="collapse nav-collapse" id="footer-company">
 						<ul class="list-unstyled">
 
-                            @{ Html.RenderWidget("footer_col_3_before"); }
+                            @{ 
+								Html.RenderWidget("footer_col_3_before");
+								var urls = new Dictionary<string, string>
+								{
+									["aboutus"] = Url.TopicUrl("aboutus")
+								};
+							}
 
+							@*<li><a class="footer-link" href="@Url.TopicUrl("aboutus")">@T("AboutUs")</a></li>*@
 							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
 							{
 								<li><a class="footer-link" href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>

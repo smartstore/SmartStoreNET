@@ -155,6 +155,7 @@ namespace SmartStore.Services.Seo
 			var query = from ur in _urlRecordRepository.Table
 						where ur.Slug == slug
 						select ur;
+
 			var urlRecord = query.FirstOrDefault();
 			return urlRecord;
 		}

@@ -56,7 +56,7 @@ namespace SmartStore.Web.Framework
 			var workContext = EngineContext.Current.Resolve<IWorkContext>();
 			var cache = EngineContext.Current.Resolve<ICacheManager>();
 
-			var cacheKey = "Hallo";
+			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id);
 			var seName = cache.Get(cacheKey, () => 
 			{
 				var topicService = EngineContext.Current.Resolve<ITopicService>();

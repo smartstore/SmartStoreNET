@@ -32,6 +32,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
@@ -969,9 +970,9 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-				var topic = _topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id);
+				var shippingInfoUrl = _urlHelper.TopicUrl("ShippingInfo");
 
-				if (topic == null)
+				if (shippingInfoUrl.IsEmpty())
 				{
 					model.LegalInfo = T("Tax.LegalInfoProductDetail2",
 						product.IsTaxExempt ? "" : taxInfo,
@@ -984,7 +985,7 @@ namespace SmartStore.Web.Controllers
 						product.IsTaxExempt ? "" : taxInfo,
 						product.IsTaxExempt ? "" : defaultTaxRate,
 						additionalShippingCosts,
-						_urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" }));
+						shippingInfoUrl);
 				}
             }
 

@@ -9,6 +9,8 @@ using SmartStore.Web.Models.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Core.Domain.Seo;
 using System.Web.Routing;
+using SmartStore.Services.Stores;
+using SmartStore.Core.Domain.Topics;
 
 namespace SmartStore.Web.Controllers
 {
@@ -17,7 +19,8 @@ namespace SmartStore.Web.Controllers
         private readonly ITopicService _topicService;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
-        private readonly ILocalizationService _localizationService;
+		private readonly IStoreMappingService _storeMappingService;
+		private readonly ILocalizationService _localizationService;
         private readonly ICacheManager _cacheManager;
 		private readonly SeoSettings _seoSettings;
 
@@ -26,32 +29,35 @@ namespace SmartStore.Web.Controllers
             ILocalizationService localizationService,
             IWorkContext workContext,
 			IStoreContext storeContext,
+			IStoreMappingService storeMappingService,
 			ICacheManager cacheManager,
 			SeoSettings seoSettings)
         {
             _topicService = topicService;
             _workContext = workContext;
 			_storeContext = storeContext;
-            _localizationService = localizationService;
+			_storeMappingService = storeMappingService;
+			_localizationService = localizationService;
             _cacheManager = cacheManager;
 			_seoSettings = seoSettings;
         }
 
         [NonAction]
-        protected TopicModel PrepareTopicModel(string systemName)
+        protected TopicModel PrepareTopicModel(Topic topic)
         {
-			//load by store
-			var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id);
-            if (topic == null)
-                return null;
+			Guard.NotNull(topic, nameof(topic));
 
             var titleTag = "h3";
-            if(topic.TitleTag != null)
-                titleTag = topic.TitleTag;
-            else if (!topic.RenderAsWidget) 
-                 titleTag = "h1";
+            if (topic.TitleTag != null)
+			{
+				titleTag = topic.TitleTag;
+			}   
+            else if (!topic.RenderAsWidget)
+			{
+				titleTag = "h1";
+			}          
 
-            var model = new TopicModel()
+            var model = new TopicModel
             {
                 Id = topic.Id,
                 SystemName = topic.SystemName,
@@ -61,6 +67,7 @@ namespace SmartStore.Web.Controllers
                 MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic.GetLocalized(x => x.MetaTitle),
+				SeName = topic.GetSeName(),
                 TitleTag = titleTag,
 				RenderAsWidget = topic.RenderAsWidget
 			};
@@ -94,23 +101,18 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult TopicDetails(int topicId, bool popup = false)
 		{
-			//var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
-			//var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_ID_KEY, topicId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+			var cacheModel = _cacheManager.Get(cacheKey, () => 
+			{
+				var topic = _topicService.GetTopicById(topicId);
+				if (topic == null)
+					return null;
 
-			//if (cacheModel == null || (!popup && cacheModel.RenderAsWidget))
-			//	return HttpNotFound();
+				if (!_storeMappingService.Authorize(topic))
+					return null;
 
-			//ViewBag.IsPopup = popup;
-
-			//return View("TopicDetails", cacheModel);
-
-			return null;
-		}
-
-		public ActionResult TopicDetails(string systemName, bool popup = false)
-        {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
-            var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
+				return PrepareTopicModel(topic);
+			});
 
 			if (cacheModel == null || (!popup && cacheModel.RenderAsWidget))
 				return HttpNotFound();
@@ -118,13 +120,23 @@ namespace SmartStore.Web.Controllers
 			ViewBag.IsPopup = popup;
 
 			return View("TopicDetails", cacheModel);
-        }
+		}
 
         [ChildActionOnly]
         public ActionResult TopicBlock(string systemName, bool bodyOnly = false, bool isLead = false)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
-            var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName.ToLower(), _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+            var cacheModel = _cacheManager.Get(cacheKey, () => 
+			{
+				var topic = _topicService.GetTopicBySystemName(systemName);
+				if (topic == null)
+					return null;
+
+				if (!_storeMappingService.Authorize(topic))
+					return null;
+
+				return PrepareTopicModel(topic);
+			});
 
             if (cacheModel == null)
                 return Content("");

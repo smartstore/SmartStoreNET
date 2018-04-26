@@ -22,6 +22,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
@@ -186,14 +187,14 @@ namespace SmartStore.Web.Controllers
 				
 				if (settings.MapLegalInfo)
 				{
-					if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) == null)
+					var shippingInfoUrl = _urlHelper.TopicUrl("shippinginfo");
+					if (shippingInfoUrl.HasValue())
 					{
-						legalInfo = T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
+						legalInfo = T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoUrl);
 					}
 					else
 					{
-						var shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
-						legalInfo = T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoLink);
+						legalInfo = T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
 					}
 				}
 

@@ -263,9 +263,7 @@ namespace SmartStore.Services.Seo
 		{
 			Guard.NotNull(urlRecordService, nameof(urlRecordService));
 			Guard.NotNull(seoSettings, nameof(seoSettings));
-
-			if (entity == null)
-				throw new ArgumentNullException("entity");
+			Guard.NotNull(entity, nameof(entity));
 
 			// use name if sename is not specified
 			if (String.IsNullOrWhiteSpace(seName) && !String.IsNullOrWhiteSpace(name))

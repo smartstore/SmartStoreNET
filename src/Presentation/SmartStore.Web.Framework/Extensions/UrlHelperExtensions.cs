@@ -53,23 +53,36 @@ namespace SmartStore.Web.Framework
 
 		public static string TopicUrl(this UrlHelper urlHelper, string systemName, bool popup = false)
 		{
-			var workContext = EngineContext.Current.Resolve<IWorkContext>();
-			var cache = EngineContext.Current.Resolve<ICacheManager>();
+			var seName = TopicSeName(urlHelper, systemName);
 
-			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id);
-			var seName = cache.Get(cacheKey, () => 
+			if (seName.Length == 0)
 			{
-				var topicService = EngineContext.Current.Resolve<ITopicService>();
-				var topic = topicService.GetTopicBySystemName(systemName);
-
-				return topic?.GetSeName() ?? string.Empty;
-			});
+				return string.Empty;
+			}		
 
 			var routeValues = new RouteValueDictionary { ["SeName"] = seName };
 			if (popup)
 				routeValues["popup"] = true;
 
 			return urlHelper.RouteUrl("Topic", routeValues);
+		}
+
+		public static string TopicSeName(this UrlHelper urlHelper, string systemName)
+		{
+			var workContext = EngineContext.Current.Resolve<IWorkContext>();
+			var storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStoreIdIfMultiStoreMode;
+			var cache = EngineContext.Current.Resolve<ICacheManager>();
+
+			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id, storeId);
+			var seName = cache.Get(cacheKey, () =>
+			{
+				var topicService = EngineContext.Current.Resolve<ITopicService>();
+				var topic = topicService.GetTopicBySystemName(systemName, storeId);
+
+				return topic?.GetSeName() ?? string.Empty;
+			});
+
+			return seName;
 		}
 	}
 }

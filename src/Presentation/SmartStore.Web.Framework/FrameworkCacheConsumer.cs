@@ -45,8 +45,9 @@ namespace SmartStore.Web.Framework
 		/// <remarks>
 		/// {0} : systemname
 		/// {1} : language id
+		/// {2} : store id
 		/// </remarks>
-		public const string TOPIC_SENAME_BY_SYSTEMNAME = "fw:topic:sename.bysystemname-{0}-{1}";
+		public const string TOPIC_SENAME_BY_SYSTEMNAME = "fw:topic:sename.bysystemname-{0}-{1}-{2}";
 		public const string TOPIC_SENAME_PATTERN_KEY = "fw:topic:sename*";
 
 		private readonly ICacheManager _cacheManager;

@@ -2,6 +2,16 @@
 @using SmartStore.Web.Models.Common;
 
 @{ 
+	var footerLinks = new List<Tuple<string, string>>
+	{
+		// Item1 = TopicUrl, Item2 = Locale Resource Key
+		new Tuple<string, string>(Url.TopicUrl("aboutus"), "AboutUs"),
+		new Tuple<string, string>(Url.TopicUrl("imprint"), "Imprint"),
+		new Tuple<string, string>(Url.TopicUrl("disclaimer"), "Disclaimer"),
+		new Tuple<string, string>(Url.TopicUrl("privacyinfo"), "PrivacyNotice"),
+		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), "ConditionsOfUse")
+	};
+
 	var socialLinks = new List<Tuple<string, string>>();
 	if (Model.FacebookLink.HasValue())
 	{
@@ -101,11 +111,17 @@
 					<div class="collapse nav-collapse" id="footer-service">
 						<ul class="list-unstyled">
 
-                            @{ Html.RenderWidget("footer_col_2_before"); }
+                            @{ 
+								Html.RenderWidget("footer_col_2_before");
 
-							@if (Model.TopicPageUrls.ContainsKey("contactus"))
+								var contactUsUrl = Url.TopicUrl("contactus");
+								var shippingInfoUrl = Url.TopicUrl("shippinginfo");
+								var paymentInfoUrl = Url.TopicUrl("paymentinfo");
+							}
+
+							@if (contactUsUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+								<li><a class="footer-link" href="@contactUsUrl">@T("ContactUs")</a></li>
 							}
 							@if (Model.BlogEnabled)
 							{
@@ -115,13 +131,13 @@
 							{
 								<li><a class="footer-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
 							}
-							@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+							@if (shippingInfoUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
+								<li><a class="footer-link" href="@shippingInfoUrl">@T("ShippingReturns")</a></li>
 							}
-							@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
+							@if (paymentInfoUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
+								<li><a class="footer-link" href="@paymentInfoUrl">@T("Paymentinfo")</a></li>
 							}
 
                             @{ Html.RenderWidget("footer_col_2_after"); }
@@ -140,34 +156,14 @@
 					<div class="collapse nav-collapse" id="footer-company">
 						<ul class="list-unstyled">
 
-                            @{ 
-								Html.RenderWidget("footer_col_3_before");
-								var urls = new Dictionary<string, string>
-								{
-									["aboutus"] = Url.TopicUrl("aboutus")
-								};
-							}
+                            @{ Html.RenderWidget("footer_col_3_before"); }
 
-							@*<li><a class="footer-link" href="@Url.TopicUrl("aboutus")">@T("AboutUs")</a></li>*@
-							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+							@foreach (var link in footerLinks)
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("imprint"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
+								if (link.Item1.HasValue())
+								{
+									<li><a class="footer-link" href="@link.Item1">@T(link.Item2)</a></li>
+								}
 							}
 
                             @if (Model.DisplayLoginLink)

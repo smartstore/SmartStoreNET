@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Services.Messages;
@@ -14,6 +16,9 @@ namespace SmartStore.Services.Tests.Messages
 		IRepository<NewsLetterSubscription> _subscriptionRepository;
 		IDbContext _dbContext;
 		NewsLetterSubscriptionService _newsLetterSubscriptionService;
+		IWorkContext _workContext;
+		ICommonServices _services;
+		Language _language;
 
 		[SetUp]
 		public new void SetUp()
@@ -22,7 +27,14 @@ namespace SmartStore.Services.Tests.Messages
 			_subscriptionRepository = MockRepository.GenerateStub<IRepository<NewsLetterSubscription>>();
 			_dbContext = MockRepository.GenerateStub<IDbContext>();
 
-			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_dbContext, _subscriptionRepository, _eventPublisher);
+			_language = new Language { Id = 1 };
+			_workContext = MockRepository.GenerateMock<IWorkContext>();
+			_workContext.Expect(x => x.WorkingLanguage).Return(_language);
+
+			_services = MockRepository.GenerateMock<ICommonServices>();
+			_services.Expect(x => x.WorkContext).Return(_workContext);
+
+			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_dbContext, _subscriptionRepository, _eventPublisher, _services);
 		}
 
         /// <summary>

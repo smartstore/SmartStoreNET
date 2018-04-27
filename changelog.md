@@ -4,9 +4,12 @@
 ### New Features
 
 ### Improvements
-Added double opt in feature for newsletter subscriptions during checkout (confirm order)
+* Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
 
 ### Bugfixes
+* Theming: fix broken product review voting
+* Theming: added missing bottom space to .html-editor-content
+* Theming: Language switcher is not displayed if no currency options are available
 
 
 ## SmartStore.NET 3.1.0

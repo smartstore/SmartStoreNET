@@ -788,14 +788,14 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			//delete previous helpfulness
+			// delete previous helpfulness
 			var oldPrh = (from prh in productReview.ProductReviewHelpfulnessEntries
 						  where prh.CustomerId == _services.WorkContext.CurrentCustomer.Id
 						  select prh).FirstOrDefault();
 			if (oldPrh != null)
 				_customerContentService.DeleteCustomerContent(oldPrh);
 
-			//insert new helpfulness
+			// insert new helpfulness
 			var newPrh = new ProductReviewHelpfulness
 			{
 				ProductReviewId = productReview.Id,
@@ -806,7 +806,7 @@ namespace SmartStore.Web.Controllers
 			};
 			_customerContentService.InsertCustomerContent(newPrh);
 
-			//new totals
+			// new totals
 			int helpfulYesTotal = (from prh in productReview.ProductReviewHelpfulnessEntries
 								   where prh.WasHelpful
 								   select prh).Count();

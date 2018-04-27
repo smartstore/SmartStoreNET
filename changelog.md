@@ -8,6 +8,7 @@
 
 ### Bugfixes
 * Migration: take all same-named message templates into account
+* Messaging: OrderPlaced e-mail templates show main product image even when an attribute combination with a custom image has been selected
 * Theming: fix broken product review voting
 * Theming: added missing bottom space to .html-editor-content
 * Theming: Language switcher is not displayed if no currency options are available

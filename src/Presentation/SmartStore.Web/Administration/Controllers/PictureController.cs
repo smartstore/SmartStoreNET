@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Data.Utilities;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -16,8 +17,8 @@ namespace SmartStore.Admin.Controllers
 
 		public PictureController(
 			IPictureService pictureService,
-             IPermissionService permissionService,
-			 MediaSettings mediaSettings)
+            IPermissionService permissionService,
+			MediaSettings mediaSettings)
         {
             _pictureService = pictureService;
             _permissionService = permissionService;
@@ -44,5 +45,11 @@ namespace SmartStore.Admin.Controllers
                     imageUrl = _pictureService.GetUrl(picture, _mediaSettings.ProductThumbPictureSize, host: "") 
                 });
         }
+
+		public ActionResult MoveFsMedia()
+		{
+			var count = DataMigrator.MoveFsMedia(Services.DbContext);
+			return Content("Moved and reorganized {0} media files.".FormatInvariant(count));
+		}
     }
 }

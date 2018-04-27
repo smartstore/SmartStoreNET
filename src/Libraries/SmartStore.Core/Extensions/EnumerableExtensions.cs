@@ -295,25 +295,34 @@ namespace SmartStore
                                                 Func<TSource, TKey> keySelector,
                                                 Func<TSource, TValue> valueSelector)
         {
-            Guard.NotNull(source, nameof(source));
-            Guard.NotNull(keySelector, nameof(keySelector));
-            Guard.NotNull(valueSelector, nameof(valueSelector));
-
-            var map = new Multimap<TKey, TValue>();
-
-            foreach (var item in source)
-            {
-                map.Add(keySelector(item), valueSelector(item));
-            }
-
-            return map;
+			return source.ToMultimap(keySelector, valueSelector, null);
         }
 
-        #endregion
+		public static Multimap<TKey, TValue> ToMultimap<TSource, TKey, TValue>(
+												this IEnumerable<TSource> source,
+												Func<TSource, TKey> keySelector,
+												Func<TSource, TValue> valueSelector,
+												IEqualityComparer<TKey> comparer)
+		{
+			Guard.NotNull(source, nameof(source));
+			Guard.NotNull(keySelector, nameof(keySelector));
+			Guard.NotNull(valueSelector, nameof(valueSelector));
 
-        #region NameValueCollection
+			var map = new Multimap<TKey, TValue>(comparer);
 
-        public static void AddRange(this NameValueCollection initial, NameValueCollection other)
+			foreach (var item in source)
+			{
+				map.Add(keySelector(item), valueSelector(item));
+			}
+
+			return map;
+		}
+
+		#endregion
+
+		#region NameValueCollection
+
+		public static void AddRange(this NameValueCollection initial, NameValueCollection other)
         {
             Guard.NotNull(initial, "initial");
 

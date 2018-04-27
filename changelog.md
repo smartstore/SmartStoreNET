@@ -1,5 +1,19 @@
 # Release Notes
 
+## SmartStore.NET 3.1.5
+### New Features
+
+### Improvements
+* Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
+
+### Bugfixes
+* Migration: take all same-named message templates into account
+* Theming: fix broken product review voting
+* Theming: added missing bottom space to .html-editor-content
+* Theming: Language switcher is not displayed if no currency options are available
+
+
+
 ## SmartStore.NET 3.1.0
 ### Breaking changes
 * Message template customizations are lost due to the new template engine. You have to customize the templates again. No automatic migration, sorry :-(

@@ -121,21 +121,24 @@ namespace SmartStore.Data.Utilities
 			var sourceTemplates = LoadAll(language);
 			var dbTemplatesMap = table
 				.ToList()
-				.ToDictionarySafe(x => x.Name, StringComparer.OrdinalIgnoreCase);
+				.ToMultimap(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
 			foreach (var source in sourceTemplates)
 			{
-				if (dbTemplatesMap.TryGetValue(source.Name, out var target))
+				if (dbTemplatesMap.ContainsKey(source.Name))
 				{
-					if (source.To.HasValue()) target.To = source.To;
-					if (source.ReplyTo.HasValue()) target.ReplyTo = source.ReplyTo;
-					if (source.Subject.HasValue()) target.Subject = source.Subject;
-					if (source.ModelTypes.HasValue()) target.ModelTypes = source.ModelTypes;
-					if (source.Body.HasValue()) target.Body = source.Body;
+					foreach (var target in dbTemplatesMap[source.Name])
+					{
+						if (source.To.HasValue()) target.To = source.To;
+						if (source.ReplyTo.HasValue()) target.ReplyTo = source.ReplyTo;
+						if (source.Subject.HasValue()) target.Subject = source.Subject;
+						if (source.ModelTypes.HasValue()) target.ModelTypes = source.ModelTypes;
+						if (source.Body.HasValue()) target.Body = source.Body;
+					}
 				}
 				else
 				{
-					target = new MessageTemplate
+					var template = new MessageTemplate
 					{
 						Name = source.Name,
 						To = source.To,
@@ -147,7 +150,7 @@ namespace SmartStore.Data.Utilities
 						EmailAccountId = (_defaultEmailAccount?.Id).GetValueOrDefault(),
 					};
 
-					table.Add(target);
+					table.Add(template);
 				}
 			}
 

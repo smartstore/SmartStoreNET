@@ -7,6 +7,7 @@
 * Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
 
 ### Bugfixes
+* Migration: take all same-named message templates into account
 * Theming: fix broken product review voting
 * Theming: added missing bottom space to .html-editor-content
 * Theming: Language switcher is not displayed if no currency options are available

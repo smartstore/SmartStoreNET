@@ -34,23 +34,22 @@ namespace SmartStore.Services.Messages
             IRepository<MessageTemplate> messageTemplateRepository,
             IEventPublisher eventPublisher)
         {
-			this._requestCache = requestCache;
-			this._storeMappingRepository = storeMappingRepository;
-			this._languageService = languageService;
-			this._localizedEntityService = localizedEntityService;
-			this._storeMappingService = storeMappingService;
-			this._messageTemplateRepository = messageTemplateRepository;
-			this._eventPublisher = eventPublisher;
+			_requestCache = requestCache;
+			_storeMappingRepository = storeMappingRepository;
+			_languageService = languageService;
+			_localizedEntityService = localizedEntityService;
+			_storeMappingService = storeMappingService;
+			_messageTemplateRepository = messageTemplateRepository;
+			_eventPublisher = eventPublisher;
 
-			this.QuerySettings = DbQuerySettings.Default;
+			QuerySettings = DbQuerySettings.Default;
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
 
 		public virtual void DeleteMessageTemplate(MessageTemplate messageTemplate)
 		{
-			if (messageTemplate == null)
-				throw new ArgumentNullException("messageTemplate");
+			Guard.NotNull(messageTemplate, nameof(messageTemplate));
 
 			_messageTemplateRepository.Delete(messageTemplate);
 
@@ -59,20 +58,18 @@ namespace SmartStore.Services.Messages
 
         public virtual void InsertMessageTemplate(MessageTemplate messageTemplate)
         {
-            if (messageTemplate == null)
-                throw new ArgumentNullException("messageTemplate");
+			Guard.NotNull(messageTemplate, nameof(messageTemplate));
 
-            _messageTemplateRepository.Insert(messageTemplate);
+			_messageTemplateRepository.Insert(messageTemplate);
 
             _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
         }
 
         public virtual void UpdateMessageTemplate(MessageTemplate messageTemplate)
         {
-            if (messageTemplate == null)
-                throw new ArgumentNullException("messageTemplate");
+			Guard.NotNull(messageTemplate, nameof(messageTemplate));
 
-            _messageTemplateRepository.Update(messageTemplate);
+			_messageTemplateRepository.Update(messageTemplate);
 
             _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
         }
@@ -87,8 +84,7 @@ namespace SmartStore.Services.Messages
 
 		public virtual MessageTemplate GetMessageTemplateByName(string messageTemplateName, int storeId)
         {
-            if (string.IsNullOrWhiteSpace(messageTemplateName))
-                throw new ArgumentException("messageTemplateName");
+			Guard.NotEmpty(messageTemplateName, nameof(messageTemplateName));
 
             string key = string.Format(MESSAGETEMPLATES_BY_NAME_KEY, messageTemplateName, storeId);
             return _requestCache.Get(key, () =>
@@ -117,7 +113,7 @@ namespace SmartStore.Services.Messages
 				var query = _messageTemplateRepository.Table;
 				query = query.OrderBy(t => t.Name);
 
-				//Store mapping
+				// Store mapping
 				if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 				{
 					query = from t in query
@@ -127,7 +123,7 @@ namespace SmartStore.Services.Messages
 							where !t.LimitedToStores || storeId == sm.StoreId
 							select t;
 
-					//only distinct items (group by ID)
+					// Only distinct items (group by ID)
 					query = from t in query
 							group t by t.Id	into tGroup
 							orderby tGroup.Key
@@ -141,8 +137,7 @@ namespace SmartStore.Services.Messages
 
 		public virtual MessageTemplate CopyMessageTemplate(MessageTemplate messageTemplate)
 		{
-			if (messageTemplate == null)
-				throw new ArgumentNullException("messageTemplate");
+			Guard.NotNull(messageTemplate, nameof(messageTemplate));
 
 			var mtCopy = new MessageTemplate
 			{

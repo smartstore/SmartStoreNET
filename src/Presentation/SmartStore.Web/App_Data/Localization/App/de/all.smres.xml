@@ -13878,9 +13878,6 @@
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Checkboxes">
 		<Value>Kontrollkästchen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.ColorSquares">
-		<Value>Farbflächen</Value>
-	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Datepicker">
 		<Value>Kalender</Value>
 	</LocaleResource>
@@ -16173,9 +16170,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductNotAddedToTheCart">
 		<Value>Produkt konnte nicht zum Warenkorb hinzugefügt werden.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.ProductNotAddedToTheCart.Link">
-		<Value>Produkt konnte Ihrem Warenkorb nicht hinzugefügt werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductsHaveBeenAddedToTheCart">
 		<Value>Die von Ihnen gewählten Produkte wurden in den Warenkorb gelegt.</Value>

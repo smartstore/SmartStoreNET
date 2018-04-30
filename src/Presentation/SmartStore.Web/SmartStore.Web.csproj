@@ -540,11 +540,6 @@
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Data\Samples\0000785-apple-iphone.png" />
-    <Content Include="App_Data\Samples\0000786-apple-iphone.png" />
-    <Content Include="App_Data\Samples\0000787-apple-iphone.jpg" />
-    <Content Include="App_Data\Samples\0000788-apple-iphone.png" />
-    <Content Include="App_Data\Samples\0000789-apple-iphone.jpg" />
     <Content Include="App_Data\Samples\0000904_samsung_125.jpeg" />
     <Content Include="App_Data\Samples\0000930_spiegel-bestseller.png" />
     <Content Include="App_Data\Samples\0000932_uberman-der-roman.jpeg" />
@@ -589,11 +584,9 @@
     <Content Include="App_Data\Samples\category_sports.jpg" />
     <Content Include="App_Data\Samples\category_sunglasses.jpg" />
     <Content Include="App_Data\Samples\category_watches.png" />
-    <Content Include="App_Data\Samples\clouds.png" />
     <Content Include="App_Data\Samples\company_logo.png" />
     <Content Include="App_Data\Samples\emblem_library.png" />
     <Content Include="App_Data\Samples\gift-card.jpg" />
-    <Content Include="App_Data\Samples\iphone.png" />
     <Content Include="App_Data\Samples\manufacturer-android.png" />
     <Content Include="App_Data\Samples\manufacturer-blackberry.png" />
     <Content Include="App_Data\Samples\manufacturer-canon.png" />
@@ -625,8 +618,6 @@
     <Content Include="App_Data\Samples\manufacturer_ubisoft.png" />
     <Content Include="App_Data\Samples\manufacturer_wb.png" />
     <Content Include="App_Data\Samples\manufacturer_wilson.png" />
-    <Content Include="App_Data\Samples\music.png" />
-    <Content Include="App_Data\Samples\packshot-net.png" />
     <Content Include="App_Data\Samples\productCustomFlakSunglasses_black_white.jpg" />
     <Content Include="App_Data\Samples\products_airpods_gold.jpg" />
     <Content Include="App_Data\Samples\products_airpods_lightblue.jpg" />
@@ -656,17 +647,12 @@
     <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-white.png" />
     <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-yellow.jpg" />
     <Content Include="App_Data\Samples\product_all-court-basketball.png" />
-    <Content Include="App_Data\Samples\product_allstar_charcoal.jpg" />
     <Content Include="App_Data\Samples\product_allstar_converse.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_charcoal.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_maroon.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_navy.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_purple.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_white.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_maroon.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_navy.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_purple.jpg" />
-    <Content Include="App_Data\Samples\product_allstar_white.jpg" />
     <Content Include="App_Data\Samples\product_ball_chair_black.jpg" />
     <Content Include="App_Data\Samples\product_ball_chair_white.jpg" />
     <Content Include="App_Data\Samples\product_bestgrillingrecipes.jpg" />
@@ -808,9 +794,6 @@
     <Content Include="App_Data\Samples\ubisoft-watchdogs.jpg" />
     <Content Include="App_Data\Samples\vivaldi-four-seasons-spring.mp3" />
     <Content Include="App_Data\Samples\vivaldi.jpg" />
-    <Content Include="App_Data\Samples\wayfarer_havana.png" />
-    <Content Include="App_Data\Samples\wayfarer_havana_black.png" />
-    <Content Include="App_Data\Samples\wayfarer_rayban-black.png" />
     <Content Include="Content\bs4\js\bootstrap.bundle.js" />
     <Content Include="Content\bs4\js\bootstrap.bundle.min.js" />
     <Content Include="Content\bs4\js\bootstrap.js" />

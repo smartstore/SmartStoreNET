@@ -165,13 +165,12 @@
 				{% endif %}
 				
 				<!-- Redeemed Reward Points-->
+				             
 				{% if totals.RedeemedRewardPoints %}
-					{% for rp in totals.RedeemedRewardPoints %}
-						<tr>
-							<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ rp.Title }}:</td>
-							<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ rp.Amount }}</td>
-						</tr>
-					{% endfor %}
+					<tr>
+						<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ totals.RedeemedRewardPoints.Title }}:</td>
+						<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.RedeemedRewardPoints.Amount }}</td>
+					</tr>
 				{% endif %}
 				
 				<!-- Rounding Difference -->

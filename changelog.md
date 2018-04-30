@@ -14,6 +14,7 @@
 * Theming: Language switcher is not displayed if no currency options are available
 * No bundle item thumbnail displayed in bundle summary if item is not individually visible
 * Bundle item quantity label overlapping the item name in bundle summary
+* Tracking number in shipment details was not saved
 
 
 

@@ -23,13 +23,24 @@
 	}
 
 	<ul class="pd-bundle-summary list-unstyled mb-3">
-		@for (int i = 0; i < items.Count; i++)
+		@foreach (var item in items)
 		{
-			var item = items[i];
+			var hasThumbnail = item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl.HasValue();
 			<li class="pd-bundle-summary-item">
+				@if (item.BundleItem.Quantity > 1)
+				{
+					if (hasThumbnail)
+					{
+						<span class="pd-bundle-summary-item-qty badge badge-pill badge-success">@(item.BundleItem.Quantity)&#215;</span>
+					}
+					else
+					{
+						<span><strong>@(item.BundleItem.Quantity)&#215;</strong></span>
+					}
+				}
 				@if (item.VisibleIndividually)
 				{
-					if (item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl.HasValue())
+					if (hasThumbnail)
 					{
 						<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">
 							<img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" />
@@ -39,18 +50,17 @@
 					{
 						<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
 					}
-					if (item.BundleItem.Quantity > 1)
-					{
-						<span class="pd-bundle-summary-item-qty badge badge-pill badge-success">@(item.BundleItem.Quantity)&#215;</span>
-					}
 				}
 				else
 				{
-					if (item.BundleItem.Quantity > 1)
+					if (hasThumbnail)
 					{
-						<strong>@(item.BundleItem.Quantity)&#215;</strong>
+						<img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" />
 					}
-					<span>@item.Name</span>
+					else
+					{
+						<span>@item.Name</span>
+					}
 				}
 			</li>
 		}

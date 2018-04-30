@@ -29,7 +29,14 @@
 			<li class="pd-bundle-summary-item">
 				@if (item.BundleItem.Quantity > 1)
 				{
-					<span class="pd-bundle-summary-item-qty badge badge-pill badge-success" @Html.Attr("style", "position:initial", !hasThumbnail))>@(item.BundleItem.Quantity)&#215;</span>
+					if (hasThumbnail)
+					{
+						<span class="pd-bundle-summary-item-qty badge badge-pill badge-success">@(item.BundleItem.Quantity)&#215;</span>
+					}
+					else
+					{
+						<span><strong>@(item.BundleItem.Quantity)&#215;</strong></span>
+					}
 				}
 				@if (item.VisibleIndividually)
 				{

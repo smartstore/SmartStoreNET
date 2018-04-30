@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
@@ -13,7 +13,6 @@
 * Theming: added missing bottom space to .html-editor-content
 * Theming: Language switcher is not displayed if no currency options are available
 * No bundle item thumbnail displayed in bundle summary if item is not individually visible
-* Bundle item quantity label overlapping the item name in bundle summary
 * Tracking number in shipment details was not saved
 * Reward points weren't displayed in message templates
 

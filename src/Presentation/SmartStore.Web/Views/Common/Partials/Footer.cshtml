@@ -241,12 +241,13 @@
 <div class="footer-bottom-wrapper">
 	<div class="container footer-bottom">
 		<div class="row sm-gutters">
-			<div class="col pb-1 pb-sm-0">
+			
 			@if (Model.ShowLegalInfo)
 			{
-				@Html.Raw(Model.LegalInfo)
+				<div class="col pb-1 pb-sm-0">
+					@Html.Raw(Model.LegalInfo)
+				</div>
 			}
-			</div>
 
 			@if (Model.SmartStoreHint.HasValue())
 			{

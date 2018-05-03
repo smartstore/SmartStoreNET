@@ -29,9 +29,9 @@
             {
                 if (!Model.AlreadySubscribed)
                 {
-                    <p class="x-tooltip">@T("BackInStockSubscriptions.Tooltip")</p>
+                    <p class="x-tooltip fs-h5">@T("BackInStockSubscriptions.Tooltip")</p>
                 }
-                <button type="submit" id="back-in-stock-notify-me" class="btn btn-info">
+                <button type="submit" id="back-in-stock-notify-me" class="mt-2 btn btn-lg btn-@(Model.AlreadySubscribed ? "danger" : "success")">
 					@T(Model.AlreadySubscribed ? "BackInStockSubscriptions.Unsubscribe" : "BackInStockSubscriptions.NotifyMe")
                 </button>
                 

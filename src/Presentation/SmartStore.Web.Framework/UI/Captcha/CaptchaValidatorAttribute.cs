@@ -31,32 +31,35 @@ namespace SmartStore.Web.Framework.UI.Captcha
 			try
 			{
 				var captchaSettings = CaptchaSettings.Value;
-				var verifyUrl = CommonHelper.GetAppSetting<string>("g:RecaptchaVerifyUrl");
-				var recaptchaResponse = filterContext.HttpContext.Request.Form["g-recaptcha-response"];
-
-				var url = "{0}?secret={1}&response={2}".FormatInvariant(
-					verifyUrl,
-					HttpUtility.UrlEncode(captchaSettings.ReCaptchaPrivateKey),
-					HttpUtility.UrlEncode(recaptchaResponse)
-				);
-
-				using (var client = new WebClient())
+				if (captchaSettings.Enabled && captchaSettings.ReCaptchaPrivateKey.HasValue())
 				{
-					var jsonResponse = client.DownloadString(url);
-					using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(jsonResponse)))
-					{
-						var serializer = new DataContractJsonSerializer(typeof(GoogleRecaptchaApiResponse));
-						var result = serializer.ReadObject(memoryStream) as GoogleRecaptchaApiResponse;
+					var verifyUrl = CommonHelper.GetAppSetting<string>("g:RecaptchaVerifyUrl");
+					var recaptchaResponse = filterContext.HttpContext.Request.Form["g-recaptcha-response"];
 
-						if (result == null)
+					var url = "{0}?secret={1}&response={2}".FormatInvariant(
+						verifyUrl,
+						HttpUtility.UrlEncode(captchaSettings.ReCaptchaPrivateKey),
+						HttpUtility.UrlEncode(recaptchaResponse)
+					);
+
+					using (var client = new WebClient())
+					{
+						var jsonResponse = client.DownloadString(url);
+						using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(jsonResponse)))
 						{
-							Logger.Error(LocalizationService.Value.GetResource("Common.CaptchaUnableToVerify"));
-						}
-						else
-						{
-							if (result.ErrorCodes == null)
+							var serializer = new DataContractJsonSerializer(typeof(GoogleRecaptchaApiResponse));
+							var result = serializer.ReadObject(memoryStream) as GoogleRecaptchaApiResponse;
+
+							if (result == null)
 							{
-								valid = result.Success;
+								Logger.Error(LocalizationService.Value.GetResource("Common.CaptchaUnableToVerify"));
+							}
+							else
+							{
+								if (result.ErrorCodes == null)
+								{
+									valid = result.Success;
+								}
 							}
 						}
 					}

@@ -103,7 +103,7 @@
 
         		list.slick({
 					infinite: false,
-					rtl: $("body").attr("dir") == "rtl",
+					rtl: $("html").attr("dir") == "rtl",
         			dots: true,
         			cssEase: 'ease-in-out',
         			speed: 300,

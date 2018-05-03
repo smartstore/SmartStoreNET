@@ -21,7 +21,9 @@ namespace SmartStore.Web.Models.Topics
 
         public string MetaTitle { get; set; }
 
-        public string TitleTag { get; set; }
+		public string SeName { get; set; }
+
+		public string TitleTag { get; set; }
 
 		public bool RenderAsWidget { get; set; }
 	}

@@ -80,17 +80,17 @@ namespace SmartStore.Web.Controllers
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult ContactUs()
 		{
-            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", _services.StoreContext.CurrentStore.Id);
+            var topic = _topicService.Value.GetTopicBySystemName("ContactUs");
 
-            var model = new ContactUsModel()
+            var model = new ContactUsModel
 			{
 				Email = _services.WorkContext.CurrentCustomer.Email,
 				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
 				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
                 DisplayPrivacyAgreement = _customerSettings.Value.DisplayPrivacyAgreementOnContactUs,
-                MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
-                MetaDescription = topic.GetLocalized(x => x.MetaDescription),
-                MetaTitle = topic.GetLocalized(x => x.MetaTitle),
+                MetaKeywords = topic?.GetLocalized(x => x.MetaKeywords),
+                MetaDescription = topic?.GetLocalized(x => x.MetaDescription),
+                MetaTitle = topic?.GetLocalized(x => x.MetaTitle),
             };
 
 			return View(model);

@@ -144,7 +144,8 @@ namespace SmartStore.AmazonPay.Services
 			model.KeyShareUrl = GetPluginUrl("ShareKey", store.SslEnabled);
 			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
 			model.MerchantStoreDescription = store.Name.Truncate(2048);
-			model.MerchantPrivacyNoticeUrl = urlHelper.RouteUrl("Topic", new { SystemName = "privacyinfo" }, store.SslEnabled ? "https" : "http");
+
+			model.MerchantPrivacyNoticeUrl = urlHelper.RouteUrl("Topic", new { SeName = urlHelper.TopicSeName("privacyinfo") }, store.SslEnabled ? "https" : "http");
 			model.MerchantSandboxIpnUrl = model.IpnUrl;
 			model.MerchantProductionIpnUrl = model.IpnUrl;
 

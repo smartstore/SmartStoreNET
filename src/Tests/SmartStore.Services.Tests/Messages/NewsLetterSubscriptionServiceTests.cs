@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Services.Messages;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Messages
 {
@@ -27,14 +28,7 @@ namespace SmartStore.Services.Tests.Messages
 			_subscriptionRepository = MockRepository.GenerateStub<IRepository<NewsLetterSubscription>>();
 			_dbContext = MockRepository.GenerateStub<IDbContext>();
 
-			_language = new Language { Id = 1 };
-			_workContext = MockRepository.GenerateMock<IWorkContext>();
-			_workContext.Expect(x => x.WorkingLanguage).Return(_language);
-
-			_services = MockRepository.GenerateMock<ICommonServices>();
-			_services.Expect(x => x.WorkContext).Return(_workContext);
-
-			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_dbContext, _subscriptionRepository, _eventPublisher, _services);
+			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_subscriptionRepository, new MockCommonServices());
 		}
 
         /// <summary>

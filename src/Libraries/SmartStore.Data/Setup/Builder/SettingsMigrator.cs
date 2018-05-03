@@ -61,7 +61,8 @@ namespace SmartStore.Data.Setup
 					if (HasSettings(entry.Key, false))
 						continue; // skip existing (we don't perform updates)
 
-					_settings.Add(new Setting { 
+					_settings.Add(new Setting
+					{ 
 						Name = entry.Key,
 						Value = entry.Value,
 						StoreId = 0

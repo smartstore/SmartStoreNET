@@ -9,19 +9,12 @@ namespace SmartStore.Services.Messages
 {
 	public class NewsLetterSubscriptionService : INewsLetterSubscriptionService
     {
-        private readonly IEventPublisher _eventPublisher;
-        private readonly IDbContext _context;
         private readonly IRepository<NewsLetterSubscription> _subscriptionRepository;
 		private readonly ICommonServices _services;
 
-		public NewsLetterSubscriptionService(IDbContext context,
-			IRepository<NewsLetterSubscription> subscriptionRepository,
-			IEventPublisher eventPublisher,
-			ICommonServices services)
+		public NewsLetterSubscriptionService(IRepository<NewsLetterSubscription> subscriptionRepository, ICommonServices services)
         {
-            _context = context;
             _subscriptionRepository = subscriptionRepository;
-            _eventPublisher = eventPublisher;
 			_services = services;
 		}
 
@@ -76,7 +69,7 @@ namespace SmartStore.Services.Messages
             newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
             //Get original subscription record
-            var originalSubscription = _context.LoadOriginalCopy(newsLetterSubscription);
+            var originalSubscription = _services.DbContext.LoadOriginalCopy(newsLetterSubscription);
 
             //Persist
             _subscriptionRepository.Update(newsLetterSubscription);
@@ -265,11 +258,11 @@ namespace SmartStore.Services.Messages
             {
                 if (isSubscribe)
                 {
-					_eventPublisher.Publish(new EmailSubscribedEvent(email));
+					_services.EventPublisher.Publish(new EmailSubscribedEvent(email));
 				}
                 else
                 {
-					_eventPublisher.Publish(new EmailUnsubscribedEvent(email));
+					_services.EventPublisher.Publish(new EmailUnsubscribedEvent(email));
 				}
             }
         }

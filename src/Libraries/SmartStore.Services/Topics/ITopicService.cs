@@ -27,14 +27,14 @@ namespace SmartStore.Services.Topics
         /// <param name="systemName">The topic system name</param>
 		/// <param name="storeId">Store identifier</param>
         /// <returns>Topic</returns>
-		Topic GetTopicBySystemName(string systemName, int storeId);
+		Topic GetTopicBySystemName(string systemName, int storeId = 0);
 
         /// <summary>
         /// Gets all topics
         /// </summary>
 		/// <param name="storeId">Store identifier; pass 0 to load all records</param>
         /// <returns>Topics</returns>
-		IList<Topic> GetAllTopics(int storeId);
+		IList<Topic> GetAllTopics(int storeId = 0);
 
         /// <summary>
         /// Inserts a topic

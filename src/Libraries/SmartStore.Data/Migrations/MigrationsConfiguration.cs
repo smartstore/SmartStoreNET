@@ -9,6 +9,7 @@
 	using SmartStore.Core.Domain.Media;
 	using Core.Domain.Configuration;
 	using SmartStore.Core.Domain.Customers;
+	using SmartStore.Core.Domain.Seo;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -34,7 +35,9 @@
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
-
+			// SeoSettings.RedirectLegacyTopicUrls should be true when migrating (it is false by default after fresh install)
+			var name = TypeHelper.NameOf<SeoSettings>(y => y.RedirectLegacyTopicUrls, true);
+			context.MigrateSettings(x => x.Add(name, true));
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

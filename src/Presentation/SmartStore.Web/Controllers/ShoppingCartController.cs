@@ -36,6 +36,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
@@ -1852,9 +1853,10 @@ namespace SmartStore.Web.Controllers
 
             if (cart.RequiresShipping())
             {
-				if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) != null)
+				var shippingInfoUrl = Url.TopicUrl("ShippingInfo");
+				if (shippingInfoUrl.HasValue())
 				{
-					model.EstimateShipping.ShippingInfoUrl = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
+					model.EstimateShipping.ShippingInfoUrl = shippingInfoUrl;
 				}
 
                 var address = new Address

@@ -16,7 +16,7 @@
 * No bundle item thumbnail displayed in bundle summary if item is not individually visible
 * Tracking number in shipment details was not saved
 * Reward points weren't displayed in message templates
-
+* Dashboard: link for not yet shipped orders loads list with all orders
 
 
 ## SmartStore.NET 3.1.0

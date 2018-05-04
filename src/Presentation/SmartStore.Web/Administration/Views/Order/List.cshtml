@@ -94,9 +94,13 @@
 			@Html.SmartLabelFor(model => model.PaymentStatusIds)
 			@Html.DropDownList("PaymentStatusIds", Model.AvailablePaymentStatuses, null, new { multiple = "multiple", @class = "form-control" })
 		</div>
-
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			<label class="d-none d-lg-block">&nbsp;</label>
+			@Html.SmartLabelFor(model => model.ShippingStatusIds)
+			@Html.DropDownList("ShippingStatusIds", Model.AvailableShippingStatuses, null, new { multiple = "multiple", @class = "form-control" })
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
+			<label>&nbsp;</label>
 			<button type="submit" id="btnSearch" class="btn btn-warning btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>

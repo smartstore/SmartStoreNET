@@ -219,10 +219,10 @@ namespace SmartStore.Admin.Controllers
                         }
                     }
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
                     NotifyError(T("Admin.Configuration.Languages.CheckAvailableLanguagesFailed"));
-                    Logger.ErrorsAll(exception);
+                    Logger.ErrorsAll(ex);
                 }
             }
 

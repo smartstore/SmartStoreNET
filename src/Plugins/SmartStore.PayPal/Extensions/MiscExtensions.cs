@@ -17,8 +17,6 @@ namespace SmartStore.PayPal
 
 		public static HttpWebRequest GetPayPalWebRequest(this PayPalSettingsBase settings)
 		{
-			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
 			var request = (HttpWebRequest)WebRequest.Create(GetPayPalUrl(settings));
 			return request;
 		}

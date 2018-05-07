@@ -1,8 +1,6 @@
 ﻿using NUnit.Framework;
 using Rhino.Mocks;
-using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Services.Messages;
@@ -17,9 +15,6 @@ namespace SmartStore.Services.Tests.Messages
 		IRepository<NewsLetterSubscription> _subscriptionRepository;
 		IDbContext _dbContext;
 		NewsLetterSubscriptionService _newsLetterSubscriptionService;
-		IWorkContext _workContext;
-		ICommonServices _services;
-		Language _language;
 
 		[SetUp]
 		public new void SetUp()

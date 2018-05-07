@@ -17,6 +17,7 @@
 * Tracking number in shipment details was not saved
 * Reward points weren't displayed in message templates
 * Dashboard: link for not yet shipped orders loads list with all orders
+* Topic search button had no effect
 
 
 ## SmartStore.NET 3.1.0

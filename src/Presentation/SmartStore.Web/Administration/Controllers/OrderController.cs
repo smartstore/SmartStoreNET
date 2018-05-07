@@ -1042,7 +1042,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
@@ -1051,10 +1050,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
 		[HttpPost, ActionName("Edit")]
@@ -1074,10 +1073,10 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception exc)
 			{
-				NotifyError(exc, false);
+				NotifyError(exc);
 			}
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1089,21 +1088,22 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
             {
                 var errors = _orderProcessingService.Capture(order);
-                foreach (var error in errors)
-					NotifyError(error, false);
+				foreach (var error in errors)
+				{
+					NotifyError(error);
+				}
 			}
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
 			}
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1115,7 +1115,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
@@ -1124,10 +1123,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1139,21 +1138,22 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 var errors = _orderProcessingService.Refund(order);
-                foreach (var error in errors)
-					NotifyError(error, false);
+				foreach (var error in errors)
+				{
+					NotifyError(error);
+				}
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1165,7 +1165,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1174,10 +1173,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1189,21 +1188,20 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 var errors = _orderProcessingService.Void(order);
                 foreach (var error in errors)
-					NotifyError(error, false);
+					NotifyError(error);
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1215,7 +1213,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1224,10 +1221,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
         
         public ActionResult PartiallyRefundOrderPopup(int id, bool online)
@@ -1237,7 +1234,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             var model = new OrderModel();
@@ -1255,7 +1251,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try

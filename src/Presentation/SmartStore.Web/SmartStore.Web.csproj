@@ -647,12 +647,17 @@
     <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-white.png" />
     <Content Include="App_Data\Samples\product_adidas-tango-pasadena-ball-yellow.jpg" />
     <Content Include="App_Data\Samples\product_all-court-basketball.png" />
+    <Content Include="App_Data\Samples\product_allstar_charcoal.jpg" />
     <Content Include="App_Data\Samples\product_allstar_converse.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_charcoal.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_maroon.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_navy.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_purple.jpg" />
     <Content Include="App_Data\Samples\product_allstar_hi_white.jpg" />
+    <Content Include="App_Data\Samples\product_allstar_maroon.jpg" />
+    <Content Include="App_Data\Samples\product_allstar_navy.jpg" />
+    <Content Include="App_Data\Samples\product_allstar_purple.jpg" />
+    <Content Include="App_Data\Samples\product_allstar_white.jpg" />
     <Content Include="App_Data\Samples\product_ball_chair_black.jpg" />
     <Content Include="App_Data\Samples\product_ball_chair_white.jpg" />
     <Content Include="App_Data\Samples\product_bestgrillingrecipes.jpg" />
@@ -794,6 +799,9 @@
     <Content Include="App_Data\Samples\ubisoft-watchdogs.jpg" />
     <Content Include="App_Data\Samples\vivaldi-four-seasons-spring.mp3" />
     <Content Include="App_Data\Samples\vivaldi.jpg" />
+    <Content Include="App_Data\Samples\wayfarer_havana.png" />
+    <Content Include="App_Data\Samples\wayfarer_havana_black.png" />
+    <Content Include="App_Data\Samples\wayfarer_rayban-black.png" />
     <Content Include="Content\bs4\js\bootstrap.bundle.js" />
     <Content Include="Content\bs4\js\bootstrap.bundle.min.js" />
     <Content Include="Content\bs4\js\bootstrap.js" />

@@ -60,7 +60,17 @@ namespace SmartStore.Data.Setup
 			var entities = new List<Picture>
 			{
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", GetSeName("company-logo")),
-            };
+
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_charcoal.jpg"), "image/jpeg", "all-star-charcoal"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_maroon.jpg"), "image/jpeg", "all-star-maroon"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_navy.jpg"), "image/jpeg", "all-star-navy"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_purple.jpg"), "image/jpeg", "all-star-purple"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_white.jpg"), "image/jpeg", "all-star-white"),
+
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana.png"), "image/png", "wayfarer_havana"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana_black.png"), "image/png", "wayfarer_havana_black"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_rayban-black.png"), "image/png", "wayfarer_rayban_black")
+			};
 
 			this.Alter(entities);
 			return entities;

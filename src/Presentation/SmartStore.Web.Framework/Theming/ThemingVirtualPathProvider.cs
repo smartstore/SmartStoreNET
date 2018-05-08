@@ -45,7 +45,7 @@ namespace SmartStore.Web.Framework.Theming
 					else
 					{
 						// Let system VPP check for this file
-						virtualPath = result.OriginalVirtualPath;
+						virtualPath = result.ResultVirtualPath ?? result.OriginalVirtualPath;
 					}
 				}
 			}
@@ -58,7 +58,7 @@ namespace SmartStore.Web.Framework.Theming
 			string debugPath = ResolveDebugFilePath(virtualPath);
 			if (debugPath != null)
 			{
-				return new DebugPluginVirtualFile(virtualPath, debugPath);
+				return new DebugVirtualFile(virtualPath, debugPath);
 			}
 
 			var result = GetResolveResult(virtualPath);
@@ -70,7 +70,7 @@ namespace SmartStore.Web.Framework.Theming
 				}
 				else
 				{
-					virtualPath = result.OriginalVirtualPath;
+					virtualPath = result.ResultVirtualPath ?? result.OriginalVirtualPath;
 				}
 			}
 
@@ -108,7 +108,7 @@ namespace SmartStore.Web.Framework.Theming
 				var result = GetResolveResult(dep);
 				if (result != null)
 				{
-					fileNames.Add(result.IsExplicit ? HostingEnvironment.MapPath(result.OriginalVirtualPath) : result.ResultPhysicalPath);
+					fileNames.Add(result.IsExplicit ? HostingEnvironment.MapPath(result.ResultVirtualPath ?? result.OriginalVirtualPath) : result.ResultPhysicalPath);
 				}
 				else
 				{
@@ -116,7 +116,7 @@ namespace SmartStore.Web.Framework.Theming
 					if (_isDebug)
 					{
 						// We're in debug mode and in dev environment: try to map path with VPP
-						var file = HostingEnvironment.VirtualPathProvider.GetFile(dep) as DebugPluginVirtualFile;
+						var file = HostingEnvironment.VirtualPathProvider.GetFile(dep) as DebugVirtualFile;
 						if (file != null)
 						{
 							mappedPath = file.PhysicalPath;

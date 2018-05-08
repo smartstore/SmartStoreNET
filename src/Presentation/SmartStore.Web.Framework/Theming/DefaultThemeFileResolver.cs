@@ -139,11 +139,9 @@ namespace SmartStore.Web.Framework.Theming
 
 			Func<InheritedThemeFileResult> nullOrFile = () =>
 			{
-				if (isExplicit)
-				{
-					return new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath, Query = query };
-				}
-				return null;
+				return isExplicit 
+					? new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath, Query = query } 
+					: null;
 			};
 
 			ThemeManifest currentTheme = ResolveTheme(requestedThemeName, relativePath, query, out isExplicit);
@@ -162,8 +160,13 @@ namespace SmartStore.Web.Framework.Theming
 					return nullOrFile();
 				}
 			}
+			else if (isExplicit && currentTheme.BaseTheme != null)
+			{
+				// A file from the base theme has been requested
+				currentTheme = currentTheme.BaseTheme;
+			}
 
-			var fileKey = new FileKey(currentTheme.ThemeName, relativePath);
+			var fileKey = new FileKey(currentTheme.ThemeName, relativePath, query);
 			InheritedThemeFileResult result;
 
 			using (_rwLock.GetUpgradeableReadLock())
@@ -185,6 +188,7 @@ namespace SmartStore.Web.Framework.Theming
 								ResultPhysicalPath = resultPhysicalPath,
 								OriginalThemeName = requestedThemeName,
 								ResultThemeName = actualLocation,
+								IsExplicit = isExplicit,
 								Query = query
 							};
 						}
@@ -231,6 +235,8 @@ namespace SmartStore.Web.Framework.Theming
 					}
 				}
 
+				currentTheme = ThemeHelper.ResolveCurrentTheme();
+
 				if (isPreprocessor && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
 				{
 					// special case to support SASS @import declarations
@@ -241,10 +247,6 @@ namespace SmartStore.Web.Framework.Theming
 					// which inevitably would result in a cyclic dependency.
 					currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
 					isExplicit = true;
-				}
-				else
-				{
-					currentTheme = ThemeHelper.ResolveCurrentTheme();
 				}
 			}
 
@@ -280,10 +282,10 @@ namespace SmartStore.Web.Framework.Theming
 		}
 
 
-		private class FileKey : Tuple<string, string>
+		private class FileKey : Tuple<string, string, string>
 		{
-			public FileKey(string themeName, string relativePath)
-				: base(themeName.ToLower(), relativePath.ToLower())
+			public FileKey(string themeName, string relativePath, string query)
+				: base(themeName.ToLower(), relativePath.ToLower(), query?.ToLower())
 			{
 			}
 
@@ -295,6 +297,11 @@ namespace SmartStore.Web.Framework.Theming
 			public string RelativePath
 			{
 				get { return base.Item2; }
+			}
+
+			public string Query
+			{
+				get { return base.Item3; }
 			}
 		}
 

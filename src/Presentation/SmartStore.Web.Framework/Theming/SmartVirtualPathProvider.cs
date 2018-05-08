@@ -28,10 +28,11 @@ namespace SmartStore.Web.Framework.Theming
 		protected SmartVirtualPathProvider()
 		{
 			var appRootPath = HostingEnvironment.MapPath("~/").EnsureEndsWith("\\");
-			var debugPath = Path.GetFullPath(Path.Combine(appRootPath, @"..\..\Plugins"));
-			if (Directory.Exists(debugPath))
+
+			var pluginsDebugPath = Path.GetFullPath(Path.Combine(appRootPath, @"..\..\Plugins"));
+			if (Directory.Exists(pluginsDebugPath))
 			{
-				_pluginsDebugDir = new DirectoryInfo(debugPath);
+				_pluginsDebugDir = new DirectoryInfo(pluginsDebugPath);
 			}
 		}
 
@@ -45,7 +46,7 @@ namespace SmartStore.Web.Framework.Theming
 
 			if (!d.TryGetValue(virtualPath, out var debugPath))
 			{
-				if (!IsPluginPath(virtualPath, out var appRelativePath))
+				if (!IsExtensionPath(virtualPath, out var root, out var appRelativePath))
 				{
 					// don't query again in this request
 					d[virtualPath] = null; 
@@ -61,7 +62,7 @@ namespace SmartStore.Web.Framework.Theming
 						{
 							using (_rwLock.GetWriteLock())
 							{
-								debugPath = FindDebugFile(appRelativePath);
+								debugPath = FindDebugFile(appRelativePath, root);
 								_cachedDebugFilePaths[appRelativePath] = d[appRelativePath] = debugPath;
 							}
 						}
@@ -72,12 +73,12 @@ namespace SmartStore.Web.Framework.Theming
 			return debugPath;
 		}
 
-		private string FindDebugFile(string appRelativePath)
+		private string FindDebugFile(string appRelativePath, string root)
 		{
 			if (_pluginsDebugDir == null)
 				return null;
 			
-			var unrooted = appRelativePath.Substring(10); // strip "~/Plugins/"
+			var unrooted = appRelativePath.Substring(root.Length); // strip "~/Plugins/" or "~/Themes/"
 			string area = unrooted.Substring(0, unrooted.IndexOf('/'));
 
 			// get "Views/Something/View.cshtml"
@@ -98,22 +99,35 @@ namespace SmartStore.Web.Framework.Theming
 			return null;
 		}
 
-		private bool IsPluginPath(string virtualPath, out string appRelativePath)
+		private bool IsExtensionPath(string virtualPath, out string root, out string appRelativePath)
 		{
+			root = null;
 			appRelativePath = virtualPath;
+
 			if (virtualPath != null && virtualPath.Length > 0 && virtualPath[0] != '~')
 			{
 				appRelativePath = VirtualPathUtility.ToAppRelative(virtualPath);
 			}
-			
-			var result = appRelativePath.StartsWith("~/Plugins/", StringComparison.InvariantCultureIgnoreCase);
-			return result;
+
+			if (appRelativePath.StartsWith("~/Plugins/", StringComparison.InvariantCultureIgnoreCase))
+			{
+				root = "~/Plugins/";
+				return true;
+			}
+
+			if (appRelativePath.StartsWith("~/Themes/", StringComparison.InvariantCultureIgnoreCase))
+			{
+				root = "~/Themes/";
+				return true;
+			}
+
+			return false;
 		}
 	}
 
-	internal class DebugPluginVirtualFile : VirtualFile
+	internal class DebugVirtualFile : VirtualFile
 	{
-		public DebugPluginVirtualFile(string virtualPath, string debugPath)
+		public DebugVirtualFile(string virtualPath, string debugPath)
 			: base(virtualPath)
 		{
 			this.PhysicalPath = debugPath;

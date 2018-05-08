@@ -162,29 +162,6 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-        /// <summary>
-        /// Return a value indicating whether the working language and theme support RTL (right-to-left)
-        /// </summary>
-        /// <returns></returns>
-        public bool ShouldUseRtlTheme()
-        {
-			var lang = _helper.Services?.WorkContext?.WorkingLanguage;
-			if (lang == null)
-			{
-				return false;
-			}
-
-			var supportRtl = lang.Rtl;
-			if (supportRtl)
-			{
-				// Ensure that the active theme also supports it
-				var manifest = this.ThemeManifest;
-				supportRtl = manifest == null ? supportRtl : manifest.SupportRtl;
-			}
-
-			return supportRtl;
-		}
-
 		/// <summary>
 		/// Gets the manifest of the current active theme
 		/// </summary>

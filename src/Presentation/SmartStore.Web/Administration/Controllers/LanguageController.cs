@@ -124,6 +124,155 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		private void PrepareAvailableLanguageModel(
+            AvailableLanguageModel model,
+            AvailableResourcesModel resources,
+            Dictionary<int , GenericAttribute> translatedPercentageAtLastImport,
+            Language language = null,
+            LanguageDownloadState state = null)
+        {
+            GenericAttribute attribute = null;
+
+            model.Id = resources.Id;
+			model.PreviousSetId = resources.PreviousSetId;
+            model.IsInstalled = language != null;
+            model.Name = GetCultureDisplayName(resources.Language.Culture) ?? resources.Language.Name;
+            model.LanguageCulture = resources.Language.Culture;
+            model.UniqueSeoCode = resources.Language.TwoLetterIsoCode;
+            model.Rtl = resources.Language.Rtl;
+            model.Version = resources.Version;
+            model.Type = resources.Type;
+			model.Published = resources.Published;
+			model.DisplayOrder = resources.DisplayOrder;
+			model.TranslatedCount = resources.TranslatedCount;
+			model.TranslatedPercentage = resources.TranslatedPercentage;
+            model.IsDownloadRunning = state != null && state.Id == resources.Id;
+            model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(resources.UpdatedOn, DateTimeKind.Utc);
+            model.UpdatedOnString = model.UpdatedOn.RelativeFormat(false, "f");
+            model.FlagImageFileName = GetFlagFileName(resources.Language.Culture);
+
+            if (language != null && translatedPercentageAtLastImport.TryGetValue(language.Id, out attribute))
+            {
+                // Only show percent at last import if it's less than the current percentage.
+                var percentAtLastImport = Math.Round(attribute.Value.Convert<decimal>(), 2);
+                if (percentAtLastImport < model.TranslatedPercentage)
+                {
+                    model.TranslatedPercentageAtLastImport = percentAtLastImport;
+                }
+            }
+		}
+
+        private async Task<CheckAvailableResourcesResult> CheckAvailableResources(bool enforce = false)
+        {
+            var cacheKey = "admin:language:checkavailableresourcesresult";
+            var currentVersion = SmartStoreVersion.CurrentFullVersion;
+            CheckAvailableResourcesResult result = null;
+            string jsonString = null;
+
+            if (!enforce)
+            {
+                jsonString = Session[cacheKey] as string;
+            }
+
+            if (jsonString == null)
+            {
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        client.Timeout = TimeSpan.FromMilliseconds(10000);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET " + currentVersion);
+                        client.DefaultRequestHeaders.Add("Authorization-Key", Services.StoreContext.CurrentStore.Url.EmptyNull().TrimEnd('/'));
+
+                        var url = CommonHelper.GetAppSetting<string>("sm:TranslateCheckUrl").FormatInvariant(currentVersion);
+                        var response = await client.GetAsync(url);
+
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            jsonString = await response.Content.ReadAsStringAsync();
+                            Session[cacheKey] = jsonString;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NotifyError(T("Admin.Configuration.Languages.CheckAvailableLanguagesFailed"));
+                    Logger.ErrorsAll(ex);
+                }
+            }
+
+            if (jsonString.HasValue())
+            {
+                result = JsonConvert.DeserializeObject<CheckAvailableResourcesResult>(jsonString);
+            }
+
+            return result ?? new CheckAvailableResourcesResult();
+        }
+
+        private async Task<string> DownloadAvailableResources(string downloadUrl, string storeUrl)
+        {
+            Guard.NotEmpty(downloadUrl, nameof(downloadUrl));
+
+            var tempFilePath = Path.Combine(FileSystemHelper.TempDirTenant(), Guid.NewGuid().ToString() + ".xml");
+            var buffer = new byte[32768];
+            var len = 0;
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Text.Xml));
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET " + SmartStoreVersion.CurrentFullVersion);
+                client.DefaultRequestHeaders.Add("Authorization-Key", storeUrl.EmptyNull().TrimEnd('/'));
+
+                using (var sourceStream = await client.GetStreamAsync(downloadUrl))
+                using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+                {
+                    while ((len = await sourceStream.ReadAsync(buffer, 0, 32768)) > 0)
+                    {
+                        fileStream.Write(buffer, 0, len);
+                    }
+                }
+            }
+
+            return tempFilePath;
+        }
+
+        private string GetCultureDisplayName(string culture)
+        {
+            if (culture.HasValue())
+            {
+                try
+                {
+                    return (new CultureInfo(culture)).DisplayName;
+                }
+                catch { }
+            }
+
+            return null;
+        }
+
+        private string GetFlagFileName(string culture)
+        {
+            culture = culture.EmptyNull().ToLower();
+
+            if (culture.HasValue() && culture.SplitToPair(out string cultureLeft, out string cultureRight, "-"))
+            {
+				var fileName = cultureRight + ".png";
+
+				if (System.IO.File.Exists(CommonHelper.MapPath("~/Content/images/flags/" + fileName)))
+				{
+					return fileName;
+				}
+			}
+
+			return null;
+        }
+
+>>>>>>> upstream/3.x
         #endregion
 
         #region Languages

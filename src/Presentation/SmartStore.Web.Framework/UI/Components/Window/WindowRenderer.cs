@@ -30,6 +30,7 @@ namespace SmartStore.Web.Framework.UI
                 win.HtmlAttributes["aria-hidden"] = "false";
             }
 
+<<<<<<< HEAD
             if (win.Fade)
             {
                 win.HtmlAttributes.AppendCssClass("fade");
@@ -46,6 +47,8 @@ namespace SmartStore.Web.Framework.UI
                 win.HtmlAttributes["data-remote"] = win.ContentUrl;
             }
 
+=======
+>>>>>>> upstream/3.x
             writer.AddAttributes(win.HtmlAttributes);
             writer.RenderBeginTag("div"); // root div
 
@@ -98,10 +101,14 @@ namespace SmartStore.Web.Framework.UI
             }
             writer.RenderBeginTag("div");
 
-            if (win.ContentUrl.IsEmpty() && win.Content != null)
-            {
-                win.Content.WriteTo(writer);
-            }
+			if (win.Content != null)
+			{
+				win.Content.WriteTo(writer);
+			}
+			else if (win.ContentUrl.HasValue())
+			{
+				writer.Write("<iframe class='modal-flex-fill-area' frameborder='0' src='{0}' />".FormatInvariant(win.ContentUrl));
+			}
 
             writer.RenderEndTag(); // div.modal-body
         }

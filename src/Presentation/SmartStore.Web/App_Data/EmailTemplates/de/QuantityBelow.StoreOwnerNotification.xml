@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageTemplate>
+	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
+	<Subject>{{ Store.Name }} - Mindestlagerbestand von '{{ Product.Name | Truncate:30 }}' unterschritten.</Subject>
+	<ModelTypes>Product</ModelTypes>
+	<Body><![CDATA[{% extends 'master' %}
+
+{% block 'body' %}
+
+<h1>
+  Mindestlagerbestand unterschritten,
+</h1>
+<p>
+  
+  der Mindestlagerbestand für folgendes Produkt wurde unterschritten:
+</p>
+
+<p>
+  <b>Produkt:</b><br />
+  <a href="{{ Product.Url }}">{{ Product.Name }}</a>
+</p>
+
+<p>
+  <b>ID / SKU:</b><br />
+  {{ Product.Id }} / {{ Product.Sku }}
+</p>
+
+<p>
+  <b>Menge:</b><br />
+  {{ Product.StockQuantity }}
+</p>
+
+
+{% endblock %}]]></Body>
+</MessageTemplate>

@@ -1,0 +1,48 @@
+﻿@model BackInStockSubscribeModel
+@using SmartStore.Web.Models.Catalog;
+@{
+    Layout = "_Layout.Popup.cshtml";
+}
+
+@using (Html.BeginForm("BackInStockSubscribePopup", "Product", new { id = Model.ProductId }, FormMethod.Post, new { id = "back-in-stock-subscription-form" }))
+{
+    <div class="page back-in-stock-subscription-page">
+        <div class="page-title">
+            <h4>
+				@T(Model.AlreadySubscribed ? "BackInStockSubscriptions.AlreadySubscribed" : "BackInStockSubscriptions.PopupTitle")
+			</h4>
+        </div>
+        <div class="page-body">
+            @if (!Model.SubscriptionAllowed)
+            {
+                <div>@T("BackInStockSubscriptions.NotAllowed")</div>
+            }
+            else if (!Model.IsCurrentCustomerRegistered)
+            {
+                <div>@T("BackInStockSubscriptions.OnlyRegistered")</div>
+            }
+            else if (!Model.AlreadySubscribed && Model.CurrentNumberOfBackInStockSubscriptions >= Model.MaximumBackInStockSubscriptions)
+            {
+                <div>@string.Format(T("BackInStockSubscriptions.MaxSubscriptions").Text, Model.MaximumBackInStockSubscriptions)</div>
+            }
+            else
+            {
+                if (!Model.AlreadySubscribed)
+                {
+                    <p class="x-tooltip fs-h5">@T("BackInStockSubscriptions.Tooltip")</p>
+                }
+                <button type="submit" id="back-in-stock-notify-me" class="mt-2 btn btn-lg btn-@(Model.AlreadySubscribed ? "danger" : "success")">
+					@T(Model.AlreadySubscribed ? "BackInStockSubscriptions.Unsubscribe" : "BackInStockSubscriptions.NotifyMe")
+                </button>
+                
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $("#back-in-stock-notify-me").click(function (e) {
+                            parent.$(".modal").modal("hide");
+                        });
+                    });
+                </script>
+            }
+        </div>
+    </div>
+}

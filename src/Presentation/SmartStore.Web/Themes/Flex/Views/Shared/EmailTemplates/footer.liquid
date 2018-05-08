@@ -1,0 +1,44 @@
+<p class="text-center">{{ Store.Copyright }}</p>
+
+{% assign company = Store.Company %}
+{% assign contact = Store.Contact %}
+{% assign bank = Store.Bank %}
+
+<table class="w-100">
+	<tbody>
+		<tr>
+			<td width="33%">
+				<p class="text-xs text-muted">
+					{% if company.CompanyName %}{{ company.CompanyName }}{% endif %}
+					{% if company.NameLine %}<br/>{{ company.NameLine | Join }}{% endif %}
+					{% if company.Street %}<br/>{{ company.Street }}{% endif %}
+					{% if company.Street2 %}<br/>{{ company.Street2 }}{% endif %}
+					{% if company.CityLine %}<br/>{{ company.CityLine | Join }}{% endif %}
+					{% if company.CountryLine %}<br/>{{ company.CountryLine | Join:', ' }}{% endif %}
+				</p>
+			</td>
+			<td width="33%">
+				<p class="text-xs text-muted">
+					<a href="{{ Store.Url }}">{{ Store.Url }}</a>
+					{% if contact.Email.Company %}<br/>{{ 'PDFInvoice.Footer.Mail' | T:contact.Email.Company }}{% endif %}
+					{% if contact.Phone.Company %}<br/>{{ 'PDFInvoice.Footer.Fon' | T:contact.Phone.Company }}{% endif %}
+					{% if contact.Phone.Fax %}<br/>{{ 'PDFInvoice.Footer.Fax' | T:contact.Phone.Fax }}{% endif %}
+					
+					{% if company.TaxNumber %}<br/>{{ 'PDFInvoice.TaxNumber' | T }}&nbsp;{{ company.TaxNumber }}{% endif %}
+					{% if company.VatId %}<br/>{{ 'PDFInvoice.VatId' | T }}&nbsp;{{ company.VatId }}{% endif %}
+					{% if company.CommercialRegister %}<br/>{{ 'PDFInvoice.CommercialRegisterHeading' | T }}&nbsp;{{ company.CommercialRegister }}{% endif %}
+				</p>
+			</td>
+			<td width="33%">
+				<p class="text-xs text-muted">
+					{% if bank.BankName %}{{ bank.BankName }}{% endif %}
+					{% if bank.Bankcode %}<br/>{{ 'PDFInvoice.Footer.Bankcode' | T:bank.Bankcode }}{% endif %}
+					{% if bank.AccountNumber %}<br/>{{ 'PDFInvoice.Footer.AccountNumber' | T:bank.AccountNumber }}{% endif %}
+					{% if bank.AccountHolder %}<br/>{{ 'PDFInvoice.Footer.AccountHolder' | T:bank.AccountHolder }}{% endif %}
+					{% if bank.Iban %}<br/>{{ 'PDFInvoice.Footer.Iban' | T:bank.Iban }}{% endif %}
+					{% if bank.Bic %}<br/>{{ 'PDFInvoice.Footer.Bic' | T:bank.Bic }}{% endif %}
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>

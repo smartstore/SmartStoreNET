@@ -74,7 +74,10 @@ namespace SmartStore.Admin.Models.Topics
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.RenderAsWidget")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SeName")]
+		public string SeName { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.RenderAsWidget")]
         public bool RenderAsWidget { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
@@ -124,5 +127,8 @@ namespace SmartStore.Admin.Models.Topics
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.MetaTitle")]
         [AllowHtml]
         public string MetaTitle { get; set; }
-    }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SeName")]
+		public string SeName { get; set; }
+	}
 }

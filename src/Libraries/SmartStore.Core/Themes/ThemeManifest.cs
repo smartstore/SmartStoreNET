@@ -120,12 +120,6 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
-        public bool SupportRtl 
-		{ 
-			get; 
-			protected internal set; 
-		}
-
 		[ObjectSignature]
         public string ThemeName 
 		{ 

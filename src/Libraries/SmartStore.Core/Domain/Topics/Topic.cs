@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Topics
@@ -9,7 +10,7 @@ namespace SmartStore.Core.Domain.Topics
     /// <summary>
     /// Represents a topic
     /// </summary>
-	public partial class Topic : BaseEntity, ILocalizedEntity, IStoreMappingSupported
+	public partial class Topic : BaseEntity, ILocalizedEntity, ISlugSupported, IStoreMappingSupported
     {
         /// <summary>
         /// Gets or sets the name

@@ -408,7 +408,7 @@ namespace SmartStore.Services.Seo
 			{
 				var node = new XmlSitemapNode
 				{
-					Loc = _urlHelper.RouteUrl("Topic", new { SystemName = x.SystemName }, protocol),
+					Loc = _urlHelper.RouteUrl("Topic", new { SeName = x.GetSeName() }, protocol),
 					LastMod = DateTime.UtcNow,
 					//ChangeFreq = ChangeFrequency.Weekly,
 					//Priority = 0.8f

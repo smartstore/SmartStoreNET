@@ -1,0 +1,204 @@
+<!-- Order Items -->
+{% zone 'order_items_before' %}
+<table class="w-100 brd order-items" cellpadding="10">
+	<thead>
+		<tr>
+			<th style="padding-{{_right}}: 0" colspan="2" nowrap>{{ 'Order.Product(s).Item' | T }}</th>
+			<th style="padding-{{_right}}: 0" nowrap>{{ 'Order.Product(s).Price' | T }}</th>
+			<th style="padding-{{_right}}: 0" nowrap>{{ 'Order.Product(s).Quantity' | T }}</th>
+			<th nowrap>{{ 'Order.Product(s).Total' | T }}</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for item in Order.Items %}
+			{% assign product = item.Product %}
+			<tr>
+				<td style="border-top: 1px solid #eceeef; padding-{{_right}}: 0" align="center">
+					{% if product.Thumbnail %}
+						{% assign thumb = product.Thumbnail %}
+					    <img src="{{ thumb.Src }}" alt="{{ thumb.Alt }}"
+							{% if thumb.Width %}width="{{ thumb.Width }}"{% endif %}
+							{% if thumb.Height %}height="{{ thumb.Height }}"{% endif %}
+						/>
+					{% endif %}				
+				</td>
+				<td style="border-top: 1px solid #eceeef; padding-{{_right}}: 0; line-height: 1.3em" width="70%">
+					<div class="mb-2">
+						<a class="order-item-link text-sm" href="{{ item.Product.Url }}">
+							{{ product.Name }}
+						</a>
+						{% if item.DownloadUrl %}
+							(<a class="text-sm" href="{{ item.DownloadUrl }}">{{ 'Common.Download' | T }}</a>)
+						{% endif %}	
+						{% if product.Sku %}
+							<div class="text-sm">
+								{{ 'Order.Product(s).SKU' | T }}: <span class="text-muted">{{ product.Sku }}</span>
+							</div>
+						{% endif %}						
+					</div>
+					{% if item.BundleItems %}
+						<div class="mb-2">
+							{% for bundleItem in item.BundleItems %}
+								<div class="text-xs mb-1">
+									<div>
+										{% if bundleItem.Quantity %}
+											<span>{{ bundleItem.Quantity }}&nbsp;&#215;</span>
+										{% endif %}
+										<span>{{ bundleItem.Product.Name }}</span>
+									</div>
+									{% if bundleItem.AttributeDescription %}
+										<div class="text-muted" style="line-height: 1.3">
+											{{ bundleItem.AttributeDescription }}
+										</div>
+									{% endif %}
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+					{% if product.DeliveryTime %}
+						<div class="text-sm">
+							{{ 'Products.DeliveryTime' | T }} <span style="color: {{ product.DeliveryTime.Color }}">{{ product.DeliveryTime.Name }}</span>
+						</div>
+					{% endif %}
+					{% if item.AttributeDescription %}
+						<div class="text-xs text-muted mt-2" style="line-height: 1.3">
+							{{ item.AttributeDescription }}
+						</div>
+					{% endif %}
+				</td>
+				<td class="text-sm" style="border-top: 1px solid #eceeef; padding-{{_right}}: 0" nowrap>
+					{{ item.UnitPrice }}
+				</td>
+				<td class="text-sm" style="border-top: 1px solid #eceeef; padding-{{_right}}: 0" nowrap>
+					{{ item.Qty }}
+					{% if product.QtyUnit %}
+						<span class="text-sm">{{ product.QtyUnit }}</span>
+					{% endif %}
+				</td>
+				<td class="text-sm" style="border-top: 1px solid #eceeef" class="text-right" nowrap>
+					<b>{{ item.LineTotal }}</b>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<!-- Order Summary -->
+{% zone 'order_summary_before' %}
+{% assign totals = Order.Totals %}
+<table class="w-100 brd bg-light order-summary mb-4" cellpadding="10" style="border-top: 0">
+	<tr>
+		<!-- Checkout Attributes -->
+		<td class="text-sm" width="50%">
+			{% if Order.CheckoutAttributes %}
+				{{ Order.CheckoutAttributes }}
+			{% endif %}
+		</td>
+		
+		<!-- Totals -->
+		<td width="50%">
+			<table class="w-100">
+				<!-- Subtotal -->
+				<tr>
+					<td class="text-sm" width="60%" nowrap>{{ 'Order.SubTotal' | T }}:</td>
+					<td class="text-sm text-right" width="40%" nowrap>{{ totals.SubTotal }}</td>
+				</tr>
+				
+				<!-- Subtotal Discount -->
+				{% if totals.SubTotalDiscount %}
+				<tr>
+					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.SubTotalDiscount' | T }}:</td>
+					<td class="text-sm text-success text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.SubTotalDiscount }}</td>
+				</tr>
+				{% endif %}
+
+				<!-- Shipping -->
+				{% if totals.Shipping %}
+				<tr>
+					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.Shipping' | T }}:</td>
+					<td class="text-sm text-danger text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Shipping }}</td>
+				</tr>
+				{% endif %}		
+					
+				<!-- Payment -->
+				{% if totals.Payment %}
+				<tr>
+					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.PaymentMethodAdditionalFee' | T }}:</td>
+					<td class="text-sm text-danger text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Payment }}</td>
+				</tr>
+				{% endif %}
+				
+				<!-- Tax Rates -->
+				{% if totals.TaxRates %}
+					{% for rate in totals.TaxRates %}
+						<tr>
+							<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ rate.Rate }}:</td>
+							<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ rate.Value }}</td>
+						</tr>
+					{% endfor %}
+				{% endif %}
+				
+				<!-- Tax -->
+				{% if totals.Tax %}
+				<tr>
+					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.Tax' | T }}:</td>
+					<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Tax }}</td>
+				</tr>
+				{% endif %}
+				
+				<!-- Order Total Discount -->
+				{% if totals.Discount %}
+				<tr>
+					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'Order.TotalDiscount' | T }}:</td>
+					<td class="text-sm text-success text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.Discount }}</td>
+				</tr>
+				{% endif %}
+				
+				<!-- Gift Cards -->
+				{% if totals.GiftCardUsage %}
+					{% for gc in totals.GiftCardUsage %}
+						<tr>
+							<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ gc.GiftCard }}:</td>
+							<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ gc.UsedAmount }}</td>
+						</tr>
+					{% endfor %}
+				{% endif %}
+				
+				<!-- Redeemed Reward Points-->
+				             
+				{% if totals.RedeemedRewardPoints %}
+					<tr>
+						<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ totals.RedeemedRewardPoints.Title }}:</td>
+						<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.RedeemedRewardPoints.Amount }}</td>
+					</tr>
+				{% endif %}
+				
+				<!-- Rounding Difference -->
+				{% if totals.RoundingDiff %}
+				<tr>
+					<td class="text-sm" width="60%" style="padding-top: 5px" nowrap>{{ 'ShoppingCart.Totals.Rounding' | T }}:</td>
+					<td class="text-sm text-right" width="40%" style="padding-top: 5px" nowrap>{{ totals.RoundingDiff }}</td>
+				</tr>
+				{% endif %}
+				
+				<!-- TOTAL -->
+				<tr>
+					<td width="60%" style="padding-top: 5px" nowrap><b>{{ 'Order.OrderTotal' | T }}:</b></td>
+					<td class="text-right" width="40%" style="padding-top: 5px" nowrap><b>{{ totals.Total }}</b></td>
+				</tr>
+			</table>
+		</td>
+	</td>
+</table>
+
+{% zone 'order_summary_after' %}
+
+
+
+
+
+
+
+
+
+

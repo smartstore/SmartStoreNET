@@ -87,16 +87,39 @@
 								{
 									if (item.IsPaymentMethod)
 									{
+<<<<<<< HEAD
 										<a class="btn btn-small" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
 											<i class="fa fa-pencil-square-o"></i>
 											@T("Admin.Common.Edit")
 										</a>
+=======
+										if (item.IsPaymentMethod)
+										{
+											<a class="dropdown-item" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
+												<i class="fa fa-fw fa-pencil-square-o"></i>
+												<span>@T("Admin.Common.Edit")</span>
+											</a>
+										}
+										else
+										{
+											<a class="dropdown-item module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
+												<i class="fa fa-fw fa-pencil-square-o"></i>
+												<span>@T("Admin.Common.Edit")</span>
+											</a>
+										}
+>>>>>>> upstream/3.x
 									}
 									else
 									{
+<<<<<<< HEAD
 										<a class="btn btn-small module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
 											<i class="fa fa-pencil-square-o"></i>
 											@T("Admin.Common.Edit")
+=======
+										<a class="dropdown-item module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
+											<i class="fa fa-fw fa-cog"></i>
+											<span>@T("Admin.Common.Configure")</span>
+>>>>>>> upstream/3.x
 										</a>
 									}
 								}

@@ -4,7 +4,7 @@
 
 $(function () {
 
-    $('.btn-votenow').click(function () {
+    $('.btn-votenow').on('click', function () {
         var btn = $(this);
         var id = btn.data("id");
         var pollAnswerId = $("input:radio[name=pollanswers-" + id + "]:checked").val();

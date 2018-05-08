@@ -1,4 +1,9 @@
 ﻿using System.Web.Mvc;
+<<<<<<< HEAD
+=======
+using SmartStore.Core.Domain.Media;
+using SmartStore.Data.Utilities;
+>>>>>>> upstream/3.x
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -12,8 +17,15 @@ namespace SmartStore.Admin.Controllers
         private readonly IPictureService _pictureService;
         private readonly IPermissionService _permissionService;
 
+<<<<<<< HEAD
         public PictureController(IPictureService pictureService,
              IPermissionService permissionService)
+=======
+		public PictureController(
+			IPictureService pictureService,
+            IPermissionService permissionService,
+			MediaSettings mediaSettings)
+>>>>>>> upstream/3.x
         {
             this._pictureService = pictureService;
             this._permissionService = permissionService;
@@ -36,5 +48,11 @@ namespace SmartStore.Admin.Controllers
                     imageUrl = _pictureService.GetPictureUrl(picture, 100) 
                 });
         }
+
+		public ActionResult MoveFsMedia()
+		{
+			var count = DataMigrator.MoveFsMedia(Services.DbContext);
+			return Content("Moved and reorganized {0} media files.".FormatInvariant(count));
+		}
     }
 }

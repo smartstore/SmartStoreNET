@@ -51,6 +51,7 @@
 				</label>
 			</div>
 		</form>
+<<<<<<< HEAD
 
 	</div>
     <div class="modal-footer">
@@ -58,3 +59,16 @@
 		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
     </div>
 </div>
+=======
+	</text>)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary" data-dismiss="modal">
+			<span>@T("Common.Cancel")</span>
+		</button>
+		<button class="btn btn-danger" data-dismiss="modal" onclick="$('#DeleteCategoryForm').submit();">
+			<span>@T("Common.OK")</span>
+		</button>
+	</text>)
+	.Render();
+}
+>>>>>>> upstream/3.x

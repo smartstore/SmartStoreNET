@@ -20,7 +20,19 @@
 				+ '</div>';
 
 			modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
+<<<<<<< HEAD
 				//modal.remove();
+=======
+				modal.remove();
+			});
+
+			// Create spinner
+			var spinner = $('<div class="spinner-container w-100 h-100 active" style="position:absolute; top:0; background:#fff"></div>').append(createCircularSpinner(64, true, 2));
+			modal.find('.modal-body').append(spinner);
+
+			modal.find('.modal-body > iframe').on('load', function (e) {
+				modal.find('.modal-body > .spinner-container').removeClass('active');
+>>>>>>> upstream/3.x
 			});
 		}
 		else {

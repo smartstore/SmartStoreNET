@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AddressFormats>
+	<Format code="DE" name="Germany"><![CDATA[
+{{ Company }}
+{{ Salutation }} {{ Title }} {{ FirstName }} {{ LastName }}
+{{ Street1 }}
+{{ Street2 }}
+{{ ZipCode }} {{ City }}
+{{ Country | Upcase }}
+	]]></Format>
+	<Format code="CH" name="Switzerland"><![CDATA[
+{{ Company }}
+{{ Salutation }} {{ Title }} {{ FirstName }} {{ LastName }}
+{{ Street1 }}
+{{ Street2 }}
+{{ ZipCode }} {{ City }}
+{{ Country | Upcase }}
+	]]></Format>
+	<Format code="AT" name="Australia"><![CDATA[
+{{ Salutation }} {{ FirstName }} {{ LastName }}
+{{ Company }}
+{{ Street1 }}
+{{ Street2 }}
+{{ ZipCode }} {{ City }}
+{{ Country | Upcase }}
+	]]></Format>
+	<Format code="BR" name="Brazil"><![CDATA[
+{{ Company }}
+{{ Salutation }} {{ FirstName }} {{ LastName }}
+{{ Street1 }}
+{{ ZipCode }} {{ City }} {{ State }}
+{{ Country | Upcase }}
+	]]></Format>
+	<Format code="CA" name="Canada"><![CDATA[
+{{ Salutation }} {{ FirstName }} {{ LastName }}
+{{ Company }}
+{{ City }}, {{ State }} {{ ZipCode }}
+{{ Country | Upcase }}
+	]]></Format>
+	<Format code="CN" name="China"><![CDATA[
+{{ Country }}
+{{ State }} {{ City }}
+{{ Street1 }}
+{{ LastName }} {{ FirstName }} {{ Salutation }}
+	]]></Format>
+	<Format code="FR" name="France"><![CDATA[
+{{ Salutation }} {{ FirstName }} {{ LastName }}
+{{ Company }}
+{{ Street1 }}
+{{ Street2 }}
+{{ ZipCode }} {{ City }}
+{{ Country | Upcase }}
+	]]></Format>
+	<Format code="IT" name="Italy"><![CDATA[
+{{ Title }} {{ FirstName }} {{ LastName }}
+{{ Company }}
+{{ Street1 }}
+{{ Street2 }}
+~!
+{{ CountryAbbrev2 }} {{ ZipCode }} {{ City }} {{ State }}
+{{ Country | Upcase }}
+	]]></Format>
+	<Format code="JP" name="Japan"><![CDATA[
+{{ Country | Upcase }}
+{{ ZipCode }} {{ State }} {{ City }}
+{{ Street1 }}
+{{ Company }}
+{{ LastName }} {{ FirstName }} {{ Salutation }} 
+	]]></Format>
+	<Format code="RU" name="Russia"><![CDATA[
+{{ Country }}
+{{ ZipCode }}
+{{ State }} {{ City }}
+{{ Street1 }}
+{{ Street2 }}
+{{ Company }}
+{{ LastName }} {{ FirstName | Slice: 1 | Upcase }}
+	]]></Format>
+	<Format code="US" name="United States"><![CDATA[
+{{ Salutation }} {{ FirstName }} {{ LastName }}
+{{ Company }}
+{{ Street1 }}
+{{ Street2 }}
+{{ City }}, {{ StateAbbrev | Upcase }} {{ ZipCode }}
+{{ Country | Upcase }}
+	]]></Format>
+</AddressFormats>

@@ -1,0 +1,138 @@
+﻿@model ShipmentModel
+@using Telerik.Web.Mvc.UI;
+@{    
+    ViewBag.Title = T("Admin.Orders.Shipments.ViewDetails").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.Orders.Shipments.ViewDetails") - @Model.Id @Html.ActionLink("(" + T("Admin.Orders.Shipments.BackToOrder") + ")", "Edit", new { id = Model.OrderId })
+        </div>
+        <div class="options">
+            @if (Model.DisplayPdfPackagingSlip)
+            {
+                <a href="@Url.Action("PdfPackagingSlips", new { all = false, selectedIds = Model.Id.ToString(), area = "Admin" })" class="btn btn-secondary">
+					<i class="fa fa-print"></i>
+					<span>@T("Admin.Orders.Shipments.PrintPackagingSlip")</span>
+				</a>
+            }
+            <button type="submit" id="shipment-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				<span>@T("Admin.Common.Delete")</span>
+			</button>
+        </div>
+    </div>
+	
+    @Html.ValidationSummary(false)
+
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TrackingNumber)
+            </td>
+            <td class="adminData">
+				<div class="input-group">
+					@Html.EditorFor(model => model.TrackingNumber)
+					<span class="input-group-append">
+						<button type="submit" id="settrackingnumber" name="settrackingnumber" class="btn btn-outline-secondary" value="settrackingnumber">
+							<i class="fa fa-pencil-square-o"></i>
+							<span>@T("Admin.Orders.Shipments.TrackingNumber.Button")</span>
+						</button>
+					</span>
+				</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TotalWeight)
+            </td>
+            <td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.TotalWeight
+				</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShippedDate)
+            </td>
+            <td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.ShippedDate
+					@if (Model.CanShip)
+					{
+						<button type="submit" id="setasshipped" name="setasshipped" class="btn btn-sm btn-secondary ml-2 align-text-top" value="@T("Admin.Orders.Shipments.ShippedDate.Button")">
+							<i class="fa fa-check"></i>
+							<span>@T("Admin.Orders.Shipments.ShippedDate.Button")</span>
+						</button>
+					}
+				</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DeliveryDate)
+            </td>
+            <td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.DeliveryDate
+					@if (Model.CanDeliver)
+					{
+						<button type="submit" id="setasdelivered" name="setasdelivered" class="btn btn-sm btn-secondary ml-2 align-text-top" value="@T("Admin.Orders.Shipments.DeliveryDate.Button")">
+							<i class="fa fa-check"></i>
+							<span>@T("Admin.Orders.Shipments.DeliveryDate.Button")</span>
+						</button>
+					}
+				</div>
+            </td>
+        </tr>
+    </table>
+
+	<h5>@T("Admin.Orders.Shipments.Products")</h5>
+	
+	<div class="table-responsive">
+		<table class="table admin-table">
+			<thead>
+				<tr>
+					<th>
+						@T("Admin.Orders.Shipments.Products.ProductName")
+					</th>
+					<th>
+						@T("Admin.Orders.Shipments.Products.SKU")
+					</th>
+					<th class="text-center">
+						@T("Admin.Orders.Shipments.Products.QtyShipped")
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model.Items)
+				{
+					<tr>
+						<td style="width: 70%;">
+							<div>
+								@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
+
+								@if (!String.IsNullOrEmpty(item.AttributeInfo))
+								{
+									<br />
+									@Html.Raw(item.AttributeInfo)
+								}
+							</div>
+						</td>
+						<td style="width: 15%;">
+							<div>
+								@item.Sku
+							</div>
+						</td>
+						<td class="text-center" style="width: 15%;">
+							@item.QuantityInThisShipment
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+@Html.DeleteConfirmation("DeleteShipment", "shipment-delete")

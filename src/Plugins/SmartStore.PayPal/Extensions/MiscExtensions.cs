@@ -17,11 +17,14 @@ namespace SmartStore.PayPal
 
 		public static HttpWebRequest GetPayPalWebRequest(this PayPalSettingsBase settings)
 		{
+<<<<<<< HEAD
 			if (settings.SecurityProtocol.HasValue)
 			{
 				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
 			}
 
+=======
+>>>>>>> upstream/3.x
 			var request = (HttpWebRequest)WebRequest.Create(GetPayPalUrl(settings));
 			return request;
 		}

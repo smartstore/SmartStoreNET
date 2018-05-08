@@ -26,8 +26,6 @@ namespace SmartStore.Admin.Models.Themes
 
         public string PreviewImageUrl { get; set; }
 
-        public bool SupportsRtl { get; set; }
-
         public bool IsConfigurable { get; set; }
 
         public bool IsActive { get; set; }

@@ -947,7 +947,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
@@ -959,6 +958,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
+<<<<<<< HEAD
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
@@ -966,6 +966,13 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
         }
+=======
+                NotifyError(exc);
+            }
+
+			return RedirectToAction("Edit", new { id });
+		}
+>>>>>>> upstream/3.x
 
 		[HttpPost, ActionName("Edit")]
 		[FormValueRequired("completeorder")]
@@ -984,12 +991,16 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception exc)
 			{
-				NotifyError(exc, false);
+				NotifyError(exc);
 			}
 
+<<<<<<< HEAD
 			var model = new OrderModel();
 			PrepareOrderDetailsModel(model, order);
 			return View(model);
+=======
+			return RedirectToAction("Edit", new { id });
+>>>>>>> upstream/3.x
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1001,12 +1012,12 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
             {
                 var errors = _orderProcessingService.Capture(order);
+<<<<<<< HEAD
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
@@ -1023,6 +1034,20 @@ namespace SmartStore.Admin.Controllers
             }
 
         }
+=======
+				foreach (var error in errors)
+				{
+					NotifyError(error);
+				}
+			}
+            catch (Exception exc)
+            {
+                NotifyError(exc);
+			}
+
+			return RedirectToAction("Edit", new { id });
+		}
+>>>>>>> upstream/3.x
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("markorderaspaid")]
@@ -1033,7 +1058,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
@@ -1045,6 +1069,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
+<<<<<<< HEAD
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
@@ -1052,6 +1077,13 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
         }
+=======
+                NotifyError(exc);
+            }
+
+			return RedirectToAction("Edit", new { id });
+		}
+>>>>>>> upstream/3.x
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("refundorder")]
@@ -1062,12 +1094,12 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 var errors = _orderProcessingService.Refund(order);
+<<<<<<< HEAD
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
@@ -1083,6 +1115,20 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
         }
+=======
+				foreach (var error in errors)
+				{
+					NotifyError(error);
+				}
+            }
+            catch (Exception exc)
+            {
+                NotifyError(exc);
+            }
+
+			return RedirectToAction("Edit", new { id });
+		}
+>>>>>>> upstream/3.x
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("refundorderoffline")]
@@ -1093,7 +1139,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1105,6 +1150,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
+<<<<<<< HEAD
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
@@ -1112,6 +1158,13 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
         }
+=======
+                NotifyError(exc);
+            }
+
+			return RedirectToAction("Edit", new { id });
+		}
+>>>>>>> upstream/3.x
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("voidorder")]
@@ -1122,7 +1175,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1131,6 +1183,7 @@ namespace SmartStore.Admin.Controllers
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
                 foreach (var error in errors)
+<<<<<<< HEAD
 					NotifyError(error, false);
                 return View(model);
             }
@@ -1143,6 +1196,17 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
         }
+=======
+					NotifyError(error);
+            }
+            catch (Exception exc)
+            {
+                NotifyError(exc);
+            }
+
+			return RedirectToAction("Edit", new { id });
+		}
+>>>>>>> upstream/3.x
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("voidorderoffline")]
@@ -1153,7 +1217,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1165,6 +1228,7 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
+<<<<<<< HEAD
                 //error
                 var model = new OrderModel();
                 PrepareOrderDetailsModel(model, order);
@@ -1172,6 +1236,13 @@ namespace SmartStore.Admin.Controllers
                 return View(model);
             }
         }
+=======
+                NotifyError(exc);
+            }
+
+			return RedirectToAction("Edit", new { id });
+		}
+>>>>>>> upstream/3.x
         
         public ActionResult PartiallyRefundOrderPopup(int id, bool online)
         {
@@ -1180,7 +1251,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             var model = new OrderModel();
@@ -1198,7 +1268,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try

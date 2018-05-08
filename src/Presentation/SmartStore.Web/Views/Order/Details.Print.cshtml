@@ -1,0 +1,368 @@
+﻿@model IEnumerable<OrderDetailsModel>
+
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web.Models.Order;
+
+@{
+    Layout = "_Print";
+
+    Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
+
+	var pdfMode = ViewBag.PdfMode == true;
+	if (!pdfMode)
+	{
+		Html.AddBodyCssClass("screen");
+	}
+}
+
+@functions {
+	private IHtmlString JoinValues(string[] values, string separator = " ")
+	{
+		var normalized = values.Where(x => x.HasValue());
+		return MvcHtmlString.Create(String.Join(separator, normalized));
+	}
+}
+
+<style type="text/css">
+	.checkout-attributes > table {
+		width: auto;
+	}
+	.checkout-attributes td.attr-caption {
+		padding-right: 30px;
+	}
+</style>
+
+<div class="container">
+	@foreach (var order in Model)
+    {
+        var colWidths = order.ShowSku ? new int[] { 45, 20, 5, 15, 15 } : new int[] { 65, 0, 5, 15, 15 };
+
+        var company = order.MerchantCompanyInfo;
+        var address = order.BillingAddress;
+		
+		<div class="document">
+
+			@{ Html.RenderWidget("invoice_top", order); }
+
+			<!-- Address & Info -->
+			<div class="clearfix" style="margin-bottom: 100px">
+				<div class="order-address mt-5 pull-left float-left">
+					<div>
+						<span class="header text-smallest">
+							@{
+                                var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
+                                var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
+							}
+							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
+						</span>
+					</div>
+					<div class="mt-2">
+						@Html.Raw(address.FormattedAddress)
+					</div>
+				</div>
+
+				@Html.Widget("invoice_orderinfo_top", order)
+
+				<div class="order-info text-small pull-right float-right">
+					<table>
+						<tr>
+							<td class="label">@T("PDFInvoice.Order#"):</td>
+							<td class="value">@order.OrderNumber</td>
+						</tr>
+
+						@if (order.PurchaseOrderNumber.HasValue())
+						{ 
+							<tr>
+								<td class="label">@T("Order.PurchaseOrderNumber"):</td>
+								<td class="value">@order.PurchaseOrderNumber</td>
+							</tr>
+						}
+
+						<tr>
+							<td class="label">@T("Common.Date"):</td>
+							<td class="value">@order.CreatedOn.ToShortDateString().ReplaceNativeDigits()</td>
+						</tr>
+						<tr>
+							<td class="label">@T("Order.PaymentMethod"):</td>
+							<td class="value">@order.PaymentMethod</td>
+						</tr>
+						<tr>
+							<td class="label">@T("Order.ShippingMethod"):</td>
+							<td class="value">@order.ShippingMethod</td>
+						</tr>
+					</table>
+
+					@{ Html.RenderWidget("invoice_orderinfotable_after", order); }
+
+				</div>
+
+				@{ Html.RenderWidget("invoice_orderinfo_bottom", order); }
+			</div>
+			
+			<!-- Order lines -->
+            @{ Html.RenderWidget("invoice_lines_before", order); }
+
+			<h3>@T("PDFInvoice.Product(s)")</h3>
+
+			<div class="table-responsive">
+				<table class="table order-summary">
+					<thead>
+						<tr>
+							<th style="width: @(colWidths[0])%">@T("PDFInvoice.ProductName")</th>
+							@if (order.ShowSku)
+							{
+								<th style="width: @(colWidths[1])%">@T("PDFInvoice.SKU")</th>
+							}
+							<th class="text-center" style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
+							<th class="text-right" style="width: @(colWidths[3])%">@T("PDFInvoice.ProductPrice")</th>
+							<th class="text-right" style="width: @(colWidths[4])%">@T("PDFInvoice.ProductTotal")</th>
+						</tr>
+					</thead>
+					@for (int i = 0; i < order.Items.Count; i++)
+					{
+						var item = order.Items[i];
+						<tbody>
+							@OrderLine(item, order.ShowSku)
+							@if (item.ProductType == ProductType.BundledProduct)
+							{
+								@BundleItems(item, order.ShowSku)
+							}
+						</tbody>
+					}
+				</table>
+			</div>
+
+			<!-- Checkout attributes -->
+            @{ Html.RenderWidget("invoice_checkoutattributes_before", order); }
+
+			@if (order.CheckoutAttributeInfo.HasValue())
+            {
+				<div class="checkout-attributes mb-5">
+					@Html.Raw(order.CheckoutAttributeInfo)
+				</div>
+            }
+
+			<!-- Order totals -->
+			@{ Html.RenderWidget("invoice_ordertotals_before", order); }
+
+			<div class="order-totals clearfix">
+				<div class="pull-right float-right table-responsive" style="width: 40%; page-break-inside: avoid">
+					<table class="table order-totals">
+						<tr>
+							<td class="label">@T("Order.SubTotal"):</td>
+							<td class="value">@order.OrderSubtotal</td>
+						</tr>
+						@if (order.OrderSubTotalDiscount.HasValue())
+                        {
+							<tr>
+								<td class="label">@T("Order.SubTotalDiscount"):</td>
+								<td class="value">@order.OrderSubTotalDiscount</td>
+							</tr>
+                        }
+						@if (order.IsShippable)
+                        {
+							<tr>
+								<td class="label">@T("Order.Shipping"):</td>
+								<td class="value">@order.OrderShipping</td>
+							</tr>
+                        }
+						@if (order.PaymentMethodAdditionalFee.HasValue())
+                        {
+							<tr>
+								<td class="label">@T("Order.PaymentMethodAdditionalFee"):</td>
+								<td class="value">@order.PaymentMethodAdditionalFee</td>
+							</tr>
+                        }
+						@if (order.DisplayTaxRates && order.TaxRates.Count > 0)
+                        {
+                            foreach (var taxRate in order.TaxRates)
+                            {
+								<tr>
+									<td class="label">@taxRate.Label:</td>
+									<td class="value">@taxRate.Value</td>
+								</tr>
+                            }
+                        }
+						@if (order.DisplayTax)
+                        {
+							<tr>
+								<td class="label">@T("Order.Tax"):</td>
+								<td class="value text-right">@order.Tax</td>
+							</tr>
+                        }
+						@if (order.OrderTotalDiscount.HasValue())
+                        {
+							<tr>
+								<td class="label">@T("Order.TotalDiscount"):</td>
+								<td class="value">@order.OrderTotalDiscount</td>
+							</tr>
+                        }
+						@if (order.GiftCards.Count > 0)
+                        {
+                            foreach (var gc in order.GiftCards)
+                            {
+								<tr>
+									<td class="label">@Html.Raw(string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode)):</td>
+									<td class="value">@gc.Amount</td>
+								</tr>
+                            }
+                        }
+						@if (order.RedeemedRewardPoints > 0)
+                        {
+							<tr>
+								<td class="label">@string.Format(T("Order.RewardPoints").Text, order.RedeemedRewardPoints):</td>
+								<td class="value">@order.RedeemedRewardPointsAmount</td>
+							</tr>
+                        }
+						@if (order.CreditBalance.HasValue())
+						{
+							<tr>
+								<td class="label">@T("ShoppingCart.Totals.CreditBalance"):</td>
+								<td class="value">@order.CreditBalance</td>
+							</tr>
+						}
+                        @if (order.OrderTotalRounding.HasValue())
+                        {
+                            <tr>
+                                <td class="label">@T("ShoppingCart.Totals.Rounding"):</td>
+                                <td class="value">@order.OrderTotalRounding</td>
+                            </tr>
+                        }
+						<tr>
+							<td class="label">@T("Order.OrderTotal"):</td>
+							<td class="value"><strong>@order.OrderTotal</strong></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<!-- Order notes -->
+			@{ Html.RenderWidget("invoice_ordernotes_before", order); }
+
+			@if (order.RenderOrderNotes && order.OrderNotes.Count > 0)
+            {
+				<h3>@T("PDFInvoice.OrderNotes")</h3>
+
+				<div class="order-notes mt-2 table-responsive">
+					<table class="table">
+						<thead>
+							<tr>
+								<th style="width: 30%">
+									@T("PDFInvoice.OrderNotes.CreatedOn")
+								</th>
+								<th style="width: 70%">
+									@T("PDFInvoice.OrderNotes.Note")
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var note in order.OrderNotes)
+                            {
+								<tr>
+									<td>
+										@note.CreatedOn.ToNativeString()
+									</td>
+									<td dir="auto">
+										@Html.Raw(note.Note)
+									</td>
+								</tr>
+                            }
+						</tbody>
+					</table>
+				</div>
+            }
+			
+			@{ Html.RenderWidget("invoice_bottom", order); }
+		</div>
+	}
+</div>
+
+
+@helper OrderLine(OrderDetailsModel.OrderItemModel item, bool showSku)
+{
+	<tr>
+		<td>
+			<div @Html.LanguageAttributes(item.ProductName)>
+				@item.ProductName
+			</div>
+			@if (item.AttributeInfo.HasValue())
+			{
+				<div class="attributes text-small">
+					@Html.Raw(item.AttributeInfo)
+				</div>
+			}
+		</td>
+		@if (showSku)
+		{
+			<td>
+				@item.Sku
+			</td>
+		}
+		<td class="text-center">
+			@item.Quantity
+            @item.QuantityUnit
+		</td>
+		<td class="text-right">
+			@item.UnitPrice
+		</td>
+		<td class="text-right">
+			@item.SubTotal
+		</td>
+	</tr>
+}
+
+@helper BundleItems(OrderDetailsModel.OrderItemModel parentItem, bool showSku)
+{
+	if (parentItem.BundleItems == null)
+	{
+		return;
+	}
+
+	foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
+	{
+		<tr class="child-row">
+			<td>
+				<div class="associated-product">
+					<div dir="auto">
+						@item.ProductName
+					</div>
+					@if (item.AttributeInfo.HasValue())
+					{
+						<div class="attributes text-small">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+					}
+				</div>
+			</td>
+			@if (showSku)
+			{
+				<td>&nbsp;</td>
+			}
+			<td class="text-center text-small">
+				@if (parentItem.BundlePerItemShoppingCart)
+				{
+					<text>@item.Quantity</text>
+				}
+				else
+				{
+					<text>&nbsp;</text>
+				}
+			</td>
+			<td class="text-right">
+				@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+				{
+					<span class="text-small">
+						@Html.Raw(item.PriceWithDiscount)
+					</span>
+				}
+				else
+				{
+					<text>&nbsp;</text>
+				}
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+	}
+}
+
+

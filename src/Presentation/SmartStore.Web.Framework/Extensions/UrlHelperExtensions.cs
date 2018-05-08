@@ -1,4 +1,15 @@
 ﻿using System.Web.Mvc;
+<<<<<<< HEAD
+=======
+using SmartStore.Core;
+using SmartStore.Core.Caching;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Media;
+using SmartStore.Services.Topics;
+using SmartStore.Services.Seo;
+using System.Web.Routing;
+>>>>>>> upstream/3.x
 
 namespace SmartStore.Web.Framework
 {
@@ -28,5 +39,55 @@ namespace SmartStore.Web.Framework
 
 			return fallbackUrl;
 		}
+<<<<<<< HEAD
     }
+=======
+
+		public static string Picture(this UrlHelper urlHelper, int? pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			var pictureService = EngineContext.Current.Resolve<IPictureService>();
+			return pictureService.GetUrl(pictureId.GetValueOrDefault(), targetSize, fallbackType, host);
+		}
+
+		public static string Picture(this UrlHelper urlHelper, Picture picture, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
+		{
+			var pictureService = EngineContext.Current.Resolve<IPictureService>();
+			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
+		}
+
+		public static string TopicUrl(this UrlHelper urlHelper, string systemName, bool popup = false)
+		{
+			var seName = TopicSeName(urlHelper, systemName);
+
+			if (seName.Length == 0)
+			{
+				return string.Empty;
+			}		
+
+			var routeValues = new RouteValueDictionary { ["SeName"] = seName };
+			if (popup)
+				routeValues["popup"] = true;
+
+			return urlHelper.RouteUrl("Topic", routeValues);
+		}
+
+		public static string TopicSeName(this UrlHelper urlHelper, string systemName)
+		{
+			var workContext = EngineContext.Current.Resolve<IWorkContext>();
+			var storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStoreIdIfMultiStoreMode;
+			var cache = EngineContext.Current.Resolve<ICacheManager>();
+
+			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id, storeId);
+			var seName = cache.Get(cacheKey, () =>
+			{
+				var topicService = EngineContext.Current.Resolve<ITopicService>();
+				var topic = topicService.GetTopicBySystemName(systemName, storeId);
+
+				return topic?.GetSeName() ?? string.Empty;
+			});
+
+			return seName;
+		}
+	}
+>>>>>>> upstream/3.x
 }

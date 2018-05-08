@@ -1,0 +1,101 @@
+﻿@model ContactUsModel
+@using SmartStore.Web.Models.Common;
+@{
+    Layout = "_Layout";
+
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
+}
+
+<div class="page contact-page">
+	<div class="page-title">
+		<h1 class="h2">@T("PageTitle.ContactUs")</h1>
+	</div>
+
+    @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "ContactUs", isLead = true, bodyOnly = true }); }
+
+    <div class="page-body">
+
+        @{ Html.RenderWidget("contactus_top"); }
+
+        @if (Model.SuccessfullySent)
+        {
+            <div class="alert alert-success">
+                @Model.Result
+            </div>        
+        }
+        else
+        {
+            using (Html.BeginRouteForm("ContactUs", FormMethod.Post, new { @class = "contact-form" }))
+            {
+				if (!ViewData.ModelState.IsValid)
+				{
+					@Html.ValidationSummary(false)
+				}
+
+				<div class="form-group row">
+					@Html.LabelFor(model => model.FullName, new { @class = "col-sm-3 col-form-label required" })
+					<div class="col-sm-9">
+						@Html.TextBoxFor(model => model.FullName, new { @class = "form-control", placeholder = T("ContactUs.FullName.Hint") })
+						@Html.ValidationMessageFor(model => model.FullName)
+					</div>
+				</div>
+
+				<div class="form-group row">
+					@Html.LabelFor(model => model.Email, new { @class = "col-sm-3 col-form-label required" })
+					<div class="col-sm-9">
+						@Html.TextBoxFor(model => model.Email, new { @class = "form-control", placeholder = T("ContactUs.Email.Hint") })
+						@Html.ValidationMessageFor(model => model.Email)
+					</div>
+				</div>
+
+				<div class="form-group row">
+					@Html.LabelFor(model => model.Enquiry, new { @class = "col-sm-3 col-form-label required" })
+					<div class="col-sm-9">
+						@Html.TextAreaFor(model => model.Enquiry, new { @class = "form-control", rows = "6", placeholder = T("ContactUs.Enquiry.Hint") })
+						@Html.ValidationMessageFor(model => model.Enquiry)
+					</div>
+				</div>
+
+                if (Model.DisplayPrivacyAgreement)
+                {
+                    @Html.HiddenFor(model => model.DisplayPrivacyAgreement)
+
+                    <div class="form-group row">
+                        @Html.LabelFor(model => model.PrivacyAgreement, new { @class = "col-sm-3 col-form-label required", @for = "PrivacyAgreement" })
+                        <div class="col-sm-9 form-control-plaintext">
+							<div class="form-check">
+								@Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })
+								<label class="form-check-label" for="@Html.IdFor(model => model.PrivacyAgreement)">
+									@Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(Url.TopicUrl("privacyinfo")))
+								</label>
+							</div>
+                            @Html.ValidationMessageFor(model => model.PrivacyAgreement)
+                        </div>
+                    </div>
+                }
+                
+                if (Model.DisplayCaptcha)
+                {
+					<div class="form-group row">
+						<div class="col col-sm-auto offset-sm-3 captcha-box">
+							@Html.Raw(Html.GenerateCaptcha())
+						</div>
+					</div>
+				}
+                
+				<div class="form-group row">
+					<div class="col col-sm-auto offset-sm-3">
+						<button type="submit" name="send-email" class="btn btn-primary btn-lg btn-block">
+							@T("ContactUs.Button")
+						</button>
+					</div>
+				</div>
+            }
+        }
+
+        @{ Html.RenderWidget("contactus_bottom"); }
+
+    </div>
+</div>

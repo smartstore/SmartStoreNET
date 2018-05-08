@@ -4,6 +4,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Services.Messages;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Messages
 {
@@ -22,7 +23,7 @@ namespace SmartStore.Services.Tests.Messages
 			_subscriptionRepository = MockRepository.GenerateStub<IRepository<NewsLetterSubscription>>();
 			_dbContext = MockRepository.GenerateStub<IDbContext>();
 
-			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_dbContext, _subscriptionRepository, _eventPublisher);
+			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_subscriptionRepository, new MockCommonServices());
 		}
 
         /// <summary>

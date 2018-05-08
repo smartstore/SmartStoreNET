@@ -238,6 +238,7 @@
     <Compile Include="Filters\JsonNetAttribute.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
+    <Compile Include="Modelling\Results\PermissiveRedirectResult.cs" />
     <Compile Include="Plugins\PluginRazorHost.cs" />
     <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Filters\HandleExceptionFilter.cs" />

@@ -60,10 +60,6 @@ namespace SmartStore.Data.Setup
 			var entities = new List<Picture>
 			{
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", GetSeName("company-logo")),
- 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "clouds.png"), "image/png", GetSeName("slider-bg")),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "iphone.png"), "image/png", GetSeName("slide-1")),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "music.png"), "image/png", GetSeName("slide-2")),
-				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "packshot-net.png"), "image/png", GetSeName("slide-3")),
 
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_charcoal.jpg"), "image/jpeg", "all-star-charcoal"),
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_maroon.jpg"), "image/jpeg", "all-star-maroon"),
@@ -71,11 +67,10 @@ namespace SmartStore.Data.Setup
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_purple.jpg"), "image/jpeg", "all-star-purple"),
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "product_allstar_white.jpg"), "image/jpeg", "all-star-white"),
 
-                CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana.png"), "image/jpeg", "wayfarer_havana"),
-                CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana_black.png"), "image/jpeg", "wayfarer_havana_black"),
-                CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_rayban-black.png"), "image/jpeg", "wayfarer_rayban_black"),
-
-            };
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana.png"), "image/png", "wayfarer_havana"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_havana_black.png"), "image/png", "wayfarer_havana_black"),
+				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "wayfarer_rayban-black.png"), "image/png", "wayfarer_rayban_black")
+			};
 
 			this.Alter(entities);
 			return entities;
@@ -13029,114 +13024,6 @@ namespace SmartStore.Data.Setup
 			//#endregion productComputerAcerAspireOne
 
 			#endregion computer
-
-			#region Smartphones
-
-   //         var categoryCellPhones = this._ctx.Set<Category>().First(c => c.Alias == "Cell phones");
-
-			//#region productSmartPhonesAppleIphone
-
-			//var productSmartPhonesAppleIphone = new Product()
-			//{
-			//	ProductType = ProductType.SimpleProduct,
-			//	VisibleIndividually = true,
-			//	Name = "Apple iPhone 6",
-			//	ShortDescription = "The biggest thing to happen to iPhone since iPhone.",
-			//	FullDescription = "<p>Available in silver, gold, and space gray, iPhone 6 Plus features an A8 chip, Touch ID, faster LTE wireless, a new 8MP iSight camera with Focus Pixels, and iOS 8.</p><p>Weight and Dimensions: Height: 6.22 inches (158.1 mm), Width: 3.06 inches (77.8 mm), Depth: 0.28 inch (7.1 mm), Weight: 6.07 ounces (172 grams).</p><p><ul><li>A8 chip with 64-bit architecture. M8 motion coprocessor.</li><li>New 8-megapixel iSight camera with 1.5µ pixels. Autofocus with Focus Pixels.</li><li>1080p HD video recording (30 fps or 60 fps).</li><li>Retina HD display. 4.7-inch (diagonal) LED-backlit widescreen Multi Touch display with IPS technology.</li><li>1334-by-750-pixel resolution at 326 ppi. 1400:1 contrast ratio (typical). 500 cd/m2 max brightness (typical).</li><li>Fingerprint identity sensor built into the Home button.</li><li>802.11a/b/g/n/ac Wi-Fi. Bluetooth 4.0 wireless technology. NFC.</li><li>RAM	1GB, Internal storage 16GB.</li><li>Colors: Silver, Gold, Space Gray.</li></ul></p>",
-   //             Sku = "Apple-1001",
-			//	ProductTemplateId = productTemplateSimple.Id,
-			//	AllowCustomerReviews = true,
-			//	Published = true,
-			//	MetaTitle = "Apple iPhone 6",
-			//	ShowOnHomePage = true,
-			//	Price = 579.00M,
-			//	ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
-			//	OrderMinimumQuantity = 1,
-			//	OrderMaximumQuantity = 10000,
-			//	StockQuantity = 10000,
-			//	NotifyAdminForQuantityBelow = 1,
-			//	AllowBackInStockSubscriptions = false,
-			//	IsShipEnabled = true,
-			//	DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
-			//};
-
-   //         productSmartPhonesAppleIphone.ProductCategories.Add(new ProductCategory() { Category = categoryCellPhones, DisplayOrder = 1 });
-
-			//#region pictures
-
-			////pictures
-			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			//{
-			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000789-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
-			//	DisplayOrder = 1,
-			//});
-			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			//{
-			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000785-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
-			//	DisplayOrder = 2,
-			//});
-			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			//{
-			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000786-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
-			//	DisplayOrder = 3,
-			//});
-			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			//{
-			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000787-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
-			//	DisplayOrder = 4,
-			//});
-			//productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
-			//{
-			//	Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000788-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
-			//	DisplayOrder = 5,
-			//});
-
-
-
-			//#endregion pictures
-
-			//#region manufacturer
-
-			////manufacturer
-			//productSmartPhonesAppleIphone.ProductManufacturers.Add(new ProductManufacturer()
-			//{
-			//	Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
-			//	DisplayOrder = 1,
-			//});
-
-			//#endregion manufacturer
-
-			//#region SpecificationAttributes
-			////attributes
-			//productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			//{
-			//	AllowFiltering = true,
-			//	ShowOnProductPage = true,
-			//	DisplayOrder = 1,
-			//	// housing > alu
-			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 4).Single()
-			//});
-			//productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			//{
-			//	AllowFiltering = true,
-			//	ShowOnProductPage = true,
-			//	DisplayOrder = 2,
-			//	// manufacturer > apple
-			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
-			//});
-			//productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
-			//{
-			//	AllowFiltering = true,
-			//	ShowOnProductPage = true,
-			//	DisplayOrder = 5,
-			//	// OS / Windows 7 32 Bit
-			//	SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 5).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 9).Single()
-			//});
-   //         #endregion SpecificationAttributes
-
-            //#endregion productSmartPhonesAppleIphone
-
-            #endregion Smartphones
 
             #region Instant Download Music / Digital Products
 

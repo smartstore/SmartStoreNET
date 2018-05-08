@@ -182,6 +182,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
 			//topcis
 			CreateMap<Topic, TopicModel>()
+				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
 				.ForMember(dest => dest.WidgetWrapContent, mo => mo.MapFrom(x => x.WidgetWrapContent.HasValue ? x.WidgetWrapContent.Value : true))
 				.ForMember(dest => dest.Url, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())

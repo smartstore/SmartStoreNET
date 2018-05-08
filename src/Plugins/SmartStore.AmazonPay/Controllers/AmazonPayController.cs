@@ -66,12 +66,30 @@ namespace SmartStore.AmazonPay.Controllers
 				return Configure();
 
 			ModelState.Clear();
+<<<<<<< HEAD
+=======
+
+			model.AccessKey = model.AccessKey.TrimSafe();
+			model.ClientId = model.ClientId.TrimSafe();
+			model.SecretKey = model.SecretKey.TrimSafe();
+			model.SellerId = model.SellerId.TrimSafe();
+
+			MiniMapper.Map(model, settings);
+>>>>>>> upstream/3.x
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
 			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
 
+<<<<<<< HEAD
 			model.Copy(settings, false);
+=======
+			using (Services.Settings.BeginScope())
+			{
+				Services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
+				Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
+			}
+>>>>>>> upstream/3.x
 
 			using (_services.Settings.BeginScope())
 			{

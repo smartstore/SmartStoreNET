@@ -115,18 +115,13 @@ namespace SmartStore.Web.Framework.Theming
 
 	internal class DebugPluginVirtualFile : VirtualFile
 	{
-		private readonly string _debugPath;
-
 		public DebugPluginVirtualFile(string virtualPath, string debugPath)
 			: base(virtualPath)
 		{
-			this._debugPath = debugPath;
+			this.PhysicalPath = debugPath;
 		}
 
-		public string PhysicalPath
-		{
-			get { return _debugPath; }
-		}
+		public string PhysicalPath { get; }
 
 		public override bool IsDirectory
 		{
@@ -135,7 +130,7 @@ namespace SmartStore.Web.Framework.Theming
 		
 		public override Stream Open()
 		{
-			var fileView = new FileStream(_debugPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+			var fileView = new FileStream(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 			return fileView;
 		}
 	}

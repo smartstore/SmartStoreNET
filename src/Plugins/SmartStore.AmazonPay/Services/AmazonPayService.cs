@@ -158,6 +158,7 @@ namespace SmartStore.AmazonPay.Services
 				var serializer = new XmlSerializer(typeof(AmazonPayOrderAttribute));
 				return (AmazonPayOrderAttribute)serializer.Deserialize(reader);
 			}
+<<<<<<< HEAD
 		}
 
 		public void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null)
@@ -165,6 +166,30 @@ namespace SmartStore.AmazonPay.Services
 			try
 			{
 				if (exception != null)
+=======
+			model.LeadCode = LeadCode;
+			model.PlatformId = PlatformId;
+			// Not implemented. Not available for europe at the moment.
+			model.PublicKey = string.Empty;
+			model.KeyShareUrl = GetPluginUrl("ShareKey", store.SslEnabled);
+			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
+			model.MerchantStoreDescription = store.Name.Truncate(2048);
+
+			model.MerchantPrivacyNoticeUrl = urlHelper.RouteUrl("Topic", new { SeName = urlHelper.TopicSeName("privacyinfo") }, store.SslEnabled ? "https" : "http");
+			model.MerchantSandboxIpnUrl = model.IpnUrl;
+			model.MerchantProductionIpnUrl = model.IpnUrl;
+
+			model.MerchantLoginDomains = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			model.MerchantLoginRedirectUrls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			model.CurrentMerchantLoginDomains = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			model.CurrentMerchantLoginRedirectUrls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+			foreach (var entity in allStores)
+			{
+				// SSL required!
+				var shopUrl = entity.SslEnabled ? entity.SecureUrl : entity.Url;
+				if (shopUrl.HasValue())
+>>>>>>> upstream/3.x
 				{
 					shortMessage = exception.Message;
 					exception.Dump();

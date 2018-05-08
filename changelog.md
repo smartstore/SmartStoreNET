@@ -1,15 +1,109 @@
-# Release Notes
+﻿# Release Notes
+
+## SmartStore.NET 3.1.5
+### New Features
+* #1429 Search engine friendly topic URLs
+
+### Improvements
+* Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
+
+### Bugfixes
+* Migration: take all same-named message templates into account
+* Messaging: OrderPlaced e-mail templates show main product image even when an attribute combination with a custom image has been selected
+* Theming: fix broken product review voting
+* Theming: added missing bottom space to .html-editor-content
+* Theming: Language switcher is not displayed if no currency options are available
+* No bundle item thumbnail displayed in bundle summary if item is not individually visible
+* Tracking number in shipment details was not saved
+* Reward points weren't displayed in message templates
+* Dashboard: link for not yet shipped orders loads list with all orders
+* Topic search button had no effect
+
 
 ## SmartStore.NET 3.1.0
+<<<<<<< HEAD
 ### Bugfixes
 ...
 
 ### Improvements
 ...
+=======
+
+### Highlights
+* **Wallet**: Enables full or partial order payment via credit account. Includes REST-Api. (commercial plugin)
+* **[Liquid](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) template engine**: very flexible templating for e-mails and campaigns with autocompletion and syntax highlighting.
+* **Cash Rounding**: define money rounding rules on currency and payment method level.
+* **Modern, responsive backend**: migrated backend to Bootstrap 4, overhauled and improved the user interface.
+* **Enhanced MegaMenu**: virtual dropdowns for surplus top-level categories and brands (commercial plugin exclusively bundled with Pro Edition).
+* **RTL**: comprehensive RTL (Right-to-left) and bidi(rectional) support.
+* **Amazon Pay**:
+	* Supports merchants registered in the USA and Japan
+	* External authentication via *Login with Amazon* button in shop frontend
+	* Several improvements through the new *Login and pay with Amazon* services
+* (Perf) **Faster image processing**: new processing and caching strategy! Thumbnails are not created synchronously during the main request anymore, instead a new middleware route defers processing until an image is requested by any client.
+* **TinyImage**: scores ultra-high image compression rates (up to 80 %!) and enables WebP support (commercial plugin exclusively bundled with Premium Edition).
+* **UrlRewriter**: define URL redirection rules in the backend using *mod_rewrite* notation. (commercial plugin)
+* **Address formatting** templates by country
+* **Language packs**: downloader & auto-importer for packages available online.
+
+### Breaking changes
+* Message template customizations are lost due to the new template engine. You have to customize the templates again. No automatic migration, sorry :-(
+* Amazon Pay: The plugin has been changed to new *Login and pay with Amazon* services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
+* (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
+* (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
+* (Dev) Completely removed all `EntityInserted<T>`, `EntityUpdated<T>` and `EntityDeleted<T>` legacy events. We were using DbSaveHooks anyway, which provides a much more powerful and way faster pub-sub mechanism for database operations.
+>>>>>>> upstream/3.x
 
 ### New Features
 * #431 Added option to randomize the display order for slides on each request 
 
+<<<<<<< HEAD
+=======
+### Improvements
+* Target .NET Framework changed: 4.5.2 > 4.6.1.
+* Lower memory consumption
+* #649 Media FileSystem provider: segmenting files in subfolders to increase IO perf with huge amount of files
+* #1141 Cleaner backend order list. Added more infos like payment method.
+* OuputCache: Simple product changes that affect visibility now correctly invalidate all assigned category and manufacturer pages
+* * OuputCache: When MegaSearch is active, invalidation occurs only during indexing and not ad-hoc anymore. 
+* #1248 New payment integration guidelines for Sofort\Klarna
+* TwitterAuth: better error handling and enhanced admin instruction
+* #1181 Debitoor: Add option to display shipping address on invoices
+* Moved RoundPricesDuringCalculation setting to currency entity
+* #1100 Use new "Login with Amazon" services to initialize an Amazon payment
+* #1285 Copy product: Add option to add more than one copy
+* (Perf) Many improvements in hooking framework
+* #1294 Swiss PostFinance: External payment page too small on mobile devices. Added setting for mobile device template URL, pre-configured with PostFinance template.
+* #1143 Make shipping methods suitable for multi-stores
+* #1320 Image import: Find out the content type of image URLs by response header rather than file extension (which is sometimes missing)
+* #1219 Recently viewed products list should respect setting to hide manufacturer names
+* Import and export product quantity step
+* Add bundle item information to order messages
+* #1031 Enable offline payment methods to have brand icons
+* DevTools Plugin: Added example for cached output invalidation 
+
+### Bugfixes
+* #1268 Data importer always inserts new pictures and does not detect equal pictures while importing
+* OutputCache computes ambiguous cache keys for blog pages
+* #1142 Customer import creates role multiple times
+* #1244 Variant query model binder cannot handle types text and datepicker
+* #1273 Attribute formatter should consider setting CatalogSettings.ShowVariantCombinationPriceAdjustment
+* Product entity picker should use the wildcard search to find products
+* Hook framework should run hooks with `ImportantAttribute` when hooking was disabled per scope
+* #1297 Web API: Parsing the timestamp may fail due to the different accuracy of the milliseconds
+* Debitoor: VAT amount could be transmitted as miscellaneous for deliveries abroad.
+* Prices with discounts limited to categories and customer groups were shown to all users in product lists
+* #1330 MegaSearch: Missing variant facets if the variant value is not unique
+* Back-in-stock subscription form was already submitted when opening the popup dialog
+* Associated products of a grouped product were displayed in the wrong order
+* Payment-Filter: Fixed "The cast to value type 'System.Decimal' failed because the materialized value is null"
+* The tax value per tax rate was not updated when adding\removing a product to\from the order.
+* The option to send manually was ignored when sending e-mails
+* #528 LimitedToStores is required on payment provider rather than plugin level
+* #1318 Disabled preselected attribute combination permanently hides the shopping cart button, even if another combination is selected.
+* Copy product: Fixes "Cannot insert duplicate key row in object dbo.UrlRecord with unique index IX_UrlRecord_Slug"
+* Fixed export publishing via email
+>>>>>>> upstream/3.x
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes

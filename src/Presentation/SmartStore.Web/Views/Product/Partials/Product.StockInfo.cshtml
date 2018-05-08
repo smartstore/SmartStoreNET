@@ -51,19 +51,27 @@
 			}
 			else
 			{
-				<a class="stock-subscriber" data-toggle="modal" href="#backinstock-subscription-modal" rel="nofollow">
+				<a class="stock-subscriber" data-toggle="modal" href="@Url.Action("BackInStockSubscribe", new { id = @Model.Id })" rel="nofollow">
 					@T("BackInStockSubscriptions.NotifyMeWhenAvailable")
 				</a>
 				<script>
 					$(function () {
+<<<<<<< HEAD
 						$(".stock-subscriber").on('click', function (e) {
 							$("#backinstock-subscription-modal .modal-body").html('<iframe id="iframe-backinstocksubsription" src="@Url.Action("BackInStockSubscribe", new { id = @Model.Id })" width="600" height="170" scrolling="no" frameBorder="0" />');
+=======
+						$("a.stock-subscriber").on('click', function (e) {
+							e.preventDefault();
+							openPopup({ url: $(this).attr('href'), large: false, flex: false });
+							return false;
+>>>>>>> upstream/3.x
 						});
 					});
 				</script>
 			}
 		</div>
 	}
+<<<<<<< HEAD
 </div>
 
 @if (Model.DisplayBackInStockSubscription && Model.IsCurrentCustomerRegistered)
@@ -84,3 +92,6 @@
 		</div>
 	}
 }
+=======
+</div>
+>>>>>>> upstream/3.x

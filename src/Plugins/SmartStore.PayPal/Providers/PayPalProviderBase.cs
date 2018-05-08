@@ -59,11 +59,14 @@ namespace SmartStore.PayPal
 
 		protected PayPalAPIAASoapBinding GetApiAaService(TSetting settings)
 		{
+<<<<<<< HEAD
 			if (settings.SecurityProtocol.HasValue)
 			{
 				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
 			}
 
+=======
+>>>>>>> upstream/3.x
 			var service = new PayPalAPIAASoapBinding();
 
 			service.Url = settings.UseSandbox ? "https://api-3t.sandbox.paypal.com/2.0/" : "https://api-3t.paypal.com/2.0/";
@@ -75,11 +78,14 @@ namespace SmartStore.PayPal
 
 		protected PayPalAPISoapBinding GetApiService(TSetting settings)
 		{
+<<<<<<< HEAD
 			if (settings.SecurityProtocol.HasValue)
 			{
 				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
 			}
 
+=======
+>>>>>>> upstream/3.x
 			var service = new PayPalAPISoapBinding();
 
 			service.Url = settings.UseSandbox ? "https://api-3t.sandbox.paypal.com/2.0/" : "https://api-3t.paypal.com/2.0/";

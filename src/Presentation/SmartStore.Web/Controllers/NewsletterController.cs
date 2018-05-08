@@ -15,7 +15,6 @@ namespace SmartStore.Web.Controllers
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IStoreContext _storeContext;
-
         private readonly CustomerSettings _customerSettings;
 
         public NewsletterController(

@@ -194,6 +194,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         public const string PRODUCT_SPECS_MODEL_KEY = "pres:product:specs-{0}-{1}";
         public const string PRODUCT_SPECS_PATTERN_KEY = "pres:product:specs";
 
+<<<<<<< HEAD
         /// <summary>
         /// Key for TopicModel caching
         /// </summary>
@@ -214,6 +215,29 @@ namespace SmartStore.Web.Infrastructure.Cache
         /// </remarks>
         public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget";
         public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}";
+=======
+		/// <summary>
+		/// Key for TopicModel caching
+		/// </summary>
+		/// <remarks>
+		/// {0} : topic id/systemname
+		/// {1} : language id
+		/// {2} : store id
+		/// </remarks>
+		public const string TOPIC_BY_SYSTEMNAME_KEY = "pres:topic:page.bysystemname-{0}-{1}-{2}";
+		public const string TOPIC_BY_ID_KEY = "pres:topic:page.byid-{0}-{1}-{2}";
+		public const string TOPIC_PATTERN_KEY = "pres:topic:page*";
+
+		/// <summary>
+		/// Key for TopicWidget caching
+		/// </summary>
+		/// <remarks>
+		/// {0} : store id
+		/// {1} : language id
+		/// </remarks>
+		public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}";
+		public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget*";
+>>>>>>> upstream/3.x
 
         /// <summary>
         /// Key for CategoryTemplate caching

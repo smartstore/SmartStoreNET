@@ -233,8 +233,8 @@ namespace SmartStore.Web.Framework.Theming
 
 				if (isPreprocessor && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
 				{
-					// special case to support SASS/LESS @import declarations
-					// within inherited SASS/LESS files. Snenario: an inheritor wishes to
+					// special case to support SASS @import declarations
+					// within inherited SASS files. Snenario: an inheritor wishes to
 					// include the same file from it's base theme (e.g. custom.scss) just to tweak it
 					// a bit for his child theme. Without the 'explicit' query the resolution starting point
 					// for custom.scss would be the CURRENT theme's folder, and NOT the requested one's,

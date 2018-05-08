@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Email;
 using SmartStore.Core.Events;
+using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication.External;
@@ -82,6 +83,8 @@ namespace SmartStore.Admin.Controllers
 		private readonly IEventPublisher _eventPublisher;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
+		private readonly IMessageModelProvider _messageModelProvider;
+
 		#endregion
 
 		#region Constructors
@@ -108,42 +111,44 @@ namespace SmartStore.Admin.Controllers
 			AddressSettings addressSettings, IStoreService storeService,
 			IEventPublisher eventPublisher,
 			PluginMediator pluginMediator,
-			IAffiliateService affiliateService)
+			IAffiliateService affiliateService,
+			IMessageModelProvider messageModelProvider)
 		{
-            this._customerService = customerService;
-			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
-            this._genericAttributeService = genericAttributeService;
-            this._customerRegistrationService = customerRegistrationService;
-            this._customerReportService = customerReportService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._localizationService = localizationService;
-            this._dateTimeSettings = dateTimeSettings;
-            this._taxSettings = taxSettings;
-            this._rewardPointsSettings = rewardPointsSettings;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._addressService = addressService;
-            this._customerSettings = customerSettings;
-            this._taxService = taxService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._priceFormatter = priceFormatter;
-            this._orderService = orderService;
-            this._customerActivityService = customerActivityService;
-            this._priceCalculationService = priceCalculationService;
-            this._permissionService = permissionService;
-            this._adminAreaSettings = adminAreaSettings;
-            this._queuedEmailService = queuedEmailService;
-            this._emailAccountSettings = emailAccountSettings;
-            this._emailAccountService = emailAccountService;
-            this._forumSettings = forumSettings;
-            this._forumService = forumService;
-            this._openAuthenticationService = openAuthenticationService;
-            this._addressSettings = addressSettings;
-			this._storeService = storeService;
-			this._eventPublisher = eventPublisher;
-			this._pluginMediator = pluginMediator;
-			this._affiliateService = affiliateService;
+            _customerService = customerService;
+			_newsLetterSubscriptionService = newsLetterSubscriptionService;
+            _genericAttributeService = genericAttributeService;
+            _customerRegistrationService = customerRegistrationService;
+            _customerReportService = customerReportService;
+            _dateTimeHelper = dateTimeHelper;
+            _localizationService = localizationService;
+            _dateTimeSettings = dateTimeSettings;
+            _taxSettings = taxSettings;
+            _rewardPointsSettings = rewardPointsSettings;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _addressService = addressService;
+            _customerSettings = customerSettings;
+            _taxService = taxService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _priceFormatter = priceFormatter;
+            _orderService = orderService;
+            _customerActivityService = customerActivityService;
+            _priceCalculationService = priceCalculationService;
+            _permissionService = permissionService;
+            _adminAreaSettings = adminAreaSettings;
+            _queuedEmailService = queuedEmailService;
+            _emailAccountSettings = emailAccountSettings;
+            _emailAccountService = emailAccountService;
+            _forumSettings = forumSettings;
+            _forumService = forumService;
+            _openAuthenticationService = openAuthenticationService;
+            _addressSettings = addressSettings;
+			_storeService = storeService;
+			_eventPublisher = eventPublisher;
+			_pluginMediator = pluginMediator;
+			_affiliateService = affiliateService;
+			_messageModelProvider = messageModelProvider;
 		}
 
         #endregion
@@ -1262,33 +1267,51 @@ namespace SmartStore.Admin.Controllers
             if (customer == null)
                 throw new ArgumentException("No customer found with the specified id", "customerId");
 
-            var addresses = customer.Addresses.OrderByDescending(a => a.CreatedOnUtc).ThenByDescending(a => a.Id).ToList();
-            var gridModel = new GridModel<AddressModel>
+            var addresses = customer.Addresses
+				.OrderByDescending(a => a.CreatedOnUtc)
+				.ThenByDescending(a => a.Id)
+				.ToList();
+
+			var wantedAddressKeys = new string[] { "Street1", "Street2", "Country", "CountryId", "CountryAbbrev2", "CountryAbbrev3", "State", "StateAbbrev", "City", "ZipCode" };
+
+			var gridModel = new GridModel<AddressModel>
             {
                 Data = addresses.Select(x =>
                 {
                     var model = x.ToModel(_addressService);
-                    var addressHtmlSb = new StringBuilder("<div>");
-                    if (_addressSettings.CompanyEnabled && !String.IsNullOrEmpty(model.Company))
-                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.Company));
-                    if (_addressSettings.StreetAddressEnabled && !String.IsNullOrEmpty(model.Address1))
-                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.Address1));
-                    if (_addressSettings.StreetAddress2Enabled && !String.IsNullOrEmpty(model.Address2))
-                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.Address2));
-                    if (_addressSettings.CityEnabled && !String.IsNullOrEmpty(model.City))
-                        addressHtmlSb.AppendFormat("{0},", Server.HtmlEncode(model.City));
-                    if (_addressSettings.StateProvinceEnabled && !String.IsNullOrEmpty(model.StateProvinceName))
-                        addressHtmlSb.AppendFormat("{0},", Server.HtmlEncode(model.StateProvinceName));
-                    if (_addressSettings.ZipPostalCodeEnabled && !String.IsNullOrEmpty(model.ZipPostalCode))
-                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.ZipPostalCode));
-                    if (_addressSettings.CountryEnabled && !String.IsNullOrEmpty(model.CountryName))
-                        addressHtmlSb.AppendFormat("{0}", Server.HtmlEncode(model.CountryName));
-                    addressHtmlSb.Append("</div>");
-                    model.AddressHtml = addressHtmlSb.ToString();
-                    return model;
+
+					try
+					{
+						var messageContext = MessageContext.Create(
+							x.Country?.AddressFormat,
+							_workContext.WorkingLanguage.Id,
+							_storeContext.CurrentStore.Id,
+							customer);
+						messageContext.Model = new TemplateModel();
+
+						_messageModelProvider.AddModelPart(x, messageContext, "Address");
+
+						var addressModel = messageContext.Model["Address"];
+						var dic = addressModel as Dictionary<string, object>;
+						if (dic != null)
+						{
+							var keysToRemove = dic.Keys.Except(wantedAddressKeys).ToList();
+							keysToRemove.Each(key => dic.Remove(key));
+						}
+
+						model.AddressHtml = _addressService.FormatAddress(addressModel, x.Country?.AddressFormat, messageContext.FormatProvider);
+						model.AddressHtml = HtmlUtils.ConvertPlainTextToHtml(model.AddressHtml);
+					}
+					catch (Exception exception)
+					{
+						Logger.Error(exception);
+					}
+
+					return model;
                 }),
                 Total = addresses.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel

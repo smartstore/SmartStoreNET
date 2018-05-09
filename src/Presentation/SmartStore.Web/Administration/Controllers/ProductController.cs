@@ -319,6 +319,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				product.ProductTags.Remove(productTag);
 				_productService.UpdateProduct(product);
+				_services.DbContext.ChangeState(product, System.Data.Entity.EntityState.Modified);
 			}
 
 			foreach (string productTagName in productTags)
@@ -341,6 +342,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					product.ProductTags.Add(productTag);
 					_productService.UpdateProduct(product);
+					_services.DbContext.ChangeState(product, System.Data.Entity.EntityState.Modified);
 				}
 			}
 		}

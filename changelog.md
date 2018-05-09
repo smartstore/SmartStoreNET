@@ -18,6 +18,7 @@
 * Theming: Language switcher is not displayed if no currency options are available
 * No bundle item thumbnail displayed in bundle summary if item is not individually visible
 * Tracking number in shipment details was not saved
+* Assigning or removing product tags did not invalidate model cache
 * Reward points weren't displayed in message templates
 * Dashboard: link for not yet shipped orders loads list with all orders
 * Topic search button had no effect

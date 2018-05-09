@@ -298,6 +298,8 @@ namespace SmartStore.Web.Infrastructure.Cache
 					_cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
+					_cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY);
+					_cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_PATTERN_KEY);
 				}
 			}
 			else if (entity is Manufacturer)

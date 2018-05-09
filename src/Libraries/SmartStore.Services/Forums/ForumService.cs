@@ -26,6 +26,7 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<Customer> _customerRepository;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
+        private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ICommonServices _services;
 
@@ -40,6 +41,7 @@ namespace SmartStore.Services.Forums
             IRepository<Customer> customerRepository,
             IGenericAttributeService genericAttributeService,
             ICustomerService customerService,
+            IWorkflowMessageService workflowMessageService,
 			IRepository<StoreMapping> storeMappingRepository,
 			ICommonServices services)
         {
@@ -53,6 +55,7 @@ namespace SmartStore.Services.Forums
             _customerRepository = customerRepository;
             _genericAttributeService = genericAttributeService;
             _customerService = customerService;
+            _workflowMessageService = workflowMessageService;
 			_storeMappingRepository = storeMappingRepository;
 			_services = services;
         }
@@ -205,6 +208,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumGroupRepository.Delete(forumGroup);
+
+            //event notification
+            _services.EventPublisher.EntityDeleted(forumGroup);
         }
 
         public virtual ForumGroup GetForumGroupById(int forumGroupId)
@@ -250,6 +256,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumGroupRepository.Insert(forumGroup);
+
+            //event notification
+            _services.EventPublisher.EntityInserted(forumGroup);
         }
 
         public virtual void UpdateForumGroup(ForumGroup forumGroup)
@@ -260,6 +269,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumGroupRepository.Update(forumGroup);
+
+            //event notification
+            _services.EventPublisher.EntityUpdated(forumGroup);
         }
 
         public virtual void DeleteForum(Forum forum)
@@ -279,6 +291,8 @@ namespace SmartStore.Services.Forums
             foreach (var fs in queryFs1.ToList())
             {
                 _forumSubscriptionRepository.Delete(fs);
+                //event notification
+                _services.EventPublisher.EntityDeleted(fs);
             }
 
             //delete forum subscriptions (forum)
@@ -288,10 +302,15 @@ namespace SmartStore.Services.Forums
             foreach (var fs2 in queryFs2.ToList())
             {
                 _forumSubscriptionRepository.Delete(fs2);
+                //event notification
+                _services.EventPublisher.EntityDeleted(fs2);
             }
 
             //delete forum
             _forumRepository.Delete(forum);
+
+            //event notification
+            _services.EventPublisher.EntityDeleted(forum);
         }
 
         public virtual Forum GetForumById(int forumId)
@@ -321,6 +340,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumRepository.Insert(forum);
+
+            //event notification
+            _services.EventPublisher.EntityInserted(forum);
         }
 
         public virtual void UpdateForum(Forum forum)
@@ -331,6 +353,9 @@ namespace SmartStore.Services.Forums
             }
 
 			_forumRepository.Update(forum);
+
+            //event notification
+            _services.EventPublisher.EntityUpdated(forum);
         }
 
         public virtual void DeleteTopic(ForumTopic forumTopic)
@@ -354,11 +379,16 @@ namespace SmartStore.Services.Forums
             foreach (var fs in forumSubscriptions)
             {
                 _forumSubscriptionRepository.Delete(fs);
+                //event notification
+                _services.EventPublisher.EntityDeleted(fs);
             }
 
             //update stats
             UpdateForumStats(forumId);
             UpdateCustomerStats(customerId);
+
+            //event notification
+            _services.EventPublisher.EntityDeleted(forumTopic);
         }
 
         public virtual ForumTopic GetTopicById(int forumTopicId)
@@ -468,6 +498,9 @@ namespace SmartStore.Services.Forums
             //update stats
             UpdateForumStats(forumTopic.ForumId);
 
+            //event notification
+            _services.EventPublisher.EntityInserted(forumTopic);
+
             //send notifications
             if (sendNotifications)
             {
@@ -484,7 +517,7 @@ namespace SmartStore.Services.Forums
 
                     if (!String.IsNullOrEmpty(subscription.Customer.Email))
                     {
-                        _services.MessageFactory.SendNewForumTopicMessage(subscription.Customer, forumTopic, languageId);	
+                        _workflowMessageService.SendNewForumTopicMessage(subscription.Customer, forumTopic, forum, languageId);
                     }
                 }
             }
@@ -498,6 +531,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumTopicRepository.Update(forumTopic);
+
+            //event notification
+            _services.EventPublisher.EntityUpdated(forumTopic);
         }
 
         public virtual ForumTopic MoveTopic(int forumTopicId, int newForumId)
@@ -563,6 +599,9 @@ namespace SmartStore.Services.Forums
             }
             UpdateForumStats(forumId);
             UpdateCustomerStats(customerId);
+
+            //event notification
+            _services.EventPublisher.EntityDeleted(forumPost);
 
         }
 
@@ -632,6 +671,9 @@ namespace SmartStore.Services.Forums
             UpdateForumStats(forumId);
             UpdateCustomerStats(customerId);
 
+            //event notification
+            _services.EventPublisher.EntityInserted(forumPost);
+
             //notifications
             if (sendNotifications)
             {
@@ -651,7 +693,7 @@ namespace SmartStore.Services.Forums
 
                     if (!String.IsNullOrEmpty(subscription.Customer.Email))
                     {
-                        _services.MessageFactory.SendNewForumPostMessage(subscription.Customer, forumPost, friendlyTopicPageIndex, languageId);
+                        _workflowMessageService.SendNewForumPostMessage(subscription.Customer, forumPost, forumTopic, forum, friendlyTopicPageIndex, languageId);
                     }
                 }
             }
@@ -666,6 +708,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumPostRepository.Update(forumPost);
+
+            //event notification
+            _services.EventPublisher.EntityUpdated(forumPost);
         }
 
         public virtual void DeletePrivateMessage(PrivateMessage privateMessage)
@@ -676,6 +721,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumPrivateMessageRepository.Delete(privateMessage);
+
+            //event notification
+            _services.EventPublisher.EntityDeleted(privateMessage);
         }
 
         public virtual PrivateMessage GetPrivateMessageById(int privateMessageId)
@@ -741,6 +789,9 @@ namespace SmartStore.Services.Forums
 
             _forumPrivateMessageRepository.Insert(privateMessage);
 
+            //event notification
+            _services.EventPublisher.EntityInserted(privateMessage);
+
             var customerTo = _customerService.GetCustomerById(privateMessage.ToCustomerId);
             if (customerTo == null)
             {
@@ -753,7 +804,7 @@ namespace SmartStore.Services.Forums
             //Email notification
             if (_forumSettings.NotifyAboutPrivateMessages)
             {
-				_services.MessageFactory.SendPrivateMessageNotification(customerTo, privateMessage, _services.WorkContext.WorkingLanguage.Id);                
+                _workflowMessageService.SendPrivateMessageNotification(customerTo, privateMessage, _services.WorkContext.WorkingLanguage.Id);                
             }
         }
 
@@ -765,10 +816,14 @@ namespace SmartStore.Services.Forums
             if (privateMessage.IsDeletedByAuthor && privateMessage.IsDeletedByRecipient)
             {
                 _forumPrivateMessageRepository.Delete(privateMessage);
+                //event notification
+                _services.EventPublisher.EntityDeleted(privateMessage);
             }
             else
             {
                 _forumPrivateMessageRepository.Update(privateMessage);
+                //event notification
+                _services.EventPublisher.EntityUpdated(privateMessage);
             }
         }
 
@@ -780,6 +835,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumSubscriptionRepository.Delete(forumSubscription);
+
+            //event notification
+            _services.EventPublisher.EntityDeleted(forumSubscription);
         }
 
         public virtual ForumSubscription GetSubscriptionById(int forumSubscriptionId)
@@ -827,6 +885,9 @@ namespace SmartStore.Services.Forums
             }
 
             _forumSubscriptionRepository.Insert(forumSubscription);
+
+            //event notification
+            _services.EventPublisher.EntityInserted(forumSubscription);
         }
 
         public virtual void UpdateSubscription(ForumSubscription forumSubscription)
@@ -837,6 +898,9 @@ namespace SmartStore.Services.Forums
             }
             
             _forumSubscriptionRepository.Update(forumSubscription);
+
+            //event notification
+            _services.EventPublisher.EntityUpdated(forumSubscription);
         }
 
         public virtual bool IsCustomerAllowedToCreateTopic(Customer customer, Forum forum)

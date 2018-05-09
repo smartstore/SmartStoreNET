@@ -1,5 +1,5 @@
-﻿<div class="row justify-content-center">
-    <div class="col-10 mt-4">
+﻿<div class="row">
+    <div class="col-10 push-1 mt-4">
 
         @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get, new { @class = "forum-search-box" }))
         {
@@ -7,13 +7,13 @@
 
             <div class="input-group d-flex">
                 @Html.TextBox("searchterms", searchText, new { @class = "forum-search-box-text form-control", placeholder = searchText, onclick = String.Format("if(this.value=='{0}')this.value=''", searchText), onblur = String.Format("if(this.value=='')this.value='{0}';", searchText) })
-                <div class="input-group-append">
+                <span class="input-group-btn">
                     <input type="submit" value="@T("Forum.SearchButton")" class="btn btn-primary" />
-                </div>
+                </span>
                 
             </div>
             <div class="advanced mt-2">
-                @Html.RouteLink(T("Forum.AdvancedSearch").Text, "BoardSearch", new { adv = true }, new { title = T("Forum.AdvancedSearch").Text })
+                @Html.RouteLink(@T("Forum.AdvancedSearch").Text, "BoardSearch", new { adv = true }, new { title = @T("Forum.AdvancedSearch").Text })
             </div>
         }
     </div>

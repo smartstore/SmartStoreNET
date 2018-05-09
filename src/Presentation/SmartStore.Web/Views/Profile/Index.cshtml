@@ -26,7 +26,7 @@
                     .Selected(postsTabSelected)
                     .Content(Html.Action("posts", new { customerProfileId = Model.CustomerProfileId, page = Model.PostsPage }).ToString());
             }
-        }).TabContentHeaderContent(TabContentHeader()).Fade(false)
+        }).TabContentHeaderContent(TabContentHeader()).ComponentVersion(BootstrapVersion.V4).Fade(false)
 
     </div>
 </div>

@@ -6,7 +6,6 @@ namespace SmartStore.OfflinePayment.Settings
 	public abstract class PaymentSettingsBase : ISettings
 	{
 		public string DescriptionText { get; set; }
-		public int ThumbnailPictureId { get; set; }
 		public decimal AdditionalFee { get; set; }
 		public bool AdditionalFeePercentage { get; set; }
 	}

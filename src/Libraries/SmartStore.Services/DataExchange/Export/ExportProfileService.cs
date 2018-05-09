@@ -6,7 +6,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
@@ -57,17 +56,15 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			Guard.NotEmpty(providerSystemName, nameof(providerSystemName));
 
+			var profileCount = _exportProfileRepository.Table.Count(x => x.ProviderSystemName == providerSystemName);
+
 			if (name.IsEmpty())
-			{
 				name = providerSystemName;
-			}
 
 			if (!isSystemProfile)
-			{
-				var profileCount = _exportProfileRepository.Table.Count(x => x.ProviderSystemName == providerSystemName);
+				name = string.Concat(_localizationService.GetResource("Common.My"), " ", name);
 
-				name = string.Concat(_localizationService.GetResource("Common.My"), " ", name, " ", profileCount + 1);
-			}
+			name = string.Concat(name, " ", profileCount + 1);
 
 			var cloneProfile = GetExportProfileById(cloneFromProfileId);
 
@@ -125,8 +122,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 					var filter = new ExportFilter
 					{
-						IsPublished = true,
-						ShoppingCartTypeId = (int)ShoppingCartType.ShoppingCart
+						IsPublished = true
 					};
 
 					profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
@@ -156,9 +152,10 @@ namespace SmartStore.Services.DataExchange.Export
 			var path = DataSettings.Current.TenantPath + "/ExportProfiles";
 			profile.FolderName = path + "/" + FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath(path), folderName);
 
-			profile.SystemName = profileSystemName.IsEmpty() && isSystemProfile
-				? cleanedSystemName
-				: profileSystemName;
+			if (profileSystemName.IsEmpty() && isSystemProfile)
+				profile.SystemName = cleanedSystemName;
+			else
+				profile.SystemName = profileSystemName;
 
 			_exportProfileRepository.Insert(profile);
 
@@ -197,6 +194,8 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 			}
 
+			_eventPublisher.EntityInserted(profile);
+
 			return profile;
 		}
 
@@ -233,6 +232,8 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_exportProfileRepository.Update(profile);
+
+			_eventPublisher.EntityUpdated(profile);
 		}
 
 		public virtual void DeleteExportProfile(ExportProfile profile, bool force = false)
@@ -250,6 +251,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(scheduleTaskId);
 			_scheduleTaskService.DeleteTask(scheduleTask);
+
+			_eventPublisher.EntityDeleted(profile);
 
 			if (System.IO.Directory.Exists(folder))
 			{
@@ -357,6 +360,8 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_exportDeploymentRepository.Update(deployment);
+
+			_eventPublisher.EntityUpdated(deployment);
 		}
 
 		public virtual void DeleteExportDeployment(ExportDeployment deployment)
@@ -365,6 +370,8 @@ namespace SmartStore.Services.DataExchange.Export
 				throw new ArgumentNullException("deployment");
 
 			_exportDeploymentRepository.Delete(deployment);
+
+			_eventPublisher.EntityDeleted(deployment);
 		}
 	}
 }

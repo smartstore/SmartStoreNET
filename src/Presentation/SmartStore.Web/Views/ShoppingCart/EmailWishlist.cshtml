@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.YourEmailAddress, new { @for = "YourEmailAddress" })
+                        @Html.LabelFor(model => model.YourEmailAddress, new { @for = "FriendEmail" })
                         @Html.TextBoxFor(model => model.YourEmailAddress, new { @class = "your-email form-control", placeholder = T("Wishlist.EmailAFriend.YourEmailAddress.Hint") })
                         @Html.ValidationMessageFor(model => model.YourEmailAddress)
                     </div>
@@ -48,11 +48,9 @@
 
                     @if (Model.DisplayCaptcha)
                     {
-						<div class="form-group">
-							<div class="captcha-box">
-								@Html.Raw(Html.GenerateCaptcha())
-							</div>
-						</div>
+                        <div class="captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
                     }
                 
                     <input type="hidden" name="send-email" value="send-email">

@@ -6,7 +6,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Payments
 {
-	public class PaymentMethodEditModel : TabbableModel, ILocalizedModel<PaymentMethodLocalizedModel>, IStoreSelector
+	public class PaymentMethodEditModel : TabbableModel, ILocalizedModel<PaymentMethodLocalizedModel>
 	{
 		public PaymentMethodEditModel()
 		{
@@ -31,15 +31,6 @@ namespace SmartStore.Admin.Models.Payments
 		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.FullDescription")]
 		[AllowHtml]
 		public string FullDescription { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.RoundOrderTotalEnabled")]
-        public bool RoundOrderTotalEnabled { get; set; }
-
-		// Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
 	}
 
 

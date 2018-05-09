@@ -3,84 +3,56 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Mime;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Xml;
-using Autofac;
-using Newtonsoft.Json;
 using SmartStore.Admin.Models.Localization;
-using SmartStore.Core;
-using SmartStore.Core.Async;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
-using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class LanguageController : AdminControllerBase
     {
         #region Fields
 
         private readonly ILanguageService _languageService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly IGenericAttributeService _genericAttributeService;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IPluginFinder _pluginFinder;
-        private readonly PluginMediator _pluginMediator;
-        private readonly ICountryService _countryService;
+		private readonly ICountryService _countryService;
 		private readonly ICommonServices _services;
-        private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly IAsyncState _asyncState;
 
         #endregion
 
         #region Constructors
 
-        public LanguageController(
-            ILanguageService languageService,
+        public LanguageController(ILanguageService languageService,
 			IStoreMappingService storeMappingService,
-            IGenericAttributeService genericAttributeService,
             AdminAreaSettings adminAreaSettings,
 			IPluginFinder pluginFinder,
-            PluginMediator pluginMediator,
-            ICountryService countryService,
-			ICommonServices services,
-            IDateTimeHelper dateTimeHelper,
-            IAsyncState asyncState)
+			ICountryService countryService,
+			ICommonServices services)
         {
-            _languageService = languageService;
-			_storeMappingService = storeMappingService;
-            _genericAttributeService = genericAttributeService;
-            _adminAreaSettings = adminAreaSettings;
-			_pluginFinder = pluginFinder;
-            _pluginMediator = pluginMediator;
-			_countryService = countryService;
-			_services = services;
-            _dateTimeHelper = dateTimeHelper;
-            _asyncState = asyncState;
+            this._languageService = languageService;
+			this._storeMappingService = storeMappingService;
+            this._adminAreaSettings = adminAreaSettings;
+			this._pluginFinder = pluginFinder;
+			this._countryService = countryService;
+			this._services = services;
         }
 
 		#endregion
@@ -89,12 +61,14 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareLanguageModel(LanguageModel model, Language language, bool excludeProperties)
 		{
+			var languageId = _services.WorkContext.WorkingLanguage.Id;
+
 			var allCultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
 				.OrderBy(x => x.DisplayName)
 				.ToList();
 
 			var allCountryNames = _countryService.GetAllCountries(true)
-				.ToDictionarySafe(x => x.TwoLetterIsoCode.EmptyNull().ToLower(), x => x.GetLocalized(y => y.Name, _services.WorkContext.WorkingLanguage, true, false));
+				.ToDictionarySafe(x => x.TwoLetterIsoCode.EmptyNull().ToLower(), x => x.GetLocalized(y => y.Name, languageId, true, false));
 
 			model.AvailableCultures = allCultures
 				.Select(x => new SelectListItem { Text = "{0} [{1}]".FormatInvariant(x.DisplayName, x.IetfLanguageTag), Value = x.IetfLanguageTag })
@@ -107,7 +81,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (!model.AvailableTwoLetterLanguageCodes.Any(x => x.Value.IsCaseInsensitiveEqual(item.TwoLetterISOLanguageName)))
 				{
-					// Display language name is not provided by net framework
+					// display language name is not provided by net framework
 					var index = item.DisplayName.EmptyNull().IndexOf(" (");
 
 					if (index == -1)
@@ -138,15 +112,20 @@ namespace SmartStore.Admin.Controllers
 				model.AvailableFlags.Add(new SelectListItem { Text = countryDescription, Value = Path.GetFileName(path) });
 			}
 
+			model.AvailableFlags = model.AvailableFlags.OrderBy(x => x.Text).ToList();
+
+			model.AvailableStores = _services.StoreService.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+
 			if (!excludeProperties)
 			{
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(language);
 			}
-
-			model.AvailableFlags = model.AvailableFlags.OrderBy(x => x.Text).ToList();
-			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
+<<<<<<< HEAD
+=======
 		private void PrepareAvailableLanguageModel(
             AvailableLanguageModel model,
             AvailableResourcesModel resources,
@@ -293,6 +272,7 @@ namespace SmartStore.Admin.Controllers
 			return null;
         }
 
+>>>>>>> upstream/3.x
         #endregion
 
         #region Languages
@@ -308,43 +288,39 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var languages = _languageService.GetAllLanguages(true);
-            var model = languages.Select(x => x.ToModel()).ToList();
 
-            return View(model);
+            var gridModel = new GridModel<LanguageModel>
+            {
+                Data = languages.Select(x => x.ToModel()),
+                Total = languages.Count()
+            };
+
+            return View(gridModel);
         }
 
-        public async Task<ActionResult> AvailableLanguages(bool enforce = false)
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        public ActionResult List(GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
-                return Content(T("Admin.AccessDenied.Description"));
+			var model = new GridModel<LanguageModel>();
 
-            var languages = _languageService.GetAllLanguages(true);
-            var languageDic = languages.ToDictionarySafe(x => x.LanguageCulture, StringComparer.OrdinalIgnoreCase);
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
+			{
+				var languages = _languageService.GetAllLanguages(true);
 
-            var downloadState = _asyncState.Get<LanguageDownloadState>();
-            var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
+				model.Data = languages.Select(x => x.ToModel());
+				model.Total = languages.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<LanguageModel>();
 
-			var checkResult = await CheckAvailableResources(enforce);
+				NotifyAccessDenied();
+			}
 
-			var model = new AvailableLanguageListModel();
-			model.Languages = new List<AvailableLanguageModel>();
-			model.Version = checkResult.Version;
-			model.ResourceCount = checkResult.ResourceCount;
-
-			foreach (var resources in checkResult.Resources)
+            return new JsonResult
             {
-                if (resources.Language.Culture.HasValue())
-                {
-					languageDic.TryGetValue(resources.Language.Culture, out Language language);
-
-					var alModel = new AvailableLanguageModel();
-                    PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, language, downloadState);
-
-                    model.Languages.Add(alModel);
-                }
-            }
-
-            return PartialView(model);
+                Data = model
+            };
         }
 
         public ActionResult Create()
@@ -370,6 +346,7 @@ namespace SmartStore.Admin.Controllers
                 var language = model.ToEntity();
                 _languageService.InsertLanguage(language);
 
+				//Stores
 				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
 
 				var plugins = _pluginFinder.GetPluginDescriptors(true);
@@ -386,11 +363,11 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareLanguageModel(model, null, true);
 
-            // If we got this far, something failed, redisplay form
+            //If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        public async Task<ActionResult> Edit(int id)
+        public ActionResult Edit(int id)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
                 return AccessDeniedView();
@@ -399,56 +376,14 @@ namespace SmartStore.Admin.Controllers
             if (language == null)
                 return RedirectToAction("List");
 
-            // Set page timeout to 5 minutes
+            //set page timeout to 5 minutes
             this.Server.ScriptTimeout = 300;
 
             var model = language.ToModel();
-            PrepareLanguageModel(model, language, false);
 
-            // Provide combobox with downloadable resources for this language.
-            var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
-            var checkResult = await CheckAvailableResources();
-			string cultureParentName = null;
+			PrepareLanguageModel(model, language, false);
 
-			try
-			{
-				var ci = CultureInfo.GetCultureInfo(language.LanguageCulture);
-				if (!ci.IsNeutralCulture && ci.Parent != null)
-				{
-					cultureParentName = ci.Parent.Name;
-				}
-			}
-			catch { }
-
-			foreach (var resources in checkResult.Resources.Where(x => x.Published))
-			{
-				var srcCulture = resources.Language.Culture;
-				if (srcCulture.HasValue())
-				{
-					var downloadDisplayOrder = srcCulture.IsCaseInsensitiveEqual(language.LanguageCulture) ? 1 : 0;
-
-					if (downloadDisplayOrder == 0 && cultureParentName.IsCaseInsensitiveEqual(srcCulture))
-					{
-						downloadDisplayOrder = 2;
-					}
-
-					if (downloadDisplayOrder == 0 && resources.Language.TwoLetterIsoCode.IsCaseInsensitiveEqual(language.UniqueSeoCode))
-					{
-						downloadDisplayOrder = 3;
-					}
-
-					if (downloadDisplayOrder != 0)
-					{
-						var alModel = new AvailableLanguageModel();
-						PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, language);
-						alModel.DisplayOrder = downloadDisplayOrder;
-
-						model.AvailableDownloadLanguages.Add(alModel);
-					}
-				}
-			}
-
-			return View(model);
+            return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
@@ -463,26 +398,30 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                // Ensure we have at least one published language
+                //ensure we have at least one published language
                 var allLanguages = _languageService.GetAllLanguages();
-                if (allLanguages.Count == 1 && allLanguages[0].Id == language.Id && !model.Published)
+                if (allLanguages.Count == 1 && allLanguages[0].Id == language.Id &&
+                    !model.Published)
                 {
-					NotifyError(T("Admin.Configuration.Languages.OnePublishedLanguageRequired"));
+					NotifyError("At least one published language is required.");
                     return RedirectToAction("Edit", new { id = language.Id });
                 }
 
+                //update
                 language = model.ToEntity(language);
                 _languageService.UpdateLanguage(language);
 
-				_storeMappingService.SaveStoreMappings(language, model.SelectedStoreIds);
+				//Stores
+				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
 
+                //notification
                 NotifySuccess(T("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
             }
 
 			PrepareLanguageModel(model, language, true);
 
-			// If we got this far, something failed, redisplay form.
+			//If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -496,16 +435,18 @@ namespace SmartStore.Admin.Controllers
             if (language == null)
                 return RedirectToAction("List");
 
-            // Ensure we have at least one published language
+            //ensure we have at least one published language
             var allLanguages = _languageService.GetAllLanguages();
             if (allLanguages.Count == 1 && allLanguages[0].Id == language.Id)
             {
-				NotifyError(T("Admin.Configuration.Languages.OnePublishedLanguageRequired"));
+				NotifyError("At least one published language is required.");
                 return RedirectToAction("Edit", new { id = language.Id });
             }
 
+            //delete
             _languageService.DeleteLanguage(language);
 
+            //notification
             NotifySuccess(T("Admin.Configuration.Languages.Deleted"));
             return RedirectToAction("List");
         }
@@ -531,11 +472,11 @@ namespace SmartStore.Admin.Controllers
             ViewBag.LanguageId = languageId;
             ViewBag.LanguageName = language.Name;
 
-            var resourceQuery = _services.Localization.All(languageId);
+            var resources = _services.Localization.All(languageId);
 
             var gridModel = new GridModel<LanguageResourceModel>
             {
-                Data = resourceQuery
+                Data = resources
 					.Take(_adminAreaSettings.GridPageSize)
 					.ToList()
                     .Select(x => new LanguageResourceModel
@@ -546,9 +487,8 @@ namespace SmartStore.Admin.Controllers
                         ResourceName = x.ResourceName,
                         ResourceValue = x.ResourceValue.EmptyNull(),
                     }),
-                Total = resourceQuery.AsQueryable().Count()
+                Total = resources.AsQueryable().Count()
             };
-
             return View(gridModel);
         }
 
@@ -560,6 +500,7 @@ namespace SmartStore.Admin.Controllers
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
 			{
 				var language = _languageService.GetLanguageById(languageId);
+
 				var resources = _services.Localization.All(languageId).ForCommand(command);
 
 				model.Data = resources.PagedForCommand(command).ToList().Select(x =>
@@ -702,7 +643,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> ImportXml(int id, FormCollection form, ImportModeFlags mode, bool updateTouched, int? availableLanguageSetId)
+        public ActionResult ImportXml(int id, FormCollection form, ImportModeFlags mode, bool updateTouched)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
                 return AccessDeniedView();
@@ -711,172 +652,33 @@ namespace SmartStore.Admin.Controllers
             if (language == null)
                 return RedirectToAction("List");
 
-            // Set page timeout to 5 minutes
+            //set page timeout to 5 minutes
             this.Server.ScriptTimeout = 300;
-
-            string tempFilePath = null;
 
             try
             {
                 var file = Request.Files["importxmlfile"];
                 if (file != null && file.ContentLength > 0)
                 {
-                    _services.Localization.ImportResourcesFromXml(language, file.InputStream.AsString(), mode: mode, updateTouchedResources: updateTouched);
-
-                    NotifySuccess(T("Admin.Configuration.Languages.Imported"));
-                }
-                else if ((availableLanguageSetId ?? 0) != 0)
-                {
-                    var checkResult = await CheckAvailableResources();
-                    var availableResources = checkResult.Resources.First(x => x.Id == availableLanguageSetId.Value);
-
-                    tempFilePath = await DownloadAvailableResources(availableResources.DownloadUrl, _services.StoreContext.CurrentStore.Url);
-
-                    var xmlDoc = new XmlDocument();
-                    xmlDoc.Load(tempFilePath);
-
-                    _services.Localization.ImportResourcesFromXml(language, xmlDoc, null, false, mode, updateTouched);
-
-                    _genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", availableResources.TranslatedPercentage);
-
-                    NotifySuccess(T("Admin.Configuration.Languages.Imported"));
+					_services.Localization.ImportResourcesFromXml(language, file.InputStream.AsString(), mode: mode, updateTouchedResources: updateTouched);
                 }
                 else
                 {
-                    NotifyError(T("Admin.Configuration.Languages.UploadFileOrSelectLanguage"));
+					NotifyError(T("Admin.Common.UploadFile"));
+                    return RedirectToAction("Edit", new { id = language.Id });
                 }
+
+                NotifySuccess(T("Admin.Configuration.Languages.Imported"));
+                return RedirectToAction("Edit", new { id = language.Id });
             }
-            catch (Exception exception)
+            catch (Exception exc)
             {
-                NotifyError(exception);
-                Logger.ErrorsAll(exception);
-            }
-            finally
-            {
-                FileSystemHelper.Delete(tempFilePath);
+                NotifyError(exc);
+                return RedirectToAction("Edit", new { id = language.Id });
             }
 
-            return RedirectToAction("Edit", new { id = language.Id });
         }
 
         #endregion
-
-        #region Download
-
-        private void DownloadCore(ILifetimeScope scope, CancellationToken ct, LanguageDownloadContext context)
-        {
-            var asyncState = scope.Resolve<IAsyncState>();
-            var services = scope.Resolve<ICommonServices>();
-            var languageService = scope.Resolve<ILanguageService>();
-            var genericAttributeService = scope.Resolve<IGenericAttributeService>();
-            var logger = scope.Resolve<ILogger>();
-            string tempFilePath = null;
-
-            try
-            {
-                // 1. Download resources
-                var state = asyncState.Get<LanguageDownloadState>() ?? new LanguageDownloadState
-                {
-                    Id = context.SetId,
-                    ProgressMessage = T("Admin.Configuration.Languages.DownloadingResources")
-                };
-                asyncState.Set(state);
-
-                var resources = context.AvailableResources.Resources.First(x => x.Id == context.SetId);
-                tempFilePath = DownloadAvailableResources(resources.DownloadUrl, services.StoreContext.CurrentStore.Url).Result;
-
-                state.ProgressMessage = T("Admin.Configuration.Languages.ImportResources");
-                asyncState.Set(state);
-
-                // 2. Create language entity (if required)
-                var allLanguages = languageService.GetAllLanguages();
-                var lastLanguage = allLanguages.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
-
-                var language = languageService.GetLanguageByCulture(resources.Language.Culture);
-                if (language == null)
-                {
-                    language = new Language();
-                    language.LanguageCulture = resources.Language.Culture;
-                    language.UniqueSeoCode = resources.Language.TwoLetterIsoCode;
-                    language.Name = GetCultureDisplayName(resources.Language.Culture) ?? resources.Name;
-                    language.FlagImageFileName = GetFlagFileName(resources.Language.Culture);
-                    language.Rtl = resources.Language.Rtl;
-                    language.Published = false;
-                    language.DisplayOrder = lastLanguage != null ? lastLanguage.DisplayOrder + 1 : 0;
-
-                    languageService.InsertLanguage(language);
-                }
-
-                // 3. Import resources
-                var xmlDoc = new XmlDocument();
-                xmlDoc.Load(tempFilePath);
-
-                services.Localization.ImportResourcesFromXml(language, xmlDoc);
-
-                genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", resources.TranslatedPercentage);
-            }
-            catch (Exception exception)
-            {
-                logger.ErrorsAll(exception);
-            }
-            finally
-            {
-                if (asyncState.Exists<LanguageDownloadState>())
-                {
-                    asyncState.Remove<LanguageDownloadState>();
-                }
-
-                FileSystemHelper.Delete(tempFilePath);
-            }
-        }
-
-        public async Task<ActionResult> Download(int setId)
-        {
-            if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
-            {
-                var ctx = new LanguageDownloadContext(setId);
-                ctx.AvailableResources = await CheckAvailableResources();
-
-                if (ctx.AvailableResources.Resources.Any())
-                {
-                    var task = AsyncRunner.Run(
-                        (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),
-                        ctx,
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        TaskScheduler.Default).ConfigureAwait(false);
-                }
-            }
-
-            return RedirectToAction("List");
-        }
-
-        [HttpPost]
-        public JsonResult DownloadProgress()
-        {
-            try
-            {
-                var state = _asyncState.Get<LanguageDownloadState>();
-                if (state != null)
-                {
-                    var progressInfo = new
-                    {
-                        id = state.Id,
-                        percent = state.ProgressPercent,
-                        message = state.ProgressMessage
-                    };
-
-                    return Json(new object[] { progressInfo });
-                }
-            }
-            catch (Exception exception)
-            {
-                exception.Dump();
-            }
-
-            return Json(null);
-        }
-
-        #endregion Download
     }
 }

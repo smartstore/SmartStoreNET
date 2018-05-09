@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.PayPal.Models;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
 using SmartStore.Services.Orders;
@@ -33,13 +34,33 @@ namespace SmartStore.PayPal.Controllers
 			_httpContext = httpContext;
 		}
 
-		[LoadSetting, AdminAuthorize, ChildActionOnly]
-		public ActionResult Configure(PayPalDirectPaymentSettings settings, int storeScope)
+		private SelectList TransactModeValues(TransactMode selected)
+		{
+			return new SelectList(new List<object>
+			{
+				new { ID = (int)TransactMode.Authorize, Name = T("Plugins.Payments.PayPalDirect.ModeAuth") },
+				new { ID = (int)TransactMode.AuthorizeAndCapture, Name = T("Plugins.Payments.PayPalDirect.ModeAuthAndCapture") }
+			},
+			"ID", "Name", (int)selected);
+		}
+
+		[AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure()
 		{
             var model = new PayPalDirectConfigurationModel();
+            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
+
             model.Copy(settings, true);
 
-			PrepareConfigurationModel(model, storeScope);
+			model.TransactModeValues = TransactModeValues(settings.TransactMode);
+
+			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
+				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
+				.ToList();
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
             return View(model);
 		}
@@ -47,39 +68,35 @@ namespace SmartStore.PayPal.Controllers
 		[HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalDirectConfigurationModel model, FormCollection form)
 		{
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
-
-			if (!ModelState.IsValid)
-			{
-				return Configure(settings, storeScope);
-			}
+            if (!ModelState.IsValid)
+                return Configure();
 
 			ModelState.Clear();
-			model.Copy(settings, false);
+
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
+
+            model.Copy(settings, false);
 
 			using (Services.Settings.BeginScope())
 			{
 				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
 
-			using (Services.Settings.BeginScope())
-			{
-				// Multistore context not possible, see IPN handling.
+				// multistore context not possible, see IPN handling
 				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 			}
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-			return RedirectToConfiguration(PayPalDirectProvider.SystemName, false);
+            return Configure();
 		}
 
 		public ActionResult PaymentInfo()
 		{
 			var model = new PayPalDirectPaymentInfoModel();
 
-			// Credit card types.
+			//CC types
 			model.CreditCardTypes.Add(new SelectListItem
 			{
 				Text = "Visa",
@@ -101,7 +118,7 @@ namespace SmartStore.PayPal.Controllers
 				Value = "Amex",
 			});
 
-			// Years.
+			//years
 			for (int i = 0; i < 15; i++)
 			{
 				string year = Convert.ToString(DateTime.Now.Year + i);
@@ -112,7 +129,7 @@ namespace SmartStore.PayPal.Controllers
 				});
 			}
 
-			// Months.
+			//months
 			for (int i = 1; i <= 12; i++)
 			{
 				string text = (i < 10) ? "0" + i.ToString() : i.ToString();
@@ -123,7 +140,7 @@ namespace SmartStore.PayPal.Controllers
 				});
 			}
 
-			// Set postback values.
+			//set postback values
 			var paymentData = _httpContext.GetCheckoutState().PaymentData;
 			model.CardholderName = (string)paymentData.Get("CardholderName");
 			model.CardNumber = (string)paymentData.Get("CardNumber");

@@ -65,7 +65,7 @@ namespace SmartStore.Services.Themes
                 });
 
                 // ...then merge with persisted runtime records
-                var query = from v in _rsVariables.TableUntracked
+                var query = from v in _rsVariables.Table
 							where v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
                             select v;
 
@@ -83,10 +83,10 @@ namespace SmartStore.Services.Themes
 
         public virtual void DeleteThemeVariables(string themeName, int storeId)
         {
-			DeleteThemeVariablesInternal(themeName, storeId);
+			DeleteThemeVariablesInternal(themeName, storeId, true);
 		}
 
-		private void DeleteThemeVariablesInternal(string themeName, int storeId)
+		private void DeleteThemeVariablesInternal(string themeName, int storeId, bool publishEvents)
 		{
 			Guard.NotEmpty(themeName, nameof(themeName));
 
@@ -101,6 +101,7 @@ namespace SmartStore.Services.Themes
 					query.Each(v =>
 					{
 						_rsVariables.Delete(v);
+						if (publishEvents) _eventPublisher.EntityDeleted(v);
 					});
 
 					_requestCache.Remove(THEMEVARS_BY_THEME_KEY.FormatInvariant(themeName, storeId));
@@ -140,7 +141,7 @@ namespace SmartStore.Services.Themes
 					// Restore previous vars
 					try
 					{
-						DeleteThemeVariablesInternal(themeName, storeId);
+						DeleteThemeVariablesInternal(themeName, storeId, false);
 					}
 					finally
 					{
@@ -150,6 +151,10 @@ namespace SmartStore.Services.Themes
 
 					throw new ThemeValidationException(error, variables);
 				}
+
+				result.Deleted.Each(x => _eventPublisher.EntityDeleted(x));
+				result.Inserted.Each(x => _eventPublisher.EntityInserted(x));
+				result.Updated.Each(x => _eventPublisher.EntityUpdated(x));
 			}
 
 			return result.TouchedVariablesCount;

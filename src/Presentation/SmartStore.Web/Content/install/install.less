@@ -1,0 +1,268 @@
+/*
+ * Uses Bootstrap v2.2.1
+ *
+ * Copyright 2012 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ */
+
+/* Fonts (Chrome DirectWrite & FF fix)
+-------------------------------------------------------------- */
+
+// CSS Reset
+@import "~/Content/bootstrap/reset.less";
+
+// Core variables and mixins
+@import "variables.less";
+@import "variables.custom.less";
+@import "~/Content/bootstrap/mixins.less";
+@import "~/Content/bootstrap/custom/mixins.less";
+
+// Grid system and page structure
+@import "~/Content/bootstrap/scaffolding.less";
+@import "~/Content/bootstrap/grid.less";
+@import "~/Content/bootstrap/layouts.less";
+
+// Base CSS
+@import "~/Content/bootstrap/type.less";
+@import "~/Content/bootstrap/code.less";
+@import "~/Content/bootstrap/forms.less";
+@import "~/Content/bootstrap/tables.less";
+
+// Components: common
+//@import "~/Content/bootstrap/font/font-awesome.less";
+@import "~/Content/bootstrap/dropdowns.less";
+@import "~/Content/bootstrap/wells.less";
+@import "~/Content/bootstrap/component-animations.less";
+@import "~/Content/bootstrap/close.less";
+
+// Components: Buttons & Alerts
+@import "~/Content/bootstrap/buttons.less";
+@import "~/Content/bootstrap/button-groups.less";
+@import "~/Content/bootstrap/alerts.less"; // Note: alerts share common CSS with buttons and thus have styles in buttons.less
+
+// Components: Nav
+@import "~/Content/bootstrap/navs.less";
+
+// Components: Popovers
+@import "~/Content/bootstrap/modals.less";
+@import "~/Content/bootstrap/tooltip.less";
+
+// Components: Misc
+@import "~/Content/bootstrap/labels-badges.less";
+@import "~/Content/bootstrap/progress-bars.less";
+
+// (MC) extra 3rd party or own components
+@import "~/Content/bootstrap/custom/spinner.less";
+@import "~/Content/bootstrap/custom/throbber.less";
+
+// (MC) extra tweaks and corrections
+/*@import "~/Content/bootstrap/custom/custom.less";*/
+
+// Utility classes
+@import "~/Content/bootstrap/utilities.less"; // Has to be last to override when necessary
+
+
+/* INSTALL STYLES
+--------------------------------------------------------*/
+
+body {
+    background: #f5f5f5;
+}
+
+input:not([type=checkbox]):not([type=radio]), 
+select {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 34px;
+    box-shadow: none;
+    border-color: #d2d2d2;
+}
+
+textarea {
+    height: initial;
+    min-height: 34px;
+    box-shadow: none;
+    border-color: #d2d2d2;
+}
+
+.bg-top {
+    position: fixed; 
+    z-index: 0;
+    background: #3F51B5; 
+    width: 100%; 
+    height: 140px; 
+}
+
+.dropdown-menu li > a {
+    padding: 8px 20px 8px 12px;
+    > .fa { margin-right: 4px; }
+}
+
+.help-block {
+    color: #a1a1a1;
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.install-head {
+    position: relative;
+    z-index: 1;
+    margin: 20px 0;
+	vertical-align: middle;
+}
+
+.install-panel {
+    position: relative;
+    z-index: 1;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	padding: 30px;
+    padding-bottom: 0;
+    background-color: #fff;
+    .box-shadow(~'0 1px 1px 0 rgba(0,0,0,.06),0 2px 5px 0 rgba(0,0,0,.2)');
+    .border-radius(3px);
+}
+
+.buttonbar {
+    text-align: left;
+    background: #fafafa;
+    padding: 20px 30px;
+    margin-left: -30px;
+    margin-right: -30px;
+    border-radius: 0 0 3px 3px;
+}
+
+.btn-install {
+    font-size: 22px;
+    line-height: 32px;
+	font-weight: 600;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+}
+
+.install-title {
+	margin: 0;
+	font-family: @pageTitleFontFamily;
+	font-weight: @pageTitleFontWeight;
+    font-size: 22px;
+    color: #fff;
+    padding-left: 8px;
+    vertical-align: bottom;
+}
+
+.install-intro {
+    font-size: 16px;
+    line-height: 22px;
+    color: #818181;
+    margin-bottom: 30px;
+}
+
+.install-content fieldset {
+    margin-bottom: 30px;
+}
+
+.install-content legend {
+    font-weight: 600;
+	font-size: 22px;
+	border-bottom-color: rgba(0,0,0, 0.1);
+	color: @headingsColor;
+	margin-bottom: 0;
+	padding-bottom: 8px;
+
+    > .fa {
+        color: #717171;
+        margin-right: 4px;
+    }
+}
+
+.install-icon {
+    margin-right: 10px;
+}
+
+.install-icon .fa-circle {
+    color: #f90;
+}
+.install-icon .fa-inverse {
+    font-size: 0.7em;
+}
+
+.form-horizontal .control-label {
+	width: 240px;
+    text-align: left;
+}
+
+.form-horizontal .controls {
+	margin-left: 260px;
+}
+
+label.control-label {
+	font-weight: bold;
+}
+
+.field-validation-error {
+    display: inline-block;
+	color: @red;
+	text-shadow: none !important;
+    padding-top: 4px;
+}
+
+label.control-label {
+	font-weight: normal;
+}
+
+
+#navbar-tools {
+	
+	.active-tool() {
+		.box-shadow(~'inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)');	
+	}
+	
+	position: absolute;
+    z-index: 100;
+	right: 0;
+	top: 15px;
+	margin: 0;
+	
+	.btn,
+	.btn-group {
+		margin-top: 0;
+	}
+
+	.open .navbar-tool {
+		.active-tool();
+	}
+
+	.navbar-tool {
+		color: rgba(255,255,255, .87);
+		border: none;
+		background: transparent;
+		.box-shadow(none);
+		padding: 8px 6px;
+		.transition(color 0.1s linear);
+		
+		&:hover {
+			color: #fff;
+		}
+		
+		&:active {
+			.active-tool();
+		}
+
+		> .fa {
+			font-size: 20px;
+		}
+
+		span {
+			display: inline-block;
+			margin-left: 3px;
+			vertical-align: top;
+		}
+	
+	}
+}
+
+

@@ -32,9 +32,10 @@ namespace SmartStore.ComponentModel
 
 		public override object ConvertFrom(CultureInfo culture, object value)
 		{
-			if (value is string str)
+			if (value is string)
 			{
 				object result = null;
+				string str = value as string;
 				if (!String.IsNullOrEmpty(str))
 				{
 					try

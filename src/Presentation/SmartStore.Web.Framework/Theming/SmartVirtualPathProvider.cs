@@ -43,9 +43,11 @@ namespace SmartStore.Web.Framework.Theming
 			// Two-Level caching: RequestCache > AppCache
 			var d = _requestState.GetState();
 
-			if (!d.TryGetValue(virtualPath, out var debugPath))
+			string debugPath;
+			if (!d.TryGetValue(virtualPath, out debugPath))
 			{
-				if (!IsPluginPath(virtualPath, out var appRelativePath))
+				string appRelativePath;
+				if (!IsPluginPath(virtualPath, out appRelativePath))
 				{
 					// don't query again in this request
 					d[virtualPath] = null; 

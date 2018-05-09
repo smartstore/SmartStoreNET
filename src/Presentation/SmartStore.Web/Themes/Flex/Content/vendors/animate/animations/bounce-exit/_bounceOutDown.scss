@@ -1,0 +1,71 @@
+@if $use-bounceOutDown == true {
+
+	@-webkit-keyframes bounceOutDown {
+		0% {
+			-webkit-transform: translateY(0);
+		}
+
+		20% {
+			opacity: 1;
+			-webkit-transform: translateY(-$base-distance * 2);
+		}
+
+		100% {
+			opacity: 0;
+			-webkit-transform: translateY($base-distance-big * 2);
+		}
+	}
+
+	@-moz-keyframes bounceOutDown {
+		0% {
+			-moz-transform: translateY(0);
+		}
+
+		20% {
+			opacity: 1;
+			-moz-transform: translateY(-$base-distance * 2);
+		}
+
+		100% {
+			opacity: 0;
+			-moz-transform: translateY($base-distance-big * 2);
+		}
+	}
+
+	@-o-keyframes bounceOutDown {
+		0% {
+			-o-transform: translateY(0);
+		}
+
+		20% {
+			opacity: 1;
+			-o-transform: translateY(-$base-distance * 2);
+		}
+
+		100% {
+			opacity: 0;
+			-o-transform: translateY($base-distance-big * 2);
+		}
+	}
+
+	@keyframes bounceOutDown {
+		0% {
+			transform: translateY(0);
+		}
+
+		20% {
+			opacity: 1;
+			transform: translateY(-$base-distance * 2);
+		}
+
+		100% {
+			opacity: 0;
+			transform: translateY($base-distance-big * 2);
+		}
+	}
+
+	.bounceOutDown {
+		@include animate-prefixer(animation-name, bounceOutDown);
+	}
+
+}

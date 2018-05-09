@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 using System.Web.Routing;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Cms;
 using SmartStore.Web.Models.ShoppingCart;
+using SmartStore.AmazonPay.Services;
+using SmartStore.AmazonPay.Extensions;
+using SmartStore.Services.Cms;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.AmazonPay.Widgets
 {
-	[DisplayOrder(-1)]
 	[SystemName("Widgets.AmazonPay")]
-	[FriendlyName("Amazon Pay")]
+	[FriendlyName("Pay with Amazon")]
 	public class AmazonPayWidget : IWidget
 	{
 		private readonly HttpContextBase _httpContext;
@@ -21,27 +22,25 @@ namespace SmartStore.AmazonPay.Widgets
 
 		public IList<string> GetWidgetZones()
 		{
-			return new List<string>
+			return new List<string>()
 			{
 				"order_summary_content_before",
                 "offcanvas_cart_summary",
-				"checkout_completed_top"
+				"head_html_tag"
 			};
 		}
 
 		public void GetDisplayWidgetRoute(string widgetZone, object model, int storeId, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
 		{
-			var renderAmazonPayView = true;
+			bool renderAmazonPayView = true;
 
-			if (widgetZone.IsCaseInsensitiveEqual("checkout_completed_top"))
+			if (widgetZone.IsCaseInsensitiveEqual("head_html_tag"))
 			{
-				actionName = "CheckoutCompleted";
-				controllerName = "AmazonPayCheckout";
+				actionName = "WidgetLibrary";
 			}
 			else if (widgetZone.IsCaseInsensitiveEqual("offcanvas_cart_summary"))
 			{
 				actionName = "MiniShoppingCart";
-				controllerName = "AmazonPayShoppingCart";
 
 				var viewModel = model as MiniShoppingCartModel;
 				if (viewModel != null)
@@ -50,7 +49,6 @@ namespace SmartStore.AmazonPay.Widgets
 			else
 			{
 				actionName = "OrderReviewData";
-				controllerName = "AmazonPayShoppingCart";
 
 				renderAmazonPayView = (_httpContext.HasAmazonPayState() && _httpContext.Request.RequestContext.RouteData.IsRouteEqual("Checkout", "Confirm"));
 
@@ -62,10 +60,12 @@ namespace SmartStore.AmazonPay.Widgets
 				}
 			}
 
-			routeValues = new RouteValueDictionary
+			controllerName = "AmazonPayShoppingCart";
+
+			routeValues = new RouteValueDictionary()
             {
                 { "Namespaces", "SmartStore.AmazonPay.Controllers" },
-                { "area", AmazonPayPlugin.SystemName },
+                { "area", AmazonPayCore.SystemName },
 				{ "renderAmazonPayView", renderAmazonPayView }
             };
 		}

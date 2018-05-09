@@ -1,5 +1,10 @@
 ﻿@model CommentModel
+
 @using SmartStore.Web.Models.Common;
+
+@{
+
+}
 
 <div class="row sm-gutters comment-item">
 	@if (Model.Parent.HasAnyAvatar())
@@ -31,11 +36,11 @@
 			</div>
 			@if (Model.CommentTitle.HasValue())
 			{
-				<h5 class="comment-title mt-2" dir="auto">
+				<h5 class="comment-title mt-2">
 					@Html.Raw(Model.CommentTitle)
 				</h5>
 			}
-			<p class="comment-body text-body mt-4 mb-0" dir="auto">
+			<p class="comment-body text-body mt-4 mb-0">
 				@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(Model.CommentText, false, true, false, false, false, false))
 			</p>
 		</div>

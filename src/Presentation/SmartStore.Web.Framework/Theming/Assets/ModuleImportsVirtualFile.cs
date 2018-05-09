@@ -4,7 +4,6 @@ using System.Text;
 using System.Linq;
 using System.Web.Hosting;
 using SmartStore.Core.Plugins;
-using SmartStore.Core.Data;
 
 namespace SmartStore.Web.Framework.Theming.Assets
 {
@@ -18,10 +17,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			_adminImports = new HashSet<string>();
 			_publicImports = new HashSet<string>();
 
-			if (DataSettings.DatabaseIsInstalled())
-			{
-				CollectModuleImports();
-			}	
+			CollectModuleImports();
 		}
 
 		private static void CollectModuleImports()

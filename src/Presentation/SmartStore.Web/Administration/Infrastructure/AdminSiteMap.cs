@@ -5,8 +5,10 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Infrastructure
@@ -48,9 +50,10 @@ namespace SmartStore.Admin.Infrastructure
 
 		protected override string GetCacheKey()
 		{
+			var customerRolesIds = Services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 			string cacheKey = "{0}-{1}".FormatInvariant(
 				Services.WorkContext.WorkingLanguage.Id,
-				Services.WorkContext.CurrentCustomer.GetRolesIdent());
+				string.Join(",", customerRolesIds));
 
 			return cacheKey;
 		}
@@ -70,12 +73,6 @@ namespace SmartStore.Admin.Infrastructure
 			var item = new MenuItem();
 			var treeNode = new TreeNode<MenuItem>(item);
 
-			string id = null;
-			if (node.Attributes.ContainsKey("id"))
-				id = node.Attributes["id"] as string;
-
-			treeNode.Id = id;
-
 			if (node.RouteName.HasValue())
 			{
 				item.RouteName = node.RouteName;
@@ -91,13 +88,15 @@ namespace SmartStore.Admin.Infrastructure
 			}
 			item.RouteValues = node.RouteValues;
 
-			item.Id = id;
 			item.Visible = node.Visible;
 			item.Text = node.Title;
 			item.Attributes.Merge(node.Attributes);
 
 			if (node.Attributes.ContainsKey("permissionNames"))
 				item.PermissionNames = node.Attributes["permissionNames"] as string;
+
+			if (node.Attributes.ContainsKey("id"))
+				item.Id = node.Attributes["id"] as string;
 
 			if (node.Attributes.ContainsKey("resKey"))
 				item.ResKey = node.Attributes["resKey"] as string;

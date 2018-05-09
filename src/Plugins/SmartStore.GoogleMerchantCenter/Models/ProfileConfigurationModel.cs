@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
 using System.Xml.Serialization;
 using FluentValidation.Attributes;
+using Newtonsoft.Json;
 using SmartStore.GoogleMerchantCenter.Validators;
 using SmartStore.Web.Framework;
 
@@ -19,14 +18,22 @@ namespace SmartStore.GoogleMerchantCenter.Models
 			SpecialPrice = true;
 		}
 
-		[XmlIgnore]
-		public string LanguageSeoCode { get; set; }
-
-		[XmlIgnore]
-		public List<SelectListItem> AvailableCategories { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.DefaultGoogleCategory")]
 		public string DefaultGoogleCategory { get; set; }
+
+		[XmlIgnore]
+		public string[] AvailableGoogleCategories { get; set; }
+
+		[XmlIgnore]
+		public string AvailableGoogleCategoriesAsJson
+		{
+			get
+			{
+				if (AvailableGoogleCategories != null && AvailableGoogleCategories.Length > 0)
+					return JsonConvert.SerializeObject(AvailableGoogleCategories);
+				return "";
+			}
+		}
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.AdditionalImages")]
 		public bool AdditionalImages { get; set; }

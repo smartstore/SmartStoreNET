@@ -23,12 +23,12 @@
                 }
 
                 <div class="col">
-                    <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
+                    <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
-                    @if (Model.DisplayShortDesc && item.ShortDesc.Value.HasValue())
+                    @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
-                        <div class="cart-item-desc fs-sm text-muted" @Html.LanguageAttributes(item.ShortDesc)>
-                            @Html.Raw(item.ShortDesc.Value.Truncate(180, "..."))
+                        <div class="cart-item-desc fs-sm text-muted">
+                            @Html.Raw(item.ShortDesc.Truncate(180, "..."))
                         </div>
                     }
 
@@ -38,7 +38,7 @@
                             <span class="col-9">@item.UnitPrice</span>
                         </div>
 
-                        @if (Model.ShowSku && item.Sku.HasValue())
+                        @if (Model.ShowSku && !String.IsNullOrEmpty(item.Sku))
                         {
                             <div class="text-nowrap row cart-item-attr">
                                 <span class="col-3">@T("ShoppingCart.SKU"):</span>
@@ -47,13 +47,13 @@
                         }
                     </div>
 
-                    @if (item.AttributeInfo.HasValue())
+                    @if (!String.IsNullOrEmpty(item.AttributeInfo))
                     {
                         <div class="attributes text-muted fs-sm mb-2">
                             @Html.Raw(item.AttributeInfo)
                         </div>
                     }
-                    @if (item.RecurringInfo.HasValue())
+                    @if (!String.IsNullOrEmpty(item.RecurringInfo))
                     {
                         <div class="recurring-info">
                             @Html.Raw(item.RecurringInfo)
@@ -74,9 +74,9 @@
                                data-action="remove">
                                 <i class="fa fa-2x">×</i>
                             </a>
-                            @if (Model.DisplayAddToCart && !item.DisableBuyButton)
+                            @if (Model.DisplayAddToCart)
                             {
-                                <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.AddToCart")"
+                                <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
                                    href="#"
                                    rel="nofollow"
                                    data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.Wishlist, isCartPage = true })"
@@ -115,12 +115,10 @@
 
         <div class="cart-col cart-col-price cart-col-subtotal" data-caption="@T("Order.Product(s).Total")">
             <span class="price">@item.SubTotal</span>
-            @if (item.Discount.HasValue())
+            @if (!String.IsNullOrEmpty(item.Discount))
             {
                 <div class="discount">
-                    <span>@T("ShoppingCart.ItemYouSave"):</span>
-					<br/> 
-					<span>@item.Discount</span>
+                    @T("ShoppingCart.ItemYouSave"):<br/> @item.Discount
                 </div>
             }
         </div>
@@ -147,7 +145,7 @@
                                 </div>
                             }
                             <div class="bundle-item-body">
-                                <div class="bundle-item-name" @Html.LanguageAttributes(item.ProductName)>
+                                <div class="bundle-item-name">
                                     @if (item.VisibleIndividually)
                                     {
                                         <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
@@ -161,13 +159,13 @@
                                         <text>&#215;&nbsp;@item.EnteredQuantity</text>
                                     }
                                 </div>
-                                @if (Model.DisplayShortDesc && item.ShortDesc.Value.HasValue())
+                                @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
                                 {
-                                    <div class="bundle-item-description cart-item-desc fs-sm text-muted" @Html.LanguageAttributes(item.ShortDesc)>
-                                        @Html.Raw(item.ShortDesc.Value.Truncate(210, "..."))
+                                    <div class="bundle-item-description cart-item-desc fs-sm text-muted">
+                                        @Html.Raw(item.ShortDesc.Truncate(210, "..."))
                                     </div>
                                 }
-                                @if (item.AttributeInfo.HasValue())
+                                @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                 {
                                     <div class="bundle-item-attribute-info text-muted">
                                         @Html.Raw(item.AttributeInfo)
@@ -178,7 +176,7 @@
                     </div>
                 </div>
                 <div class="cart-col cart-col-price">
-                    @if (item.BundleItem.PriceWithDiscount.HasValue())
+                    @if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
                     {
                         @Html.Raw(item.BundleItem.PriceWithDiscount)
                     }

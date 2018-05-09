@@ -16,18 +16,18 @@
                 }
 
                 <div class="col">
-                    <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
+                    <a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
                     @if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
                     {
-                        <div class="cart-item-desc fs-sm"  @Html.LanguageAttributes(item.ShortDesc)>
-                            @Html.Raw(item.ShortDesc.Value.Truncate(250, "..."))
+                        <div class="cart-item-desc fs-sm">
+                            @Html.Raw(item.ShortDesc.Truncate(250, "..."))
                         </div>
                     }
 
                     @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
                     {
-                        <div class="cart-item-base-price text-muted fs-sm lrm">
+                        <div class="cart-item-base-price text-muted fs-sm">
                             @item.BasePrice
                         </div>
                     }
@@ -40,7 +40,7 @@
 								<div class="col-9">
 									<span class="delivery-time pl-0" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
 										<i class="fa fa-circle delivery-time-status"></i>
-										<span @Html.LanguageAttributes(item.DeliveryTimeName)>@item.DeliveryTimeName</span>
+										@item.DeliveryTimeName
 									</span>
 								</div>
                             </div>
@@ -81,8 +81,8 @@
 							@if (item.IsDownload && item.HasUserAgreement)
 							{
 								<div class="download-agreement form-check">
-									<input type="checkbox" id="AgreeUserAgreement@(item.ProductId)" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
-									<label class="form-check-label" for="AgreeUserAgreement@(item.ProductId)">
+									<label class="form-check-label">
+										<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" class="form-check-input" />
 										<span>@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)</span>
 									</label>
 								</div>
@@ -90,8 +90,8 @@
 							@if (Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
 							{
 								<div class="esd-revocation-waiver form-check">
-									<input type="checkbox" id="AgreeEsdRevocationWaiver@(item.ProductId)" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
-									<label class="form-check-label" for="AgreeEsdRevocationWaiver@(item.ProductId)">
+									<label class="form-check-label">
+										<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" class="form-check-input" />
 										<span>@T("Checkout.EsdRevocationWaiverConfirmation")</span>
 									</label>
 								</div>
@@ -122,18 +122,15 @@
 							   data-action="remove">
 								<i class="fa fa-2x">×</i>
 							</a>
-                            @if (Model.DisplayMoveToWishlistButton && !item.DisableWishlistButton)
-                            {
-                                <a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
-                                   href="#"
-                                   rel="nofollow"
-                                   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart, isCartPage = true })"
-                                   data-name="@item.ProductName"
-                                   data-type="wishlist"
-                                   data-action="addfromcart">
-                                    <i class="fa fa-heart-o"></i>
-                                </a>
-                            }
+							<a class="btn btn-secondary btn-sm btn-icon ajax-action-link" title="@T("ShoppingCart.MoveToWishlist")"
+							   href="#"
+							   rel="nofollow"
+							   data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.ShoppingCart, isCartPage = true })"
+							   data-name="@item.ProductName"
+							   data-type="wishlist"
+							   data-action="addfromcart">
+							    <i class="fa fa-heart-o"></i>
+							</a>
 						</div>
 					</div>
 				}
@@ -203,11 +200,11 @@
 										}
 										@if (item.VisibleIndividually)
 										{
-											<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
+											<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 										}
 										else
 										{
-											<span class="cart-item-link" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</span>
+											<span class="cart-item-link">@item.ProductName</span>
 										}
 									</div>
 								}
@@ -215,13 +212,13 @@
 
                             @if (Model.DisplayShortDesc && !String.IsNullOrWhiteSpace(item.ShortDesc))
                             {
-                                <div class="cart-item-desc mt-2" @Html.LanguageAttributes(item.ShortDesc)>
-                                    @Html.Raw(item.ShortDesc.Value.Truncate(210, "..."))
+                                <div class="cart-item-desc mt-2">
+                                    @Html.Raw(item.ShortDesc.Truncate(210, "..."))
                                 </div>
                             }
                             @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
                             {
-                                <div class="cart-item-base-price text-muted mt-2 lrm">
+                                <div class="cart-item-base-price text-muted mt-2">
                                     @item.BasePrice
                                 </div>
                             }

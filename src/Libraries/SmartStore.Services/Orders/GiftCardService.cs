@@ -49,6 +49,8 @@ namespace SmartStore.Services.Orders
 
             _giftCardRepository.Delete(giftCard);
 
+            //event notification
+            _eventPublisher.EntityDeleted(giftCard);
         }
 
         /// <summary>
@@ -105,6 +107,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("giftCard");
 
             _giftCardRepository.Insert(giftCard);
+
+            //event notification
+            _eventPublisher.EntityInserted(giftCard);
         }
 
         /// <summary>
@@ -117,6 +122,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("giftCard");
 
             _giftCardRepository.Update(giftCard);
+
+            //event notification
+            _eventPublisher.EntityUpdated(giftCard);
         }
 
         /// <summary>

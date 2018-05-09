@@ -24,7 +24,6 @@ namespace SmartStore.Services.Search.Modelling
 
 		private readonly ICacheManager _cacheManager;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
-		private readonly IRepository<ProductAttribute> _productAttributeRepository;
 		private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
 		private readonly ISpecificationAttributeService _specificationAttributeService;
 		private readonly ISettingService _settingService;
@@ -33,7 +32,6 @@ namespace SmartStore.Services.Search.Modelling
 		public CatalogSearchQueryAliasMapper(
 			ICacheManager cacheManager,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
-			IRepository<ProductAttribute> productAttributeRepository,
 			IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
 			ISpecificationAttributeService specificationAttributeService,
 			ISettingService settingService,
@@ -41,7 +39,6 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			_cacheManager = cacheManager;
 			_localizedPropertyRepository = localizedPropertyRepository;
-			_productAttributeRepository = productAttributeRepository;
 			_productVariantAttributeValueRepository = productVariantAttributeValueRepository;
 			_specificationAttributeService = specificationAttributeService;
 			_settingService = settingService;
@@ -174,8 +171,8 @@ namespace SmartStore.Services.Search.Modelling
 
 		public void ClearAttributeCache()
 		{
-			_cacheManager.Remove(ALL_ATTRIBUTE_ID_BY_ALIAS_KEY);
-			_cacheManager.Remove(ALL_ATTRIBUTE_ALIAS_BY_ID_KEY);
+			_cacheManager.RemoveByPattern(ALL_ATTRIBUTE_ID_BY_ALIAS_KEY);
+			_cacheManager.RemoveByPattern(ALL_ATTRIBUTE_ALIAS_BY_ID_KEY);
 		}
 
 		public int GetAttributeIdByAlias(string attributeAlias, int languageId = 0)
@@ -255,56 +252,40 @@ namespace SmartStore.Services.Search.Modelling
 			return _cacheManager.Get(ALL_VARIANT_ID_BY_ALIAS_KEY, () =>
 			{
 				var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-				IPagedList<ProductAttribute> variants = null;
+				var optionIdMappings = new Dictionary<int, int>();
 				IPagedList<ProductVariantAttributeValue> options = null;
 				var variantId = 0;
 				var pageIndex = 0;
 
-				var variantQuery = _productAttributeRepository.TableUntracked
-					.Where(x => !string.IsNullOrEmpty(x.Alias))
-					.OrderBy(x => x.Id);
-
-				var optionQuery = _productVariantAttributeValueRepository.TableUntracked
+				var query = _productVariantAttributeValueRepository.TableUntracked
 					.Expand(x => x.ProductVariantAttribute)
 					.Expand("ProductVariantAttribute.ProductAttribute")
-					.Where(x => !string.IsNullOrEmpty(x.Alias))
 					.OrderBy(x => x.Id);
 
 				do
 				{
-					variants = new PagedList<ProductAttribute>(variantQuery, pageIndex++, 500);
-
-					foreach (var variant in variants)
-					{
-						result[CreateKey("vari", 0, variant.Alias)] = variant.Id;
-					}
-				}
-				while (variants.HasNextPage);
-				pageIndex = 0;
-				variants.Clear();
-
-				do
-				{
-					options = new PagedList<ProductVariantAttributeValue>(optionQuery, pageIndex++, 500);
+					options = new PagedList<ProductVariantAttributeValue>(query, pageIndex++, 500);
 
 					foreach (var option in options)
 					{
 						var variant = option.ProductVariantAttribute.ProductAttribute;
-						result[CreateOptionKey("vari.option", 0, variant.Id, option.Alias)] = option.Id;
+
+						optionIdMappings[option.Id] = variant.Id;
+
+						if (variant.Alias.HasValue())
+						{
+							result[CreateKey("vari", 0, variant.Alias)] = variant.Id;
+						}
+
+						if (option.Alias.HasValue())
+						{
+							result[CreateOptionKey("vari.option", 0, variant.Id, option.Alias)] = option.Id;
+						}
 					}
 				}
 				while (options.HasNextPage);
-				options.Clear();
 
-				var optionIdMappings = _productVariantAttributeValueRepository.TableUntracked
-					.Expand(x => x.ProductVariantAttribute)
-					.Expand("ProductVariantAttribute.ProductAttribute")
-					.Select(x => new
-					{
-						OptionId = x.Id,
-						VariantId = x.ProductVariantAttribute.ProductAttribute.Id
-					})
-					.ToDictionary(x => x.OptionId, x => x.VariantId);
+				options.Clear();
 
 				CachedLocalizedAlias("ProductAttribute", x => result[CreateKey("vari", x.LanguageId, x.LocaleValue)] = x.EntityId);
 				CachedLocalizedAlias("ProductVariantAttributeValue", x =>
@@ -322,41 +303,35 @@ namespace SmartStore.Services.Search.Modelling
 			return _cacheManager.Get(ALL_VARIANT_ALIAS_BY_ID_KEY, () =>
 			{
 				var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-				IPagedList<ProductAttribute> variants = null;
 				IPagedList<ProductVariantAttributeValue> options = null;
 				var pageIndex = 0;
 
-				var variantQuery = _productAttributeRepository.TableUntracked
-					.Where(x => !string.IsNullOrEmpty(x.Alias))
-					.OrderBy(x => x.Id);
-
-				var optionQuery = _productVariantAttributeValueRepository.TableUntracked
-					.Where(x => !string.IsNullOrEmpty(x.Alias))
+				var query = _productVariantAttributeValueRepository.TableUntracked
+					.Expand(x => x.ProductVariantAttribute)
+					.Expand("ProductVariantAttribute.ProductAttribute")
 					.OrderBy(x => x.Id);
 
 				do
 				{
-					variants = new PagedList<ProductAttribute>(variantQuery, pageIndex++, 500);
-
-					foreach (var variant in variants)
-					{
-						result[CreateKey("vari", 0, variant.Id)] = variant.Alias;
-					}
-				}
-				while (variants.HasNextPage);
-				pageIndex = 0;
-				variants.Clear();
-
-				do
-				{
-					options = new PagedList<ProductVariantAttributeValue>(optionQuery, pageIndex++, 500);
+					options = new PagedList<ProductVariantAttributeValue>(query, pageIndex++, 500);
 
 					foreach (var option in options)
 					{
-						result[CreateOptionKey("attr.option", 0, option.Id)] = option.Alias;
+						var variant = option.ProductVariantAttribute.ProductAttribute;
+
+						if (variant.Alias.HasValue())
+						{
+							result[CreateKey("vari", 0, variant.Id)] = variant.Alias;
+						}
+
+						if (option.Alias.HasValue())
+						{
+							result[CreateOptionKey("attr.option", 0, option.Id)] = option.Alias;
+						}
 					}
 				}
 				while (options.HasNextPage);
+
 				options.Clear();
 
 				CachedLocalizedAlias("ProductAttribute", x => result[CreateKey("vari", x.LanguageId, x.EntityId)] = x.LocaleValue);
@@ -368,8 +343,8 @@ namespace SmartStore.Services.Search.Modelling
 
 		public void ClearVariantCache()
 		{
-			_cacheManager.Remove(ALL_VARIANT_ID_BY_ALIAS_KEY);
-			_cacheManager.Remove(ALL_VARIANT_ALIAS_BY_ID_KEY);
+			_cacheManager.RemoveByPattern(ALL_VARIANT_ID_BY_ALIAS_KEY);
+			_cacheManager.RemoveByPattern(ALL_VARIANT_ALIAS_BY_ID_KEY);
 		}
 
 		public int GetVariantIdByAlias(string variantAlias, int languageId = 0)
@@ -480,7 +455,7 @@ namespace SmartStore.Services.Search.Modelling
 
 		public void ClearCommonFacetCache()
 		{
-			_cacheManager.Remove(ALL_COMMONFACET_ALIAS_BY_KIND_KEY);
+			_cacheManager.RemoveByPattern(ALL_COMMONFACET_ALIAS_BY_KIND_KEY);
 		}
 
 		public string GetCommonFacetAliasByGroupKind(FacetGroupKind kind, int languageId)

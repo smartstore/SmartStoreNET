@@ -69,14 +69,24 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		private void PrepareStoresMappingModel(NewsItemModel model, NewsItem newsItem, bool excludeProperties)
 		{
-			Guard.NotNull(model, nameof(model));
+			if (model == null)
+				throw new ArgumentNullException("model");
 
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
 			if (!excludeProperties)
 			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(newsItem);
+				if (newsItem != null)
+				{
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(newsItem);
+				}
+				else
+				{
+					model.SelectedStoreIds = new int[0];
+				}
 			}
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
 		#endregion

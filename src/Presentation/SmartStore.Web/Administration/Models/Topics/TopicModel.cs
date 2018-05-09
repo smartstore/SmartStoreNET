@@ -11,12 +11,13 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Topics
 {
 	[Validator(typeof(TopicValidator))]
-    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector
+    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>
     {       
         public TopicModel()
         {
 			WidgetWrapContent = true;
 			Locales = new List<TopicLocalizedModel>();
+			AvailableStores = new List<StoreModel>();
             AvailableTitleTags = new List<SelectListItem>(); 
             AvailableTitleTags.Add(new SelectListItem { Text = "h1", Value = "h1" });
             AvailableTitleTags.Add(new SelectListItem { Text = "h2", Value = "h2" });
@@ -28,13 +29,14 @@ namespace SmartStore.Admin.Models.Topics
             AvailableTitleTags.Add(new SelectListItem { Text = "span", Value = "span" });
         }
 
-		// Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]
         public string SystemName { get; set; }
 
@@ -79,9 +81,8 @@ namespace SmartStore.Admin.Models.Topics
         public bool RenderAsWidget { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
-		[UIHint("WidgetZone")]
-		public string[] WidgetZone { get; set; }
-		public MultiSelectList AvailableWidgetZones { get; set; }
+        [UIHint("WidgetZone")]
+        public string WidgetZone { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetWrapContent")]
 		public bool WidgetWrapContent { get; set; }
@@ -97,8 +98,6 @@ namespace SmartStore.Admin.Models.Topics
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.TitleTag")]
         public string TitleTag { get; set; }
-
-        public bool IsSystemTopic { get; set; }
 
         public IList<SelectListItem> AvailableTitleTags { get; private set; }
 

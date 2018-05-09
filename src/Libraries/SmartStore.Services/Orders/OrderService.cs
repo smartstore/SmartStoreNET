@@ -324,6 +324,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("order");
 
             _orderRepository.Insert(order);
+
+            //event notification
+            _eventPublisher.EntityInserted(order);
         }
 
         /// <summary>
@@ -337,6 +340,8 @@ namespace SmartStore.Services.Orders
 
             _orderRepository.Update(order);
 
+            //event notifications
+            _eventPublisher.EntityUpdated(order);
 			_eventPublisher.PublishOrderUpdated(order);
         }
 
@@ -365,6 +370,9 @@ namespace SmartStore.Services.Orders
 			int orderId = orderNote.OrderId;
 
             _orderNoteRepository.Delete(orderNote);
+
+            //event notifications
+            _eventPublisher.EntityDeleted(orderNote);
 
 			var order = GetOrderById(orderId);
 			_eventPublisher.PublishOrderUpdated(order);
@@ -518,6 +526,9 @@ namespace SmartStore.Services.Orders
 
             _orderItemRepository.Delete(orderItem);
 
+            //event notifications
+            _eventPublisher.EntityDeleted(orderItem);
+
 			var order = GetOrderById(orderId);
 			_eventPublisher.PublishOrderUpdated(order);
         }
@@ -563,6 +574,8 @@ namespace SmartStore.Services.Orders
 
             _recurringPaymentRepository.Insert(recurringPayment);
 
+            //event notification
+            _eventPublisher.EntityInserted(recurringPayment);
 			_eventPublisher.PublishOrderUpdated(recurringPayment.InitialOrder);
         }
 
@@ -577,6 +590,8 @@ namespace SmartStore.Services.Orders
 
             _recurringPaymentRepository.Update(recurringPayment);
 
+            //event notification
+            _eventPublisher.EntityUpdated(recurringPayment);
 			_eventPublisher.PublishOrderUpdated(recurringPayment.InitialOrder);
         }
 
@@ -635,6 +650,9 @@ namespace SmartStore.Services.Orders
 			int orderItemId = returnRequest.OrderItemId;
 
             _returnRequestRepository.Delete(returnRequest);
+
+            //event notifications
+            _eventPublisher.EntityDeleted(returnRequest);
 
 			var orderItem = GetOrderItemById(orderItemId);
 			_eventPublisher.PublishOrderUpdated(orderItem.Order);

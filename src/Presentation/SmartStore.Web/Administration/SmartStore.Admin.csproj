@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Admin</RootNamespace>
     <AssemblyName>SmartStore.Admin</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <SccProjectName>
@@ -39,7 +39,6 @@
     <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
     <NuGetPackageImportStamp>1e5b888b</NuGetPackageImportStamp>
     <UseGlobalApplicationHostFile />
-    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,44 +63,42 @@
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>False</Private>
+      <Private>True</Private>
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SmartStore.Licensing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\SmartStore.Licensing\SmartStore.Licensing.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -109,17 +106,13 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -130,38 +123,31 @@
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -169,13 +155,11 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\lib\Telerik\Telerik.Web.Mvc.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -207,6 +191,7 @@
     <Compile Include="Controllers\ForumController.cs" />
     <Compile Include="Controllers\GiftCardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MediaController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\ManufacturerController.cs" />
@@ -280,10 +265,7 @@
     <Compile Include="Models\Directory\CountryListModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
     <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
-    <Compile Include="Models\Localization\AvailableLanguageModel.cs" />
-    <Compile Include="Models\Localization\CheckAvailableResourcesResult.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
-    <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
     <Compile Include="Models\Orders\CheckoutAttributeListModel.cs" />
@@ -293,7 +275,6 @@
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
-    <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
@@ -401,7 +382,6 @@
     <Compile Include="Validators\Catalog\ProductTagValidator.cs" />
     <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
     <Compile Include="Validators\Catalog\ProductAttributeOptionModelValidator.cs" />
-    <Compile Include="Validators\Catalog\CopyProductValidator.cs" />
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
@@ -456,43 +436,284 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\filemanager\css\images\animated-overlay.gif" />
-    <Content Include="Content\filemanager\css\images\ui-icons_444444_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_555555_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_777620_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_777777_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_cc0000_256x240.png" />
-    <Content Include="Content\filemanager\css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\filemanager\css\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\filemanager\css\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.css" />
     <Content Include="Content\filemanager\css\jquery-ui-1.10.4.custom.min.css" />
-    <Content Include="Content\filemanager\css\main.scss" />
+    <Content Include="Content\filemanager\css\main.css" />
+    <Content Include="Content\filemanager\css\main.min.css" />
+    <Content Include="Content\filemanager\dev.html" />
+    <Content Include="Content\filemanager\images\action-folder-paste.png" />
+    <Content Include="Content\filemanager\images\action-folder-rename.png" />
+    <Content Include="Content\filemanager\images\arrow_down.png" />
+    <Content Include="Content\filemanager\images\arrow_up.png" />
     <Content Include="Content\filemanager\images\blank.gif" />
+    <Content Include="Content\filemanager\images\copy.png" />
+    <Content Include="Content\filemanager\images\cut.png" />
+    <Content Include="Content\filemanager\images\dir-minus.png" />
+    <Content Include="Content\filemanager\images\dir-plus.png" />
+    <Content Include="Content\filemanager\images\file-add.png" />
+    <Content Include="Content\filemanager\images\file-delete.png" />
+    <Content Include="Content\filemanager\images\file-download.png" />
+    <Content Include="Content\filemanager\images\file-duplicate.png" />
     <Content Include="Content\filemanager\images\file-upload.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_3gp.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_7z.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ace.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ai.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_aif.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_aiff.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_amr.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_asf.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_asx.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_bat.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_bin.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_bmp.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_bup.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_cab.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_cbr.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_cda.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_cdl.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_cdr.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_chm.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_dat.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_divx.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_dll.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_dmg.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_doc.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_dss.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_dvf.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_dwg.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_eml.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_eps.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_exe.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_fla.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_flv.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_gif.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_gz.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_hqx.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_htm.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_html.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ifo.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_indd.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_iso.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_jar.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_jpeg.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_jpg.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_lnk.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_log.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_m4a.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_m4b.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_m4p.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_m4v.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mcd.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mdb.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mid.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mov.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mp2.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mp3.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mp4.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mpeg.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mpg.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_msi.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_mswmm.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ogg.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_pdf.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_png.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_pps.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ps.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_psd.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_pst.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ptb.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_pub.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_qbb.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_qbw.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_qxd.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ram.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_rar.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_rm.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_rmvb.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_rtf.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_sea.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ses.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_sit.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_sitx.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ss.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_swf.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_tgz.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_thm.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_tif.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_tmp.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_torrent.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_ttf.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_txt.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_vcd.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_vob.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_wav.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_wma.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_wmv.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_wps.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_xls.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_xpi.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\file_extension_zip.png" />
+    <Content Include="Content\filemanager\images\filetypes\big\unknown.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_3gp.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_7z.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ace.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ai.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_aif.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_aiff.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_amr.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_asf.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_asx.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_bat.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_bin.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_bmp.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_bup.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_cab.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_cbr.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_cda.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_cdl.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_cdr.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_chm.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_dat.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_divx.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_dll.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_dmg.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_doc.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_dss.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_dvf.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_dwg.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_eml.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_eps.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_exe.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_fla.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_flv.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_gif.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_gz.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_hqx.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_htm.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_html.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ifo.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_indd.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_iso.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_jar.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_jpeg.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_jpg.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_lnk.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_log.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_m4a.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_m4b.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_m4p.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_m4v.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mcd.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mdb.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mid.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mov.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mp2.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mp3.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mp4.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mpeg.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mpg.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_msi.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_mswmm.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ogg.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_pdf.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_png.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_pps.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ps.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_psd.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_pst.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ptb.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_pub.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_qbb.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_qbw.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_qxd.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ram.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_rar.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_rm.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_rmvb.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_rtf.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_sea.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ses.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_sit.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_sitx.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ss.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_swf.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_tgz.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_thm.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_tif.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_tmp.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_torrent.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_ttf.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_txt.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_vcd.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_vob.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_wav.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_wma.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_wmv.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_wps.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_xls.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_xpi.png" />
+    <Content Include="Content\filemanager\images\filetypes\file_extension_zip.png" />
+    <Content Include="Content\filemanager\images\filetypes\unknown.png" />
+    <Content Include="Content\filemanager\images\find.png" />
+    <Content Include="Content\filemanager\images\folder-add.png" />
+    <Content Include="Content\filemanager\images\folder-delete.png" />
+    <Content Include="Content\filemanager\images\folder-download.png" />
     <Content Include="Content\filemanager\images\folder-green.png" />
     <Content Include="Content\filemanager\images\folder-opened.png" />
     <Content Include="Content\filemanager\images\folder.png" />
     <Content Include="Content\filemanager\images\loading-dir.gif" />
     <Content Include="Content\filemanager\images\loading.gif" />
+    <Content Include="Content\filemanager\images\paste.png" />
+    <Content Include="Content\filemanager\images\preview.png" />
+    <Content Include="Content\filemanager\images\remove-upload - Copy.png" />
     <Content Include="Content\filemanager\images\remove-upload.png" />
+    <Content Include="Content\filemanager\images\rename.png" />
+    <Content Include="Content\filemanager\images\search.png" />
+    <Content Include="Content\filemanager\images\select.png" />
     <Content Include="Content\filemanager\images\sprite.png" />
     <Content Include="Content\filemanager\images\stripes-reverse.gif" />
     <Content Include="Content\filemanager\images\stripes.gif" />
     <Content Include="Content\filemanager\images\upload-big.png" />
+    <Content Include="Content\filemanager\images\view-list.png" />
+    <Content Include="Content\filemanager\images\view-tile.png" />
+    <Content Include="Content\filemanager\index.html" />
     <Content Include="Content\filemanager\js\custom.js" />
     <Content Include="Content\filemanager\js\directory.js" />
     <Content Include="Content\filemanager\js\file.js" />
     <Content Include="Content\filemanager\js\filetypes.js" />
+    <Content Include="Content\filemanager\js\jquery-1.10.2.min.js" />
+    <Content Include="Content\filemanager\js\jquery-1.11.1.min.js" />
     <Content Include="Content\filemanager\js\jquery-2.1.1.min.js" />
     <Content Include="Content\filemanager\js\jquery-dateFormat.min.js" />
     <Content Include="Content\filemanager\js\jquery-ui-1.10.4.custom.min.js" />
     <Content Include="Content\filemanager\js\main.js" />
+    <Content Include="Content\filemanager\js\main.min.js" />
+    <Content Include="Content\filemanager\js\mini-main.js" />
+    <Content Include="Content\filemanager\js\tiny_mce_popup.js" />
     <Content Include="Content\filemanager\js\utils.js" />
-    <Content Include="Content\filemanager\lang\en.js" />
     <Content Include="Content\filemanager\LICENSE.txt" />
     <Content Include="Content\filemanager\third-party.txt" />
     <Content Include="Content\images\ajax_loader_small.gif" />
+    <Content Include="Content\images\checkmark.png" />
+    <Content Include="Content\images\google-maps.gif" />
     <Content Include="Content\images\ico-content-negative.png" />
     <Content Include="Content\images\ico-content-o60.png" />
     <Content Include="Content\images\ico-content.png" />
+    <Content Include="Content\images\fileuploader-loading.gif" />
     <Content Include="Content\images\icon-plugin-admin.png" />
     <Content Include="Content\images\icon-plugin-analytics.png" />
     <Content Include="Content\images\icon-plugin-api.png" />
@@ -515,73 +736,43 @@
     <Content Include="Content\images\icon-plugin-shipping.png" />
     <Content Include="Content\images\icon-plugin-social.png" />
     <Content Include="Content\images\icon-plugin-tax.png" />
-    <Content Include="Content\images\loading.gif" />
-    <Content Include="Content\images\smartstore-icon.svg" />
-    <Content Include="Content\images\smartstore.svg" />
-    <Content Include="Content\telerik\css\2012.2.607\telerik.common.css" />
-    <Content Include="Content\telerik\css\2012.2.607\telerik.rtl.css" />
-    <Content Include="Content\telerik\js\jquery.validate.js" />
-    <Content Include="Content\telerik\js\jquery-1.7.1.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.calendar.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.common.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.datepicker.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.datetimepicker.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.draganddrop.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.grid.editing.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.grid.filtering.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.grid.grouping.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.grid.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.grid.reordering.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.grid.resizing.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.textbox.min.js" />
-    <Content Include="Content\telerik\js\2012.2.607\telerik.treeview.min.js" />
-    <Content Include="Content\telerik\img\editor.png" />
-    <Content Include="Content\telerik\img\gradient.png" />
-    <Content Include="Content\telerik\img\imagebrowser.png" />
-    <Content Include="Content\telerik\img\loading.gif" />
-    <Content Include="Content\telerik\img\slider-h.gif" />
-    <Content Include="Content\telerik\img\slider-v.gif" />
-    <Content Include="Content\telerik\img\sprite-vertical.png" />
-    <Content Include="Content\telerik\img\sprite.png" />
+    <Content Include="Content\images\smnet.png" />
     <Content Include="favicon.ico" />
     <Content Include="Scripts\admin.common.js" />
     <Content Include="Content\filemanager\conf.json" />
-    <Content Include="Content\filemanager\lang\bg.js" />
-    <Content Include="Content\filemanager\lang\de.js" />
-    <Content Include="Content\filemanager\lang\fr.js" />
-    <Content Include="Content\filemanager\lang\ca.js" />
-    <Content Include="Content\filemanager\lang\cs.js" />
-    <Content Include="Content\filemanager\lang\cs1.js" />
-    <Content Include="Content\filemanager\lang\da.js" />
-    <Content Include="Content\filemanager\lang\es.js" />
-    <Content Include="Content\filemanager\lang\hu.js" />
-    <Content Include="Content\filemanager\lang\it.js" />
-    <Content Include="Content\filemanager\lang\nl.js" />
-    <Content Include="Content\filemanager\lang\pl.js" />
-    <Content Include="Content\filemanager\lang\pt.js" />
-    <Content Include="Content\filemanager\lang\ru.js" />
-    <Content Include="Content\filemanager\lang\sk.js" />
-    <Content Include="Content\filemanager\lang\tr.js" />
-    <Content Include="Content\theme.scss" />
-    <Content Include="Content\_telerik.scss" />
-    <Content Include="Content\_variables.scss" />
-    <Content Include="Content\_admin.scss" />
-    <Content Include="Scripts\jquery-shims.js" />
+    <Content Include="Content\filemanager\lang\bg.json" />
+    <Content Include="Content\filemanager\lang\de.json" />
+    <Content Include="Content\filemanager\lang\en.json" />
+    <Content Include="Content\filemanager\lang\fr.json" />
+    <Content Include="Content\filemanager\lang\ca.json" />
+    <Content Include="Content\filemanager\lang\cs.json" />
+    <Content Include="Content\filemanager\lang\cs1.json" />
+    <Content Include="Content\filemanager\lang\da.json" />
+    <Content Include="Content\filemanager\lang\es.json" />
+    <Content Include="Content\filemanager\lang\hu.json" />
+    <Content Include="Content\filemanager\lang\it.json" />
+    <Content Include="Content\filemanager\lang\nl.json" />
+    <Content Include="Content\filemanager\lang\pl.json" />
+    <Content Include="Content\filemanager\lang\pt.json" />
+    <Content Include="Content\filemanager\lang\ru.json" />
+    <Content Include="Content\filemanager\lang\sk.json" />
+    <Content Include="Content\filemanager\lang\tr.json" />
+    <None Include="Scripts\jquery-1.8.3.intellisense.js" />
+    <Content Include="Scripts\jquery-1.8.3.js" />
+    <Content Include="Scripts\jquery-1.8.3.min.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
     <Content Include="Scripts\smartstore.download.js" />
     <Content Include="Scripts\smartstore.discountrules.js" />
-    <Content Include="Content\theme-rtl.scss" />
-    <Content Include="Content\_rtl.scss" />
-    <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\_references.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Product\_CreateOrUpdate.Inventory.cshtml" />
     <Content Include="Views\Product\_Create.SaveFirst.cshtml" />
     <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
-    <Content Include="Views\RoxyFileManager\Index.cshtml" />
     <Content Include="Views\Shared\Partials\_Providers.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
     <Content Include="Views\Plugin\EditProviderPopup.cshtml" />
     <Content Include="Views\Theme\PreviewTool.cshtml" />
     <Content Include="Views\Shared\Layouts\_AdminRoot.cshtml" />
@@ -629,26 +820,18 @@
     <Content Include="Views\Export\_ProfileList.cshtml" />
     <Content Include="Views\Product\EditorTemplates\TierPriceCalculationMethod.cshtml" />
     <Content Include="Views\Setting\Search.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\ModelTree.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\TokenSelector.cshtml" />
     <Content Include="Views\ProductAttribute\OptionCreatePopup.cshtml" />
     <Content Include="Views\ProductAttribute\OptionEditPopup.cshtml" />
     <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
     <Content Include="Views\Setting\Partials\CommonFacet.cshtml" />
     <Content Include="Views\Plugin\Partials\LicenseLabel.cshtml" />
-    <Content Include="Views\Language\Partials\AvailableLanguages.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
-    <Content Include="Views\MessageTemplate\Preview.cshtml" />
-    <Content Include="Views\Shared\Partials\StoreSelector.cshtml" />
-    <Content Include="Views\Shared\Partials\AclSelector.cshtml" />
-    <Content Include="Views\Order\_Edit.Products.cshtml" />
-    <Content Include="Views\Order\_Edit.BillingAndShipment.cshtml" />
-    <Content Include="Views\Order\_Edit.Info.cshtml" />
-    <Content Include="Views\Order\_Edit.OrderNotes.cshtml" />
-    <Content Include="Views\Shared\Layouts\_AdminBareLayout.cshtml" />
-    <Content Include="Views\Setting\Payment.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\SelectList.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\admin.less" />
+    <Content Include="Content\theme.less" />
+    <Content Include="Content\variables.custom.less" />
+    <Content Include="Content\variables.less" />
     <Content Include="Views\Category\Create.cshtml" />
     <Content Include="Views\Category\Edit.cshtml" />
     <Content Include="Views\Category\List.cshtml" />
@@ -679,22 +862,18 @@
     <ProjectReference Include="..\..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
       <Name>SmartStore.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\SmartStore.Data\SmartStore.Data.csproj">
       <Project>{CCD7F2C9-6A2C-4CF0-8E89-076B8FC0F144}</Project>
       <Name>SmartStore.Data</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\SmartStore.Services\SmartStore.Services.csproj">
       <Project>{210541ad-f659-47da-8763-16f36c5cd2f4}</Project>
       <Name>SmartStore.Services</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\SmartStore.Web.Framework\SmartStore.Web.Framework.csproj">
       <Project>{75fd4163-333c-4dd5-854d-2ef294e45d94}</Project>
       <Name>SmartStore.Web.Framework</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -999,6 +1178,7 @@
     <Content Include="Views\Order\Edit.cshtml" />
     <Content Include="Views\Order\List.cshtml" />
     <Content Include="Views\Order\PartiallyRefundOrderPopup.cshtml" />
+    <Content Include="Views\Order\_CreateOrUpdateAddress.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Blog\_CreateOrUpdate.cshtml" />
@@ -1281,7 +1461,7 @@
     <Content Include="Views\Common\GenericAttributes.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RichEditor.SummerNote.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\AttributeControlType.cshtml" />
@@ -1330,6 +1510,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Media\UploadImage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\About.cshtml" />
@@ -1393,8 +1576,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)\FixRazorIntellisense.targets" Condition="'$(Configuration)' == 'PluginDev'" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

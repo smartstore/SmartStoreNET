@@ -16,7 +16,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Email;
 using SmartStore.Core.Events;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
@@ -83,7 +82,10 @@ namespace SmartStore.Admin.Controllers
 		private readonly IEventPublisher _eventPublisher;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
+<<<<<<< HEAD
+=======
 		private readonly IMessageModelProvider _messageModelProvider;
+>>>>>>> upstream/3.x
 
 		#endregion
 
@@ -371,45 +373,35 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-			{
-				return AccessDeniedView();
-			}
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+                return AccessDeniedView();
 
-			// Load registered customers by default.
-			var allRoles = _customerService.GetAllCustomerRoles(true);
-			var registeredRoleId = allRoles.First(x => x.SystemName.IsCaseInsensitiveEqual(SystemCustomerRoleNames.Registered)).Id;
-
-			var listModel = new CustomerListModel
+            //load registered customers by default
+            var defaultRoleIds = new[] {_customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Id};
+            var listModel = new CustomerListModel()
             {
                 UsernamesEnabled = _customerSettings.UsernamesEnabled,
                 DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled,
                 CompanyEnabled = _customerSettings.CompanyEnabled,
                 PhoneEnabled = _customerSettings.PhoneEnabled,
                 ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled,
-				SearchCustomerRoleIds = registeredRoleId.ToString()
-			};
-
-			listModel.AvailableCustomerRoles = allRoles
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
-
-			var customers = _customerService.GetAllCustomers(null, null, new int[] { registeredRoleId }, null,
+                AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).Select(cr => cr.ToModel()).ToList(),
+                SearchCustomerRoleIds = defaultRoleIds,
+            };
+            var customers = _customerService.GetAllCustomers(null, null, defaultRoleIds, null,
                 null, null, null, 0, 0, null, null, null,
                 false, null, 0, _adminAreaSettings.GridPageSize);
-
-            // Customer list.
+            //customer list
             listModel.Customers = new GridModel<CustomerModel>
             {
                 Data = customers.Select(PrepareCustomerModelForList),
                 Total = customers.TotalCount
             };
-
             return View(listModel);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult CustomerList(GridCommand command, CustomerListModel model)
+        public ActionResult CustomerList(GridCommand command, CustomerListModel model, [ModelBinderAttribute(typeof(CommaSeparatedModelBinder))] int[] searchCustomerRoleIds)
         {
 			// we use own own binder for searchCustomerRoleIds property 
 			var gridModel = new GridModel<CustomerModel>();
@@ -426,7 +418,7 @@ namespace SmartStore.Admin.Controllers
 					searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
 
 				var customers = _customerService.GetAllCustomers(null, null,
-					model.SearchCustomerRoleIds.ToIntArray(), model.SearchEmail, model.SearchUsername,
+					searchCustomerRoleIds, model.SearchEmail, model.SearchUsername,
 					model.SearchFirstName, model.SearchLastName,
 					searchDayOfBirth, searchMonthOfBirth,
 					model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,
@@ -1137,8 +1129,10 @@ namespace SmartStore.Admin.Controllers
                 var email = new QueuedEmail
                 {
                     EmailAccountId = emailAccount.Id,
-					From = emailAccount.ToEmailAddress(),
-					To = new EmailAddress(customer.Email, customer.GetFullName()),
+                    FromName = emailAccount.DisplayName,
+                    From = emailAccount.Email,
+                    ToName = customer.GetFullName(),
+                    To = customer.Email,
                     Subject = model.SendEmail.Subject,
                     Body = model.SendEmail.Body,
                     CreatedOnUtc = DateTime.UtcNow,
@@ -1278,6 +1272,27 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = addresses.Select(x =>
                 {
+<<<<<<< HEAD
+                    var model = x.ToModel();
+                    var addressHtmlSb = new StringBuilder("<div>");
+                    if (_addressSettings.CompanyEnabled && !String.IsNullOrEmpty(model.Company))
+                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.Company));
+                    if (_addressSettings.StreetAddressEnabled && !String.IsNullOrEmpty(model.Address1))
+                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.Address1));
+                    if (_addressSettings.StreetAddress2Enabled && !String.IsNullOrEmpty(model.Address2))
+                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.Address2));
+                    if (_addressSettings.CityEnabled && !String.IsNullOrEmpty(model.City))
+                        addressHtmlSb.AppendFormat("{0},", Server.HtmlEncode(model.City));
+                    if (_addressSettings.StateProvinceEnabled && !String.IsNullOrEmpty(model.StateProvinceName))
+                        addressHtmlSb.AppendFormat("{0},", Server.HtmlEncode(model.StateProvinceName));
+                    if (_addressSettings.ZipPostalCodeEnabled && !String.IsNullOrEmpty(model.ZipPostalCode))
+                        addressHtmlSb.AppendFormat("{0}<br />", Server.HtmlEncode(model.ZipPostalCode));
+                    if (_addressSettings.CountryEnabled && !String.IsNullOrEmpty(model.CountryName))
+                        addressHtmlSb.AppendFormat("{0}", Server.HtmlEncode(model.CountryName));
+                    addressHtmlSb.Append("</div>");
+                    model.AddressHtml = addressHtmlSb.ToString();
+                    return model;
+=======
                     var model = x.ToModel(_addressService);
 
 					try
@@ -1308,6 +1323,7 @@ namespace SmartStore.Admin.Controllers
 					}
 
 					return model;
+>>>>>>> upstream/3.x
                 }),
                 Total = addresses.Count
             };
@@ -1444,7 +1460,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new CustomerAddressModel();
             model.CustomerId = customerId;
-            model.Address = address.ToModel(_addressService);
+            model.Address = address.ToModel();
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
             model.Address.LastNameEnabled = true;
@@ -1509,7 +1525,7 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             model.CustomerId = customer.Id;
-            model.Address = address.ToModel(_addressService);
+            model.Address = address.ToModel();
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
             model.Address.LastNameEnabled = true;

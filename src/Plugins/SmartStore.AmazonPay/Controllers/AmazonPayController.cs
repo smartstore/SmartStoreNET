@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.AmazonPay.Models;
 using SmartStore.AmazonPay.Services;
-using SmartStore.ComponentModel;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Services.Authentication.External;
+using SmartStore.AmazonPay.Settings;
+using SmartStore.Services;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Tasks;
-using SmartStore.Web.Framework;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
@@ -18,20 +15,17 @@ namespace SmartStore.AmazonPay.Controllers
 	public class AmazonPayController : PaymentControllerBase
 	{
 		private readonly IAmazonPayService _apiService;
-		private readonly Lazy<IScheduleTaskService> _scheduleTaskService;
-		private readonly Lazy<IOpenAuthenticationService> _openAuthenticationService;
-		private readonly Lazy<ExternalAuthenticationSettings> _externalAuthenticationSettings;
+		private readonly ICommonServices _services;
+		private readonly IStoreService _storeService;
 
 		public AmazonPayController(
 			IAmazonPayService apiService,
-			Lazy<IScheduleTaskService> scheduleTaskService,
-			Lazy<IOpenAuthenticationService> openAuthenticationService,
-			Lazy<ExternalAuthenticationSettings> externalAuthenticationSettings)
+			ICommonServices services,
+			IStoreService storeService)
 		{
 			_apiService = apiService;
-			_scheduleTaskService = scheduleTaskService;
-			_openAuthenticationService = openAuthenticationService;
-			_externalAuthenticationSettings = externalAuthenticationSettings;
+			_services = services;
+			_storeService = storeService;
 		}
 
 		[NonAction]
@@ -48,13 +42,19 @@ namespace SmartStore.AmazonPay.Controllers
 			return paymentInfo;
 		}
 
-		[AdminAuthorize, LoadSetting]
-		public ActionResult Configure(AmazonPaySettings settings)
+		[AdminAuthorize]
+		public ActionResult Configure()
 		{
 			var model = new ConfigurationModel();
+			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
 
-			MiniMapper.Map(settings, model);
+			model.Copy(settings, true);
+
 			_apiService.SetupConfiguration(model);
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
 			return View(model);
 		}
@@ -62,14 +62,12 @@ namespace SmartStore.AmazonPay.Controllers
 		[HttpPost, AdminAuthorize]
 		public ActionResult Configure(ConfigurationModel model, FormCollection form)
 		{
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
-
 			if (!ModelState.IsValid)
-				return Configure(settings);
+				return Configure();
 
 			ModelState.Clear();
+<<<<<<< HEAD
+=======
 
 			model.AccessKey = model.AccessKey.TrimSafe();
 			model.ClientId = model.ClientId.TrimSafe();
@@ -77,124 +75,44 @@ namespace SmartStore.AmazonPay.Controllers
 			model.SellerId = model.SellerId.TrimSafe();
 
 			MiniMapper.Map(model, settings);
+>>>>>>> upstream/3.x
 
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(storeScope);
 
+<<<<<<< HEAD
+			model.Copy(settings, false);
+=======
 			using (Services.Settings.BeginScope())
 			{
 				Services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
 				Services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
 			}
+>>>>>>> upstream/3.x
 
-			var task = _scheduleTaskService.Value.GetTaskByType<DataPollingTask>();
-			if (task != null)
+			using (_services.Settings.BeginScope())
 			{
-				task.Enabled = settings.DataFetching == AmazonPayDataFetchingType.Polling;
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
 
-				_scheduleTaskService.Value.UpdateTask(task);
+				_services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
+				_services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
 			}
 
-			NotifySuccess(T("Plugins.Payments.AmazonPay.ConfigSaveNote"));
+			_apiService.DataPollingTaskUpdate(settings.DataFetching == AmazonPayDataFetchingType.Polling, model.PollingTaskMinutes * 60);
 
-			return RedirectToConfiguration(AmazonPayPlugin.SystemName);
-		}
+			NotifySuccess(_services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 
-		[HttpPost, AdminAuthorize]
-		public ActionResult SaveAccessData(string accessData)
-		{
-			try
-			{
-				var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-				_apiService.ShareKeys(accessData, storeScope);
-
-				NotifySuccess(T("Plugins.Payments.AmazonPay.SaveAccessDataSucceeded"));
-			}
-			catch (Exception exception)
-			{
-				NotifyError(exception.Message);
-			}
-
-			return RedirectToConfiguration(AmazonPayPlugin.SystemName);
-		}
-
-		[ValidateInput(false)]
-		public ActionResult ShareKey(string payload)
-		{
-			Response.AddHeader("Access-Control-Allow-Origin", "https://payments.amazon.com");
-			Response.AddHeader("Access-Control-Allow-Methods", "GET, POST");
-			Response.AddHeader("Access-Control-Allow-Headers", "Content-Type");
-
-			try
-			{
-				_apiService.ShareKeys(payload, 0);
-			}
-			catch (Exception exception)
-			{
-				Response.StatusCode = 400;
-				return Json(new { result = "error", message = exception.Message });
-			}
-
-			return Json(new { result = "success" });
+			return Configure();
 		}
 
 		[HttpPost]
 		[ValidateInput(false)]
+		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
 		public ActionResult IPNHandler()
 		{
 			_apiService.ProcessIpn(Request);
 			return Content("OK");
-		}
-
-		// Authentication
-
-		[ChildActionOnly]
-		public ActionResult AuthenticationPublicInfo()
-		{
-			var model = _apiService.CreateViewModel(AmazonPayRequestType.AuthenticationPublicInfo, TempData);
-            if (model != null)
-            {
-                return View(model);
-            }
-
-            return new EmptyResult();
-		}
-
-		public ActionResult AuthenticationButtonHandler()
-		{
-			var processor = _openAuthenticationService.Value.LoadExternalAuthenticationMethodBySystemName(AmazonPayPlugin.SystemName, Services.StoreContext.CurrentStore.Id);
-			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings.Value))
-			{
-				throw new SmartException(T("Plugins.Payments.AmazonPay.AuthenticationNotActive"));
-			}
-
-			var returnUrl = Session["AmazonAuthReturnUrl"] as string;
-			var result = _apiService.Authorize(returnUrl);
-
-			switch (result.AuthenticationStatus)
-			{
-				case OpenAuthenticationStatus.Error:
-					result.Errors.Each(x => NotifyError(x));
-					return new RedirectResult(Url.LogOn(returnUrl));
-				case OpenAuthenticationStatus.AssociateOnLogon:
-					return new RedirectResult(Url.LogOn(returnUrl));
-				case OpenAuthenticationStatus.AutoRegisteredEmailValidation:
-					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation, returnUrl });
-				case OpenAuthenticationStatus.AutoRegisteredAdminApproval:
-					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.AdminApproval, returnUrl });
-				case OpenAuthenticationStatus.AutoRegisteredStandard:
-					return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Standard, returnUrl });
-				default:
-					if (result.Result != null)
-						return result.Result;
-
-					if (HttpContext.Request.IsAuthenticated)
-						return RedirectToReferrer(returnUrl, "~/");
-
-					return new RedirectResult(Url.LogOn(returnUrl));
-			}
 		}
 	}
 }

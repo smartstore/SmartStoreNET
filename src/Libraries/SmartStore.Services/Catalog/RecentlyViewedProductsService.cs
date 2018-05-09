@@ -3,21 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Recently viewed products service
-	/// </summary>
-	public partial class RecentlyViewedProductsService : IRecentlyViewedProductsService
+    /// <summary>
+    /// Recently viewed products service
+    /// </summary>
+    public partial class RecentlyViewedProductsService : IRecentlyViewedProductsService
     {
         #region Fields
 
         private readonly HttpContextBase _httpContext;
         private readonly IProductService _productService;
-		private readonly IAclService _aclService;
-		private readonly CatalogSettings _catalogSettings;
+        private readonly CatalogSettings _catalogSettings;
 
         #endregion
 
@@ -29,16 +27,12 @@ namespace SmartStore.Services.Catalog
         /// <param name="httpContext">HTTP context</param>
         /// <param name="productService">Product service</param>
         /// <param name="catalogSettings">Catalog settings</param>
-        public RecentlyViewedProductsService(
-			HttpContextBase httpContext,
-			IProductService productService,
-			IAclService aclService,
-			CatalogSettings catalogSettings)
+        public RecentlyViewedProductsService(HttpContextBase httpContext, IProductService productService,
+            CatalogSettings catalogSettings)
         {
-            _httpContext = httpContext;
-            _productService = productService;
-			_aclService = aclService;
-            _catalogSettings = catalogSettings;
+            this._httpContext = httpContext;
+            this._productService = productService;
+            this._catalogSettings = catalogSettings;
         }
 
         #endregion
@@ -79,6 +73,7 @@ namespace SmartStore.Services.Catalog
 
         #region Methods
 
+
         /// <summary>
         /// Gets a "recently viewed products" list
         /// </summary>
@@ -86,13 +81,12 @@ namespace SmartStore.Services.Catalog
         /// <returns>"recently viewed products" list</returns>
         public virtual IList<Product> GetRecentlyViewedProducts(int number)
         {
+            var products = new List<Product>();
             var productIds = GetRecentlyViewedProductsIds(number);
-			var recentlyViewedProducts = _productService
-				.GetProductsByIds(productIds.ToArray())
-				.Where(x => x.Published && !x.Deleted && !x.IsSystemProduct && _aclService.Authorize(x))
-				.ToList();
+            var recentlyViewedProducts = _productService.GetProductsByIds(productIds.ToArray()).Where(x => x.Published && !x.Deleted);
 
-            return recentlyViewedProducts;
+            products.AddRange(recentlyViewedProducts);
+            return products;
         }
 
         /// <summary>

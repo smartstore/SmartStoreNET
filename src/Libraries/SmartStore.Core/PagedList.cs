@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartStore.Core
@@ -149,16 +148,6 @@ namespace SmartStore.Core
 			: base(pageIndex, pageSize, totalItemsCount)
         {
         }
-
-		public static PagedList<T> Create<T>(IEnumerable<T> source, int pageIndex, int pageSize)
-		{
-			return new PagedList<T>(source, pageIndex, pageSize);
-		}
-
-		public static PagedList<T> Create<T>(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
-		{
-			return new PagedList<T>(source, pageIndex, pageSize, totalCount);
-		}
-	}
+    }
 
 }

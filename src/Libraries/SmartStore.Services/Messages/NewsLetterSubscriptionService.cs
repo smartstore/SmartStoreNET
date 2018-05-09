@@ -46,6 +46,9 @@ namespace SmartStore.Services.Messages
             {
                 PublishSubscriptionEvent(newsLetterSubscription.Email, true, publishSubscriptionEvents);
             }
+
+            //Publish event
+            _eventPublisher.EntityInserted(newsLetterSubscription);
         }
 
         /// <summary>
@@ -94,6 +97,9 @@ namespace SmartStore.Services.Messages
                 //If the previous entry was true, but this one is false
                 PublishSubscriptionEvent(originalSubscription.Email, false, publishSubscriptionEvents);
             }
+
+            //Publish event
+            _eventPublisher.EntityUpdated(newsLetterSubscription);
         }
 
         /// <summary>
@@ -110,6 +116,9 @@ namespace SmartStore.Services.Messages
 
             //Publish the unsubscribe event 
             PublishSubscriptionEvent(newsLetterSubscription.Email, false, publishSubscriptionEvents);
+
+            //event notification
+            _eventPublisher.EntityDeleted(newsLetterSubscription);
         }
 
 		public virtual bool? AddNewsLetterSubscriptionFor(bool add, string email, int storeId)
@@ -258,12 +267,21 @@ namespace SmartStore.Services.Messages
             {
                 if (isSubscribe)
                 {
+<<<<<<< HEAD
+                    _eventPublisher.PublishNewsletterSubscribe(email);
+                }
+                else
+                {
+                    _eventPublisher.PublishNewsletterUnsubscribe(email);
+                }
+=======
 					_services.EventPublisher.Publish(new EmailSubscribedEvent(email));
 				}
                 else
                 {
 					_services.EventPublisher.Publish(new EmailUnsubscribedEvent(email));
 				}
+>>>>>>> upstream/3.x
             }
         }
 

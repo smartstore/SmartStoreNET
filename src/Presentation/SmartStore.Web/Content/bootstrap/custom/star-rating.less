@@ -1,0 +1,79 @@
+// rating.less
+// Pure CSS3 star rating
+// -------------------------------------------------------------
+
+
+/* :not(:checked) is a filter, so that browsers that don’t support :checked don’t 
+	follow these rules. Every browser that supports :checked also supports :not(), so
+	it doesn’t make the test unnecessarily selective */
+.star-rating:not(:checked) > input {
+	position: absolute;
+	top: -9999px;
+	clip: rect(0,0,0,0);
+}
+	
+.iepre9 .star-rating > input {
+	float: left;
+	margin-right: 4px;
+}
+	
+.star-rating:not(:checked) > label {
+	float: right;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	color: #bbb;
+	padding: 0 2px;
+	font-size: 22px;
+	line-height: 22px;
+}
+	
+.star-rating.star-rating-large:not(:checked) > label {
+	font-size: 30px;
+	line-height: 30px;
+}
+.star-rating.star-rating-small:not(:checked) > label {
+	padding: 0 1px;
+	font-size: 18px;
+	line-height: 18px;
+}
+.star-rating.star-rating-mini:not(:checked) > label {
+	padding: 0 1px;
+	font-size: 14px;
+	line-height: 14px;
+}
+	
+.star-rating:not(:checked) > label:before {
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-style: normal;
+	content: "\f006";
+}
+	
+.star-rating > input:checked ~ label:before,
+.star-rating:not(:checked) > label:hover:before,
+.star-rating:not(:checked) > label:hover ~ label:before,
+.star-rating > input:checked + label:hover:before,
+.star-rating > input:checked + label:hover ~ label:before,
+.star-rating > input:checked ~ label:hover:before,
+.star-rating > input:checked ~ label:hover ~ label:before,
+.star-rating > label:hover ~ input:checked ~ label:before {
+	content: "\f005";
+}
+	
+/* CURRENT STATE */
+.star-rating > input:checked ~ label {
+	color: #f9bc1b;
+}
+	
+/* HOVER */
+.star-rating:not(:checked) > label:hover,
+.star-rating:not(:checked) > label:hover ~ label {
+	color: #f30;
+}
+
+.star-rating > label:active {
+	position:relative;
+	top: 1px;
+	left: 1px;
+}

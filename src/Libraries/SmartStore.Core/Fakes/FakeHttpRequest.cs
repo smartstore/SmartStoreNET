@@ -136,11 +136,31 @@ namespace SmartStore.Core.Fakes
             get { return null; }
         }
 
-		public override string RawUrl => this.ApplicationPath;
-		public override bool IsSecureConnection => false;
-		public override bool IsAuthenticated => false;
-		public override string[] UserLanguages => new string[] { };
-		public override string UserAgent => "SmartStore.NET";
+        public override string RawUrl
+        {
+            get { return this.ApplicationPath; }
+        }
+
+        public override bool IsSecureConnection
+        {
+            get { return false; }
+        }
+
+        public override bool IsAuthenticated
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+		public override string[] UserLanguages 
+		{
+			get 
+			{
+				return new string[] { };
+			}
+		}
 
 		public override RequestContext RequestContext
 		{

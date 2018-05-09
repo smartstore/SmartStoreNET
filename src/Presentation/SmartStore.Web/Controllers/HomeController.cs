@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Email;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
@@ -18,7 +20,10 @@ using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
+using SmartStore.Web.Infrastructure.Cache;
+using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
+using SmartStore.Web.Models.Topics;
 
 namespace SmartStore.Web.Controllers
 {
@@ -31,6 +36,8 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
 		private readonly Lazy<CatalogHelper> _catalogHelper;
 		private readonly Lazy<ITopicService> _topicService;
+		private readonly Lazy<IQueuedEmailService> _queuedEmailService;
+		private readonly Lazy<IEmailAccountService> _emailAccountService;
 		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
@@ -45,6 +52,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<ICatalogSearchService> catalogSearchService,
 			Lazy<CatalogHelper> catalogHelper,
 			Lazy<ITopicService> topicService,
+			Lazy<IQueuedEmailService> queuedEmailService,
+			Lazy<IEmailAccountService> emailAccountService,
 			Lazy<IXmlSitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
@@ -58,6 +67,8 @@ namespace SmartStore.Web.Controllers
 			this._catalogSearchService = catalogSearchService;
 			this._catalogHelper = catalogHelper;
 			this._topicService = topicService;
+			this._queuedEmailService = queuedEmailService;
+			this._emailAccountService = emailAccountService;
 			this._sitemapGenerator = sitemapGenerator;
 			this._captchaSettings = captchaSettings;
 			this._commonSettings = commonSettings;
@@ -100,7 +111,7 @@ namespace SmartStore.Web.Controllers
 		[CaptchaValidator]
 		public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
 		{
-			// Validate CAPTCHA
+			//validate CAPTCHA
 			if (_captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
@@ -108,34 +119,49 @@ namespace SmartStore.Web.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var customer = _services.WorkContext.CurrentCustomer;
-				var email = model.Email.Trim();
-				var fullName = model.FullName;
-				var subject = T("ContactUs.EmailSubject", _services.StoreContext.CurrentStore.Name);
-				var body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
+				string email = model.Email.Trim();
+				string fullName = model.FullName;
+				string subject = T("ContactUs.EmailSubject", _services.StoreContext.CurrentStore.Name);
 
-				// Required for some SMTP servers
-				EmailAddress sender = null;
-				if (!_commonSettings.Value.UseSystemEmailForContactUsForm)
+				var emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
+
+				string from = null;
+				string fromName = null;
+				string body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
+				//required for some SMTP servers
+				if (_commonSettings.Value.UseSystemEmailForContactUsForm)
 				{
-					sender = new EmailAddress(email, fullName);
-				}
-
-				// email
-				var msg = Services.MessageFactory.SendContactUsMessage(customer, email, fullName, subject, body, sender);
-
-				if (msg?.Email?.Id != null)
-				{
-					model.SuccessfullySent = true;
-					model.Result = T("ContactUs.YourEnquiryHasBeenSent");
-					_services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
+					from = emailAccount.Email;
+					fromName = emailAccount.DisplayName;
+					body = string.Format("<strong>From</strong>: {0} - {1}<br /><br />{2}",
+						Server.HtmlEncode(fullName),
+						Server.HtmlEncode(email), body);
 				}
 				else
 				{
-					ModelState.AddModelError("", T("Common.Error.SendMail"));
-					model.Result = T("Common.Error.SendMail");
+					from = email;
+					fromName = fullName;
 				}
+				_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
+				{
+					From = from,
+					FromName = fromName,
+					To = emailAccount.Email,
+					ToName = emailAccount.DisplayName,
+					Priority = 5,
+					Subject = subject,
+					Body = body,
+					CreatedOnUtc = DateTime.UtcNow,
+					EmailAccountId = emailAccount.Id,
+					ReplyTo = email,
+					ReplyToName = fullName
+				});
 
+				model.SuccessfullySent = true;
+				model.Result = T("ContactUs.YourEnquiryHasBeenSent");
+
+				//activity log
+				_services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
 
 				return View(model);
 			}

@@ -27,7 +27,7 @@ namespace SmartStore.Services.Orders
     {
 		// 0 = CustomerId, 1 = CartType, 2 = StoreId
 		const string CARTITEMS_KEY = "sm.cartitems-{0}-{1}-{2}";
-		const string CARTITEMS_PATTERN_KEY = "sm.cartitems-*";
+		const string CARTITEMS_PATTERN_KEY = "sm.cartitems-";
 
 		private readonly IRepository<ShoppingCartItem> _sciRepository;
         private readonly IWorkContext _workContext;
@@ -143,7 +143,7 @@ namespace SmartStore.Services.Orders
 			return result;
 		}
 
-		protected virtual List<OrganizedShoppingCartItem> OrganizeCartItems(IEnumerable<ShoppingCartItem> cart)
+		protected List<OrganizedShoppingCartItem> OrganizeCartItems(IEnumerable<ShoppingCartItem> cart)
 		{
 			var result = new List<OrganizedShoppingCartItem>();
 			
@@ -225,6 +225,9 @@ namespace SmartStore.Services.Orders
 				checkoutAttributesXml = _checkoutAttributeParser.EnsureOnlyActiveAttributes(checkoutAttributesXml, cart);
 				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CheckoutAttributes, checkoutAttributesXml);
             }
+
+            // event notification
+            _eventPublisher.EntityDeleted(shoppingCartItem);
 
 			// delete child items
 			if (deleteChildCartItems)
@@ -1008,10 +1011,9 @@ namespace SmartStore.Services.Orders
 						}
                     }
 
-					// Products with CustomerEntersPrice are equal if the price is the same.
-					// But a system product may only be placed once in the shopping cart.
-					var customerEnteredPricesEqual = true;
-					if (sci.Item.Product.CustomerEntersPrice && !sci.Item.Product.IsSystemProduct)
+                    // price is the same (for products which require customers to enter a price)
+                    var customerEnteredPricesEqual = true;
+					if (sci.Item.Product.CustomerEntersPrice)
 					{
 						customerEnteredPricesEqual = Math.Round(sci.Item.CustomerEnteredPrice, 2) == Math.Round(customerEnteredPrice, 2);
 					}
@@ -1097,6 +1099,9 @@ namespace SmartStore.Services.Orders
 					existingCartItem.Item.Quantity = newQuantity;
 					existingCartItem.Item.UpdatedOnUtc = DateTime.UtcNow;
 					_customerService.UpdateCustomer(customer);
+
+					// event notification
+					_eventPublisher.EntityUpdated(existingCartItem.Item);
 				}
 			}
 			else
@@ -1142,6 +1147,7 @@ namespace SmartStore.Services.Orders
 					{
 						customer.ShoppingCartItems.Add(cartItem);
 						_customerService.UpdateCustomer(customer);
+						_eventPublisher.EntityInserted(cartItem);
 					}
 					else
 					{
@@ -1166,7 +1172,8 @@ namespace SmartStore.Services.Orders
 		public virtual void AddToCart(AddToCartContext ctx)
 		{
 			var customer = ctx.Customer ?? _workContext.CurrentCustomer;
-			var storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
+			int storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
+			var cart = GetCartItems(customer, ctx.CartType, storeId);
 
 			_customerService.ResetCheckoutData(customer, storeId);
 
@@ -1196,7 +1203,7 @@ namespace SmartStore.Services.Orders
 			}
 
 			ctx.Warnings.AddRange(
-				AddToCart(customer, ctx.Product, ctx.CartType, storeId,	ctx.AttributesXml, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
+				AddToCart(_workContext.CurrentCustomer, ctx.Product, ctx.CartType, storeId,	ctx.AttributesXml, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
 			);
 
 			if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Warnings.Count <= 0 && ctx.BundleItem == null)
@@ -1240,6 +1247,7 @@ namespace SmartStore.Services.Orders
 
 				customer.ShoppingCartItems.Add(ctx.Item);
 				_customerService.UpdateCustomer(customer);
+				_eventPublisher.EntityInserted(ctx.Item);
 
 				foreach (var childItem in ctx.ChildItems)
 				{
@@ -1247,6 +1255,7 @@ namespace SmartStore.Services.Orders
 
 					customer.ShoppingCartItems.Add(childItem);
 					_customerService.UpdateCustomer(customer);
+					_eventPublisher.EntityInserted(childItem);
 				}
 			}
 		}
@@ -1277,6 +1286,9 @@ namespace SmartStore.Services.Orders
                         shoppingCartItem.Quantity = newQuantity;
                         shoppingCartItem.UpdatedOnUtc = DateTime.UtcNow;
                         _customerService.UpdateCustomer(customer);
+
+                        // event notification
+                        _eventPublisher.EntityUpdated(shoppingCartItem);
                     }
                 }
                 else

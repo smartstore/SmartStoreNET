@@ -1,56 +1,43 @@
 ﻿using System;
 using System.Net.Mail;
+using System.Text;
 
 namespace SmartStore.Core.Email
 {
     public class EmailAddress
     {
-		private readonly MailAddress _inner;
+        public string Address { get; set; }
+        public string DisplayName { get; set; }
 
-		public EmailAddress(string address)
+        public EmailAddress(string address)
         {
-			_inner = new MailAddress(address);
+            this.Address = address;
         }
 
         public EmailAddress(string address, string displayName)
         {
-			_inner = new MailAddress(address, displayName);
-		}
+            this.Address = address;
+            this.DisplayName = displayName;
+        }
 
-		public EmailAddress(MailAddress address)
+		public override int GetHashCode()
 		{
-			_inner = address;
+			return this.ToString().GetHashCode();
 		}
 
-		public string Address
+		public override string ToString()
 		{
-			get { return _inner.Address; }
+			if (this.DisplayName.IsEmpty())
+			{
+				return this.Address;
+			}
+
+			return "{0} [{1}]".FormatCurrent(this.DisplayName, this.Address);
 		}
 
-		public string DisplayName
+		public MailAddress ToMailAddress()
 		{
-			get { return _inner.DisplayName; }
+			return new MailAddress(this.Address, this.DisplayName);
 		}
-
-		public string User
-		{
-			get { return _inner.User; }
-		}
-
-		public string Host
-		{
-			get { return _inner.Host; }
-		}
-
-		public override int GetHashCode() => _inner.GetHashCode();
-
-		public override string ToString() => _inner.ToString();
-
-		public MailAddress ToMailAddress() => _inner;
-
-		public static implicit operator string(EmailAddress obj)
-		{
-			return obj.ToString();
-		}
-	}
+    }
 }

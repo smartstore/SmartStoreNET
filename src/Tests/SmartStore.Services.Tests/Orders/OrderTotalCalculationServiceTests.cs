@@ -8,7 +8,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
@@ -16,6 +15,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -24,7 +24,6 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
@@ -43,8 +42,6 @@ namespace SmartStore.Services.Tests.Orders
         IDiscountService _discountService;
         IGiftCardService _giftCardService;
         IGenericAttributeService _genericAttributeService;
-        IPaymentService _paymentService;
-        ICurrencyService _currencyService;
         TaxSettings _taxSettings;
         RewardPointsSettings _rewardPointsSettings;
         ICategoryService _categoryService;
@@ -57,8 +54,7 @@ namespace SmartStore.Services.Tests.Orders
         IAddressService _addressService;
         ShippingSettings _shippingSettings;
         IRepository<ShippingMethod> _shippingMethodRepository;
-		IRepository<StoreMapping> _storeMappingRepository;
-		ShoppingCartSettings _shoppingCartSettings;
+        ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
         IEventPublisher _eventPublisher;
 		ISettingService _settingService;
@@ -67,24 +63,17 @@ namespace SmartStore.Services.Tests.Orders
 		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
-        Currency _currency;
-        ITypeFinder _typeFinder;
+		ITypeFinder _typeFinder;
 
         [SetUp]
         public new void SetUp()
         {
+			_workContext = MockRepository.GenerateMock<IWorkContext>();
+
 			_store = new Store { Id = 1 };
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
-
-            _currency = new Currency { Id = 1 };
-            _workContext = MockRepository.GenerateMock<IWorkContext>();
-            _workContext.Expect(x => x.WorkingCurrency).Return(_currency);
-
-            _services = MockRepository.GenerateMock<ICommonServices>();
-            _services.Expect(x => x.StoreContext).Return(_storeContext);
-            _services.Expect(x => x.WorkContext).Return(_workContext);
-
+			
             var pluginFinder = new PluginFinder();
 
 			_shoppingCartSettings = new ShoppingCartSettings();
@@ -98,8 +87,6 @@ namespace SmartStore.Services.Tests.Orders
 			_productService = MockRepository.GenerateMock<IProductService>();
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
-            _paymentService = MockRepository.GenerateMock<IPaymentService>();
-            _currencyService = MockRepository.GenerateMock<ICurrencyService>();
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
@@ -111,11 +98,9 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames = new List<string>();
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
-			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 
-			_shippingService = new ShippingService(
+            _shippingService = new ShippingService(
                 _shippingMethodRepository,
-				_storeMappingRepository,
                 _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,
@@ -125,8 +110,7 @@ namespace SmartStore.Services.Tests.Orders
 				_shoppingCartSettings,
 				_settingService,
 				this.ProviderManager,
-				_typeFinder,
-				_services);
+				_typeFinder);
 
 			_providerManager = MockRepository.GenerateMock<IProviderManager>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
@@ -143,6 +127,7 @@ namespace SmartStore.Services.Tests.Orders
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address { Id = _taxSettings.DefaultTaxAddressId });
 			_downloadService = MockRepository.GenerateMock<IDownloadService>();
+			_services = MockRepository.GenerateMock<ICommonServices>();
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 
@@ -151,11 +136,11 @@ namespace SmartStore.Services.Tests.Orders
             _rewardPointsSettings = new RewardPointsSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,
-				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService, _taxSettings);
+				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
 
 			_orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,
-                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _paymentService, _currencyService, _productAttributeParser,
+                _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _productAttributeParser,
                 _taxSettings, _rewardPointsSettings, _shippingSettings, _shoppingCartSettings, _catalogSettings);
         }
 
@@ -1321,14 +1306,15 @@ namespace SmartStore.Services.Tests.Orders
 		//}
 
         [Test]
-        public void Can_get_shopping_cart_total()
+        public void Can_get_shopping_cart_total_discount()
         {
+			//customer
 			var customer = new Customer
 			{
 				Id = 10,
 			};
 
-			// Shopping cart
+			//shopping cart
 			var product1 = new Product
 			{
 				Id = 1,
@@ -1366,7 +1352,7 @@ namespace SmartStore.Services.Tests.Orders
 			cart.ForEach(sci => sci.Item.Customer = customer);
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
-			// Discounts
+			//discounts
 			var discount1 = new Discount
 			{
 				Id = 1,
@@ -1396,25 +1382,25 @@ namespace SmartStore.Services.Tests.Orders
 
 			//_paymentService.Expect(ps => ps.GetAdditionalHandlingFee(cart, "test1")).Return(20);
 
-			// Shipping is taxable, payment fee is taxable
+
+			decimal discountAmount;
+			Discount appliedDiscount;
+			List<AppliedGiftCard> appliedGiftCards;
+			int redeemedRewardPoints;
+			decimal redeemedRewardPointsAmount;
+
+			//shipping is taxable, payment fee is taxable
 			_taxSettings.ShippingIsTaxable = true;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
 
-            // 56 - items, 10 - shipping (fixed), 20 - payment fee, 8.6 - tax, [-3] - discount = 91.6
-            // 56 - items, 10 - shipping (fixed), 6.6 - tax, [-3] - discount = 69.6
-            var cartTotal = _orderTotalCalcService.GetShoppingCartTotal(cart);
-            cartTotal.TotalAmount.ShouldEqual(69.6M);
-            cartTotal.DiscountAmount.ShouldEqual(3);
-            cartTotal.AppliedDiscount.ShouldNotBeNull();
-            cartTotal.AppliedDiscount.Name.ShouldEqual("Discount 1");
+			//56 - items, 10 - shipping (fixed), 20 - payment fee, 8.6 - tax, [-3] - discount = 91.6
+			//56 - items, 10 - shipping (fixed), 6.6 - tax, [-3] - discount = 69.6
+			_orderTotalCalcService.GetShoppingCartTotal(cart, out discountAmount, out appliedDiscount,	out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount)
+				.ShouldEqual(69.6M);
 
-            // Test implicit operators
-            decimal? totalAmount = null;
-            totalAmount = _orderTotalCalcService.GetShoppingCartTotal(cart);
-            totalAmount.ShouldEqual(69.6M);
-
-            ShoppingCartTotal cartTotalObject = 123.45M;
-            cartTotalObject.TotalAmount.ShouldEqual(123.45M);
+			discountAmount.ShouldEqual(3);
+			appliedDiscount.ShouldNotBeNull();
+			appliedDiscount.Name.ShouldEqual("Discount 1");
         }
 
         [Test]

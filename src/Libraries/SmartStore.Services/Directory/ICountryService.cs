@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Directory;
 
@@ -75,5 +74,5 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="country">Country</param>
         void UpdateCountry(Country country);
-	}
+    }
 }

@@ -38,7 +38,6 @@ namespace SmartStore.Core.Domain.Customers
 		public static string AdminAreaStoreScopeConfiguration { get { return "AdminAreaStoreScopeConfiguration"; } }
 		public static string MostRecentlyUsedCategories { get { return "MostRecentlyUsedCategories"; } }
 		public static string MostRecentlyUsedManufacturers { get { return "MostRecentlyUsedManufacturers"; } }
-		public static string WalletEnabled { get { return "WalletEnabled"; } }
 
 		//depends on store
 		public static string CurrencyId { get { return "CurrencyId"; } }
@@ -51,6 +50,5 @@ namespace SmartStore.Core.Domain.Customers
 		public static string WorkingThemeName { get { return "WorkingThemeName"; } }
 		public static string TaxDisplayTypeId { get { return "TaxDisplayTypeId"; } }
 		public static string UseRewardPointsDuringCheckout { get { return "UseRewardPointsDuringCheckout"; } }
-		public static string UseCreditBalanceDuringCheckout { get { return "UseCreditBalanceDuringCheckout"; } }
-	}
+    }
 }

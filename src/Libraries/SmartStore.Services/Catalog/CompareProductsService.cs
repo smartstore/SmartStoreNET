@@ -82,7 +82,7 @@ namespace SmartStore.Services.Catalog
             foreach (int productId in productIds)
             {
                 var product = _productService.GetProductById(productId);
-                if (product != null && product.Published && !product.Deleted && !product.IsSystemProduct)
+                if (product != null && product.Published && !product.Deleted)
                     products.Add(product);
             }
             return products;

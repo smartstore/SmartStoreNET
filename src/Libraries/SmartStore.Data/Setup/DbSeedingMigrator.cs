@@ -20,7 +20,6 @@ namespace SmartStore.Data.Setup
 	{
 		private ILogger _logger;
 		private static bool _isMigrating;
-		private static Exception _lastSeedException;
 
 		/// <summary>
 		/// Initializes a new instance of the DbMigrator class with the default (core db) configuration.
@@ -73,12 +72,6 @@ namespace SmartStore.Data.Setup
 		/// <returns>The number of applied migrations</returns>
 		public int RunPendingMigrations(TContext context)
 		{
-			if (_lastSeedException != null)
-			{
-				// This can happen when a previous migration attempt failed with a rollback.
-				throw _lastSeedException;
-			}
-
 			var pendingMigrations = GetPendingMigrations().ToList();
 			if (!pendingMigrations.Any())
 				return 0;
@@ -86,9 +79,8 @@ namespace SmartStore.Data.Setup
 			var coreSeeders = new List<SeederEntry>();
 			var externalSeeders = new List<SeederEntry>();
 			var isCoreMigration = context is SmartObjectContext;
-			var databaseMigrations = this.GetDatabaseMigrations().ToArray();
-			var initialMigration = databaseMigrations.LastOrDefault() ?? "[Initial]";
-			var lastSuccessfulMigration = databaseMigrations.FirstOrDefault();
+			var initialMigration = this.GetDatabaseMigrations().LastOrDefault() ?? "[Initial]";
+			var lastSuccessfulMigration = initialMigration;
 
 			IDataSeeder<SmartObjectContext> coreSeeder = null;
 			IDataSeeder<TContext> externalSeeder = null;
@@ -197,8 +189,7 @@ namespace SmartStore.Data.Setup
 					{
 						Update(seederEntry.PreviousMigrationId);
 						_isMigrating = false;
-						_lastSeedException = new DbMigrationException(seederEntry.PreviousMigrationId, seederEntry.MigrationId, ex.InnerException ?? ex, true);
-						throw _lastSeedException;
+						throw new DbMigrationException(seederEntry.PreviousMigrationId, seederEntry.MigrationId, ex.InnerException ?? ex, true);
 					}
 
 					Logger.WarnFormat(ex, "Seed error in migration '{0}'. The error was ignored because no rollback was requested.", seederEntry.MigrationId);

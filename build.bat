@@ -1,37 +1,42 @@
-for /f "usebackq tokens=1* delims=: " %%i in (`lib\vswhere\vswhere -latest -requires Microsoft.Component.MSBuild`) do (
-	if /i "%%i"=="installationPath" set InstallDir=%%j
-)
-
 FOR %%b in (
-       "%InstallDir%\Common7\Tools\VsMSBuildCmd.bat"
-       "%VS140COMNTOOLS%\Common7\Tools\vsvars32.bat"
-    ) do (
-    if exist %%b ( 
-       call %%b
-       goto findmsbuild
-    )
-)
+		"%VS140COMNTOOLS%..\..\VC\vcvarsall.bat"
+		"%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+		"%ProgramFiles%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" 
 
+		"%VS120COMNTOOLS%..\..\VC\vcvarsall.bat"
+		"%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+		"%ProgramFiles%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+
+		"%VS110COMNTOOLS%..\..\VC\vcvarsall.bat"
+		"%ProgramFiles(x86)%\Microsoft Visual Studio 11.0\VC\vcvarsall.bat"
+		"%ProgramFiles%\Microsoft Visual Studio 11.0\VC\vcvarsall.bat" 
+	) do (
+	if exist %%b ( 
+		call %%b x86
+		goto findmsbuild
+	)
+)
+  
 echo "Unable to detect suitable environment. Build may not succeed."
 
 :findmsbuild
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
-if exist "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
-	if not defined MsBuildPath (	
-		SET "MsBuildPath=%InstallDir%\MSBuild\15.0\Bin\MsBuild.exe"
-		goto build	
-	)	
+FOR %%p in (
+	   "%ProgramFiles(x86)%\MSBuild\14.0\Bin"
+	   "%ProgramFiles%\MSBuild\14.0\Bin"
+    ) do (
+	if exist %%p (
+		if not defined MsBuildPath (
+			SET "MsBuildPath=%%~p"
+			goto build	
+		)
+	)
 )
 
-
-echo "Unable to detect suitable MsBuild version (15.0). Build may not succeed."
+echo "Unable to detect suitable MsBuild version (14.0). Build may not succeed."
 
 :build
-cd /d %~dp0
 
-echo "Restoring NuGet packages"
-lib\nuget\nuget.exe restore "src\SmartStoreNET.Full-sym.sln"
-
-call "!MsBuildPath!" SmartStoreNET.proj /p:SlnName=SmartStoreNET /m /p:DebugSymbols=false /p:DebugType=None /maxcpucount %*
+call "!MsBuildPath!\msbuild.exe" SmartStoreNET.proj /p:DebugSymbols=false /p:DebugType=None /P:SlnName=SmartStoreNET /maxcpucount %*

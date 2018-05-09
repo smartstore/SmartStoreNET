@@ -17,9 +17,9 @@ namespace SmartStore.Services.Hooks
 			_localizedEntityService = localizedEntityService;
 		}
 
-		protected override void OnDeleted(ILocalizedEntity entity, IHookedEntity entry)
+		protected override void OnDeleted(ILocalizedEntity entity, HookedEntity entry)
 		{
-			var entityType = entry.EntityType;
+			var entityType = entry.Entity.GetUnproxiedType();
 			var localizedEntities = _localizedEntityService.Value.GetLocalizedProperties(entry.Entity.Id, entityType.Name);
 			_toDelete.AddRange(localizedEntities);
 		}

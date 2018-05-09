@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.AmazonPay.Extensions;
 using SmartStore.AmazonPay.Services;
 
 namespace SmartStore.AmazonPay.Filters
@@ -26,24 +27,20 @@ namespace SmartStore.AmazonPay.Filters
 			if (filterContext == null || filterContext.ActionDescriptor == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
 				return;
 
-			var actionName = filterContext.ActionDescriptor.ActionName;
+			if (!filterContext.HttpContext.HasAmazonPayState())
+				return;
+
+			string actionName = filterContext.ActionDescriptor.ActionName;
 
 			if (!IsInterceptableAction(actionName))
 				return;
 
-			if (actionName.IsCaseInsensitiveEqual("ShippingMethod") || actionName.IsCaseInsensitiveEqual("PaymentMethod"))
-			{
-				if (!filterContext.HttpContext.HasAmazonPayState())
-					return;
-			}
-
 			if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
 			{
-				var model = _apiService.Value.CreateViewModel(AmazonPayRequestType.ShippingMethod, filterContext.Controller.TempData);
+				var model = _apiService.Value.ProcessPluginRequest(AmazonPayRequestType.ShippingMethod, filterContext.Controller.TempData);
 
-				if (model.Result == AmazonPayResultType.Redirect)
+				if (model.Result == AmazonPayResultType.Redirect) // shipping to selected address not possible
 				{
-					// Shipping to selected address not possible.
 					var urlHelper = new UrlHelper(filterContext.HttpContext.Request.RequestContext);
 					var url = urlHelper.Action("ShippingAddress", "Checkout", new { area = "" });
 
@@ -57,18 +54,18 @@ namespace SmartStore.AmazonPay.Filters
 			if (filterContext == null || filterContext.ActionDescriptor == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
 				return;
 
-			var actionName = filterContext.ActionDescriptor.ActionName;
-
-            if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
-                return;
-
-            if (!IsInterceptableAction(actionName))
+			if (!filterContext.HttpContext.HasAmazonPayState())
 				return;
 
-            if (!filterContext.HttpContext.HasAmazonPayState())
-                return;
+			string actionName = filterContext.ActionDescriptor.ActionName;
 
-            var routeValues = new RouteValueDictionary(new { action = actionName, controller = "AmazonPayCheckout" });
+			if (!IsInterceptableAction(actionName))
+				return;
+
+			if (actionName.IsCaseInsensitiveEqual("ShippingMethod"))
+				return;
+
+			var routeValues = new RouteValueDictionary(new { action = actionName, controller = "AmazonPayCheckout" });
 
 			filterContext.Result = new RedirectToRouteResult("SmartStore.AmazonPay", routeValues);
 		}

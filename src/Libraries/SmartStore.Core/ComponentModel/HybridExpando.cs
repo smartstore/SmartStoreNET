@@ -37,17 +37,10 @@ using System.Linq;
 using System.Dynamic;
 using System.Reflection;
 using System.Collections;
-using SmartStore.Utilities;
 
 namespace SmartStore.ComponentModel
 {
-    public enum MemberOptMethod
-	{
-		Allow,
-		Disallow
-	}
-	
-	/// <summary>
+    /// <summary>
     /// Class that provides extensible properties and methods to an
     /// existing object when cast to dynamic. This
     /// dynamic object stores 'extra' properties in a dictionary or
@@ -78,33 +71,22 @@ namespace SmartStore.ComponentModel
         /// </summary>
         private Type _instanceType;
 
-		/// <summary>
-		/// Adjusted property list for the wrapped instance type after white/black-list members has been applied.
-		/// </summary>
-		private IDictionary<string, FastProperty> _instanceProps;
-		private readonly static IDictionary<string, FastProperty> EmptyProps = new Dictionary<string, FastProperty>();
+        /// <summary>
+        /// String Dictionary that contains the extra dynamic values
+        /// stored on this object/instance
+        /// </summary>        
+        /// <remarks>Using PropertyBag to support XML Serialization of the dictionary</remarks>
+        public PropertyBag Properties = new PropertyBag();
 
-		/// <summary>
-		/// String Dictionary that contains the extra dynamic values
-		/// stored on this object/instance
-		/// </summary>        
-		/// <remarks>Using PropertyBag to support XML Serialization of the dictionary</remarks>
-		public PropertyBag Properties = new PropertyBag();
-
-		private readonly HashSet<string> _optMembers;
-		private readonly MemberOptMethod _optMethod;
-
-		private readonly bool _returnNullWhenFalsy;
-
-		/// <summary>
-		/// This constructor just works off the internal dictionary and any 
-		/// public properties of this object.
-		/// 
-		/// Note you can subclass HybridExpando.
-		/// </summary>
-		public HybridExpando(bool returnNullWhenFalsy = false)
+        /// <summary>
+        /// This constructor just works off the internal dictionary and any 
+        /// public properties of this object.
+        /// 
+        /// Note you can subclass Expando.
+        /// </summary>
+        public HybridExpando()
         {
-			_returnNullWhenFalsy = returnNullWhenFalsy;
+            Initialize(this);
         }
 
         /// <summary>
@@ -115,42 +97,16 @@ namespace SmartStore.ComponentModel
         /// check native properties and only check the Dictionary!
         /// </remarks>
         /// <param name="instance"></param>
-        public HybridExpando(object instance, bool returnNullWhenFalsy = false)
+        public HybridExpando(object instance)
         {
-			Guard.NotNull(instance, nameof(instance));
-
-			_returnNullWhenFalsy = returnNullWhenFalsy;
-			Initialize(instance);
+            Initialize(instance);
         }
-
-		/// <summary>
-		/// Allows passing in an existing instance variable to 'extend'
-		/// along with a list of member names to allow or disallow.
-		/// </summary>
-		/// <param name="instance"></param>
-		public HybridExpando(object instance, IEnumerable<string> optMembers, MemberOptMethod optMethod, bool returnNullWhenFalsy = false)
-		{
-			Guard.NotNull(instance, nameof(instance));
-
-			_returnNullWhenFalsy = returnNullWhenFalsy;
-			Initialize(instance);
-
-			_optMethod = optMethod;
-
-			if (optMembers is HashSet<string> h)
-			{
-				_optMembers = h;
-			}
-			else
-			{
-				_optMembers = new HashSet<string>(optMembers);
-			}
-		}
-
-		protected void Initialize(object instance)
+        
+        protected void Initialize(object instance)
         {
             _instance = instance;
-			_instanceType = instance?.GetType();
+            if (instance != null)
+                _instanceType = instance.GetType();
         }
 
 		protected object WrappedObject
@@ -160,29 +116,19 @@ namespace SmartStore.ComponentModel
 
 		public override IEnumerable<string> GetDynamicMemberNames()
         {
-			foreach (var kvp in this.Properties.Keys)
-			{
-				yield return kvp;
-			}
-
-			foreach (var kvp in GetInstanceProperties())
-			{
-				if (!this.Properties.ContainsKey(kvp.Key))
-				{
-					yield return kvp.Key;
-				}
-			}
-		}
+            foreach (var prop in this.GetProperties(false))
+                yield return prop.Key;
+        }
 
 
-		/// <summary>
-		/// Try to retrieve a member by name first from instance properties
-		/// followed by the collection entries.
-		/// </summary>
-		/// <param name="binder"></param>
-		/// <param name="result"></param>
-		/// <returns></returns>
-		public override bool TryGetMember(GetMemberBinder binder, out object result)
+        /// <summary>
+        /// Try to retrieve a member by name first from instance properties
+        /// followed by the collection entries.
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
 			return TryGetMemberCore(binder.Name, out result);
         }
@@ -190,33 +136,27 @@ namespace SmartStore.ComponentModel
 		protected virtual bool TryGetMemberCore(string name, out object result)
 		{
 			result = null;
-			bool exists = false;
 
 			// first check the Properties collection for member
-			if (Properties.ContainsKey(name))
+			if (Properties.Keys.Contains(name))
 			{
 				result = Properties[name];
-				exists = true;
+				return true;
 			}
 
 			// Next check for public properties via Reflection
-			if (!exists && _instance != null)
+			if (_instance != null)
 			{
 				try
 				{
-					exists = GetProperty(_instance, name, out result);
+					return GetProperty(_instance, name, out result);
 				}
 				catch { }
 			}
 
-			// Falsy check
-			if (_returnNullWhenFalsy && result != null && !CommonHelper.IsTruthy(result))
-			{
-				result = null;
-			}
-
 			// failed to retrieve a property
-			return exists;
+			result = null;
+			return false;
 		}
 
 
@@ -235,13 +175,6 @@ namespace SmartStore.ComponentModel
 		protected virtual bool TrySetMemberCore(string name, object value)
 		{
 			// first check to see if there's a native property to set
-			if (Properties.ContainsKey(name))
-			{
-				Properties[name] = value;
-				return true;
-			}
-
-			// Check to see if there's a native property to set
 			if (_instance != null)
 			{
 				try
@@ -259,19 +192,6 @@ namespace SmartStore.ComponentModel
 		}
 
 		/// <summary>
-		/// Dynamic invocation method. Currently allows only for Reflection based
-		/// operation (no ability to add methods dynamically).
-		/// </summary>
-		/// <param name="binder"></param>
-		/// <param name="args"></param>
-		/// <param name="result"></param>
-		public void Override(string name, object value = null)
-		{
-			Guard.NotEmpty(name, nameof(name));
-			Properties[name] = value;
-		}
-
-		/// <returns></returns>
 		/// Dynamic invocation method. Currently allows only for Reflection based
 		/// operation (no ability to add methods dynamically).
 		/// </summary>
@@ -306,7 +226,8 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool GetProperty(object instance, string name, out object result)
         {
-			if (GetInstanceProperties().TryGetValue(name, out var fastProp))
+			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, PropertyCachingStrategy.EagerCached) : null;
+			if (fastProp != null)
 			{
 				result = fastProp.GetValue(instance ?? this);
 				return true;
@@ -325,11 +246,12 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool SetProperty(object instance, string name, object value)
         {
-			if (GetInstanceProperties().TryGetValue(name, out var fastProp))
+			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, PropertyCachingStrategy.EagerCached) : null;
+			if (fastProp != null)
 			{
 				fastProp.SetValue(instance ?? this, value);
 				return true;
-			}
+            }
 
 			return false;
         }
@@ -345,7 +267,7 @@ namespace SmartStore.ComponentModel
         protected bool InvokeMethod(object instance, string name, object[] args, out object result)
         {
             // Look at the instanceType
-            var mi = _instanceType?.GetMethod(name, BindingFlags.Instance | BindingFlags.Public);
+            var mi = _instanceType != null ? _instanceType.GetMethod(name, BindingFlags.Instance | BindingFlags.Public) : null;
             if (mi != null)
             {
                 result = mi.Invoke(instance ?? this, args);
@@ -380,7 +302,8 @@ namespace SmartStore.ComponentModel
 		{
 			get
 			{
-				if (!TryGetMemberCore(key, out var result))
+				object result = null;
+				if (!TryGetMemberCore(key, out result))
 				{
 					throw new KeyNotFoundException();
 				}
@@ -401,14 +324,14 @@ namespace SmartStore.ComponentModel
 		/// <returns></returns>
 		public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
         {
-			foreach (var kvp in this.Properties)
+			foreach (var key in this.Properties.Keys)
 			{
-				yield return kvp;
+				yield return new KeyValuePair<string, object>(key, this.Properties[key]);
 			}
 				
-			if (includeInstanceProperties)
+			if (includeInstanceProperties && _instance != null)
             {
-                foreach (var prop in GetInstanceProperties().Values)
+                foreach (var prop in FastProperty.GetProperties(_instance).Values)
 				{
 					if (!this.Properties.ContainsKey(prop.Name))
 					{
@@ -416,31 +339,8 @@ namespace SmartStore.ComponentModel
 					}
 				}
             }
+
         }
-
-		private IDictionary<string, FastProperty> GetInstanceProperties()
-		{
-			if (_instance == null)
-			{
-				return EmptyProps;
-			}
-
-			if (_instanceProps == null)
-			{
-				var props = FastProperty.GetProperties(_instance) as IDictionary<string, FastProperty>;
-
-				if (_optMembers != null)
-				{
-					props = props
-						.Where(x => _optMethod == MemberOptMethod.Allow ? _optMembers.Contains(x.Key) : !_optMembers.Contains(x.Key))
-						.ToDictionary(x => x.Key, x => x.Value);
-				}
-
-				_instanceProps = props;
-			}
-
-			return _instanceProps;
-		}
 
         /// <summary>
         /// Checks whether a property exists in the Property collection
@@ -467,10 +367,10 @@ namespace SmartStore.ComponentModel
 				return true;
 			}
 
-            if (includeInstanceProperties)
+            if (includeInstanceProperties && _instance != null)
             {
-				return GetInstanceProperties().ContainsKey(propertyName);
-			}
+				return FastProperty.GetProperties(_instance).ContainsKey(propertyName);
+            }
 
             return false;
         }
@@ -497,9 +397,15 @@ namespace SmartStore.ComponentModel
 		{
 			get
 			{
-				return GetDynamicMemberNames().Count();
+				var count = Properties.Count;
+				if (_instanceType != null)
+				{
+					count += FastProperty.GetProperties(_instanceType).Count;
 				}
+
+				return count;
 			}
+		}
 
 		bool ICollection<KeyValuePair<string, object>>.IsReadOnly
 		{

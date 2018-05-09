@@ -8,13 +8,12 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Localization
 {
-    [Validator(typeof(LanguageValidator))]
-    public class LanguageModel : EntityModelBase, IStoreSelector
+	[Validator(typeof(LanguageValidator))]
+    public class LanguageModel : EntityModelBase
     {
         public LanguageModel()
         {
             FlagFileNames = new List<string>();
-            AvailableDownloadLanguages = new List<AvailableLanguageModel>();
         }
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Name")]
@@ -31,6 +30,7 @@ namespace SmartStore.Admin.Models.Localization
         public string UniqueSeoCode { get; set; }
 		public List<SelectListItem> AvailableTwoLetterLanguageCodes { get; set; }
 
+		//flags
 		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.FlagImageFileName")]
         [AllowHtml]
         public string FlagImageFileName { get; set; }
@@ -46,13 +46,11 @@ namespace SmartStore.Admin.Models.Localization
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
+		//Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.AvailableLanguageSetId")]
-        public int AvailableLanguageSetId { get; set; }
-        public List<AvailableLanguageModel> AvailableDownloadLanguages { get; set; }
     }
 }

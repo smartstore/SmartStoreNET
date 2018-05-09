@@ -8,11 +8,13 @@ using SmartStore.ShippingByWeight.Domain;
 using SmartStore.ShippingByWeight.Models;
 using SmartStore.ShippingByWeight.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.ShippingByWeight.Controllers
 {
+
 	[AdminAuthorize]
     public class ShippingByWeightController : PluginControllerBase
     {
@@ -129,9 +131,15 @@ namespace SmartStore.ShippingByWeight.Controllers
             return RatesList(command);
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Configure")]
+        [FormValueRequired("addshippingbyweightrecord")]
         public ActionResult AddShippingByWeightRecord(ShippingByWeightListModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return Configure();
+            }
+
             var sbw = new ShippingByWeightRecord()
             {
 				StoreId = model.AddStoreId,
@@ -147,26 +155,24 @@ namespace SmartStore.ShippingByWeight.Controllers
                 SmallQuantitySurcharge = model.SmallQuantitySurcharge,
                 SmallQuantityThreshold = model.SmallQuantityThreshold,
             };
-
             _shippingByWeightService.InsertShippingByWeightRecord(sbw);
 
-			NotifySuccess(T("Plugins.Shipping.ByWeight.AddNewRecord.Success"));
+            return Configure();
+        }
 
-			return Json(new { Result = true });
-		}
-
-        [HttpPost]
-        public ActionResult Configure(ShippingByWeightListModel model)
+        [HttpPost, ActionName("Configure")]
+        [FormValueRequired("savegeneralsettings")]
+        public ActionResult SaveGeneralSettings(ShippingByWeightListModel model)
         {
+            //save settings
             _shippingByWeightSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
             _shippingByWeightSettings.CalculatePerWeightUnit = model.CalculatePerWeightUnit;
 			_shippingByWeightSettings.IncludeWeightOfFreeShippingProducts = model.IncludeWeightOfFreeShippingProducts;
 
             _services.Settings.SaveSetting(_shippingByWeightSettings);
-
-			NotifySuccess(T("Admin.Configuration.Updated"));
-
-			return Configure();
-		}   
+            
+            return Configure();
+        }
+        
     }
 }

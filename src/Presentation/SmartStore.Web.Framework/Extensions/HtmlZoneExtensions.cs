@@ -104,7 +104,7 @@ namespace SmartStore.Web.Framework
 			ZoneInjectMode injectMode = ZoneInjectMode.Append, 
 			string key = null)
 		{
-			if ((key.HasValue() && DocumentZone.HasUniqueKey(key)) || helper.ViewContext.HttpContext.Request.IsAjaxRequest())
+			if (key.HasValue() && DocumentZone.HasUniqueKey(key))
 			{
 				return ActionDisposable.Empty;
 			}

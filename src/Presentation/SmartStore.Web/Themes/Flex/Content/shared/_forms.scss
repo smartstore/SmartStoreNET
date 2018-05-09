@@ -1,0 +1,168 @@
+/// <reference path="../_variables.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Forms
+// ------------------------------------------------------
+
+fieldset.content-group {
+    margin-bottom: 2rem;
+
+    > legend {
+        position: relative;
+        font-size: $font-size-h5;
+        font-weight: 400;
+        color: $gray-light;
+        text-transform: uppercase;
+        margin-bottom: 1.2rem;
+
+        &:before {
+            position: absolute;
+            content: ' ';
+            width: 100%;
+            left: 0;
+            top: 50%;
+            height: 1px;
+            background: rgba(0,0,0, 0.12);
+            z-index: 0;
+        }
+
+        > span {
+            position: relative;
+            display: inline-block;
+            background: $body-bg;
+            padding-right: 1rem;
+            z-index: 1;
+        }
+    }
+}
+
+.form-group label:not(.form-check-label) {
+    font-weight: $font-weight-medium;
+}
+
+.form-group.required > label:after {
+    content: ' *';
+}
+
+.input-group-addon {
+    // fixes Flex wrong alignment with input-groups
+    line-height: inherit;
+}
+
+.form-text {
+    line-height: 1.3;
+}
+
+
+// Control with Icons
+// ------------------------------------------------------
+
+.has-icon {
+    position: relative;
+    display: flex;
+}
+
+.has-icon .form-control {
+    position: relative;
+    z-index: 2;
+}
+
+.has-icon .input-group-icon {
+    position: absolute;
+    left: 0;
+    z-index: 10;
+    width: $input-height;
+    height: $input-height;
+    line-height: $input-height;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.has-icon.has-icon-right .input-group-icon { 
+    left: auto;
+    right: 0;
+}
+
+.has-icon.input-group-lg .input-group-icon {
+    width: $input-height-lg;
+    height: $input-height-lg;
+    line-height: $input-height-lg;
+    font-size: $font-size-lg;
+}
+
+.has-icon.input-group-sm .input-group-icon {
+    width: $input-height-sm;
+    height: $input-height-sm;
+    line-height: $input-height-sm;
+    font-size: $font-size-sm;
+}
+
+.has-icon:not(.has-icon-right) .form-control { 
+    padding-left: $input-height;
+}
+.has-icon:not(.has-icon-right).input-group-lg .form-control {
+    padding-left: $input-height-lg;
+}
+.has-icon:not(.has-icon-right).input-group-sm .form-control {
+    padding-left: $input-height-sm;
+}
+
+.has-icon-right .form-control { 
+    padding-right: $input-height;
+}
+.has-icon-right.input-group-lg .form-control {
+    padding-right: $input-height-lg;
+}
+.has-icon-right.input-group-sm .form-control {
+    padding-right: $input-height-sm;
+}
+
+
+// Checkbox & Radio tweaks
+// ------------------------------------------------------
+
+.radio input[type="radio"], 
+.radio-inline input[type="radio"], 
+.checkbox input[type="checkbox"], 
+.checkbox-inline input[type="checkbox"] {
+    margin-right: 0.25rem;
+}
+
+
+//
+// Validation
+// ------------------------------------------------------
+
+.validation-summary-valid,
+.validation-summary-errors {
+    @extend .alert;
+
+    > *:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.validation-summary-valid {
+    @extend .alert-success; 
+}
+
+.validation-summary-errors {
+    @extend .alert-danger; 
+}
+
+.field-validation-error {
+    display: block;
+    color: $state-danger-text;
+    margin-top: 0.25rem;
+}
+
+
+//
+// Some BS 4 fixes
+// ------------------------------------------------------
+
+.input-group .form-control {
+    // Inputs too wide on FF otherwise
+    flex-basis: auto;
+}
+

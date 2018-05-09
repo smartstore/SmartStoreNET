@@ -51,7 +51,7 @@ namespace SmartStore.Services.Hooks
 
 		#region Utilities
 
-		private bool IsPropertyModified(IHookedEntity entry, string propertyName)
+		private bool IsPropertyModified(HookedEntity entry, string propertyName)
 		{
 			var result = false;
 
@@ -71,9 +71,7 @@ namespace SmartStore.Services.Hooks
 							result = prop.OriginalValue != null;
 							break;
 						default:
-							result =
-								(prop.CurrentValue != null && !prop.CurrentValue.Equals(prop.OriginalValue)) ||
-								(prop.OriginalValue != null && !prop.OriginalValue.Equals(prop.CurrentValue));
+							result = prop.CurrentValue != null && !prop.CurrentValue.Equals(prop.OriginalValue);
 							break;
 					}
 				}
@@ -82,24 +80,24 @@ namespace SmartStore.Services.Hooks
 			return result;
 		}
 
-		private void RevertChanges(IHookedEntity entry, string errorMessage)
+		private void RevertChanges(HookedEntity entry, string errorMessage)
 		{
 			// throw exception in OnBeforeSaveCompleted
 			_errorMessage = errorMessage;
 
 			// revert changes
-			if (entry.State == EntityState.Modified)
+			if (entry.Entry.State == System.Data.Entity.EntityState.Modified)
 			{
-				entry.State = EntityState.Unchanged;
+				entry.Entry.State = System.Data.Entity.EntityState.Unchanged;
 			}
-			else if (entry.State == EntityState.Added)
+			else if (entry.Entry.State == System.Data.Entity.EntityState.Added)
 			{
-				entry.State = EntityState.Detached;
+				entry.Entry.State = System.Data.Entity.EntityState.Detached;
 			}
 		}
 
 		private bool HasAliasDuplicate<TEntity>(
-			IHookedEntity entry,
+			HookedEntity entry,
 			BaseEntity baseEntity,
 			Func<IQueryable<TEntity>, TEntity, bool> hasDuplicate = null) 
 			where TEntity : BaseEntity
@@ -135,7 +133,7 @@ namespace SmartStore.Services.Hooks
 			return false;
 		}
 
-		private bool HasAliasDuplicate<T1, T2>(IHookedEntity entry, BaseEntity baseEntity) where T1 : BaseEntity where T2 : BaseEntity
+		private bool HasAliasDuplicate<T1, T2>(HookedEntity entry, BaseEntity baseEntity) where T1 : BaseEntity where T2 : BaseEntity
 		{
 			if (entry.InitialState == EntityState.Added || entry.InitialState == EntityState.Modified)
 			{
@@ -153,7 +151,7 @@ namespace SmartStore.Services.Hooks
 
 						if (duplicate1 != null || duplicate2 != null)
 						{
-							var type = entry.EntityType;
+							var type = baseEntity.GetUnproxiedType();
 
 							if (duplicate1 != null && duplicate1.Id == entity.Id && type == typeof(T1))
 								return false;
@@ -258,7 +256,7 @@ namespace SmartStore.Services.Hooks
 		}
 
 		private bool HasEntityDuplicate<TEntity>(
-			IHookedEntity entry,
+			HookedEntity entry,
 			BaseEntity baseEntity,
 			Func<TEntity, string> getName,
 			Expression<Func<TEntity, bool>> getDuplicate) where TEntity : BaseEntity
@@ -281,17 +279,17 @@ namespace SmartStore.Services.Hooks
 
 		#endregion
 
-		protected override void OnDeleting(BaseEntity entity, IHookedEntity entry)
+		protected override void OnDeleting(BaseEntity entity, HookedEntity entry)
 		{
 			HookObject(entity, entry);
 		}
 
-		protected override void OnInserting(BaseEntity entity, IHookedEntity entry)
+		protected override void OnInserting(BaseEntity entity, HookedEntity entry)
 		{
 			HookObject(entity, entry);
 		}
 
-		protected override void OnUpdating(BaseEntity entity, IHookedEntity entry)
+		protected override void OnUpdating(BaseEntity entity, HookedEntity entry)
 		{
 			HookObject(entity, entry);
 		}
@@ -307,12 +305,12 @@ namespace SmartStore.Services.Hooks
 			}
 		}
 
-		private void HookObject(BaseEntity baseEntity, IHookedEntity entry)
+		private void HookObject(BaseEntity baseEntity, HookedEntity entry)
 		{
-			var type = entry.EntityType;
+			var type = baseEntity.GetUnproxiedType();
 
 			if (!_candidateTypes.Contains(type))
-				throw new NotSupportedException();
+				return;
 
 			if (type == typeof(SpecificationAttribute))
 			{

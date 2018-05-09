@@ -3,69 +3,50 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.AmazonPay.Controllers;
 using SmartStore.AmazonPay.Services;
+using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
-using SmartStore.Services.Authentication.External;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Tasks;
 
 namespace SmartStore.AmazonPay
 {
 	[DependentWidgets("Widgets.AmazonPay")]
-	[FriendlyName("Amazon Pay")]
-	[DisplayOrder(-1)]
-	public class AmazonPayPlugin : PaymentPluginBase, IExternalAuthenticationMethod, IConfigurable
+	public class Plugin : PaymentPluginBase, IConfigurable
 	{
 		private readonly IAmazonPayService _apiService;
-		private readonly ICommonServices _services;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-		private readonly IScheduleTaskService _scheduleTaskService;
+		private readonly ICommonServices _services;
 
-		public AmazonPayPlugin(
+		public Plugin(
 			IAmazonPayService apiService,
-			ICommonServices services,
 			IOrderTotalCalculationService orderTotalCalculationService,
-			IScheduleTaskService scheduleTaskService)
+			ICommonServices services)
 		{
 			_apiService = apiService;
-			_services = services;
 			_orderTotalCalculationService = orderTotalCalculationService;
-			_scheduleTaskService = scheduleTaskService;
-
-			Logger = NullLogger.Instance;
-		}
-
-		public ILogger Logger { get; set; }
-
-		public static string SystemName
-		{
-			get { return "SmartStore.AmazonPay"; }
+			_services = services;
 		}
 
 		public override void Install()
 		{
-			_services.Settings.SaveSetting(new AmazonPaySettings());
-			_services.Localization.ImportPluginResourcesFromXml(PluginDescriptor);
+			_services.Settings.SaveSetting<AmazonPaySettings>(new AmazonPaySettings());
 
-			// Polling task every 30 minutes.
-			_scheduleTaskService.GetOrAddTask<DataPollingTask>(x =>
-			{
-				x.Name = _services.Localization.GetResource("Plugins.Payments.AmazonPay.TaskName");
-				x.CronExpression = "*/30 * * * *";
-			});
+			_services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
+
+			_apiService.DataPollingTaskInit();
 
 			base.Install();
 		}
 
 		public override void Uninstall()
 		{
-			_scheduleTaskService.TryDeleteTask<DataPollingTask>();
+			_apiService.DataPollingTaskDelete();
+
 			_services.Settings.DeleteSetting<AmazonPaySettings>();
-			_services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
+
+			_services.Localization.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 
 			base.Uninstall();
 		}
@@ -90,19 +71,18 @@ namespace SmartStore.AmazonPay
 		public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
 		{
 			var result = decimal.Zero;
-
 			try
 			{
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(_services.StoreContext.CurrentStore.Id);
 
 				result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, settings.AdditionalFee, settings.AdditionalFeePercentage);
 			}
-			catch (Exception exception)
+			catch (Exception exc)
 			{
-				Logger.Error(exception);
+				_apiService.LogError(exc);
 			}
-
 			return result;
+
 		}
 
 		public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
@@ -128,36 +108,14 @@ namespace SmartStore.AmazonPay
 		{
 			actionName = "Configure";
 			controllerName = "AmazonPay";
-			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", SystemName } };
-		}
-
-		public void GetPublicInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
-		{
-			actionName = "AuthenticationPublicInfo";
-			controllerName = "AmazonPay";
-			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", SystemName } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", AmazonPayCore.SystemName } };
 		}
 
 		public override void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
 		{
-			try
-			{
-				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(_services.StoreContext.CurrentStore.Id);
-				if (settings.ShowPayButtonForAdminOnly && !_services.WorkContext.CurrentCustomer.IsAdmin())
-				{
-					actionName = controllerName = null;
-					routeValues = null;
-					return;
-				}
-			}
-			catch (Exception exception)
-			{
-				Logger.Error(exception);
-			}
-
 			actionName = "ShoppingCart";
 			controllerName = "AmazonPayShoppingCart";
-			routeValues = new RouteValueDictionary { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", SystemName } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.AmazonPay.Controllers" }, { "area", AmazonPayCore.SystemName } };
 		}
 
 		public override Type GetControllerType()

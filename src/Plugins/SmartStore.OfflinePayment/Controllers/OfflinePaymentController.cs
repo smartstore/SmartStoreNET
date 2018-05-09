@@ -14,8 +14,6 @@ using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
-using SmartStore.Services.Media;
-using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.OfflinePayment.Controllers
 {
@@ -24,17 +22,14 @@ namespace SmartStore.OfflinePayment.Controllers
     {
 		private readonly IComponentContext _ctx;
 		private readonly HttpContextBase _httpContext;
-		private readonly IPictureService _pictureService;
 
 		public OfflinePaymentController(
 			HttpContextBase httpContext,
-			IComponentContext ctx,
-			IPictureService pictureService)
+			IComponentContext ctx)
         {
 			_httpContext = httpContext;
 			_ctx = ctx;
-			_pictureService = pictureService;
-		}
+        }
 
 		#region Global
 
@@ -57,15 +52,10 @@ namespace SmartStore.OfflinePayment.Controllers
 		{
 			var model = new TModel();
 
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
-			var store = storeScope == 0
-				? Services.StoreContext.CurrentStore
-				: Services.StoreService.GetStoreById(storeScope);
 
-			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 			model.DescriptionText = settings.DescriptionText;
-			model.PaymentMethodLogo = settings.ThumbnailPictureId;
 			model.AdditionalFee = settings.AdditionalFee;
 			model.AdditionalFeePercentage = settings.AdditionalFeePercentage;
 
@@ -92,7 +82,6 @@ namespace SmartStore.OfflinePayment.Controllers
 			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
 
 			settings.DescriptionText = model.DescriptionText;
-			settings.ThumbnailPictureId = model.PaymentMethodLogo;
 			settings.AdditionalFee = model.AdditionalFee;
 			settings.AdditionalFeePercentage = model.AdditionalFeePercentage;
 
@@ -101,12 +90,9 @@ namespace SmartStore.OfflinePayment.Controllers
 				fn(settings);
 			}
 
-			using (Services.Settings.BeginScope())
-			{
-				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
+			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			NotifySuccess(Services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 		}
 
 		[NonAction]
@@ -117,7 +103,6 @@ namespace SmartStore.OfflinePayment.Controllers
 			var settings = _ctx.Resolve<TSetting>();
 			var model = new TModel();
 			model.DescriptionText = GetLocalizedText(settings.DescriptionText);
-			model.ThumbnailUrl = _pictureService.GetUrl(settings.ThumbnailPictureId, 120, false); 
 
 			if (fn != null)
 			{
@@ -199,8 +184,8 @@ namespace SmartStore.OfflinePayment.Controllers
 					paymentInfo.CreditCardType = form["CreditCardType"];
 					paymentInfo.CreditCardName = form["CardholderName"];
 					paymentInfo.CreditCardNumber = form["CardNumber"];
-					paymentInfo.CreditCardExpireMonth = int.Parse(form["ExpireMonth"].SplitSafe(",")[0]);
-					paymentInfo.CreditCardExpireYear = int.Parse(form["ExpireYear"].SplitSafe(",")[0]);
+					paymentInfo.CreditCardExpireMonth = int.Parse(form["ExpireMonth"]);
+					paymentInfo.CreditCardExpireYear = int.Parse(form["ExpireYear"]);
 					paymentInfo.CreditCardCvv2 = form["CardCode"];
 				}
 				else if (type == "DirectDebit")
@@ -265,10 +250,11 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		#endregion
-		
+
+
 		#region CashOnDelivery
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult CashOnDeliveryConfigure()
 		{
 			var model = ConfigureGet<CashOnDeliveryConfigurationModel, CashOnDeliveryPaymentSettings>();
@@ -276,7 +262,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+		[HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
 		public ActionResult CashOnDeliveryConfigure(CashOnDeliveryConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -294,10 +280,11 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		#endregion
-		
+
+
 		#region Invoice
 
-		[ChildActionOnly, AdminThemed, AdminAuthorize]
+		[ChildActionOnly, AdminAuthorize]
 		public ActionResult InvoiceConfigure()
 		{
 			var model = ConfigureGet<InvoiceConfigurationModel, InvoicePaymentSettings>();
@@ -305,7 +292,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+		[HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
 		public ActionResult InvoiceConfigure(InvoiceConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -323,10 +310,11 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		#endregion
-		
+
+
 		#region PayInStore
 
-		[ChildActionOnly, AdminThemed, AdminAuthorize]
+		[ChildActionOnly, AdminAuthorize]
 		public ActionResult PayInStoreConfigure()
 		{
 			var model = ConfigureGet<PayInStoreConfigurationModel, PayInStorePaymentSettings>();
@@ -334,7 +322,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+		[HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
 		public ActionResult PayInStoreConfigure(PayInStoreConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -352,10 +340,11 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		#endregion
-		
+
+
 		#region Prepayment
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult PrepaymentConfigure()
 		{
 			var model = ConfigureGet<PrepaymentConfigurationModel, PrepaymentPaymentSettings>();
@@ -363,7 +352,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+		[HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
 		public ActionResult PrepaymentConfigure(PrepaymentConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -381,10 +370,11 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		#endregion
-		
+
+
 		#region DirectDebit
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult DirectDebitConfigure()
 		{
 			var model = ConfigureGet<DirectDebitConfigurationModel, DirectDebitPaymentSettings>();
@@ -392,7 +382,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+		[HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
 		public ActionResult DirectDebitConfigure(DirectDebitConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -420,10 +410,11 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		#endregion
-		
+
+
 		#region Manual
 
-		[AdminAuthorize, AdminThemed, ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult ManualConfigure()
 		{
 			var model = ConfigureGet<ManualConfigurationModel, ManualPaymentSettings>((m, s) => 
@@ -445,7 +436,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View(model);
 		}
 
-		[HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+		[HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
 		public ActionResult ManualConfigure(ManualConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -521,7 +512,8 @@ namespace SmartStore.OfflinePayment.Controllers
 
         #region PurchaseOrderNumber
 
-        [AdminAuthorize, AdminThemed, ChildActionOnly]
+        [AdminAuthorize]
+        [ChildActionOnly]
         public ActionResult PurchaseOrderNumberConfigure()
         {
             var model = ConfigureGet<PurchaseOrderNumberConfigurationModel, PurchaseOrderNumberPaymentSettings>();
@@ -529,13 +521,13 @@ namespace SmartStore.OfflinePayment.Controllers
             return View("GenericConfigure", model);
         }
 
-        [HttpPost, AdminAuthorize, AdminThemed, ChildActionOnly, ValidateInput(false)]
+        [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
         public ActionResult PurchaseOrderNumberConfigure(PurchaseOrderNumberConfigurationModel model, FormCollection form)
         {
             if (!ModelState.IsValid)
-				return PurchaseOrderNumberConfigure();
+                return InvoiceConfigure();
 
-			ConfigurePost<PurchaseOrderNumberConfigurationModel, PurchaseOrderNumberPaymentSettings>(model, form);
+            ConfigurePost<PurchaseOrderNumberConfigurationModel, InvoicePaymentSettings>(model, form);
 
             return PurchaseOrderNumberConfigure();
         }

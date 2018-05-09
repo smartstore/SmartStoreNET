@@ -3,11 +3,15 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Async;
-using SmartStore.Core.Events;
+using SmartStore.Collections;
 using Autofac;
+using System.Diagnostics;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Events
 {
@@ -50,7 +54,7 @@ namespace SmartStore.Services.Events
 				{
 					// for wiring up dependencies correctly
 					var newFactory = c.Resolve<IConsumerFactory<T>>();
-					consumers = newFactory.GetConsumers(true).ToArray();
+					consumers = newFactory.GetConsumers(true);
 					foreach (var consumer in consumers)
 					{
 						consumer.HandleEvent(eventMessage);
@@ -69,7 +73,7 @@ namespace SmartStore.Services.Events
 			}
 
 			// now execute all sync consumers
-			consumers = consumerFactory.GetConsumers(false).ToArray();
+			consumers = consumerFactory.GetConsumers(false);
 			foreach (var consumer in consumers)
 			{
 				PublishEvent(consumer, eventMessage);

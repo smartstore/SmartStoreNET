@@ -10,7 +10,6 @@ using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 using SmartStore.Utilities;
-using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Search.Modelling
 {
@@ -36,9 +35,7 @@ namespace SmartStore.Services.Search.Modelling
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
 	{
 		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "a", "n", "d", "v" };
-        protected static readonly string[] _instantSearchFields = new string[] { "manufacturer", "sku", "gtin", "mpn", "attrname", "variantname" };
-
-        protected readonly HttpContextBase _httpContext;
+		protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
 		protected readonly ICommonServices _services;
@@ -86,12 +83,18 @@ namespace SmartStore.Services.Search.Modelling
 				fields.Add("shortdescription");
 				fields.Add("tagname");
 
-                foreach (var fieldName in _instantSearchFields)
-                {
-                    if (_searchSettings.SearchFields.Contains(fieldName))
-                        fields.Add(fieldName);
-                }
-            }
+				if (_searchSettings.SearchFields.Contains("manufacturer"))
+					fields.Add("manufacturer");
+
+				if (_searchSettings.SearchFields.Contains("sku"))
+					fields.Add("sku");
+
+				if (_searchSettings.SearchFields.Contains("gtin"))
+					fields.Add("gtin");
+
+				if (_searchSettings.SearchFields.Contains("mpn"))
+					fields.Add("mpn");
+			}
 			else
 			{
 				fields.AddRange(_searchSettings.SearchFields);
@@ -305,7 +308,7 @@ namespace SmartStore.Services.Search.Modelling
 					displayOrder = _searchSettings.BrandDisplayOrder;
 					break;
 				case FacetGroupKind.Price:
-					if (_searchSettings.PriceDisabled || !_services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
+					if (_searchSettings.PriceDisabled)
 						return;
 					fieldName = "price";
 					displayOrder = _searchSettings.PriceDisplayOrder;

@@ -17,9 +17,9 @@ namespace SmartStore.Services.Common
 			_urlRecordService = urlRecordService;
 		}
 
-		protected override void OnDeleted(ISlugSupported entity, IHookedEntity entry)
+		protected override void OnDeleted(ISlugSupported entity, HookedEntity entry)
 		{
-			var entityType = entry.EntityType;
+			var entityType = entry.Entity.GetUnproxiedType();
 			var records = _urlRecordService.Value.GetUrlRecordsFor(entityType.Name, entry.Entity.Id);
 			_toDelete.AddRange(records);
 		}

@@ -11,9 +11,11 @@ using SmartStore.Core.Domain.Configuration;
 
 namespace SmartStore.Data.Tests.Setup
 {
+
 	[TestFixture]
 	public class MigrateBuilderTests : PersistenceTest
 	{
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -63,16 +65,13 @@ namespace SmartStore.Data.Tests.Setup
 			var builder = new LocaleResourcesBuilder();
 			builder.DeleteFor("de", "Res1", "Res2", "Res3");
 			builder.DeleteFor("en", "Res1");
-			context.DetachEntities<Language>();
 			migrator.Migrate(builder.Build());
 
 			resources.ToList().Count.ShouldEqual(2);
 
 			builder.Reset();
 			builder.DeleteFor("en", "Res2");
-			context.DetachEntities<Language>();
 			migrator.Migrate(builder.Build());
-
 			resources.ToList().Count.ShouldEqual(1);
 		}
 

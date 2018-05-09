@@ -6,33 +6,41 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.FacebookAuth
 {
-	/// <summary>
-	/// Facebook externalAuth processor
-	/// </summary>
-	public class FacebookExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod, IConfigurable
+    /// <summary>
+    /// Facebook externalAuth processor
+    /// </summary>
+    public class FacebookExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod, IConfigurable
     {
+        #region Fields
+
         private readonly FacebookExternalAuthSettings _facebookExternalAuthSettings;
         private readonly ILocalizationService _localizationService;
 
+        #endregion
+
+        #region Ctor
+
         public FacebookExternalAuthMethod(FacebookExternalAuthSettings facebookExternalAuthSettings, ILocalizationService localizationService)
         {
-            _facebookExternalAuthSettings = facebookExternalAuthSettings;
+            this._facebookExternalAuthSettings = facebookExternalAuthSettings;
             _localizationService = localizationService;
         }
 
-		public static string SystemName => "SmartStore.FacebookAuth";
+        #endregion
 
-		/// <summary>
-		/// Gets a route for provider configuration
-		/// </summary>
-		/// <param name="actionName">Action name</param>
-		/// <param name="controllerName">Controller name</param>
-		/// <param name="routeValues">Route values</param>
-		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
+        #region Methods
+        
+        /// <summary>
+        /// Gets a route for provider configuration
+        /// </summary>
+        /// <param name="actionName">Action name</param>
+        /// <param name="controllerName">Controller name</param>
+        /// <param name="routeValues">Route values</param>
+        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
 			actionName = "Configure";
 			controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = SystemName });
+			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = Provider.SystemName });
         }
 
         /// <summary>
@@ -45,7 +53,7 @@ namespace SmartStore.FacebookAuth
         {
             actionName = "PublicInfo";
             controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = SystemName });
+			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = Provider.SystemName });
         }
 
         /// <summary>
@@ -53,16 +61,21 @@ namespace SmartStore.FacebookAuth
         /// </summary>
         public override void Install()
         {
-            _localizationService.ImportPluginResourcesFromXml(PluginDescriptor);
+            //locales
+            _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
             base.Install();
         }
 
         public override void Uninstall()
         {
-            _localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
+            //locales
+            _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 
             base.Uninstall();
-        }        
+        }
+
+        #endregion
+        
     }
 }

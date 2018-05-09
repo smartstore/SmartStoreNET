@@ -9,10 +9,13 @@ namespace SmartStore.Core.Domain.Common
 		{
 			GridPageSize = 25;
 			DisplayProductPictures = true;
+			RichEditorFlavor = "RichEditor";
 		}
 		
 		public int GridPageSize { get; set; }
 
         public bool DisplayProductPictures { get; set; }
+
+        public string RichEditorFlavor { get; set; }
     }
 }

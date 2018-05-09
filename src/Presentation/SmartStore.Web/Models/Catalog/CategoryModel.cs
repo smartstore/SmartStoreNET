@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
@@ -23,13 +22,13 @@ namespace SmartStore.Web.Models.Catalog
 			set;
 		}
 
-		public LocalizedValue<string> Name { get; set; }
-		public LocalizedValue<string> FullName { get; set; }
-        public LocalizedValue<string> Description { get; set; }
-		public LocalizedValue<string> BottomDescription { get; set; }
-        public LocalizedValue<string> MetaKeywords { get; set; }
-        public LocalizedValue<string> MetaDescription { get; set; }
-        public LocalizedValue<string> MetaTitle { get; set; }
+		public string Name { get; set; }
+		public string FullName { get; set; }
+        public string Description { get; set; }
+		public string BottomDescription { get; set; }
+        public string MetaKeywords { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetaTitle { get; set; }
         public string SeName { get; set; }
         
         public PictureModel PictureModel { get; set; }
@@ -53,7 +52,7 @@ namespace SmartStore.Web.Models.Catalog
                 PictureModel = new PictureModel();
             }
 
-            public LocalizedValue<string> Name { get; set; }
+            public string Name { get; set; }
             public string SeName { get; set; }
             public PictureModel PictureModel { get; set; }
         }

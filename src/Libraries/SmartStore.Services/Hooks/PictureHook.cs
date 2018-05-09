@@ -37,12 +37,12 @@ namespace SmartStore.Services.Hooks
 			_productAttributeService = productAttributeService;
 		}
 
-		protected override void OnDeleting(BaseEntity entity, IHookedEntity entry)
+		protected override void OnDeleting(BaseEntity entity, HookedEntity entry)
 		{
-			var type = entry.EntityType;
+			var type = entry.Entity.GetUnproxiedType();
 
 			if (!_candidateTypes.Contains(type))
-				throw new NotSupportedException();
+				return;
 
 			if (type == typeof(ProductAttributeOption))
 			{

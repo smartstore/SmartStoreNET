@@ -154,17 +154,15 @@ namespace SmartStore.Admin.Controllers
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
 			}
 
-			// Common configuration
+			// common configuration
 			var extraData = XmlHelper.Deserialize<ImportExtraData>(profile.ExtraData);
 			model.ExtraData.NumberOfPictures = extraData.NumberOfPictures;
 
-			// Column mapping
+			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
 			model.AvailableEntityProperties = new List<ColumnMappingItemModel>();
 			model.AvailableKeyFieldNames = new List<SelectListItem>();
 			model.ColumnMappings = new List<ColumnMappingItemModel>();
-
-			model.FolderName = profile.GetImportFolder(absolutePath: false);
 
 			try
 			{
@@ -174,7 +172,7 @@ namespace SmartStore.Admin.Controllers
 				var storedMap = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
 
-				// Property name to localized property name
+				// property name to localized property name
 				var allProperties = _importProfileService.GetImportableEntityProperties(profile.EntityType);
 
 				switch (profile.EntityType)
@@ -233,7 +231,7 @@ namespace SmartStore.Admin.Controllers
 
 						if (x.Value.IgnoreProperty)
 						{
-							// Explicitly ignore the property
+							// explicitly ignore the property
 							mapping.Column = null;
 							mapping.Default = null;
 						}
@@ -269,7 +267,7 @@ namespace SmartStore.Admin.Controllers
 							PropertyDescription = GetPropertyDescription(allProperties, column.Name)
 						});
 
-						// Auto map where field equals property name
+						// auto map where field equals property name
 						if (!model.ColumnMappings.Any(x => x.Column == column.Name))
 						{
 							var kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(column.Name));
@@ -292,7 +290,7 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 
-					// Sorting
+					// sorting
 					model.AvailableSourceColumns = model.AvailableSourceColumns
 						.OrderBy(x => x.PropertyDescription)
 						.ToList();
@@ -739,7 +737,7 @@ namespace SmartStore.Admin.Controllers
 						}
 						catch (IOException)
 						{
-                            message = T("Admin.Common.FileInUse");
+							NotifyWarning(T("Admin.Common.FileInUse"));
 						}
 					}
 				}

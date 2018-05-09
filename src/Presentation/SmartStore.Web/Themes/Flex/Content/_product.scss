@@ -1,15 +1,13 @@
-/// <reference path="../../../Content/shared/_variables-shared.scss" />
-/// <reference path="../../../Content/shared/_mixins.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
 
 $pd-offer-bg:                   $product-detail-addtocart-box-bg;
 $pd-price-color:                $product-price-color;
-$pd-price-offer-color:          $danger;
+$pd-price-offer-color:          $brand-danger;
 $pd-line-height:                1.3;
 
 $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
-$pd-offer-spacing:              $grid-gutter-width / 2;
+$pd-offer-spacing:              $grid-gutter-width-base / 2;
 
 //
 // Article Detail Styles
@@ -108,17 +106,17 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     }
     td:first-child { 
         padding-right: 1rem; 
-        font-weight: $font-weight-medium; 
+        font-weight: 700; 
     }
 }
 
 .pd-stock {
     &.pd-instock {
-        color: darken($success, 10%);
+        color: darken($brand-success, 10%);
     }
     &.pd-outofstock {
         font-weight: bold;
-        color: $danger;
+        color: $brand-danger;
     } 
 }
 
@@ -130,7 +128,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 }
 
 .pd-spec-name {
-    font-weight: $font-weight-medium;
+    font-weight: bold;
     width: 20%;
 }
 
@@ -194,6 +192,19 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     margin-bottom: 1rem;
 }
 
+.pd-price-block {
+    float: left;
+}
+
+.pd-price-block + .pd-price-block {
+    margin-left: 1rem;
+    .pd-price {
+        text-decoration: line-through;
+        color: $pd-offer-muted-color;
+        font-weight: 400;
+    }
+}
+
 .pd-price {
     font-size: 1.8rem;
     font-weight: 500;
@@ -212,14 +223,6 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     }
 }
 
-.pd-price-block + .pd-price-block {
-    .pd-price {
-        text-decoration: line-through;
-        color: $pd-offer-muted-color;
-        font-weight: 400;
-    }
-}
-
 .pd-price-label {
     line-height: 1;
     font-weight: $font-weight-medium;
@@ -227,13 +230,14 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
 .pd-oldprice {
     display: inline-block;
+    padding-left: 0.25rem;
     color: $text-muted;
     text-decoration: line-through;
 }
 
 .pd-saving-percent {
     font-weight: $font-weight-medium;
-    color: $danger;
+    color: $brand-danger;
 }
 
 .pd-callforprice {
@@ -268,14 +272,14 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 
 .pd-tag {
     text-decoration: none !important;
-    display: inline-flex;
+    display: inline-block;
     padding: 0.5rem;
     margin: 0 0.2rem 0.4rem 0;
     font-weight: $font-weight-medium;
     color: $body-color;
     font-size: $font-size-base;
     line-height: 1;
-    background-color: $gray-100;
+    background-color: $gray-lightest;
     border: 1px solid rgba(0,0,0, 0.15);
     border-radius: 2px;
 }
@@ -283,6 +287,7 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 .pd-tag-count {
     color: $text-muted;
     font-weight: 400;
+    padding-left: 0.25rem;
 }
 
 
@@ -399,8 +404,8 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
 // ------------------------------------------------------
 
 .deliverytime-group .delivery-time { 
-    vertical-align: top;
-	padding-left: 0.4rem;
+    vertical-align: top; 
+    padding-left: 0.25rem;
 }
 
 .delivery-time {
@@ -410,9 +415,9 @@ $pd-offer-spacing:              $grid-gutter-width / 2;
     @include text-truncate();
 
     .delivery-time-status {
+        padding-right: 0.2rem;
         font-size: 0.85em;
-		padding-right: 0.2rem;
-		margin-left: 0.025rem;
+        margin-left: 0.025rem;
     }
 }
 

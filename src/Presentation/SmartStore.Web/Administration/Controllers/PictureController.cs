@@ -1,6 +1,9 @@
 ﻿using System.Web.Mvc;
+<<<<<<< HEAD
+=======
 using SmartStore.Core.Domain.Media;
 using SmartStore.Data.Utilities;
+>>>>>>> upstream/3.x
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -13,16 +16,19 @@ namespace SmartStore.Admin.Controllers
     {
         private readonly IPictureService _pictureService;
         private readonly IPermissionService _permissionService;
-		private readonly MediaSettings _mediaSettings;
 
+<<<<<<< HEAD
+        public PictureController(IPictureService pictureService,
+             IPermissionService permissionService)
+=======
 		public PictureController(
 			IPictureService pictureService,
             IPermissionService permissionService,
 			MediaSettings mediaSettings)
+>>>>>>> upstream/3.x
         {
-            _pictureService = pictureService;
-            _permissionService = permissionService;
-			_mediaSettings = mediaSettings;
+            this._pictureService = pictureService;
+            this._permissionService = permissionService;
         }
 
         [HttpPost]
@@ -32,17 +38,14 @@ namespace SmartStore.Admin.Controllers
                 return Json(new { success = false, error = T("Admin.AccessDenied.Description") });
 
 			var postedFile = Request.ToPostedFileResult();
-			if (postedFile == null)
-			{
-				return Json(new { success = false });
-			}
 
 			var picture = _pictureService.InsertPicture(postedFile.Buffer, postedFile.ContentType, null, true, isTransient, validate);
+
             return Json(
                 new { 
                     success = true, 
                     pictureId = picture.Id,
-                    imageUrl = _pictureService.GetUrl(picture, _mediaSettings.ProductThumbPictureSize, host: "") 
+                    imageUrl = _pictureService.GetPictureUrl(picture, 100) 
                 });
         }
 

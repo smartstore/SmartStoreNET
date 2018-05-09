@@ -12,10 +12,7 @@ namespace SmartStore.Admin.Models.Settings
             AvailablePictureZoomTypes = new List<SelectListItem>();
         }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AutoGenerateAbsoluteUrls")]
-		public bool AutoGenerateAbsoluteUrls { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AvatarPictureSize")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.AvatarPictureSize")]
         public int AvatarPictureSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductThumbPictureSize")]

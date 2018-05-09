@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Web.Framework</RootNamespace>
     <AssemblyName>SmartStore.Web.Framework</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -92,20 +92,21 @@
       <HintPath>..\..\packages\BundleTransformer.Core.1.9.152\lib\net40\BundleTransformer.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BundleTransformer.Less, Version=1.9.143.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.Less.1.9.143\lib\net40\BundleTransformer.Less.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="BundleTransformer.SassAndScss, Version=1.9.154.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\BundleTransformer.SassAndScss.1.9.154\lib\net40\BundleTransformer.SassAndScss.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DotLiquid, Version=2.0.254.0, Culture=neutral, PublicKeyToken=82e46016ecf9f07c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\DotLiquid.2.0.254\lib\net45\DotLiquid.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
@@ -159,9 +160,6 @@
     <Reference Include="System.Spatial, Version=5.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Spatial.5.8.2\lib\net40\System.Spatial.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
@@ -237,28 +235,11 @@
     <Compile Include="Controllers\AdminControllerBase.cs" />
     <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Extensions\HtmlZoneExtensions.cs" />
-    <Compile Include="Extensions\LocalizedValueExtensions.cs" />
     <Compile Include="Filters\JsonNetAttribute.cs" />
-    <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
-    <Compile Include="Modelling\IAclSelector.cs" />
-    <Compile Include="Modelling\IStoreSelector.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
     <Compile Include="Modelling\Results\PermissiveRedirectResult.cs" />
     <Compile Include="Plugins\PluginRazorHost.cs" />
-    <Compile Include="Settings\SaveSettingAttribute.cs" />
-    <Compile Include="Settings\LoadSettingAttribute.cs" />
-    <Compile Include="Templating\Events.cs" />
-    <Compile Include="Templating\Liquid\Drops\DictionaryDrop.cs" />
-    <Compile Include="Templating\Liquid\Drops\EnumerableWrapper.cs" />
-    <Compile Include="Templating\Liquid\Drops\ObjectDrop.cs" />
-    <Compile Include="Templating\Liquid\Drops\SafeDropBase.cs" />
-    <Compile Include="Templating\Liquid\Drops\TestDrop.cs" />
-    <Compile Include="Templating\Liquid\Filters\AdditionalFilters.cs" />
-    <Compile Include="Templating\Liquid\LiquidTemplate.cs" />
-    <Compile Include="Templating\Liquid\LiquidTemplateEngine.cs" />
-    <Compile Include="Templating\Liquid\LiquidUtil.cs" />
-    <Compile Include="Templating\Liquid\Tags\Zone.cs" />
     <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Filters\HandleExceptionFilter.cs" />
     <Compile Include="Filters\NotifyAttribute.cs" />
@@ -313,10 +294,6 @@
     <Compile Include="UI\Choices\ChoiceItemModel.cs" />
     <Compile Include="UI\Choices\GenericChoiceModel.cs" />
     <Compile Include="UI\Choices\ChoiceModel.cs" />
-    <Compile Include="UI\Components\EntityPicker\EntityPicker.cs" />
-    <Compile Include="UI\Components\EntityPicker\EntityPickerBuilder.cs" />
-    <Compile Include="UI\Components\FileUploader\FileUploaderBuilder.cs" />
-    <Compile Include="UI\Components\FileUploader\FileUploader.cs" />
     <Compile Include="UI\Components\Menu\CatalogMenuProvider.cs" />
     <Compile Include="UI\Components\ViewBasedComponentRenderer.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
@@ -342,6 +319,7 @@
     <Compile Include="Theming\ThemeVarsVirtualFile.cs" />
     <Compile Include="Theming\ThemingVirtualPathProvider.cs" />
     <Compile Include="Theming\ThemeHtmlExtensions.cs" />
+    <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Theming\ThemeVarsRepository.cs" />
     <Compile Include="UI\Components\ComponentRendererUtils.cs" />
     <Compile Include="UI\Components\Menu\MenuExtensions.cs" />
@@ -372,6 +350,7 @@
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Modelling\IModelAttribute.cs" />
     <Compile Include="Localization\ILocalizedModel.cs" />
+    <Compile Include="Localization\ILocalizedModelLocal.cs" />
     <Compile Include="Modelling\DeleteConfirmationModel.cs" />
     <Compile Include="Routing\IRouteProvider.cs" />
     <Compile Include="Routing\IRoutePublisher.cs" />
@@ -394,10 +373,12 @@
     <Compile Include="Security\RequireHttpsByConfigAttribute.cs" />
     <Compile Include="Localization\TelerikLocalizationService.cs" />
     <Compile Include="Localization\TelerikLocalizationServiceFactory.cs" />
+    <Compile Include="Theming\IThemeContext.cs" />
     <Compile Include="Theming\ThemeableVirtualPathProviderViewEngine.cs" />
     <Compile Include="Theming\ThemeableRazorViewEngine.cs" />
     <Compile Include="Theming\ThemeContext.cs" />
     <Compile Include="UI\Components\Enums.cs" />
+    <Compile Include="UI\Components\Button\Button.cs" />
     <Compile Include="UI\Components\Component.cs" />
     <Compile Include="UI\Components\ComponentBuilder.cs" />
     <Compile Include="UI\Components\ComponentFactory.cs" />

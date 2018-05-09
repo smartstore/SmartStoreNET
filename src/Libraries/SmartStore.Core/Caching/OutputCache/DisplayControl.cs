@@ -178,11 +178,7 @@ namespace SmartStore.Core.Caching
 			}
 			else if (type == typeof(ProductVariantAttributeValue))
 			{
-				var pva = ((ProductVariantAttributeValue)entity).ProductVariantAttribute;
-				if (pva != null)
-				{
-					yield return "p" + pva.ProductId;
-				}
+				yield return "p" + ((ProductVariantAttributeValue)entity).ProductVariantAttribute.ProductId;
 			}
 			else if (type == typeof(ProductVariantAttributeCombination))
 			{

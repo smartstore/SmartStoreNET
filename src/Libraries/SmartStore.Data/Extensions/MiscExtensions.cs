@@ -8,5 +8,6 @@ namespace SmartStore
 		{
 			return provider.GetType().FullName == "System.Data.Objects.ELinq.ObjectQueryProvider";
 		}
+
 	}
 }

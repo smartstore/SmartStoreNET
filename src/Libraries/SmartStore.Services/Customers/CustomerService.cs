@@ -440,6 +440,8 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customer");
 
             _customerRepository.Insert(customer);
+
+            _services.EventPublisher.EntityInserted(customer);
         }
         
         public virtual void UpdateCustomer(Customer customer)
@@ -448,44 +450,45 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customer");
 
             _customerRepository.Update(customer);
+
+			_services.EventPublisher.EntityUpdated(customer);
         }
 
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
             bool clearRewardPoints = false, bool clearShippingMethod = true,
-            bool clearPaymentMethod = true,
-			bool clearCreditBalance = false)
+            bool clearPaymentMethod = true)
         {
             if (customer == null)
                 throw new ArgumentNullException();
 
+            //clear entered coupon codes
             if (clearCouponCodes)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.DiscountCouponCode, null);
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.GiftCardCouponCodes, null);
             }
 
+            //clear checkout attributes
             if (clearCheckoutAttributes)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.CheckoutAttributes, null);
             }
 
+            //clear reward points flag
             if (clearRewardPoints)
             {
 				_genericAttributeService.SaveAttribute<bool>(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, false, storeId);
             }
 
-			if (clearCreditBalance)
-			{
-				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, decimal.Zero, storeId);
-			}
-
+            //clear selected shipping method
             if (clearShippingMethod)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, storeId);
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.OfferedShippingOptions, null, storeId);
             }
 
+            //clear selected payment method
             if (clearPaymentMethod)
             {
 				_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, storeId);
@@ -629,6 +632,8 @@ namespace SmartStore.Services.Customers
                 throw new SmartException("System role could not be deleted");
 
             _customerRoleRepository.Delete(customerRole);
+
+			_services.EventPublisher.EntityDeleted(customerRole);
         }
 
         public virtual CustomerRole GetCustomerRoleById(int customerRoleId)
@@ -670,6 +675,8 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customerRole");
 
             _customerRoleRepository.Insert(customerRole);
+
+			_services.EventPublisher.EntityInserted(customerRole);
         }
 
         public virtual void UpdateCustomerRole(CustomerRole customerRole)
@@ -678,6 +685,8 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customerRole");
 
             _customerRoleRepository.Update(customerRole);
+
+			_services.EventPublisher.EntityUpdated(customerRole);
         }
 
         #endregion

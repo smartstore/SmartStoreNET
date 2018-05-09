@@ -2,9 +2,10 @@
 
 namespace SmartStore.Core.Data.Hooks
 {
-	public abstract class DbSaveHook<TEntity> : IDbSaveHook where TEntity : class
+	public abstract class DbSaveHook<TEntity> : IDbSaveHook 
+		where TEntity : class
 	{
-		public virtual void OnBeforeSave(IHookedEntity entry)
+		public void OnBeforeSave(HookedEntity entry)
 		{
 			var entity = entry.Entity as TEntity;
 			switch (entry.InitialState)
@@ -21,19 +22,16 @@ namespace SmartStore.Core.Data.Hooks
 			}
 		}
 
-		protected virtual void OnInserting(TEntity entity, IHookedEntity entry)
+		protected virtual void OnInserting(TEntity entity, HookedEntity entry)
 		{
-			throw new NotImplementedException();
 		}
 
-		protected virtual void OnUpdating(TEntity entity, IHookedEntity entry)
+		protected virtual void OnUpdating(TEntity entity, HookedEntity entry)
 		{
-			throw new NotImplementedException();
 		}
 
-		protected virtual void OnDeleting(TEntity entity, IHookedEntity entry)
+		protected virtual void OnDeleting(TEntity entity, HookedEntity entry)
 		{
-			throw new NotImplementedException();
 		}
 
 		public virtual void OnBeforeSaveCompleted()
@@ -41,7 +39,7 @@ namespace SmartStore.Core.Data.Hooks
 		}
 
 
-		public virtual void OnAfterSave(IHookedEntity entry)
+		public void OnAfterSave(HookedEntity entry)
 		{
 			var entity = entry.Entity as TEntity;
 			switch (entry.InitialState)
@@ -58,19 +56,16 @@ namespace SmartStore.Core.Data.Hooks
 			}
 		}
 
-		protected virtual void OnInserted(TEntity entity, IHookedEntity entry)
+		protected virtual void OnInserted(TEntity entity, HookedEntity entry)
 		{
-			throw new NotImplementedException();
 		}
 
-		protected virtual void OnUpdated(TEntity entity, IHookedEntity entry)
+		protected virtual void OnUpdated(TEntity entity, HookedEntity entry)
 		{
-			throw new NotImplementedException();
 		}
 
-		protected virtual void OnDeleted(TEntity entity, IHookedEntity entry)
+		protected virtual void OnDeleted(TEntity entity, HookedEntity entry)
 		{
-			throw new NotImplementedException();
 		}
 
 		public virtual void OnAfterSaveCompleted()

@@ -11,7 +11,6 @@ using System.Web.Mvc;
 using DotNetOpenAuth.AspNet;
 using Newtonsoft.Json.Linq;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
 
@@ -39,16 +38,12 @@ namespace SmartStore.FacebookAuth.Core
             HttpContextBase httpContext,
 			ICommonServices services)
         {
-            _authorizer = authorizer;
-            _openAuthenticationService = openAuthenticationService;
-            _externalAuthenticationSettings = externalAuthenticationSettings;
-            _httpContext = httpContext;
-			_services = services;
-
-			Logger = NullLogger.Instance;
-		}
-
-		public ILogger Logger { get; set; }
+            this._authorizer = authorizer;
+            this._openAuthenticationService = openAuthenticationService;
+            this._externalAuthenticationSettings = externalAuthenticationSettings;
+            this._httpContext = httpContext;
+			this._services = services;
+        }
 
 		#endregion
 
@@ -71,34 +66,9 @@ namespace SmartStore.FacebookAuth.Core
 
 		private AuthorizeState VerifyAuthentication(string returnUrl)
         {
-			string error = null;
-			AuthenticationResult authResult = null;
+			var authResult = this.FacebookApplication.VerifyAuthentication(_httpContext, GenerateLocalCallbackUri());
 
-			try
-			{
-				authResult = this.FacebookApplication.VerifyAuthentication(_httpContext, GenerateLocalCallbackUri());
-			}
-			catch (WebException wexc)
-			{
-				using (var response = wexc.Response as HttpWebResponse)
-				{
-					error = response.StatusDescription;
-
-					var enc = Encoding.GetEncoding(response.CharacterSet);
-					using (var reader = new StreamReader(response.GetResponseStream(), enc))
-					{
-						var rawResponse = reader.ReadToEnd();
-						Logger.Log(LogLevel.Error, new Exception(rawResponse), response.StatusDescription, null);
-					}
-				}
-			}
-			catch (Exception exception)
-			{
-				error = exception.ToString();
-				Logger.Log(LogLevel.Error, exception, null, null);
-			}
-
-			if (authResult != null && authResult.IsSuccessful)
+			if (authResult.IsSuccessful)
 			{
 				if (!authResult.ExtraData.ContainsKey("id"))
 					throw new Exception("Authentication result does not contain id data");
@@ -106,7 +76,7 @@ namespace SmartStore.FacebookAuth.Core
 				if (!authResult.ExtraData.ContainsKey("accesstoken"))
 					throw new Exception("Authentication result does not contain accesstoken data");
 
-				var parameters = new OAuthAuthenticationParameters(FacebookExternalAuthMethod.SystemName)
+				var parameters = new OAuthAuthenticationParameters(Provider.SystemName)
 				{
 					ExternalIdentifier = authResult.ProviderUserId,
 					OAuthToken = authResult.ExtraData["accesstoken"],
@@ -121,17 +91,11 @@ namespace SmartStore.FacebookAuth.Core
 				return new AuthorizeState(returnUrl, result);
 			}
 
-			if (error.IsEmpty() && authResult != null && authResult.Error != null)
-			{
-				error = authResult.Error.Message;
-			}
-			if (error.IsEmpty())
-			{
-				error = _services.Localization.GetResource("Admin.Common.UnknownError");
-			}
-
 			var state = new AuthorizeState(returnUrl, OpenAuthenticationStatus.Error);
-			state.AddError(error);
+
+			state.AddError(authResult.Error != null 
+				? authResult.Error.Message 
+				: _services.Localization.GetResource("Admin.Common.UnknownError"));
 
             return state;
         }

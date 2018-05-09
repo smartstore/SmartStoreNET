@@ -35,9 +35,13 @@ namespace SmartStore.Services.Topics
 
         public virtual void DeleteTopic(Topic topic)
         {
-			Guard.NotNull(topic, nameof(topic));
+            if (topic == null)
+                throw new ArgumentNullException("topic");
 
-			_topicRepository.Delete(topic);
+            _topicRepository.Delete(topic);
+
+			//event notification
+			_eventPublisher.EntityDeleted(topic);
         }
 
         public virtual Topic GetTopicById(int topicId)
@@ -50,8 +54,13 @@ namespace SmartStore.Services.Topics
 
 		public virtual Topic GetTopicBySystemName(string systemName, int storeId = 0)
         {
+<<<<<<< HEAD
+            if (String.IsNullOrEmpty(systemName))
+                return null;
+=======
 			if (systemName.IsEmpty())
 				return null;
+>>>>>>> upstream/3.x
 
 			var topic = _topicRepository.Table
 				.Where(x => x.SystemName == systemName)
@@ -70,7 +79,7 @@ namespace SmartStore.Services.Topics
         {
 			var query = _topicRepository.Table;
 
-			// Store mapping
+			//Store mapping
 			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
 				query = from t in query
@@ -80,7 +89,7 @@ namespace SmartStore.Services.Topics
 						where !t.LimitedToStores || storeId == sm.StoreId
 						select t;
 
-				// Only distinct items (group by ID)
+				//only distinct items (group by ID)
 				query = from t in query
 						group t by t.Id into tGroup
 						orderby tGroup.Key
@@ -94,16 +103,24 @@ namespace SmartStore.Services.Topics
 
         public virtual void InsertTopic(Topic topic)
         {
-			Guard.NotNull(topic, nameof(topic));
+            if (topic == null)
+                throw new ArgumentNullException("topic");
 
-			_topicRepository.Insert(topic);
+            _topicRepository.Insert(topic);
+
+			//event notification
+			_eventPublisher.EntityInserted(topic);
         }
 
         public virtual void UpdateTopic(Topic topic)
         {
-			Guard.NotNull(topic, nameof(topic));
+            if (topic == null)
+                throw new ArgumentNullException("topic");
 
-			_topicRepository.Update(topic);
+            _topicRepository.Update(topic);
+
+			//event notification
+			_eventPublisher.EntityUpdated(topic);
         }
     }
 }

@@ -24,6 +24,9 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("manufacturerTemplate");
 
             _manufacturerTemplateRepository.Delete(manufacturerTemplate);
+
+            //event notification
+            _eventPublisher.EntityDeleted(manufacturerTemplate);
         }
 
         public virtual IList<ManufacturerTemplate> GetAllManufacturerTemplates()
@@ -50,6 +53,9 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("manufacturerTemplate");
 
             _manufacturerTemplateRepository.Insert(manufacturerTemplate);
+
+            //event notification
+            _eventPublisher.EntityInserted(manufacturerTemplate);
         }
 
         public virtual void UpdateManufacturerTemplate(ManufacturerTemplate manufacturerTemplate)
@@ -59,6 +65,8 @@ namespace SmartStore.Services.Catalog
 
             _manufacturerTemplateRepository.Update(manufacturerTemplate);
 
+            //event notification
+            _eventPublisher.EntityUpdated(manufacturerTemplate);
         }
     }
 }

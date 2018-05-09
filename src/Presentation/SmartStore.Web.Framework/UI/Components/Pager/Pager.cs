@@ -233,5 +233,7 @@ namespace SmartStore.Web.Framework.UI
             get;
             private set;
         }
+
     }
+
 }

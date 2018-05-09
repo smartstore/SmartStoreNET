@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 
 namespace SmartStore.Linq
 {
+
     public static class PredicateBuilder
     {
         public static Expression<Func<T, bool>> True<T>()
@@ -31,5 +32,7 @@ namespace SmartStore.Linq
             return Expression.Lambda<Func<T, bool>>
                   (Expression.And(expr1.Body, invokedExpr), expr1.Parameters);
         }
+
     }
+
 }

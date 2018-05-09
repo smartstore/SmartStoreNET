@@ -16,7 +16,7 @@ namespace SmartStore.GoogleMerchantCenter
 
 		public Events(IGoogleFeedService googleService)
 		{
-			_googleService = googleService;
+			this._googleService = googleService;
 		}
 
 		public void HandleEvent(TabStripCreated eventMessage)
@@ -56,6 +56,7 @@ namespace SmartStore.GoogleMerchantCenter
 				};
 			}
 
+			// map objects
 			entity.AgeGroup = model.AgeGroup;
 			entity.Color = model.Color;
 			entity.Gender = model.Gender;

@@ -11,7 +11,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Forums
 {
     [Validator(typeof(ForumGroupValidator))]
-	public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>, IStoreSelector
+	public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>
     {
         public ForumGroupModel()
         {
@@ -39,10 +39,13 @@ namespace SmartStore.Admin.Models.Forums
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
-		public int[] SelectedStoreIds { get; set; }
 
-		public IList<ForumModel> ForumModels { get; set; }
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
+        
+        //use ForumModel
+        public IList<ForumModel> ForumModels { get; set; }
 
 		public IList<ForumGroupLocalizedModel> Locales { get; set; }
     }

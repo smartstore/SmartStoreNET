@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Web;
+using System.Web.UI;
 using SmartStore.Utilities;
 using SmartStore.Core.Infrastructure;
 using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public abstract class ComponentBuilder<TComponent, TBuilder, TModel> : IHtmlString, IHideObjectMembers 
+    public abstract class ComponentBuilder<TComponent, TBuilder> : IHtmlString, IHideObjectMembers 
         where TComponent : Component
-        where TBuilder : ComponentBuilder<TComponent, TBuilder, TModel>
+        where TBuilder : ComponentBuilder<TComponent, TBuilder>
     {
         private ComponentRenderer<TComponent> _renderer;
 
-        protected ComponentBuilder(TComponent component, HtmlHelper<TModel> htmlHelper)
+        protected ComponentBuilder(TComponent component, HtmlHelper htmlHelper)
         {
             Guard.NotNull(component, nameof(component));
             Guard.NotNull(htmlHelper, nameof(htmlHelper));
@@ -22,7 +25,7 @@ namespace SmartStore.Web.Framework.UI
             this.HtmlHelper = htmlHelper;
         }
 
-        protected internal HtmlHelper<TModel> HtmlHelper
+        protected internal HtmlHelper HtmlHelper
         {
             get;
             private set;
@@ -110,6 +113,12 @@ namespace SmartStore.Web.Framework.UI
             return this as TBuilder;
         }
 
+		public virtual TBuilder ComponentVersion(BootstrapVersion value)
+		{
+			this.Component.ComponentVersion = value;
+			return this as TBuilder;
+		}
+
 		public virtual TBuilder HtmlAttributes(object attributes)
         {
             return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
@@ -121,24 +130,7 @@ namespace SmartStore.Web.Framework.UI
             return this as TBuilder;
         }
 
-		public virtual TBuilder HtmlAttribute(string name, object value)
-		{
-			Guard.NotEmpty(name, nameof(name));
-			Guard.NotNull(value, nameof(value));
-
-			this.Component.HtmlAttributes[name] = value;
-			return this as TBuilder;
-		}
-
-		public virtual TBuilder AddCssClass(string cssClass)
-		{
-			Guard.NotEmpty(cssClass, nameof(cssClass));
-
-			this.Component.HtmlAttributes.AppendCssClass(cssClass);
-			return this as TBuilder;
-		}
-
-		public string ToHtmlString()
+        public string ToHtmlString()
         {
             return this.Renderer.ToHtmlString();
         }
@@ -153,9 +145,11 @@ namespace SmartStore.Web.Framework.UI
             this.Renderer.Render();
         }
 
-        public static implicit operator TComponent(ComponentBuilder<TComponent, TBuilder, TModel> builder)
+        public static implicit operator TComponent(ComponentBuilder<TComponent, TBuilder> builder)
         {
             return builder.ToComponent();
         }
+
     }
+
 }

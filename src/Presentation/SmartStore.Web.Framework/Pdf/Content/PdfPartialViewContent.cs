@@ -4,6 +4,7 @@ using SmartStore.Services.Pdf;
 
 namespace SmartStore.Web.Framework.Pdf
 {
+
 	public class PdfPartialViewContent : PdfHtmlContent
 	{
 		public PdfPartialViewContent(string partialViewName, object model, ControllerContext controllerContext)
@@ -11,4 +12,5 @@ namespace SmartStore.Web.Framework.Pdf
 		{
 		}
 	}
+
 }

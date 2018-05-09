@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using SmartStore.Core.Configuration;
 
 namespace SmartStore.PayPal.Settings
@@ -7,9 +8,12 @@ namespace SmartStore.PayPal.Settings
     {
 		public PayPalSettingsBase()
 		{
+			SecurityProtocol = SecurityProtocolType.Tls12;
 			IpnChangesPaymentStatus = true;
 			AddOrderNotes = true;
 		}
+
+		public SecurityProtocolType? SecurityProtocol { get; set; }
 
 		public bool UseSandbox { get; set; }
 

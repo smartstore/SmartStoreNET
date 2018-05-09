@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Theming
 
         #region ThemeVars
 
-        public static MvcHtmlString ThemeVarLabel(this HtmlHelper html, ThemeVariableInfo info, string hint = null)
+        public static MvcHtmlString ThemeVarLabel(this HtmlHelper html, ThemeVariableInfo info)
         {
             Guard.NotNull(info, "info");
 
@@ -30,14 +30,15 @@ namespace SmartStore.Web.Framework.Theming
 
             var displayName = locService.GetResource(resKey, langId, false, "", true);
 
-			if (displayName.HasValue() && hint.IsEmpty())
+			string hint = null;
+			if (displayName.HasValue())
 			{
 				hint = locService.GetResource(resKey + ".Hint", langId, false, "", true);
 				hint = "${0}{1}".FormatInvariant(info.Name, hint.HasValue() ? "\n" + hint : "");
 			}
 
             result.Append("<div class='ctl-label'>");
-            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name, new { @class = "x-col-form-label" }));
+            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name));
 			if (hint.HasValue())
 			{
 				result.Append(html.Hint(hint).ToHtmlString());
@@ -65,6 +66,7 @@ namespace SmartStore.Web.Framework.Theming
 				strValue = value.ToString();
 			}
 
+			var currentTheme = ThemeHelper.ResolveCurrentTheme();
 			var isDefault = strValue.IsCaseInsensitiveEqual(info.DefaultValue);
 			var isValidColor = info.Type == ThemeVariableType.Color 
 				&& ((strValue.HasValue() && ThemeVarsRepository.IsValidColor(strValue)) || (strValue.IsEmpty() && ThemeVarsRepository.IsValidColor(info.DefaultValue)));
@@ -95,26 +97,19 @@ namespace SmartStore.Web.Framework.Theming
 				control = html.TextBox(expression, isDefault ? "" : strValue, new { placeholder = info.DefaultValue, @class = "form-control" });
 			}
 
-			return control;
-		}
-
-		public static MvcHtmlString ThemeVarChainInfo(this HtmlHelper html, ThemeVariableInfo info)
-		{
-			Guard.NotNull(info, "info");
-
-			var currentTheme = ThemeHelper.ResolveCurrentTheme();
-
 			if (currentTheme != info.Manifest)
 			{
 				// the variable is inherited from a base theme: display an info badge
-				var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-chain fa-flip-horizontal'></i><span class='pl-1'>{0}</span></span>".FormatCurrent(info.Manifest.ThemeName);
-				return MvcHtmlString.Create(chainInfo);
+				var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-chain fa-flip-horizontal'></i>&nbsp;{0}</span>".FormatCurrent(info.Manifest.ThemeName);
+				return MvcHtmlString.Create(control.ToString() + chainInfo);
 			}
+			else
+			{
+				return control;
+			}	
+        }
 
-			return MvcHtmlString.Empty;
-		}
-
-		private static MvcHtmlString ThemeVarSelectEditor(HtmlHelper html, ThemeVariableInfo info, string expression, string value)
+        private static MvcHtmlString ThemeVarSelectEditor(HtmlHelper html, ThemeVariableInfo info, string expression, string value)
         {
             var manifest = info.Manifest; 
 

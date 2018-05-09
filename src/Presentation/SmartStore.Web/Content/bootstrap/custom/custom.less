@@ -1,0 +1,585 @@
+// bootstrap.custom.less overrides
+// specific tweaks & hacks
+// -------------------------------------------------------------
+
+
+// GENERAL STUFF
+// -------------
+
+.transparent						{ opacity: 0 !important; filter: Alpha(opacity=0) !important; }
+.o0 								{ opacity: 0 !important; filter: Alpha(Opacity=0) !important; visibility: hidden }
+.o10 								{ opacity: .1; filter: Alpha(Opacity=10) }
+.o20 								{ opacity: .2; filter: Alpha(Opacity=20) }
+.o30 								{ opacity: .3; filter: Alpha(Opacity=30) }
+.o40 								{ opacity: .4; filter: Alpha(Opacity=40) }
+.o50 								{ opacity: .5; filter: Alpha(Opacity=50) }
+.o60 								{ opacity: .6; filter: Alpha(Opacity=60) }
+.o70 								{ opacity: .7; filter: Alpha(Opacity=70) }
+.o80 								{ opacity: .8; filter: Alpha(Opacity=80) }
+.o90 								{ opacity: .9; filter: Alpha(Opacity=90) }
+.o100 								{ opacity: 1; filter:  Alpha(Opacity=100) }
+
+.al	                                { text-align: left !important;}
+.ac	                                { text-align: center !important;}
+.ar	                                { text-align: right !important;}
+
+
+// NICER PAGE TITLES & TYPO STUFF
+// ------------------------------
+
+.font-inherit() {
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	color: inherit;
+	font-size: inherit;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.title-typo() {
+	font-family: @pageTitleFontFamily;
+	font-weight: @pageTitleFontWeight;
+	color: @pageTitleColor;
+}
+
+.page-title {
+	margin: 0 0 18px 0;
+
+	h1, h2, h3, h4, h5, h6 {
+		.title-typo();
+	}
+
+	small { 
+		color: inherit;
+		font-weight: inherit;
+	}
+}
+
+.modal-header.page-title {
+	margin-bottom: 0;
+}
+
+.fa {
+	// prevent Chrome ugliness on fonts
+	//-webkit-text-stroke: 0.25px;
+	-webkit-font-smoothing: subpixel-antialiased;
+}
+
+.btn-small .fa {
+	vertical-align: text-bottom;
+}
+
+// THUMB ZOOMER
+// ------------
+
+.zoomable-thumb-container {
+    width: 50px;
+    height: 32px;
+	line-height: 32px;
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+
+	> img { max-height: 100%; max-width: 100%; }
+}
+
+.zoomable-thumb {
+    max-width: 50px;
+    max-height: 32px;
+}
+
+.zoomable-thumb-clone {
+    border: 1px solid #bbb;
+	background-color: #fff;
+}
+
+// MORE RESET
+// ------------
+::-moz-selection {
+	background: #b3d4fc;
+    text-shadow: none;
+}
+
+::selection {
+	background: #b3d4fc;
+    text-shadow: none;
+}
+
+nav ul, 
+nav li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none; 
+}
+
+
+// ALERT STYLES
+// ------------
+
+.alert > *:first-child {
+	margin-top: 0;
+}
+
+.alert > *:last-child {
+	margin-bottom: 0;
+}
+
+.alert .validation-summary-errors > ul {
+	margin-bottom: 0;
+}
+
+
+// FORM STATES
+// ------------
+
+span.field-validation-error {
+	color: @errorText;
+}
+
+
+// WELL TWEAKS
+// ------------
+.well {
+	margin: 10px 0;
+	border: 1px solid #e5e5e5;
+    border-color: rgba(0,0,0, 0.1);
+	border-radius: 3px;
+	.box-shadow(inset 0 0 10px rgba(0,0,0, 0.05));
+}
+
+.well-small {
+	border-radius: 3px;
+}
+
+.well > *:first-child {
+	margin-top: 0;
+}
+
+.well > *:last-child {
+	margin-bottom: 0;
+}
+
+.well {
+	h2, h3, h4, h5 {
+		//.title-typo();
+		font-weight: normal;
+		color: #bbb;
+	}
+}
+
+// TOOLTIP TWEAKS
+// ---------------
+.tooltip-inner {
+	white-space: pre-wrap;
+}
+
+
+// BUTTON STYLES
+// -------------
+
+.btn {
+	text-shadow: none;
+}
+
+// fix for tooltip <> btn-group bug in V2.2.1
+// see: https://github.com/twitter/bootstrap/issues/5783
+.btn-group > .btn + .tooltip + .btn {
+	margin-left: -1px;
+}
+
+.btn-group-wrapper {
+    text-align: center;
+}
+
+.btn-group-wrapper > .btn-group {
+    margin: 0 auto; 
+    text-align: center;
+    width: inherit;
+    display: inline-block;
+}
+
+// add gradient to buttons in ie < 10 with png mask
+.iepre10 .btn {
+	background-image: url('../images/btn-mask.png');
+	background-position: 50% 50%;
+	background-repeat: repeat-x;
+	outline: 0;
+	&:hover,
+	&:active {
+		background-position: 50% 50%;
+	}
+	&:active {
+		background-image: none;
+	}
+}
+
+.btn-above {
+	margin-bottom: 5px !important;
+}
+.btn-below {
+	margin-top: 5px !important;
+}
+.btn-right {
+	margin-left: 10px !important;
+}
+
+
+// FORMS (GENERAL)
+// --------------
+
+legend > a {
+    text-decoration: none !important;
+}
+
+
+// FORMS (SELECT)
+// --------------
+
+select {
+	width: auto; // tb sets 220px, not good...
+	min-width: 120px; // ...but too small is also bad
+}
+
+select, 
+input[type="file"] {
+    height: 30px;
+    line-height: 30px;
+}
+
+
+// FORMS (PROMPTS)
+// ---------------
+
+.input-append .add-on .fa, 
+.input-prepend .add-on .fa {
+	font-size: 16px;
+}
+
+
+// FORMS (BLOCK LEVEL INPUT-APPEND/PREPEND)
+// ----------------------------------------
+
+.input-append.input-block-level,
+.input-prepend.input-block-level {
+	display: table;
+
+	.add-on, .btn {
+		display: table-cell;
+	}
+
+	> input {
+		.box-sizing(border-box);
+		display: table-cell; /* table-cell is not working well in Chrome for small widths */
+		min-height: inherit;
+		width: 100%;
+	}
+}
+
+.input-append.input-block-level > input {
+  border-right: 0;
+}
+.input-prepend.input-block-level > input {
+  border-left: 0;
+}
+
+
+// FORMS (CHECKBOX / RADIO)
+// ------------------------
+input[type="radio"], 
+input[type="checkbox"] {
+	margin-top: 4px;
+	margin-top: 1px \9;
+}
+
+th label {
+	font-weight: inherit;
+	font-size: inherit;
+}
+
+
+// NAV STYLES
+// ------------
+
+// remove outline from focussed nav links
+.nav > li > a:focus {
+	outline: 0;
+}
+
+// add icon support to nav tabs and pills
+.nav > li > a > img,
+.nav > li > a > .fa {
+	vertical-align: baseline;
+	margin-right: 4px;
+	color: lighten(@textColor, 18%);
+}
+.nav > li > a:hover > .fa,
+.nav > li.active > a > .fa {
+	color: @textColor
+}
+
+.nav > li > a > .chevron {
+	margin-left: 3px;
+}
+
+.tabs-left .nav > li > a > .fa {
+    min-width: 16px;
+}
+
+// make nav pills look nicer
+.nav.nav-pills > li > a {
+	.transition(none);
+}
+.nav-pills > .active > a,
+.nav-pills > .active > a:hover {
+	border-radius: 2px;
+	.box-shadow(~'inset 0 3px 5px rgba(0,0,0,.125)');
+}
+
+.tab-content {
+	overflow: visible; // was 'auto'. Fixes dropdown problem.
+}
+
+.tabs-left .tab-content,
+.tab-content .tab-content {
+	overflow: auto; // restore in nested panels, buggy otherwise
+}
+
+.ie .tabs-left .nav-tabs {
+	min-width: 200px;
+}
+
+.nav-tabs > li > a > span.tab-caption {
+	display: inline-block;
+	margin-right: 8px;
+	white-space: nowrap;
+}
+  
+
+
+// DROPDOWN STYLES
+// ---------------
+
+// add 'disabled' style to dropdown-menu items (will be officially implemented in a future bootstrap release)
+
+.nav .disabled > a,	
+.dropdown-menu .disabled > a,
+.dropdown-menu .disabled > a:hover {	
+	color: @dropdownLinkColor;
+	.opacity(40);
+	pointer-events: none;	
+}
+	
+// Nuke hover effects
+.nav .disabled > a:hover,	
+.dropdown-menu .disabled > a:hover {
+	text-decoration: none;
+	background-color: transparent;	
+	cursor: default;
+}
+
+.dropdown-menu li > a > img {
+	// adjust icon alignment a bit.
+	vertical-align: -1px;
+}
+
+.dropdown-menu li a i {
+	display: inline-block;
+	min-width: 16px;
+}
+
+// LABEL-BADGE ENHANCEMENTS
+// -------------------------
+
+.nav.nav-tabs .badge,
+.nav.nav-tabs .label {
+	// labels & badges within tabs "push" the tab item
+	// downwards: kill the ugly solid table line
+	vertical-align: text-top;
+}
+
+.label-smnet,
+.label-inline {
+	margin-right: 5px;
+}
+.label-smnet-hide {
+	display: none;
+}
+.label-smnet + span,
+.label-smnet + a {
+	vertical-align: middle;
+}
+
+
+// COLOR PICKER
+// ------------------------------
+.sm-colorbox {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+
+// JQUERY UI STUFF
+// -------------------------
+
+.ui-effects-transfer,
+.transfer {
+	border: 2px dotted #555 !important;
+	background: transparent;
+	z-index: 100000;
+
+}
+
+
+// MVC UI adaptation
+// -------------------------
+
+.validation-summary-errors {
+	.alert();
+	.alert-error();
+
+	ul {
+		margin-bottom: 0;
+	}
+}
+
+
+/* Sortable lists
+-------------------------------------------------------------- */
+
+.sortable-grip {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 100%;
+	width: 5px;
+	cursor: move;
+	visibility: hidden;
+	.opacity(0);
+	.transition(opacity 0.1s ease-in-out);
+	background: transparent url('../../images/grippy.png') 0 0 repeat;
+}
+
+.sortable-item:hover .sortable-grip {
+	visibility: visible;
+	.opacity(100);
+}
+
+.sortable-dragging {
+	/*border: 1px dashed #CCC;
+	background: none;*/
+}
+
+.sortable-placeholder {
+	border: 1px dotted #ccc;
+	background: #f5f5f5;
+}
+
+
+// 'summernote' html editor tweaks
+// -------------------------
+
+.note-editable {
+    background-color: #fff;
+}
+
+
+// NICER MODAL FADE
+// ------------------------------
+
+.modal.fade {
+	top: 50%;
+	.transition(~'opacity 0.12s linear, transform 0.12s ease-out');
+	.transform(~'translate(0, -40px) scale(0.9, 0.9)');
+}
+
+.modal.fade.in {
+	.transform(none);
+}
+
+.modal-backdrop, 
+.modal-backdrop.fade.in {
+	opacity: 0.6;
+}
+
+.modal-header .close {
+	font-size: 30px;
+	text-shadow: none;
+}
+
+.modal-large {
+	width: 800px !important;
+	margin: -250px 0 0 -400px !important;
+}
+
+
+// XLARGE MODAL
+// ------------------------------
+
+.modal-xlarge {
+	width: 960px !important;
+	margin: -250px 0 0 -480px !important;
+}
+
+
+// FLEX MODAL
+// ------------------------------
+
+.modal-flex {
+    top: 3% !important;
+    bottom: 3% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+	
+	&.modal-fluid {
+		margin: 0 !important;
+		left: 3% !important;
+		width: 94% !important;
+	}
+
+    &.fade.in {
+        display: -webkit-box !important;
+        display: -webkit-flex !important;
+        display: -ms-flexbox !important;
+        display: flex !important;
+    }
+
+    .modal-body {
+        max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        .display-flex();
+        -webkit-flex-direction: row;
+            -ms-flex-direction: row;
+                flex-direction: row;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+            -ms-flex: 1;
+                flex: 1;
+        -webkit-box-pack: start;
+        -webkit-justify-content: flex-start;
+            -ms-flex-pack: start;
+                justify-content: flex-start;
+        -webkit-box-align: stretch;
+        -webkit-align-items: stretch;
+            -ms-flex-align: stretch;
+                align-items: stretch;
+        -webkit-align-content: stretch;
+            -ms-flex-line-pack: stretch;
+                align-content: stretch;
+    }
+
+    .modal-flex-fill-area {
+        //overflow: hidden;
+        min-height: 100%;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+            -ms-flex: 1;
+                flex: 1;
+    }
+}

@@ -8,9 +8,9 @@ using System.Web.Optimization;
 using BundleTransformer.Core.Orderers;
 using BundleTransformer.Core.Bundles;
 using SmartStore.Core;
+using SmartStore.Web.Framework.Theming;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Theming.Assets;
-using SmartStore.Core.Themes;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -54,14 +54,14 @@ namespace SmartStore.Web.Framework.UI
                     bundleFor = BundleTable.Bundles.GetBundleFor(bundleVirtualPath);
                     if (bundleFor == null)
                     {
-						var nullOrderer = new NullOrderer();
+                        var nullOrderer = new NullOrderer();
 
-						Bundle bundle = (type == BundleType.Script) ?
+                        Bundle bundle = (type == BundleType.Script) ?
                             new CustomScriptBundle(bundleVirtualPath) as Bundle :
                             new SmartStyleBundle(bundleVirtualPath) as Bundle;
-						bundle.Orderer = nullOrderer;
+                        bundle.Orderer = nullOrderer;
 
-						bundle.Include(files.ToArray());
+                        bundle.Include(files.ToArray());
 
                         BundleTable.Bundles.Add(bundle);
                     }

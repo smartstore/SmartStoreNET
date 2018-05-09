@@ -94,5 +94,6 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets the tax number that will be used
         /// </summary>
         public string TaxNumber { get; set; }
+
     }
 }

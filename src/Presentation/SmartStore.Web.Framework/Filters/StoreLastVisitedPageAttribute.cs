@@ -9,6 +9,7 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class StoreLastVisitedPageAttribute : FilterAttribute, IActionFilter
     {
+
 		public Lazy<IWebHelper> WebHelper { get; set; }
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<CustomerSettings> CustomerSettings { get; set; }

@@ -43,15 +43,15 @@ namespace SmartStore.Data.Migrations
             var topics = context.Set<Topic>().Where(x => systemTopics.Contains(x.SystemName)).ToList();
             topics.Each(x => x.IsSystemTopic = true);
 
-			context.MigrateLocaleResources(MigrateLocaleResources);
+            context.SaveChanges();
 
-			context.SaveChanges();
+            context.MigrateLocaleResources(MigrateLocaleResources);
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
             builder.AddOrUpdate("Admin.ContentManagement.Topics.CannotBeDeleted", 
-                "This topic is required by your Shop and can therefore not be deleted.", 
+                "This topic is needed by your Shop and can therefore not be deleted.", 
                 "Diese Seite wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.");
         }
     }

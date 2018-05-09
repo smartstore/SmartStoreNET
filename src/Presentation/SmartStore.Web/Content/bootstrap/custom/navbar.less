@@ -1,0 +1,299 @@
+/* =========================================================
+ * Navbar & dropdown menu customization
+ * ========================================================= */
+@dropListItemHoverBorderColor: 	darken(@dropdownLinkBackgroundHover, 8%);
+@dropListItemArrowHeight:		((@baseLineHeight + 6) / 2); // 6 = aPaddingTop + aPaddingBottom + liBorderTop + liBorderBottom - 2;
+
+.navbar {
+	margin-bottom: 0;
+}
+
+.navbar .navbar-inner {
+	padding-left: 0;
+	padding-right: 0;
+	.border-radius(6px 6px 0 0);
+	@stopColor1: mix(@navbarBackground, @navbarBackgroundHighlight, 35%);
+	@stopColor2: darken(@stopColor1, 1.5%);
+	#gradient > .glossy(@navbarBackgroundHighlight, @stopColor1, @stopColor2, @navbarBackground);
+}
+
+.navbar.navbar-inverse .navbar-inner {
+	@stopColor1: mix(@navbarInverseBackground, @navbarInverseBackgroundHighlight, 40%);
+	@stopColor2: darken(@stopColor1, 2.5%);
+	#gradient > .glossy(@navbarInverseBackgroundHighlight, @stopColor1, @stopColor2, @navbarInverseBackground);
+	.border-radius(4px 4px 0 0);
+}
+.navbar.navbar-inverse .divider-vertical {
+	border-left: 1px solid #444;
+	border-right: 1px solid #6a6a6a;
+}
+
+.rgba .navbar.navbar-inverse .divider-vertical {
+	border-left: 1px solid rgba(0,0,0, 0.5);
+	border-right: 1px solid rgba(255,255,255, 0.12);
+}
+
+// remove border-radius in in IE < 10:
+// gradient shines thru
+.iepre10 .navbar .navbar-inner  {
+	.border-radius(0);
+}
+
+.navbar .divider-vertical {
+	margin: 0;
+}
+
+.rgba .navbar .divider-vertical {
+	border-left: 1px solid rgba(0,0,0, 0.12);
+	border-right: 1px solid rgba(255,255,255, 0.5);
+}
+
+.navbar .nav {
+	margin-right: 6px;		
+}
+
+.navbar .nav > li > a {
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 13px;
+	line-height: 18px;
+	.text-overflow();
+	.transition(color 0.1s linear);		
+}
+
+.navbar .nav > li.dropdown > a {
+	padding-right: 4px;
+}
+
+.navbar .dropdown-menu .drop-list {
+	list-style: none;
+	margin: 0;
+}
+
+
+ /* Smarter navbar
+  * ========================================================= */
+
+.drop-list-item-aim() {
+	@shadowColor: darken(@dropdownLinkBackgroundHover, 7%);
+	background-color: @dropdownLinkBackgroundHover;
+	border-bottom-color: @dropListItemHoverBorderColor;
+	border-top-color: darken(@dropListItemHoverBorderColor, 3%);
+	.box-shadow(0 12px 6px -10px @shadowColor inset);
+	> a {
+		color: @dropdownLinkColorHover;
+		text-shadow: -1px 0 0 @shadowColor; 
+	}
+}
+
+.nav-smart.shrinkable {
+    max-height: @navbarHeight;
+}
+
+// reset li offsets
+.nav-smart li {
+	margin: 0;
+	padding: 0;
+}
+
+.nav-smart li + .nav-header {
+	// restore
+	margin-top: 9px;
+}
+
+// remove item background
+.nav-smart .dropdown-menu li > a:hover, 
+.nav-smart .dropdown-menu li > a:focus, 
+.nav-smart .dropdown-submenu:hover > a {
+	background: transparent;
+	.reset-filter();
+}
+
+.nav-smart > .dropdown:hover > a {
+    .arrow(bottom-in, 7px, #fff, @dropdownBorder, @zindexDropdown + 1);
+}
+
+.nav-smart > .dropdown .dropdown-toggle .chevron { font-size: 12px; /* looks better */ }
+
+.nav-smart .dropdown-menu { // any dropdown
+	width: 200px;
+	margin-top: 0;
+	padding: 0;
+	.border-radius(0);
+	display: block;
+	border: 1px solid #bbb;
+	border-bottom-color: #aaa;
+	font-size: 13px;
+	
+	&:before,
+	&:after {
+		// kill arrow on dropdown-menu
+		display: none !important;
+	}
+}
+
+/*
+.nav.nav-smart .dropdown-menu ul.drop-list > li a,
+.nav.nav-smart .dropdown-menu ul.drop-list > li.nav-header {
+	// to get more 'air'
+	line-height: @baseLineHeight;
+}
+*/
+
+.nav-smart li.drop-list-item {
+	background-color: transparent;
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+
+.nav-smart li.drop-list-item a { // any link
+	display: block;
+	position: relative;
+	color: #666;
+	z-index: @zindexDropdown + 20;
+	white-space: normal; // allow for multiline entries
+	&:hover { color: #000; }
+}
+
+.nav-smart.shrink-menu li.drop-list-item:hover,
+.nav-smart li.drop-list-item.aimed { 
+	.drop-list-item-aim();
+}
+
+.nav-smart .dropdown-menu:not(.pull-right) li.dropdown-submenu.aimed > a {
+	.arrow(right-out, @dropListItemArrowHeight, @dropdownLinkBackgroundHover, darken(@dropListItemHoverBorderColor, 10%), 2);
+}
+
+.nav-smart .dropdown-menu.pull-right li.dropdown-submenu > a {
+	// no caret when right aligned
+	&:before, &:after { display: none }
+}
+
+.nav-smart .dropdown-menu.pull-right li.dropdown-submenu.aimed > a {
+	.arrow(left-out, @dropListItemArrowHeight, @dropdownLinkBackgroundHover, darken(@dropListItemHoverBorderColor, 10%), 2);
+}
+
+.nav-smart li.divider {
+	margin: 4px 1px;
+}
+
+// 2nd level drop
+.nav-smart li.dropdown > div.dropdown-menu {
+	overflow: hidden;
+	.border-radius(4px);
+	visibility: hidden;
+	opacity: 0;
+	#gradient > .vertical(#fbfbfb, #f4f4f4);
+	.reset-filter();
+	.transition(width 0.3s ease-out, opacity 0.15s linear);
+}
+
+// expanded state (3rd level is visible)
+.nav-smart li.dropdown > div.dropdown-menu.expanded {
+	width: 420px;
+}
+
+.nav-smart li.dropdown > div.dropdown-menu.expanded .dropdown-menu-inner {
+	border-right: 1px solid #ccc;
+	.box-shadow(0 0 6px 0 rgba(0,0,0, .18));
+	.border-radius(3px 0 0 3px);
+}
+
+// open state for 2nd level drop
+.nav-smart li.dropdown.open > div.dropdown-menu {
+	opacity: 1;
+	visibility: visible;
+}
+
+.nav-smart .dropdown-menu-inner {
+	position: relative;
+	float: left;
+	background-color: #fff;
+	.border-radius(3px);
+	.transition(height 0.3s ease-out);
+}
+
+// main ul for 2nd level
+.nav-smart .dropdown-menu-inner ul.drop-list {
+	width: 200px;
+	padding: 12px 0;
+}
+
+// 3rd level sub-nav
+.nav-smart .dropdown-submenu > ul.dropdown-menu {
+	position: absolute;
+	top: -1px;
+	visibility: hidden;
+	left: 200px;
+	width: 220px;
+	padding: 12px 0;
+	border: 0;
+	background: transparent;
+	.box-shadow(none);
+	.border-radius(0);
+	
+	// 4th level cannot be displayed
+	ul { display: none; }
+}
+
+.nav-smart .dropdown-submenu > a:after {
+	// make caret a bit lighter than default
+	border-left-color: darken(@dropdownBackground, 14%);
+}
+
+.nav-smart li.dropdown-submenu {
+	position: static;	
+}
+
+.nav-smart li.dropdown-submenu.aimed > ul.dropdown-menu {
+	visibility: visible;
+}
+
+/* right aligned drop */
+
+.nav-smart .dropdown-menu.pull-right {
+
+	&.expanded .dropdown-menu-inner {
+		border-left: 1px solid #ccc !important;
+		border-right-width: 0 !important;
+		.border-radius(0 3px 3px 0);
+	}
+	
+	.dropdown-menu-inner {
+		float: right;
+	}	
+	
+	// Sub List
+	.dropdown-menu-inner ul.drop-list > li > ul {
+        left: auto;
+        .border-radius(0);
+        text-align: right;	
+	}
+	
+    .dropdown-menu-inner ul.drop-list > li > a [class*=icon-chevron] {
+    	display: none !important;
+    }
+}
+
+/* Shrink menu */
+
+.nav-smart.shrink-menu {
+	display: none;
+	padding-right: 6px;
+}
+
+.nav-smart.shrink-menu .dropdown-toggle {
+	padding: 6px 4px;
+}
+
+.nav-smart.shrink-menu .dropdown-toggle sup {
+	font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+	font-size: 24px; 
+	font-weight: bold; 
+	display: inline-block;
+	padding-left: 12px; // otherwise mouse slips out easily from dropdown
+	top: auto; /* for FF, IE, Opera */
+	
+	/*.wkit & { top: -0.5em; }*/ // reset 'top' for wkit (UPDATE 04.10.2013: seems to work with current Chrome)
+	.ie & 	{ font-size: 30px; /* too small in IE, enlarge! */ }
+}

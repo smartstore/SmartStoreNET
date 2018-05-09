@@ -62,8 +62,8 @@ namespace SmartStore.Web.Controllers
                 Id = topic.Id,
                 SystemName = topic.SystemName,
                 IsPasswordProtected = topic.IsPasswordProtected,
-                Title = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Title),
-                Body = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Body, detectEmptyHtml: true),
+                Title = topic.IsPasswordProtected ? "" : topic.GetLocalized(x => x.Title),
+                Body = topic.IsPasswordProtected ? "" : topic.GetLocalized(x => x.Body),
                 MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic.GetLocalized(x => x.MetaTitle),
@@ -169,7 +169,7 @@ namespace SmartStore.Web.Controllers
                 {
                     authResult = true;
                     title = topic.GetLocalized(x => x.Title);
-                    body = topic.GetLocalized(x => x.Body, detectEmptyHtml: true);
+                    body = topic.GetLocalized(x => x.Body);
                 }
                 else
                 {

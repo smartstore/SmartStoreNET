@@ -27,6 +27,9 @@ namespace SmartStore.Services.Tax
                 throw new ArgumentNullException("taxCategory");
 
             _taxCategoryRepository.Delete(taxCategory);
+
+            //event notification
+            _eventPublisher.EntityDeleted(taxCategory);
         }
 
         public virtual IList<TaxCategory> GetAllTaxCategories()
@@ -53,6 +56,9 @@ namespace SmartStore.Services.Tax
                 throw new ArgumentNullException("taxCategory");
 
             _taxCategoryRepository.Insert(taxCategory);
+
+            //event notification
+            _eventPublisher.EntityInserted(taxCategory);
         }
 
         public virtual void UpdateTaxCategory(TaxCategory taxCategory)
@@ -61,6 +67,9 @@ namespace SmartStore.Services.Tax
                 throw new ArgumentNullException("taxCategory");
 
             _taxCategoryRepository.Update(taxCategory);
+
+            //event notification
+            _eventPublisher.EntityUpdated(taxCategory);
         }
     }
 }

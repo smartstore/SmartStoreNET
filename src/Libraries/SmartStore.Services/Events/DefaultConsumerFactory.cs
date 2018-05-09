@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 
@@ -15,8 +16,8 @@ namespace SmartStore.Services.Events
 			IEnumerable<Lazy<IConsumer<T>, EventConsumerMetadata>> consumers,
 			ICommonServices services)
 		{
-			_consumers = consumers;
-			_services = services;
+			this._consumers = consumers;
+			this._services = services;
 		}
 
 		public IEnumerable<IConsumer<T>> GetConsumers(bool? resolveAsyncs = null)

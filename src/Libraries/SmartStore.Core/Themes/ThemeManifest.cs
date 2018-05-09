@@ -9,8 +9,10 @@ using System.Web;
 
 namespace SmartStore.Core.Themes
 {
+
 	public class ThemeManifest : ComparableObject<ThemeManifest>
     {
+
         internal ThemeManifest()
         {
         }
@@ -313,4 +315,5 @@ namespace SmartStore.Core.Themes
 		MissingBaseTheme = -1,
 		Active = 0,
 	}
+
 }

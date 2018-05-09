@@ -19,13 +19,13 @@
 						</span>
 					}
 					<span class="d-block text-truncate">
-						<span class="d-block text-truncate" @Html.LanguageAttributes(hit.Name)>
+						<span class="d-block text-truncate">
 							@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>", false))
 						</span>
-						@if (hasThumbs && hit.ShortDescription.Value.HasValue())
+						@if (hasThumbs && hit.ShortDescription.HasValue())
 						{
-							<span class="instasearch-hit-label-secondary d-block text-truncate" @Html.LanguageAttributes(hit.ShortDescription)>
-								@hit.ShortDescription.Value.RemoveHtml()
+							<span class="instasearch-hit-label-secondary d-block text-truncate">
+								@hit.ShortDescription.RemoveHtml()
 							</span>
 						}
 					</span>

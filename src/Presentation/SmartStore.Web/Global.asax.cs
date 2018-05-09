@@ -15,7 +15,6 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Themes;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Filters;
@@ -140,9 +139,6 @@ namespace SmartStore.Web
 			// Register JsEngine
 			RegisterJsEngines();
 
-			// VPPs
-			RegisterVirtualPathProviders();
-
 			if (installed)
 			{
 				// register our themeable razor view engine we use
@@ -153,6 +149,9 @@ namespace SmartStore.Web
 
 				// Bundles
 				RegisterBundles(BundleTable.Bundles, engine);
+
+				// VPPs
+				RegisterVirtualPathProviders();
 
 				// "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
 				GlobalFilters.Filters.Add(new InitializeSchedulerFilter(), int.MinValue);
@@ -172,17 +171,13 @@ namespace SmartStore.Web
 		private void RegisterVirtualPathProviders()
 		{
 			var vppSystem = HostingEnvironment.VirtualPathProvider;
+			var vppTheme = new ThemingVirtualPathProvider(vppSystem);
 
-			// register virtual path provider for bundling (Sass & variables handling)
+			// register virtual path provider for theming (file inheritance handling etc.)
+			HostingEnvironment.RegisterVirtualPathProvider(vppTheme);
+
+			// register virtual path provider for bundling (Sass, Less & variables handling)
 			BundleTable.VirtualPathProvider = new BundlingVirtualPathProvider(vppSystem);
-
-			if (DataSettings.DatabaseIsInstalled())
-			{
-				var vppTheme = new ThemingVirtualPathProvider(vppSystem);
-
-				// register virtual path provider for theming (file inheritance handling etc.)
-				HostingEnvironment.RegisterVirtualPathProvider(vppTheme);
-			}
 		}
 
 		public override string GetVaryByCustomString(HttpContext context, string custom)

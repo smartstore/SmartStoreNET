@@ -1,10 +1,11 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.FacebookAuth.Core;
 using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.FacebookAuth
 {
-	public partial class RouteProvider : IRouteProvider
+    public partial class RouteProvider : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
@@ -13,7 +14,7 @@ namespace SmartStore.FacebookAuth
 				 new { controller = "ExternalAuthFacebook" },
 				 new[] { "SmartStore.FacebookAuth.Controllers" }
 			)
-			.DataTokens["area"] = FacebookExternalAuthMethod.SystemName;
+			.DataTokens["area"] = Provider.SystemName;
         }
         public int Priority
         {

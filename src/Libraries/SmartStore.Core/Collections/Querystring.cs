@@ -49,7 +49,6 @@ namespace SmartStore.Collections
                     return s.Substring(s.IndexOf("?") + 1);
                 }
             }
-
             return s;
         }
 

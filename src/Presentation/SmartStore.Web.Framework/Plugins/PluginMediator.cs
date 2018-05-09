@@ -168,8 +168,10 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				var routeInfo = _routesCache.GetOrAdd(model.SystemName, (key) =>
 				{
+					string actionName, controllerName;
+					RouteValueDictionary routeValues;
 					var configurable = (IConfigurable)provider.Value;
-					configurable.GetConfigurationRoute(out var actionName, out var controllerName, out var routeValues);
+					configurable.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
 
 					if (actionName.IsEmpty())
 					{

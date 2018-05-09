@@ -6,9 +6,9 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -22,12 +22,10 @@ namespace SmartStore.Services.Tests.Shipping
     public class ShippingServiceTests : ServiceTest
     {
         IRepository<ShippingMethod> _shippingMethodRepository;
-		IRepository<StoreMapping> _storeMappingRepository;
-		IProductAttributeParser _productAttributeParser;
+        IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;
-		ICommonServices _services;
-		ShippingSettings _shippingSettings;
+        ShippingSettings _shippingSettings;
         IEventPublisher _eventPublisher;
 		IGenericAttributeService _genericAttributeService;
         IShippingService _shippingService;
@@ -43,13 +41,11 @@ namespace SmartStore.Services.Tests.Shipping
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
 
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
-			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
-			_productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
+            _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productService = MockRepository.GenerateMock<IProductService>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
-			_services = MockRepository.GenerateMock<ICommonServices>();
 
-			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
+            _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
@@ -58,9 +54,8 @@ namespace SmartStore.Services.Tests.Shipping
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _shippingService = new ShippingService(
-                _shippingMethodRepository,
-				_storeMappingRepository,
-				_productAttributeParser,
+                _shippingMethodRepository, 
+                _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
@@ -69,8 +64,7 @@ namespace SmartStore.Services.Tests.Shipping
                 _shoppingCartSettings,
 				_settingService, 
 				this.ProviderManager,
-				_typeFinder,
-				_services);
+				_typeFinder);
         }
 
         [Test]

@@ -22,7 +22,6 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
-using SmartStore.Data.Utilities;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -117,9 +116,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 			var localizationService = this.LocalizationService;
 
-			// Perf
-			_ctx.DetachAll(false);
-
 			// save resources
 			foreach (var filePath in System.IO.Directory.EnumerateFiles(locPath, "*.smres.xml", SearchOption.TopDirectoryOnly))
 			{
@@ -134,9 +130,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				// no need to call SaveChanges() here, as the above call makes it
 				// already without AutoDetectChanges(), so it's fast.
-
-				// Perf
-				_ctx.DetachAll(false);
 			}
 
 			MigratorUtils.ExecutePendingResourceMigrations(locPath, _ctx);
@@ -150,7 +143,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private void PopulateCountriesAndStates()
         {
 			SaveRange(_data.Countries().Where(x => x != null));
-			DataMigrator.ImportAddressFormats(_ctx);
         }
 
 		private void PopulateShippingMethods()
@@ -234,6 +226,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			adminUser.PasswordFormat = PasswordFormat.Hashed;
 			adminUser.Password = encryptionService.CreatePasswordHash(defaultUserPassword, saltKey, new CustomerSettings().HashedPasswordFormat);
 
+			SetModified(adminUser);
 			_ctx.SaveChanges();
         }
 
@@ -267,12 +260,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 			_ctx.SaveChanges();
         }
-
-		private void PopulateMessageTemplates()
-		{
-			var converter = new MessageTemplateConverter(_ctx);
-			converter.ImportAll(_config.Language);
-		}
 
 		private void PopulateCategories()
         {
@@ -314,7 +301,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             //search engine names
             manufacturers.Each(x =>
             {
-                Save(new UrlRecord
+                Save(new UrlRecord()
                 {
                     EntityId = x.Id,
                     EntityName = "Manufacturer",
@@ -329,14 +316,10 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             var products = _data.Products();
 			SaveRange(products);
-
-			// Fix MainPictureId
-			DataMigrator.FixProductMainPictureIds(_ctx);
-
-            // Search engine names
+            //search engine names
             products.Each(x =>
             {
-                Save(new UrlRecord
+                Save(new UrlRecord()
                 {
                     EntityId = x.Id,
                     EntityName = "Product",
@@ -356,7 +339,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             //search engine names
             blogPosts.Each(x =>
             {
-                Save(new UrlRecord
+                Save(new UrlRecord()
                 {
                     EntityId = x.Id,
                     EntityName = "BlogPost",
@@ -374,7 +357,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             //search engine names
             newsItems.Each(x =>
             {
-                Save(new UrlRecord
+                Save(new UrlRecord()
                 {
                     EntityId = x.Id,
                     EntityName = "NewsItem",
@@ -404,7 +387,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			var productTag = _ctx.Set<ProductTag>().FirstOrDefault(pt => pt.Name == tag);
             if (productTag == null)
             {
-                productTag = new ProductTag
+                productTag = new ProductTag()
                 {
                     Name = tag
                 };
@@ -500,7 +483,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rs = new EfRepository<Setting>(_ctx);
 					rs.AutoCommitEnabled = false;
 
-					_settingService = new SettingService(NullCache.Instance, rs);
+					_settingService = new SettingService(NullCache.Instance, NullEventPublisher.Instance, rs);
 				}
 
 				return _settingService;
@@ -539,7 +522,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance, new SecuritySettings());
+					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
 					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
@@ -603,18 +586,18 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
 			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
-			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
+			Populate("PopulateMessageTemplates", _data.MessageTemplates());
 			Populate("PopulateTopics", _data.Topics());
 			Populate("PopulateSettings", PopulateSettings);
+			Populate("PopulateLocaleResources", PopulateLocaleResources);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateProductTemplates", _data.ProductTemplates());
 			Populate("PopulateCategoryTemplates", _data.CategoryTemplates());
 			Populate("PopulateManufacturerTemplates", PopulateManufacturerTemplates);
 			Populate("PopulateScheduleTasks", _data.ScheduleTasks());
-			Populate("PopulateLocaleResources", PopulateLocaleResources);
 
-			if (_config.SeedSampleData)
+            if (_config.SeedSampleData)
             {
 				_logger.Info("Seeding sample data");
 
@@ -640,9 +623,6 @@ namespace SmartStore.Web.Infrastructure.Installation
             }
 
 			Populate("MovePictures", MoveMedia);
-
-			// Perf
-			_ctx.DetachAll();
         }
 
 		public bool RollbackOnFailure
@@ -653,6 +633,13 @@ namespace SmartStore.Web.Infrastructure.Installation
         #endregion
 
 		#region Utils
+
+		private void SetModified<TEntity>(TEntity entity) 
+			where TEntity : BaseEntity
+		{
+			_ctx.Set<TEntity>().Attach(entity);
+			_ctx.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+		}
 
 		private string ValidateSeName<TEntity>(TEntity entity, string name)
 			where TEntity : BaseEntity, ISlugSupported

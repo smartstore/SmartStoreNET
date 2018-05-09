@@ -6,8 +6,6 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Catalog.Modelling;
 using SmartStore.Web.Framework;
@@ -36,10 +34,9 @@ namespace SmartStore.Admin.Models.Orders
 		//store
 		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
 		public string StoreName { get; set; }
-		public string FromStore { get; set; }
 
-		//customer info
-		[SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
+        //customer info
+        [SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
         public int CustomerId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Orders.List.CustomerName")]
@@ -85,19 +82,13 @@ namespace SmartStore.Admin.Models.Orders
         public int RedeemedRewardPoints { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.RedeemedRewardPoints")]
         public string RedeemedRewardPointsAmount { get; set; }
-
-		[SmartResourceDisplayName("Admin.Orders.Fields.CreditBalance")]
-		public string CreditBalance { get; set; }
-
-		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
-        public string OrderTotalRounding { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
         public string OrderTotal { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.RefundedAmount")]
         public string RefundedAmount { get; set; }
 
-		//edit totals
-		[SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
+        //edit totals
+        [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
         public decimal OrderSubtotalInclTaxValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderSubtotal")]
         public decimal OrderSubtotalExclTaxValue { get; set; }
@@ -119,12 +110,6 @@ namespace SmartStore.Admin.Models.Orders
         public string TaxRatesValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotalDiscount")]
         public decimal OrderTotalDiscountValue { get; set; }
-
-		[SmartResourceDisplayName("Admin.Orders.Fields.CreditBalance")]
-		public decimal CreditBalanceValue { get; set; }
-
-		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotalRounding")]
-        public decimal OrderTotalRoundingValue { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.Edit.OrderTotal")]
         public decimal OrderTotalValue { get; set; }
 
@@ -135,67 +120,18 @@ namespace SmartStore.Admin.Models.Orders
         //order status
         [SmartResourceDisplayName("Admin.Orders.Fields.OrderStatus")]
         public string OrderStatus { get; set; }
-		public OrderStatus StatusOrder { get; set; }
 
-		public string OrderStatusLabelClass
-		{
-			get
-			{
-				switch (StatusOrder)
-				{
-					case Core.Domain.Orders.OrderStatus.Pending:
-						return "fw-600";
-					case Core.Domain.Orders.OrderStatus.Processing:
-						return "";
-					case Core.Domain.Orders.OrderStatus.Complete:
-						return "text-success";
-					case Core.Domain.Orders.OrderStatus.Cancelled:
-						return "muted";
-					default:
-						return "";
-				}
-			}
-		}
-
-		//payment info
-		[SmartResourceDisplayName("Admin.Orders.Fields.PaymentStatus")]
+        //payment info
+        [SmartResourceDisplayName("Admin.Orders.Fields.PaymentStatus")]
         public string PaymentStatus { get; set; }
-		public PaymentStatus StatusPayment { get; set; }
-
-		public bool HasPaymentMethod { get; set; }
-		[SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
+        [SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
         public string PaymentMethod { get; set; }
-		public string WithPaymentMethod { get; set; }
 		public string PaymentMethodSystemName { get; set; }
 
 		public bool HasNewPaymentNotification { get; set; }
 
-		public string PaymentStatusLabelClass
-		{
-			get
-			{
-				switch (StatusPayment)
-				{
-					case Core.Domain.Payments.PaymentStatus.Pending:
-						return "fa fa-fw fa-circle text-danger";
-					case Core.Domain.Payments.PaymentStatus.Authorized:
-						return "fa fa-fw fa-circle text-warning";
-					case Core.Domain.Payments.PaymentStatus.Paid:
-						return "fa fa-fw fa-check text-success";
-					case Core.Domain.Payments.PaymentStatus.PartiallyRefunded:
-						return "fa fa-fw fa-exchange text-warning";
-					case Core.Domain.Payments.PaymentStatus.Refunded:
-						return "fa fa-fw fa-exchange text-success";
-					case Core.Domain.Payments.PaymentStatus.Voided:
-						return "fa fa-fw fa-ban muted";
-					default:
-						return "";
-				}
-			}
-		}
-
-		//credit card info
-		public bool AllowStoringCreditCardNumber { get; set; }
+        //credit card info
+        public bool AllowStoringCreditCardNumber { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.CardType")]
         [AllowHtml]
         public string CardType { get; set; }
@@ -266,46 +202,18 @@ namespace SmartStore.Admin.Models.Orders
         public bool IsShippable { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.ShippingStatus")]
         public string ShippingStatus { get; set; }
-		public ShippingStatus StatusShipping { get; set; }
-
-		[SmartResourceDisplayName("Admin.Orders.Fields.ShippingAddress")]
+        [SmartResourceDisplayName("Admin.Orders.Fields.ShippingAddress")]
         public AddressModel ShippingAddress { get; set; }
-		public string ShippingAddressString { get; set; }
-
-		[SmartResourceDisplayName("Admin.Orders.Fields.OrderWeight")]
+        [SmartResourceDisplayName("Admin.Orders.Fields.OrderWeight")]
         public decimal OrderWeight { get; set; }
         public string BaseWeightIn { get; set; }
-
         [SmartResourceDisplayName("Admin.Orders.Fields.ShippingMethod")]
         public string ShippingMethod { get; set; }
-		public string ViaShippingMethod { get; set; }
-		public string ShippingAddressGoogleMapsUrl { get; set; }
+        public string ShippingAddressGoogleMapsUrl { get; set; }
         public bool CanAddNewShipments { get; set; }
 
-		public string ShippingStatusLabelClass
-		{
-			get
-			{
-				switch (StatusShipping)
-				{
-					case Core.Domain.Shipping.ShippingStatus.ShippingNotRequired:
-						return "fa fa-fw fa-download muted";
-					case Core.Domain.Shipping.ShippingStatus.NotYetShipped:
-						return "fa fa-fw fa-circle text-danger";
-					case Core.Domain.Shipping.ShippingStatus.PartiallyShipped:
-						return "fa fa-fw fa-truck fa-flip-horizontal text-warning";
-					case Core.Domain.Shipping.ShippingStatus.Shipped:
-						return "fa fa-fw fa-truck fa-flip-horizontal text-success";
-					case Core.Domain.Shipping.ShippingStatus.Delivered:
-						return "fa fa-fw fa-check text-success";
-					default:
-						return "";
-				}
-			}
-		}
-
-		//billing info
-		[SmartResourceDisplayName("Admin.Orders.Fields.BillingAddress")]
+        //billing info
+        [SmartResourceDisplayName("Admin.Orders.Fields.BillingAddress")]
         public AddressModel BillingAddress { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.VatNumber")]
         public string VatNumber { get; set; }
@@ -317,9 +225,9 @@ namespace SmartStore.Admin.Models.Orders
         public bool HasDownloadableProducts { get; set; }
         public IList<OrderItemModel> Items { get; set; }
 
+        //creation date
         [SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
-		public string CreatedOnString { get; set; }
 
 		[SmartResourceDisplayName("Common.UpdatedOn")]
 		public DateTime UpdatedOn { get; set; }
@@ -451,10 +359,7 @@ namespace SmartStore.Admin.Models.Orders
 					if (Status == ReturnRequestStatus.Received)
 						return "info";
 
-					if (Status == ReturnRequestStatus.Pending)
-						return "danger";
-
-					return "light";
+					return "";
 				}
 			}
 		}

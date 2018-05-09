@@ -15,14 +15,15 @@ using SmartStore.Core.Domain.Catalog;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ProductValidator))]
-    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>, IStoreSelector, IAclSelector
-	{
+    public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>
+    {
         public ProductModel()
         {
             Locales = new List<ProductLocalizedModel>();
             ProductPictureModels = new List<ProductPictureModel>();
             CopyProductModel = new CopyProductModel();
             AvailableProductTemplates = new List<SelectListItem>();
+            AvailableProductTags = new List<SelectListItem>();
 			AvailableTaxCategories = new List<SelectListItem>();
 			AvailableDeliveryTimes = new List<SelectListItem>();
             AvailableMeasureUnits = new List<SelectListItem>();
@@ -106,8 +107,8 @@ namespace SmartStore.Admin.Models.Catalog
         public bool AllowCustomerReviews { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductTags")]
-        public string[] ProductTags { get; set; }
-        public MultiSelectList AvailableProductTags { get; set; }
+        public string ProductTags { get; set; }
+        public IList<SelectListItem> AvailableProductTags { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
 		[AllowHtml]
@@ -337,15 +338,20 @@ namespace SmartStore.Admin.Models.Catalog
 
         public IList<ProductLocalizedModel> Locales { get; set; }
 
-        // ACL (customer roles)
+        //ACL (customer roles)
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.SubjectToAcl")]
         public bool SubjectToAcl { get; set; }
-        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AclCustomerRoles")]
+        public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
-		// Store mapping
+		//Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
         //categories
@@ -396,13 +402,10 @@ namespace SmartStore.Admin.Models.Catalog
         public IList<SelectListItem> AvailableQuantityUnits { get; set; }
 
 		public string ProductSelectCheckboxClass { get; set; }
-
-		public bool IsSystemProduct { get; set; } 
-		public string SystemName { get; set; }
-
-		#region Nested classes
-
-		public class AddProductSpecificationAttributeModel : ModelBase
+        
+        #region Nested classes
+        
+        public class AddProductSpecificationAttributeModel : ModelBase
         {
             public AddProductSpecificationAttributeModel()
             {

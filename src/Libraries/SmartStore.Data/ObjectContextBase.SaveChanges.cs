@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
@@ -8,22 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using SmartStore.Core;
-using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
-using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
 {
 	public abstract partial class ObjectContextBase
 	{
+		private IDbHookHandler _dbHookHandler;
 		private SaveChangesOperation _currentSaveOperation;
 
-		private readonly static ConcurrentDictionary<Type, bool> _hookableEntities = new ConcurrentDictionary<Type, bool>();
-
-		private enum SaveStage
+		enum SaveStage
 		{
 			PreSave,
 			PostSave
@@ -31,7 +28,53 @@ namespace SmartStore.Data
 
 		private IEnumerable<DbEntityEntry> GetChangedEntries()
 		{
-			return ChangeTracker.Entries().Where(x => x.State > EfState.Unchanged);
+			return ChangeTracker.Entries().Where(IsChangedEntry);
+		}
+
+		private bool IsChangedEntry(DbEntityEntry entry)
+		{
+			var state = entry.State;
+
+			if (state == EntityState.Added || state == EntityState.Deleted)
+			{
+				return true;
+			}
+			else if (state == EntityState.Modified)
+			{
+				var mergeable = entry.Entity as IMergedData;
+
+				if (mergeable?.MergedDataValues == null)
+				{
+					return true;
+				}
+				else
+				{
+					if (mergeable.MergedDataValues.Count == 0)
+						return true;
+
+					// At this point it's certain that 'MergeWithCombination()' has been called recently
+					// (to merge variant with product attributes), and at least one attribute has been 
+					// overwritten on variant level.
+
+					// This should return an empty dict if no other property has been changed.
+					// GetModifiedProperties() can handle/ignore merged properties very well.
+					var modProps = GetModifiedProperties(entry);
+
+					if (modProps.Count == 0)
+					{
+						try
+						{
+							// Set state to unchanged: no 'real' prop changed!
+							entry.State = EntityState.Unchanged;
+						}
+						catch { }
+					}
+
+					return modProps.Count > 0;
+				}
+			}
+
+			return false;
 		}
 
 		public IDbHookHandler DbHookHandler
@@ -48,31 +91,23 @@ namespace SmartStore.Data
 			{
 				if (op.Stage == SaveStage.PreSave)
 				{
-					// This was called from within a PRE action hook. We must get out:... 
-					// 1.) to prevent cyclic calls
-					// 2.) we want new entities in the state tracker (added by pre hooks) to be committed atomically in the core SaveChanges() call later on.
+					//	// This was called from within a PRE action hook. We must get out:... 
+					//	// 1.) to prevent cyclic calls
+					//	// 2.) we want new entities in the state tracker (added by pre hooks) to be committed atomically in the core SaveChanges() call later on.
 					return 0;
 				}
 				else if (op.Stage == SaveStage.PostSave)
 				{
-					// This was called from within a POST action hook. Core SaveChanges() has already been called,
-					// but new entities could have been added to the state tracker by hooks.
-					// Therefore we need to commit them and get outta here, otherwise: cyclic nightmare!
-					// DetectChanges() here is important, 'cause we turned it off for the save process.
-					base.ChangeTracker.DetectChanges();
+					//	// This was called from within a POST action hook. Core SaveChanges() has already been called,
+					//	// but new entities could have been added to the state tracker by hooks.
+					//	// Therefore we need to commit them and get outta here, otherwise: cyclic nightmare!
 					return SaveChangesCore();
 				}
 			}
 
 			_currentSaveOperation = new SaveChangesOperation(this, this.DbHookHandler);
 
-			Action endExecute = () =>
-			{
-				_currentSaveOperation?.Dispose();
-				_currentSaveOperation = null;
-			};
-
-			using (new ActionDisposable(endExecute))
+			using (new ActionDisposable(() => _currentSaveOperation = null))
 			{
 				return _currentSaveOperation.Execute();
 			}
@@ -86,33 +121,26 @@ namespace SmartStore.Data
 			{
 				if (op.Stage == SaveStage.PreSave)
 				{
-					// This was called from within a PRE action hook. We must get out:... 
-					// 1.) to prevent cyclic calls
-					// 2.) we want new entities in the state tracker (added by pre hooks) to be committed atomically in the core SaveChanges() call later on.
+					//	// This was called from within a PRE action hook. We must get out:... 
+					//	// 1.) to prevent cyclic calls
+					//	// 2.) we want new entities in the state tracker (added by pre hooks) to be committed atomically in the core SaveChanges() call later on.
 					return Task.FromResult(0);
 				}
 				else if (op.Stage == SaveStage.PostSave)
 				{
-					// This was called from within a POST action hook. Core SaveChanges() has already been called,
-					// but new entities could have been added to the state tracker by hooks.
-					// Therefore we need to commit them and get outta here, otherwise: cyclic nightmare!
-					// DetectChanges() here is important, 'cause we turned it off for the save process.
-					base.ChangeTracker.DetectChanges();
+					//	// This was called from within a POST action hook. Core SaveChanges() has already been called,
+					//	// but new entities could have been added to the state tracker by hooks.
+					//	// Therefore we need to commit them and get outta here, otherwise: cyclic nightmare!
 					return SaveChangesCoreAsync(cancellationToken);
 				}
 			}
 
 			_currentSaveOperation = new SaveChangesOperation(this, this.DbHookHandler);
 
-			var result = _currentSaveOperation.ExecuteAsync(cancellationToken);
-
-			result.ContinueWith(t =>
+			using (new ActionDisposable(() => _currentSaveOperation = null))
 			{
-				_currentSaveOperation?.Dispose();
-				_currentSaveOperation = null;
-			});
-
-			return result;
+				return _currentSaveOperation.ExecuteAsync(cancellationToken);
+			}
 		}
 
 		/// <summary>
@@ -121,7 +149,13 @@ namespace SmartStore.Data
 		/// <returns>The number of affected records</returns>
 		protected internal int SaveChangesCore()
 		{
-			return base.SaveChanges();
+			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries().ToList();
+
+			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
+			{
+				IgnoreMergedData(changedEntries, true);
+				return base.SaveChanges();
+			}		
 		}
 
 		/// <summary>
@@ -130,54 +164,27 @@ namespace SmartStore.Data
 		/// <returns>The number of affected records</returns>
 		protected internal Task<int> SaveChangesCoreAsync(CancellationToken cancellationToken)
 		{
-			return base.SaveChangesAsync(cancellationToken);
+			var changedEntries = _currentSaveOperation?.ChangedEntries ?? GetChangedEntries().ToList();
+
+			using (new ActionDisposable(() => IgnoreMergedData(changedEntries, false)))
+			{
+				IgnoreMergedData(changedEntries, true);
+				return base.SaveChangesAsync(cancellationToken);
+			}
 		}
 
-		private void IgnoreMergedData(IEnumerable<IMergedData> entries, bool ignore)
+		private void IgnoreMergedData(IEnumerable<DbEntityEntry> entries, bool ignore)
 		{
-			foreach (var entry in entries)
+			foreach (var entry in entries.Select(x => x.Entity).OfType<IMergedData>())
 			{
 				entry.MergedDataIgnore = ignore;
 			}
 		}
 
-		internal bool IsInSaveOperation
-		{
-			get { return _currentSaveOperation != null; }
-		}
-
-		private bool IsHookableEntry(IHookedEntity entry)
-		{
-			var entity = entry.Entity;
-			if (entity == null)
-			{
-				return false;
-			}
-
-			return IsHookableEntityType(entry.EntityType);
-		}
-
-		private bool IsHookableEntityType(Type entityType)
-		{
-			var isHookable = _hookableEntities.GetOrAdd(entityType, t =>
-			{
-				var attr = t.GetAttribute<HookableAttribute>(true);
-				if (attr != null)
-				{
-					return attr.IsHookable;
-				}
-
-				// Entities are hookable by default
-				return true;
-			});
-
-			return isHookable;
-		}
-
 		class SaveChangesOperation : IDisposable
 		{
 			private SaveStage _stage;
-			private IEnumerable<DbEntityEntry> _changedEntries;
+			private IList<DbEntityEntry> _changedEntries;
 			private ObjectContextBase _ctx;
 			private IDbHookHandler _hookHandler;
 
@@ -185,6 +192,7 @@ namespace SmartStore.Data
 			{
 				_ctx = ctx;
 				_hookHandler = hookHandler;
+				_changedEntries = ctx.GetChangedEntries().ToList();
 			}
 
 			public IEnumerable<DbEntityEntry> ChangedEntries
@@ -199,80 +207,23 @@ namespace SmartStore.Data
 
 			public int Execute()
 			{
-				var autoDetectChanges = _ctx.Configuration.AutoDetectChangesEnabled;
-				IEnumerable<IMergedData> mergeableEntities = null;
-				
-				Action endExecute = () =>
-				{
-					_ctx.Configuration.AutoDetectChangesEnabled = autoDetectChanges;
-					_ctx.IgnoreMergedData(mergeableEntities, false);
-				};
+				// pre
+				HookedEntity[] changedHookEntries;
+				PreExecute(out changedHookEntries);
 
-				using (new ActionDisposable(endExecute))
-				{
-					// Suppress implicit DetectChanges() calls by EF,
-					// e.g. called by SaveChanges(), ChangeTracker.Entries() etc.
-					_ctx.Configuration.AutoDetectChangesEnabled = false;
+				// save
+				var result = _ctx.SaveChangesCore();
 
-					// Get all attached entries implementing IMergedData,
-					// we need to ignore merge on them. Otherwise
-					// EF's change detection may think that properties has changed
-					// where they actually didn't.
-					mergeableEntities = _ctx.GetMergeableEntitiesFromChangeTracker().ToArray();
+				// post
+				PostExecute(changedHookEntries);
 
-					// Now ignore merged data, otherwise merged data will be saved to database
-					_ctx.IgnoreMergedData(mergeableEntities, true);
-
-					// We must detect changes earlier in the process
-					// before hooks are executed. Therefore we suppressed the
-					// implicit DetectChanges() call by EF and call it here explicitly.
-					_ctx.ChangeTracker.DetectChanges();
-
-					// Now get changed entries
-					_changedEntries = _ctx.GetChangedEntries();
-
-					// pre
-					IEnumerable<IHookedEntity> changedHookEntries;
-					PreExecute(out changedHookEntries);
-
-					// save
-					var result = _ctx.SaveChangesCore();
-
-					// post
-					PostExecute(changedHookEntries);
-
-					return result;
-				}
+				return result;
 			}
 
 			public Task<int> ExecuteAsync(CancellationToken cancellationToken)
 			{
-				var autoDetectChanges = _ctx.Configuration.AutoDetectChangesEnabled;
-				IEnumerable<IMergedData> mergeableEntities = null;
-
-				// Suppress implicit DetectChanges() calls by EF,
-				// e.g. called by SaveChanges(), ChangeTracker.Entries() etc.
-				_ctx.Configuration.AutoDetectChangesEnabled = false;
-
-				// Get all attached entries implementing IMergedData,
-				// we need to ignore merge on them. Otherwise
-				// EF's change detection may think that properties has changed
-				// where they actually didn't.
-				mergeableEntities = _ctx.GetMergeableEntitiesFromChangeTracker().ToArray();
-
-				// Now ignore merged data, otherwise merged data will be saved to database
-				_ctx.IgnoreMergedData(mergeableEntities, true);
-
-				// We must detect changes earlier in the process
-				// before hooks are executed. Therefore we suppressed the
-				// implicit DetectChanges() calls by EF and call it here explicitly.
-				_ctx.ChangeTracker.DetectChanges();
-
-				// Now get changed entries
-				_changedEntries = _ctx.GetChangedEntries();
-
 				// pre
-				IEnumerable<IHookedEntity> changedHookEntries;
+				HookedEntity[] changedHookEntries;
 				PreExecute(out changedHookEntries);
 
 				// save
@@ -285,20 +236,16 @@ namespace SmartStore.Data
 					{
 						PostExecute(changedHookEntries);
 					}
-
-					_ctx.Configuration.AutoDetectChangesEnabled = autoDetectChanges;
-					_ctx.IgnoreMergedData(mergeableEntities, false);
 				});
-
+				
 				return result;
 			}
 
-			private IEnumerable<IDbSaveHook> PreExecute(out IEnumerable<IHookedEntity> changedHookEntries)
+			private void PreExecute(out HookedEntity[] changedHookEntries)
 			{
 				bool enableHooks = false;
 				bool importantHooksOnly = false;
 				bool anyStateChanged = false;
-				IEnumerable<IDbSaveHook> processedHooks = null;
 
 				changedHookEntries = null;
 
@@ -318,35 +265,26 @@ namespace SmartStore.Data
 				{
 					changedHookEntries = _changedEntries
 						.Select(x => new HookedEntity(x))
-						.Where(x => _ctx.IsHookableEntityType(x.EntityType))
 						.ToArray();
 
 					// Regardless of validation (possible fixing validation errors too)
-					processedHooks = _hookHandler.TriggerPreSaveHooks(changedHookEntries, importantHooksOnly, out anyStateChanged);
-
-					if (processedHooks.Any() && changedHookEntries.Any(x => x.State == SmartStore.Core.Data.EntityState.Modified))
-					{
-						// Because at least one pre action hook has been processed,
-						// we must assume that entity properties has been changed.
-						// We need to call DetectChanges() again.
-						_ctx.ChangeTracker.DetectChanges();
-					}
+					anyStateChanged = _hookHandler.TriggerPreSaveHooks(changedHookEntries, importantHooksOnly);
 				}
 
 				if (anyStateChanged)
 				{
 					// because the state of at least one entity has been changed during pre hooking
 					// we have to further reduce the set of hookable entities (for the POST hooks)
-					changedHookEntries = changedHookEntries.Where(x => x.InitialState > SmartStore.Core.Data.EntityState.Unchanged);
+					changedHookEntries = changedHookEntries
+						.Where(x => x.InitialState > SmartStore.Core.Data.EntityState.Unchanged)
+						.ToArray();
 				}
-
-				return processedHooks ?? Enumerable.Empty<IDbSaveHook>();
 			}
 
-			private IEnumerable<IDbSaveHook> PostExecute(IEnumerable<IHookedEntity> changedHookEntries)
+			private void PostExecute(HookedEntity[] changedHookEntries)
 			{
-				if (changedHookEntries == null || !changedHookEntries.Any())
-					return Enumerable.Empty<IDbSaveHook>();
+				if (changedHookEntries == null || changedHookEntries.Length == 0)
+					return;
 
 				// the existence of hook entries actually implies that hooking is enabled.
 
@@ -354,7 +292,7 @@ namespace SmartStore.Data
 
 				var importantHooksOnly = !_ctx.HooksEnabled && _hookHandler.HasImportantSaveHooks();
 
-				return _hookHandler.TriggerPostSaveHooks(changedHookEntries, importantHooksOnly);
+				_hookHandler.TriggerPostSaveHooks(changedHookEntries, importantHooksOnly);
 			}
 
 			private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)

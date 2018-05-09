@@ -288,7 +288,8 @@ namespace SmartStore.ComponentModel
         /// <returns>XML String or Null if it fails</returns>
         public string ToXml()
         {
-            SerializationUtils.SerializeObject(this, out var xml);
+            string xml = null;
+            SerializationUtils.SerializeObject(this, out xml);
             return xml;
         }
 
@@ -305,7 +306,8 @@ namespace SmartStore.ComponentModel
             if (string.IsNullOrEmpty(xml))
                 return true;
 
-            if (SerializationUtils.DeSerializeObject(xml, this.GetType()) is PropertyBag<TValue> result)
+            var result = SerializationUtils.DeSerializeObject(xml, this.GetType()) as PropertyBag<TValue>;
+            if (result != null)
             {
                 foreach (var item in result)
                 {

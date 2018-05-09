@@ -1,0 +1,213 @@
+// Additional mixins
+// -------------------------------------------------------------
+
+
+/* Typo Extras
+----------------------------------------*/
+
+// all based on 14px 20px size
+
+.small() {
+	line-height: @baseLineHeight * 0.9; 
+}
+
+.small(@min: 13px) when (round(@baseFontSize * 0.9) >= @min) {
+	font-size: round(@baseFontSize * 0.9); 
+}
+
+.small(@min: 13px) when (round(@baseFontSize * 0.9) < @min) {
+	// guard against too small font-size
+	font-size: @min; 
+}
+
+.smaller() {
+	line-height: @baseLineHeight * 0.85; 
+}
+
+.smaller(@min: 12px) when (round(@baseFontSize * 0.85) >= @min) {
+	font-size: round(@baseFontSize * 0.85); 
+}
+
+.smaller(@min: 12px) when (round(@baseFontSize * 0.85) < @min) {
+	// guard against too small font-size
+	font-size: @min; 
+}
+
+.btn-text-shadow(@shadowColor) when (@shadowColor = #fff) {
+	text-shadow: 0 1px 1px rgba(255,255,255, .75);
+}
+
+.btn-text-shadow(@shadowColor) when (@shadowColor = #000) {
+	text-shadow: 0 -1px 0 rgba(0,0,0, .25);
+}
+
+
+/* Arrow Component
+-----------------------------------------*/
+
+.arrow(@pos: top-out, @size: 7px, @color: #fff, @borderColor: #ccc, @zindex: 2) {
+    
+    // vars
+    @outerSize: @size + 1; 
+    
+    // mixins
+    .arrow-pos() when (@pos = right-out) {
+        // east outer
+        &:before, &:after  { left: 100%; top: 50%; border-right: 0; }
+        &:before           { right: -@size; margin-top: -@size; border-left-color: @color; }
+        &:after            { right: -@outerSize; margin-top: -@outerSize; border-left-color: #ccc; border-left-color: @borderColor; }      
+    }
+    
+    .arrow-pos() when (@pos = left-in) {
+        // east inner
+        &:before, &:after  { top: 50%; left: -1px; border-right: 0 }
+        &:before           { margin-top: -@size; border-left-color: @color; }
+        &:after            { margin-top: -@outerSize; border-left-color: #ccc; border-left-color: @borderColor;  }      
+    }
+    
+    .arrow-pos() when (@pos = left-out) {
+        // west outer
+        &:before, &:after  { top: 50%; border-left: 0; }
+        &:before           { left: -@size; margin-top: -@size; border-right-color: @color; }
+        &:after            { left: -@outerSize; margin-top: -@outerSize; border-right-color: #ccc; border-right-color: @borderColor; }      
+    }
+    
+    .arrow-pos() when (@pos = right-in) {
+        // west inner
+        &:before, &:after  { top: 50%; left: 100%; border-left: 0 }
+        &:before           { margin-top: -@size; margin-left: -@size; border-right-color: @color; }
+        &:after            { margin-top: -@outerSize; margin-left: -@outerSize; border-right-color: #ccc; border-right-color: @borderColor; }      
+    }
+    
+    .arrow-pos() when (@pos = top-out) {
+        // north outer
+        &:before, &:after  { left: 50%; border-top: 0; }
+        &:before           { top: -@size; margin-left: -@size; border-bottom-color: @color; }
+        &:after            { top: -@outerSize; margin-left: -@outerSize; border-bottom-color: #ccc; border-bottom-color: @borderColor; }      
+    }
+    
+    .arrow-pos() when (@pos = bottom-in) {
+        // north inner
+        &:before, &:after  { left: 50%; bottom: -1px; border-top: 0; }
+        &:before           { margin-left: -@size; border-bottom-color: @color; }
+        &:after            { margin-left: -@outerSize; border-bottom-color: #ccc; border-bottom-color: @borderColor; }      
+    }
+    
+    .arrow-pos() when (@pos = bottom-out) {
+        // south outer
+        &:before, &:after  { left: 50%; border-bottom: 0; }
+        &:before           { bottom: -@size; margin-left: -@size; border-top-color: @color; }
+        &:after            { bottom: -@outerSize; margin-left: -@outerSize; border-top-color: #ccc; border-top-color: @borderColor; }      
+    }
+    
+    .arrow-pos() when (@pos = top-in) {
+        // south inner
+        &:before, &:after  { left: 50%; border-bottom: 0; top: -1px }
+        &:before           { margin-left: -@size; border-top-color: @color; }
+        &:after            { margin-left: -@outerSize; border-top-color: #ccc; border-top-color: @borderColor; }      
+    }
+    
+    // output
+    &:before,
+    &:after {
+        position: absolute;
+        display: inline-block;
+        content: '';
+        width: 0;
+        height: 0;
+        z-index: @zindex;
+        border-style: solid;
+        border-color: transparent;
+    }
+        
+    &:before {
+        z-index: @zindex + 1;
+        border-width: @size;
+    }  
+                
+    &:after {
+        border-width: @outerSize;
+    }    
+    
+    .arrow-pos();                        
+}
+
+// Gradient extras
+#gradient {
+
+	.glossy(@c1: #ebe9f9, @c2: #d8d0ef, @c3: #cec7ec, @c4: #c1bfea, @stop: 51%) {
+		@stop1: @stop - 1;
+		@bg: ~'top, @{c1} 0%, @{c2} @{stop1}, @{c3} @{stop}, @{c4} 100%';
+		background-color: mix(@c2, @c3, 50%);
+		background-image: -webkit-linear-gradient(@bg);
+		background-image:         linear-gradient(@bg);
+		background-repeat: repeat-x;
+	}
+	
+}
+
+
+// Drop shadow extras
+
+.box-shadow(@shadow1, @shadow2) {
+    box-shadow: @shadow1, @shadow2;
+}
+
+.box-shadow(@shadow1, @shadow2, @shadow3) {
+    box-shadow: @shadow1, @shadow2, @shadow3;
+}
+
+
+// Transition extras
+
+.transition-duration(@duration) {
+  -webkit-transition-duration: @duration;
+          transition-duration: @duration;
+}
+
+.transition(@transition1, @transition2) {
+	-webkit-transition: @transition1, @transition2;
+	        transition: @transition1, @transition2;
+}
+
+.transition(@transition1, @transition2, @transition3) {
+	-webkit-transition: @transition1, @transition2, @transition3;
+	        transition: @transition1, @transition2, @transition3;
+}
+
+
+// Animation
+
+.animation(@animation) {
+	-webkit-animation: @animation;
+	        animation: @animation;
+}
+
+// Transforms
+
+.transform(@expr) {
+  -webkit-transform: @expr;
+          transform: @expr;
+}
+
+
+/* Flexbox Extras
+----------------------------------------*/
+
+.display-flex() {
+    display: -webkit-flex;
+    display: -webkit-box; 
+    display: -ms-flexbox; 
+    display: flex;
+}
+
+.flex-center() {
+    -webkit-align-items:       center; 
+    -webkit-box-align:         center; 
+    -ms-flex-align:            center; 
+    align-items:               center;
+    -webkit-box-pack:          center; 
+    -webkit-justify-content:   center;
+    -ms-flex-pack:             center; 
+    justify-content:           center;
+}

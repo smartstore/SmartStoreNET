@@ -7,27 +7,25 @@
     var cancellable = ViewBag.Cancellable == true;
     var reloadPage = ViewBag.ReloadPage == true;
 }
-<div id="@widgetId" class="minimal-task-widget form-row">
-	<div class="task-info col@(Model.IsRunning ? " hide" : "")">
+<div id="@widgetId" class="minimal-task-widget clearfix">
+	<div class="task-info@(Model.IsRunning ? " hide" : "")">
 		@{ Html.RenderPartial("_MinimalTaskWidget", Model); }
 	</div>
-	<div class='task-progress text-muted col@(Model.IsRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(Model.IsRunning ? "true" : "false")'></div>
+	<div class='task-progress pull-left text-success@(Model.IsRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(Model.IsRunning ? "true" : "false")'></div>
 	@if (cancellable && hasPermission)
 	{
-		<div class="col-auto">
-			<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-sm btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
-				@T("Common.Cancel")
-			</a>
-		</div>
+		<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-small btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+			@T("Common.Cancel")
+		</a>
 	}
 </div>
 
 <script>
 	$(function () {
-		SmartStore.Admin.TaskWatcher.startWatching({
+		Admin.TaskWatcher.startWatching({
 			context: $('#@widgetId'),
 			elementsSelector: '.task-progress',
-			defaultProgressMessage: @T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText,
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
 			pollUrl: '@Url.Action("GetRunningTasks")',
 			onTaskStarted: function (task, el) {
 				el.prev().addClass('hide'); // .task-info

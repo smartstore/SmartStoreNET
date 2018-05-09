@@ -13,6 +13,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 
 namespace SmartStore.Web.Framework
@@ -31,6 +32,7 @@ namespace SmartStore.Web.Framework
         private readonly TaxSettings _taxSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly ICacheManager _cacheManager;
+        private readonly IStoreService _storeService;
 		private readonly Lazy<ITaxService> _taxService;
 		private readonly IUserAgent _userAgent;
 
@@ -53,6 +55,7 @@ namespace SmartStore.Web.Framework
             TaxSettings taxSettings,
             LocalizationSettings localizationSettings,
 			Lazy<ITaxService> taxService,
+            IStoreService storeService,
 			IUserAgent userAgent)
         {
 			_cacheManager = cacheManager;
@@ -66,6 +69,7 @@ namespace SmartStore.Web.Framework
             _taxSettings = taxSettings;
 			_taxService = taxService;
             _localizationSettings = localizationSettings;
+            _storeService = storeService;
 			_userAgent = userAgent;
         }
 
@@ -191,7 +195,6 @@ namespace SmartStore.Web.Framework
 			{
 				visitorCookie = new HttpCookie(VisitorCookieName);
 				visitorCookie.HttpOnly = true;
-				//visitorCookie.Secure = true;
 				visitorCookie.Value = customer.CustomerGuid.ToString();
 				if (customer.CustomerGuid == Guid.Empty)
 				{

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
-using System.IO;
 using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.IO
@@ -75,8 +74,7 @@ namespace SmartStore.Core.IO
 
 		private bool IsLockedInternal(string path)
 		{
-			// INFO: VirtualPathProvider caches file existence info, so not very reliable here.
-			if (File.Exists(_env.TenantFolder.MapPath(path)))
+			if (_env.TenantFolder.FileExists(path))
 			{
 				var content = _env.TenantFolder.ReadFile(path);
 

@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Forums;
+﻿using System.Web.Mvc;
+using SmartStore.Core.Domain.Forums;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -64,5 +65,7 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.SearchResultsPageSize")]
         public int SearchResultsPageSize { get; set; }
+
+        public SelectList ForumEditorValues { get; set; }
     }
 }

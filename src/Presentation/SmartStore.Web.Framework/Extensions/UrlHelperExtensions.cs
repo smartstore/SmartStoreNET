@@ -1,4 +1,6 @@
 ﻿using System.Web.Mvc;
+<<<<<<< HEAD
+=======
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Media;
@@ -7,6 +9,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Topics;
 using SmartStore.Services.Seo;
 using System.Web.Routing;
+>>>>>>> upstream/3.x
 
 namespace SmartStore.Web.Framework
 {
@@ -16,7 +19,6 @@ namespace SmartStore.Web.Framework
         {
             if (!string.IsNullOrEmpty(returnUrl))
                 return urlHelper.Action("Login", "Customer", new { ReturnUrl = returnUrl, area = "" });
-
 			return urlHelper.Action("Login", "Customer", new { area = "" });
         }
 
@@ -24,7 +26,6 @@ namespace SmartStore.Web.Framework
         {
             if (!string.IsNullOrEmpty(returnUrl))
                 return urlHelper.Action("Logout", "Customer", new { ReturnUrl = returnUrl, area = "" });
-
 			return urlHelper.Action("Logout", "Customer", new { area = "" });
         }
 
@@ -38,6 +39,9 @@ namespace SmartStore.Web.Framework
 
 			return fallbackUrl;
 		}
+<<<<<<< HEAD
+    }
+=======
 
 		public static string Picture(this UrlHelper urlHelper, int? pictureId, int targetSize = 0, FallbackPictureType fallbackType = FallbackPictureType.Entity, string host = null)
 		{
@@ -85,4 +89,5 @@ namespace SmartStore.Web.Framework
 			return seName;
 		}
 	}
+>>>>>>> upstream/3.x
 }

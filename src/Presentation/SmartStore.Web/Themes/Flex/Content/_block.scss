@@ -1,6 +1,5 @@
-/// <reference path="../../../Content/shared/_variables-shared.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
 
 .block {
     &:not(:last-child) {
@@ -8,7 +7,7 @@
     }
 
     .block-title {
-        font-size: $h3-font-size;
+        font-size: $font-size-h3;
         border-bottom: 1px solid rgba(0,0,0, 0.12);
         padding-top: 0.75em;
         padding-bottom: 0.75em;
@@ -30,7 +29,7 @@
     }
 
     &.block-boxed .block-title {
-        color: $gray-500;
+        color: $gray-light;
         margin-left: 1.5rem;
         margin-right: 1.5rem;
     }

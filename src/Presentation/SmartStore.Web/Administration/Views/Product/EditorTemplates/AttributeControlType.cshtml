@@ -3,7 +3,7 @@
     var controlTypeList = AttributeControlType.DropdownList.ToSelectList();
 }
 
-<select name="AttributeControlType" id="AttributeControlType" class="form-control">
+<select name="AttributeControlType" id="AttributeControlType" class="autowidth">
 @foreach (var item in controlTypeList)
 {
     <option value="@item.Value">@item.Text</option>  

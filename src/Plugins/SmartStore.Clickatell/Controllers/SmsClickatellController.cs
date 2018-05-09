@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Clickatell.Models;
-using SmartStore.ComponentModel;
 using SmartStore.Core.Plugins;
+using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -13,39 +13,57 @@ namespace SmartStore.Clickatell.Controllers
 	[AdminAuthorize]
     public class SmsClickatellController : PluginControllerBase
     {
-		private readonly IPluginFinder _pluginFinder;
+		private readonly ICommonServices _services;
+        private readonly IPluginFinder _pluginFinder;
 
-        public SmsClickatellController(IPluginFinder pluginFinder)
+        public SmsClickatellController(
+			ICommonServices services,
+			IPluginFinder pluginFinder)
         {
+			_services = services;
             _pluginFinder = pluginFinder;
         }
 
-		[LoadSetting]
-		public ActionResult Configure(ClickatellSettings settings)
+		public ActionResult Configure()
 		{
-			var model = new SmsClickatellModel();
-			MiniMapper.Map(settings, model);
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<ClickatellSettings>(storeScope);
+
+			var model = new SmsClickatellModel
+			{
+				Enabled = settings.Enabled,
+				PhoneNumber = settings.PhoneNumber,
+				ApiId = settings.ApiId
+			};
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
 			return View(model);
         }
 
-        [HttpPost, SaveSetting, FormValueRequired("save")]
-        public ActionResult Configure(ClickatellSettings settings, SmsClickatellModel model)
+        [HttpPost]
+        public ActionResult Configure(SmsClickatellModel model, FormCollection form)
         {
-			if (!ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
-				return Configure(settings);
+				var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+				int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+				var settings = _services.Settings.LoadSetting<ClickatellSettings>(storeScope);
+
+				settings.Enabled = model.Enabled;
+				settings.PhoneNumber = model.PhoneNumber;
+				settings.ApiId = model.ApiId;
+
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
+
+				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 			}
 
-			MiniMapper.Map(model, settings);
-			settings.ApiId = model.ApiId.TrimSafe();
-
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-
-			return RedirectToConfiguration(ClickatellSmsProvider.SystemName);
+			return Configure();
 		}
 
-		[HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
+        [HttpPost, ActionName("Configure"), FormValueRequired("test-sms")]
         public ActionResult TestSms(SmsClickatellModel model)
         {
             try
@@ -57,7 +75,7 @@ namespace SmartStore.Clickatell.Controllers
                 }
                 else
                 {
-                    var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(ClickatellSmsProvider.SystemName);
+                    var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.Clickatell");
                     var plugin = pluginDescriptor.Instance() as ClickatellSmsProvider;
 
 					plugin.SendSms(model.TestMessage);

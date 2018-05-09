@@ -1,7 +1,5 @@
 ﻿(function ($, window, document, undefined) {
 
-	var viewport = ResponsiveBootstrapToolkit;
-
     window.displayAjaxLoading = function(display) {
         if ($.throbber === undefined)
             return;
@@ -15,32 +13,33 @@
     }
 
     window.getPageWidth = function() {
-        return parseFloat($("#page").css("width"));
-    }
-
-    window.getViewport = function () {
-    	return viewport;
+        return parseFloat($("#content").css("width"));
     }
 
     var _commonPluginFactories = [
         // select2
         function (ctx) {
-            if ($.fn.select2 === undefined || $.fn.selectWrapper === undefined)
-            	return;
-            ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+            if (!Modernizr.touchevents) {
+                if ($.fn.select2 === undefined || $.fn.selectWrapper === undefined)
+                    return;
+                ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+            }
         },
         // tooltips
         function (ctx) {
             if ($.fn.tooltip === undefined)
                 return;
             if (!Modernizr.touchevents) {
-                ctx.tooltip({ selector: '[data-toggle=tooltip], .tooltip-toggle', animation: false });
+                ctx.tooltip({ selector: "a[rel=tooltip], .tooltip-toggle" });
             }
         },
-        // touch spin
+        // column equalizer
         function (ctx) {
-            if ($.fn.TouchSpin === undefined)
+            if ($.fn.equalizeColumns === undefined)
                 return;
+<<<<<<< HEAD
+            ctx.find(".equalized-column").equalizeColumns({ /*deep: true,*/ responsive: true });
+=======
             
             ctx.find('.qty-input > .form-control').each(function (i, el) {
                 var ctl = $(this);
@@ -139,6 +138,7 @@
         			]
         		});
         	});
+>>>>>>> upstream/3.x
         }
     ];
 
@@ -156,20 +156,63 @@
     // on document ready
     // TODO: reorganize > public.globalinit.js
     $(function () {
-        // Notify subscribers about page/content width change
-        if (window.EventBroker) {
-        	var currentContentWidth = $('#content').width();
-        	$(window).on('resize', function () {
-        		var contentWidth = $('#content').width();
-        		if (contentWidth !== currentContentWidth) {
-        			currentContentWidth = contentWidth;
-        			console.debug("Grid tier changed: " + viewport.current());
-        			EventBroker.publish("page.resized", viewport);
-        		}
-        	});
+
+        // adjust pnotify global defaults
+        if ($.pnotify) {
+
+            // intercept window.alert with pnotify
+            window.alert = function (message) {
+                if (message == null || message.length <= 0)
+                    return;
+
+                $.pnotify({
+                    title: window.Res["Common.Notification"],
+                    text: message,
+                    type: "info",
+                    animate_speed: 'fast',
+                    closer_hover: false,
+                    stack: false,
+                    before_open: function (pnotify) {
+                        // Position this notice in the center of the screen.
+                        pnotify.css({
+                            "top": ($(window).height() / 2) - (pnotify.height() / 2),
+                            "left": ($(window).width() / 2) - (pnotify.width() / 2)
+                        });
+                    }
+                });
+            }
         }
+
+        // notify subscribers about page/content width change
+        if (window.EventBroker) {
+            pageWidth = getPageWidth(); // initial width
+            $(window).on("resize", function () {
+                // check if page width has changed
+                var newWidth = getPageWidth();
+                if (newWidth !== pageWidth) {
+                    // ...and publish event
+                    EventBroker.publish("page.resized", { oldWidth: pageWidth, newWidth: newWidth });
+                    pageWidth = newWidth;
+                }
+            });
+        }
+
+        // create navbar
+        if ($.fn.navbar)
+        {
+            $('.navbar ul.nav-smart > li.dropdown').navbar();
+        }
+
+        // shrink menu
+        if ($.fn.shrinkMenu) {
+            $(".shrink-menu").shrinkMenu({ responsive: true });
+        }
+
         
         applyCommonPlugins($("body"));
+
+        //$("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+
     });
 
 })( jQuery, this, document );

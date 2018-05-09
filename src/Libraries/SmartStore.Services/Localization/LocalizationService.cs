@@ -26,7 +26,7 @@ namespace SmartStore.Services.Localization
 		/// 0 = segment (first 3 chars of key), 1 = language id
 		/// </summary>
 		const string LOCALESTRINGRESOURCES_SEGMENT_KEY = "localization:{0}-lang-{1}";
-		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:{0}*";
+		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:{0}";
 
         private readonly IRepository<LocaleStringResource> _lsrRepository;
         private readonly IWorkContext _workContext;
@@ -65,6 +65,9 @@ namespace SmartStore.Services.Localization
 			
             // db
             _lsrRepository.Delete(resource);
+
+            // event notification
+            _eventPublisher.EntityDeleted(resource);
         }
 
 		public virtual int DeleteLocaleStringResources(string key, bool keyIsRootKey = true) {
@@ -149,21 +152,30 @@ namespace SmartStore.Services.Localization
 
 			// cache
 			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
+
+            // event notification
+            _eventPublisher.EntityInserted(resource);
         }
 
         public virtual void UpdateLocaleStringResource(LocaleStringResource resource)
         {
 			Guard.NotNull(resource, nameof(resource));
 
+			var modProps = _lsrRepository.GetModifiedProperties(resource);
+
+            _lsrRepository.Update(resource);
+
             // cache
             object origKey = null;
-			if (_dbContext.TryGetModifiedProperty(resource, "ResourceName", out origKey))
-			{
+            if (modProps.TryGetValue("ResourceName", out origKey))
+            {
 				ClearCachedResourceSegment((string)origKey, resource.LanguageId);
 			}
 			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
 
-			_lsrRepository.Update(resource);
+
+            // event notification
+            _eventPublisher.EntityUpdated(resource);
         }
 
 		protected virtual IDictionary<string, string> GetCachedResourceSegment(string forKey, int languageId)

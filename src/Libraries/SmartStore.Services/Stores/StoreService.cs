@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Data;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
-using SmartStore.Services.Media;
-using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Services.Stores
 {
@@ -15,26 +12,29 @@ namespace SmartStore.Services.Stores
 	{
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
-		private readonly SecuritySettings _securitySettings;
-
 		private bool? _isSingleStoreMode = null;
 
-		public StoreService(IRepository<Store> storeRepository, IEventPublisher eventPublisher, SecuritySettings securitySettings)
+		public StoreService(
+			IRepository<Store> storeRepository,
+			IEventPublisher eventPublisher)
 		{
-			_storeRepository = storeRepository;
-			_eventPublisher = eventPublisher;
-			_securitySettings = securitySettings;
+			this._storeRepository = storeRepository;
+			this._eventPublisher = eventPublisher;
 		}
 
 		public virtual void DeleteStore(Store store)
 		{
-			Guard.NotNull(store, nameof(store));
+			if (store == null)
+				throw new ArgumentNullException("store");
 
 			var allStores = GetAllStores();
 			if (allStores.Count == 1)
 				throw new Exception("You cannot delete the only configured store.");
 
 			_storeRepository.Delete(store);
+
+			//event notification
+			_eventPublisher.EntityDeleted(store);
 		}
 
 		public virtual IList<Store> GetAllStores()
@@ -59,16 +59,24 @@ namespace SmartStore.Services.Stores
 
 		public virtual void InsertStore(Store store)
 		{
-			Guard.NotNull(store, nameof(store));
+			if (store == null)
+				throw new ArgumentNullException("store");
 
 			_storeRepository.Insert(store);
+
+			//event notification
+			_eventPublisher.EntityInserted(store);
 		}
 
 		public virtual void UpdateStore(Store store)
 		{
-			Guard.NotNull(store, nameof(store));
+			if (store == null)
+				throw new ArgumentNullException("store");
 
 			_storeRepository.Update(store);
+
+			//event notification
+			_eventPublisher.EntityUpdated(store);
 		}
 
 		public virtual bool IsSingleStoreMode()
@@ -83,7 +91,8 @@ namespace SmartStore.Services.Stores
 
 		public virtual bool IsStoreDataValid(Store store)
 		{
-			Guard.NotNull(store, nameof(store));
+			if (store == null)
+				throw new ArgumentNullException("store");
 
 			if (store.Url.IsEmpty())
 				return false;
@@ -106,17 +115,10 @@ namespace SmartStore.Services.Stores
 						return store.Url.IsWebUrl();
 				}
 			}
-			catch
+			catch (Exception)
 			{
 				return false;
 			}
-		}
-
-		public string GetHost(Store store, bool? secure = null)
-		{
-			Guard.NotNull(store, nameof(store));
-			
-			return store.GetHost(secure ?? store.ForceSslForAllPages);
 		}
 	}
 }

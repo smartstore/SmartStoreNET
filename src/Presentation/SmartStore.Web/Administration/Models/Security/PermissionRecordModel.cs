@@ -16,13 +16,13 @@ namespace SmartStore.Admin.Models.Security
 				{
 					case "PublicStore":
 					case "Standard":
-						return "badge-success";
+						return "label-success";
 
 					case "Plugin":
-						return "badge-warning";
+						return "";
 
 					default:
-						return "badge-info";
+						return "label-info";
 				}
 			}
 		}

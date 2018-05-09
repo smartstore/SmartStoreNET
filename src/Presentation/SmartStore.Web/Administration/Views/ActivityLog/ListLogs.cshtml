@@ -3,7 +3,6 @@
 @{   
     ViewBag.Title = T("Admin.Configuration.ActivityLog.ActivityLog").Text;
 }
-
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -12,83 +11,114 @@
             @T("Admin.Configuration.ActivityLog.ActivityLog")
         </div>
         <div class="options">
-			<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary">
-				<i class="fa fa-trash-o"></i>
-				<span>@T("Admin.Common.DeleteSelected")</span>
+			<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteSelected")
 			</button>
             <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>
-				<span>@T("Admin.Common.DeleteAll")</span>
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteAll")
 			</button>
         </div>
     </div>
-	
-	<div class="row mt-3 grid-filter">
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.CreatedOnFrom)
-			@Html.EditorFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.CreatedOnTo)
-			@Html.EditorFor(model => model.CreatedOnTo, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.ActivityLogTypeId)
-			@Html.DropDownListFor(ModelBase => ModelBase.ActivityLogTypeId, Model.ActivityLogType, T("Common.Unspecified"))
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.CustomerEmail)
-			@Html.TextBoxFor(model => model.CustomerEmail, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.CustomerSystemAccount)
-			@Html.EditorFor(model => model.CustomerSystemAccount, new { @class = "form-control" })
-		</div>
 
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			<label>&nbsp;</label>
-			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
-				<span>@T("Admin.Common.ApplyFilter")</span>
-			</button>
-		</div>
-	</div>
+    <p></p>
 
-	<div class="mt-2">
-		@(Html.Telerik().Grid<ActivityLogModel>()
-			.Name("activityLog-grid")
-			.DataKeys(x =>
-			{
-				x.Add(y => y.Id).RouteKey("Id");
-			})
-			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
-			.Columns(columns =>
-			{
-				columns.Bound(x => x.Id)
-					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-					.Title("<input id='mastercheckbox' type='checkbox'/>")
-					.Width(50)
-					.HtmlAttributes(new { style = "text-align:center" })
-					.HeaderHtmlAttributes(new { style = "text-align:center" });
-				columns.Bound(x => x.ActivityLogTypeName);
-				columns.Bound(x => x.Comment);
-				columns.Bound(x => x.CustomerId)
-					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
-				columns.Bound(x => x.IsSystemAccount)
-					.ClientTemplate("<i class='fa fa-fw icon-active-<#= IsSystemAccount #> mr-1'></i><#= SystemAccountName #>")
-					.Centered()
-					.Width(220);
-				columns.Bound(x => x.CreatedOn)
-					.Width(200);
-			})
-			.DataBinding(dataBinding =>
-			{
-				dataBinding.Ajax()
-					.Select("ListActivityLogs", "ActivityLog");
-			})
-			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-			.PreserveGridState()
-			.EnableCustomBinding(true))
-	</div>
+    <table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CreatedOnFrom)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CreatedOnFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CreatedOnTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CreatedOnTo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ActivityLogTypeId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(ModelBase => ModelBase.ActivityLogTypeId, Model.ActivityLogType, T("Common.Unspecified"))
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerEmail)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CustomerEmail)
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSystemAccount)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.CustomerSystemAccount)
+			</td>
+		</tr>
+        <tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+                <button type="submit" id="btnSearch" class="btn">
+                    <i class="fa fa-search"></i>
+                    @T("Admin.Common.Search")
+                </button>
+            </td>
+        </tr>
+    </table>
+
+	<p></p>
+
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ActivityLogModel>()
+					.Name("activityLog-grid")
+					.DataKeys(x =>
+					{
+						x.Add(y => y.Id).RouteKey("Id");
+					})
+					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
+						columns.Bound(x => x.ActivityLogTypeName);
+						columns.Bound(x => x.Comment);
+						columns.Bound(x => x.CustomerId)
+							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
+						columns.Bound(x => x.IsSystemAccount)
+							.ClientTemplate("<i class='fa fa-fw icon-active-<#= IsSystemAccount #>'></i>&nbsp;<#= SystemAccountName #>")
+							.Centered()
+							.Width(220);
+						columns.Bound(x => x.CreatedOn)
+							.Width(200);
+					})
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax()
+							.Select("ListActivityLogs", "ActivityLog");
+					})
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.PreserveGridState()
+					.EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+
     <script type="text/javascript">
 		var selectedIds = [];
 

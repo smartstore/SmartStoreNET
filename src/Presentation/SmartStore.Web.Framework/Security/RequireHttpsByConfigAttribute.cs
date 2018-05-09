@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Security
 {
@@ -32,18 +33,15 @@ namespace SmartStore.Web.Framework.Security
                 return;
 
 			var securitySettings = SecuritySettings.Value;
-			var isLocalRequest = filterContext.HttpContext.Request.IsLocal;
 
-			if (!securitySettings.UseSslOnLocalhost && isLocalRequest)
+			if (!securitySettings.UseSslOnLocalhost && filterContext.HttpContext.Request.IsLocal)
 				return;
 
 			var webHelper = WebHelper.Value;
 
 			var currentConnectionSecured = webHelper.IsCurrentConnectionSecured();
-			var storeContext = StoreContext.Value;
-			var currentStore = storeContext.CurrentStore;
-
-			if (currentStore.ForceSslForAllPages)
+	
+            if (securitySettings.ForceSslForAllPages)
             {
                 // all pages are forced to be SSL no matter of the specified value
                 this.SslRequirement = SslRequirement.Yes;
@@ -55,13 +53,16 @@ namespace SmartStore.Web.Framework.Security
                     {
                         if (!currentConnectionSecured)
                         {
+							var storeContext = StoreContext.Value;
+							var currentStore = storeContext.CurrentStore;
+
 							if (currentStore != null && currentStore.GetSecurityMode() > HttpSecurityMode.Unsecured)
                             {
                                 // redirect to HTTPS version of page
                                 // string url = "https://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
 								
                                 string url = webHelper.GetThisPageUrl(true, true);
-                                filterContext.Result = new RedirectResult(url, !isLocalRequest);
+                                filterContext.Result = new RedirectResult(url, true);
                             }
                         }
                     }
@@ -73,7 +74,7 @@ namespace SmartStore.Web.Framework.Security
                             // redirect to HTTP version of page
                             // string url = "http://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
                             string url = webHelper.GetThisPageUrl(true, false);
-                            filterContext.Result = new RedirectResult(url, !isLocalRequest);
+                            filterContext.Result = new RedirectResult(url, true);
                         }
                     }
                     break;

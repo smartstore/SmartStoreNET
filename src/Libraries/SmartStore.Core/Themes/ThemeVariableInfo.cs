@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace SmartStore.Core.Themes
-{   
+{
+    
     /// <summary>
     /// Represents deserialized metadata for a theme variable
     /// </summary>
     public class ThemeVariableInfo : DisposableObject
     {
+
         /// <summary>
         /// Gets the variable name as specified in the config file
         /// </summary>
@@ -57,4 +59,5 @@ namespace SmartStore.Core.Themes
             }
         }
     }
+
 }

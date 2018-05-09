@@ -3,9 +3,12 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -16,11 +19,23 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
 	public partial class StoreController : AdminControllerBase
 	{
+		private readonly IStoreService _storeService;
+		private readonly ISettingService _settingService;
+		private readonly ILocalizationService _localizationService;
+		private readonly IPermissionService _permissionService;
 		private readonly ICurrencyService _currencyService;
 
-		public StoreController(ICurrencyService currencyService)
+		public StoreController(IStoreService storeService,
+			ISettingService settingService,
+			ILocalizationService localizationService,
+			IPermissionService permissionService,
+			ICurrencyService currencyService)
 		{
-			_currencyService = currencyService;
+			this._storeService = storeService;
+			this._settingService = settingService;
+			this._localizationService = localizationService;
+			this._permissionService = permissionService;
+			this._currencyService = currencyService;
 		}
 
 		private void PrepareStoreModel(StoreModel model, Store store)
@@ -36,7 +51,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult List()
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 				return AccessDeniedView();
 
 			return View();
@@ -44,7 +59,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult AllStores(string label, int selectedId = 0)
 		{
-			var stores = Services.StoreService.GetAllStores();
+			var stores = _storeService.GetAllStores();
 
 			if (label.HasValue())
 			{
@@ -68,9 +83,9 @@ namespace SmartStore.Admin.Controllers
 		{
 			var gridModel = new GridModel<StoreModel>();
 
-			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 			{
-				var storeModels = Services.StoreService.GetAllStores()
+				var storeModels = _storeService.GetAllStores()
 					.Select(x =>
 					{
 						var model = x.ToModel();
@@ -101,7 +116,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Create()
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 				return AccessDeniedView();
 
 			var model = new StoreModel();
@@ -113,7 +128,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Create(StoreModel model, bool continueEditing)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 				return AccessDeniedView();
 
 			if (ModelState.IsValid)
@@ -122,9 +137,9 @@ namespace SmartStore.Admin.Controllers
 				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoPictureId);
 				//ensure we have "/" at the end
 				store.Url = store.Url.EnsureEndsWith("/");
-				Services.StoreService.InsertStore(store);
+				_storeService.InsertStore(store);
 
-				NotifySuccess(T("Admin.Configuration.Stores.Added"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Stores.Added"));
 				return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
 			}
 
@@ -135,10 +150,10 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Edit(int id)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 				return AccessDeniedView();
 
-			var store = Services.StoreService.GetStoreById(id);
+			var store = _storeService.GetStoreById(id);
 			if (store == null)
 				return RedirectToAction("List");
 
@@ -152,10 +167,10 @@ namespace SmartStore.Admin.Controllers
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult Edit(StoreModel model, bool continueEditing)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 				return AccessDeniedView();
 
-			var store = Services.StoreService.GetStoreById(model.Id);
+			var store = _storeService.GetStoreById(model.Id);
 			if (store == null)
 				return RedirectToAction("List");
 
@@ -167,9 +182,9 @@ namespace SmartStore.Admin.Controllers
 
 				//ensure we have "/" at the end
 				store.Url = store.Url.EnsureEndsWith("/");
-				Services.StoreService.UpdateStore(store);
+				_storeService.UpdateStore(store);
 
-				NotifySuccess(T("Admin.Configuration.Stores.Updated"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Stores.Updated"));
 				return continueEditing ? RedirectToAction("Edit", new { id = store.Id }) : RedirectToAction("List");
 			}
 
@@ -181,39 +196,39 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Delete(int id)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageStores))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 				return AccessDeniedView();
 
-			var store = Services.StoreService.GetStoreById(id);
+			var store = _storeService.GetStoreById(id);
 			if (store == null)
 				return RedirectToAction("List");
 
 			try
 			{
-				Services.StoreService.DeleteStore(store);
+				_storeService.DeleteStore(store);
 
 				//when we delete a store we should also ensure that all "per store" settings will also be deleted
-				var settingsToDelete = Services.Settings
+				var settingsToDelete = _settingService
 					.GetAllSettings()
 					.Where(s => s.StoreId == id)
 					.ToList();
 
-				settingsToDelete.ForEach(x => Services.Settings.DeleteSetting(x));
+				settingsToDelete.ForEach(x => _settingService.DeleteSetting(x));
 
 				//when we had two stores and now have only one store, we also should delete all "per store" settings
-				var allStores = Services.StoreService.GetAllStores();
+				var allStores = _storeService.GetAllStores();
 
 				if (allStores.Count == 1)
 				{
-					settingsToDelete = Services.Settings
+					settingsToDelete = _settingService
 						.GetAllSettings()
 						.Where(s => s.StoreId == allStores[0].Id)
 						.ToList();
 
-					settingsToDelete.ForEach(x => Services.Settings.DeleteSetting(x));
+					settingsToDelete.ForEach(x => _settingService.DeleteSetting(x));
 				}
 
-				NotifySuccess(T("Admin.Configuration.Stores.Deleted"));
+				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Stores.Deleted"));
 				return RedirectToAction("List");
 			}
 			catch (Exception exc)

@@ -40,6 +40,9 @@ namespace SmartStore.Services.Directory
                 throw new SmartException("The quantity unit cannot be deleted. It has associated product variants");
 
             _quantityUnitRepository.Delete(quantityUnit);
+
+            //event notification
+            _eventPublisher.EntityDeleted(quantityUnit);
         }
 
         public virtual bool IsAssociated(int quantityUnitId)
@@ -94,6 +97,9 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("quantityUnit");
 
             _quantityUnitRepository.Insert(quantityUnit);
+
+            //event notification
+            _eventPublisher.EntityInserted(quantityUnit);
         }
 
         public virtual void UpdateQuantityUnit(QuantityUnit quantityUnit)
@@ -118,6 +124,9 @@ namespace SmartStore.Services.Directory
             }
 
             _quantityUnitRepository.Update(quantityUnit);
+
+            //event notification
+            _eventPublisher.EntityUpdated(quantityUnit);
         }
     }
 }

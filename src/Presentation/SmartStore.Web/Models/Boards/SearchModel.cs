@@ -10,7 +10,7 @@ namespace SmartStore.Web.Models.Boards
             LimitList = new List<SelectListItem>();
             ForumList = new List<SelectListItem>();
             WithinList = new List<SelectListItem>();
-            ForumTopics = new List<ForumTopicRowModel>();
+            this.ForumTopics = new List<ForumTopicRowModel>();
         }
 
         public bool ShowAdvancedSearch { get; set; }

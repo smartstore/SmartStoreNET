@@ -13,19 +13,31 @@ namespace SmartStore.Web.Controllers
     {
         private readonly IWorkContext _workContext;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
+        private readonly IWorkflowMessageService _workflowMessageService;
 		private readonly IStoreContext _storeContext;
         private readonly CustomerSettings _customerSettings;
 
         public NewsletterController(
             IWorkContext workContext,
 			INewsLetterSubscriptionService newsLetterSubscriptionService,
+            IWorkflowMessageService workflowMessageService,
 			CustomerSettings customerSettings,
 			IStoreContext storeContext)
         {
             this._workContext = workContext;
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
+            this._workflowMessageService = workflowMessageService;
             this._customerSettings = customerSettings;
 			this._storeContext = storeContext;
+        }
+
+        [ChildActionOnly]
+        public ActionResult NewsletterBox()
+        {
+            if (_customerSettings.HideNewsletterBlock)
+                return Content("");
+
+            return PartialView(new NewsletterBoxModel());
         }
 
         [HttpPost]
@@ -51,7 +63,7 @@ namespace SmartStore.Web.Controllers
 					{
 						if (!subscription.Active)
 						{
-							Services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
+							_workflowMessageService.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
 						}
 						result = T("Newsletter.SubscribeEmailSent");
 					}
@@ -59,7 +71,7 @@ namespace SmartStore.Web.Controllers
 					{
 						if (subscription.Active)
 						{
-							Services.MessageFactory.SendNewsLetterSubscriptionDeactivationMessage(subscription, _workContext.WorkingLanguage.Id);
+							_workflowMessageService.SendNewsLetterSubscriptionDeactivationMessage(subscription, _workContext.WorkingLanguage.Id);
 						}
 						result = T("Newsletter.UnsubscribeEmailSent");
 					}
@@ -76,7 +88,7 @@ namespace SmartStore.Web.Controllers
 					};
 
 					_newsLetterSubscriptionService.InsertNewsLetterSubscription(subscription);
-					Services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
+					_workflowMessageService.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);
 
 					result = T("Newsletter.SubscribeEmailSent");
 				}

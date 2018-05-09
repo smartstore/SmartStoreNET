@@ -139,27 +139,24 @@ namespace SmartStoreNetWebApiClient
 			var webRequest = apiConsumer.StartRequest(context, cboContent.Text, multiPartData, out requestContent);
 			txtRequest.Text = requestContent.ToString();
 
-			var result = apiConsumer.ProcessResponse(webRequest, response, folderBrowserDialog1);
+			var result = apiConsumer.ProcessResponse(webRequest, response);
 
 			lblResponse.Text = "Response: " + response.Status;
 
 			sb.Append(response.Headers);
 
-			if (result && response.Content.HasValue())
+			if (result && radioJson.Checked && radioOdata.Checked)
 			{
-                if (radioJson.Checked && radioOdata.Checked)
-                {
-                    var customers = response.TryParseCustomers();
+				var customers = response.TryParseCustomers();
 
-                    if (customers != null)
-                    {
-                        sb.AppendLine("Parsed {0} customer(s):".FormatInvariant(customers.Count));
+				if (customers != null)
+				{
+					sb.AppendLine("Parsed {0} customer(s):".FormatInvariant(customers.Count));
 
-                        customers.ForEach(x => sb.AppendLine(x.ToString()));
+					customers.ForEach(x => sb.AppendLine(x.ToString()));
 
-                        sb.Append("\r\n");
-                    }
-                }
+					sb.Append("\r\n");
+				}
 			}
 
 			sb.Append(response.Content);

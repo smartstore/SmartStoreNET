@@ -110,7 +110,7 @@ namespace SmartStore.Admin.Controllers
 		public ActionResult GetRunningTasks()
 		{
 			if (!_scheduleTaskService.HasRunningTasks())
-				return Json(new EmptyResult());
+				return Json(null);
 
 			var runningTasks = from t in _scheduleTaskService.GetRunningTasks()
 							   select new 

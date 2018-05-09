@@ -1,5 +1,4 @@
-﻿using System;
-using SmartStore.Core.Localization;
+﻿using SmartStore.Core.Localization;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.Localization
@@ -15,14 +14,9 @@ namespace SmartStore.Web.Framework.Localization
 		
 		public LocalizedString Get(string key, params object[] args)
 		{
-			return GetEx(key, 0, args);
-		}
-
-		public LocalizedString GetEx(string key, int languageId, params object[] args)
-		{
 			try
 			{
-				var value = _localizationService.GetResource(key, languageId);
+				var value = _localizationService.GetResource(key);
 
 				if (string.IsNullOrEmpty(value))
 				{

@@ -34,6 +34,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerService _customerService;
         private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
+        private readonly IWorkflowMessageService _workflowMessageService;
         private readonly LocalizationSettings _localizationSettings;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
@@ -46,15 +47,11 @@ namespace SmartStore.Admin.Controllers
 
         #region Constructors
 
-        public ReturnRequestController(
-			IOrderService orderService,
-            ICustomerService customerService, 
-			IDateTimeHelper dateTimeHelper,
-            ILocalizationService localizationService, 
-			IWorkContext workContext,
-            LocalizationSettings localizationSettings,
-            ICustomerActivityService customerActivityService, 
-			IPermissionService permissionService,
+        public ReturnRequestController(IOrderService orderService,
+            ICustomerService customerService, IDateTimeHelper dateTimeHelper,
+            ILocalizationService localizationService, IWorkContext workContext,
+            IWorkflowMessageService workflowMessageService, LocalizationSettings localizationSettings,
+            ICustomerActivityService customerActivityService, IPermissionService permissionService,
 			IOrderProcessingService orderProcessingService,
 			OrderSettings orderSettings,
 			AdminAreaSettings adminAreaSettings,
@@ -65,6 +62,7 @@ namespace SmartStore.Admin.Controllers
             _dateTimeHelper = dateTimeHelper;
             _localizationService = localizationService;
             _workContext = workContext;
+            _workflowMessageService = workflowMessageService;
             _localizationSettings = localizationSettings;
             _customerActivityService = customerActivityService;
             _permissionService = permissionService;
@@ -293,9 +291,9 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);
-            var msg = Services.MessageFactory.SendReturnRequestStatusChangedCustomerNotification(returnRequest, orderItem, _localizationSettings.DefaultAdminLanguageId);
+            int queuedEmailId = _workflowMessageService.SendReturnRequestStatusChangedCustomerNotification(returnRequest, orderItem, _localizationSettings.DefaultAdminLanguageId);
 
-            if (msg?.Email?.Id != null)
+            if (queuedEmailId > 0)
                 NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Notified"));
 
             return RedirectToAction("Edit", returnRequest.Id);

@@ -7,7 +7,8 @@ using System.Xml;
 using SmartStore.Collections;
 
 namespace SmartStore.Core.Themes
-{   
+{
+    
     internal class ThemeManifestMaterializer
     {
         private readonly ThemeManifest _manifest;
@@ -169,5 +170,7 @@ namespace SmartStore.Core.Themes
 
             return result;
         }
+
     }
+
 }

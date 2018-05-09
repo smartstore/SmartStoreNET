@@ -13,7 +13,6 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -57,14 +56,16 @@ namespace SmartStore.Admin.Controllers
 
 		private void PreparePollModel(PollModel model, Poll poll, bool excludeProperties)
 		{
-			Guard.NotNull(model, nameof(model));
+			model.AvailableStores = _storeService.GetAllStores().Select(s => s.ToModel()).ToList();
 
 			if (!excludeProperties)
 			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(poll);
+				if (poll != null)
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(poll);
+				else
+					model.SelectedStoreIds = new int[0];
 			}
 
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
 		#endregion Utilities

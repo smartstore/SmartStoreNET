@@ -75,13 +75,13 @@
 
     <div id="ph-title">
         <div class="page-title">
-            @Html.Raw("<" + Model.TitleTag + Html.LanguageAttributes(Model.Title) + " class=\"block-title\">")
+            @Html.Raw("<" + Model.TitleTag + " class=\"block-title\">")
             @Html.Raw(Model.Title)
             @Html.Raw("</" + Model.TitleTag + ">")
         </div>
     </div>
 
-    <div class="page-body html-editor-content" @Html.LanguageAttributes(Model.Body)>
+    <div class="page-body html-editor-content">
         @Html.Raw(Model.Body)
     </div>
 </div>

@@ -1,1 +1,0 @@
-/* Just a placeholder. Telerik asset loader will complain otherwise. */

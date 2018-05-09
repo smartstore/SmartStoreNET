@@ -1,6 +1,5 @@
 ﻿using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Settings;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -26,12 +25,13 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Amount")]
         public decimal PointsForPurchases_Amount { get; set; }
         public int PointsForPurchases_Points { get; set; }
+		public bool PointsForPurchases_OverrideForStore { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Awarded")]
-        public OrderStatus PointsForPurchases_Awarded { get; set; }
+        public int PointsForPurchases_Awarded { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Canceled")]
-		public OrderStatus PointsForPurchases_Canceled { get; set; }
+		public int PointsForPurchases_Canceled { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
     }

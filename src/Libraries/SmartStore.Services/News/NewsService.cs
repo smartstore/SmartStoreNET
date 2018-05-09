@@ -54,6 +54,9 @@ namespace SmartStore.Services.News
                 throw new ArgumentNullException("newsItem");
 
             _newsItemRepository.Delete(newsItem);
+
+            //event notification
+            _services.EventPublisher.EntityDeleted(newsItem);
         }
 
         /// <summary>
@@ -154,6 +157,9 @@ namespace SmartStore.Services.News
                 throw new ArgumentNullException("news");
 
             _newsItemRepository.Insert(news);
+
+            //event notification
+            _services.EventPublisher.EntityInserted(news);
         }
 
         /// <summary>
@@ -166,6 +172,9 @@ namespace SmartStore.Services.News
                 throw new ArgumentNullException("news");
 
             _newsItemRepository.Update(news);
+
+            //event notification
+            _services.EventPublisher.EntityUpdated(news);
         }
         
         /// <summary>

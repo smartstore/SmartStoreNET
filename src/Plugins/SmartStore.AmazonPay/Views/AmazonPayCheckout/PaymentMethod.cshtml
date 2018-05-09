@@ -1,10 +1,12 @@
 ﻿@using SmartStore.Web.Models.Checkout;
-@model SmartStore.AmazonPay.Models.AmazonPayViewModel
-@{
-	Layout = "_Checkout";
 
-	Html.AddTitleParts(T("PageTitle.Checkout").Text);
-	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
+@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+@{
+    Layout = "_Checkout";
+
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
 @section orderProgress{
@@ -22,7 +24,7 @@
 		@using (Html.BeginForm("PaymentMethod", "AmazonPayCheckout", new { area = Model.SystemName }, FormMethod.Post))
         {
 			<div class="amazon-pay-widget clearfix">
-				<div id="amazon-pay-wallet-widget"></div>
+				<div id="@Model.GetWidgetId"></div>
 			</div>
 
             <div class="buttons mt-3">
@@ -31,7 +33,7 @@
                     <span>@T("Common.Back")</span>
                 </a>
 
-                <button id="AmazonPayNextCheckoutStep" type="submit" disabled="disabled" class="btn btn-warning btn-lg payment-method-next-step-button">
+                <button id="AmazonPayNextCheckoutStep" type="submit" class="btn btn-warning btn-lg payment-method-next-step-button hide">
                     <span>@T("Checkout.NextButton")</span>
                     <i class="fa fa-angle-right"></i>
                 </button>
@@ -43,36 +45,24 @@
 </div>
 
 <script type="text/javascript">
-	window.onAmazonLoginReady = function () {
-		try {
-			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
-		}
-		catch (e) {
-			console.log(e);
-			displayNotification(e, 'error');
-		}
-	};
-
-	window.onAmazonPaymentsReady = function () {
+	$(document).ready(function () {
 		try {
 			new OffAmazonPayments.Widgets.Wallet({
 				sellerId: '@Model.SellerId',
-				scope: '',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				design: {
-					designMode: 'responsive'
+					size: { width: '@(Model.PaymentWidgetWidth)px', height: '@(Model.PaymentWidgetHeight)px' }
 				},
 				onPaymentSelect: function (orderReference) {
-					$('#AmazonPayNextCheckoutStep').prop('disabled', false);
+					$('#AmazonPayNextCheckoutStep').fadeIn();
 				},
 				onError: function (e) {
-					console.log(e.getErrorCode() + ': ' + e.getErrorMessage());
+					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('amazon-pay-wallet-widget');
+			}).bind('@Model.GetWidgetId');
 		}
 		catch (e) {
-			console.log(e);
+			alert(e.description);
 		}
-	};
+	});
 </script>
-<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

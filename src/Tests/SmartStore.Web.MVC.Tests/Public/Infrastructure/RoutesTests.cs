@@ -1,7 +1,6 @@
 ﻿using System;
 using SmartStore.Web.Controllers;
 using NUnit.Framework;
-using SmartStore.Services.Catalog.Modelling;
 
 namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 {
@@ -124,7 +123,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         [Test]
         public void Cart_routes()
         {
-            "~/cart/".ShouldMapTo<ShoppingCartController>(c => c.Cart(null));
+            "~/cart/".ShouldMapTo<ShoppingCartController>(c => c.Cart());
 			"~/wishlist".ShouldMapTo<ShoppingCartController>(c => c.Wishlist(null));
 			"~/wishlist/aa74c80f-1edd-43f7-85df-a3cccc1b47b9".ShouldMapTo<ShoppingCartController>(c => c.Wishlist(new Guid("aa74c80f-1edd-43f7-85df-a3cccc1b47b9")));
 			"~/shoppingcart/emailwishlist".ShouldMapTo<ShoppingCartController>(c => c.EmailWishlist());

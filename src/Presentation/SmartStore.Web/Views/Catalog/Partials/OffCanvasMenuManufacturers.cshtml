@@ -3,7 +3,7 @@
 @{
     Layout = "";
 
-    if (Model.Manufacturers.Count == 0)
+    if (Model.Manufacturers.Count == 0 || !Model.DisplayManufacturers)
     {
         return;
     }
@@ -28,7 +28,7 @@
                     }
                     <div class="col col-data">
                         <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="ocm-link">
-                            <span @Html.LanguageAttributes(manufacturer.Name)>@manufacturer.Name</span>
+                            @manufacturer.Name
                         </a>
                     </div>
                 </div>

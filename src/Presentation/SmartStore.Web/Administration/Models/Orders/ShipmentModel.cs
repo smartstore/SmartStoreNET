@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-	public class ShipmentModel : EntityModelBase
+
+    public class ShipmentModel : EntityModelBase
     {
         public ShipmentModel()
         {
@@ -16,13 +18,8 @@ namespace SmartStore.Admin.Models.Orders
 		public int StoreId { get; set; }
 		public string ShippingMethod { get; set; }
 		public Address ShippingAddress { get; set; }
-		public string FormattedShippingAddress { get; set; }
 		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
-		public string FormattedMerchantAddress { get; set; }
-
-		public string OrderNumber { get; set; }
-		public string PurchaseOrderNumber { get; set; }
-
+		
 		[SmartResourceDisplayName("Admin.Orders.Shipments.OrderID")]
         public int OrderId { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Shipments.TotalWeight")]
@@ -62,7 +59,6 @@ namespace SmartStore.Admin.Models.Orders
             public int QuantityInThisShipment { get; set; }
             public int QuantityInAllShipments { get; set; }
         }
-
         #endregion
     }
 }

@@ -1,9 +1,10 @@
 ﻿@using SmartStore;
 @using SmartStore.Core;
 @using SmartStore.Web.Framework.UI;
-@using System.Web.Hosting;
 
 @{
+	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
 	// page title
 	string adminPageTitle = "";
 	if (!string.IsNullOrWhiteSpace(ViewBag.Title))
@@ -12,115 +13,115 @@
 	}
 	adminPageTitle += T("Admin.PageTitle").Text;
 
-	var adminJsRoot = "~/Administration/Scripts/";
-	var vendorsRoot = "~/Content/vendors/";
-	var contentRoot = "~/Content/";
-	var jsRoot = "~/Scripts/";
-
 	// add css assets
-	var telerikCssRoot = "~/Administration/Content/telerik/css/2012.2.607/";
-
+	var telerikCssRootPath = "~/Content/2012.2.607/";
 	Html.AppendCssFileParts(
-		contentRoot + "fontastic/fontastic.css",
-		vendorsRoot + "font-awesome/font-awesome.css",
-		telerikCssRoot + "telerik.common.css",
-		vendorsRoot + "pnotify/css/pnotify.css",
-		vendorsRoot + "pnotify/css/pnotify.mobile.css",
-		vendorsRoot + "pnotify/css/pnotify.buttons.css");
-
-	// Theme
-	Html.AddCssFileParts(true, "~/Administration/Content/theme.scss");
-
-	if (WorkContext.WorkingLanguage.Rtl)
-	{
-		Html.AddCssFileParts(true,
-			telerikCssRoot + "telerik.rtl.css",
-			"~/Administration/Content/theme-rtl.scss");
-	}
+		"~/Content/font-awesome.css",
+		telerikCssRootPath + "telerik.common.css",
+		"~/Content/jquery.pnotify.default.css",
+		"~/Content/jquery.pnotify.default.icons.css",
+		"~/Content/smartstore.entitypicker.css",
+		"~/Administration/Content/theme.less");
 
 	// add js assets (Head)
 	Html.AppendScriptParts(ResourceLocation.Head,
-		vendorsRoot + "modernizr/modernizr.js",
-		vendorsRoot + "jquery/jquery-3.2.1.js",
-		//vendorsRoot + "jquery/jquery-migrate-3.0.0.js",
-		adminJsRoot + "jquery-shims.js");
+		"~/Scripts/modernizr.js",
+		// Telerik doesn't like jQuery 1.9+, a shame!
+		"~/Administration/Scripts/jquery-1.8.3.js",
+		//"~/Scripts/jquery-2.1.1.js",
+		//"~/Scripts/jquery-migrate-1.2.1.js",
+		"~/Scripts/globalize/globalize.js",
+		"~/Scripts/smartstore.globalize.adapter.js");
 
+	Html.AddScriptParts(ResourceLocation.Head, true,
+		"~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
+
+	// add js assets (Foot)
+	var bootstrapJsRoot = "~/Content/bootstrap/js/";
 	Html.AppendScriptParts(ResourceLocation.Foot,
-		// Vendors
-		vendorsRoot + "underscore/underscore.js",
-		vendorsRoot + "underscore/underscore.string.js",
-		vendorsRoot + "jquery/jquery.addeasing.js",
-		vendorsRoot + "jquery-ui/effect.js",
-		vendorsRoot + "jquery-ui/effect-transfer.js",
-		vendorsRoot + "jquery-ui/position.js",
-		vendorsRoot + "jquery/jquery.unobtrusive-ajax.js",
-		vendorsRoot + "jquery/jquery.validate.js",
-		vendorsRoot + "jquery/jquery.validate.unobtrusive.js",
-		vendorsRoot + "jquery/jquery.scrollTo.js",
-		vendorsRoot + "jquery/jquery.sortable.js",
-		vendorsRoot + "moment/moment.js",
-		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
-		vendorsRoot + "colorpicker/js/bootstrap-colorpicker.js",
-		vendorsRoot + "colorpicker/js/bootstrap-colorpicker-globalinit.js",
-		vendorsRoot + "select2/js/select2.js",
-		vendorsRoot + "pnotify/js/pnotify.js",
-		vendorsRoot + "pnotify/js/pnotify.mobile.js",
-		vendorsRoot + "pnotify/js/pnotify.buttons.js",
-		vendorsRoot + "pnotify/js/pnotify.animate.js",
-		contentRoot + "bs4/js/bootstrap.bundle.js",
-		// Common
-		jsRoot + "underscore.mixins.js",
-		jsRoot + "smartstore.system.js",
-		jsRoot + "smartstore.touchevents.js",
-		jsRoot + "smartstore.jquery.utils.js",
-		jsRoot + "smartstore.globalization.js",
-		jsRoot + "jquery.validate.unobtrusive.custom.js",
-		jsRoot + "smartstore.viewport.js",
-		jsRoot + "smartstore.doajax.js",
-		jsRoot + "smartstore.eventbroker.js",
-		jsRoot + "smartstore.hacks.js",
-		jsRoot + "smartstore.common.js",
-		jsRoot + "smartstore.selectwrapper.js",
-		jsRoot + "smartstore.throbber.js",
-		jsRoot + "smartstore.thumbzoomer.js",
-		jsRoot + "smartstore.entitypicker.js",
+		// jQuery UI Core
+		"~/Scripts/jquery-ui/effect.js",
+		"~/Scripts/jquery-ui/effect-transfer.js",
+		"~/Scripts/jquery-ui/effect-shake.js",
+		"~/Scripts/jquery-ui/position.js",
+		// jQuery Validation
+		"~/Scripts/jquery.unobtrusive-ajax.js",
+		"~/Scripts/jquery.validate.js",
+		"~/Scripts/jquery.validate.unobtrusive.js",
+		// SmartStore system
+		"~/Scripts/smartstore.system.js",
+		"~/Scripts/underscore.js",
+		"~/Scripts/underscore.string.js",
+		"~/Scripts/underscore.mixins.js",
+		"~/Scripts/smartstore.jquery.utils.js",
+		"~/Scripts/jquery.ba-outside-events.js",
+		"~/Scripts/jquery.preload.js",
+		"~/Scripts/jquery.menu-aim.js",
+		"~/Scripts/smartstore.doAjax.js",
+		"~/Scripts/smartstore.entityPicker.js",
+		"~/Scripts/jquery.addeasing.js",
+		"~/Scripts/smartstore.eventbroker.js",
+		"~/Scripts/smartstore.hacks.js",
+		"~/Scripts/smartstore.common.js",
+		// Bootstrap
+		bootstrapJsRoot + "bootstrap-transition.js",
+		bootstrapJsRoot + "bootstrap-alert.js",
+		bootstrapJsRoot + "bootstrap-button.js",
+		bootstrapJsRoot + "bootstrap-collapse.js",
+		bootstrapJsRoot + "bootstrap-dropdown.js",
+		bootstrapJsRoot + "bootstrap-modal.js",
+		bootstrapJsRoot + "bootstrap-tooltip.js",
+		bootstrapJsRoot + "bootstrap-popover.js",
+		bootstrapJsRoot + "bootstrap-tab.js",
+		bootstrapJsRoot + "bootstrap-typeahead.js",
+		// Bootstrap custom
+		bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
+		// Shared UI
+		"~/Scripts/smartstore.placeholder.js",
+		"~/Scripts/select2.js",
+		"~/Scripts/smartstore.selectwrapper.js",
+		"~/Scripts/smartstore.throbber.js",
+		"~/Scripts/smartstore.navbar.js",
+		"~/Scripts/smartstore.thumbzoomer.js",
+		"~/Scripts/smartstore.column-equalizer.js",
+		"~/Scripts/smartstore.shrinkmenu.js",
+		"~/Scripts/smartstore.scrollbutton.js",
+		"~/Scripts/smartstore.tabselector.js",
+		"~/Scripts/jquery.pnotify.js",
+		"~/Scripts/jquery.scrollTo.js",
+		"~/Scripts/jquery.sortable.js",
 		// Admin
-		adminJsRoot + "admin.common.js",
-		adminJsRoot + "admin.globalinit.js");
+		"~/Administration/Scripts/admin.common.js",
+		"~/Administration/Scripts/admin.globalinit.js");
 }
 <!DOCTYPE html>
-<html @Html.LanguageAttributes() class="no-js not-ready loading" data-pnotify-firstpos1="140">
+<html class="no-js not-ready loading">
 <head>
     <title>@adminPageTitle</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge; chrome=1" />
 
-    @{ Html.RenderPartial("_ClientRes"); }
+    <script>
+        window.Res = {
+        	"Common.Notification": "@T("Common.Notification").ToString().EncodeJsString()",
+        	"Common.Close": "@T("Common.Close").ToString()",
+        }
+    </script>
+    
     @{ Html.RenderPartial("ConditionalComments"); }
     @Html.MetaAcceptLanguage()
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
 
-    <link rel="shortcut icon" href="~/Administration/favicon.ico?v=@SmartStoreVersion.CurrentVersion" />
+    <link rel="shortcut icon" href="~/Administration/favicon.ico" />
 
-	@Html.CustomHead()
-
-	<script src="~/Scripts/smartstore.globalization.adapter.js"></script>
-
-	@{ Html.RenderZone("head"); }
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>   
-	@{ Html.RenderZone("start"); }
 	@RenderBody()
-	@{ Html.RenderZone("aftercontent"); }
-
 	@RenderSection("foot", required: false)
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)
-	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, vendorsRoot + "select2/js/i18n", "*.js", null)
-	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, vendorsRoot + "moment/locale", "*.js", null)
 
 	<!--These need to be at the end of the page to ensure that all the controls requiring scripts have been rendered-->
 	@(Html.Telerik().ScriptRegistrar()
@@ -128,7 +129,6 @@
 		.jQueryValidation(false)
 		.Globalization(true)
 	)
-	@{ Html.RenderZone("end"); }
 </body>
 </html>
 

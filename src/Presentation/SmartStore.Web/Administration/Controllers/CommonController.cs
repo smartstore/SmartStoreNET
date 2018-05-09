@@ -10,12 +10,10 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web.Hosting;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core;
-using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -50,9 +48,7 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class CommonController : AdminControllerBase
     {
-		const string CHECKUPDATE_CACHEKEY_PREFIX = "admin:common:checkupdateresult";
-
-		private readonly Lazy<IPaymentService> _paymentService;
+        private readonly Lazy<IPaymentService> _paymentService;
         private readonly Lazy<IShippingService> _shippingService;
         private readonly Lazy<ICurrencyService> _currencyService;
         private readonly Lazy<IMeasureService> _measureService;
@@ -91,24 +87,24 @@ namespace SmartStore.Admin.Controllers
 			ICommonServices services,
 			Lazy<ISiteMapService> siteMapService)
         {
-            _paymentService = paymentService;
-            _shippingService = shippingService;
-            _currencyService = currencyService;
-            _measureService = measureService;
-            _customerService = customerService;
-			_commonSettings = commonSettings;
-            _currencySettings = currencySettings;
-            _measureSettings = measureSettings;
-            _dateTimeHelper = dateTimeHelper;
-            _languageService = languageService;
-            _localizationService = localizationService;
-            _imageCache = imageCache;
-			_importProfileService = importProfileService;
-            _genericAttributeService = genericAttributeService;
-			_dbCache = dbCache;
-			_taskScheduler = taskScheduler;
-			_services = services;
-			_siteMapService = siteMapService;
+            this._paymentService = paymentService;
+            this._shippingService = shippingService;
+            this._currencyService = currencyService;
+            this._measureService = measureService;
+            this._customerService = customerService;
+			this._commonSettings = commonSettings;
+            this._currencySettings = currencySettings;
+            this._measureSettings = measureSettings;
+            this._dateTimeHelper = dateTimeHelper;
+            this._languageService = languageService;
+            this._localizationService = localizationService;
+            this._imageCache = imageCache;
+			this._importProfileService = importProfileService;
+            this._genericAttributeService = genericAttributeService;
+			this._dbCache = dbCache;
+			this._taskScheduler = taskScheduler;
+			this._services = services;
+			this._siteMapService = siteMapService;
         }
 
         #region Navbar & Menu
@@ -122,7 +118,7 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.Stores = _services.StoreService.GetAllStores();
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 			{
-				ViewBag.CheckUpdateResult = AsyncRunner.RunSync(() => CheckUpdateInternalAsync(false));
+				ViewBag.CheckUpdateResult = CheckUpdateInternal(false);
 			}
 
 			return PartialView();
@@ -139,9 +135,9 @@ namespace SmartStore.Admin.Controllers
 
 		#region CheckUpdate
 
-		public async Task<ActionResult> CheckUpdate(bool enforce = false)
+		public ActionResult CheckUpdate(bool enforce = false)
 		{
-			var model = await CheckUpdateInternalAsync(enforce);
+			var model = CheckUpdateInternal(enforce);
 			return View(model);
 		}
 
@@ -151,31 +147,33 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("Index", "Home");
 		}
 
-		private void CheckUpdateSuppressInternal(string myVersion, string newVersion)
+		public void CheckUpdateSuppressInternal(string myVersion, string newVersion)
 		{
 			var suppressKey = "SuppressUpdateMessage.{0}.{1}".FormatInvariant(myVersion, newVersion);
 			_genericAttributeService.SaveAttribute<bool?>(_services.WorkContext.CurrentCustomer, suppressKey, true);
-			_services.Cache.RemoveByPattern(CHECKUPDATE_CACHEKEY_PREFIX + "*");
+			_services.Cache.RemoveByPattern("Common.CheckUpdateResult");
 		}
 
-		private async Task<CheckUpdateResult> CheckUpdateInternalAsync(bool enforce = false, bool forSuppress = false)
+		[NonAction]
+		private CheckUpdateResult CheckUpdateInternal(bool enforce = false, bool forSuppress = false)
 		{
 			var curVersion = SmartStoreVersion.CurrentFullVersion;
 			var lang = _services.WorkContext.WorkingLanguage.UniqueSeoCode;
-			var cacheKey = "{0}-{1}".FormatInvariant(CHECKUPDATE_CACHEKEY_PREFIX, lang);
+			var cacheKeyPattern = "admin:common:checkupdateresult";
+			var cacheKey = "{0}-{1}".FormatInvariant(cacheKeyPattern, lang);
 
 			if (enforce)
 			{
-				_services.Cache.RemoveByPattern(CHECKUPDATE_CACHEKEY_PREFIX + "*");
+				_services.Cache.RemoveByPattern(cacheKeyPattern);
 			}
 
-			var result = await _services.Cache.GetAsync(cacheKey, async () => 
+			var execute = new Func<CheckUpdateResult>(() => 
 			{
 				var noUpdateResult = new CheckUpdateResult { UpdateAvailable = false, LanguageCode = lang, CurrentVersion = curVersion };
 
 				try
 				{
-					string url = "https://dlm.smartstore.com/api/v1/apprelease/CheckUpdate?app=SMNET&version={0}&language={1}".FormatInvariant(curVersion, lang);
+					string url = "http://dlm.smartstore.com/api/v1/apprelease/CheckUpdate?app=SMNET&version={0}&language={1}".FormatInvariant(curVersion, lang);
 
 					using (var client = new HttpClient())
 					{
@@ -184,9 +182,8 @@ namespace SmartStore.Admin.Controllers
 						client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 						client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET {0}".FormatInvariant(curVersion));
 						client.DefaultRequestHeaders.Add("Authorization-Key", _services.StoreContext.CurrentStore.Url.TrimEnd('/'));
-						client.DefaultRequestHeaders.Add("X-Application-ID", HostingEnvironment.ApplicationID);
 
-						HttpResponseMessage response = await client.GetAsync(url);
+						HttpResponseMessage response = client.GetAsync(url).Result;
 
 						if (response.StatusCode != HttpStatusCode.OK)
 						{
@@ -227,6 +224,13 @@ namespace SmartStore.Admin.Controllers
 					return noUpdateResult;
 				}
 			});
+
+			var result = _services.Cache.Get<CheckUpdateResult>(cacheKey);
+
+			if (result == null)
+			{
+				result = execute();
+			}
 
 			return result;
 		}
@@ -784,7 +788,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
-			_imageCache.Value.Clear();
+			_imageCache.Value.DeleteCachedImages();
 
 			// get rid of cached image metadata
 			_services.Cache.Clear();
@@ -831,6 +835,7 @@ namespace SmartStore.Admin.Controllers
 
 			string[] paths = new string[]
 			{
+				appPath + @"Content\files\exportimport\",
 				appPath + @"Exchange\",
 				appPath + @"App_Data\Tenants\{0}\ExportProfiles\".FormatInvariant(DataSettings.Current.TenantName)
 			};

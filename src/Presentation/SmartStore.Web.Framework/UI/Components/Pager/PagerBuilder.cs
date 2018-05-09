@@ -4,116 +4,117 @@ using SmartStore.Core;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public class PagerBuilder<TModel> : NavigatableComponentBuilder<Pager, PagerBuilder<TModel>, TModel>
+    public class PagerBuilder : NavigatableComponentBuilder<Pager, PagerBuilder>
     {
-        public PagerBuilder(Pager component, HtmlHelper<TModel> htmlHelper)
+
+        public PagerBuilder(Pager component, HtmlHelper htmlHelper)
             : base(component, htmlHelper)
         {
         }
 
-        public PagerBuilder<TModel> Model(IPageable value)
+        public PagerBuilder Model(IPageable value)
         {
             base.Component.Model = value;
             return this;
         }
 
-        public PagerBuilder<TModel> Alignment(PagerAlignment value)
+        public PagerBuilder Alignment(PagerAlignment value)
         {
             base.Component.Alignment = value;
             return this;
         }
 
-        public PagerBuilder<TModel> Size(PagerSize value)
+        public PagerBuilder Size(PagerSize value)
         {
             base.Component.Size = value;
             return this;
         }
 
-        public PagerBuilder<TModel> Style(PagerStyle value)
+        public PagerBuilder Style(PagerStyle value)
         {
             base.Component.Style = value;
             return this;
         }
 
-        public PagerBuilder<TModel> ShowFirst(bool value)
+        public PagerBuilder ShowFirst(bool value)
         {
             base.Component.ShowFirst = value;
             return this;
         }
 
-        public PagerBuilder<TModel> ShowLast(bool value)
+        public PagerBuilder ShowLast(bool value)
         {
             base.Component.ShowLast = value;
             return this;
         }
 
-        public PagerBuilder<TModel> ShowNext(bool value)
+        public PagerBuilder ShowNext(bool value)
         {
             base.Component.ShowNext = value;
             return this;
         }
 
-        public PagerBuilder<TModel> ShowPrevious(bool value)
+        public PagerBuilder ShowPrevious(bool value)
         {
             base.Component.ShowPrevious = value;
             return this;
         }
 
-        public PagerBuilder<TModel> ShowSummary(bool value)
+        public PagerBuilder ShowSummary(bool value)
         {
             base.Component.ShowSummary = value;
             return this;
         }
 
-        public PagerBuilder<TModel> ShowPaginator(bool value)
+        public PagerBuilder ShowPaginator(bool value)
         {
             base.Component.ShowPaginator = value;
             return this;
         }
 
-        public PagerBuilder<TModel> MaxPagesToDisplay(int value)
+        public PagerBuilder MaxPagesToDisplay(int value)
         {
             base.Component.MaxPagesToDisplay = value;
             return this;
         }
 
-        public PagerBuilder<TModel> SkipActiveState(bool value)
+        public PagerBuilder SkipActiveState(bool value)
         {
             base.Component.SkipActiveState = value;
             return this;
         }
 
-        public PagerBuilder<TModel> FirstButtonText(string value)
+        public PagerBuilder FirstButtonText(string value)
         {
             base.Component.FirstButtonText = value;
             return this;
         }
 
-        public PagerBuilder<TModel> LastButtonText(string value)
+        public PagerBuilder LastButtonText(string value)
         {
             base.Component.LastButtonText = value;
             return this;
         }
 
-        public PagerBuilder<TModel> NextButtonText(string value)
+        public PagerBuilder NextButtonText(string value)
         {
             base.Component.NextButtonText = value;
             return this;
         }
 
-        public PagerBuilder<TModel> PreviousButtonText(string value)
+        public PagerBuilder PreviousButtonText(string value)
         {
             base.Component.PreviousButtonText = value;
             return this;
         }
 
-        public PagerBuilder<TModel> CurrentPageText(string value)
+        public PagerBuilder CurrentPageText(string value)
         {
             base.Component.CurrentPageText = value;
             return this;
         }
 
-        public PagerBuilder<TModel> ItemTitleFormatString(string value)
+        public PagerBuilder ItemTitleFormatString(string value)
         {
             base.Component.ItemTitleFormatString = value;
             return this;

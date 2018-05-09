@@ -26,19 +26,17 @@ namespace SmartStore
 				return false;
 
 			const int BuffSize = 32768;
-			var result = true;
+			bool result = true;
 			Stream dstStream = null;
-			var buffer = new byte[BuffSize];
+			byte[] buffer = new Byte[BuffSize];
 
 			try 
             {
-                using (dstStream = File.Open(path, FileMode.Create))
-                {
+				using (dstStream = File.OpenWrite(path))
+				{
 					int len;
-                    while ((len = srcStream.Read(buffer, 0, BuffSize)) > 0)
-                    {
-                        dstStream.Write(buffer, 0, len);
-                    }
+					while ((len = srcStream.Read(buffer, 0, BuffSize)) > 0)
+						dstStream.Write(buffer, 0, len);
 				}
             }
 			catch 
@@ -54,7 +52,7 @@ namespace SmartStore
 				}
 			}
 
-			return (result && File.Exists(path));
+			return (result && System.IO.File.Exists(path));
 		}
 
         public static bool ContentsEqual(this Stream src, Stream other) 

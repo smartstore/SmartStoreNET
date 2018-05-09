@@ -6,7 +6,8 @@ using System.Linq;
 using SmartStore.Collections;
 
 namespace SmartStore.Core.Tests
-{	
+{
+	
 	[TestFixture]
 	public class TopologicSortTests
     {

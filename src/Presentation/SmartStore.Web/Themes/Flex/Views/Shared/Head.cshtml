@@ -1,12 +1,7 @@
 ﻿@using SmartStore.Web.Framework.Theming;
 
 @{
-	Html.AddCssFileParts(true, "~/Themes/Flex/Content/theme.scss");
-
-	if (WorkContext.WorkingLanguage.Rtl)
-	{
-		Html.AddCssFileParts(true, "~/Themes/Flex/Content/theme-rtl.scss");
-	}
+    Html.AppendCssFileParts(false, "~/Themes/Flex/Content/theme.scss");
 }
 
 @{ Html.RenderPartial("ConditionalComments"); }

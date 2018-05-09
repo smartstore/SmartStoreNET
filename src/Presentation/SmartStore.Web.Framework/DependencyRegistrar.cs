@@ -77,11 +77,8 @@ using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Themes;
 using SmartStore.Services.Topics;
-using SmartStore.Templating;
-using SmartStore.Templating.Liquid;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Bundling;
-using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Plugins;
@@ -220,7 +217,7 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
 			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
-			builder.RegisterType<DefaultImageProcessor>().As<IImageProcessor>().InstancePerRequest();
+			builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance();
 			builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
 			builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
@@ -396,7 +393,7 @@ namespace SmartStore.Web.Framework
 							m.For(em => em.HookedType, hookedType);
 							m.For(em => em.ImplType, hook);
 							m.For(em => em.IsLoadHook, typeof(IDbLoadHook).IsAssignableFrom(hook));
-							m.For(em => em.Important, hook.HasAttribute<ImportantAttribute>(false));
+							m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
 						});
 				}
 
@@ -407,19 +404,7 @@ namespace SmartStore.Web.Framework
 			}
 			else
 			{
-				builder.Register<IDbContext>(c =>
-					{
-						try
-						{
-							return new SmartObjectContext(DataSettings.Current.DataConnectionString);
-						}
-						catch
-						{
-							//return new SmartObjectContext();
-							return null;
-						}
-
-					})
+				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
 					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
 					.InstancePerRequest();
 			}
@@ -455,7 +440,8 @@ namespace SmartStore.Web.Framework
 			{
 				if (DataSettings.DatabaseIsInstalled())
 				{
-					if (e.Component.Metadata.Get("Property.DbQuerySettings") is FastProperty prop)
+					var prop = e.Component.Metadata.Get("Property.DbQuerySettings") as FastProperty;
+					if (prop != null)
 					{
 						var querySettings = e.Context.Resolve<DbQuerySettings>();
 						prop.SetValue(e.Instance, querySettings);
@@ -489,10 +475,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<LocalizationService>().As<ILocalizationService>().InstancePerRequest();
 
 			builder.RegisterType<Text>().As<IText>().InstancePerRequest();
-			builder.Register<Localizer>(c => c.Resolve<IText>().Get).InstancePerRequest();
-			builder.Register<LocalizerEx>(c => c.Resolve<IText>().GetEx).InstancePerRequest();
 
-			builder.RegisterType<LocalizationFileResolver>().As<ILocalizationFileResolver>().InstancePerRequest();
 			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>().InstancePerRequest();
 		}
 
@@ -509,21 +492,13 @@ namespace SmartStore.Web.Framework
 			{
 				if (DataSettings.DatabaseIsInstalled() && e.Context.Resolve<IEngine>().IsFullyInitialized)
 				{
-					if (e.Component.Metadata.Get("Property.T") is FastProperty prop)
+					var prop = e.Component.Metadata.Get("Property.T") as FastProperty;
+					if (prop != null)
 					{
 						try
 						{
-							var iText = e.Context.Resolve<IText>();
-							if (prop.Property.PropertyType == typeof(Localizer))
-							{
-								Localizer localizer = e.Context.Resolve<IText>().Get;
-								prop.SetValue(e.Instance, localizer);
-							}
-							else
-							{
-								LocalizerEx localizerEx = e.Context.Resolve<IText>().GetEx;
-								prop.SetValue(e.Instance, localizerEx);
-							}
+							Localizer localizer = e.Context.Resolve<IText>().Get;
+							prop.SetValue(e.Instance, localizer);
 						}
 						catch { }
 					}
@@ -533,7 +508,7 @@ namespace SmartStore.Web.Framework
 
 		private static PropertyInfo FindUserProperty(Type type)
 		{
-			return type.GetProperty("T", typeof(Localizer)) ?? type.GetProperty("T", typeof(LocalizerEx));
+			return type.GetProperty("T", typeof(Localizer));
 		}
 	}
 
@@ -636,19 +611,15 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			// Templating
-			builder.RegisterType<LiquidTemplateEngine>().As<ITemplateEngine>().SingleInstance();
-			builder.RegisterType<DefaultTemplateManager>().As<ITemplateManager>().SingleInstance();
-
-			builder.RegisterType<MessageModelProvider>().As<IMessageModelProvider>().InstancePerRequest();
-			builder.RegisterType<MessageFactory>().As<IMessageFactory>().InstancePerRequest();
-
 			builder.RegisterType<MessageTemplateService>().As<IMessageTemplateService>().InstancePerRequest();
 			builder.RegisterType<QueuedEmailService>().As<IQueuedEmailService>().InstancePerRequest();
 			builder.RegisterType<NewsLetterSubscriptionService>().As<INewsLetterSubscriptionService>().InstancePerRequest();
 			builder.RegisterType<CampaignService>().As<ICampaignService>().InstancePerRequest();
 			builder.RegisterType<EmailAccountService>().As<IEmailAccountService>().InstancePerRequest();
-			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().InstancePerRequest();
+			builder.RegisterType<WorkflowMessageService>().As<IWorkflowMessageService>().InstancePerRequest();
+			builder.RegisterType<MessageTokenProvider>().As<IMessageTokenProvider>().InstancePerRequest();
+			builder.RegisterType<Tokenizer>().As<ITokenizer>().InstancePerRequest();
+			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().SingleInstance(); // xxx (http)
 			builder.RegisterType<LocalAsyncState>().As<IAsyncState>().SingleInstance();
 		}
 	}
@@ -690,7 +661,7 @@ namespace SmartStore.Web.Framework
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				pageHelperRegistration.PropertiesAutowired(PropertyWiringOptions.None);
-				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<SmartController>(-100);
+				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>(-100);
 			}
 		}
 
@@ -752,8 +723,9 @@ namespace SmartStore.Web.Framework
 			
 			var baseType = typeof(WebApiEntityController<,>);
 			var type = registration.Activator.LimitType;
+			Type implementingType;
 
-			if (!type.IsSubClass(baseType, out var implementingType))
+			if (!type.IsSubClass(baseType, out implementingType))
 				return;
 
 			var repoProperty = FindRepositoryProperty(type, implementingType.GetGenericArguments()[0]);
@@ -1176,7 +1148,8 @@ namespace SmartStore.Web.Framework
                 Service service,
                 Func<Service, IEnumerable<IComponentRegistration>> registrations)
         {
-            if (service is TypedService ts && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
+            var ts = service as TypedService;
+            if (ts != null && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
             {
 				var buildMethod = BuildMethod.MakeGenericMethod(ts.ServiceType);
 				yield return (IComponentRegistration)buildMethod.Invoke(null, null);
@@ -1189,9 +1162,11 @@ namespace SmartStore.Web.Framework
 				.ForDelegate((c, p) =>
 				{
 					int currentStoreId = 0;
+					IStoreContext storeContext;
+
 					try
 					{
-						if (c.TryResolve(out IStoreContext storeContext))
+						if (c.TryResolve(out storeContext))
 						{
 							currentStoreId = storeContext.CurrentStore.Id;
 							//uncomment the code below if you want load settings per store only when you have two stores installed.
@@ -1268,7 +1243,8 @@ namespace SmartStore.Web.Framework
 
 						var workValues = scope.Resolve<WorkValues<T>>();
 
-						if (!workValues.Values.TryGetValue(w, out T value))
+						T value;
+						if (!workValues.Values.TryGetValue(w, out value))
 						{
 							value = (T)workValues.ComponentContext.ResolveComponent(valueRegistration, p);
 							workValues.Values[w] = value;

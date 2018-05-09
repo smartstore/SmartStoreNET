@@ -139,37 +139,33 @@ namespace SmartStore.Services.Customers
         
         public static string GetFullName(this Customer customer)
         {
-			if (customer == null)
-				return string.Empty;
+			Guard.NotNull(customer, nameof(customer));
 
-			var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName).NullEmpty();
-			var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName).NullEmpty();
+			var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
+            var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
 
-			if (firstName != null && lastName != null)
-			{
-				return firstName + " " + lastName;
-			}
-			else if (firstName != null)
-			{
-				return firstName;
-			}
-			else if (lastName != null)
-			{
-				return lastName;
-			}
+            string fullName = "";
+            if (!String.IsNullOrWhiteSpace(firstName) && !String.IsNullOrWhiteSpace(lastName))
+            {
+                fullName = string.Format("{0} {1}", firstName, lastName);
+            }
+            else
+            {
+                if (!String.IsNullOrWhiteSpace(firstName))
+                    fullName = firstName;
 
-			string name = customer.BillingAddress?.GetFullName();
-			if (name.IsEmpty())
-			{
-				name = customer.ShippingAddress?.GetFullName();
-			}
-			if (name.IsEmpty())
-			{
-				name = customer.Addresses.FirstOrDefault()?.GetFullName();
-			}
+                if (!String.IsNullOrWhiteSpace(lastName))
+                    fullName = lastName;
 
-			return name.TrimSafe();
-		}
+                if (String.IsNullOrWhiteSpace(firstName) && String.IsNullOrWhiteSpace(lastName))
+                {
+                    var address = customer.Addresses.FirstOrDefault();
+                    if (address != null)
+                        fullName = string.Format("{0} {1}", address.FirstName, address.LastName);
+                }
+            }
+            return fullName;
+        }
 
         /// <summary>
         /// Formats the customer name
@@ -265,11 +261,15 @@ namespace SmartStore.Services.Customers
 		{
 			if (customer != null)
 			{
-				return customer.Email.NullEmpty()
-					?? customer.BillingAddress?.Email?.NullEmpty()
-					?? customer.ShippingAddress?.Email?.NullEmpty();
-			}
+				if (customer.Email.HasValue())
+					return customer.Email;
 
+				if (customer.BillingAddress != null && customer.BillingAddress.Email.HasValue())
+					return customer.BillingAddress.Email;
+
+				if (customer.ShippingAddress != null && customer.ShippingAddress.Email.HasValue())
+					return customer.ShippingAddress.Email;
+			}
 			return null;
 		}
 
@@ -429,5 +429,5 @@ namespace SmartStore.Services.Customers
 		}
 
 		#endregion
-	}
+    }
 }

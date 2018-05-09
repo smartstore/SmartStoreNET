@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -159,9 +158,16 @@ namespace SmartStore.Admin.Controllers
 			if (model == null)
 				throw new ArgumentNullException("model");
 
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+
 			if (!excludeProperties)
 			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
+				model.SelectedStoreIds = (manufacturer != null ? _storeMappingService.GetStoresIdsWithAccess(manufacturer) : new int[0]);
 				model.SelectedDiscountIds = (manufacturer != null ? manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray() : new int[0]);
 			}
 
@@ -171,8 +177,6 @@ namespace SmartStore.Admin.Controllers
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
 			}
 
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 			model.AvailableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true).ToList();
 		}
 
@@ -198,41 +202,39 @@ namespace SmartStore.Admin.Controllers
                            selected = m.Id == selectedId
                        };
 
-			var mainList = list.ToList();
+			var data = list.ToList();
 
-			var mruList = new MostRecentlyUsedList<string>(
-				_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-				_catalogSettings.MostRecentlyUsedManufacturersMaxSize)
-				.Reverse()
-				.Select(x => 
-				{
-					var item = manufacturers.FirstOrDefault(m => m.Id.ToString() == x);
-					if (item != null)
-					{
-						return new
-						{
-							id = x,
-							text = item.Name,
-							selected = false
-						};
-					}
+			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+				_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
 
-					return null;
-				})
-				.Where(x => x != null)
-				.ToList();
+			// TODO: insert disabled option separator (select2 v.3.4.2 or higher required)
+			//if (mru.Count > 0)
+			//{
+			//	data.Insert(0, new
+			//	{
+			//		id = "",
+			//		text = "----------------------",
+			//		selected = false,
+			//		disabled = true
+			//	});
+			//}
 
-			object data = mainList;
-			if (mruList.Count > 0)
+			for (int i = mru.Count - 1; i >= 0; --i)
 			{
-				data = new List<object>
+				string id = mru[i];
+				var item = manufacturers.FirstOrDefault(x => x.Id.ToString() == id);
+				if (item != null)
 				{
-					new Dictionary<string, object> { ["text"] = T("Common.Mru").Text, ["children"] = mruList },
-					new Dictionary<string, object> { ["text"] = T("Admin.Catalog.Manufacturers").Text, ["children"] = mainList, ["main"] = true }
-				};
+					data.Insert(0, new
+					{
+						id = id,
+						text = item.Name,
+						selected = false
+					});
+				}
 			}
 
-			return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Index()
@@ -560,11 +562,12 @@ namespace SmartStore.Admin.Controllers
         }       
 
 		[HttpPost]
-		public ActionResult ProductAdd(int manufacturerId, int[] selectedProductIds)
+		public ActionResult ProductAdd(int manufacturerId, string selectedProductIds)
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var products = _productService.GetProductsByIds(selectedProductIds);
+				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
+				var products = _productService.GetProductsByIds(productIds);
 				ProductManufacturer productManu = null;
 				var maxDisplayOrder = -1;
 

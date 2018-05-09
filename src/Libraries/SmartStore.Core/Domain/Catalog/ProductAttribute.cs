@@ -46,23 +46,11 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int DisplayOrder { get; set; }
 
-        /// <summary>
-        /// Gets or sets the facet template hint. Only effective in accordance with MegaSearchPlus plugin.
-        /// </summary>
-        [DataMember]
-		public FacetTemplateHint FacetTemplateHint { get; set; }
-
-        /// <summary>
-        /// Specifies whether option names should be included in the search index. Only effective in accordance with MegaSearchPlus plugin.
-        /// </summary>
-        [DataMember]
-        public bool IndexOptionNames { get; set; }
-
 		/// <summary>
-		/// Gets or sets export mappings.
+		/// Gets or sets the facet template hint
 		/// </summary>
 		[DataMember]
-		public string ExportMappings { get; set; }
+		public FacetTemplateHint FacetTemplateHint { get; set; }
 
 		/// <summary>
 		/// Gets or sets the prooduct attribute option sets

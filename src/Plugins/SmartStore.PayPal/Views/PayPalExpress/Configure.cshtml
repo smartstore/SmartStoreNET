@@ -1,5 +1,4 @@
-﻿@using SmartStore.PayPal.Settings;
-@using SmartStore.PayPal.Models;
+﻿@using SmartStore.PayPal.Models;
 @using SmartStore.Web.Framework;
 @using SmartStore.Web.Framework.UI;
 @model PayPalExpressConfigurationModel
@@ -9,17 +8,16 @@
 }
 
 <div class="plugin-actions">
-	<button type="submit" name="save" class="btn btn-warning" value="save">
-		<i class="fa fa-check"></i>
-		<span>@T("Admin.Common.Save")</span>
+	<button type="submit" name="save" class="btn btn-primary" value="save">
+		<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
 	</button>
 </div>
 
 <div class="plugin-configuration">
 	<div>
-		<div class="alert alert-info alert-dismissible">
+		<div class="alert alert-info">
+			<button class="close" data-dismiss="alert">×</button>
 			@Html.Raw(T("Plugins.Payments.PayPalExpress.AdminInstruction"))
-			<button class="close" data-dismiss="alert">&times;</button>
 		</div>
 	</div>
 	<div>
@@ -39,13 +37,18 @@
                 @Html.SmartLabelFor(model => model.TransactMode)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.TransactMode, Html.DropDownListFor(model => model.TransactMode, new List<SelectListItem>
-				{
-					new SelectListItem { Text = T("Plugins.Payments.PayPalExpress.ModeAuth"), Value = TransactMode.Authorize.ToString(), Selected = Model.TransactMode == TransactMode.Authorize },
-					new SelectListItem { Text = T("Plugins.Payments.PayPalExpress.ModeAuthAndCapture"), Value = TransactMode.AuthorizeAndCapture.ToString(), Selected = Model.TransactMode == TransactMode.AuthorizeAndCapture }
-				}))
+                @Html.SettingOverrideCheckbox(model => model.TransactMode)
+                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SecurityProtocol)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.UseSandbox)
@@ -133,7 +136,7 @@
                 @Html.SmartLabelFor(model => model.DefaultShippingPrice)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.DefaultShippingPrice, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.SettingEditorFor(model => model.DefaultShippingPrice)
                 @Html.ValidationMessageFor(model => model.DefaultShippingPrice)
             </td>
         </tr>
@@ -142,7 +145,7 @@
 				@Html.SmartLabelFor(model => model.AdditionalFee)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.SettingEditorFor(model => model.AdditionalFee)
 				@Html.ValidationMessageFor(model => model.AdditionalFee)
 			</td>
 		</tr>

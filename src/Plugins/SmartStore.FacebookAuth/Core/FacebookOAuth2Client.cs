@@ -123,7 +123,8 @@ namespace SmartStore.FacebookAuth.Core
 			// add the access token to the user data dictionary just in case page developers want to use it
 			userData["accesstoken"] = accessToken;
 
-			return new AuthenticationResult(isSuccessful: true, provider: ProviderName, providerUserId: id, userName: name, extraData: userData);
+			return new AuthenticationResult(
+				isSuccessful: true, provider: this.ProviderName, providerUserId: id, userName: name, extraData: userData);
 		}
 
 		protected override Uri GetServiceLoginUrl(Uri returnUrl)
@@ -181,24 +182,21 @@ namespace SmartStore.FacebookAuth.Core
 
 			var webRequest = (HttpWebRequest)WebRequest.Create(uri);
 			string accessToken = null;
+			HttpWebResponse response = (HttpWebResponse)webRequest.GetResponse();
 
-			using (var response = (HttpWebResponse)webRequest.GetResponse())
+			// handle response from FB 
+			// this will not be a url with params like the first request to get the 'code'
+			Encoding rEncoding = Encoding.GetEncoding(response.CharacterSet);
+
+			using (StreamReader sr = new StreamReader(response.GetResponseStream(), rEncoding))
 			{
-				// handle response from FB 
-				// this will not be a url with params like the first request to get the 'code'
-				Encoding rEncoding = Encoding.GetEncoding(response.CharacterSet);
+				var serializer = new JavaScriptSerializer();
+				var jsonObject = serializer.DeserializeObject(sr.ReadToEnd());
+				var jConvert = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(jsonObject));
 
-				using (var sr = new StreamReader(response.GetResponseStream(), rEncoding))
-				{
-					var serializer = new JavaScriptSerializer();
-					var jsonObject = serializer.DeserializeObject(sr.ReadToEnd());
-					var jConvert = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(jsonObject));
-
-					Dictionary<string, object> desirializedJsonObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(jConvert.ToString());
-					accessToken = desirializedJsonObject["access_token"].ToString();
-				}
+				Dictionary<string, object> desirializedJsonObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(jConvert.ToString());
+				accessToken = desirializedJsonObject["access_token"].ToString();
 			}
-
 			return accessToken;
 		}
 

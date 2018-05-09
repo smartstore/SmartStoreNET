@@ -1,12 +1,11 @@
-﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
-/// <reference path="../../../Content/shared/_mixins.scss" />
-/// <reference path="../../../Content/shared/_offcanvas.scss" />
-/// <reference path="_variables.scss" />
-/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+﻿/// <reference path="_variables.scss" />
+/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="shared/_mixins.scss" />
+/// <reference path="shared/_offcanvas.scss" />
 
 $ocm-border-color:                      rgba(#000, 0.1);
 $ocm-horizontal-padding:                1.6rem;
-$ocm-selected-color:                    $warning;
+$ocm-selected-color:                    $brand-warning;
 
 
 //
@@ -147,15 +146,14 @@ $ocm-selected-color:                    $warning;
     .ocm-nav .show-current-cat {
         font-weight: $font-weight-medium;
     }
-	/*
+
     .button-bar {
-        background: $gray-100;
+        background: $gray-lightest;
         padding: 1rem $ocm-horizontal-padding;    
         span {
             margin-right: 1rem;
         }
     }
-	*/
     .category-info {
         padding: 0 $ocm-horizontal-padding;
         .category-name {
@@ -263,7 +261,7 @@ $ocm-selected-color:                    $warning;
         transform: translateY(-50%);
     }
 
-    .openend .menubar-caret:before {
+    .show .menubar-caret:before {
         content: "\f106";
     }
 
@@ -313,10 +311,10 @@ $ocm-selected-color:                    $warning;
     max-height: 18px;
 }
 
-/*
+
 body > .select2-container,
 body > .select2-container .select2-dropdown {
     // one higher than .offcanvas-overlay
     z-index: $offcanvas-z-index + 1;
 }
-*/
+

@@ -1,5 +1,4 @@
 ﻿using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Localization;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -12,7 +11,7 @@ namespace SmartStore.Web.Models.Catalog
 		int MinOrderAmount { get; }
 		int MaxOrderAmount { get; }
         int QuantityStep { get; }
-		LocalizedValue<string> QuantityUnitName { get; }
+        string QuantityUnitName { get; }
 		List<SelectListItem> AllowedQuantities { get; }
         QuantityControlType QuantiyControlType { get; }
     }

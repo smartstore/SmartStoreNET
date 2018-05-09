@@ -6,6 +6,7 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Core.Logging
 {
+
 	public interface INotifier
 	{
 		void Add(NotifyType type, LocalizedString message, bool durable = true);

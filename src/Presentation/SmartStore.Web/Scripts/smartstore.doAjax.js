@@ -9,7 +9,7 @@
 		normalizeOptions(this, options);
 
 		if (_.isEmpty(options.url)) {
-		    console.log('doAjax cannot find the URL!');
+			console.log('doAjax can\'t find the url!');
 		}
 		else if (!_.isFalse(options.valid)) {
 			doRequestSwitch(options);
@@ -42,7 +42,7 @@
 		normalizeOptions(this, options);
 
 		if (_.isEmpty(options.url)) {
-			console.log('doAjax.doPostData cannot find the URL!');
+			console.log('doPostData can\'t find the url!');
 		}
 		else if (_.isEmpty(options.ask)) {
 			createAndSubmitForm();
@@ -59,7 +59,11 @@
 		opt.ask = (_.isUndefined(opt.ask) ? $(element).attr('data-ask') : opt.ask);
 
 		if (_.isUndefined(opt.type)) {
-			opt.type = 'POST';
+			opt.type = (_.isUndefined(opt.autoContainer) ? 'POST' : 'GET');
+		}
+
+		if (!_.isUndefined(opt.autoContainer)) {
+			opt.smallIcon = opt.autoContainer;
 		}
 
         if ($(element).is('form')) {
@@ -118,9 +122,15 @@
 			url: opt.url + (_.isEmpty(opt.appendToUrl) ? '' : opt.appendToUrl),
 			async: opt.async === undefined ? true : opt.async,
 			beforeSend: function () {
+				if (!_.isUndefined(opt.autoContainer))
+					$(opt.autoContainer).empty();
+
 				_.call(opt.callbackBeforeSend);
 			},
 			success: function (response) {
+				if (!_.isUndefined(opt.autoContainer))
+					$(opt.autoContainer).html(response);
+
 				_.call(opt.callbackSuccess, response);
 			},
 			error: function (objXml) {

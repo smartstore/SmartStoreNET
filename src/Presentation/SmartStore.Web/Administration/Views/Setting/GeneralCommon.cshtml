@@ -1,5 +1,10 @@
-﻿@using SmartStore.Web.Framework.UI;
-@model GeneralCommonSettingsModel
+﻿@model GeneralCommonSettingsModel
+           
+@using Telerik.Web.Mvc.UI;
+@using SmartStore.Core.Domain.Customers;
+@using SmartStore.Core.Domain.Security;
+@using SmartStore.Web.Framework.UI;
+
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.GeneralCommon").Text;
 }
@@ -11,36 +16,65 @@
             @T("Admin.Configuration.Settings.GeneralCommon")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-warning">
-				<i class="fa fa-check"></i>
-				<span>@T("Admin.Common.Save")</span>
-			</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
         
     
 <script type="text/javascript">
 	$(document).ready(function () {
-		
-		// Test creation of SEO names.
+
+		$("#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)").click(toggleStoreClosed);
+		$("#@Html.FieldIdFor(model => model.CaptchaSettings.Enabled)").change(function () {
+			$('#SecuritySettingTable').find('.captcha-setting').toggle($(this).is(':checked'));
+		}).trigger('change');
+		$("#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)").click(toggleSeoLanguageUrls);
+
+		toggleStoreClosed();
+		toggleSeoLanguageUrls();
+
+		$("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").change(function () {
+			$('#SocialLinkTable').find('.social-link').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		// test creation of SEO names
 		$('#TestSeoNameCreationButton').click(function () {
 			$(this).closest('form').doAjax({
 				type: 'POST',
 				url: '@Url.Action("TestSeoNameCreation")',
 				callbackSuccess: function (resp) {
-
-					$('#TestSeoNameCreationResult').html('<p class="alert alert-info">' + resp + '</p>');
+					$('#TestSeoNameCreationResult').text(resp);
 				}
 			});
 		});
 	});
+
+	function toggleStoreClosed() {
+		if ($('#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)').is(':checked')) {
+			$('#pnlStoreClosedAllowForAdmins').show();
+		}
+		else {
+			$('#pnlStoreClosedAllowForAdmins').hide();
+		}
+	}
+
+	function toggleSeoLanguageUrls() {
+		if ($('#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)').is(':checked')) {
+			$('#pnlDefaultLanguageRedirectBehaviour').show();
+			$('#pnlInvalidLanguageRedirectBehaviour').show();
+		}
+		else {
+			$('#pnlDefaultLanguageRedirectBehaviour').hide();
+			$('#pnlInvalidLanguageRedirectBehaviour').hide();
+		}
+	}
 </script>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
     @Html.ValidationSummary(false)
     
-    @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Style(TabsStyle.Material).Items(x =>
+    @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Items(x =>
      {
          x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings()).Selected(true);
          x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());
@@ -52,17 +86,15 @@
          x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SocialSettings").Text).Content(@TabSocialSettings());
      }))
 }
-
 @helper TabStoreInformationSettings()
-{
+    {
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.StoreInformationSettings.StoreClosed)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.StoreInformationSettings.StoreClosed,
-					Html.CheckBoxFor(model => model.StoreInformationSettings.StoreClosed, new { data_toggler_for = "#pnlStoreClosedAllowForAdmins" }))
+                @Html.SettingEditorFor(model => model.StoreInformationSettings.StoreClosed)
                 @Html.ValidationMessageFor(model => model.StoreInformationSettings.StoreClosed)
             </td>
         </tr>
@@ -77,9 +109,8 @@
         </tr>
     </table>
 }
-
 @helper TabSEOSettings()
-{
+    {
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -95,7 +126,8 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.PageTitleSeoAdjustment)
             </td>
             <td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.SeoSettings.PageTitleSeoAdjustment)
+				@Html.SettingOverrideCheckbox(model => model.SeoSettings.PageTitleSeoAdjustment)
+                @Html.DropDownListForEnum(model => model.SeoSettings.PageTitleSeoAdjustment )
                 @Html.ValidationMessageFor(model => model.SeoSettings.PageTitleSeoAdjustment)
             </td>
         </tr>
@@ -131,17 +163,16 @@
 				@Html.SmartLabelFor(model => model.SeoSettings.MetaRobotsContent)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.SeoSettings.MetaRobotsContent, Html.DropDownListFor(model => model.SeoSettings.MetaRobotsContent,
-					new List<SelectListItem>
-					{
-						new SelectListItem { Text = "index", Value = "index" },
-						new SelectListItem { Text = "noindex", Value = "noindex" },
-						new SelectListItem { Text = "index, follow", Value = "index, follow" },
-						new SelectListItem { Text = "index, nofollow", Value = "index, nofollow" },
-						new SelectListItem { Text = "noindex, follow", Value = "noindex, follow" },
-						new SelectListItem { Text = "noindex, nofollow", Value = "noindex, nofollow" }
-					},
-					T("Common.Unspecified")))
+				@Html.SettingOverrideCheckbox(model => model.SeoSettings.MetaRobotsContent)
+				@Html.DropDownListFor(model => model.SeoSettings.MetaRobotsContent, new List<SelectListItem>
+				{
+					new SelectListItem { Text = "index", Value = "index" },
+					new SelectListItem { Text = "noindex", Value = "noindex" },
+					new SelectListItem { Text = "index, follow", Value = "index, follow" },
+					new SelectListItem { Text = "index, nofollow", Value = "index, nofollow" },
+					new SelectListItem { Text = "noindex, follow", Value = "noindex, follow" },
+					new SelectListItem { Text = "noindex, nofollow", Value = "noindex, nofollow" }
+				}, T("Common.Unspecified"))
 				@Html.ValidationMessageFor(model => model.SeoSettings.MetaRobotsContent)
 			</td>
 		</tr>
@@ -159,7 +190,8 @@
 				@Html.SmartLabelFor(model => model.SeoSettings.CanonicalHostNameRule)
 			</td>
 			<td class="adminData">
-				@Html.EnumSettingEditorFor(model => model.SeoSettings.CanonicalHostNameRule)
+				@Html.SettingOverrideCheckbox(model => model.SeoSettings.CanonicalHostNameRule)
+				@Html.DropDownListForEnum(model => model.SeoSettings.CanonicalHostNameRule)
 				@Html.ValidationMessageFor(model => model.SeoSettings.CanonicalHostNameRule)
 			</td>
 		</tr>
@@ -168,7 +200,7 @@
                 @Html.SmartLabelFor(model => model.SeoSettings.ExtraRobotsDisallows)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsDisallows, new { style = "height:250px" })
+                @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsDisallows, new { @class = "input-large", style = "height:250px" })
                 @Html.ValidationMessageFor(model => model.SeoSettings.ExtraRobotsDisallows)
             </td>
         </tr>
@@ -202,7 +234,7 @@
 				@Html.SmartLabelFor(model => model.SeoSettings.SeoNameCharConversion)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.SeoSettings.SeoNameCharConversion, new { style = "height:250px" })
+				@Html.TextAreaFor(model => model.SeoSettings.SeoNameCharConversion, new { @class = "input-large", style = "height:250px" })
 				@Html.ValidationMessageFor(model => model.SeoSettings.SeoNameCharConversion)
 			</td>
 		</tr>
@@ -211,13 +243,11 @@
 				@Html.SmartLabelFor(model => model.SeoSettings.TestSeoNameCreation)
 			</td>
 			<td class="adminData">
-				<div class="input-group">
-					@Html.EditorFor(model => model.SeoSettings.TestSeoNameCreation, new { @class = "form-control" })
-					<button id="TestSeoNameCreationButton" type="button" class="btn btn-outline-secondary">
-						<i class="fa fa-refresh"></i>
-						<span>@T("Admin.Common.Check")</span>
-					</button>
-				</div>
+				@Html.EditorFor(model => model.SeoSettings.TestSeoNameCreation)
+
+				<button id="TestSeoNameCreationButton" type="button" class="btn">
+					<i class="fa fa-refresh"></i>&nbsp;@T("Admin.Common.Check")
+				</button>
 			</td>
 		</tr>
 		<tr>
@@ -225,69 +255,70 @@
 				&nbsp;
 			</td>
 			<td id="TestSeoNameCreationResult" class="adminData">
-
 			</td>
 		</tr>
     </table>
 }
-
 @helper TabSecuritySettings()
-{
-	<table id="SecuritySettingTable" class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SecuritySettings.EncryptionKey)
-			</td>
-			<td class="adminData">
-				<div class="input-group">
-					@Html.EditorFor(model => model.SecuritySettings.EncryptionKey, new { @class = "form-control" })
-					<button type="submit" name="changeencryptionkey" id="changeencryptionkey" class="btn btn-outline-secondary">
-						<span>@T("Admin.Common.Change")</span>
-					</button>
-				</div>
-				@Html.ValidationMessageFor(model => model.SecuritySettings.EncryptionKey)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
-				@Html.ValidationMessageFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
-				@Html.ValidationMessageFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				<div class="alert alert-info">
-					@T("Admin.Configuration.Settings.General.Common.Captcha.Hint")
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CaptchaSettings.Enabled)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.CaptchaSettings.Enabled,
-					Html.CheckBoxFor(model => model.CaptchaSettings.Enabled, new { data_toggler_for = "#pnlCaptchaSettings" }))
-				@Html.ValidationMessageFor(model => model.CaptchaSettings.Enabled)
-			</td>
-		</tr>
-		<tbody id="pnlCaptchaSettings">
+    {
+		<table id="SecuritySettingTable" class="adminContent">
 			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.EncryptionKey)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.EncryptionKey)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.EncryptionKey)
+					<input type="submit" name="changeencryptionkey" value="@T("Admin.Common.Change")" id="changeencryptionkey" class="btn" />
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.ForceSslForAllPages)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.ForceSslForAllPages)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.ForceSslForAllPages)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div class="alert alert-info">
+						@T("Admin.Configuration.Settings.General.Common.Captcha.Hint")
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.Enabled)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.Enabled)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.Enabled)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnLoginPage)
 				</td>
@@ -296,7 +327,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnLoginPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnRegistrationPage)
 				</td>
@@ -305,7 +336,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnRegistrationPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnContactUsPage)
 				</td>
@@ -314,7 +345,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnContactUsPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnEmailWishlistToFriendPage)
 				</td>
@@ -323,7 +354,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnEmailWishlistToFriendPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnEmailProductToFriendPage)
 				</td>
@@ -332,7 +363,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnEmailProductToFriendPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnAskQuestionPage)
 				</td>
@@ -341,7 +372,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnAskQuestionPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnBlogCommentPage)
 				</td>
@@ -350,7 +381,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnBlogCommentPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnNewsCommentPage)
 				</td>
@@ -359,7 +390,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnNewsCommentPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnProductReviewPage)
 				</td>
@@ -368,7 +399,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnProductReviewPage)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
 				</td>
@@ -377,7 +408,7 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
 				</td>
 			</tr>
-			<tr>
+			<tr class="captcha-setting">
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
 				</td>
@@ -386,12 +417,10 @@
 					@Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
 				</td>
 			</tr>
-		</tbody>
-	</table>
+		</table>
 }
-
 @helper TabPdfSettings()
-{
+    {
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -445,7 +474,6 @@
 		</tr>
     </table>
 }
-
 @helper TabLocalizationSettings()
 {
     <table class="adminContent">
@@ -454,33 +482,28 @@
                 @Html.SmartLabelFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled,
-					Html.CheckBoxFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled, new { data_toggler_for = "#pnlSeoFriendlyUrlsForLanguages" }))
+                @Html.EditorFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 @Html.ValidationMessageFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             </td>
         </tr>
-		<tbody id="pnlSeoFriendlyUrlsForLanguages">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour,
-						Html.DropDownListForEnum(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour))
-					@Html.ValidationMessageFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour,
-						Html.DropDownListForEnum(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour))
-					@Html.ValidationMessageFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
-				</td>
-			</tr>
-		</tbody>
+        <tr id="pnlDefaultLanguageRedirectBehaviour">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListForEnum(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
+                @Html.ValidationMessageFor(model => model.LocalizationSettings.DefaultLanguageRedirectBehaviour)
+            </td>
+        </tr>
+        <tr id="pnlInvalidLanguageRedirectBehaviour">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListForEnum(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
+                @Html.ValidationMessageFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
+            </td>
+        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.LocalizationSettings.UseImagesForLanguageSelection)
@@ -523,8 +546,8 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.Salutation)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CompanyInformationSettings.Salutation, 
-					Html.DropDownListFor(model => model.CompanyInformationSettings.Salutation, Model.CompanyInformationSettings.Salutations))
+                @Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.Salutation)
+                @Html.DropDownListFor(model => model.CompanyInformationSettings.Salutation, Model.CompanyInformationSettings.Salutations)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.Salutation)
             </td>
         </tr>
@@ -560,8 +583,8 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CompanyManagementDescription)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CompanyInformationSettings.CompanyManagementDescription, 
-					Html.DropDownListFor(model => model.CompanyInformationSettings.CompanyManagementDescription, Model.CompanyInformationSettings.ManagementDescriptions))
+                @Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.CompanyManagementDescription)
+                @Html.DropDownListFor(model => model.CompanyInformationSettings.CompanyManagementDescription, Model.CompanyInformationSettings.ManagementDescriptions)
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CompanyManagementDescription)
             </td>
         </tr>
@@ -617,8 +640,8 @@
                 @Html.SmartLabelFor(model => model.CompanyInformationSettings.CountryId)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.CompanyInformationSettings.CountryId, 
-					Html.DropDownListFor(model => model.CompanyInformationSettings.CountryId, Model.CompanyInformationSettings.AvailableCountries))
+				@Html.SettingOverrideCheckbox(model => model.CompanyInformationSettings.CountryId)
+                @Html.DropDownListFor(model => model.CompanyInformationSettings.CountryId, Model.CompanyInformationSettings.AvailableCountries, new { style = "min-width:289px" } )
                 @Html.ValidationMessageFor(model => model.CompanyInformationSettings.CountryId)
             </td>
         </tr>
@@ -817,66 +840,54 @@
                 @Html.SmartLabelFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.SocialSettings.ShowSocialLinksInFooter,
-					Html.CheckBoxFor(model => model.SocialSettings.ShowSocialLinksInFooter, new { data_toggler_for = "#pnlSocialLinks" }))
+                @Html.SettingEditorFor(model => model.SocialSettings.ShowSocialLinksInFooter)
                 @Html.ValidationMessageFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
         </tr>
-		<tbody id="pnlSocialLinks">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.FacebookLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.FacebookLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.GooglePlusLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.GooglePlusLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.GooglePlusLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.TwitterLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.TwitterLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.TwitterLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.PinterestLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.PinterestLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.YoutubeLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.YoutubeLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.YoutubeLink)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SocialSettings.InstagramLink)
-				</td>
-				<td class="adminData">
-					@Html.SettingEditorFor(model => model.SocialSettings.InstagramLink)
-					@Html.ValidationMessageFor(model => model.SocialSettings.InstagramLink)
-				</td>
-			</tr>
-		</tbody>
+        <tr class="social-link">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.FacebookLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.FacebookLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
+            </td>
+        </tr>
+        <tr class="social-link">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.GooglePlusLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.GooglePlusLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.GooglePlusLink)
+            </td>
+        </tr>
+        <tr class="social-link">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.TwitterLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.TwitterLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.TwitterLink)
+            </td>
+        </tr>
+        <tr class="social-link">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.PinterestLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.PinterestLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
+            </td>
+        </tr>
+        <tr class="social-link">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SocialSettings.YoutubeLink)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SocialSettings.YoutubeLink)
+                @Html.ValidationMessageFor(model => model.SocialSettings.YoutubeLink)
+            </td>
+        </tr>
     </table>
 }

@@ -3,7 +3,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Catalog
 {
@@ -126,10 +125,9 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="product">Product</param>
 		/// <param name="customer">The customer</param>
-		/// <param name="currency">The currency</param>
 		/// <param name="context">Object with cargo data for better performance</param>
 		/// <returns>Preselected price</returns>
-		decimal GetPreselectedPrice(Product product, Customer customer, Currency currency, PriceCalculationContext context);
+		decimal GetPreselectedPrice(Product product, Customer customer, PriceCalculationContext context);
 
 		/// <summary>
 		/// Gets the product cost

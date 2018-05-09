@@ -65,14 +65,13 @@ namespace SmartStore.Core.Caching
         {
         }
 
-		public IEnumerable<string> Keys(string pattern)
+		public string[] Keys(string pattern)
 		{
 			return new string[0];
 		}
 
-		public int RemoveByPattern(string pattern)
+		public void RemoveByPattern(string pattern)
         {
-			return 0;
         }
 
         public void Clear()

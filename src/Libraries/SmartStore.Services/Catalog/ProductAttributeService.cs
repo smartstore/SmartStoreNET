@@ -20,11 +20,11 @@ namespace SmartStore.Services.Catalog
     {
 		// 0 = ProductId, 1 = PageIndex, 2 = PageSize
 		private const string PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY = "SmartStore.productvariantattribute.combinations.id-{0}-{1}-{2}";
-		private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.*";
+		private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
 
 		// 0 = Attribute value ids, e.g. 16-254-1245
 		private const string PRODUCTVARIANTATTRIBUTEVALUES_BY_IDS_KEY = "SmartStore.productvariantattributevalues.ids-{0}";
-		private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalues*";
+		private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalues";
 
 		private readonly IRepository<ProductAttribute> _productAttributeRepository;
 		private readonly IRepository<ProductAttributeOption> _productAttributeOptionRepository;
@@ -104,6 +104,9 @@ namespace SmartStore.Services.Catalog
             //cache
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityDeleted(productAttribute);
         }
 
         public virtual IList<ProductAttribute> GetAllProductAttributes()
@@ -132,6 +135,9 @@ namespace SmartStore.Services.Catalog
             
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityInserted(productAttribute);
         }
 
         public virtual void UpdateProductAttribute(ProductAttribute productAttribute)
@@ -143,45 +149,10 @@ namespace SmartStore.Services.Catalog
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityUpdated(productAttribute);
         }
-
-		public virtual Multimap<string, int> GetExportFieldMappings(string fieldPrefix)
-		{
-			Guard.NotEmpty(fieldPrefix, nameof(fieldPrefix));
-
-			var result = new Multimap<string, int>(StringComparer.OrdinalIgnoreCase);
-
-			if (!fieldPrefix.EndsWith(":"))
-			{
-				fieldPrefix = fieldPrefix + ":";
-			}
-
-			var mappings = _productAttributeRepository.TableUntracked
-				.Where(x => !string.IsNullOrEmpty(x.ExportMappings))
-				.Select(x => new
-				{
-					x.Id,
-					x.ExportMappings
-				})
-				.ToList();
-
-			foreach (var mapping in mappings)
-			{
-				var rows = mapping.ExportMappings.SplitSafe(Environment.NewLine)
-					.Where(x => x.StartsWith(fieldPrefix, StringComparison.InvariantCultureIgnoreCase));
-
-				foreach (var row in rows)
-				{
-					var exportFieldName = row.Substring(fieldPrefix.Length).TrimEnd();
-					if (exportFieldName.HasValue())
-					{
-						result.Add(exportFieldName, mapping.Id);
-					}
-				}
-			}
-
-			return result;
-		}
 
 		#endregion
 
@@ -228,6 +199,8 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productAttributeOption, nameof(productAttributeOption));
 
 			_productAttributeOptionRepository.Delete(productAttributeOption);
+
+			_eventPublisher.EntityDeleted(productAttributeOption);
 		}
 
 		public virtual void InsertProductAttributeOption(ProductAttributeOption productAttributeOption)
@@ -235,6 +208,8 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productAttributeOption, nameof(productAttributeOption));
 
 			_productAttributeOptionRepository.Insert(productAttributeOption);
+
+			_eventPublisher.EntityInserted(productAttributeOption);
 		}
 
 		public virtual void UpdateProductAttributeOption(ProductAttributeOption productAttributeOption)
@@ -242,6 +217,8 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productAttributeOption, nameof(productAttributeOption));
 
 			_productAttributeOptionRepository.Update(productAttributeOption);
+
+			_eventPublisher.EntityUpdated(productAttributeOption);
 		}
 
 		#endregion
@@ -274,6 +251,8 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productAttributeOptionsSet, nameof(productAttributeOptionsSet));
 
 			_productAttributeOptionsSetRepository.Delete(productAttributeOptionsSet);
+
+			_eventPublisher.EntityDeleted(productAttributeOptionsSet);
 		}
 
 		public virtual void InsertProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet)
@@ -281,6 +260,8 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productAttributeOptionsSet, nameof(productAttributeOptionsSet));
 
 			_productAttributeOptionsSetRepository.Insert(productAttributeOptionsSet);
+
+			_eventPublisher.EntityInserted(productAttributeOptionsSet);
 		}
 
 		public virtual void UpdateProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet)
@@ -288,6 +269,8 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productAttributeOptionsSet, nameof(productAttributeOptionsSet));
 
 			_productAttributeOptionsSetRepository.Update(productAttributeOptionsSet);
+
+			_eventPublisher.EntityUpdated(productAttributeOptionsSet);
 		}
 
 		#endregion
@@ -303,6 +286,9 @@ namespace SmartStore.Services.Catalog
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityDeleted(productVariantAttribute);
         }
 
 		public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId)
@@ -419,6 +405,9 @@ namespace SmartStore.Services.Catalog
 
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityInserted(productVariantAttribute);
         }
 
         public virtual void UpdateProductVariantAttribute(ProductVariantAttribute productVariantAttribute)
@@ -430,6 +419,9 @@ namespace SmartStore.Services.Catalog
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityUpdated(productVariantAttribute);
         }
 
 		public virtual int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, int productAttributeOptionsSetId, bool deleteExistingValues)
@@ -516,6 +508,11 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 
+			if (productVariantAttributeValue != null)
+			{
+				_eventPublisher.EntityInserted(productVariantAttributeValue);
+			}
+
 			return result;
 		}
 
@@ -532,6 +529,9 @@ namespace SmartStore.Services.Catalog
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityDeleted(productVariantAttributeValue);
         }
 
         public virtual IList<ProductVariantAttributeValue> GetProductVariantAttributeValues(int productVariantAttributeId)
@@ -562,6 +562,9 @@ namespace SmartStore.Services.Catalog
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityInserted(productVariantAttributeValue);
         }
 
         public virtual void UpdateProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue)
@@ -573,6 +576,9 @@ namespace SmartStore.Services.Catalog
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityUpdated(productVariantAttributeValue);
         }
 
         #endregion
@@ -601,6 +607,9 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("combination");
 
             _pvacRepository.Delete(combination);
+
+            //event notification
+            _eventPublisher.EntityDeleted(combination);
         }
 
 		public virtual IPagedList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(
@@ -703,7 +712,7 @@ namespace SmartStore.Services.Catalog
 			if (sku.IsEmpty())
 				return null;
 
-			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && x.Product.Deleted == false && !x.Product.IsSystemProduct);
+			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && x.Product.Deleted == false);
 			return combination;
 		}
 
@@ -712,8 +721,15 @@ namespace SmartStore.Services.Catalog
             if (combination == null)
                 throw new ArgumentNullException("combination");
 
+			//if (combination.IsDefaultCombination)
+			//{
+			//	EnsureSingleDefaultVariant(combination);
+			//}
+
             _pvacRepository.Insert(combination);
 
+            //event notification
+            _eventPublisher.EntityInserted(combination);
         }
 
         public virtual void UpdateProductVariantAttributeCombination(ProductVariantAttributeCombination combination)
@@ -746,6 +762,9 @@ namespace SmartStore.Services.Catalog
 			//}
 
             _pvacRepository.Update(combination);
+
+            //event notification
+            _eventPublisher.EntityUpdated(combination);
         }
 
 		public virtual void CreateAllProductVariantAttributeCombinations(Product product)
@@ -804,6 +823,12 @@ namespace SmartStore.Services.Catalog
 					}
 
 					scope.Commit();
+
+					if (combination != null)
+					{
+						// Perf: publish event for last one only
+						_eventPublisher.EntityInserted(combination);
+					}
 				}
 			}
 
@@ -843,6 +868,8 @@ namespace SmartStore.Services.Catalog
 			if (attributeFilter.AttributeId != 0 && attributeFilter.AttributeValueId != 0)
 			{
 				_productBundleItemAttributeFilterRepository.Insert(attributeFilter);
+
+				_eventPublisher.EntityInserted(attributeFilter);
 			}
 		}
 
@@ -852,6 +879,8 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("attributeFilter");
 
 			_productBundleItemAttributeFilterRepository.Update(attributeFilter);
+
+			_eventPublisher.EntityUpdated(attributeFilter);
 		}
 
 		public virtual void DeleteProductBundleItemAttributeFilter(ProductBundleItemAttributeFilter attributeFilter)
@@ -860,6 +889,8 @@ namespace SmartStore.Services.Catalog
 				throw new ArgumentNullException("attributeFilter");
 
 			_productBundleItemAttributeFilterRepository.Delete(attributeFilter);
+
+			_eventPublisher.EntityDeleted(attributeFilter);
 		}
 
 		public virtual void DeleteProductBundleItemAttributeFilter(ProductBundleItem bundleItem)

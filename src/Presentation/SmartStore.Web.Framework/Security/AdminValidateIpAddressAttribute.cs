@@ -21,12 +21,8 @@ namespace SmartStore.Web.Framework.Security
 			if (request == null)
 				return;
 
-			// don't apply filter to child methods
+			//don't apply filter to child methods
 			if (filterContext.IsChildAction)
-				return;
-
-			// Prevent lockout
-			if (filterContext.HttpContext.Request.IsLocal)
 				return;
 
 			bool ok = false;
@@ -34,9 +30,8 @@ namespace SmartStore.Web.Framework.Security
 			if (ipAddresses != null && ipAddresses.Count > 0)
 			{
 				var webHelper = WebHelper.Value;
-				var curIpAddress = webHelper.GetCurrentIpAddress();
 				foreach (string ip in ipAddresses)
-					if (ip.Equals(curIpAddress, StringComparison.InvariantCultureIgnoreCase))
+					if (ip.Equals(webHelper.GetCurrentIpAddress(), StringComparison.InvariantCultureIgnoreCase))
 					{
 						ok = true;
 						break;

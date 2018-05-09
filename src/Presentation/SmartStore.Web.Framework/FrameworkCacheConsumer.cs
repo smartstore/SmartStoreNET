@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
-using SmartStore.Core.Data;
-using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Seo;
@@ -17,8 +13,17 @@ using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework
 {
-    public partial class FrameworkCacheConsumer : DbSaveHook<BaseEntity>, IConsumer<ThemeTouchedEvent>
+    public class FrameworkCacheConsumer :
+        IConsumer<EntityInserted<ThemeVariable>>,
+        IConsumer<EntityUpdated<ThemeVariable>>,
+        IConsumer<EntityDeleted<ThemeVariable>>,
+        IConsumer<EntityInserted<CustomerRole>>,
+        IConsumer<EntityUpdated<CustomerRole>>,
+        IConsumer<EntityDeleted<CustomerRole>>,
+        IConsumer<EntityUpdated<Setting>>,
+		IConsumer<ThemeTouchedEvent>
     {
+
         /// <summary>
         /// Key for ThemeVariables caching
         /// </summary>
@@ -26,8 +31,14 @@ namespace SmartStore.Web.Framework
         /// {0} : theme name
         /// {1} : store identifier
         /// </remarks>
+<<<<<<< HEAD
+        public const string THEMEVARS_KEY = "pres:themevars-{0}-{1}";
+		public const string THEMEVARS_THEME_KEY = "pres:themevars-{0}";
+		
+=======
         public const string THEMEVARS_KEY = "fw:themevars-{0}-{1}";
 		public const string THEMEVARS_THEME_KEY = "fw:themevars-{0}";	
+>>>>>>> upstream/3.x
         
         /// <summary>
         /// Key for tax display type caching
@@ -37,7 +48,7 @@ namespace SmartStore.Web.Framework
         /// {1} : store identifier
         /// </remarks>
         public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "fw:customerroles:taxdisplaytypes-{0}-{1}";
-        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes*";
+        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes";
 
 		/// <summary>
 		/// Key for Topic SE names
@@ -53,13 +64,25 @@ namespace SmartStore.Web.Framework
 		private readonly ICacheManager _cacheManager;
 		private readonly IAssetCache _assetCache;
 
-		// Item1 = ThemeName, Item2 = StoreId
-		private HashSet<Tuple<string, int>> _themeScopes;
-
 		public FrameworkCacheConsumer(ICacheManager cacheManager, IAssetCache assetCache)
         {
 			_cacheManager = cacheManager;
 			_assetCache = assetCache;
+        }
+
+        public void HandleEvent(EntityInserted<ThemeVariable> eventMessage)
+        {
+			HttpRuntime.Cache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+        }
+
+        public void HandleEvent(EntityUpdated<ThemeVariable> eventMessage)
+        {
+			HttpRuntime.Cache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+        }
+
+        public void HandleEvent(EntityDeleted<ThemeVariable> eventMessage)
+        {
+			HttpRuntime.Cache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
 		public void HandleEvent(ThemeTouchedEvent eventMessage)
@@ -68,6 +91,8 @@ namespace SmartStore.Web.Framework
 			HttpRuntime.Cache.RemoveByPattern(cacheKey);
 		}
 
+<<<<<<< HEAD
+=======
 		public override void OnAfterSave(IHookedEntity entry)
 		{
 			if (entry.Entity is ThemeVariable)
@@ -100,33 +125,30 @@ namespace SmartStore.Web.Framework
 				throw new NotImplementedException();
 			}	
 		}
+>>>>>>> upstream/3.x
 
-		public override void OnAfterSaveCompleted()
-		{
-			FlushThemeVarsCacheEviction();
-		}
+        public void HandleEvent(EntityDeleted<CustomerRole> eventMessage)
+        {
+            _cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY);
+        }
 
-		#region Helpers
+        public void HandleEvent(EntityUpdated<CustomerRole> eventMessage)
+        {
+            _cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY);
+        }
 
-		private void AddEvictableThemeScope(string themeName, int storeId)
-		{
-			if (_themeScopes == null)
-				_themeScopes = new HashSet<Tuple<string, int>>();
-			_themeScopes.Add(new Tuple<string, int>(themeName, storeId));
-		}
+        public void HandleEvent(EntityInserted<CustomerRole> eventMessage)
+        {
+            _cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY);
+        }
 
-		private void FlushThemeVarsCacheEviction()
-		{
-			if (_themeScopes == null || _themeScopes.Count == 0)
-				return;
+        public void HandleEvent(EntityUpdated<Setting> eventMessage)
+        {
+            // clear models which depend on settings
+            _cacheManager.RemoveByPattern(CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY); // depends on TaxSettings.TaxDisplayType
+        }
 
-			foreach (var scope in _themeScopes)
-			{
-				HttpRuntime.Cache.Remove(BuildThemeVarsCacheKey(scope.Item1 /* ThemeName */, scope.Item2 /* StoreId */));
-			}
-
-			_themeScopes.Clear();
-		}
+        #region Helpers
 
         private static string BuildThemeVarsCacheKey(ThemeVariable entity)
         {
@@ -144,5 +166,7 @@ namespace SmartStore.Web.Framework
         }
 
         #endregion
+
 	}
+
 }

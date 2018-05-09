@@ -34,11 +34,11 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			{
 				var queuedEmail = new QueuedEmail
 				{
-					From = emailAccount.ToEmailAddress(),
+					From = emailAccount.Email,
+					FromName = emailAccount.DisplayName,
 					SendManually = false,
 					To = email,
 					Subject = deployment.EmailSubject.NaIfEmpty(),
-					Body = deployment.EmailSubject.NaIfEmpty(),
 					CreatedOnUtc = DateTime.UtcNow,
 					EmailAccountId = deployment.EmailAccountId
 				};

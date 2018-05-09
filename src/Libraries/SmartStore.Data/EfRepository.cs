@@ -8,10 +8,12 @@ using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Data.Caching;
-using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
 {
+    /// <summary>
+    /// Entity Framework repository
+    /// </summary>
     public partial class EfRepository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly IDbContext _context;
@@ -32,7 +34,6 @@ namespace SmartStore.Data
 				{
 					return this.Entities.AsNoTracking();
 				}
-
 				return this.Entities;
             }
         }
@@ -70,32 +71,30 @@ namespace SmartStore.Data
 
 		public virtual void Insert(T entity)
         {
-			Guard.NotNull(entity, nameof(entity));
+            if (entity == null)
+                throw new ArgumentNullException("entity");
 
-			this.Entities.Add(entity);
+            this.Entities.Add(entity);
 
 			if (this.AutoCommitEnabledInternal)
-			{
-				_context.SaveChanges();
-			}
+                _context.SaveChanges();
         }
 
 		public virtual void InsertRange(IEnumerable<T> entities, int batchSize = 100)
         {
             try
             {
-				Guard.NotNull(entities, nameof(entities));
+                if (entities == null)
+                    throw new ArgumentNullException("entities");
 
-				if (entities.Any())
+                if (entities.Any())
                 {
                     if (batchSize <= 0)
                     {
 						// insert all in one step
 						this.Entities.AddRange(entities);
 						if (this.AutoCommitEnabledInternal)
-						{
-							_context.SaveChanges();
-						}   
+                            _context.SaveChanges();
                     }
                     else
                     {
@@ -108,9 +107,7 @@ namespace SmartStore.Data
                             if (i % batchSize == 0)
                             {
 								if (this.AutoCommitEnabledInternal)
-								{
-									_context.SaveChanges();
-								}  
+                                    _context.SaveChanges();
                                 i = 0;
                                 saved = true;
                             }
@@ -120,9 +117,7 @@ namespace SmartStore.Data
                         if (!saved)
                         {
 							if (this.AutoCommitEnabledInternal)
-							{
-								_context.SaveChanges();
-							} 
+                                _context.SaveChanges();
                         }
                     }
                 }
@@ -135,9 +130,10 @@ namespace SmartStore.Data
 
 		public virtual void Update(T entity)
         {
-			Guard.NotNull(entity, nameof(entity));
+            if (entity == null)
+                throw new ArgumentNullException("entity");
 
-			ChangeStateToModifiedIfApplicable(entity);
+			SetEntityStateToModifiedIfApplicable(entity);
 
 			if (this.AutoCommitEnabledInternal)
 			{
@@ -147,12 +143,13 @@ namespace SmartStore.Data
 
 		public virtual void UpdateRange(IEnumerable<T> entities)
 		{
-			Guard.NotNull(entities, nameof(entities));
+			if (entities == null)
+				throw new ArgumentNullException("entities");
 
-			foreach (var entity in entities)
+			entities.Each(entity =>
 			{
-				ChangeStateToModifiedIfApplicable(entity);
-			}
+				SetEntityStateToModifiedIfApplicable(entity);
+			});
 
 			if (this.AutoCommitEnabledInternal)
 			{
@@ -160,56 +157,51 @@ namespace SmartStore.Data
 			}
 		}
 
-		private void ChangeStateToModifiedIfApplicable(T entity)
+		private void SetEntityStateToModifiedIfApplicable(T entity)
 		{
 			if (entity.IsTransientRecord())
 				return;
-
+			
 			var entry = InternalContext.Entry(entity);
-
-			if (entry.State == EfState.Detached)
+			if (entry.State < System.Data.Entity.EntityState.Added || (this.AutoCommitEnabledInternal && !InternalContext.Configuration.AutoDetectChangesEnabled))
 			{
-				// Entity was detached before or was explicitly constructed.
-				// This unfortunately sets all properties to modified.
-				entry.State = EfState.Modified;
-			}
-			else if (entry.State == EfState.Unchanged)
-			{
-				// We simply do nothing here, because it is ensured now that DetectChanges()
-				// gets implicitly called prior SaveChanges().
-
-				//if (this.AutoCommitEnabledInternal && !ctx.Configuration.AutoDetectChangesEnabled)
-				//{
-				//	_context.DetectChanges();
-				//}
+				entry.State = System.Data.Entity.EntityState.Modified;
 			}
 		}
 
 		public virtual void Delete(T entity)
         {
-			Guard.NotNull(entity, nameof(entity));
+            if (entity == null)
+                throw new ArgumentNullException("entity");
 
-			InternalContext.Entry(entity).State = EfState.Deleted;
+            if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
+            {
+                this.Entities.Attach(entity);
+            }
+			
+            this.Entities.Remove(entity);
 
 			if (this.AutoCommitEnabledInternal)
-			{
-				_context.SaveChanges();
-			}   
+                _context.SaveChanges();
         }
 
 		public virtual void DeleteRange(IEnumerable<T> entities)
 		{
-			Guard.NotNull(entities, nameof(entities));
+			if (entities == null)
+				throw new ArgumentNullException("entities");
 
-			foreach (var entity in entities)
+			entities.Each(entity =>
 			{
-				InternalContext.Entry(entity).State = EfState.Deleted;
-			}
+				if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
+				{
+					this.Entities.Attach(entity);
+				}
+			});
+
+			this.Entities.RemoveRange(entities);
 
 			if (this.AutoCommitEnabledInternal)
-			{
 				_context.SaveChanges();
-			}	
 		}
 
 		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
@@ -228,6 +220,26 @@ namespace SmartStore.Data
             Guard.NotNull(path, "path");
 
             return query.Include(path);
+        }
+
+		public virtual bool IsModified(T entity)
+		{
+			Guard.NotNull(entity, nameof(entity));
+			var ctx = InternalContext;
+			var entry = ctx.Entry(entity);
+
+			if (entry != null)
+			{
+				var modified = entry.State == System.Data.Entity.EntityState.Modified;
+				return modified;
+			}
+
+			return false;
+		}
+
+		public virtual IDictionary<string, object> GetModifiedProperties(T entity)
+        {
+			return InternalContext.GetModifiedProperties(entity);
         }
 
 		public virtual IDbContext Context
@@ -262,7 +274,6 @@ namespace SmartStore.Data
                 {
                     _entities = _context.Set<T>();
                 }
-
                 return _entities as DbSet<T>;
             }
         }

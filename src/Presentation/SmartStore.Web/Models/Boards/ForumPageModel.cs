@@ -1,5 +1,4 @@
-﻿using SmartStore.Services.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SmartStore.Web.Models.Boards
 {
@@ -11,12 +10,12 @@ namespace SmartStore.Web.Models.Boards
         }
 
         public int Id { get; set; }
-        public LocalizedValue<string> Name { get; set; }
-		public LocalizedValue<string> Description { get; set; }
-		public string SeName { get; set; }
+        public string Name { get; set; }
+        public string SeName { get; set; }
+        public string Description { get; set; }
 
         public string WatchForumText { get; set; }
-        public bool WatchForumSubscribed { get; set; }
+        public bool WatchForumSubscribed { get; set; } // codehing: sm-add
 
         public IList<ForumTopicRowModel> ForumTopics { get; set; }
         public int TopicPageSize { get; set; }

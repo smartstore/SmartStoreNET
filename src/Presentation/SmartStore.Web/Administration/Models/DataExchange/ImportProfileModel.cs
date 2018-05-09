@@ -60,9 +60,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool LogFileExists { get; set; }
 		public string TempFileName { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Import.FolderName")]
-		public string FolderName { get; set; }
-
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 
 		public ExtraDataModel ExtraData { get; set; }

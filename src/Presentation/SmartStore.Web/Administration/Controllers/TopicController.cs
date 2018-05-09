@@ -13,7 +13,10 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
+<<<<<<< HEAD
+=======
 using SmartStore.Web.Framework;
+>>>>>>> upstream/3.x
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -93,14 +96,24 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		private void PrepareStoresMappingModel(TopicModel model, Topic topic, bool excludeProperties)
 		{
-			Guard.NotNull(model, nameof(model));
+			if (model == null)
+				throw new ArgumentNullException("model");
 
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
 			if (!excludeProperties)
 			{
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
+				if (topic != null)
+				{
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
+				}
+				else
+				{
+					model.SelectedStoreIds = new int[0];
+				}
 			}
-
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
         
         public ActionResult Index()
@@ -135,7 +148,6 @@ namespace SmartStore.Admin.Controllers
 				gridModel.Data = topics.Select(x =>
 				{
 					var item = x.ToModel();
-					item.WidgetZone = x.WidgetZone.SplitSafe(",");
 					// otherwise maxJsonLength could be exceeded
 					item.Body = "";
 					return item;
@@ -231,10 +243,7 @@ namespace SmartStore.Admin.Controllers
 				locale.SeName = topic.GetSeName(languageId, false, false);
             });
 
-
-			model.WidgetZone = topic.WidgetZone.SplitSafe(",");
-
-			return View(model);
+            return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
@@ -256,6 +265,10 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 topic = model.ToEntity(topic);
+<<<<<<< HEAD
+                _topicService.UpdateTopic(topic);
+				
+=======
 
 				if (model.WidgetZone != null)
 				{
@@ -267,6 +280,7 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
+>>>>>>> upstream/3.x
 				//Stores
 				_storeMappingService.SaveStoreMappings<Topic>(topic, model.SelectedStoreIds);
                 

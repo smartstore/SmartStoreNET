@@ -18,6 +18,7 @@ namespace SmartStore.Web.Framework.Theming
 		private static readonly Regex s_valueLessVars = new Regex(@"[@][a-zA-Z0-9_-]+", RegexOptions.Compiled);
 		//private static readonly Regex s_valueWhitelist = new Regex(@"^[#@]?[a-zA-Z0-9""' _\.,-]*$");
 
+		const string LessVarPrefix = "@var_";
 		const string SassVarPrefix = "$";
 
 		public string GetPreprocessorCss(string extension, string themeName, int storeId)
@@ -26,8 +27,9 @@ namespace SmartStore.Web.Framework.Theming
             Guard.IsPositive(storeId, nameof(storeId));
 
             var variables = GetVariables(themeName, storeId);
-            var css = Transform(variables);
 
+			var isLess = extension.IsCaseInsensitiveEqual(".less");
+            var css = Transform(variables, isLess);
             return css;
         }
 
@@ -73,7 +75,8 @@ namespace SmartStore.Web.Framework.Theming
 				string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
 				return HttpRuntime.Cache.GetOrAdd(cacheKey, () =>
 				{
-					return GetRawVariablesCore(themeName, storeId);
+					var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
+					return themeVarService.GetThemeVariables(themeName, storeId) ?? new ExpandoObject();
 				});
 			}
         }
@@ -84,17 +87,35 @@ namespace SmartStore.Web.Framework.Theming
 			return themeVarService.GetThemeVariables(themeName, storeId) ?? new ExpandoObject();
 		}
 
-		private string Transform(IDictionary<string, string> parameters)
+		private string Transform(IDictionary<string, string> parameters, bool toLess)
 		{
 			if (parameters.Count == 0)
 				return string.Empty;
 
-			var prefix = SassVarPrefix;
+			var prefix = toLess ? LessVarPrefix : SassVarPrefix;
 
 			var sb = new StringBuilder();
 			foreach (var parameter in parameters.Where(kvp => kvp.Value.HasValue()))
 			{
-				sb.AppendFormat("{0}{1}: {2};\n", prefix, parameter.Key, parameter.Value);
+				var value = parameter.Value;
+				if (toLess)
+				{
+					value = s_valueLessVars.Replace(value, match =>
+					{
+						// Replaces all occurences of @varname with @var_varname (in case of LESS).
+						// The LESS compiler would throw exceptions otherwise, because the main variables file
+						// is not loaded yet at this stage.
+						var refVar = match.Value;
+						if (!refVar.StartsWith(prefix))
+						{
+							refVar = "{0}{1}".FormatInvariant(prefix, refVar.Substring(1));
+						}
+
+						return refVar;
+					});
+				}
+
+				sb.AppendFormat("{0}{1}: {2};\n", prefix, parameter.Key, value);
 			}
 
 			return sb.ToString();

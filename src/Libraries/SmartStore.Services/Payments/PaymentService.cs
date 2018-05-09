@@ -5,11 +5,10 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Payments
 {
@@ -18,35 +17,37 @@ namespace SmartStore.Services.Payments
 	/// </summary>
 	public partial class PaymentService : IPaymentService
     {
+		#region Constants
+		
+		private const string PAYMENTMETHOD_ALL_KEY = "SmartStore.paymentmethod.all";
+
+		#endregion
+
 		#region Fields
 
 		private readonly static object _lock = new object();
 		private static IList<Type> _paymentMethodFilterTypes = null;
 
 		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly IStoreMappingService _storeMappingService;
-		private readonly PaymentSettings _paymentSettings;
+        private readonly PaymentSettings _paymentSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IProviderManager _providerManager;
 		private readonly ICommonServices _services;
 		private readonly ITypeFinder _typeFinder;
 
-		#endregion
+        #endregion
 
-		#region Ctor
+        #region Ctor
 
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="paymentSettings">Payment settings</param>
-		/// <param name="pluginFinder">Plugin finder</param>
-		/// <param name="shoppingCartSettings">Shopping cart settings</param>
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="paymentSettings">Payment settings</param>
+        /// <param name="pluginFinder">Plugin finder</param>
+        /// <param name="shoppingCartSettings">Shopping cart settings</param>
 		/// <param name="pluginService">Plugin service</param>
-		public PaymentService(
+        public PaymentService(
 			IRepository<PaymentMethod> paymentMethodRepository,
-			IRepository<StoreMapping> storeMappingRepository,
-			IStoreMappingService storeMappingService,
 			PaymentSettings paymentSettings, 
             ShoppingCartSettings shoppingCartSettings,
 			IProviderManager providerManager,
@@ -54,20 +55,16 @@ namespace SmartStore.Services.Payments
 			ITypeFinder typeFinder)
         {
 			_paymentMethodRepository = paymentMethodRepository;
-			_storeMappingRepository = storeMappingRepository;
-			_storeMappingService = storeMappingService;
-			_paymentSettings = paymentSettings;
+            _paymentSettings = paymentSettings;
             _shoppingCartSettings = shoppingCartSettings;
 			_providerManager = providerManager;
 			_services = services;
 			_typeFinder = typeFinder;
 
 			T = NullLocalizer.Instance;
-			QuerySettings = DbQuerySettings.Default;
 		}
 
 		public Localizer T { get; set; }
-		public DbQuerySettings QuerySettings { get; set; }
 
 		#endregion
 
@@ -157,73 +154,39 @@ namespace SmartStore.Services.Payments
 			return activeProviders;
         }
 
+		/// <summary>
+		/// Load payment provider by system name
+		/// </summary>
+		/// <param name="systemName">System name</param>
+		/// <returns>Found payment provider</returns>
 		public virtual Provider<IPaymentMethod> LoadPaymentMethodBySystemName(string systemName, bool onlyWhenActive = false, int storeId = 0)
         {
 			var provider = _providerManager.GetProvider<IPaymentMethod>(systemName, storeId);
-			if (provider != null)
+			if (provider != null && onlyWhenActive && !provider.IsPaymentMethodActive(_paymentSettings))
 			{
-				if (onlyWhenActive && !provider.IsPaymentMethodActive(_paymentSettings))
-				{
-					return null;
-				}
-
-				if (!QuerySettings.IgnoreMultiStore && storeId > 0)
-				{
-					// Return provider if paymentMethod is null!
-					var paymentMethod = _paymentMethodRepository.TableUntracked.FirstOrDefault(x => x.PaymentMethodSystemName == systemName);
-					if (paymentMethod != null && !_storeMappingService.Authorize(paymentMethod, storeId))
-					{
-						return null;
-					}
-				}
+				return null;
 			}
-
 			return provider;
         }
 
+		/// <summary>
+		/// Load all payment providers
+		/// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
+		/// <returns>Payment providers</returns>
 		public virtual IEnumerable<Provider<IPaymentMethod>> LoadAllPaymentMethods(int storeId = 0)
         {
-			var providers = _providerManager.GetAllProviders<IPaymentMethod>(storeId);
-
-			if (providers.Any() && !QuerySettings.IgnoreMultiStore && storeId > 0)
-			{
-				var unauthorizedMethods = _paymentMethodRepository.TableUntracked
-					.Where(x => x.LimitedToStores)
-					.ToList();
-
-				var unauthorizedMethodNames = unauthorizedMethods
-					.Where(x => !_storeMappingService.Authorize(x, storeId))
-					.Select(x => x.PaymentMethodSystemName)
-					.ToList();
-
-				return providers.Where(x => !unauthorizedMethodNames.Contains(x.Metadata.SystemName));
-			}
-
-			return providers;
+			return _providerManager.GetAllProviders<IPaymentMethod>(storeId);
         }
 
-		public virtual IList<PaymentMethod> GetAllPaymentMethods(int storeId = 0)
+
+		/// <summary>
+		/// Gets all payment method extra data
+		/// </summary>
+		/// <returns>List of payment method objects</returns>
+		public virtual IList<PaymentMethod> GetAllPaymentMethods()
 		{
-			var query = _paymentMethodRepository.TableUntracked;
-
-			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
-			{
-				query = 
-					from x in query
-					join sm in _storeMappingRepository.TableUntracked
-					on new { c1 = x.Id, c2 = "PaymentMethod" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-					from sm in m_sm.DefaultIfEmpty()
-					where !x.LimitedToStores || storeId == sm.StoreId
-					select x;
-
-				query = 
-					from x in query
-					group x by x.Id into mGroup
-					orderby mGroup.Key
-					select mGroup.FirstOrDefault();
-			}
-
-			var methods = query.ToList();
+			var methods = _paymentMethodRepository.TableUntracked.ToList();
 			return methods;
 		}
 
@@ -238,7 +201,6 @@ namespace SmartStore.Services.Payments
 			{
 				return _paymentMethodRepository.Table.FirstOrDefault(x => x.PaymentMethodSystemName == systemName);
 			}
-
 			return null;
 		}
 
@@ -252,6 +214,8 @@ namespace SmartStore.Services.Payments
 				throw new ArgumentNullException("paymentMethod");
 
 			_paymentMethodRepository.Insert(paymentMethod);
+
+			_services.EventPublisher.EntityInserted(paymentMethod);
 		}
 
 		/// <summary>
@@ -264,6 +228,8 @@ namespace SmartStore.Services.Payments
 				throw new ArgumentNullException("paymentMethod");
 
 			_paymentMethodRepository.Update(paymentMethod);
+
+			_services.EventPublisher.EntityUpdated(paymentMethod);
 		}
 
 		/// <summary>
@@ -276,6 +242,8 @@ namespace SmartStore.Services.Payments
 				throw new ArgumentNullException("paymentMethod");
 
 			_paymentMethodRepository.Delete(paymentMethod);
+
+			_services.EventPublisher.EntityDeleted(paymentMethod);
 		}
 
 
@@ -396,7 +364,10 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
 			var paymentMethodAdditionalFee = (paymentMethod != null ? paymentMethod.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
-            paymentMethodAdditionalFee = paymentMethodAdditionalFee.RoundIfEnabledFor(_services.WorkContext.WorkingCurrency);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+			}
 
 			return paymentMethodAdditionalFee;
         }

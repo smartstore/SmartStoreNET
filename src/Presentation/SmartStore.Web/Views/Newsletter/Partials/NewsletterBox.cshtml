@@ -1,0 +1,74 @@
+﻿@model NewsletterBoxModel
+@using SmartStore.Web.Models.Newsletter;
+<div class="block block-bordered block-newsletter">
+    <div class="block-title">
+        @T("Newsletter.Title")
+    </div>
+    <div class="block-body listbox">
+        <div id="newsletter-subscribe-block">
+            @T("Newsletter.Email"):
+            @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="span4", placeholder = @T("Newsletter.Email") })
+            @Html.ValidationMessageFor(x => x.NewsletterEmail)
+
+            
+            <label class="inline">
+              <input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked"> 
+                @T("Newsletter.Subscribe")
+            </label>
+            <label class="inline">
+              <input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
+                @T("Newsletter.Unsubscribe")
+            </label>
+
+            <div class="clear">
+            </div>
+            <div class="buttons">
+                <button id="newsletter-subscribe-button" class="btn btn-info">@T("Newsletter.Button")</button>
+
+                <span id="subscribe-loading-progress" style="display: none;">@T("Common.Wait...")
+                    <img src='@Url.Content("~/Content/Images/ajax_loader_small.gif")' alt="@T("Common.Wait...")" />
+                </span>
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+        <div id="newsletter-result-block">
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#newsletter-subscribe-button').click(function () {
+                
+                var subscribe = 'true';
+                if($('#newsletter-unsubscribe').is(':checked')) { 
+                    subscribe = 'false';
+                }
+                var email = $("#newsletter-email").val();
+                var subscribeProgress = $("#subscribe-loading-progress");
+                subscribeProgress.show();
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "@(Url.RouteUrl("SubscribeNewsletter"))",
+                    data: { "subscribe": subscribe, "email": email },
+                    success: function (data) {
+                        subscribeProgress.hide();
+                        $("#newsletter-result-block").html(data.Result);
+                         if (data.Success) {
+                            $('#newsletter-subscribe-block').hide();
+                            $('#newsletter-result-block').show();
+                         }
+                         else {
+                            $('#newsletter-result-block').fadeIn("slow").delay(2000).fadeOut("slow");
+                         }
+                    },
+                    error:function (xhr, ajaxOptions, thrownError){
+                        alert('Failed to subscribe.');
+                        subscribeProgress.hide();
+                    }  
+                });                
+                return false;
+            });
+        });
+    </script>
+</div>

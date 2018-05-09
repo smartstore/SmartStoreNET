@@ -1,0 +1,53 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+.alert {
+    position: relative;
+    padding-left: 4rem;
+    line-height: 1.5;
+    border-width: 0;
+
+    &:before {
+        display: block; 
+        position: absolute;
+        content: ' ';
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3rem;
+        z-index: 1;
+    }
+    &.alert-danger:before    { background-color: $brand-danger; }
+    &.alert-info:before      { background-color: $brand-info; }
+    &.alert-success:before   { background-color: $brand-success; }
+    &.alert-warning:before   { background-color: $brand-warning; }
+
+    &:after {
+        display: block; 
+        position: absolute;
+        color: #fff;
+        font-family: FontAwesome; 
+        left: 0;
+        top: 50%;
+        font-size: 1.25em;
+        width: 3rem;
+        text-align: center;
+        transform: translateY(-50%);
+        z-index: 2;
+    }
+    &.alert-danger:after   { content: "\f071"; } // exclamation-triangle
+    &.alert-info:after     { content: "\f129"; } // info
+    &.alert-success:after  { content: "\f00c"; } // check
+    &.alert-warning:after  { content: "\f06a"; } // exclamation-circle
+}
+
+.alert > ul {
+    padding-left: 1.2rem;
+}
+
+.alert > *:first-child {
+	margin-top: 0 !important;
+}
+
+.alert > *:last-child {
+	margin-bottom: 0 !important;
+}

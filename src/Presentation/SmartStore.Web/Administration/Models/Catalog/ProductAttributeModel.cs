@@ -26,24 +26,22 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Description")]
         [AllowHtml]
-        public string Description {get; set;}
+        public string Description {get;set;}
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering")]
 		public bool AllowFiltering { get; set; }
 
-        [SmartResourceDisplayName("Common.DisplayOrder")]
-        public int DisplayOrder { get; set; }
-
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint")]
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint")]
 		public FacetTemplateHint FacetTemplateHint { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.IndexOptionNames")]
-        public bool IndexOptionNames { get; set; }
+		[SmartResourceDisplayName("Common.DisplayOrder")]
+		public int DisplayOrder { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings")]
-		public string ExportMappings { get; set; }
+		[SmartResourceDisplayName("Common.Options.Count")]
+		public int OptionCount { get; set; }
 
 		public IList<ProductAttributeLocalizedModel> Locales { get; set; }
+
     }
 
     public class ProductAttributeLocalizedModel : ILocalizedModelLocal

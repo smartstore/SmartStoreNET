@@ -67,6 +67,12 @@ namespace SmartStore.Web.Framework.UI
             set;
         }
 
+        public bool Stacked
+        {
+            get;
+            set;
+        }
+
         public bool Fade
         {
             get;

@@ -9,9 +9,9 @@ namespace SmartStore.Web.Framework.UI
 {
     public static class HtmlHelperExtensions
     {
-        public static ComponentFactory<TModel> SmartStore<TModel>(this HtmlHelper<TModel> helper)
+        public static ComponentFactory SmartStore(this HtmlHelper helper)
         {
-            return new ComponentFactory<TModel>(helper);
+            return new ComponentFactory(helper);
         }
 
 		public static IHtmlString Attrs(this HtmlHelper html, IDictionary<string, object> attrs)

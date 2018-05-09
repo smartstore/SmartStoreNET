@@ -52,6 +52,8 @@ namespace SmartStore.Services.Messages
             _emailAccountRepository.Insert(emailAccount);
 
 			_defaultEmailAccount = null;
+
+            _eventPublisher.EntityInserted(emailAccount);
         }
 
         public virtual void UpdateEmailAccount(EmailAccount emailAccount)
@@ -80,6 +82,8 @@ namespace SmartStore.Services.Messages
             _emailAccountRepository.Update(emailAccount);
 
 			_defaultEmailAccount = null;
+
+            _eventPublisher.EntityUpdated(emailAccount);
         }
 
         public virtual void DeleteEmailAccount(EmailAccount emailAccount)
@@ -93,6 +97,8 @@ namespace SmartStore.Services.Messages
             _emailAccountRepository.Delete(emailAccount);
 
 			_defaultEmailAccount = null;
+
+            _eventPublisher.EntityDeleted(emailAccount);
         }
 
         public virtual EmailAccount GetEmailAccountById(int emailAccountId)

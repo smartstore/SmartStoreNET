@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -9,7 +11,18 @@ namespace SmartStore.GoogleMerchantCenter.Models
 	public class FeedGoogleMerchantCenterModel
 	{
 		public int GridPageSize { get; set; }
-		public string LanguageSeoCode { get; set; }
+
+		public string[] AvailableGoogleCategories { get; set; }
+		public string AvailableGoogleCategoriesAsJson
+		{
+			get
+			{
+				if (AvailableGoogleCategories != null && AvailableGoogleCategories.Length > 0)
+					return JsonConvert.SerializeObject(AvailableGoogleCategories);
+				return "[ ]";
+			}
+		}
+
 		public string[] EnergyEfficiencyClasses { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchProductName")]
@@ -23,7 +36,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 	{
 		public int TotalCount { get; set; }
 
-		// This attribute is required to disable editing.
+		//this attribute is required to disable editing
 		[ScaffoldColumn(false)]
 		public int ProductId 
 		{ 
@@ -32,7 +45,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		}
 		public int Id { get; set; }
 
-		// This attribute is required to disable editing.
+		//this attribute is required to disable editing
 		[ReadOnly(true)]
 		[ScaffoldColumn(false)]
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.ProductName")]
@@ -49,7 +62,7 @@ namespace SmartStore.GoogleMerchantCenter.Models
 				switch (ProductType)
 				{
 					case ProductType.SimpleProduct:
-						return "secondary d-none";
+						return "smnet-hide";
 					case ProductType.GroupedProduct:
 						return "success";
 					case ProductType.BundledProduct:

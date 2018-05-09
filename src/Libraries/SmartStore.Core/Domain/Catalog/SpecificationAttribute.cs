@@ -58,16 +58,10 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public FacetTemplateHint FacetTemplateHint { get; set; }
 
-        /// <summary>
-        /// Specifies whether option names should be included in the search index. Only effective in accordance with MegaSearchPlus plugin.
-        /// </summary>
-        [DataMember]
-        public bool IndexOptionNames { get; set; }
-
-        /// <summary>
-        /// Gets or sets the specification attribute options
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets the specification attribute options
+		/// </summary>
+		[DataMember]
 		public virtual ICollection<SpecificationAttributeOption> SpecificationAttributeOptions
         {
 			get { return _specificationAttributeOptions ?? (_specificationAttributeOptions = new HashSet<SpecificationAttributeOption>()); }

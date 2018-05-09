@@ -1,0 +1,36 @@
+$animate-name: 'zoomIn';
+
+@mixin zoomIn($prefix: '') {
+	0% {
+		opacity: 0;
+		#{$prefix}transform: scale3d(.3, .3, .3);
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+@if $use-zoomIn == true {
+
+	@-webkit-keyframes #{$animate-name} {
+		@include zoomIn('-webkit-');
+	}
+
+	@-moz-keyframes #{$animate-name} {
+		@include zoomIn('-moz-');
+	}
+
+	@-o-keyframes #{$animate-name} {
+		@include zoomIn('-o-');
+	}
+
+	@keyframes #{$animate-name} {
+		@include zoomIn();
+	}
+
+	.#{$animate-name} {
+		@include animate-prefixer(animation-name, $animate-name);
+	}
+
+}

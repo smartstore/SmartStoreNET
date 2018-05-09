@@ -6,17 +6,16 @@
 }
 
 <div class="plugin-actions">
-	<button type="submit" name="save" class="btn btn-warning" value="save">
-		<i class="fa fa-check"></i>
-		<span>@T("Admin.Common.Save")</span>
+	<button type="submit" name="save" class="btn btn-primary" value="save">
+		<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
 	</button>
 </div>
 
 <div class="plugin-configuration">
 	<div>
-		<div class="alert alert-info alert-dismissible">
+		<div class="alert alert-info">
+			<button class="close" data-dismiss="alert">×</button>
 			@Html.Raw(T("Plugins.Payments.PayPalStandard.AdminInstruction"))
-			<button class="close" data-dismiss="alert">&times;</button>
 		</div>
 	</div>
 	<div>
@@ -31,6 +30,14 @@
 @using (Html.BeginForm())
 {
     <table class="adminContent configure-paypal-standard">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SecurityProtocol)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.UseSandbox)
@@ -55,7 +62,8 @@
                 @Html.SmartLabelFor(model => model.PdtToken)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.PdtToken)
+				@Html.SettingOverrideCheckbox(model => model.PdtToken)
+				@Html.TextBoxFor(model => model.PdtToken, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.PdtToken)
             </td>
         </tr>
@@ -63,11 +71,10 @@
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PdtValidateOrderTotal)
             </td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.PdtValidateOrderTotal,
-					Html.CheckBoxFor(model => model.PdtValidateOrderTotal, new { data_toggler_for = "#PdtValidateOnlyWarnContainer" }))
-				@Html.ValidationMessageFor(model => model.PdtValidateOrderTotal)
-			</td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.PdtValidateOrderTotal)
+                @Html.ValidationMessageFor(model => model.PdtValidateOrderTotal)
+            </td>
         </tr>
 		<tr id="PdtValidateOnlyWarnContainer">
 			<td class="adminTitle">
@@ -83,7 +90,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.SettingEditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
         </tr>
@@ -128,8 +135,7 @@
                 @Html.SmartLabelFor(model => model.EnableIpn)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.EnableIpn, 
-					Html.CheckBoxFor(model => model.EnableIpn, new { data_toggler_for = ".ipn-handling" }))
+                @Html.SettingEditorFor(model => model.EnableIpn)
                 @Html.ValidationMessageFor(model => model.EnableIpn)
             </td>
         </tr>
@@ -147,7 +153,8 @@
                 @Html.SmartLabelFor(model => model.IpnUrl)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(model => model.IpnUrl)
+				@Html.SettingOverrideCheckbox(model => model.IpnUrl)
+				@Html.TextBoxFor(model => model.IpnUrl, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.IpnUrl)
             </td>
         </tr>
@@ -160,3 +167,17 @@
 		</tr>
     </table>
 }
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		$("#@Html.FieldIdFor(model => model.EnableIpn)").change(function () {
+			$('.ipn-handling').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		$("#@Html.FieldIdFor(model => model.PdtValidateOrderTotal)").change(function () {
+			$('#PdtValidateOnlyWarnContainer').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+	});
+</script>

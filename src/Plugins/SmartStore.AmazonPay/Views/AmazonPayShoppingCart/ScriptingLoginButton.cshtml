@@ -1,0 +1,25 @@
+﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		try {
+
+			new OffAmazonPayments.Widgets.Button({
+				sellerId: '@Model.SellerId',
+				useAmazonAddressBook: @Model.IsShippable.ToString().ToLower(),
+				onSignIn: function (orderReference) {
+					var amazonOrderReferenceId = orderReference.getAmazonOrderReferenceId();
+
+					window.location = '@Model.LoginHandlerUrl' + '?orderReferenceId=' + encodeURIComponent(amazonOrderReferenceId);
+				},
+				onError: function (error) {
+					alert(error.getErrorCode() + ': ' + error.getErrorMessage());
+				}
+			}).bind('@Model.GetWidgetId');
+
+		}
+		catch (e) {
+			if (e.description) alert(e.description);
+		}
+	});
+</script>

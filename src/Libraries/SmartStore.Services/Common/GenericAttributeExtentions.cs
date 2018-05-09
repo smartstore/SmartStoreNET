@@ -30,7 +30,8 @@ namespace SmartStore.Services.Common
         /// <param name="genericAttributeService">GenericAttributeService</param>
 		/// <param name="storeId">Load a value specific for a certain store; pass 0 to load a value shared for all stores</param>
         /// <returns>Attribute</returns>
-        public static TPropType GetAttribute<TPropType>(this BaseEntity entity, string key, IGenericAttributeService genericAttributeService, int storeId = 0)
+        public static TPropType GetAttribute<TPropType>(this BaseEntity entity,
+			string key, IGenericAttributeService genericAttributeService, int storeId = 0)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
@@ -38,7 +39,7 @@ namespace SmartStore.Services.Common
             if (genericAttributeService == null)
                 genericAttributeService = EngineContext.Current.Resolve<IGenericAttributeService>();
 
-            string keyGroup = entity.GetUnproxiedType().Name;
+            string keyGroup = entity.GetUnproxiedEntityType().Name;
 
             return genericAttributeService.GetAttribute<TPropType>(keyGroup, entity.Id, key, storeId);
 

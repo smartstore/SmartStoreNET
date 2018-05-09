@@ -14,8 +14,7 @@
         @if (Model.LocationEnabled)
         {
             <div class="profile-stat">
-                <span class="pr-1">@T("Profile.Country"):</span>
-				<span class="profile-stat-value">@Model.Location</span>
+                @T("Profile.Country"): <span class="profile-stat-value">@Model.Location</span>
             </div>  
         }
         @if (Model.PMEnabled)
@@ -36,22 +35,19 @@
         @if (Model.TotalPostsEnabled)
         {
             <div class="profile-stat">
-                <span class="pr-1">@T("Profile.TotalPosts"):</span>
-				<span class="profile-stat-value">@Model.TotalPosts</span>
+                @T("Profile.TotalPosts"): <span class="profile-stat-value">@Model.TotalPosts</span>
             </div>         
         }
         @if (Model.JoinDateEnabled)
         {
             <div class="profile-stat">
-                <span class="pr-1">@T("Profile.JoinDate"):</span>
-				<span class="profile-stat-value">@Model.JoinDate</span>
+                @T("Profile.JoinDate"): <span class="profile-stat-value">@Model.JoinDate</span>
             </div>
         }
         @if (Model.DateOfBirthEnabled)
         {
             <div class="profile-stat">
-                <span class="pr-1">@T("Profile.DateOfBirth"):</span>
-				<span class="profile-stat-value">@Model.DateOfBirth</span>
+                @T("Profile.DateOfBirth"): <span class="profile-stat-value">@Model.DateOfBirth</span>
             </div>
         }
 

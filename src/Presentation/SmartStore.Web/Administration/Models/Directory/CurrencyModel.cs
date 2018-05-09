@@ -4,7 +4,6 @@ using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Directory;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -12,15 +11,13 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Directory
 {
     [Validator(typeof(CurrencyValidator))]
-    public class CurrencyModel : EntityModelBase, ILocalizedModel<CurrencyLocalizedModel>, IStoreSelector
+    public class CurrencyModel : EntityModelBase, ILocalizedModel<CurrencyLocalizedModel>
     {
         public CurrencyModel()
         {
             Locales = new List<CurrencyLocalizedModel>();
-            RoundOrderTotalPaymentMethods = new Dictionary<string, string>();
-            RoundNumDecimals = 2;
 
-            AvailableDomainEndings = new List<SelectListItem>
+			AvailableDomainEndings = new List<SelectListItem>
 			{
 				new SelectListItem { Text = ".com", Value = ".com" },
 				new SelectListItem { Text = ".uk", Value = ".uk" },
@@ -69,33 +66,15 @@ namespace SmartStore.Admin.Models.Directory
 		public string DomainEndings { get; set; }
 		public IList<SelectListItem> AvailableDomainEndings { get; set; }
 
-		public IList<CurrencyLocalizedModel> Locales { get; set; }
+        public IList<CurrencyLocalizedModel> Locales { get; set; }
 
+		//Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
-		public IEnumerable<SelectListItem> AvailableStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
-
-		#region Rounding
-
-		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderItemsEnabled")]
-        public bool RoundOrderItemsEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundNumDecimals")]
-        public int RoundNumDecimals { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotalEnabled")]
-        public bool RoundOrderTotalEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotalDenominator")]
-        public decimal RoundOrderTotalDenominator { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.RoundOrderTotalRule")]
-        public CurrencyRoundingRule RoundOrderTotalRule { get; set; }
-
-        public Dictionary<string, string> RoundOrderTotalPaymentMethods { get; set; }
-
-        #endregion Rounding
     }
 
     public class CurrencyLocalizedModel : ILocalizedModelLocal

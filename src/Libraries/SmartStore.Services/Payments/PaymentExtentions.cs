@@ -58,13 +58,13 @@ namespace SmartStore.Services.Payments
             var result = decimal.Zero;
             if (usePercentage)
             {
-                // Percentage
-                decimal? orderTotalWithoutPaymentFee = orderTotalCalculationService.GetShoppingCartTotal(cart, usePaymentMethodAdditionalFee: false);
+                //percentage
+                var orderTotalWithoutPaymentFee = orderTotalCalculationService.GetShoppingCartTotal(cart, usePaymentMethodAdditionalFee: false);
                 result = (decimal)((((float)orderTotalWithoutPaymentFee) * ((float)fee)) / 100f);
             }
             else
             {
-                // Fixed value
+                //fixed value
                 result = fee;
             }
             return result;

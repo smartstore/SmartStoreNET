@@ -7,7 +7,6 @@ using SmartStore.Services;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -21,31 +20,35 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
     public partial class ShippingController : AdminControllerBase
 	{
+		#region Fields
+
         private readonly IShippingService _shippingService;
         private readonly ShippingSettings _shippingSettings;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _services;
-		private readonly IStoreMappingService _storeMappingService;
 
-		public ShippingController(
-			IShippingService shippingService,
+		#endregion
+
+		#region Constructors
+
+		public ShippingController(IShippingService shippingService,
 			ShippingSettings shippingSettings,
             ILocalizedEntityService localizedEntityService,
 			ILanguageService languageService,
 			PluginMediator pluginMediator,
-			ICommonServices services,
-			IStoreMappingService storeMappingService)
+			ICommonServices services)
 		{
-            _shippingService = shippingService;
-            _shippingSettings = shippingSettings;
-            _localizedEntityService = localizedEntityService;
-            _languageService = languageService;
-			_pluginMediator = pluginMediator;
-			_services = services;
-			_storeMappingService = storeMappingService;
+            this._shippingService = shippingService;
+            this._shippingSettings = shippingSettings;
+            this._localizedEntityService = localizedEntityService;
+            this._languageService = languageService;
+			this._pluginMediator = pluginMediator;
+			this._services = services;
 		}
+
+		#endregion 
         
         #region Utilities
 
@@ -68,28 +71,19 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareShippingMethodModel(ShippingMethodModel model, ShippingMethod shippingMethod)
 		{
+			var allFilters = _shippingService.GetAllShippingMethodFilters();
+
 			if (shippingMethod != null)
 			{
-				var allFilters = _shippingService.GetAllShippingMethodFilters();
-				var configUrls = allFilters
-					.Select(x => x.GetConfigurationUrl(shippingMethod.Id))
-					.Where(x => x.HasValue())
-					.ToList();
-
-				model.FilterConfigurationUrls = configUrls
-					.Select(x => string.Concat("'", x, "'"))
+				model.FilterConfigurationUrls = allFilters
+					.Select(x => "'" + x.GetConfigurationUrl(shippingMethod.Id) + "'")
 					.OrderBy(x => x)
 					.ToList();
-
-				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(shippingMethod);
 			}
 			else
 			{
 				model.FilterConfigurationUrls = new List<string>();
-				model.SelectedStoreIds = new int[0];
 			}
-
-			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
         #endregion
@@ -196,6 +190,7 @@ namespace SmartStore.Admin.Controllers
             var model = new ShippingMethodModel();
 			PrepareShippingMethodModel(model, null);
 
+            //locales
             AddLocales(_languageService, model.Locales);
             return View(model);
         }
@@ -209,17 +204,17 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var sm = model.ToEntity();
+
                 _shippingService.InsertShippingMethod(sm);
 
-				_storeMappingService.SaveStoreMappings(sm, model.SelectedStoreIds);
-
-				UpdateLocales(sm, model);
+                UpdateLocales(sm, model);
 
                 NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Added"));
+
                 return continueEditing ? RedirectToAction("EditMethod", new { id = sm.Id }) : RedirectToAction("Methods");
             }
 
-            // If we got this far, something failed, redisplay form.
+            //If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -257,15 +252,15 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 sm = model.ToEntity(sm);
+
                 _shippingService.UpdateShippingMethod(sm);
 
-				_storeMappingService.SaveStoreMappings(sm, model.SelectedStoreIds);
-
-				UpdateLocales(sm, model);
+                UpdateLocales(sm, model);
 
 				_services.EventPublisher.Publish(new ModelBoundEvent(model, sm, form));
 
 				NotifySuccess(T("Admin.Configuration.Shipping.Methods.Updated"));
+
                 return continueEditing ? RedirectToAction("EditMethod", sm.Id) : RedirectToAction("Methods");
             }
 

@@ -1,22 +1,24 @@
 ﻿@model TopicWidgetModel
+
 @using SmartStore.Web.Models.Topics;
+
 @{
     Layout = "";
 }
 
 @if (!Model.WrapContent)
 {
-	<div @Html.LanguageAttributes(Model.HtmlRtl, WorkContext.WorkingLanguage)>@Html.Raw(Model.Html)</div>
+	<text>@Html.Raw(Model.Html)</text>
 	return;
 }
 
 <div class="block @(Model.IsBordered ? "block-boxed" : "") topic-widget topic-widget-@Model.SystemName">
     @if (Model.ShowTitle) {
 		<div class="block-title">
-			@Html.Raw("<" + Model.TitleTag + " " + @Html.LanguageAttributes(Model.TitleRtl, WorkContext.WorkingLanguage) + ">" + Model.Title + "</" + Model.TitleTag + ">")
+			@Html.Raw("<" + Model.TitleTag + ">" + Model.Title + "</" + Model.TitleTag + ">")
 		</div>
     }
-    <div class="block-body @(Model.IsBordered ? "px-4" : "")" @Html.LanguageAttributes(Model.HtmlRtl, WorkContext.WorkingLanguage)>
+    <div class="block-body @(Model.IsBordered ? "px-4" : "")">
         @Html.Raw(Html.CollapsedText(Model.Html))
     </div>
 </div>

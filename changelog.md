@@ -21,6 +21,13 @@
 
 
 ## SmartStore.NET 3.1.0
+<<<<<<< HEAD
+### Bugfixes
+...
+
+### Improvements
+...
+=======
 
 ### Highlights
 * **Wallet**: Enables full or partial order payment via credit account. Includes REST-Api. (commercial plugin)
@@ -45,31 +52,13 @@
 * (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
 * (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
 * (Dev) Completely removed all `EntityInserted<T>`, `EntityUpdated<T>` and `EntityDeleted<T>` legacy events. We were using DbSaveHooks anyway, which provides a much more powerful and way faster pub-sub mechanism for database operations.
+>>>>>>> upstream/3.x
 
 ### New Features
-* 1203 MegaMenu shrinker and *Brands* virtual menu item
-* [Summernote](https://summernote.org/) is now the primary HTML editor
-* #431 Added option to randomize the display order for slides on each request
-* #1258 Add option to filter shipping and payment methods by a specific customer role
-* #1247 Allow to import non system customer roles in customer import
-* #1117 Added an option to display a dropdown menu for manufacturers 
-* #1203 Added an option to define a maximum number of elements in the main menu for the first hierarchy of the catalog navigation
-* GMC: column chooser for edit grid
-* #1100 Customer can register in frontend via "Login with Amazon" button
-* **Web API**:
-	* #1292 Added endpoint to get order in PDF format
-	* Added endpoint to complete an order
-	* #1364 Added endpoints for MeasureWeight and MeasureDimension
-* Added options to include option names of specification and product attributes in the search index
-* #441 added option to specify that additional shipping surcharges are considered only once.
-* #1295 Sales tracking (tracking pixel) for Billiger.de
-* XML and CSV export of shopping cart and wishlist items
-* #1363 Make storing of IP addresses optional
-* #729 Option for automatic order amount capturing when the shipping status changed to "shipped"
-* (Dev) ILocalizationFileResolver: responsible for finding localization files for client scripts
-* #998 GMC: Find a way to map attribute combination values to feed export values
-* Added Instagram icon to social media icons in footer
+* #431 Added option to randomize the display order for slides on each request 
 
+<<<<<<< HEAD
+=======
 ### Improvements
 * Target .NET Framework changed: 4.5.2 > 4.6.1.
 * Lower memory consumption
@@ -114,6 +103,7 @@
 * #1318 Disabled preselected attribute combination permanently hides the shopping cart button, even if another combination is selected.
 * Copy product: Fixes "Cannot insert duplicate key row in object dbo.UrlRecord with unique index IX_UrlRecord_Slug"
 * Fixed export publishing via email
+>>>>>>> upstream/3.x
 
 ## SmartStore.NET 3.0.3
 ### Bugfixes
@@ -133,9 +123,7 @@
 * Fixed shipping computation method ignoring deactivated PricesIncludeTax setting
 * **Debitoor**: Fixed missing tax rates on Debitoor invoice for net prices
 * #1224 Notifier wasn't working in plugin controllers
-* #1205 Server cannot append header after 
-* 
-*  headers have been sent
+* #1205 Server cannot append header after HTTP headers have been sent
 * #1154 Left offcanvas navigation does not open when in checkout progress
 * #1212 Export: FTP publishing should consider directory structure
 * #1253 Product PDF exporter only exports one picture and ignores the picture number profile setting
@@ -214,7 +202,7 @@
 * Added config setting *sm:PdfEngineBaseUrl*. There are cases where the PDF converter exits with a network error, when it is unable to load automatically resolved URLs.
 * (Dev) Added *Retry* utility class
 * #1176 Admin > Product Search: It ain't possible to search for parts of a product name
- 
+
 ### Bugfixes
 * #1145: Fixed HTTP 404 after switching language
 * Fixed null reference exception in product lists if sorting is not allowed

@@ -39,6 +39,9 @@ namespace SmartStore.Services.Common
 
             _genericAttributeRepository.Delete(attribute);
 
+            //event notifications
+            _eventPublisher.EntityDeleted(attribute);
+
 			if (keyGroup.IsCaseInsensitiveEqual("Order") && entityId != 0)
 			{
 				var order = _orderRepository.GetById(entityId);
@@ -62,6 +65,9 @@ namespace SmartStore.Services.Common
 
             _genericAttributeRepository.Insert(attribute);
 
+            //event notifications
+            _eventPublisher.EntityInserted(attribute);
+
 			if (attribute.KeyGroup.IsCaseInsensitiveEqual("Order") && attribute.EntityId != 0)
 			{
 				var order = _orderRepository.GetById(attribute.EntityId);
@@ -75,6 +81,9 @@ namespace SmartStore.Services.Common
                 throw new ArgumentNullException("attribute");
 
             _genericAttributeRepository.Update(attribute);
+
+            //event notifications
+            _eventPublisher.EntityUpdated(attribute);
 
 			if (attribute.KeyGroup.IsCaseInsensitiveEqual("Order") && attribute.EntityId != 0)
 			{
@@ -122,7 +131,7 @@ namespace SmartStore.Services.Common
         {
 			Guard.NotNull(entity, nameof(entity));
 
-			SaveAttribute(entity.Id, key, entity.GetUnproxiedType().Name, value, storeId);
+			SaveAttribute(entity.Id, key, entity.GetUnproxiedEntityType().Name, value, storeId);
         }
 
 		public virtual void SaveAttribute<TPropType>(int entityId, string key, string keyGroup, TPropType value, int storeId = 0)

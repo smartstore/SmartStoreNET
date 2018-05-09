@@ -2,7 +2,6 @@
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Web.Validators.Boards;
-using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.Boards
 {
@@ -18,7 +17,7 @@ namespace SmartStore.Web.Models.Boards
         public string Text { get; set; }
         public EditorType ForumEditor { get; set; }
 
-        public LocalizedValue<string> ForumName { get; set; }
+        public string ForumName { get; set; }
         public string ForumTopicSubject { get; set; }
         public string ForumTopicSeName { get; set; }
 

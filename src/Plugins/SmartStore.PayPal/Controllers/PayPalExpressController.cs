@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
 using SmartStore.Services.Common;
@@ -51,6 +55,16 @@ namespace SmartStore.PayPal.Controllers
 			_genericAttributeService = genericAttributeService;
 		}
 
+		private SelectList TransactModeValues(TransactMode selected)
+		{
+			return new SelectList(new List<object>
+			{
+				new { ID = (int)TransactMode.Authorize, Name = T("Plugins.Payments.PayPalExpress.ModeAuth") },
+				new { ID = (int)TransactMode.AuthorizeAndCapture, Name = T("Plugins.Payments.PayPalExpress.ModeAuthAndCapture") }
+			},
+			"ID", "Name", (int)selected);
+		}
+
 		private string GetCheckoutButtonUrl(PayPalExpressPaymentSettings settings)
 		{
 			var expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-default.png";
@@ -69,13 +83,23 @@ namespace SmartStore.PayPal.Controllers
 
         }
 
-		[AdminAuthorize, ChildActionOnly, LoadSetting]
-		public ActionResult Configure(PayPalExpressPaymentSettings settings, int storeScope)
+		[AdminAuthorize, ChildActionOnly]
+		public ActionResult Configure()
 		{
             var model = new PayPalExpressConfigurationModel();
+            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
+
             model.Copy(settings, true);
 
-			PrepareConfigurationModel(model, storeScope);
+            model.TransactModeValues = TransactModeValues(settings.TransactMode);
+
+			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
+				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
+				.ToList();
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
 			return View(model);
 		}
@@ -83,32 +107,28 @@ namespace SmartStore.PayPal.Controllers
 		[HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalExpressConfigurationModel model, FormCollection form)
 		{
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
-
 			if (!ModelState.IsValid)
-			{
-				return Configure(settings, storeScope);
-			}
+				return Configure();
 
 			ModelState.Clear();
-			model.Copy(settings, false);
+
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
+
+            model.Copy(settings, false);
 
 			using (Services.Settings.BeginScope())
 			{
 				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
 
-			using (Services.Settings.BeginScope())
-			{
-				// Multistore context not possible, see IPN handling.
+				// multistore context not possible, see IPN handling
 				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 			}
 
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+            NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-			return RedirectToConfiguration(PayPalExpressProvider.SystemName, false);
+			return Configure();
 		}
 
 		public ActionResult PaymentInfo()
@@ -222,8 +242,6 @@ namespace SmartStore.PayPal.Controllers
 
 				if (resp.Ack == AckCodeType.Success)
 				{
-					// Note: If Token is null and an empty page with "No token passed" is displyed, then this is caused by a broken
-					// Web References/PayPalSvc/Reference.cs file. To fix it, check git history of the file and revert changes.
 					processPaymentRequest.PaypalToken = resp.Token;
 					processPaymentRequest.OrderGuid = new Guid();
 					processPaymentRequest.IsShippingMethodSet = ControllerContext.RouteData.IsRouteEqual("ShoppingCart", "Cart");

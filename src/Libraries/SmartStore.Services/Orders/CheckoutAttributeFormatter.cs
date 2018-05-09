@@ -96,7 +96,7 @@ namespace SmartStore.Services.Orders
                         if (ca.AttributeControlType == AttributeControlType.MultilineTextbox)
                         {
                             //multiline textbox
-                            string attributeName = ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage);
+                            var attributeName = ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id);
                             //encode (if required)
                             if (htmlEncode)
                                 attributeName = HttpUtility.HtmlEncode(attributeName);
@@ -133,7 +133,7 @@ namespace SmartStore.Services.Orders
                                     //hyperlinks aren't allowed
                                     attributeText = fileName;
                                 }
-                                string attributeName = ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage);
+                                var attributeName = ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id);
                                 //encode (if required)
                                 if (htmlEncode)
                                     attributeName = HttpUtility.HtmlEncode(attributeName);
@@ -143,7 +143,7 @@ namespace SmartStore.Services.Orders
                         else
                         {
                             //other attributes (textbox, datepicker)
-                            caAttribute = string.Format("{0}: {1}", ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage), valueStr);
+                            caAttribute = string.Format("{0}: {1}", ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id), valueStr);
                             //encode (if required)
                             if (htmlEncode)
                                 caAttribute = HttpUtility.HtmlEncode(caAttribute);
@@ -157,7 +157,7 @@ namespace SmartStore.Services.Orders
                             var caValue = _checkoutAttributeService.GetCheckoutAttributeValueById(caId);
                             if (caValue != null)
                             {
-                                caAttribute = string.Format("{0}: {1}", ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage), caValue.GetLocalized(a => a.Name, _workContext.WorkingLanguage));
+                                caAttribute = string.Format("{0}: {1}", ca.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id), caValue.GetLocalized(a => a.Name, _workContext.WorkingLanguage.Id));
                                 if (renderPrices)
                                 {
                                     decimal priceAdjustmentBase = _taxService.GetCheckoutAttributePrice(caValue, customer);

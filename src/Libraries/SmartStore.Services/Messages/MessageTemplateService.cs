@@ -15,7 +15,7 @@ namespace SmartStore.Services.Messages
     {
         private const string MESSAGETEMPLATES_ALL_KEY = "SmartStore.messagetemplate.all-{0}";
         private const string MESSAGETEMPLATES_BY_NAME_KEY = "SmartStore.messagetemplate.name-{0}-{1}";
-        private const string MESSAGETEMPLATES_PATTERN_KEY = "SmartStore.messagetemplate.*";
+        private const string MESSAGETEMPLATES_PATTERN_KEY = "SmartStore.messagetemplate.";
 
         private readonly IRepository<MessageTemplate> _messageTemplateRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
@@ -54,6 +54,9 @@ namespace SmartStore.Services.Messages
 			_messageTemplateRepository.Delete(messageTemplate);
 
 			_requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityDeleted(messageTemplate);
 		}
 
         public virtual void InsertMessageTemplate(MessageTemplate messageTemplate)
@@ -63,6 +66,9 @@ namespace SmartStore.Services.Messages
 			_messageTemplateRepository.Insert(messageTemplate);
 
             _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+
+            //event notification
+            _eventPublisher.EntityInserted(messageTemplate);
         }
 
         public virtual void UpdateMessageTemplate(MessageTemplate messageTemplate)
@@ -72,6 +78,9 @@ namespace SmartStore.Services.Messages
 			_messageTemplateRepository.Update(messageTemplate);
 
             _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+
+            //event notification
+            _eventPublisher.EntityUpdated(messageTemplate);
         }
 
         public virtual MessageTemplate GetMessageTemplateById(int messageTemplateId)
@@ -142,8 +151,6 @@ namespace SmartStore.Services.Messages
 			var mtCopy = new MessageTemplate
 			{
 				Name = messageTemplate.Name,
-				To = messageTemplate.To,
-				ReplyTo = messageTemplate.ReplyTo,
 				BccEmailAddresses = messageTemplate.BccEmailAddresses,
 				Subject = messageTemplate.Subject,
 				Body = messageTemplate.Body,
@@ -160,19 +167,19 @@ namespace SmartStore.Services.Messages
 			// localization
 			foreach (var lang in languages)
 			{
-				string bccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, lang, false, false);
+				var bccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, lang.Id, false, false);
 				if (bccEmailAddresses.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.BccEmailAddresses, bccEmailAddresses, lang.Id);
 
-				string subject = messageTemplate.GetLocalized(x => x.Subject, lang, false, false);
+				var subject = messageTemplate.GetLocalized(x => x.Subject, lang.Id, false, false);
 				if (subject.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Subject, subject, lang.Id);
 
-				string body = messageTemplate.GetLocalized(x => x.Body, lang, false, false);
+				var body = messageTemplate.GetLocalized(x => x.Body, lang.Id, false, false);
 				if (body.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Body, subject, lang.Id);
 
-				int emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, lang, false, false);
+				var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, lang.Id, false, false);
 				if (emailAccountId > 0)
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.EmailAccountId, emailAccountId, lang.Id);
 			}

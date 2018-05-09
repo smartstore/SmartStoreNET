@@ -1,0 +1,130 @@
+
+.wkit input[type='checkbox']:not(.noskin) {
+	-webkit-box-shadow: inset 0 1px 2px rgba(255,255,255, .7), 0 1px 2px rgba(0,0,0, .05);
+    -webkit-appearance: none;
+    background: -webkit-linear-gradient(@btnBackground, @btnBackgroundHighlight);
+    border-radius: 3px;
+	border: 1px solid @btnBorder;
+	border-bottom-color: darken(@btnBorder, 10%);
+	position: relative;
+    width: 15px;
+    height: 15px;
+    margin-top: 1px;
+    margin-bottom: 3px;
+
+	&:disabled {
+		opacity: .75;
+	}
+
+	&:not(:disabled) {
+
+		&:not(:active):hover {
+			background: -webkit-linear-gradient(@btnBackground, @btnBackgroundHighlight);
+			text-shadow: 0 1px 0 rgba(255,255,255, 1);
+			border-color: darken(@btnBorder, 20%);
+			.transition(border-color .1s linear);
+		}
+
+		&:active {
+			box-shadow: inset 0 1px 3px rgba(0,0,0, .2);
+			background: -webkit-linear-gradient(@btnBackgroundHighlight, darken(@btnBackgroundHighlight, 14%));
+			border: 1px solid darken(@btnBorder, 30%);
+			text-shadow: 0 1px 0 rgba(255,255,255, .25);
+		}
+	}
+
+	&:checked::before {
+		color: #808080;
+		content: url('../images/checkmark.png');
+		font-size: 13px;  /* Explicitly set the font size so that the positioning
+							of the checkmark is correct. */
+		height: 13px;
+		left: 1px;
+		top: -2px;
+		position: absolute;
+	}
+
+}
+
+
+.wkit input[type='radio']:not(.noskin) {
+	-webkit-box-shadow: inset 0 1px 2px rgba(255,255,255, .7), 0 1px 2px rgba(0,0,0, .05);
+    -webkit-appearance: none;
+    -webkit-transition: border 500ms;
+    background: -webkit-linear-gradient(@btnBackground, @btnBackgroundHighlight);
+	border: 1px solid darken(@btnBorder, 6%);
+    border-radius: 100%;
+	position: relative;
+    display: inline-block;
+	width: 15px;
+    height: 15px;
+    margin-top: 3px;
+
+	&:disabled {
+		opacity: .75;
+	}
+
+	&:not(:disabled) {
+		
+		&:not(:active):hover {
+			background: -webkit-linear-gradient(@btnBackground, @btnBackgroundHighlight);
+			text-shadow: 0 1px 0 rgba(255,255,255, 1);
+			border-color: darken(@btnBorder, 20%);
+			-webkit-transition: border-color .1s linear;
+		}
+
+		&:active {
+			box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+			background: -webkit-linear-gradient(#f0f0f0, #bebebe);
+			background: -webkit-linear-gradient(darken(@btnBackgroundHighlight, 5%), darken(@btnBackgroundHighlight, 14%));
+			border: 1px solid #808080;
+			border: 1px solid darken(@btnBorder, 30%);
+			text-shadow: 0 1px 0 rgba(255, 255, 255, .25);
+		}
+
+	}
+
+	&:checked::before {
+		box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+		margin-left: 4px;
+		background: #808080;
+		border-radius: 50%;
+		content: '';
+		display: inline-block;
+		font-size: 13px;
+		font-weight: 400;
+		height: 5px;
+		left: 0;
+		margin-top: 4px;
+		opacity: 1;
+		position: absolute;
+		top: 0;
+		vertical-align: top;
+		width: 5px;
+	}
+
+	&:active:checked::before {
+		background: #606060;
+	}
+
+}
+
+html[dir='rtl'].wkit input[type='radio']:checked::before {
+    right: 0;
+}
+
+.wkit input[type='checkbox']:focus,
+.wkit input[type='radio']:focus {
+	@shine: rgba(82,168,236, .8);
+	-webkit-transition: border-color 0.1s linear;
+	border-color: @shine;
+	outline: 0;
+	box-shadow: inset 0 1px 2px white, 0 0 4px @shine;
+}
+
+.wkit label:hover > input[type=checkbox],
+.wkit label:hover > input[type=radio] {
+	&:disabled ~ span		{ color: #888; }
+	&:not(:disabled) ~ span { color: @textColor; }
+}
+

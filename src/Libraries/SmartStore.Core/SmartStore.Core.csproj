@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Core</RootNamespace>
     <AssemblyName>SmartStore.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -62,9 +62,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
@@ -74,11 +71,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -119,9 +120,6 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -181,10 +179,7 @@
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Collections\TreeNodeBase.cs" />
-    <Compile Include="ComponentModel\MiniMapper.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
-    <Compile Include="ComponentModel\TypeConversion\DictionaryConverter.cs" />
-    <Compile Include="ComponentModel\TypeConversion\EmailAddressConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\ProductBundleDataConverter.cs" />
@@ -208,7 +203,6 @@
     <Compile Include="Data\Hooks\IDbHookHandler.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
-    <Compile Include="Domain\Catalog\CategoryNode.cs" />
     <Compile Include="Domain\Catalog\ProductAttributeOption.cs" />
     <Compile Include="Domain\Catalog\ProductAttributeOptionsSet.cs" />
     <Compile Include="Domain\Catalog\QuantiyControlType.cs" />
@@ -216,8 +210,6 @@
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
-    <Compile Include="Domain\Customers\WalletHistory.cs" />
-    <Compile Include="Domain\Customers\WalletPostingReason.cs" />
     <Compile Include="Domain\DataExchange\DataExchangeEnums.cs" />
     <Compile Include="Domain\DataExchange\ImportEnums.cs" />
     <Compile Include="Domain\DataExchange\ImportProfile.cs" />
@@ -225,7 +217,6 @@
     <Compile Include="Domain\DataExchange\DataExchangeSettings.cs" />
     <Compile Include="Domain\DataExchange\ExportDeployment.cs" />
     <Compile Include="Domain\DataExchange\ExportProjection.cs" />
-    <Compile Include="Domain\Directory\CurrencyRoundingRule.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
     <Compile Include="Domain\DataExchange\ExportEnums.cs" />
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />
@@ -233,10 +224,8 @@
     <Compile Include="Domain\Media\MediaStorage.cs" />
     <Compile Include="Domain\Media\IHasMedia.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
-    <Compile Include="Domain\Messages\MessageTemplateNames.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
-    <Compile Include="Domain\Payments\CapturePaymentReason.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Domain\Tax\AuxiliaryServicesTaxType.cs" />
@@ -257,7 +246,6 @@
     <Compile Include="Infrastructure\DependencyManagement\Work.cs" />
     <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
     <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
-    <Compile Include="IO\ImageHeader.cs" />
     <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
     <Compile Include="IO\VirtualPath\IVirtualFolder.cs" />
     <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
@@ -270,8 +258,6 @@
     <Compile Include="IAuditable.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\MostRecentlyUsedList.cs" />
-    <Compile Include="Localization\ILocalizationFileResolver.cs" />
-    <Compile Include="Localization\LocalizationFileResolver.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />
     <Compile Include="Logging\IChronometer.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />
@@ -410,6 +396,9 @@
     <Compile Include="Domain\Polls\PollAnswer.cs" />
     <Compile Include="Domain\Polls\Poll.cs" />
     <Compile Include="Domain\Orders\BestsellersReportLine.cs" />
+    <Compile Include="Events\CommonMessages\EntityDeleted.cs" />
+    <Compile Include="Events\CommonMessages\EntityInserted.cs" />
+    <Compile Include="Events\CommonMessages\EntityUpdated.cs" />
     <Compile Include="Extensions\ConversionExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
@@ -435,7 +424,6 @@
     <Compile Include="Plugins\LoadPluginResult.cs" />
     <Compile Include="Search\AcquireWriterContext.cs" />
     <Compile Include="Search\DefaultIndexManager.cs" />
-    <Compile Include="Search\Events\IndexingCompletedEvent.cs" />
     <Compile Include="Search\Facets\Facet.cs" />
     <Compile Include="Search\Facets\FacetExtensions.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />
@@ -447,14 +435,11 @@
     <Compile Include="Search\Filter\SearchFilterBase.cs" />
     <Compile Include="Search\IIndexDocument.cs" />
     <Compile Include="Search\IIndexManager.cs" />
-    <Compile Include="Search\IIndexOperation.cs" />
     <Compile Include="Search\IIndexProvider.cs" />
     <Compile Include="Search\IIndexStore.cs" />
     <Compile Include="Search\IndexDocument.cs" />
     <Compile Include="Search\IndexField.cs" />
-    <Compile Include="Search\IndexInfo.cs" />
     <Compile Include="Search\IndexProviderBase.cs" />
-    <Compile Include="Search\Events\IndexSegmentProcessedEvent.cs" />
     <Compile Include="Search\ISearchAlias.cs" />
     <Compile Include="Search\ISearchBits.cs" />
     <Compile Include="Search\ISearchEngine.cs" />
@@ -469,18 +454,12 @@
     <Compile Include="Search\SearchSettings.cs" />
     <Compile Include="Search\SearchSort.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
-    <Compile Include="Templating\DefaultTemplateManager.cs" />
-    <Compile Include="Templating\ITemplate.cs" />
-    <Compile Include="Templating\ITemplateEngine.cs" />
-    <Compile Include="Templating\ITemplateManager.cs" />
-    <Compile Include="Templating\NullTemplateEngine.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\InheritedThemeFileResult.cs" />
-    <Compile Include="Themes\IThemeContext.cs" />
     <Compile Include="Themes\IThemeFileResolver.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
-    <Compile Include="Utilities\ImagingHelper.cs" />
+    <Compile Include="Utilities\ColorHelper.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />
@@ -526,6 +505,7 @@
     <Compile Include="Domain\Media\PictureType.cs" />
     <Compile Include="Domain\Messages\EmailAccountSettings.cs" />
     <Compile Include="Domain\Messages\EmailAccount.cs" />
+    <Compile Include="Domain\Messages\MessageTemplatesSettings.cs" />
     <Compile Include="Domain\Messages\MessageTemplate.cs" />
     <Compile Include="Domain\Messages\NewsLetterSubscription.cs" />
     <Compile Include="Domain\Messages\QueuedEmail.cs" />
@@ -684,7 +664,6 @@
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\WriteLockDisposable.cs" />
-    <Compile Include="Utilities\Throttle.cs" />
     <Compile Include="Utilities\TypeHelper.cs" />
     <Compile Include="Utilities\Wildcard.cs" />
     <Compile Include="WebHelper.cs" />

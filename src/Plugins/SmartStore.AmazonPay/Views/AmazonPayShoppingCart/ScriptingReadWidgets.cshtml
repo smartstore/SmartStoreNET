@@ -1,34 +1,23 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
-@{
-	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/SmartStore.AmazonPay.css"));
-}
 
 <script type="text/javascript">
-	window.onAmazonLoginReady = function () {
-		try {
-			amazon.Login.setClientId('@Html.Raw(Model.ClientId)');
-		}
-		catch (e) {
-			console.log(e);
-		}
-	};
+	$(document).ready(function () {
 
-	window.onAmazonPaymentsReady = function () {
 		try {
 			new OffAmazonPayments.Widgets.AddressBook({
 				sellerId: '@Model.SellerId',
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
-					designMode: 'responsive'
+					size: { width: '400px', height: '185px' }
 				},
 				onError: function (e) {
-					console.log(e.getErrorCode() + ': ' + e.getErrorMessage());
+					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('amazon-pay-read-address-book-widget');
+			}).bind('@(Model.GetWidgetId)Address');
 		}
 		catch (e) {
-			console.log(e);
+			if (e.description) alert(e.description);
 		}
 
 		try {
@@ -37,16 +26,16 @@
 				amazonOrderReferenceId: '@Model.OrderReferenceId',
 				displayMode: 'Read',
 				design: {
-					designMode: 'responsive'
+					size: { width: '400px', height: '185px' }
 				},
 				onError: function (e) {
-					console.log(e.getErrorCode() + ': ' + e.getErrorMessage());
+					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
 				}
-			}).bind('amazon-pay-read-wallet-widget');
+			}).bind('@(Model.GetWidgetId)Wallet');
 		}
 		catch (e) {
-			console.log(e);
+			if (e.description) alert(e.description);
 		}
-	};
+
+	});
 </script>
-<script async="async" src="@Html.Raw(Model.WidgetUrl)"></script>

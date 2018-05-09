@@ -1,0 +1,65 @@
+﻿@model String
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Web.Framework.Theming;
+
+@functions {
+	private bool FullPage
+	{
+		get
+		{
+			if (ViewData.ContainsKey("fullPage"))
+			{
+				var x = ViewData["fullPage"].Convert<bool>();
+				return x;
+			}
+			return false;
+		}
+	}
+}
+
+@{
+    var availableLangs = new string[] { "de", "en" };
+    var lang = WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
+    if (!availableLangs.Contains(lang))
+    {
+        lang = "en";
+    }
+
+    Html.AddScriptParts(true, "~/Content/editors/ckeditor/ckeditor.js");
+    
+    var themeCssPath = Url.ThemeAwareContent("Content/theme.scss");
+}
+
+<script type="text/javascript">
+    $(function () {
+    	var roxyFileman = '@Url.Content("~/Administration/Content/filemanager/index.html")';
+        var fullPage = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)').data("fullpage");
+        CKEDITOR.replace('@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)', {
+			language: '@lang',
+        	allowedContent: true,
+            filebrowserBrowseUrl: roxyFileman,
+            filebrowserImageBrowseUrl: roxyFileman + '?type=image',
+            removeDialogTabs: 'link:upload;image:upload',
+            fullPage: (fullPage === true) ? true : false,
+			entities: false,
+			removePlugins: 'divarea',
+			contentsCss: [
+                "@themeCssPath",
+                "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
+                "@Url.Content("~/Content/editors/ckeditor/contents.css")"
+			],
+			on: {
+				instanceReady: function (evt) {
+					// Fix native context menu
+					evt.editor.container.getPrivate().events.contextmenu.listeners.splice(0, 1);
+				}
+			}
+        });
+    });
+</script>
+
+@Html.TextArea(
+	string.Empty, /* Name suffix */
+	(string)ViewData.TemplateInfo.FormattedModelValue, /* Initial value */
+	new { @class = "", style = "", data_fullpage = FullPage.ToString().ToLower(), data_upload_url = Url.Action("UploadImageAjax", "Media") }
+)

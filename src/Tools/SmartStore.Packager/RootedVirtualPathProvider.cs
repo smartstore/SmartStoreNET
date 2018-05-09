@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Packager
 {

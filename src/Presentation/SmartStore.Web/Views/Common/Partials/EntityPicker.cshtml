@@ -1,0 +1,96 @@
+﻿@model EntityPickerModel
+@using SmartStore.Web.Models.Common;
+
+<div id="entity-picker-@(Model.Entity)-dialog" class="entity-picker modal modal-xlarge modal-flex hide fade" tabindex="-1">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
+		<h4 class="caption">&nbsp;</h4>
+	</div>
+	<div class="modal-body">
+		<form method="POST" class="modal-flex-fill-area" action="@Url.Action("EntityPicker", "Common", new { area = "" })">
+			<input type="hidden" name="Entity" value="@Model.Entity" />
+			<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
+			<input type="hidden" name="ReturnField" value="@Model.ReturnField" />
+			<input type="hidden" name="MaxReturnValues" value="@Model.MaxReturnValues" />
+			<input type="hidden" name="DisableIf" value="@Model.DisableIf" />
+			<input type="hidden" name="DisableIds" value="@Model.DisableIds" />
+			<input type="hidden" name="PageIndex" value="@Model.PageIndex" />
+
+			@if (Model.Entity.IsCaseInsensitiveEqual("product"))
+			{
+				@ProductSearchForm()
+			}
+			<div class="clear"></div>
+			<div class="entity-picker-list"></div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<span class="footer-note pull-left">
+			<span class="default hide">@T(Model.MaxReturnValues == 1 ? "Common.EntityPicker.SinglePickNote" : "Common.EntityPicker.MultiPickNote")</span>
+			<span class="not-selectable hide">@T("Common.NotSelectable").</span>
+		</span>
+		<button class="btn btn-primary" disabled="disabled">@T("Common.Apply")</button>
+		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#entity-picker-@(Model.Entity)-dialog').entityPicker('initDialog');
+		});
+	</script>
+</div>
+
+@helper FormButtons()
+{
+	<div class="control-group">
+		@Html.LabelFor(model => model.ProductName, new { @class = "control-label", @for = "ProductName" })
+		<div class="controls">
+			@Html.TextBoxFor(model => model.ProductName, new { @class = "entity-picker-searchterm" })
+			<button type="button" class="btn btn-warning" name="SearchEntities" data-loading-text="@(T("Common.Loading"))&hellip;">
+				<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+			</button>
+			<button type="button" class="btn" name="FilterEntities">
+				<i class="fa fa-filter"></i>&nbsp;@T("Common.Filter")
+			</button>
+		</div>
+	</div>
+}
+
+@helper ProductSearchForm()
+{
+	<div class="form-horizontal">
+		@FormButtons()
+
+		<div class="entity-picker-filter hide">
+			<div class="control-group">
+				@Html.LabelFor(model => model.CategoryId, new { @class = "control-label", @for = "CategoryId" })
+				<div class="controls">
+					@Html.DropDownListFor(model => model.CategoryId, Model.AvailableCategories, Model.AllString, new { @class = "item" })
+				</div>
+			</div>
+
+			<div class="control-group">
+				@Html.LabelFor(model => model.ManufacturerId, new { @class = "control-label", @for = "ManufacturerId" })
+				<div class="controls">
+					@Html.DropDownListFor(model => model.ManufacturerId, Model.AvailableManufacturers, Model.AllString, new { @class = "item" })
+				</div>
+			</div>
+
+			@if (Model.AvailableStores.Count > 1)
+			{
+				<div class="control-group">
+					@Html.LabelFor(model => model.StoreId, new { @class = "control-label", @for = "StoreId" })
+					<div class="controls">
+						@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, Model.AllString, new { @class = "item" })
+					</div>
+				</div>
+			}
+
+			<div class="control-group">
+				@Html.LabelFor(model => model.ProductTypeId, new { @class = "control-label", @for = "ProductTypeId" })
+				<div class="controls">
+					@Html.DropDownListFor(model => model.ProductTypeId, Model.AvailableProductTypes, Model.AllString, new { @class = "item" })
+				</div>
+			</div>
+		</div>
+	</div>
+}

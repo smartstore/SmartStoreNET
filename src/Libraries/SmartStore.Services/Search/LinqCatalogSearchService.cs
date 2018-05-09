@@ -87,33 +87,6 @@ namespace SmartStore.Services.Search
 			}
 		}
 
-		private ISearchFilter FindFilter(ICollection<ISearchFilter> filters, string fieldName)
-		{
-			if (fieldName.HasValue())
-			{
-				foreach (var filter in filters)
-				{
-					var attributeFilter = filter as IAttributeSearchFilter;
-					if (attributeFilter != null && attributeFilter.FieldName == fieldName)
-					{
-						return attributeFilter;
-					}
-
-					var combinedFilter = filter as ICombinedSearchFilter;
-					if (combinedFilter != null)
-					{
-						var filter2 = FindFilter(combinedFilter.Filters, fieldName);
-						if (filter2 != null)
-						{
-							return filter2;
-						}
-					}
-				}
-			}
-
-			return null;
-		}
-
 		private List<int> GetIdList(List<ISearchFilter> filters, string fieldName)
 		{
 			var result = new List<int>();
@@ -223,7 +196,7 @@ namespace SmartStore.Services.Search
 			var utcNow = DateTime.UtcNow;
 			var query = baseQuery ?? _productRepository.Table;
 
-			query = query.Where(x => !x.Deleted && !x.IsSystemProduct);
+			query = query.Where(x => !x.Deleted);
 			query = ApplySearchTerm(query, searchQuery);
 
 			#region Filters
@@ -536,17 +509,13 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-            #endregion
+			#endregion
 
-            query =
-                from p in query
-                group p by p.Id into grp
-                orderby grp.Key
-                select grp.FirstOrDefault();
+			query = query.GroupBy(x => x.Id).Select(x => x.FirstOrDefault());
 
-            #region Sorting
+			#region Sorting
 
-            foreach (var sort in searchQuery.Sorting)
+			foreach (var sort in searchQuery.Sorting)
 			{
 				if (sort.FieldName.IsEmpty())
 				{
@@ -561,7 +530,7 @@ namespace SmartStore.Services.Search
 						var manufacturerId = manufacturerIds.First();
 						query = OrderBy(ref ordered, query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
 					}
-					else if (FindFilter(searchQuery.Filters, "parentid") != null)
+					else if (searchQuery.Filters.OfType<IAttributeSearchFilter>().Any(x => x.FieldName == "parentid"))
 					{
 						query = OrderBy(ref ordered, query, x => x.DisplayOrder);
 					}
@@ -590,14 +559,7 @@ namespace SmartStore.Services.Search
 
 			if (!ordered)
 			{
-				if (FindFilter(searchQuery.Filters, "parentid") != null)
-				{
-					query = query.OrderBy(x => x.DisplayOrder);
-				}
-				else
-				{
-					query = query.OrderBy(x => x.Id);
-				}
+				query = query.OrderBy(x => x.Id);
 			}
 
 			#endregion
@@ -635,14 +597,14 @@ namespace SmartStore.Services.Search
 				{
 					#region Category
 
-					var categoryTree = _categoryService.GetCategoryTree(0, false, storeId);
-					var categories = categoryTree.Flatten(false);
-
+					var categoryQuery = _categoryService.GetCategories(null, false, null, true, storeId);
+					categoryQuery = categoryQuery.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
 					if (descriptor.MaxChoicesCount > 0)
 					{
-						categories = categories.Take(descriptor.MaxChoicesCount);
+						categoryQuery = categoryQuery.Take(descriptor.MaxChoicesCount);
 					}
 
+					var categories = categoryQuery.ToList();
 					var nameQuery = _localizedPropertyRepository.TableUntracked
 						.Where(x => x.LocaleKeyGroup == "Category" && x.LocaleKey == "Name" && x.LanguageId == languageId);
 					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
@@ -724,8 +686,8 @@ namespace SmartStore.Services.Search
 
 					var count = 0;
 					var hasActivePredefinedFacet = false;
-					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).Min(x => (double)x.Price);
-					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).Max(x => (double)x.Price);
+					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Min(x => (double)x.Price);
+					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published).Max(x => (double)x.Price);
 					minPrice = FacetUtility.MakePriceEven(minPrice);
 					maxPrice = FacetUtility.MakePriceEven(maxPrice);
 

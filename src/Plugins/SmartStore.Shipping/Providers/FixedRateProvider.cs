@@ -58,7 +58,7 @@ namespace SmartStore.Shipping
                 return response;
             }
 
-            var shippingMethods = this._shippingService.GetAllShippingMethods(getShippingOptionRequest, getShippingOptionRequest.StoreId);
+            var shippingMethods = this._shippingService.GetAllShippingMethods(getShippingOptionRequest);
             foreach (var shippingMethod in shippingMethods)
             {
                 var shippingOption = new ShippingOption();
@@ -82,7 +82,7 @@ namespace SmartStore.Shipping
             if (getShippingOptionRequest == null)
                 throw new ArgumentNullException("getShippingOptionRequest");
 
-            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest, getShippingOptionRequest.StoreId);
+            var shippingMethods = this._shippingService.GetAllShippingMethods(getShippingOptionRequest);
             
             var rates = new List<decimal>();
             foreach (var shippingMethod in shippingMethods)

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Constants;
+using BundleTransformer.Core.Transformers;
 using BundleTransformer.Core.Translators;
 using BundleTransformer.SassAndScss.Translators;
 using SmartStore.Core.Infrastructure;
@@ -148,6 +150,14 @@ namespace SmartStore.Web.Framework.Theming.Assets
 		protected override string[] ValidTypeCodes
 		{
 			get { return new[] { "sass", "scss" }; }
+		}
+	}
+
+	public sealed class LessTranslator : AssetTranslator<BundleTransformer.Less.Translators.LessTranslator>
+	{
+		protected override string[] ValidTypeCodes
+		{
+			get { return new[] { "less" }; }
 		}
 	}
 }

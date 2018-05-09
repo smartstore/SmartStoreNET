@@ -1,5 +1,6 @@
 ﻿@model MaintenanceModel
 @{
+    //page title
     ViewBag.Title = T("Admin.System.Maintenance").Text;
 }
 <div class="section-header">
@@ -23,9 +24,7 @@
 				@Html.SmartLabelFor(model => model.DeleteImageCache.FileCount)
 			</td>
 			<td class="adminData">
-				<div class="form-control-plaintext">
-					@Model.DeleteImageCache.FileCount
-				</div>
+				@Model.DeleteImageCache.FileCount
 			</td>
 		</tr>
 		<tr>
@@ -33,17 +32,15 @@
 				@Html.SmartLabelFor(model => model.DeleteImageCache.TotalSize)
 			</td>
 			<td class="adminData">
-				<div class="form-control-plaintext">
-					@Model.DeleteImageCache.TotalSize
-				</div>
+				@Model.DeleteImageCache.TotalSize
 			</td>
 		</tr>
 		<tr>
-			<td class="adminTitle"></td>
+			<td>&nbsp;</td>
 			<td class="adminData">
-				<button type="submit" name="delete-image-cache" value="delete-image-cache" class="btn btn-secondary">
+				<button type="submit" name="delete-image-cache" value="delete-image-cache" class="btn btn-default">
 					<i class="fa fa-trash-o"></i>
-					<span>@T("Admin.Header.ClearCache")</span>
+					@T("Admin.Header.ClearCache")
 				</button>
 			</td>
 		</tr>
@@ -90,11 +87,11 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="adminTitle"></td>
+			<td>&nbsp;</td>
 			<td class="adminData">
-				<button type="submit" name="delete-guests" value="delete-guests" class="btn btn-secondary">
+				<button type="submit" name="delete-guests" value="delete-guests" class="btn btn-default">
 					<i class="fa fa-trash-o"></i>
-					<span>@T("Admin.Common.Delete")</span>
+					@T("Admin.Common.Delete")
 				</button>
 			</td>
 		</tr>
@@ -140,11 +137,11 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="adminTitle"></td>
+			<td>&nbsp;</td>
 			<td class="adminData">
-				<button type="submit" name="delete-exported-files" value="delete-exported-files" class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
+				<button type="submit" name="delete-exported-files" value="delete-exported-files" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
 					<i class="fa fa-trash-o"></i>
-					<span>@T("Admin.Common.Delete")</span>
+					@T("Admin.Common.Delete")
 				</button>
 			</td>
 		</tr>
@@ -158,15 +155,17 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SqlQuery)
+				<div class="ctl-label">
+					@Html.SmartLabelFor(model => model.SqlQuery)
+				</div>
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.SqlQuery, new { style = "height:250px;" })
+				@Html.TextAreaFor(model => model.SqlQuery, new { style = "width:500px; height:250px;" })
 			</td>
 		</tr>
 
 		<tr>
-			<td class="adminTitle"></td>
+			<td>&nbsp;</td>
 			<td class="adminData">
 				<button type="submit" name="execute-sql-query" value="execute-sql-query" class="btn btn-danger">
 					<i class="fa fa-bolt"></i>

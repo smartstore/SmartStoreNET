@@ -8,6 +8,7 @@ using SmartStore.Services;
 
 namespace SmartStore.Services.Tests
 {
+
 	public class MockProviderManager : IProviderManager
 	{
 		private IDictionary<ProviderMetadata, IProvider> _providers = new Dictionary<ProviderMetadata, IProvider>();
@@ -57,5 +58,7 @@ namespace SmartStore.Services.Tests
 		{
 			return providers.OrderBy(x => x.Metadata.DisplayOrder);
 		}
+
 	}
+
 }

@@ -40,6 +40,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("checkoutAttribute");
 
             _checkoutAttributeRepository.Delete(checkoutAttribute);
+
+            //event notification
+            _eventPublisher.EntityDeleted(checkoutAttribute);
         }
 
 		public virtual IQueryable<CheckoutAttribute> GetCheckoutAttributes(int storeId = 0, bool showHidden = false)
@@ -95,6 +98,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("checkoutAttribute");
 
             _checkoutAttributeRepository.Insert(checkoutAttribute);
+
+            //event notification
+            _eventPublisher.EntityInserted(checkoutAttribute);
         }
 
         public virtual void UpdateCheckoutAttribute(CheckoutAttribute checkoutAttribute)
@@ -103,6 +109,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("checkoutAttribute");
 
             _checkoutAttributeRepository.Update(checkoutAttribute);
+
+            //event notification
+            _eventPublisher.EntityUpdated(checkoutAttribute);
         }
 
         #endregion
@@ -115,6 +124,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("checkoutAttributeValue");
 
             _checkoutAttributeValueRepository.Delete(checkoutAttributeValue);
+
+            //event notification
+            _eventPublisher.EntityDeleted(checkoutAttributeValue);
         }
 
         public virtual IList<CheckoutAttributeValue> GetCheckoutAttributeValues(int checkoutAttributeId)
@@ -141,6 +153,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("checkoutAttributeValue");
 
             _checkoutAttributeValueRepository.Insert(checkoutAttributeValue);
+
+            //event notification
+            _eventPublisher.EntityInserted(checkoutAttributeValue);
         }
 
         public virtual void UpdateCheckoutAttributeValue(CheckoutAttributeValue checkoutAttributeValue)
@@ -149,6 +164,9 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("checkoutAttributeValue");
 
             _checkoutAttributeValueRepository.Update(checkoutAttributeValue);
+
+            //event notification
+            _eventPublisher.EntityUpdated(checkoutAttributeValue);
         }
         
         #endregion

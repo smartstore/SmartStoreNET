@@ -1,0 +1,74 @@
+@charset 'UTF-8';
+/*
+ * User Interface Plugin (for single file uploads)
+ *
+ * Based on:
+ * jQuery File Upload UI Plugin CSS 6.3
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+
+.fileupload {
+    vertical-align: middle !important;
+}
+
+.fileupload .btn.cancel {
+    display: none;
+}
+
+.fileinput-button {
+    position: relative;
+    overflow: hidden;
+    float: left;
+    margin-right: 4px;
+    float: none;
+}
+.fileinput-button input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    border: solid transparent;
+    border-width: 0 0 100px 200px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -moz-transform: translate(-300px, 0) scale(4);
+    direction: ltr;
+    cursor: pointer;
+}
+
+.fileupload-progress {
+    display: inline-block !important; 
+    vertical-align: text-top !important;
+    float: none !important;
+}
+
+.fileupload-progress .progress {
+    margin-bottom: 3px;
+}
+
+.fileupload-progress .progress-extended {
+    font-size: 0.9em;
+}
+
+fileupload-progress .progress-animated .bar {
+    background: url(images/progressbar.gif) !important;
+    filter: none;
+}
+
+/* Fix for IE 6: */
+*html .fileinput-button {
+    line-height: 22px;
+    margin: 1px -3px 0 0;
+}
+
+/* Fix for IE 7: */
+*+html .fileinput-button {
+    margin: 1px 0 0 0;
+}
+

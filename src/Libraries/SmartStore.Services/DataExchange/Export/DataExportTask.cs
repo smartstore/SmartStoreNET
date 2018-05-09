@@ -4,7 +4,7 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	// Note, namespace persisted in ScheduleTask.Type!
+	// note: namespace persisted in ScheduleTask.Type
 	public partial class DataExportTask : ITask
 	{
 		private readonly IDataExporter _exporter;
@@ -25,12 +25,12 @@ namespace SmartStore.Services.DataExchange.Export
 			var profileId = ctx.ScheduleTask.Alias.ToInt();
 			var profile = _exportProfileService.GetExportProfileById(profileId);
 
-			// Load provider.
+			// load provider
 			var provider = _exportProfileService.LoadProvider(profile.ProviderSystemName);
 			if (provider == null)
 				throw new SmartException(T("Admin.Common.ProviderNotLoaded", profile.ProviderSystemName.NaIfEmpty()));
 
-			// Build export request.
+			// build export request
 			var request = new DataExportRequest(profile, provider);
 
 			request.ProgressValueSetter = delegate (int val, int max, string msg)
@@ -46,12 +46,7 @@ namespace SmartStore.Services.DataExchange.Export
 					.ToList();
 			}
 
-			if (ctx.Parameters.ContainsKey("ActionOrigin"))
-			{
-				request.ActionOrigin = ctx.Parameters["ActionOrigin"];
-			}
-
-			// Process!
+			// process!
 			_exporter.Export(request, ctx.CancellationToken);
 		}
 	}

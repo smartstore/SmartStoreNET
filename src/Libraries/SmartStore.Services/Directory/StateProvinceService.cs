@@ -27,6 +27,9 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("stateProvince");
             
             _stateProvinceRepository.Delete(stateProvince);
+
+            //event notification
+            _eventPublisher.EntityDeleted(stateProvince);
         }
 
 		public virtual IQueryable<StateProvince> GetAllStateProvinces(bool showHidden = false)
@@ -74,6 +77,9 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("stateProvince");
 
             _stateProvinceRepository.Insert(stateProvince);
+
+            //event notification
+            _eventPublisher.EntityInserted(stateProvince);
         }
 
         public virtual void UpdateStateProvince(StateProvince stateProvince)
@@ -82,6 +88,9 @@ namespace SmartStore.Services.Directory
                 throw new ArgumentNullException("stateProvince");
 
             _stateProvinceRepository.Update(stateProvince);
+
+            //event notification
+            _eventPublisher.EntityUpdated(stateProvince);
         }
     }
 }

@@ -1,155 +1,103 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.Win32.SafeHandles;
 
 namespace SmartStore.Core.IO
 {
 	internal static class SymbolicLink
 	{
-		private const uint genericReadAccess = 0x80000000;
-		private const uint fileFlagsForOpenReparsePointAndBackupSemantics = 0x02200000;
-		private const int ioctlCommandGetReparsePoint = 0x000900A8;
-		private const uint openExisting = 0x3;
-		private const uint pathNotAReparsePointError = 0x80071126;
-		private const uint shareModeAll = 0x7; // Read, Write, Delete
-		private const uint symLinkTag = 0xA000000C;
-		private const int targetIsAFile = 0;
-		private const int targetIsADirectory = 1;
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern IntPtr CreateFile(
+			[MarshalAs(UnmanagedType.LPTStr)] string filename,
+			[MarshalAs(UnmanagedType.U4)] uint access,
+			[MarshalAs(UnmanagedType.U4)] FileShare share,
+			IntPtr securityAttributes, // optional SECURITY_ATTRIBUTES struct or IntPtr.Zero
+			[MarshalAs(UnmanagedType.U4)] FileMode creationDisposition,
+			[MarshalAs(UnmanagedType.U4)] uint flagsAndAttributes,
+			IntPtr templateFile);
+
+		//[DllImport("kernel32.dll", EntryPoint = "CreateSymbolicLinkW", CharSet = CharSet.Unicode, SetLastError = true)]
+		//private static extern bool CreateSymbolicLink(
+		//	[In] string lpSymlinkFileName,
+		//	[In] string lpTargetFileName,
+		//	[In] int dwFlags);
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern uint GetFinalPathNameByHandle(
+			IntPtr hFile, 
+			[MarshalAs(UnmanagedType.LPTStr)] StringBuilder lpszFilePath, 
+			uint cchFilePath, 
+			uint dwFlags);
 
 		[DllImport("kernel32.dll", SetLastError = true)]
-		private static extern SafeFileHandle CreateFile(
-			string lpFileName,
-			uint dwDesiredAccess,
-			uint dwShareMode,
-			IntPtr lpSecurityAttributes,
-			uint dwCreationDisposition,
-			uint dwFlagsAndAttributes,
-			IntPtr hTemplateFile);
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool CloseHandle(IntPtr hObject);
 
-		[DllImport("kernel32.dll", SetLastError = true)]
-		static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, int dwFlags);
+		private const int FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
+		private const uint FILE_READ_EA = 0x0008;
 
-		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-		private static extern bool DeviceIoControl(
-			IntPtr hDevice,
-			uint dwIoControlCode,
-			IntPtr lpInBuffer,
-			int nInBufferSize,
-			IntPtr lpOutBuffer,
-			int nOutBufferSize,
-			out int lpBytesReturned,
-			IntPtr lpOverlapped);
+		private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
-		public static void CreateDirectoryLink(string linkPath, string targetPath)
+		public static bool IsSymbolicLink(FileSystemInfo fsi)
 		{
-			if (!CreateSymbolicLink(linkPath, targetPath, targetIsADirectory) || Marshal.GetLastWin32Error() != 0)
-			{
-				try
-				{
-					Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
-				}
-				catch (COMException exception)
-				{
-					throw new IOException(exception.Message, exception);
-				}
-			}
-		}
+			Guard.NotNull(fsi, nameof(fsi));
 
-		public static void CreateFileLink(string linkPath, string targetPath)
-		{
-			if (!CreateSymbolicLink(linkPath, targetPath, targetIsAFile))
-			{
-				Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
-			}
-		}
-
-		public static bool Exists(string path)
-		{
-			if (!Directory.Exists(path) && !File.Exists(path))
-			{
+			if (!fsi.Exists)
 				return false;
-			}
-			string target = GetTarget(path);
-			return target != null;
-		}
 
-		private static SafeFileHandle GetFileHandle(string path)
-		{
-			return CreateFile(path, genericReadAccess, shareModeAll, IntPtr.Zero, openExisting,
-				fileFlagsForOpenReparsePointAndBackupSemantics, IntPtr.Zero);
-		}
-
-		public static string GetTarget(string path)
-		{
-			SymbolicLinkReparseData reparseDataBuffer;
-
-			using (SafeFileHandle fileHandle = GetFileHandle(path))
+			if (fsi.Attributes.HasFlag(FileAttributes.ReparsePoint))
 			{
-				if (fileHandle.IsInvalid)
+				var target = GetFinalPathName(fsi.FullName);
+				if (target.HasValue())
 				{
-					Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
-				}
-
-				int outBufferSize = Marshal.SizeOf<SymbolicLinkReparseData>();
-
-				IntPtr outBuffer = IntPtr.Zero;
-				try
-				{
-					outBuffer = Marshal.AllocHGlobal(outBufferSize);
-					bool success = DeviceIoControl(
-						fileHandle.DangerousGetHandle(), ioctlCommandGetReparsePoint, IntPtr.Zero, 0,
-						outBuffer, outBufferSize, out int bytesReturned, IntPtr.Zero);
-
-					fileHandle.Dispose();
-
-					if (!success)
-					{
-						if (((uint)Marshal.GetHRForLastWin32Error()) == pathNotAReparsePointError)
-						{
-							return null;
-						}
-						Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
-					}
-
-					reparseDataBuffer = Marshal.PtrToStructure<SymbolicLinkReparseData>(outBuffer);
-				}
-				finally
-				{
-					Marshal.FreeHGlobal(outBuffer);
+					return !string.Equals(target.TrimEnd('\\'), fsi.FullName.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
 				}
 			}
-			if (reparseDataBuffer.ReparseTag != symLinkTag)
-			{
-				return null;
-			}
 
-			string target = Encoding.Unicode.GetString(reparseDataBuffer.PathBuffer,
-				reparseDataBuffer.PrintNameOffset, reparseDataBuffer.PrintNameLength);
-
-			return target;
+			return false;
 		}
-	}
 
-	/// <remarks>
-	/// Refer to http://msdn.microsoft.com/en-us/library/windows/hardware/ff552012%28v=vs.85%29.aspx
-	/// </remarks>
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct SymbolicLinkReparseData
-	{
-		// Not certain about this!
-		private const int maxUnicodePathLength = 260 * 2;
+		public static string GetFinalPathName(string path)
+		{
+			Guard.NotEmpty(path, nameof(path));
 
-		public uint ReparseTag;
-		public ushort ReparseDataLength;
-		public ushort Reserved;
-		public ushort SubstituteNameOffset;
-		public ushort SubstituteNameLength;
-		public ushort PrintNameOffset;
-		public ushort PrintNameLength;
-		public uint Flags;
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = maxUnicodePathLength)]
-		public byte[] PathBuffer;
+			var h = CreateFile(path,
+				FILE_READ_EA,
+				FileShare.ReadWrite | FileShare.Delete,
+				IntPtr.Zero,
+				FileMode.Open,
+				FILE_FLAG_BACKUP_SEMANTICS,
+				IntPtr.Zero);
+
+			if (h == INVALID_HANDLE_VALUE)
+			{
+				throw new Win32Exception(Marshal.GetLastWin32Error());
+			}		
+
+			try
+			{
+				var sb = new StringBuilder(1024);
+				var res = GetFinalPathNameByHandle(h, sb, 1024, 0);
+				if (res == 0)
+				{
+					throw new Win32Exception(Marshal.GetLastWin32Error());
+				}
+
+				var result = sb.ToString();
+
+				if (result.Length >= 4 && result.StartsWith(@"\\?\"))
+				{
+					return result.Substring(4);// remove "\\?\"
+				}
+
+				return result;
+			}
+			finally
+			{
+				CloseHandle(h);
+			}
+		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -20,6 +21,12 @@ namespace SmartStore.Utilities
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get { return _combinedHash64.GetHashCode(); }
+		}
+
+		public string CombinedHashString
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get { return _combinedHash64.GetHashCode().ToString("x", CultureInfo.InvariantCulture); }
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

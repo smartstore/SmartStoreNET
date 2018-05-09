@@ -1,8 +1,10 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
 * #1429 Search engine friendly topic URLs
+* Trusted Shops: Added consent checkbox to confirm order page for submission of customer email address to Trusted Shops if review widget is active
+
 
 ### Improvements
 * Added double opt-in feature for newsletter subscriptions during checkout (confirm order)

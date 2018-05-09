@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
@@ -8,11 +7,13 @@ using System.Threading;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities.Threading;
 using SmartStore.Utilities;
+using SmartStore.Core.Themes;
 
 namespace SmartStore.Web.Framework.Theming
 {
 	public abstract class SmartVirtualPathProvider : VirtualPathProvider
 	{
+		private readonly IThemeRegistry _themeRegistry;
 		private readonly Dictionary<string, string> _cachedDebugFilePaths = new Dictionary<string, string>();
 		private readonly ContextState<Dictionary<string, string>> _requestState = new ContextState<Dictionary<string, string>>("PluginDebugViewVPP.RequestCache", () => new Dictionary<string, string>());
 		private readonly DirectoryInfo _pluginsDebugDir;
@@ -34,9 +35,11 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				_pluginsDebugDir = new DirectoryInfo(pluginsDebugPath);
 			}
+
+			_themeRegistry = EngineContext.Current.Resolve<IThemeRegistry>();
 		}
 
-		protected string ResolveDebugFilePath(string virtualPath)
+		protected internal string ResolveDebugFilePath(string virtualPath)
 		{
 			if (!_isDebug)
 				return null;
@@ -77,22 +80,40 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			if (_pluginsDebugDir == null)
 				return null;
-			
-			var unrooted = appRelativePath.Substring(root.Length); // strip "~/Plugins/" or "~/Themes/"
-			string area = unrooted.Substring(0, unrooted.IndexOf('/'));
+
+			// strip "~/Plugins/" or "~/Themes/"
+			var unrooted = appRelativePath.Substring(root.Length);
+
+			// either plugin or theme name 
+			var extensionName = unrooted.Substring(0, unrooted.IndexOf('/'));
 
 			// get "Views/Something/View.cshtml"
-			var viewPath = unrooted.Substring(area.Length + 1);
+			var relativePath = unrooted.Substring(extensionName.Length + 1);
 
-			var foldersToCheck = new[] { area, area + "-sym" };
-
-			foreach (var folder in foldersToCheck)
+			if (root == "~/Themes/")
 			{
-				var pluginDir = new DirectoryInfo(Path.Combine(_pluginsDebugDir.FullName, folder));
-				if (pluginDir != null && pluginDir.Exists)
+				var theme = _themeRegistry.GetThemeManifest(extensionName);
+				if (theme != null && theme.IsSymbolicLink)
 				{
-					var result = Path.Combine(pluginDir.FullName, viewPath).Replace("/", "\\");
-					return File.Exists(result) ? result : null;
+					// Linked theme folders cannot compute cache dependencies correctly when
+					// working with source paths. We must determine the link target path, 
+					var finalPath = Path.Combine(theme.Path, relativePath.Replace('/', '\\'));
+					return File.Exists(finalPath) ? finalPath : null;
+				}
+			}
+			else
+			{
+				// Root is "~/Plugin/"
+				var foldersToCheck = new[] { extensionName, extensionName + "-sym" };
+
+				foreach (var folder in foldersToCheck)
+				{
+					var pluginDir = new DirectoryInfo(Path.Combine(_pluginsDebugDir.FullName, folder));
+					if (pluginDir != null && pluginDir.Exists)
+					{
+						var result = Path.Combine(pluginDir.FullName, relativePath).Replace("/", "\\");
+						return File.Exists(result) ? result : null;
+					}
 				}
 			}
 
@@ -142,8 +163,8 @@ namespace SmartStore.Web.Framework.Theming
 		
 		public override Stream Open()
 		{
-			var fileView = new FileStream(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-			return fileView;
+			var fileStream = new FileStream(PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+			return fileStream;
 		}
 	}
 }

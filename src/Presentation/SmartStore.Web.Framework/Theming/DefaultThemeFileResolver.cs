@@ -209,7 +209,7 @@ namespace SmartStore.Web.Framework.Theming
 			isExplicit = false;
 			ThemeManifest currentTheme;
 
-			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin; // ThemeHelper.IsAdminArea()
+			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin;
 			if (isAdmin)
 			{
 				currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);

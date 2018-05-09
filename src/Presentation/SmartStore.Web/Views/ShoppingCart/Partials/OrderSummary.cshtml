@@ -1,5 +1,4 @@
 ﻿@model ShoppingCartModel
-@using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.ShoppingCart;
 
 <div class="order-summary-content">
@@ -11,35 +10,6 @@
     @if (Model.DisplayCommentBox && !Model.IsEditable)
     {
         Html.RenderPartial("_CommentBox", Model);
-    }
-
-    @if (!Model.IsEditable && (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None || Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None))
-    {
-        <div class="card newsletter-subscription mb-3">
-            <div class="card-header h5">
-                <span>@T("Common.Options")</span>
-            </div>
-            <div class="card-body">
-                @if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
-                {
-                    <div class="form-check">
-						<input type="checkbox" id="SubscribeToNewsLetter" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
-                        <label class="form-check-label" for="SubscribeToNewsLetter">
-                            <span>@T("Checkout.SubscribeToNewsLetter")</span>
-                        </label>
-                    </div>
-                }
-                @if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
-                {
-                    <div class="form-check">
-						<input type="checkbox" id="AcceptThirdPartyEmailHandOver" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
-                        <label class="form-check-label" for="AcceptThirdPartyEmailHandOver">
-                            <span>@Model.ThirdPartyEmailHandOverLabel</span>
-                        </label>
-                    </div>
-                }
-            </div>
-        </div>
     }
 
     @if (Model.Items.Count > 0)

@@ -260,21 +260,19 @@
 /* Checkout Confirm
 ================================================ */
 
-.terms-of-service {
-	margin: 10px 0;
+#terms-of-service-consent-box {
+	background: lighten($gray-100, 1.5%);
 }
 .reward-points.alert,
-.terms-of-service.alert {
+#terms-of-service-consent-box {
     a.read {
-        font-weight: bold;
+        font-weight: $font-weight-medium;
         &:hover { cursor: pointer; }
     }
 }
-
 #iframe-terms-of-service { 
     width: 100%;
 }
-
 .checkout-data .change-checkout-data {
     padding: 0.25rem 0.5rem;
 }

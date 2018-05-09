@@ -1,15 +1,19 @@
 ﻿@model CheckoutConfirmModel
 
 @using SmartStore.Web.Models.Checkout;
+@using SmartStore.Core.Domain.Orders;
 
 @{
 	Layout = "_Checkout";
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
 	Html.AddBodyCssClass("no-offcanvas-cart");
 
-	string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+	string termsLink = "<a id='terms-of-service-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+	string disclaimerLink = "<a id='disclaimer-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
 	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
+
+	string consentZoneContent = Html.Widget("checkout_submit_data_consent").ToHtmlString();
+	bool consentZoneHasValue = consentZoneContent.HasValue();
 }
 
 @section orderProgress{
@@ -25,44 +29,73 @@
 		{
 			Html.RenderWidget("checkout_confirm_top");
 
-            <p class="page-intro lead">
-                @Html.Raw(@T("Checkout.ConfirmHint"))
-            </p>
+			<p class="page-intro lead">
+				@Html.Raw(@T("Checkout.ConfirmHint"))
+			</p>
 
-            <input type="hidden" id="customercommenthidden" name="customercommenthidden" />
-			<input type="hidden" id="SubscribeToNewsLetterHidden" name="SubscribeToNewsLetterHidden" />
-			<input type="hidden" id="AcceptThirdPartyEmailHandOverHidden" name="AcceptThirdPartyEmailHandOverHidden" />
+			<input type="hidden" id="customercommenthidden" name="customercommenthidden" />
 
-			if (Model.TermsOfServiceEnabled)
+			if (Model.TermsOfServiceEnabled ||
+				Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None ||
+				Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None ||
+				consentZoneHasValue)
 			{
-                <div class="terms-of-service alert alert-info mb-3">
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $("#terms-of-service-trigger").on("click", function (event) {
-                                event.preventDefault();
-                                $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("conditionsofuse", true)" frameBorder="0" class="h-100" />');
-                            });
-                            $("#disclaimer-trigger").on("click", function (event) {
-                                event.preventDefault();
-								$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("disclaimer", true)" frameBorder="0" class="h-100" />');
-                            });
-                        });
-                    </script>
-                    <div class="form-check">
-						<input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
-                        <label class="mb-0 form-check-label" for="termsofservice">@Html.Raw(terms)</label>
-                    </div>
+				<div id="terms-of-service-consent-box" class="card mb-3">
+					<div class="card-body">
 
-                    <!-- Terms of service -->
-                    @using (Html.BeginZoneContent("end", key: "terms-of-service-modal"))
-					{
-						Html.SmartStore().Window()
-							.Name("terms-of-service-modal")
-							.Size(WindowSize.FlexSmall)
-							.FooterContent(@<text><button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button></text>)
-							.Render();
-                    }
-                </div>
+						@if (Model.TermsOfServiceEnabled)
+						{
+							<script type="text/javascript">
+								$(document).ready(function () {
+									$("#terms-of-service-trigger").on("click", function (event) {
+										event.preventDefault();
+										$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("conditionsofuse", true)" frameBorder="0" class="h-100" />');
+									});
+									$("#disclaimer-trigger").on("click", function (event) {
+										event.preventDefault();
+										$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("disclaimer", true)" frameBorder="0" class="h-100" />');
+									});
+								});
+							</script>
+
+							<div class="form-check">
+								<input id="termsofservice" type="checkbox" name="termsofservice" class="form-check-input" />
+								<label class="mb-0 form-check-label" for="termsofservice">@Html.Raw(terms)</label>
+							</div>
+
+							using (Html.BeginZoneContent("end", key: "terms-of-service-modal"))
+							{
+								Html.SmartStore().Window()
+									.Name("terms-of-service-modal")
+									.Size(WindowSize.FlexSmall)
+									.FooterContent(@<text><button class="btn btn-secondary" data-dismiss="modal">@T("Common.Confirm")</button></text>)
+									.Render();
+							}
+						}
+
+						@if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+						{
+							<div class="form-check">
+								<input type="checkbox" id="SubscribeToNewsLetter" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+								<label class="form-check-label" for="SubscribeToNewsLetter">
+									<span>@T("Checkout.SubscribeToNewsLetter")</span>
+								</label>
+							</div>
+						}
+
+						@if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+						{
+							<div class="form-check">
+								<input type="checkbox" id="AcceptThirdPartyEmailHandOver" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+								<label class="form-check-label" for="AcceptThirdPartyEmailHandOver">
+									<span>@Model.ThirdPartyEmailHandOverLabel</span>
+								</label>
+							</div>
+						}
+
+						@{ Html.RenderWidget("checkout_submit_data_consent"); }
+					</div>
+				</div>
 			}
 
             <div class="confirm-order">
@@ -133,9 +166,7 @@
                 var cartItems = $('#cart-items');
 
                 $("#customercommenthidden").val($("#CustomerComment").val());
-                $('#SubscribeToNewsLetterHidden').val($('input[name=SubscribeToNewsLetter]').is(':checked'));
-                $('#AcceptThirdPartyEmailHandOverHidden').val($('input[name=AcceptThirdPartyEmailHandOver]').is(':checked'));
-
+                
 				// terms of services
                 @if (Model.TermsOfServiceEnabled)
                 {

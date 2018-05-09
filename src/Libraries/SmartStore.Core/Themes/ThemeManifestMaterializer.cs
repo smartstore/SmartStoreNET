@@ -22,6 +22,7 @@ namespace SmartStore.Core.Themes
 			_manifest.BaseThemeName = folderData.BaseTheme;
             _manifest.Location = folderData.VirtualBasePath;
             _manifest.Path = folderData.FullPath;
+			_manifest.IsSymbolicLink = folderData.IsSymbolicLink;
             _manifest.ConfigurationNode = folderData.Configuration.DocumentElement;
         }
         

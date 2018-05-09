@@ -8,6 +8,7 @@
 
 ### Improvements
 * Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
+* Allow forward slash in product tag URL slug
 
 ### Bugfixes
 * Migration: take all same-named message templates into account

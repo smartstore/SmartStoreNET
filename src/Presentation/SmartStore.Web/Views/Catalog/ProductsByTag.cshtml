@@ -17,7 +17,7 @@
 	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
 	if (canonicalUrlsEnabled)
 	{
-		var byTagUrl = Url.RouteUrl("ProductsByTag", new { productTagId = Model.Id, SeName = Model.TagName }, this.Request.Url.Scheme);
+		var byTagUrl = Url.RouteUrl("ProductsByTag", new { productTagId = Model.Id, path = Model.TagName }, this.Request.Url.Scheme);
 		Html.AddCanonicalUrlParts(byTagUrl);
 	}
 

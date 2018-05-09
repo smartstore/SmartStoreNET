@@ -17,7 +17,7 @@
         @for (int i = 0; i < Model.Count; i++)
 		{
 			var tag = Model[i];
-			<a href="@Url.RouteUrl("ProductsByTag", new { productTagId = tag.Id, SeName = tag.SeName })" class="pd-tag">
+			<a href="@Url.RouteUrl("ProductsByTag", new { productTagId = tag.Id, path = tag.SeName })" class="pd-tag">
 				<span @Html.LanguageAttributes(tag.Name)>@tag.Name</span> 
 				<span class="pd-tag-count pl-1">@tag.ProductCount</span>
             </a>

@@ -17,11 +17,11 @@ namespace SmartStore.Utilities
 		/// </summary>
 		/// <param name="name">String to be converted</param>
 		/// <param name="convertNonWesternChars">A value indicating whether non western chars should be converted</param>
-		/// <param name="allowUnicodeCharsInUrls">A value indicating whether Unicode chars are allowed</param>
+		/// <param name="allowUnicodeChars">A value indicating whether Unicode chars are allowed</param>
 		/// <param name="charConversions">Raw data of semicolon separated char conversions</param>
 		/// <returns>SEO friendly string</returns>
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeCharsInUrls, string charConversions = null)
+		public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeChars, string charConversions = null)
 		{
 			if (String.IsNullOrEmpty(name))
 				return name;
@@ -54,7 +54,7 @@ namespace SmartStore.Utilities
 					c2 = _seoCharacterTable[c2];
 				}
 
-				if (_okChars.Contains(c2) || (allowUnicodeCharsInUrls && char.IsLetterOrDigit(c)))
+				if (_okChars.Contains(c2) || (allowUnicodeChars && char.IsLetterOrDigit(c)))
 				{
 					sb.Append(c2);
 				}

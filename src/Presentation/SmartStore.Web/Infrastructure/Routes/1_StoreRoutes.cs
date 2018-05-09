@@ -127,8 +127,8 @@ namespace SmartStore.Web.Infrastructure
 				new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("ProductsByTag",
-				"producttag/{productTagId}/{SeName}",
-				new { controller = "Catalog", action = "ProductsByTag", SeName = UrlParameter.Optional },
+				"producttag/{productTagId}/{*path}",
+				new { controller = "Catalog", action = "ProductsByTag" },
 				new { productTagId = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 

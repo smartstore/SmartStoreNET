@@ -18,6 +18,7 @@
 * Reward points weren't displayed in message templates
 * Dashboard: link for not yet shipped orders loads list with all orders
 * Topic search button had no effect
+* #1442 Message factory should not throw an exception if a template has been deactivated
 
 
 ## SmartStore.NET 3.1.0

@@ -45,6 +45,12 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+<<<<<<< HEAD
+=======
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOver.Hint",
+				"Specifies whether customers can agree to a transferring of their email address to third parties when ordering, and whether the checkbox is enabled by default during checkout. Please keep in mind that the option 'Show activated' isn't legally justified in line with the GDPR.",
+				"Legt fest, ob Kunden bei einer Bestellung der Weitergabe ihrer E-Mail Adresse an Dritte zustimmen können und ob die Checkbox dafür standardmäßig aktiviert ist. Bitte beachten Sie, dass die Option 'Aktiviert anzeigen' im Rahmen der DSVGO nicht rechtskonform ist.");
+>>>>>>> upstream/3.x
 		}
 	}
 }

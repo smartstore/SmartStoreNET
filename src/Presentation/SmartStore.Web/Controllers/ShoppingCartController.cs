@@ -2216,7 +2216,7 @@ namespace SmartStore.Web.Controllers
             {
                 var cart = _workContext.CurrentCustomer.GetCartItems(isWishlist ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
                 
-                if(isWishlist)
+                if (isWishlist)
                 {
                     var model = new WishlistModel();
                     PrepareWishlistModel(model, cart);
@@ -2237,9 +2237,9 @@ namespace SmartStore.Web.Controllers
                 success = warnings.Count > 0 ? false : true,
                 SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(),
                 message = warnings,
-                cartHtml = cartHtml,
-                totalsHtml = totalsHtml,
-				showCheckoutButtons = showCheckoutButtons
+                cartHtml,
+                totalsHtml,
+				showCheckoutButtons
             });
         }
 

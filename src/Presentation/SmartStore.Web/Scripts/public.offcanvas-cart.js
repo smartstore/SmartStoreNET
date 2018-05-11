@@ -186,27 +186,38 @@ $(function () {
     });
 
 	// React to touchspin change
-    $('#offcanvas-cart').on('change', '.qty-input .form-control', function (e) {
-    	var el = $(this);
-    	$.ajax({
-    		cache: false,
-    		type: "POST",
-    		url: el.data("update-url"),
-    		data: { "sciItemId": el.data("sci-id"), "newQuantity": el.val() },
-    		success: function (data) {
-    			if (data.success == true) {
-    				var type = el.data("type");
-    				ShopBar.loadSummary(type, true);
-    				el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
-    			}
-    			else {
-    				$(data.message).each(function (index, value) {
-    					displayNotification(value, "error", false);
-    				});
-    			}
-    		}
-    	});
-    });
+	var updatingCart = false;
+	var debouncedSpin = _.debounce(function (e) {
+		if (updatingCart)
+			return;
+
+		updatingCart = true;
+		var el = $(this);
+
+		$.ajax({
+			cache: false,
+			type: "POST",
+			url: el.data("update-url"),
+			data: { "sciItemId": el.data("sci-id"), "newQuantity": el.val() },
+			success: function (data) {
+				if (data.success == true) {
+					var type = el.data("type");
+					ShopBar.loadSummary(type, true);
+					el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
+				}
+				else {
+					$(data.message).each(function (index, value) {
+						displayNotification(value, "error", false);
+					});
+				}
+			},
+			complete: function () {
+				updatingCart = false;
+			}
+		});
+	}, 350, false);
+
+	$('#offcanvas-cart').on('change', '.qty-input .form-control', debouncedSpin);
 }); 
 
 var ShopBar = (function($) {

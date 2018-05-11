@@ -25,6 +25,7 @@
 * #1442 Message factory should not throw an exception if a template has been deactivated
 * Fixes script error "$(...).tab is not a function" on product detail page
 * Title attribute for the product name in product lists was sometimes truncated
+* Relativizing font sizes should cast to double, not int
 
 
 ## SmartStore.NET 3.1.0

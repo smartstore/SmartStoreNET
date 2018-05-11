@@ -1475,7 +1475,7 @@ namespace SmartStore.Admin.Controllers
 				var productCategoriesModel = productCategories
 					.Select(x =>
 					{
-						var node = _categoryService.GetCategoryTree(x.CategoryId);
+						var node = _categoryService.GetCategoryTree(x.CategoryId, true);
 						return new ProductModel.ProductCategoryModel
 						{
 							Id = x.Id,

@@ -1,10 +1,10 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
 * #1429 Search engine friendly topic URLs
 * Trusted Shops: Added consent checkbox to confirm order page for submission of customer email address to Trusted Shops if review widget is active
-
+* #1226 Shop-Connector: Added exchange of tier prices
 
 ### Improvements
 * Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
@@ -27,6 +27,7 @@
 * Fixes script error "$(...).tab is not a function" on product detail page
 * Title attribute for the product name in product lists was sometimes truncated
 * Relativizing font sizes should cast to double, not int
+* Fixes category list on product edit page shows empty category name
 
 
 ## SmartStore.NET 3.1.0

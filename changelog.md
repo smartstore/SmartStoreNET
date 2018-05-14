@@ -28,6 +28,7 @@
 * Title attribute for the product name in product lists was sometimes truncated
 * Relativizing font sizes should cast to double, not int
 * Fixes category list on product edit page shows empty category name
+* #1438 Debitoor: The country is displayed twice
 
 
 ## SmartStore.NET 3.1.0

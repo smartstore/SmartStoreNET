@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
@@ -30,6 +30,7 @@
 * Relativizing font sizes should cast to double, not int
 * Fixes category list on product edit page shows empty category name
 * #1438 Debitoor: The country is displayed twice
+* MegaSearch: Fixes indexing ignores DeliveryTimeIdForEmptyStock setting
 
 
 ## SmartStore.NET 3.1.0

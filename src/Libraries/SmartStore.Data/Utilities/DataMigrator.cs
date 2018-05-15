@@ -153,7 +153,7 @@ namespace SmartStore.Data.Utilities
 						select new
 						{
 							ProductId = g.Key,
-							PictureIds = g.OrderBy(x => x.DisplayOrder)
+							PictureIds = g.OrderBy(x => x.DisplayOrder).ThenBy(x => x.Id)
 								.Take(1)
 								.Select(x => x.PictureId)
 						};

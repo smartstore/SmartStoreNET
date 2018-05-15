@@ -4,8 +4,6 @@ using System.Drawing;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.ComponentModel;
@@ -107,6 +105,20 @@ namespace SmartStore.Services.Messages
 			model["Theme"] = CreateThemeModelPart(messageContext);
 			model["Customer"] = CreateModelPart(messageContext.Customer, messageContext);
 			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
+		}
+
+		public object CreateModelPart(object part)
+		{
+			var messageContext = new MessageContext
+			{
+				Language = _services.WorkContext.WorkingLanguage,
+				Store = _services.StoreContext.CurrentStore,
+				Model = new TemplateModel()
+			};
+			
+			AddModelPart(part, messageContext, "Part");
+
+			return messageContext.Model["Part"];
 		}
 
 		public virtual void AddModelPart(object part, MessageContext messageContext, string name = null)

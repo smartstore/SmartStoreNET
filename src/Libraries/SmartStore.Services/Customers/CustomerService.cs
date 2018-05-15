@@ -21,6 +21,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.ComponentModel;
+using SmartStore.Services.Messages;
 
 namespace SmartStore.Services.Customers
 {
@@ -35,6 +36,7 @@ namespace SmartStore.Services.Customers
 		private readonly ICommonServices _services;
 		private readonly HttpContextBase _httpContext;
 		private readonly IUserAgent _userAgent;
+		private readonly Lazy<IMessageModelProvider> _messageModelProvider;
 
 		public CustomerService(
             IRepository<Customer> customerRepository,
@@ -45,7 +47,8 @@ namespace SmartStore.Services.Customers
 			RewardPointsSettings rewardPointsSettings,
 			ICommonServices services,
 			HttpContextBase httpContext,
-			IUserAgent userAgent)
+			IUserAgent userAgent,
+			Lazy<IMessageModelProvider> messageModelProvider)
         {
             _customerRepository = customerRepository;
             _customerRoleRepository = customerRoleRepository;
@@ -56,6 +59,7 @@ namespace SmartStore.Services.Customers
 			_services = services;
 			_httpContext = httpContext;
 			_userAgent = userAgent;
+			_messageModelProvider = messageModelProvider;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -730,14 +734,16 @@ namespace SmartStore.Services.Customers
 
 		#region GDPR
 
-		//public dynamic Export(Customer customer)
-		//{
-		//	Guard.NotNull(customer, nameof(customer));
+		public dynamic Export(Customer customer)
+		{
+			Guard.NotNull(customer, nameof(customer));
 
-		//	dynamic result = new HybridExpando(customer, new[] { "AdminComment", "IsSystemAccount", "SystemName" }, MemberOptMethod.Disallow);
+			var provider = _messageModelProvider.Value;
 
-		//	return (dynamic)result;
-		//}
+			dynamic result = provider.CreateModelPart(customer);
+
+			return result;
+		}
 
 		#endregion
 	}

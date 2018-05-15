@@ -231,24 +231,6 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastVisitedPage)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.StoreLastIpAddress)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.StoreLastIpAddress)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastIpAddress)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
-            </td>
-        </tr>
     </table>
 }
 
@@ -783,5 +765,24 @@
 				</td>
 			</tr>
 		</tbody>
+	
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PrivacySettings.StoreLastIpAddress)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PrivacySettings.StoreLastIpAddress)
+				@Html.ValidationMessageFor(model => model.PrivacySettings.StoreLastIpAddress)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PrivacySettings.DisplayPrivacyAgreementOnContactUs)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PrivacySettings.DisplayPrivacyAgreementOnContactUs)
+				@Html.ValidationMessageFor(model => model.PrivacySettings.DisplayPrivacyAgreementOnContactUs)
+			</td>
+		</tr>
 	</table>
 }

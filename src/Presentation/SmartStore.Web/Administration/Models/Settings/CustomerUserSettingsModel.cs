@@ -96,12 +96,6 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StoreLastVisitedPage")]
             public bool StoreLastVisitedPage { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StoreLastIpAddress")]
-			public bool StoreLastIpAddress { get; set; }
-
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs")]
-            public bool DisplayPrivacyAgreementOnContactUs { get; set; }
-
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.GenderEnabled")]
             public bool GenderEnabled { get; set; }
 
@@ -249,6 +243,12 @@ namespace SmartStore.Admin.Models.Settings
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext")]
 			[AllowHtml]
 			public string CookieConsentBadgetext { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress")]
+			public bool StoreLastIpAddress { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayPrivacyAgreementOnContactUs")]
+			public bool DisplayPrivacyAgreementOnContactUs { get; set; }
 		}
 		
 		#endregion

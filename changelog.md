@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
@@ -11,6 +11,7 @@
 * Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
 * Allow forward slash in product tag URL slug
 * Theming: throttle AJAX cart refresh after spin up/down click
+* Moved StoreLastIpAddress & DisplayPrivacyAgreementOnContactUs from customer settings to privacy settings tab
 
 ### Bugfixes
 * Migration: take all same-named message templates into account

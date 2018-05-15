@@ -62,8 +62,7 @@
                 {
                     @Html.HiddenFor(model => model.DisplayPrivacyAgreement)
 
-                    <div class="form-group row">
-                        @Html.LabelFor(model => model.PrivacyAgreement, new { @class = "col-sm-3 col-form-label required", @for = "PrivacyAgreement" })
+                    <div class="form-group row justify-content-end">
                         <div class="col-sm-9 form-control-plaintext">
 							<div class="form-check">
 								@Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })

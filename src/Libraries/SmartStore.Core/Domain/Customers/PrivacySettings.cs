@@ -9,6 +9,8 @@ namespace SmartStore.Core.Domain.Customers
 		public PrivacySettings()
 		{
 			EnableCookieConsent = true;
+			StoreLastIpAddress = false;
+			DisplayPrivacyAgreementOnContactUs = true;
 		}
 
 		/// <summary>
@@ -16,6 +18,21 @@ namespace SmartStore.Core.Domain.Customers
 		/// </summary>
 		public bool EnableCookieConsent { get; set; }
 
+		/// <summary>
+		/// Specifies the text which will be display to customers using the frontend
+		/// </summary>
 		public string CookieConsentBadgetext { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to store last IP address for each customer
+		/// </summary>
+		public bool StoreLastIpAddress { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
+		/// </summary>
+		public bool DisplayPrivacyAgreementOnContactUs { get; set; }
+
+
 	}
 }

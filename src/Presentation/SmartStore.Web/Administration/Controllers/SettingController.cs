@@ -987,6 +987,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
+		[ValidateInput(false)]
 		public ActionResult CustomerUser(CustomerUserSettingsModel model, FormCollection form)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))

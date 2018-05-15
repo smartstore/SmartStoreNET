@@ -23,8 +23,6 @@ namespace SmartStore.Core.Domain.Customers
 			NewsletterEnabled = true;
 			OnlineCustomerMinutes = 20;
 			StoreLastVisitedPage = true;
-			StoreLastIpAddress = true;
-			DisplayPrivacyAgreementOnContactUs = false;
 		}
 		
 		/// <summary>
@@ -151,16 +149,6 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating we should store last visited page URL for each customer
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to store last IP address for each customer
-		/// </summary>
-		public bool StoreLastIpAddress { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
-		/// </summary>
-		public bool DisplayPrivacyAgreementOnContactUs { get; set; }
         
         #region Form fields
 

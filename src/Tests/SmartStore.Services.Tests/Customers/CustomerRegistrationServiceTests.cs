@@ -15,6 +15,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Tests;
+using System;
 
 namespace SmartStore.Services.Tests.Customers
 {
@@ -37,6 +38,7 @@ namespace SmartStore.Services.Tests.Customers
 		IStoreContext _storeContext;
 		ICommonServices _services;
 		IUserAgent _userAgent;
+		Lazy<IMessageModelProvider> _messageModelProvider;
 
 		[SetUp]
         public new void SetUp()
@@ -127,8 +129,10 @@ namespace SmartStore.Services.Tests.Customers
 			_services.Expect(x => x.Cache).Return(NullCache.Instance);
 			_services.Expect(x => x.EventPublisher).Return(_eventPublisher);
 
+			_messageModelProvider = MockRepository.GenerateMock<Lazy<IMessageModelProvider>>();
+
 			_customerService = new CustomerService(_customerRepo, _customerRoleRepo,
-                _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _rewardPointsSettings, _services, new FakeHttpContext("~/"), _userAgent);
+                _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _rewardPointsSettings, _services, new FakeHttpContext("~/"), _userAgent, _messageModelProvider);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings, _customerSettings, _storeContext, _eventPublisher);

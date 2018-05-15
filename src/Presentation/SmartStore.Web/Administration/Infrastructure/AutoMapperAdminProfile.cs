@@ -709,6 +709,9 @@ namespace SmartStore.Admin.Infrastructure
 			CreateMap<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>();
 			CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
+			CreateMap<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>();
+			CreateMap<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore());
 
 			CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())

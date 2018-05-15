@@ -29,7 +29,7 @@
 		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.AddressFormFields").Text).Content(TabAddressFormFields().ToHtmlString());
 		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.DateTimeSettings").Text).Content(TabDateTimeSettings());
 		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings").Text).Content(TabExternalAuthenticationSettings());
-
+		x.Add().Text(T("Admin.Configuration.Settings.CustomerUser.Privacy").Text).Content(TabPrivacy());
 		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customersettings-edit", this.Html, this.Model));
 	})
 }
@@ -481,7 +481,7 @@
     </table>
 
 	<div id="pnlAddressSettingsSalutations">
-		@(Html.LocalizedEditor<CustomerUserSettingsModel, AddressSettingsLocalizedModel>("setting-customer-localized",
+		@(Html.LocalizedEditor<CustomerUserSettingsModel, CustomerUserSettingsLocalizedModel>("setting-customer-localized",
 			@<table class="adminContent pnlSalutations">
 				<tr>
 					<td class="adminTitle">
@@ -734,4 +734,54 @@
             </td>
         </tr>
     </table>
+}
+
+@helper TabPrivacy()
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PrivacySettings.EnableCookieConsent)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PrivacySettings.EnableCookieConsent,
+					Html.CheckBoxFor(model => model.PrivacySettings.EnableCookieConsent, new { data_toggler_for = "#pnlCookieConsent" }))
+				@Html.ValidationMessageFor(model => model.PrivacySettings.EnableCookieConsent)
+			</td>
+		</tr>
+		<tbody id="pnlCookieConsent">
+			<tr>
+				<td colspan="2">
+					@(Html.LocalizedEditor<CustomerUserSettingsModel, CustomerUserSettingsLocalizedModel>("setting-privacy-localized",
+						@<div class="adminContent">
+							<div class="adminRow">
+								<div class="adminTitle">
+									@Html.SmartLabelFor(model => model.Locales[item].CookieConsentBadgetext)
+								</div>
+								<div class="adminData wide">
+									@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+									@Html.HiddenFor(model => model.Locales[item].LanguageId)
+
+									@Html.TextAreaFor(model => Model.Locales[item].CookieConsentBadgetext)
+									@Html.ValidationMessageFor(model => model.Locales[item].CookieConsentBadgetext)
+								</div>
+							</div>
+						</div>
+						,
+						@<div class="adminContent">
+							<div class="adminRow">
+								<div class="adminTitle">
+									@Html.SmartLabelFor(model => model.PrivacySettings.CookieConsentBadgetext)
+								</div>
+								<div class="adminData wide">
+									@Html.TextAreaFor(model => model.PrivacySettings.CookieConsentBadgetext)
+									@Html.ValidationMessageFor(model => model.PrivacySettings.CookieConsentBadgetext)
+								</div>
+							</div>
+						</div>
+					))
+				</td>
+			</tr>
+		</tbody>
+	</table>
 }

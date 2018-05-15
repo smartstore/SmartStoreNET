@@ -931,6 +931,7 @@ namespace SmartStore.Admin.Controllers
 			var addressSettings = _services.Settings.LoadSetting<AddressSettings>(storeScope);
 			var dateTimeSettings = _services.Settings.LoadSetting<DateTimeSettings>(storeScope);
 			var externalAuthenticationSettings = _services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
+			var privacySettings = _services.Settings.LoadSetting<PrivacySettings>(storeScope);
 
 			//merge settings
 			var model = new CustomerUserSettingsModel();
@@ -966,10 +967,21 @@ namespace SmartStore.Admin.Controllers
 				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
 				.ToList();
 
-            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			model.PrivacySettings = privacySettings.ToModel();
+
+			StoreDependingSettings.GetOverrideKeys(privacySettings, model.PrivacySettings, storeScope, _services.Settings, false);
+
+			// loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
+			if (!privacySettings.CookieConsentBadgetext.HasValue())
+			{
+				model.PrivacySettings.CookieConsentBadgetext = _services.Localization.GetResource("CookieConsent.BadgeText");
+			}
+			
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Salutations = addressSettings.GetLocalized(x => x.Salutations, languageId, false, false);
-            });
+				locale.CookieConsentBadgetext = privacySettings.GetLocalized(x => x.CookieConsentBadgetext, languageId, false, false);
+			});
 
 			return View(model);
         }
@@ -995,6 +1007,9 @@ namespace SmartStore.Admin.Controllers
 			var authSettings = _services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
 			authSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
 
+			var privacySettings = _services.Settings.LoadSetting<PrivacySettings>(storeScope);
+			privacySettings = model.PrivacySettings.ToEntity(privacySettings);
+
 			// Scope to avoid duplicate CustomerSettings.DefaultPasswordFormat records.
 			using (Services.Settings.BeginScope())
 			{
@@ -1002,6 +1017,7 @@ namespace SmartStore.Admin.Controllers
 				StoreDependingSettings.UpdateSettings(addressSettings, form, storeScope, _services.Settings);
 				StoreDependingSettings.UpdateSettings(dateTimeSettings, form, storeScope, _services.Settings);
 				StoreDependingSettings.UpdateSettings(authSettings, form, storeScope, _services.Settings);
+				StoreDependingSettings.UpdateSettings(privacySettings, form, storeScope, _services.Settings);
 			}
 
 			// Scope because customer settings are updated.
@@ -1013,9 +1029,10 @@ namespace SmartStore.Admin.Controllers
 			foreach (var localized in model.Locales)
 			{
 				_localizedEntityService.SaveLocalizedValue(addressSettings, x => x.Salutations, localized.Salutations, localized.LanguageId);
-			}			
-
-            return NotifyAndRedirect("CustomerUser");
+				_localizedEntityService.SaveLocalizedValue(privacySettings, x => x.CookieConsentBadgetext, localized.CookieConsentBadgetext, localized.LanguageId);
+			}
+			
+			return NotifyAndRedirect("CustomerUser");
         }
 
 

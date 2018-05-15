@@ -7,22 +7,25 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<AddressSettingsLocalizedModel>
-    {
+	public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<CustomerUserSettingsLocalizedModel>
+	{
         public CustomerUserSettingsModel()
         {
             CustomerSettings = new CustomerSettingsModel();
             AddressSettings = new AddressSettingsModel();
             DateTimeSettings = new DateTimeSettingsModel();
             ExternalAuthenticationSettings = new ExternalAuthenticationSettingsModel();
-            Locales = new List<AddressSettingsLocalizedModel>();
-        }
+			PrivacySettings = new PrivacySettingsModel();
+			Locales = new List<CustomerUserSettingsLocalizedModel>();
+			PrivacySettings = new PrivacySettingsModel();
+		}
 
         public CustomerSettingsModel CustomerSettings { get; set; }
         public AddressSettingsModel AddressSettings { get; set; }
         public DateTimeSettingsModel DateTimeSettings { get; set; }
         public ExternalAuthenticationSettingsModel ExternalAuthenticationSettings { get; set; }
-        public IList<AddressSettingsLocalizedModel> Locales { get; set; }
+		public PrivacySettingsModel PrivacySettings { get; set; }
+		public IList<CustomerUserSettingsLocalizedModel> Locales { get; set; }
 
         #region Nested classes
 
@@ -233,14 +236,32 @@ namespace SmartStore.Admin.Models.Settings
             public bool AutoRegisterEnabled { get; set; }
         }
 
-        #endregion
-    }
+		public partial class PrivacySettingsModel
+		{
+			public PrivacySettingsModel()
+			{
+				EnableCookieConsent = true;
+			}
 
-    public class AddressSettingsLocalizedModel : ILocalizedModelLocal
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent")]
+			public bool EnableCookieConsent { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext")]
+			[AllowHtml]
+			public string CookieConsentBadgetext { get; set; }
+		}
+		
+		#endregion
+	}
+
+	public class CustomerUserSettingsLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations")]
         public string Salutations { get; set; }
-    }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext")]
+		public string CookieConsentBadgetext { get; set; }
+	}
 }

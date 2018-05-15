@@ -78,7 +78,9 @@ namespace SmartStore.Services.Messages
 		/// </para>
 		/// </summary>
 		/// <param name="part">The model part instance to convert.</param>
-		object CreateModelPart(object part);
+		/// <param name="ignoreNullMembers">Whether members/properties with null values should be excluded from the result model.</param>
+		/// <param name="ignoreMemberNames">Optional list of member/property names to exclude from the result model.</param>
+		object CreateModelPart(object part, bool ignoreNullMembers, params string[] ignoreMemberNames);
 
 		/// <summary>
 		/// Tries to infer the model part name by type:

@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
@@ -6,6 +6,7 @@
 * Trusted Shops: Added consent checkbox to confirm order page for submission of customer email address to Trusted Shops if review widget is active
 * #1226 Shop-Connector: Added exchange of tier prices and delivery times
 * Implemented cookie consent according to EU law
+* #1439 Debitoor: Option whether to display the payment method and SKU on invoices
 
 ### Improvements
 * Added double opt-in feature for newsletter subscriptions during checkout (confirm order)
@@ -32,6 +33,7 @@
 * Fixes category list on product edit page shows empty category name
 * #1438 Debitoor: The country is displayed twice
 * MegaSearch: Fixes indexing ignores DeliveryTimeIdForEmptyStock setting
+* Web API: Fixes "No NavigationLink factory was found for the navigation property 'WalletHistory'"
 
 
 ## SmartStore.NET 3.1.0

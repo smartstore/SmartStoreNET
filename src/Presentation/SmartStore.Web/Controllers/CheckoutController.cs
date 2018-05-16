@@ -215,7 +215,7 @@ namespace SmartStore.Web.Controllers
 
 					// Adjust rate.
 					Discount appliedDiscount = null;
-					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
+					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, shippingOption, shippingMethods, out appliedDiscount);
 					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, customer);
 					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
 					soModel.FeeRaw = rate;

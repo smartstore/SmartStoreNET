@@ -1885,7 +1885,7 @@ namespace SmartStore.Web.Controllers
                             //calculate discounted and taxed rate
                             Discount appliedDiscount = null;
                             decimal shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
-								shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
+								shippingOption.Rate, cart, shippingOption, shippingMethods, out appliedDiscount);
 
                             decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
                             decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);

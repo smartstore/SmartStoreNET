@@ -3,14 +3,8 @@ namespace SmartStore.Data.Migrations
 	using System;
 	using System.Data.Entity.Migrations;
 	using System.Web.Hosting;
-	using System.Linq;
-	using System.Collections.Generic;
-	using SmartStore.Core.Domain.Configuration;
 	using SmartStore.Data.Setup;
 	using SmartStore.Utilities;
-	using Core.Infrastructure;
-	using Core.IO;
-	using System.Text.RegularExpressions;
 	using System.IO;
 	using Core.Data;
 	using SmartStore.Data.Utilities;

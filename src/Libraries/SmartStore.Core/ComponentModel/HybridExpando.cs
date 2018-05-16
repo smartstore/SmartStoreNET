@@ -234,7 +234,7 @@ namespace SmartStore.ComponentModel
 
 		protected virtual bool TrySetMemberCore(string name, object value)
 		{
-			// first check to see if there's a native property to set
+			// first check to see if there's a dictionary entry to set
 			if (Properties.ContainsKey(name))
 			{
 				Properties[name] = value;

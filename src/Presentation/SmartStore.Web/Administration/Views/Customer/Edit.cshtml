@@ -10,34 +10,38 @@
             @T("Admin.Customers.Customers.EditCustomerDetails") - @Model.LastName @Model.FirstName
 			<a href='@Url.Action("List")'>(@T("Admin.Customers.Customers.BackToList"))</a>			
         </div>
-        <div class="options">
+		<div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before");}
 
-            <button type="submit" name="save" value="save" class="btn btn-warning">
+			<button type="submit" name="save" value="save" class="btn btn-warning">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Common.Save")</span>
 			</button>
 
-            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+			<button type="submit" name="save" value="save-continue" class="btn btn-secondary">
 				<span>@T("Admin.Common.SaveContinue")</span>
 			</button>
 
-            <a href="#sendemail-window" data-toggle="modal" class="btn btn-secondary">
+			<a href="#sendemail-window" data-toggle="modal" class="btn btn-secondary">
 				<i class="fa fa-envelope"></i>
 				<span>@T("Admin.Customers.Customers.SendEmail")</span>
 			</a>
-            <a href="#sendprivatemessage-window" data-toggle="modal" class="btn btn-secondary">
+			<a href="#sendprivatemessage-window" data-toggle="modal" class="btn btn-secondary">
 				<i class="fa fa-envelope"></i>
 				<span>@T("Admin.Customers.Customers.SendPM")</span>
 			</a>
 
-            <button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger">
+			<a href="@Url.Action("Export", new { id = Model.Id })" class="btn btn-secondary">
+				<span>@T("Common.Export")</span>
+			</a>
+
+			<button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger">
 				<i class="fa fa-trash-o"></i>
 				<span>@T("Admin.Common.Delete")</span>
 			</button>
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
-        </div>
+		</div>
     </div>
 
     Html.RenderPartial("_CreateOrUpdate", Model);

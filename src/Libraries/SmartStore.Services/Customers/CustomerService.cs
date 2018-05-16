@@ -20,7 +20,6 @@ using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.ComponentModel;
 using SmartStore.Services.Messages;
 
 namespace SmartStore.Services.Customers
@@ -731,20 +730,5 @@ namespace SmartStore.Services.Customers
 		}
 
 		#endregion Reward points
-
-		#region GDPR
-
-		public dynamic Export(Customer customer)
-		{
-			Guard.NotNull(customer, nameof(customer));
-
-			var provider = _messageModelProvider.Value;
-
-			dynamic result = provider.CreateModelPart(customer);
-
-			return result;
-		}
-
-		#endregion
 	}
 }

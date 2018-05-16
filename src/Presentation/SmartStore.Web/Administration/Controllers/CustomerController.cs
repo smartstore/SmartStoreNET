@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.ShoppingCart;
@@ -84,12 +85,14 @@ namespace SmartStore.Admin.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
 		private readonly IMessageModelProvider _messageModelProvider;
+		private readonly IGdprTool _gdprTool;
 
 		#endregion
 
 		#region Constructors
 
-		public CustomerController(ICustomerService customerService,
+		public CustomerController(
+			ICustomerService customerService,
 			INewsLetterSubscriptionService newsLetterSubscriptionService,
             IGenericAttributeService genericAttributeService,
             ICustomerRegistrationService customerRegistrationService,
@@ -112,7 +115,8 @@ namespace SmartStore.Admin.Controllers
 			IEventPublisher eventPublisher,
 			PluginMediator pluginMediator,
 			IAffiliateService affiliateService,
-			IMessageModelProvider messageModelProvider)
+			IMessageModelProvider messageModelProvider,
+			IGdprTool gdprTool)
 		{
             _customerService = customerService;
 			_newsLetterSubscriptionService = newsLetterSubscriptionService;
@@ -149,6 +153,7 @@ namespace SmartStore.Admin.Controllers
 			_pluginMediator = pluginMediator;
 			_affiliateService = affiliateService;
 			_messageModelProvider = messageModelProvider;
+			_gdprTool = gdprTool;
 		}
 
         #endregion
@@ -1799,5 +1804,24 @@ namespace SmartStore.Admin.Controllers
         }
 
 		#endregion
-    }
+
+		#region GDPR
+
+		public ActionResult Export(int id /* customerId */)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+				return AccessDeniedView();
+
+			var customer = _customerService.GetCustomerById(id);
+			if (customer == null || customer.Deleted)
+				return HttpNotFound();
+
+			var data = _gdprTool.ExportCustomer(customer);
+			var json = JsonConvert.SerializeObject(data, Formatting.Indented);
+
+			return File(Encoding.UTF8.GetBytes(json), "application/json"/*, "yodele.json"*/);
+		}
+
+		#endregion
+	}
 }

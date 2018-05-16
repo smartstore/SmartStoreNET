@@ -199,6 +199,8 @@
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerMessageFactoryExtensions.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
+    <Compile Include="Customers\GdprTool.cs" />
+    <Compile Include="Customers\IGdprTool.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
     <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />

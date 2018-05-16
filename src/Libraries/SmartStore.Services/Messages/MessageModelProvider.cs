@@ -131,11 +131,16 @@ namespace SmartStore.Services.Messages
 				AddModelPart(part, messageContext, "Part");
 			}
 
-			var result = messageContext.Model["Part"];
+			object result = null;
 
-			if (result is IDictionary<string, object> dict)
+			if (messageContext.Model.Any())
 			{
-				SanitizeModelDictionary(dict, ignoreNullMembers, ignoreMemberNames);
+				result = messageContext.Model.FirstOrDefault().Value;
+
+				if (result is IDictionary<string, object> dict)
+				{
+					SanitizeModelDictionary(dict, ignoreNullMembers, ignoreMemberNames);
+				}
 			}
 
 			return result;
@@ -147,17 +152,15 @@ namespace SmartStore.Services.Messages
 			{
 				foreach (var key in dict.Keys.ToArray())
 				{
+					var expando = dict as HybridExpando;
 					var value = dict[key];
 
-					if (ignoreNullMembers && value == null)
+					if ((ignoreNullMembers && value == null) || ignoreMemberNames.Contains(key))
 					{
-						dict.Remove(key);
-						continue;
-					}
-
-					if (ignoreMemberNames.Contains(key))
-					{
-						dict.Remove(key);
+						if (expando != null)
+							expando.Override(key, null); // INFO: we cannot remove entries from HybridExpando
+						else
+							dict.Remove(key);
 						continue;
 					}
 
@@ -256,6 +259,9 @@ namespace SmartStore.Services.Messages
 					modelPart = CreateModelPart(x, messageContext);
 					break;
 				case PrivateMessage x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case IEnumerable<GenericAttribute> x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
 				//case BackInStockSubscription x:
@@ -919,6 +925,23 @@ namespace SmartStore.Services.Messages
 			};
 
 			PublishModelPartCreatedEvent<RewardPointsHistory>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(IEnumerable<GenericAttribute> part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>();
+
+			foreach (var attr in part)
+			{
+				m[attr.Key] = attr.Value;
+			}
+
+			PublishModelPartCreatedEvent<IEnumerable<GenericAttribute>>(part, m);
 
 			return m;
 		}

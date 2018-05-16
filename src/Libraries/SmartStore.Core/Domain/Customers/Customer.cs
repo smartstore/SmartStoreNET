@@ -206,7 +206,6 @@ namespace SmartStore.Core.Domain.Customers
 		/// <summary>
 		/// Gets or sets the wallet history.
 		/// </summary>
-		[DataMember]
 		public virtual ICollection<WalletHistory> WalletHistory
 		{
 			get

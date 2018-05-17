@@ -35,6 +35,7 @@
 * MegaSearch: Fixes indexing ignores DeliveryTimeIdForEmptyStock setting
 * Web API: Fixes "No NavigationLink factory was found for the navigation property 'WalletHistory'"
 * #1449 IgnoreCharges of shipping methods is not working if a localized name is specified
+* Fixes "The object does not support the property or method 'startsWith'" on product edit page.
 
 
 ## SmartStore.NET 3.1.0

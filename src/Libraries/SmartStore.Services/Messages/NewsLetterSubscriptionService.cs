@@ -140,14 +140,15 @@ namespace SmartStore.Services.Messages
 				{
 					if (add)
 					{
-						InsertNewsLetterSubscription(new NewsLetterSubscription
+						newsletter = new NewsLetterSubscription
 						{
 							NewsLetterSubscriptionGuid = Guid.NewGuid(),
 							Email = email,
 							Active = false,
 							CreatedOnUtc = DateTime.UtcNow,
 							StoreId = storeId
-						});
+						};
+						InsertNewsLetterSubscription(newsletter);
 
 						_services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(newsletter, _services.WorkContext.WorkingLanguage.Id);
 

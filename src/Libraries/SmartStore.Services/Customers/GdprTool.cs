@@ -163,5 +163,9 @@ namespace SmartStore.Services.Customers
 			return model;
 		}
 
+		public void AnonymizeCustomer(Customer customer, bool deleteContent)
+		{
+			Guard.NotNull(customer, nameof(customer));
+		}
 	}
 }

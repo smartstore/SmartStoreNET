@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Blogs;
-using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Forums;
@@ -21,20 +19,25 @@ namespace SmartStore.Services.Customers
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IForumService _forumService;
 		private readonly IBackInStockSubscriptionService _backInStockSubscriptionService;
+		private readonly ICommonServices _services;
+
+		const string AnonymousEmail = "anonymous@example.com";
 
 		public GdprTool(
 			IMessageModelProvider messageModelProvider,
 			IGenericAttributeService genericAttributeService,
 			IForumService forumService,
-			IBackInStockSubscriptionService backInStockSubscriptionService)
+			IBackInStockSubscriptionService backInStockSubscriptionService,
+			ICommonServices services)
 		{
 			_messageModelProvider = messageModelProvider;
 			_genericAttributeService = genericAttributeService;
 			_forumService = forumService;
 			_backInStockSubscriptionService = backInStockSubscriptionService;
+			_services = services;
 		}
 
-		public IDictionary<string, object> ExportCustomer(Customer customer)
+		public virtual IDictionary<string, object> ExportCustomer(Customer customer)
 		{
 			Guard.NotNull(customer, nameof(customer));
 
@@ -158,14 +161,22 @@ namespace SmartStore.Services.Customers
 				// - Private messages
 				// - Activity log
 				// It doesn't feel right and GDPR rules are not very clear about this. Let's wait and see :-)
+
+				// Publish event to give plugin devs a chance to attach external data.
+				_services.EventPublisher.Publish(new CustomerExportedEvent(customer, model));
 			}
 
 			return model;
 		}
 
-		public void AnonymizeCustomer(Customer customer, bool deleteContent)
+		public virtual void AnonymizeCustomer(Customer customer, bool deleteContent)
 		{
 			Guard.NotNull(customer, nameof(customer));
+		}
+
+		protected string AnonymizeIpAddress(string ipAddress)
+		{
+			return ipAddress;
 		}
 	}
 }

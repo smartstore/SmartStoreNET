@@ -15,7 +15,15 @@ namespace SmartStore.Services.Customers
 		/// </summary>
 		/// <param name="customer">The customer to export data for.</param>
 		/// <returns>The exported data</returns>
-		/// <remarks>This method fulfills the "GDPR data portability" requirement.</remarks>
+		/// <remarks>This method fulfills the "GDPR Data Portability" requirement.</remarks>
 		IDictionary<string, object> ExportCustomer(Customer customer);
+
+		/// <summary>
+		/// Anonymizes a customer's (personal) data.
+		/// </summary>
+		/// <param name="customer">The customer to anonymize.</param>
+		/// <param name="deleteContent"></param>
+		/// <remarks>This method fulfills the "GDPR Right to be forgotten" requirement.</remarks>
+		void AnonymizeCustomer(Customer customer, bool deleteContent);
 	}
 }

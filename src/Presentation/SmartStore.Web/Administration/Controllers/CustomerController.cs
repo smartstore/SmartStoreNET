@@ -1819,7 +1819,7 @@ namespace SmartStore.Admin.Controllers
 			var data = _gdprTool.ExportCustomer(customer);
 			var json = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-			return File(Encoding.UTF8.GetBytes(json), "application/json"/*, "yodele.json"*/);
+			return File(Encoding.UTF8.GetBytes(json), "application/json", "customer-{0}.json".FormatInvariant(customer.Id));
 		}
 
 		#endregion

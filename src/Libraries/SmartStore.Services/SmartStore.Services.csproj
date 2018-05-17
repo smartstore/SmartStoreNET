@@ -198,7 +198,8 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerMessageFactoryExtensions.cs" />
-    <Compile Include="Customers\CustomerRegisteredEvent.cs" />
+    <Compile Include="Customers\Events\CustomerExportedEvent.cs" />
+    <Compile Include="Customers\Events\CustomerRegisteredEvent.cs" />
     <Compile Include="Customers\GdprTool.cs" />
     <Compile Include="Customers\IGdprTool.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />

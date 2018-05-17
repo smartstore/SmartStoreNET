@@ -11,14 +11,11 @@
 {
 
 	<div class="cookie-consent-panel-message fade show">
-		
-		<button type="submit" class="close">&times;</button>
-
 		<div class="d-flex">
-			<div class="align-self-center">
+			<div class="align-self-center pr-3">
 				@Html.Raw(Model.BadgeText)
 			</div>
-			<div class="align-self-center mx-5">
+			<div class="align-self-center ml-auto">
 				<button type="submit" class="btn btn-warning">@T("CookieConsent.Button")</button>
 			</div>
 		</div>

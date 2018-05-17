@@ -247,8 +247,8 @@ namespace SmartStore.Admin.Models.Settings
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress")]
 			public bool StoreLastIpAddress { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayPrivacyAgreementOnContactUs")]
-			public bool DisplayPrivacyAgreementOnContactUs { get; set; }
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayDataProcessingConsentOnForms")]
+			public bool DisplayDataProcessingConsentOnForms { get; set; }
 		}
 		
 		#endregion

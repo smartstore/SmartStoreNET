@@ -36,8 +36,7 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<CommonSettings> _commonSettings;
 		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
-		private readonly Lazy<PrivacySettings> _privacySettings;
-
+		
 		public HomeController(
 			ICommonServices services,
 			Lazy<ICategoryService> categoryService,
@@ -50,8 +49,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
 			Lazy<SeoSettings> seoSettings,
-			Lazy<CustomerSettings> customerSettings,
-			Lazy<PrivacySettings> privacySettings)
+			Lazy<CustomerSettings> customerSettings)
         {
 			this._services = services;
 			this._categoryService = categoryService;
@@ -65,10 +63,8 @@ namespace SmartStore.Web.Controllers
 			this._commonSettings = commonSettings;
 			this._seoSettings = seoSettings;
             this._customerSettings = customerSettings;
-			this._privacySettings = privacySettings;
 		}
-
-
+		
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Index()
         {
@@ -90,7 +86,6 @@ namespace SmartStore.Web.Controllers
 				Email = _services.WorkContext.CurrentCustomer.Email,
 				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
 				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
-                DisplayPrivacyAgreement = _privacySettings.Value.DisplayPrivacyAgreementOnContactUs,
                 MetaKeywords = topic?.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic?.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic?.GetLocalized(x => x.MetaTitle),

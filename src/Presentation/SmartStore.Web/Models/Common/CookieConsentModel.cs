@@ -6,4 +6,9 @@ namespace SmartStore.Web.Models.Common
     {
 		public string BadgeText { get; set; }
 	}
+
+	public partial class FormDataProcessingConsentModel : ModelBase
+	{
+		public bool DataProcessingConsent { get; set; }
+	}
 }

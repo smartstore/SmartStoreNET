@@ -891,6 +891,28 @@ namespace SmartStore.Web.Controllers
 			return new EmptyResult();
 		}
 
+		[ChildActionOnly]
+		public ActionResult FormDataProcessingConsent()
+		{
+			if (!_privacySettings.DisplayDataProcessingConsentOnForms)
+			{
+				return new EmptyResult();
+			}
+
+			var customer = _services.WorkContext.CurrentCustomer;
+			var hasConsentedToDataProcessing = customer.GetAttribute<bool>(SystemCustomerAttributeNames.HasConsentedToDataProcessing);
+
+			if (hasConsentedToDataProcessing)
+			{
+				return new EmptyResult();
+			}
+
+			var model = new FormDataProcessingConsentModel();
+			model.DataProcessingConsent = false;
+			
+			return PartialView(model);
+		}
+	
 		#endregion
 	}
 }

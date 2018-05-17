@@ -70,8 +70,8 @@
 				"Bestimmt den Text, der Ihren Kunden beim Besuch der Seite angezeigt wird, sofern Sie ihre Zustimmung zur Nutzung von Cookies noch nicht gegeben haben.");
 			
 			builder.AddOrUpdate("CookieConsent.BadgeText",
-				"{0} is using cookies, to guarantee to best shopping experience. Partially cookies will be set by thrid parties. <a href='{1}'>Privacy Info</a>",
-				"{0} benutzt Cookies, um Ihnen das beste Einkaufs-Erlebnis zu ermöglichen. Zum Teil werden Cookies auch von Drittanbietern gesetzt. <a href='{1}'>Datenschutzerklärung</a>");
+				"{0} is using cookies, to guarantee the best shopping experience. Partially cookies will be set by third parties. <a href='{1}'>Privacy Info</a>",
+				"{0} benutzt Cookies, um Ihnen das beste Einkaufserlebnis zu ermöglichen. Zum Teil werden Cookies auch von Drittanbietern gesetzt. <a href='{1}'>Datenschutzerklärung</a>");
 
 			builder.AddOrUpdate("CookieConsent.Button", "Okay, got it", "Ok, verstanden");
 
@@ -87,11 +87,21 @@
 
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs");
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs.Hint");
-			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayPrivacyAgreementOnContactUs",
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayDataProcessingConsentOnForms",
 				"Get privacy consent for contact requests",
 				"Einwilligungserklärung im Kontaktformular fordern",
 				"Specifies whether a checkbox will be displayed on the contact page which requests the user to agree on storage of his data.",
 				"Bestimmt ob im Kontaktformular eine Checkbox angezeigt wird, die den Benutzer auffordert der Speicherung seiner Daten zuzustimmen.");
+
+			builder.AddOrUpdate("DataProcessingConsent.ValidationMessage",
+				"Please agree to the processing of your data.", 
+				"Bitte stimmen Sie der Verarbeitung Ihrer Daten zu.");
+
+			builder.Delete("ContactUs.PrivacyAgreement.MustBeAccepted");
+			builder.Delete("ContactUs.PrivacyAgreement.DetailText");
+			builder.AddOrUpdate("DataProcessingConsent.DetailText",
+				"Yes I've read the <a href=\"{0}\">privacy terms</a> and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.",
+				"Ja, ich habe die <a href=\"{0}\">Datenschutzerklärung</a> zur Kenntnis genommen und bin damit einverstanden, dass die von mir angegebenen Daten elektronisch erhoben und gespeichert werden. Meine Daten werden dabei nur zur Bearbeitung meiner Anfrage genutzt.");
 		}
 	}
 }

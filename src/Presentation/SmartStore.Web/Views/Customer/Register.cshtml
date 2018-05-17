@@ -88,7 +88,10 @@
 								@Html.ValidationMessageFor(model => model.Username)
 							</div>
 						</div>
-				}
+					}
+
+					@{ Html.RenderWidget("form_privacy_consent"); }
+
 				</fieldset>
 
 				<fieldset class="content-group">

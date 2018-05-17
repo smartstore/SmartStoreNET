@@ -10,11 +10,6 @@ namespace SmartStore.Web.Models.Common
 	[Validator(typeof(ContactUsValidator))]
     public partial class ContactUsModel : ModelBase
     {
-        [SmartResourceDisplayName("ContactUs.PrivacyAgreement")]
-        public bool PrivacyAgreement { get; set; }
-
-        public bool DisplayPrivacyAgreement { get; set; }
-
         [AllowHtml]
         [SmartResourceDisplayName("ContactUs.Email")]
 		[DataType(DataType.EmailAddress)]

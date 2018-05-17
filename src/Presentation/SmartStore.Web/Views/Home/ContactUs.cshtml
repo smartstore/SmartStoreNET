@@ -24,11 +24,11 @@
             <div class="alert alert-success">
                 @Model.Result
             </div>        
-        }
-        else
-        {
-            using (Html.BeginRouteForm("ContactUs", FormMethod.Post, new { @class = "contact-form" }))
-            {
+		}
+		else
+		{
+			using (Html.BeginRouteForm("ContactUs", FormMethod.Post, new { @class = "contact-form" }))
+			{
 				if (!ViewData.ModelState.IsValid)
 				{
 					@Html.ValidationSummary(false)
@@ -57,26 +57,14 @@
 						@Html.ValidationMessageFor(model => model.Enquiry)
 					</div>
 				</div>
-
-                if (Model.DisplayPrivacyAgreement)
-                {
-                    @Html.HiddenFor(model => model.DisplayPrivacyAgreement)
-
-                    <div class="form-group row justify-content-end">
-                        <div class="col-sm-9 form-control-plaintext">
-							<div class="form-check">
-								@Html.CheckBoxFor(model => model.PrivacyAgreement, new { @class = "form-check-input" })
-								<label class="form-check-label" for="@Html.IdFor(model => model.PrivacyAgreement)">
-									@Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(Url.TopicUrl("privacyinfo")))
-								</label>
-							</div>
-                            @Html.ValidationMessageFor(model => model.PrivacyAgreement)
-                        </div>
-                    </div>
-                }
-                
-                if (Model.DisplayCaptcha)
-                {
+				<div class="row justify-content-end">
+					<div class="col-sm-9">
+						@{ Html.RenderWidget("form_privacy_consent"); }
+					</div>
+				</div>
+				
+				if (Model.DisplayCaptcha)
+				{
 					<div class="form-group row">
 						<div class="col col-sm-auto offset-sm-3 captcha-box">
 							@Html.Raw(Html.GenerateCaptcha())

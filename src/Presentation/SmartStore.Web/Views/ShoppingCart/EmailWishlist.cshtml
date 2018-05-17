@@ -25,7 +25,10 @@
             {
                 <fieldset>
                     <p class="message-error">
-                        @Html.ValidationSummary(true)
+						@if (!ViewData.ModelState.IsValid)
+						{
+							@Html.ValidationSummary(true)
+						}
                     </p>
                 
                     <div class="form-group">
@@ -45,6 +48,8 @@
                         @Html.TextAreaFor(model => model.PersonalMessage, new { @class = "personal-message form-control", placeholder = T("Wishlist.EmailAFriend.PersonalMessage.Hint") })
                         @Html.ValidationMessageFor(model => model.PersonalMessage)
                     </div>
+
+					@{ Html.RenderWidget("form_privacy_consent"); }
 
                     @if (Model.DisplayCaptcha)
                     {

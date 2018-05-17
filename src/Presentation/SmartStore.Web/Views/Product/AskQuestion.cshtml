@@ -14,8 +14,8 @@
     <div class="page-body">
 
         @using (Html.BeginForm("AskQuestion", null, FormMethod.Post, new { @class = "form-horizontal" }))
-        {
-                               
+		{
+
         <fieldset>
 
             <legend>
@@ -25,9 +25,9 @@
             </legend>
 
             @if (!ViewData.ModelState.IsValid)
-            {
+			{
                 @Html.ValidationSummary(true)
-            }
+			}
 
             <div class="form-group">
                 @Html.LabelFor(model => model.SenderEmail, new { @class = "control-label required", @for = "SenderEmail" })
@@ -52,6 +52,8 @@
                 @Html.TextAreaFor(model => model.Question, new { @class = "personal-message form-control" })
                 @Html.ValidationMessageFor(model => model.Question, null, new { @class = "text-danger" })
             </div>
+
+			@{ Html.RenderWidget("form_privacy_consent"); }
 
             @if (Model.DisplayCaptcha)
             {

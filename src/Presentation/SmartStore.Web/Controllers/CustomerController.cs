@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -34,6 +36,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
@@ -174,25 +177,6 @@ namespace SmartStore.Web.Controllers
         protected bool IsCurrentUserRegistered()
         {
             return _workContext.CurrentCustomer.IsRegistered();
-        }
-
-        [NonAction]
-        protected MyAccountMenuModel GetMyAccountMenuModel(Customer customer, string selectedItem = null)
-        {
-            var model = new MyAccountMenuModel
-			{
-				HideAvatar = !_customerSettings.AllowCustomersToUploadAvatars,
-				HideRewardPoints = !_rewardPointsSettings.Enabled,
-				HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions,
-                HidePrivateMessages = !_forumSettings.AllowPrivateMessages,
-                UnreadMessageCount = GetUnreadPrivateMessages(),
-                HideReturnRequests = !_orderSettings.ReturnRequestsEnabled || _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount == 0,
-				HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab,
-				HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab,
-				SelectedItemToken = selectedItem
-			};
-
-            return model;
         }
 
         [NonAction]
@@ -982,9 +966,146 @@ namespace SmartStore.Web.Controllers
 
         #endregion
 
+		[ChildActionOnly]
 		public ActionResult MyAccountMenu(string selectedItem = null)
 		{
-			var model = GetMyAccountMenuModel(_workContext.CurrentCustomer, selectedItem);
+			var customer = _workContext.CurrentCustomer;
+			var menu = new List<MenuItem>();
+
+			// Info
+			menu.Add(new MenuItem
+			{
+				Id = "info",
+				Text = T("Account.CustomerInfo"),
+				Icon = "user-o",
+				Url = Url.Action("Info"),
+			});
+
+			// Addresses
+			menu.Add(new MenuItem
+			{
+				Id = "addresses",
+				Text = T("Account.CustomerAddresses"),
+				Icon = "address-book-o",
+				Url = Url.Action("Addresses"),
+			});
+
+			// Orders
+			menu.Add(new MenuItem
+			{
+				Id = "orders",
+				Text = T("Account.CustomerOrders"),
+				Icon = "file-text",
+				Url = Url.Action("Orders"),
+			});
+
+			// Return requests
+			if (_orderSettings.ReturnRequestsEnabled && _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount > 0)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "returnrequests",
+					Text = T("Account.CustomerReturnRequests"),
+					Icon = "truck",
+					Url = Url.Action("ReturnRequests"),
+				});
+			}
+
+			// Downloadable products
+			if (!_customerSettings.HideDownloadableProductsTab)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "downloads",
+					Text = T("Account.DownloadableProducts"),
+					Icon = "download",
+					Url = Url.Action("DownloadableProducts"),
+				});
+			}
+
+			// BackInStock subscriptions
+			if (!_customerSettings.HideBackInStockSubscriptionsTab)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "backinstock",
+					Text = T("Account.BackInStockSubscriptions"),
+					Icon = "bullhorn",
+					Url = Url.Action("BackInStockSubscriptions"),
+				});
+			}
+
+			// Reward points
+			if (_rewardPointsSettings.Enabled)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "rewardpoints",
+					Text = T("Account.RewardPoints"),
+					Icon = "certificate",
+					Url = Url.Action("RewardPoints"),
+				});
+			}
+
+			// Change password
+			menu.Add(new MenuItem
+			{
+				Id = "changepassword",
+				Text = T("Account.ChangePassword"),
+				Icon = "unlock-alt",
+				Url = Url.Action("ChangePassword"),
+			});
+
+			// Avatar
+			if (_customerSettings.AllowCustomersToUploadAvatars)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "avatar",
+					Text = T("Account.Avatar"),
+					Icon = "user-circle",
+					Url = Url.Action("Avatar"),
+				});
+			}
+
+			// Forum subscriptions
+			if (_forumSettings.ForumsEnabled && _forumSettings.AllowCustomersToManageSubscriptions)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "forumsubscriptions",
+					Text = T("Account.ForumSubscriptions"),
+					Icon = "bell",
+					Url = Url.Action("ForumSubscriptions"),
+				});
+			}
+
+			// Private messages
+			var numUnreadMessages = GetUnreadPrivateMessages();
+			if (_forumSettings.AllowPrivateMessages)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "privatemessages",
+					Text = T("PrivateMessages.Inbox"),
+					Icon = "envelope-o",
+					Url = Url.RouteUrl("PrivateMessages", new { tab = "inbox" }),
+					BadgeText = numUnreadMessages > 0 ? numUnreadMessages.ToString() : null,
+					BadgeStyle = BadgeStyle.Warning
+				});
+			}
+
+			var model = new MyAccountMenuModel
+			{
+				Root = new TreeNode<MenuItem>(new MenuItem { Id = "root" }, menu),
+				SelectedItemToken = selectedItem
+			};
+
+			// Event for plugins
+			var evt = new MenuCreatedEvent("MyAccount", model.Root, model.SelectedItemToken);
+			_services.EventPublisher.Publish(evt);
+			model.SelectedItemToken = evt.SelectedItemToken;
+
 			return PartialView(model);
 		}
 

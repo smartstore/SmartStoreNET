@@ -8,6 +8,10 @@ using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Blogs;
+using SmartStore.ComponentModel;
+using SmartStore.Core.Domain.Polls;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Forums;
 
 namespace SmartStore.Services.Customers
 {
@@ -15,13 +19,19 @@ namespace SmartStore.Services.Customers
 	{
 		private readonly IMessageModelProvider _messageModelProvider;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IForumService _forumService;
+		private readonly IBackInStockSubscriptionService _backInStockSubscriptionService;
 
 		public GdprTool(
 			IMessageModelProvider messageModelProvider,
-			IGenericAttributeService genericAttributeService)
+			IGenericAttributeService genericAttributeService,
+			IForumService forumService,
+			IBackInStockSubscriptionService backInStockSubscriptionService)
 		{
 			_messageModelProvider = messageModelProvider;
 			_genericAttributeService = genericAttributeService;
+			_forumService = forumService;
+			_backInStockSubscriptionService = backInStockSubscriptionService;
 		}
 
 		public IDictionary<string, object> ExportCustomer(Customer customer)
@@ -114,10 +124,44 @@ namespace SmartStore.Services.Customers
 					model["BlogComments"] = blogComments.Select(x => _messageModelProvider.CreateModelPart(x, true)).ToList();
 				}
 
-				// TODO: PollVotingRecord, ReviewHelpfulness
+				// Product review helpfulness
+				var helpfulness = customer.CustomerContent.OfType<ProductReviewHelpfulness>();
+				if (helpfulness.Any())
+				{
+					ignoreMemberNames = new string[] { "CustomerId", "UpdatedOn" };
+					model["ProductReviewHelpfulness"] = helpfulness.Select(x => _messageModelProvider.CreateModelPart(x, true, ignoreMemberNames)).ToList();
+				}
+
+				// Poll voting
+				var pollVotings = customer.CustomerContent.OfType<PollVotingRecord>();
+				if (pollVotings.Any())
+				{
+					ignoreMemberNames = new string[] { "CustomerId", "UpdatedOn" };
+					model["PollVotings"] = pollVotings.Select(x => _messageModelProvider.CreateModelPart(x, true, ignoreMemberNames)).ToList();
+				}
+
+				// Forum subscriptions
+				var forumSubscriptions = _forumService.GetAllSubscriptions(customer.Id, 0, 0, 0, int.MaxValue);
+				if (forumSubscriptions.Any())
+				{
+					model["ForumSubscriptions"] = forumSubscriptions.Select(x => _messageModelProvider.CreateModelPart(x, true, "CustomerId")).ToList();
+				}
+
+				// BackInStock subscriptions
+				var backInStockSubscriptions = _backInStockSubscriptionService.GetAllSubscriptionsByCustomerId(customer.Id, 0, 0, int.MaxValue);
+				if (backInStockSubscriptions.Any())
+				{
+					model["BackInStockSubscriptions"] = backInStockSubscriptions.Select(x => _messageModelProvider.CreateModelPart(x, true, "CustomerId")).ToList();
+				}
+
+				// INFO: we're not going to export: 
+				// - Private messages
+				// - Activity log
+				// It doesn't feel right and GDPR rules are not very clear about this. Let's wait and see :-)
 			}
 
 			return model;
 		}
+
 	}
 }

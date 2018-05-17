@@ -19,6 +19,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
@@ -124,10 +125,12 @@ namespace SmartStore.Services.Messages
 			if (part is Customer x)
 			{
 				// This case is not handled in AddModelPart core method.
+				messageContext.Customer = x;
 				messageContext.Model["Part"] = CreateModelPart(x, messageContext);
 			}
 			else
 			{
+				messageContext.Customer = _services.WorkContext.CurrentCustomer;
 				AddModelPart(part, messageContext, "Part");
 			}
 
@@ -264,9 +267,15 @@ namespace SmartStore.Services.Messages
 				case IEnumerable<GenericAttribute> x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
-				//case BackInStockSubscription x:
-				//	modelPart = CreateModelPart(x, messageContext);
-				//	break;
+				case ProductReviewHelpfulness x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case ForumSubscription x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case BackInStockSubscription x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
 				default:
 					var partType = part.GetType();
 					modelPart = part;
@@ -738,6 +747,44 @@ namespace SmartStore.Services.Messages
 			return m;
 		}
 
+		protected virtual object CreateModelPart(ProductReviewHelpfulness part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{ "ProductReviewId", part.ProductReviewId },
+				{ "ReviewTitle", part.ProductReview.Title },
+				{ "WasHelpful", part.WasHelpful }
+			};
+
+			ApplyCustomerContentPart(m, part, messageContext);
+
+			PublishModelPartCreatedEvent<ProductReviewHelpfulness>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(PollVotingRecord part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{ "PollAnswerId", part.PollAnswerId },
+				{ "PollAnswerName", part.PollAnswer.Name },
+				{ "PollId", part.PollAnswer.PollId }
+			};
+
+			ApplyCustomerContentPart(m, part, messageContext);
+
+			PublishModelPartCreatedEvent<PollVotingRecord>(part, m);
+
+			return m;
+		}
+
 		protected virtual object CreateModelPart(PrivateMessage part, MessageContext messageContext)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
@@ -942,6 +989,43 @@ namespace SmartStore.Services.Messages
 			}
 
 			PublishModelPartCreatedEvent<IEnumerable<GenericAttribute>>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(ForumSubscription part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{  "SubscriptionGuid", part.SubscriptionGuid },
+				{  "CustomerId",  part.CustomerId },
+				{  "ForumId",  part.ForumId },
+				{  "TopicId",  part.TopicId },
+				{  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+			};
+
+			PublishModelPartCreatedEvent<ForumSubscription>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(BackInStockSubscription part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{  "StoreId", part.StoreId },
+				{  "CustomerId",  part.CustomerId },
+				{  "ProductId",  part.ProductId },
+				{  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+			};
+
+			PublishModelPartCreatedEvent<BackInStockSubscription>(part, m);
 
 			return m;
 		}

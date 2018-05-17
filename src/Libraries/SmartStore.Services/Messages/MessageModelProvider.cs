@@ -267,6 +267,9 @@ namespace SmartStore.Services.Messages
 				case IEnumerable<GenericAttribute> x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
+				case PollVotingRecord x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
 				case ProductReviewHelpfulness x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;

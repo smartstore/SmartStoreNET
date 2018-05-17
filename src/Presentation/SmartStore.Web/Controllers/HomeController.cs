@@ -134,7 +134,6 @@ namespace SmartStore.Web.Controllers
 					model.Result = T("Common.Error.SendMail");
 				}
 
-
 				return View(model);
 			}
 

@@ -25,23 +25,20 @@ namespace SmartStore.Services.Messages
         /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public void InsertNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-            if (newsLetterSubscription == null)
-            {
-                throw new ArgumentNullException("newsLetterSubscription");
-            }
+			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
 
 			if (newsLetterSubscription.StoreId == 0)
 			{
 				throw new SmartException("News letter subscription must be assigned to a valid store.");
 			}
 
-            //Handle e-mail
+            // Handle e-mail
             newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
-            //Persist
+            // Persist
             _subscriptionRepository.Insert(newsLetterSubscription);
 
-            //Publish the subscription event 
+            // Publish the subscription event 
             if (newsLetterSubscription.Active)
             {
                 PublishSubscriptionEvent(newsLetterSubscription.Email, true, publishSubscriptionEvents);
@@ -55,43 +52,40 @@ namespace SmartStore.Services.Messages
         /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public void UpdateNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-            if (newsLetterSubscription == null)
-            {
-                throw new ArgumentNullException("newsLetterSubscription");
-            }
+			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
 
 			if (newsLetterSubscription.StoreId == 0)
 			{
 				throw new SmartException("News letter subscription must be assigned to a valid store.");
 			}
 
-            //Handle e-mail
+            // Handle e-mail
             newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
-            //Get original subscription record
+            // Get original subscription record
             var originalSubscription = _services.DbContext.LoadOriginalCopy(newsLetterSubscription);
 
-            //Persist
+            // Persist
             _subscriptionRepository.Update(newsLetterSubscription);
 
-            //Publish the subscription event 
+            // Publish the subscription event 
             if ((originalSubscription.Active == false && newsLetterSubscription.Active) ||
                 (newsLetterSubscription.Active && (originalSubscription.Email != newsLetterSubscription.Email)))
             {
-                //If the previous entry was false, but this one is true, publish a subscribe.
+                // If the previous entry was false, but this one is true, publish a subscribe.
                 PublishSubscriptionEvent(newsLetterSubscription.Email, true, publishSubscriptionEvents);
             }
             
             if ((originalSubscription.Active && newsLetterSubscription.Active) && 
                 (originalSubscription.Email != newsLetterSubscription.Email))
             {
-                //If the two emails are different publish an unsubscribe.
+                // If the two emails are different publish an unsubscribe.
                 PublishSubscriptionEvent(originalSubscription.Email, false, publishSubscriptionEvents);
             }
 
             if ((originalSubscription.Active && !newsLetterSubscription.Active))
             {
-                //If the previous entry was true, but this one is false
+                // If the previous entry was true, but this one is false
                 PublishSubscriptionEvent(originalSubscription.Email, false, publishSubscriptionEvents);
             }
         }
@@ -103,8 +97,7 @@ namespace SmartStore.Services.Messages
         /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public virtual void DeleteNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-            if (newsLetterSubscription == null)
-				throw new ArgumentNullException("newsLetterSubscription");
+			Guard.NotNull(newsLetterSubscription, nameof(newsLetterSubscription));
 
             _subscriptionRepository.Delete(newsLetterSubscription);
 

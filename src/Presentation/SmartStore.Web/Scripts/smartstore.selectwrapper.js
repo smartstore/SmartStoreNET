@@ -208,13 +208,13 @@
 				},
 				closeOnSelect: !(sel.prop('multiple') || sel.data("tags")),
 				adaptContainerCssClass: function (c) {
-					if (c.startsWith("select-"))
+					if (c.startsWith && c.startsWith("select-"))
 						return c;
 					else
 						return null;
 				},
 				adaptDropdownCssClass: function (c) {
-					if (c.startsWith("drop-"))
+					if (c.startsWith && c.startsWith("drop-"))
 						return c;
 					else
 						return null;

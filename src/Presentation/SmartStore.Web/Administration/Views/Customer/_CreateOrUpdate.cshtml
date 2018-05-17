@@ -342,7 +342,7 @@
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.AffiliateId)
                 </td>
-                <td class="adminData">
+                <td class="adminData form-control-plaintext">
                     <a href="@Url.Action("Edit", "Affiliate", new { id = Model.AffiliateId })">@Model.AffiliateFullName</a>
                 </td>
             </tr>

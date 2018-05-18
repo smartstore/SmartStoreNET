@@ -49,7 +49,7 @@
                         @Html.ValidationMessageFor(model => model.PersonalMessage)
                     </div>
 
-					@{ Html.RenderWidget("form_privacy_consent"); }
+					@{ Html.RenderWidget("gdpr_consent"); }
 
                     @if (Model.DisplayCaptcha)
                     {

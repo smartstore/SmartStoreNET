@@ -53,7 +53,7 @@
                 @Html.ValidationMessageFor(model => model.Question, null, new { @class = "text-danger" })
             </div>
 
-			@{ Html.RenderWidget("form_privacy_consent"); }
+			@{ Html.RenderWidget("gdpr_consent"); }
 
             @if (Model.DisplayCaptcha)
             {

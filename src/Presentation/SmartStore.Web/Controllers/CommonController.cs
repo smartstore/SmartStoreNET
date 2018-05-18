@@ -892,23 +892,23 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult FormDataProcessingConsent()
+		public ActionResult GdprConsent()
 		{
-			if (!_privacySettings.DisplayDataProcessingConsentOnForms)
+			if (!_privacySettings.DisplayGdprConsentOnForms)
 			{
 				return new EmptyResult();
 			}
 
 			var customer = _services.WorkContext.CurrentCustomer;
-			var hasConsentedToDataProcessing = customer.GetAttribute<bool>(SystemCustomerAttributeNames.HasConsentedToDataProcessing);
+			var hasConsentedToGdpr = customer.GetAttribute<bool>(SystemCustomerAttributeNames.HasConsentedToGdpr);
 
-			if (hasConsentedToDataProcessing)
+			if (hasConsentedToGdpr)
 			{
 				return new EmptyResult();
 			}
 
-			var model = new FormDataProcessingConsentModel();
-			model.DataProcessingConsent = false;
+			var model = new GdprConsentModel();
+			model.GdprConsent = false;
 			
 			return PartialView(model);
 		}

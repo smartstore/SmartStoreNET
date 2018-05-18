@@ -238,7 +238,7 @@
     <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Extensions\HtmlZoneExtensions.cs" />
     <Compile Include="Extensions\LocalizedValueExtensions.cs" />
-    <Compile Include="Filters\FormDataProcessingConsentFilter.cs" />
+    <Compile Include="Filters\GdprConsentFilter.cs" />
     <Compile Include="Filters\CookieConsentFilter.cs" />
     <Compile Include="Filters\JsonNetAttribute.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />

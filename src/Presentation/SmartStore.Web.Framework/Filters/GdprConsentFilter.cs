@@ -10,7 +10,7 @@ using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.Filters
 {
-	public class FormDataProcessingConsentFilter : IActionFilter, IResultFilter
+	public class GdprConsentFilter : IActionFilter, IResultFilter
 	{
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly ICommonServices _services;
@@ -31,7 +31,7 @@ namespace SmartStore.Web.Framework.Filters
 			"TopicCreate",
 		};
 
-		public FormDataProcessingConsentFilter(
+		public GdprConsentFilter(
 			IGenericAttributeService genericAttributeService,
 			ICommonServices services,
 			Lazy<IWidgetProvider> widgetProvider,
@@ -50,7 +50,7 @@ namespace SmartStore.Web.Framework.Filters
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			if (!_privacySettings.DisplayDataProcessingConsentOnForms)
+			if (!_privacySettings.DisplayGdprConsentOnForms)
 				return;
 
 			if (filterContext?.ActionDescriptor == null || filterContext?.HttpContext?.Request == null)
@@ -63,18 +63,18 @@ namespace SmartStore.Web.Framework.Filters
 				return;
 
 			var customer = _services.WorkContext.CurrentCustomer;
-			var hasConsentedToDataProcessing = filterContext.HttpContext.Request.Form["DataProcessingConsent"];
+			var hasConsentedToGdpr = filterContext.HttpContext.Request.Form["GdprConsent"];
 			
-			if (filterContext.HttpContext.Request.HttpMethod.Equals("POST") && hasConsentedToDataProcessing != null)
+			if (filterContext.HttpContext.Request.HttpMethod.Equals("POST") && hasConsentedToGdpr != null)
 			{
-				if (hasConsentedToDataProcessing.Contains("true"))
+				if (hasConsentedToGdpr.Contains("true"))
 				{
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.HasConsentedToDataProcessing, true);
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.HasConsentedToGdpr, true);
 				}
 				else
 				{
 					// add a validation message
-					filterContext.Controller.ViewData.ModelState.AddModelError("", _services.Localization.GetResource("DataProcessingConsent.ValidationMessage"));
+					filterContext.Controller.ViewData.ModelState.AddModelError("", _services.Localization.GetResource("GdprConsent.ValidationMessage"));
 					return;
 				}
 			}
@@ -87,7 +87,7 @@ namespace SmartStore.Web.Framework.Filters
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (!_privacySettings.DisplayDataProcessingConsentOnForms)
+			if (!_privacySettings.DisplayGdprConsentOnForms)
 				return;
 
 			if (filterContext.IsChildAction)
@@ -100,8 +100,8 @@ namespace SmartStore.Web.Framework.Filters
 				return;
 			
 			_widgetProvider.Value.RegisterAction(
-				new[] { "form_privacy_consent" },
-				"FormDataProcessingConsent",
+				new[] { "gdpr_consent" },
+				"GdprConsent",
 				"Common",
 				new { area = "" });
 		}

@@ -87,19 +87,19 @@
 
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs");
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs.Hint");
-			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayDataProcessingConsentOnForms",
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms",
 				"Get privacy consent for contact requests",
 				"Einwilligungserklärung im Kontaktformular fordern",
 				"Specifies whether a checkbox will be displayed on the contact page which requests the user to agree on storage of his data.",
 				"Bestimmt ob im Kontaktformular eine Checkbox angezeigt wird, die den Benutzer auffordert der Speicherung seiner Daten zuzustimmen.");
 
-			builder.AddOrUpdate("DataProcessingConsent.ValidationMessage",
+			builder.AddOrUpdate("GdprConsent.ValidationMessage",
 				"Please agree to the processing of your data.", 
 				"Bitte stimmen Sie der Verarbeitung Ihrer Daten zu.");
 
 			builder.Delete("ContactUs.PrivacyAgreement.MustBeAccepted");
 			builder.Delete("ContactUs.PrivacyAgreement.DetailText");
-			builder.AddOrUpdate("DataProcessingConsent.DetailText",
+			builder.AddOrUpdate("GdprConsent.DetailText",
 				"Yes I've read the <a href=\"{0}\">privacy terms</a> and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.",
 				"Ja, ich habe die <a href=\"{0}\">Datenschutzerklärung</a> zur Kenntnis genommen und bin damit einverstanden, dass die von mir angegebenen Daten elektronisch erhoben und gespeichert werden. Meine Daten werden dabei nur zur Bearbeitung meiner Anfrage genutzt.");
 		}

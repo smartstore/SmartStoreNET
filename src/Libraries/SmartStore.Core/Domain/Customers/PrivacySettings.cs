@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Customers
 		{
 			EnableCookieConsent = true;
 			StoreLastIpAddress = false;
-			DisplayDataProcessingConsentOnForms = true;
+			DisplayGdprConsentOnForms = true;
 		}
 
 		/// <summary>
@@ -31,6 +31,6 @@ namespace SmartStore.Core.Domain.Customers
 		/// <summary>
 		/// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
 		/// </summary>
-		public bool DisplayDataProcessingConsentOnForms { get; set; }
+		public bool DisplayGdprConsentOnForms { get; set; }
 	}
 }

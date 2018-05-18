@@ -512,7 +512,8 @@ namespace SmartStore.Web.Controllers
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Register()
+		[GdprConsent]
+		public ActionResult Register()
         {
 			//check whether registration is allowed
 			if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
@@ -584,7 +585,8 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         [CaptchaValidator]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterModel model, string returnUrl, bool captchaValid)
+		[GdprConsent]
+		public ActionResult Register(RegisterModel model, string returnUrl, bool captchaValid)
         {
             //check whether registration is allowed
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)

@@ -752,7 +752,8 @@ namespace SmartStore.Web.Controllers
             return RedirectToRoute("Boards");
         }
 
-        public ActionResult TopicCreate(int id)
+		[GdprConsent]
+		public ActionResult TopicCreate(int id)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -790,7 +791,8 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult TopicCreate(EditForumTopicModel model)
+		[GdprConsent]
+		public ActionResult TopicCreate(EditForumTopicModel model)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1131,7 +1133,8 @@ namespace SmartStore.Web.Controllers
             return RedirectToRoute("Boards");
         }
 
-        public ActionResult PostCreate(int id, int? quote)
+		[GdprConsent]
+		public ActionResult PostCreate(int id, int? quote)
         {
             if (!_forumSettings.ForumsEnabled)
             {
@@ -1205,7 +1208,8 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult PostCreate(EditForumPostModel model)
+		[GdprConsent]
+		public ActionResult PostCreate(EditForumPostModel model)
         {
             if (!_forumSettings.ForumsEnabled)
             {

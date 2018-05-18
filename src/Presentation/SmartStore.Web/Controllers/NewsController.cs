@@ -271,7 +271,8 @@ namespace SmartStore.Web.Controllers
             return new RssActionResult { Feed = feed };
         }
 
-        public ActionResult NewsItem(int newsItemId)
+		[GdprConsent]
+		public ActionResult NewsItem(int newsItemId)
         {
             if (!_newsSettings.Enabled)
 				return HttpNotFound();
@@ -294,7 +295,8 @@ namespace SmartStore.Web.Controllers
         [HttpPost, ActionName("NewsItem")]
         [FormValueRequired("add-comment")]
         [CaptchaValidator]
-        public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, bool captchaValid)
+		[GdprConsent]
+		public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, bool captchaValid)
         {
             if (!_newsSettings.Enabled)
 				return HttpNotFound();

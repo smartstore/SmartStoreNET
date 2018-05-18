@@ -299,7 +299,8 @@ namespace SmartStore.Web.Controllers
 			return new RssActionResult { Feed = feed };
         }
 
-        public ActionResult BlogPost(int blogPostId)
+		[GdprConsent]
+		public ActionResult BlogPost(int blogPostId)
         {
             if (!_blogSettings.Enabled)
 				return HttpNotFound();
@@ -323,7 +324,8 @@ namespace SmartStore.Web.Controllers
         [HttpPost, ActionName("BlogPost")]
         [FormValueRequired("add-comment")]
         [CaptchaValidator]
-        public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
+		[GdprConsent]
+		public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
         {
             if (!_blogSettings.Enabled)
 				return HttpNotFound();

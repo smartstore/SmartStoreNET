@@ -661,7 +661,8 @@ namespace SmartStore.Web.Controllers
 		#region Product reviews
 
 		[ActionName("Reviews")]
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RequireHttpsByConfig(SslRequirement.No)]
+		[GdprConsent]
 		public ActionResult Reviews(int id)
 		{
 			var product = _productService.GetProductById(id);
@@ -686,6 +687,7 @@ namespace SmartStore.Web.Controllers
 		[FormValueRequired("add-review")]
 		[CaptchaValidator]
 		[ValidateAntiForgeryToken]
+		[GdprConsent]
 		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, bool captchaValid)
 		{
 			var product = _productService.GetProductById(id);
@@ -832,7 +834,8 @@ namespace SmartStore.Web.Controllers
 
 		#region Ask product question
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RequireHttpsByConfig(SslRequirement.No)]
+		[GdprConsent]
 		public ActionResult AskQuestion(int id)
 		{
 			var product = _productService.GetProductById(id);
@@ -856,6 +859,7 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost, ActionName("AskQuestion")]
 		[CaptchaValidator]
+		[GdprConsent]
 		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
 		{
 			var product = _productService.GetProductById(model.Id);
@@ -903,7 +907,8 @@ namespace SmartStore.Web.Controllers
 
 		#region Email a friend
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RequireHttpsByConfig(SslRequirement.No)]
+		[GdprConsent]
 		public ActionResult EmailAFriend(int id)
 		{
 			var product = _productService.GetProductById(id);
@@ -922,6 +927,7 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost, ActionName("EmailAFriend")]
 		[CaptchaValidator]
+		[GdprConsent]
 		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, bool captchaValid)
 		{
 			var product = _productService.GetProductById(id);

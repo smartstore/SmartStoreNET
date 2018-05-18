@@ -692,7 +692,6 @@ namespace SmartStore.Web.Framework
 				pageHelperRegistration.PropertiesAutowired(PropertyWiringOptions.None);
 				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<SmartController>(-100);
 				builder.RegisterType<CookieConsentFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
-				builder.RegisterType<GdprConsentFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
 			}
 		}
 

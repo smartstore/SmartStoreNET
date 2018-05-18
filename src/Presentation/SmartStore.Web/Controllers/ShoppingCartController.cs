@@ -2462,8 +2462,9 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult EmailWishlist()
+        [RequireHttpsByConfig(SslRequirement.Yes)]
+		[GdprConsent]
+		public ActionResult EmailWishlist()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
                 return RedirectToRoute("HomePage");
@@ -2484,7 +2485,8 @@ namespace SmartStore.Web.Controllers
         [HttpPost, ActionName("EmailWishlist")]
         [FormValueRequired("send-email")]
         [CaptchaValidator]
-        public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, bool captchaValid)
+		[GdprConsent]
+		public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, bool captchaValid)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
                 return RedirectToRoute("HomePage");

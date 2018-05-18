@@ -19,6 +19,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
+using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
@@ -65,7 +66,7 @@ namespace SmartStore.Web.Controllers
             this._customerSettings = customerSettings;
 		}
 		
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RequireHttpsByConfig(SslRequirement.No)]
         public ActionResult Index()
         {
 			return View();
@@ -76,7 +77,8 @@ namespace SmartStore.Web.Controllers
 			return View();
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RequireHttpsByConfig(SslRequirement.No)]
+		[GdprConsent]
 		public ActionResult ContactUs()
 		{
             var topic = _topicService.Value.GetTopicBySystemName("ContactUs");
@@ -96,6 +98,7 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost, ActionName("ContactUs")]
 		[CaptchaValidator]
+		[GdprConsent]
 		public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
 		{
 			// Validate CAPTCHA

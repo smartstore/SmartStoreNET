@@ -15,6 +15,7 @@
 * Theming: throttle AJAX cart refresh after spin up/down click
 * Moved StoreLastIpAddress & DisplayPrivacyAgreementOnContactUs from customer settings to privacy settings tab
 * #1450 Show the regular price only if it's higher than the final price
+* #1450 Do not ignore discounts with a negative amount
 
 ### Bugfixes
 * Migration: take all same-named message templates into account

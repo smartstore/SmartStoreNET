@@ -661,7 +661,7 @@ namespace SmartStore.Web.Controllers
 				? string.Format(ctx.Resources["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice))
 				: _priceFormatter.FormatPrice(finalPrice);
 
-			priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase > decimal.Zero;
+			priceModel.HasDiscount = oldPriceBase > decimal.Zero && oldPriceBase > finalPriceBase;
 			if (priceModel.HasDiscount)
 			{
 				priceModel.RegularPriceValue = oldPrice;

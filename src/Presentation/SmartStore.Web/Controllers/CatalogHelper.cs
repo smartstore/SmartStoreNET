@@ -1121,7 +1121,7 @@ namespace SmartStore.Web.Controllers
 
 						if (productBundleItem == null || isBundleItemPricing)
 						{
-							if (finalPriceWithoutDiscountBase != oldPriceBase && oldPriceBase > decimal.Zero)
+							if (oldPriceBase > decimal.Zero && oldPriceBase > finalPriceWithoutDiscountBase)
 							{
 								model.ProductPrice.OldPriceValue = oldPrice;
 								model.ProductPrice.OldPrice = _priceFormatter.FormatPrice(oldPrice);

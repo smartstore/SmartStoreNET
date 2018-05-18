@@ -85,7 +85,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
 		private readonly IMessageModelProvider _messageModelProvider;
-		private readonly IGdprTool _gdprTool;
+		private readonly Lazy<IGdprTool> _gdprTool;
 
 		#endregion
 
@@ -116,7 +116,7 @@ namespace SmartStore.Admin.Controllers
 			PluginMediator pluginMediator,
 			IAffiliateService affiliateService,
 			IMessageModelProvider messageModelProvider,
-			IGdprTool gdprTool)
+			Lazy<IGdprTool> gdprTool)
 		{
             _customerService = customerService;
 			_newsLetterSubscriptionService = newsLetterSubscriptionService;
@@ -1816,7 +1816,7 @@ namespace SmartStore.Admin.Controllers
 			if (customer == null || customer.Deleted)
 				return HttpNotFound();
 
-			var data = _gdprTool.ExportCustomer(customer);
+			var data = _gdprTool.Value.ExportCustomer(customer);
 			var json = JsonConvert.SerializeObject(data, Formatting.Indented);
 
 			return File(Encoding.UTF8.GetBytes(json), "application/json", "customer-{0}.json".FormatInvariant(customer.Id));

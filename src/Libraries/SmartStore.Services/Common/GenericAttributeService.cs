@@ -7,7 +7,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
-using SmartStore.Data;
 using SmartStore.Services.Orders;
 using SmartStore.Data.Caching;
 
@@ -24,15 +23,14 @@ namespace SmartStore.Services.Common
             IEventPublisher eventPublisher,
 			IRepository<Order> orderRepository)
         {
-            this._genericAttributeRepository = genericAttributeRepository;
-            this._eventPublisher = eventPublisher;
-			this._orderRepository = orderRepository;
+            _genericAttributeRepository = genericAttributeRepository;
+            _eventPublisher = eventPublisher;
+			_orderRepository = orderRepository;
         }
 
         public virtual void DeleteAttribute(GenericAttribute attribute)
         {
-            if (attribute == null)
-                throw new ArgumentNullException("attribute");
+			Guard.NotNull(attribute, nameof(attribute));
 
 			int entityId = attribute.EntityId;
 			string keyGroup = attribute.KeyGroup;
@@ -57,10 +55,9 @@ namespace SmartStore.Services.Common
 
         public virtual void InsertAttribute(GenericAttribute attribute)
         {
-            if (attribute == null)
-                throw new ArgumentNullException("attribute");
+			Guard.NotNull(attribute, nameof(attribute));
 
-            _genericAttributeRepository.Insert(attribute);
+			_genericAttributeRepository.Insert(attribute);
 
 			if (attribute.KeyGroup.IsCaseInsensitiveEqual("Order") && attribute.EntityId != 0)
 			{
@@ -71,10 +68,9 @@ namespace SmartStore.Services.Common
 
         public virtual void UpdateAttribute(GenericAttribute attribute)
         {
-            if (attribute == null)
-                throw new ArgumentNullException("attribute");
+			Guard.NotNull(attribute, nameof(attribute));
 
-            _genericAttributeRepository.Update(attribute);
+			_genericAttributeRepository.Update(attribute);
 
 			if (attribute.KeyGroup.IsCaseInsensitiveEqual("Order") && attribute.EntityId != 0)
 			{

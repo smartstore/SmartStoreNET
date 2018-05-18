@@ -123,8 +123,12 @@ namespace SmartStore.Web.Controllers
 
             var pageSize = _forumSettings.PrivateMessagesPageSize;
 
-			var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id,
-				 0, _workContext.CurrentCustomer.Id, null, null, false, string.Empty, page, pageSize);
+			var list = _forumService.GetAllPrivateMessages(
+				_storeContext.CurrentStore.Id,
+				 0, 
+				 _workContext.CurrentCustomer.Id, 
+				 null, null, false, string.Empty, 
+				 page, pageSize);
 
             var inbox = new List<PrivateMessageModel>();
 

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Customers
 {
@@ -22,8 +23,18 @@ namespace SmartStore.Services.Customers
 		/// Anonymizes a customer's (personal) data.
 		/// </summary>
 		/// <param name="customer">The customer to anonymize.</param>
-		/// <param name="deleteContent"></param>
+		/// <param name="pseudomyzeContent"></param>
 		/// <remarks>This method fulfills the "GDPR Right to be forgotten" requirement.</remarks>
-		void AnonymizeCustomer(Customer customer, bool deleteContent);
+		void AnonymizeCustomer(Customer customer, bool pseudomyzeContent);
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="entity"></param>
+		/// <param name="expression"></param>
+		/// <param name="type"></param>
+		/// <param name="language"></param>
+		void AnonymizeData<TEntity>(TEntity entity, Expression<Func<TEntity, object>> expression, IdentifierDataType type, Language language = null) where TEntity : BaseEntity;
 	}
 }

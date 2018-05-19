@@ -18,6 +18,12 @@ using SmartStore.Services.Orders;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Domain.Localization;
 using System.Globalization;
+using SmartStore.Services.Localization;
+using SmartStore.Utilities;
+using System.Text;
+using System.Net;
+using System.Net.Sockets;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Customers
 {
@@ -43,7 +49,10 @@ namespace SmartStore.Services.Customers
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IForumService _forumService;
 		private readonly IBackInStockSubscriptionService _backInStockSubscriptionService;
+		private readonly ILanguageService _languageService;
 		private readonly ICommonServices _services;
+
+		public static DateTime MinDate = new DateTime(1900, 1, 1);
 
 		const string AnonymousEmail = "anonymous@example.com";
 
@@ -53,6 +62,7 @@ namespace SmartStore.Services.Customers
 			IShoppingCartService shoppingCartService,
 			IForumService forumService,
 			IBackInStockSubscriptionService backInStockSubscriptionService,
+			ILanguageService languageService,
 			ICommonServices services)
 		{
 			_messageModelProvider = messageModelProvider;
@@ -60,12 +70,16 @@ namespace SmartStore.Services.Customers
 			_shoppingCartService = shoppingCartService;
 			_forumService = forumService;
 			_backInStockSubscriptionService = backInStockSubscriptionService;
+			_languageService = languageService;
 			_services = services;
 
 			T = NullLocalizer.InstanceEx;
+			Logger = NullLogger.Instance;
 		}
 
 		public LocalizerEx T { get; set; }
+
+		public ILogger Logger { get; set; }
 
 		public virtual IDictionary<string, object> ExportCustomer(Customer customer)
 		{
@@ -203,35 +217,13 @@ namespace SmartStore.Services.Customers
 		{
 			Guard.NotNull(customer, nameof(customer));
 
+			var language = GetLanguage(customer);
+			var customerName = customer.GetFullName() ?? customer.Username ?? customer.FindEmail();
+
 			using (var scope = new DbContextScope(_services.DbContext, autoCommit: false))
 			{
-				// Customer Data
-				AnonymizeData(customer, x => x.Username, IdentifierDataType.UserName);
-				AnonymizeData(customer, x => x.Email, IdentifierDataType.EmailAddress);
-				AnonymizeData(customer, x => x.LastIpAddress, IdentifierDataType.IpAddress);
-				if (pseudomyzeContent)
-				{
-					AnonymizeData(customer, x => x.AdminComment, IdentifierDataType.LongText);
-					AnonymizeData(customer, x => x.LastLoginDateUtc, IdentifierDataType.DateTime);
-					AnonymizeData(customer, x => x.LastActivityDateUtc, IdentifierDataType.DateTime);
-				}
-
-				// Generic attributes
-				var attributes = _genericAttributeService.GetAttributesForEntity(customer.Id, "Customer");
-				foreach (var attr in attributes)
-				{
-					// we don't need to mask generic attrs, we just delete them.
-					_genericAttributeService.DeleteAttribute(attr);
-				}
-
-				// Addresses
-				foreach (var address in customer.Addresses)
-				{
-					AnonymizeAddress(address);
-				}
-
 				// Delete shopping cart & wishlist (TBD: (mc) Really?!?)
-				_shoppingCartService.DeleteExpiredShoppingCartItems(DateTime.UtcNow);
+				_shoppingCartService.DeleteExpiredShoppingCartItems(DateTime.UtcNow, customer.Id);
 
 				// Delete forum subscriptions
 				var forumSubscriptions = _forumService.GetAllSubscriptions(customer.Id, 0, 0, 0, int.MaxValue);
@@ -247,75 +239,116 @@ namespace SmartStore.Services.Customers
 					_backInStockSubscriptionService.DeleteSubscription(stockSub);
 				}
 
+				// Generic attributes
+				var attributes = _genericAttributeService.GetAttributesForEntity(customer.Id, "Customer");
+				foreach (var attr in attributes)
+				{
+					// we don't need to mask generic attrs, we just delete them.
+					_genericAttributeService.DeleteAttribute(attr);
+				}
+
+				// Customer Data
+				AnonymizeData(customer, x => x.Username, IdentifierDataType.UserName, language);
+				AnonymizeData(customer, x => x.Email, IdentifierDataType.EmailAddress, language);
+				AnonymizeData(customer, x => x.LastIpAddress, IdentifierDataType.IpAddress, language);
 				if (pseudomyzeContent)
 				{
-					// Private messages
+					AnonymizeData(customer, x => x.AdminComment, IdentifierDataType.LongText, language);
+					AnonymizeData(customer, x => x.LastLoginDateUtc, IdentifierDataType.DateTime, language);
+					AnonymizeData(customer, x => x.LastActivityDateUtc, IdentifierDataType.DateTime, language);
+				}
+
+				// Addresses
+				foreach (var address in customer.Addresses)
+				{
+					AnonymizeAddress(address, language);
+				}
+
+				// Private messages
+				if (pseudomyzeContent)
+				{
 					var privateMessages = _forumService.GetAllPrivateMessages(0, customer.Id, 0, null, null, null, null, 0, int.MaxValue);
 					foreach (var msg in privateMessages)
 					{
-						AnonymizeData(msg, x => x.Subject, IdentifierDataType.Text);
-						AnonymizeData(msg, x => x.Text, IdentifierDataType.LongText);
+						AnonymizeData(msg, x => x.Subject, IdentifierDataType.Text, language);
+						AnonymizeData(msg, x => x.Text, IdentifierDataType.LongText, language);
 					}
+				}
 
-					// Forum topics
-					var forumTopic = customer.ForumTopics;
-					foreach (var topic in forumTopic)
+				// Forum topics
+				if (pseudomyzeContent)
+				{
+					foreach (var topic in customer.ForumTopics)
 					{
-						AnonymizeData(topic, x => x.Subject, IdentifierDataType.Text);
+						AnonymizeData(topic, x => x.Subject, IdentifierDataType.Text, language);
 					}
+				}
 
-					// Forum posts
-					var forumPosts = customer.ForumPosts;
-					foreach (var post in forumPosts)
+				// Forum posts
+				foreach (var post in customer.ForumPosts)
+				{
+					AnonymizeData(post, x => x.IPAddress, IdentifierDataType.IpAddress, language);
+					if (pseudomyzeContent)
 					{
-						AnonymizeData(post, x => x.IPAddress, IdentifierDataType.IpAddress);
-						AnonymizeData(post, x => x.Text, IdentifierDataType.LongText);
-					}
+						AnonymizeData(post, x => x.Text, IdentifierDataType.LongText, language);
+					}	
+				}
 
-					// Customer Content
-					var content = customer.CustomerContent;
-					foreach (var item in content)
+				// Customer Content
+				foreach (var item in customer.CustomerContent)
+				{
+					AnonymizeData(item, x => x.IpAddress, IdentifierDataType.IpAddress, language);
+
+					if (pseudomyzeContent)
 					{
-						AnonymizeData(item, x => x.IpAddress, IdentifierDataType.IpAddress);
-
 						switch (item)
 						{
 							case ProductReview c:
-								AnonymizeData(c, x => x.ReviewText, IdentifierDataType.LongText);
-								AnonymizeData(c, x => x.Title, IdentifierDataType.Text);
+								AnonymizeData(c, x => x.ReviewText, IdentifierDataType.LongText, language);
+								AnonymizeData(c, x => x.Title, IdentifierDataType.Text, language);
 								break;
 							case NewsComment c:
-								AnonymizeData(c, x => x.CommentText, IdentifierDataType.LongText);
-								AnonymizeData(c, x => x.CommentTitle, IdentifierDataType.Text);
+								AnonymizeData(c, x => x.CommentText, IdentifierDataType.LongText, language);
+								AnonymizeData(c, x => x.CommentTitle, IdentifierDataType.Text, language);
 								break;
 							case BlogComment c:
-								AnonymizeData(c, x => x.CommentText, IdentifierDataType.LongText);
+								AnonymizeData(c, x => x.CommentText, IdentifierDataType.LongText, language);
 								break;
 						}
 					}
 				}
 
+				// Anonymize Order IPs
+				foreach (var order in customer.Orders)
+				{
+					AnonymizeData(order, x => x.CustomerIp, IdentifierDataType.IpAddress, language);
+				}
+
 				// SAVE!!!
+				//_services.DbContext.DetachAll(); // TEST
 				scope.Commit();
+
+				// Log
+				Logger.Info(T("Gdpr.Anonymize.Success", language.Id, customerName));
 			}
 		}
 
-		private void AnonymizeAddress(Address address)
+		private void AnonymizeAddress(Address address, Language language)
 		{
-			AnonymizeData(address, x => x.Address1, IdentifierDataType.Address);
-			AnonymizeData(address, x => x.Address2, IdentifierDataType.Address);
-			AnonymizeData(address, x => x.City, IdentifierDataType.Address);
-			AnonymizeData(address, x => x.Company, IdentifierDataType.Address);
-			AnonymizeData(address, x => x.Email, IdentifierDataType.EmailAddress);
-			AnonymizeData(address, x => x.FaxNumber, IdentifierDataType.PhoneNumber);
-			AnonymizeData(address, x => x.FirstName, IdentifierDataType.Name);
-			AnonymizeData(address, x => x.LastName, IdentifierDataType.Name);
-			AnonymizeData(address, x => x.PhoneNumber, IdentifierDataType.PhoneNumber);
-			AnonymizeData(address, x => x.ZipPostalCode, IdentifierDataType.PostalCode);
+			AnonymizeData(address, x => x.Address1, IdentifierDataType.Address, language);
+			AnonymizeData(address, x => x.Address2, IdentifierDataType.Address, language);
+			AnonymizeData(address, x => x.City, IdentifierDataType.Address, language);
+			AnonymizeData(address, x => x.Company, IdentifierDataType.Address, language);
+			AnonymizeData(address, x => x.Email, IdentifierDataType.EmailAddress, language);
+			AnonymizeData(address, x => x.FaxNumber, IdentifierDataType.PhoneNumber, language);
+			AnonymizeData(address, x => x.FirstName, IdentifierDataType.Name, language);
+			AnonymizeData(address, x => x.LastName, IdentifierDataType.Name, language);
+			AnonymizeData(address, x => x.PhoneNumber, IdentifierDataType.PhoneNumber, language);
+			AnonymizeData(address, x => x.ZipPostalCode, IdentifierDataType.PostalCode, language);
 		}
 
-		public virtual void AnonymizeData<T>(T entity, Expression<Func<T, object>> expression, IdentifierDataType type)
-			where T : BaseEntity
+		public virtual void AnonymizeData<TEntity>(TEntity entity, Expression<Func<TEntity, object>> expression, IdentifierDataType type, Language language = null)
+			where TEntity : BaseEntity
 		{
 			Guard.NotNull(entity, nameof(entity));
 			Guard.NotNull(expression, nameof(expression));
@@ -325,7 +358,7 @@ namespace SmartStore.Services.Customers
 
 			if (originalValue is DateTime d)
 			{
-				maskedValue = DateTime.MinValue;
+				maskedValue = MinDate;
 			}
 			else if (originalValue is string s)
 			{
@@ -334,42 +367,42 @@ namespace SmartStore.Services.Customers
 					return;
 				}
 
-				Language language = null;
-				var culture = CultureInfo.GetCultureInfo(language.LanguageCulture);
-				//customerLanguage = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, processPaymentRequest.StoreId));
-				//if (customerLanguage == null || !customerLanguage.Published)
-				//{
-				//	customerLanguage = _workContext.WorkingLanguage;
-				//}
+				language = language ?? GetLanguage(entity as Customer);
 
 				switch (type)
 				{
-					case IdentifierDataType.DateTime:
-						maskedValue = DateTime.MinValue.ToString(CultureInfo.InvariantCulture);
-						break;
-					case IdentifierDataType.EmailAddress:
-						// TODO
-						break;
-					case IdentifierDataType.IpAddress:
-						// TODO
+					case IdentifierDataType.Address:
+					case IdentifierDataType.Name:
+					case IdentifierDataType.Text:
+						maskedValue = T("Gdpr.DeletedText", language.Id).Text;
 						break;
 					case IdentifierDataType.LongText:
-						// TODO
+						maskedValue = T("Gdpr.DeletedLongText", language.Id).Text;
 						break;
-					case IdentifierDataType.PhoneNumber:
-						// TODO
-						break;
-					case IdentifierDataType.Text:
-						// TODO
+					case IdentifierDataType.EmailAddress:
+						//maskedValue = s.Hash(Encoding.ASCII, true) + "@anony.mous";
+						maskedValue = HashCodeCombiner.Start()
+							.Add(entity.GetHashCode())
+							.Add(s)
+							.CombinedHashString + "@anony.mous";
 						break;
 					case IdentifierDataType.Url:
-						// TODO
+						maskedValue = "https://anony.mous";
+						break;
+					case IdentifierDataType.IpAddress:
+						maskedValue = AnonymizeIpAddress(s);
 						break;
 					case IdentifierDataType.UserName:
-						// TODO
+						maskedValue = T("Gdpr.Anonymous", language.Id).Text.ToLower();
+						break;
+					case IdentifierDataType.PhoneNumber:
+						maskedValue = "555-00000";
 						break;
 					case IdentifierDataType.PostalCode:
-						// TODO
+						maskedValue = "00000";
+						break;
+					case IdentifierDataType.DateTime:
+						maskedValue = MinDate.ToString(CultureInfo.InvariantCulture);
 						break;
 				}
 			}
@@ -379,6 +412,56 @@ namespace SmartStore.Services.Customers
 				var pi = expression.ExtractPropertyInfo();
 				pi.SetValue(entity, maskedValue);
 			}
+		}
+
+		/// <summary>
+		/// Returns an anonymized IPv4 or IPv6 address.
+		/// </summary>
+		/// <param name="ipAddress">The IPv4 or IPv6 address to be anonymized.</param>
+		/// <returns>The anonymized IP address.</returns>
+		protected virtual string AnonymizeIpAddress(string ipAddress)
+		{
+			try
+			{
+				var ip = IPAddress.Parse(ipAddress);
+
+				switch (ip.AddressFamily)
+				{
+					case AddressFamily.InterNetwork:
+						break;
+					case AddressFamily.InterNetworkV6:
+						// Map to IPv4 first
+						ip = ip.MapToIPv4();
+						break;
+					default:
+						// we only support IPv4 and IPv6
+						return "0.0.0.0";
+				}
+
+				// Keep the first 3 bytes and append ".0"
+				return string.Join(".", ip.GetAddressBytes().Take(3)) + ".0";
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		private Language GetLanguage(Customer customer)
+		{
+			Language language = null;
+
+			if (customer != null)
+			{
+				language = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId));
+			}
+
+			if (language == null || !language.Published)
+			{
+				language = _services.WorkContext.WorkingLanguage;
+			}
+
+			return language;
 		}
 	}
 }

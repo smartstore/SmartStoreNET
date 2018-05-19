@@ -22,18 +22,23 @@
 				<span>@T("Admin.Common.SaveContinue")</span>
 			</button>
 
-			<a href="#sendemail-window" data-toggle="modal" class="btn btn-secondary">
-				<i class="fa fa-envelope"></i>
-				<span>@T("Admin.Customers.Customers.SendEmail")</span>
-			</a>
-			<a href="#sendprivatemessage-window" data-toggle="modal" class="btn btn-secondary">
-				<i class="fa fa-envelope"></i>
-				<span>@T("Admin.Customers.Customers.SendPM")</span>
-			</a>
+			<div class="btn-group">
+				<button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+					<i class="fa fa-envelope"></i>
+					<span>@T("Common.Send")</span>
+				</button>
+				<div class="dropdown-menu">
+					<a href="#sendemail-window" data-toggle="modal" class="dropdown-item">@T("Admin.Customers.Customers.SendEmail")</a>
+					<a href="#sendprivatemessage-window" data-toggle="modal" class="dropdown-item">@T("Admin.Customers.Customers.SendPM")</a>
+				</div>
+			</div>
 
 			<a href="@Url.Action("Export", new { id = Model.Id })" class="btn btn-secondary">
 				<span>@T("Common.Export")</span>
 			</a>
+			@*<a href="@Url.Action("Anonymize", new { id = Model.Id, pseudomyzeContent = true })" class="btn btn-danger">
+				<span>@T("Gdpr.Anonymize")</span>
+			</a>*@
 
 			<button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger">
 				<i class="fa fa-trash-o"></i>
@@ -54,20 +59,20 @@
     .Content(@<text>
 		<form method="POST" action="@Url.Action("SendEmail", "Customer", new { id = Model.Id })">
 			<table class="adminContent p-0">
-				<tr>
+				<tr class="wide">
 					<td class="adminTitle">
 						@Html.SmartLabelFor(model => model.SendEmail.Subject)
 					</td>
-					<td class="adminData wide">
+					<td class="adminData">
 						@Html.EditorFor(model => model.SendEmail.Subject)
 						@Html.ValidationMessageFor(model => model.SendEmail.Subject)
 					</td>
 				</tr>
-				<tr>
+				<tr class="wide">
 					<td class="adminTitle">
 						@Html.SmartLabelFor(model => model.SendEmail.Body)
 					</td>
-					<td class="adminData wide">
+					<td class="adminData">
 						@Html.TextAreaFor(model => model.SendEmail.Body, new { style = "height: 250px;" })
 						@Html.ValidationMessageFor(model => model.SendEmail.Body)
 					</td>
@@ -93,20 +98,20 @@
         .Content(@<text>
 			<form method="POST" action="@Url.Action("SendPm", "Customer", new { id = Model.Id })">
 				<table class="adminContent p-0">
-					<tr>
+					<tr class="wide">
 						<td class="adminTitle">
 							@Html.SmartLabelFor(model => model.SendPm.Subject)
 						</td>
-						<td class="adminData wide">
+						<td class="adminData">
 							@Html.EditorFor(model => model.SendPm.Subject)
 							@Html.ValidationMessageFor(model => model.SendPm.Subject)
 						</td>
 					</tr>
-					<tr>
+					<tr class="wide">
 						<td class="adminTitle">
 							@Html.SmartLabelFor(model => model.SendPm.Message)
 						</td>
-						<td class="adminData wide">
+						<td class="adminData">
 							@Html.TextAreaFor(model => model.SendPm.Message, new { style = "height: 250px;" })
 							@Html.ValidationMessageFor(model => model.SendPm.Message)
 						</td>

@@ -102,6 +102,16 @@
 			builder.AddOrUpdate("GdprConsent.DetailText",
 				"Yes I've read the <a href=\"{0}\">privacy terms</a> and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.",
 				"Ja, ich habe die <a href=\"{0}\">Datenschutzerklärung</a> zur Kenntnis genommen und bin damit einverstanden, dass die von mir angegebenen Daten elektronisch erhoben und gespeichert werden. Meine Daten werden dabei nur zur Bearbeitung meiner Anfrage genutzt.");
+
+			builder.AddOrUpdate("Gdpr.Anonymous", "Anonymous", "Anonym");
+			builder.AddOrUpdate("Gdpr.Anonymize", "Anonymize", "Anonymisieren");
+			builder.AddOrUpdate("Gdpr.DeletedText", "Deleted", "Gelöscht");
+			builder.AddOrUpdate("Gdpr.DeletedLongText",
+				"This content was deleted by the author.", 
+				"Dieser Inhalt wurde vom Autor gelöscht.");
+			builder.AddOrUpdate("Gdpr.Anonymize.Success",
+				"The customer record '{0}' has been anonymized.",
+				"Der Kundendatensatz '{0}' wurde anonymisiert.");
 		}
 	}
 }

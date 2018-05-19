@@ -1,7 +1,5 @@
-﻿@model CustomerOrderListModel
-
-@using SmartStore.Web.Models.Customer;
-
+﻿@using SmartStore.Web.Models.Customer;
+@model CustomerOrderListModel
 @{
 	Html.AddTitleParts(T("PageTitle.Account").Text);
 
@@ -141,3 +139,9 @@
         </div>
     }
 </div>
+@if (Model.Orders.TotalPages > 1)
+{
+	<div class="mt-1">
+		@Html.SmartStore().Pager(Model.Orders).Name("paginator").QueryParam("page").Action("Orders", "Customer")
+	</div>
+}

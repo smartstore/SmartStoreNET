@@ -141,7 +141,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableLanguageSetId, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDownloadLanguages, mo => mo.Ignore())
-				.ForMember(dest => dest.FlagFileNames, mo => mo.Ignore());
+				.ForMember(dest => dest.FlagFileNames, mo => mo.Ignore())
+				.ForMember(dest => dest.LastResourcesImportOn, mo => mo.Ignore())
+				.ForMember(dest => dest.LastResourcesImportOnString, mo => mo.Ignore());
 			CreateMap<LanguageModel, Language>()
 				.ForMember(dest => dest.LocaleStringResources, mo => mo.Ignore());
 			//email account

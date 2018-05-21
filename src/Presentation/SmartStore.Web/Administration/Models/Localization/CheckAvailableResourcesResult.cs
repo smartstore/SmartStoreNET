@@ -50,4 +50,11 @@ namespace SmartStore.Admin.Models.Localization
             public bool Rtl { get; set; }
         }
     }
+
+	[Serializable]
+	public class LastResourcesImportInfo
+	{
+		public decimal TranslatedPercentage { get; set; }
+		public DateTime ImportedOn { get; set; }
+	}
 }

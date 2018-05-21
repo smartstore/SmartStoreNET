@@ -112,6 +112,12 @@
 			builder.AddOrUpdate("Gdpr.Anonymize.Success",
 				"The customer record '{0}' has been anonymized.",
 				"Der Kundendatensatz '{0}' wurde anonymisiert.");
+
+			builder.AddOrUpdate("Admin.Configuration.Languages.Fields.LastResourcesImportOn",
+				"Last import",
+				"Letzter Import",
+				"The date on which resources were last downloaded and imported.",
+				"Das Datum, an dem zuletzt Ressourcen heruntergeladen und importiert worden sind.");
 		}
 	}
 }

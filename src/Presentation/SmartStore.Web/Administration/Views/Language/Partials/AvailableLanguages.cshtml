@@ -11,20 +11,17 @@
 		<table class="table admin-table available-languages-list language-list">
 			<thead>
 				<tr>
-					<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
-					<th class="text-center">@T("Common.Published")</th>
+					<th style="width: 350px;">@T("Admin.Configuration.Languages.Fields.Name")</th>
 					<th class="text-center">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
 					<th class="text-center">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
-					<th class="text-center">@T("Common.Translated")</th>
+					<th class="text-center">@T("Common.Published")</th>
 					<th>@T("Admin.Common.Updated")</th>
+					<th class="text-center">@T("Common.Translated")</th>
 					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (var language in Model.Languages
-				.OrderByDescending(x => x.Published)
-				.ThenBy(x => x.IsInstalled)
-				.ThenBy(x => x.DisplayOrder))
+				@foreach (var language in Model.Languages.OrderByDescending(x => x.Published).ThenBy(x => x.IsInstalled).ThenBy(x => x.DisplayOrder))
 				{
 					<tr class="@(language.Published ? "" : "disabled")" data-id="@language.Id">
 						<td>
@@ -41,13 +38,16 @@
 							}
 						</td>
 						<td class="text-center">
-							@Html.SymbolForBool(language.Published)
-						</td>
-						<td class="text-center">
 							@language.LanguageCulture
 						</td>
 						<td class="text-center">
 							@language.UniqueSeoCode
+						</td>
+						<td class="text-center">
+							@Html.SymbolForBool(language.Published)
+						</td>
+						<td>
+							<span title="@language.UpdatedOn.ToString()">@language.UpdatedOnString</span>
 						</td>
 						<td class="text-center">
 							@if (Model.ResourceCount == 0)
@@ -64,10 +64,7 @@
 								<div>@T("Admin.Configuration.Languages.TranslatedPercentageAtLastImport", language.TranslatedPercentageAtLastImport.Value.ToString("G29"))</div>
 							}
 						</td>
-						<td>
-							@language.UpdatedOnString
-						</td>
-						<td class="text-right" style="width: 200px;">
+						<td class="text-right">
 							@if (language.Published)
 							{
 								<a href="@Url.Action("Download", new { setId = language.Id })"

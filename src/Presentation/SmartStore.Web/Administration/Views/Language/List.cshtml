@@ -23,10 +23,11 @@
 		<table class="table admin-table installed-languages-list language-list">
 			<thead>
 				<tr>
-					<th>@T("Admin.Configuration.Languages.Fields.Name")</th>
+					<th style="width: 350px;">@T("Admin.Configuration.Languages.Fields.Name")</th>
 					<th class="text-center">@T("Admin.Configuration.Languages.Fields.LanguageCulture")</th>
 					<th class="text-center">@T("Admin.Configuration.Languages.Fields.UniqueSeoCode")</th>
 					<th class="text-center">@T("Admin.Configuration.Languages.Fields.Published")</th>
+					<th>@T("Admin.Configuration.Languages.Fields.LastResourcesImportOn")</th>
 					<th class="text-center">@T("Admin.Common.Store.LimitedTo")</th>
 					<th class="text-center">@T("Admin.Configuration.Languages.Fields.DisplayOrder")</th>
 					<th></th>
@@ -52,19 +53,27 @@
 						<td class="text-center">
 							@Html.SymbolForBool(language.Published)
 						</td>
+						<td>
+							@if (language.LastResourcesImportOn.HasValue)
+							{
+								<span title="@language.LastResourcesImportOn.Value.ToString()">@language.LastResourcesImportOnString</span>
+							}
+							else
+							{
+								@Html.SymbolForBool(false)
+							}
+						</td>
 						<td class="text-center">
 							@Html.SymbolForBool(language.LimitedToStores)
 						</td>
 						<td class="text-center">
 							@language.DisplayOrder
 						</td>
-						<td class="omega text-truncate" style="width: 200px;">
+						<td class="omega text-truncate">
 							<a href="@Url.Action("Edit", new { id = language.Id })" class="btn btn-warning btn-sm">
-								@*<i class="fa fa-pencil-square-o"></i>*@
 								<span>@T("Admin.Common.Edit")</span>
 							</a>
 							<a href="@Url.Action("Resources", new { languageId = language.Id })" class="btn btn-secondary btn-sm">
-								@*<i class="fa fa-list-alt"></i>*@
 								<span>@T("Admin.Configuration.Languages.Resources.View")</span>
 							</a>
 						</td>

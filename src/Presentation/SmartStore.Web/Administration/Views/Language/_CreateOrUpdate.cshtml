@@ -85,6 +85,17 @@
 				@Html.ValidationMessageFor(model => model.DisplayOrder)
 			</td>
 		</tr>
+		@if (Model.LastResourcesImportOnString.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.LastResourcesImportOnString)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => model.LastResourcesImportOnString, new { @readonly = "readonly", @class = "form-control-plaintext" })
+				</td>
+			</tr>
+		}
 	</table>
 }
 

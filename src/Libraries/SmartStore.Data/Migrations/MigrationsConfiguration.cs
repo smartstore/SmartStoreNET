@@ -134,17 +134,22 @@
 				"First name required",
 				"Vorname ist erforderlich",
 				"Check the box if 'First name' is required.",
-				"Legt fest, ob die Eingabe des Vornamens erforderlich ist.");
+				"Legt fest, ob die Angabe des Vornamens erforderlich ist.");
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.LastNameRequired",
 				"Last name required",
 				"Nachname ist erforderlich",
 				"Check the box if 'Last name' is required.",
-				"Legt fest, ob die Eingabe des Nachnamens erforderlich ist.");
+				"Legt fest, ob die Angabe des Nachnamens erforderlich ist.");
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired",
 				"Name in the contact form is required",
 				"Name im Kontaktformular ist erforderlich",
 				"Specifies whether the name is required in the contact form.",
-				"Legt fest, ob die Eingabe des Namens im Kontaktformular erforderlich ist.");
+				"Legt fest, ob die Angabe des Namens im Kontaktformular erforderlich ist.");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired",
+				"Name in the product request is required",
+				"Name im Produktanfrage-Formular ist erforderlich",
+				"Specifies whether the name is required in the product request form.",
+				"Legt fest, ob die Angabe des Namens im Produktanfrage-Formular erforderlich ist.");
 		}
 	}
 }

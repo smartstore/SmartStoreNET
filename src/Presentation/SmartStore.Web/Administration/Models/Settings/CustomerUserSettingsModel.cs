@@ -258,6 +258,9 @@ namespace SmartStore.Admin.Models.Settings
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired")]
 			public bool FullNameOnContactUsRequired { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired")]
+			public bool FullNameOnProductRequestRequired { get; set; }
 		}
 		
 		#endregion

@@ -19,9 +19,9 @@
 * Set catalogsettings.showsharebutton to false as its not compliant with GDPR
 * Made form fields for first & last name in customer registration optional
 * Implemented settings to make form fields for first & last name required again
-* Made form field for full name in contact request optional
-* Implemented setting to make form field for full name in contact request required again
- 
+* Made form field for full name in contact us & product request optional
+* Implemented settings to make form field for full name in contact us & product request required again
+
 ### Bugfixes
 * Migration: take all same-named message templates into account
 * Messaging: OrderPlaced e-mail templates show main product image even when an attribute combination with a custom image has been selected

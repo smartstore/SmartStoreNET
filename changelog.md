@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
@@ -70,7 +70,7 @@
 
 ### Breaking changes
 * Message template customizations are lost due to the new template engine. You have to customize the templates again. No automatic migration, sorry :-(
-* Amazon Pay: The plugin has been changed to new *Login and pay with Amazon* services. A registration at Amazon and new access data are necessary for its use. The old access data can no longer be used.
+* Amazon Pay: The plugin has been changed to new *Login and pay with Amazon* services. The client ID has been added, which has to be created in Amazon Seller Central and saved in the payment method configuration.
 * (Dev) Calls to cache methods `Keys()` and `RemoveByPattern()` require glob chars to be present now (supported glob-styles see [https://redis.io/commands/keys](https://redis.io/commands/keys)). Previously these methods appended `*` to the passed pattern, which made pattern matching rather unflexible.
 * (Dev) Hook framework now passes `IHookedEntity` interface instead of `HookedEntity` class
 * (Dev) Completely removed all `EntityInserted<T>`, `EntityUpdated<T>` and `EntityDeleted<T>` legacy events. We were using DbSaveHooks anyway, which provides a much more powerful and way faster pub-sub mechanism for database operations.

@@ -566,7 +566,7 @@ namespace SmartStore.Services.Messages
 
 			if (shoppingCartSettings.ShowDeliveryTimes && part.IsShipEnabled)
 			{
-				if (deliveryTimeService.GetDeliveryTimeById(part.DeliveryTimeId ?? 0) is DeliveryTime dt)
+				if (deliveryTimeService.GetDeliveryTime(part) is DeliveryTime dt)
 				{
 					m["DeliveryTime"] = new Dictionary<string, object>
 					{

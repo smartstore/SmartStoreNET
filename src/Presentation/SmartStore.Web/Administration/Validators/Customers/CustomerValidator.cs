@@ -9,8 +9,12 @@ namespace SmartStore.Admin.Validators.Customers
     {
         public CustomerValidator(ILocalizationService localizationService, CustomerSettings customerSettings)
         {
-            //form fields
-            if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
+			//form fields
+			if (customerSettings.FirstNameRequired)
+				RuleFor(x => x.FirstName).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.FirstName.Required"));
+			if (customerSettings.LastNameRequired)
+				RuleFor(x => x.LastName).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.LastName.Required"));
+			if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
                 RuleFor(x => x.Company).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.Company.Required"));
             if (customerSettings.StreetAddressRequired && customerSettings.StreetAddressEnabled)
                 RuleFor(x => x.StreetAddress).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.StreetAddress.Required"));

@@ -17,6 +17,8 @@
 * #1450 Show the regular price only if it's higher than the final price
 * #1450 Do not ignore discounts with a negative amount
 * Set catalogsettings.showsharebutton to false as its not compliant with GDPR
+* Made form fields for first & last name in customer registration optional
+* Implemented settings to make form fields for first & last name required again
 
 ### Bugfixes
 * Migration: take all same-named message templates into account

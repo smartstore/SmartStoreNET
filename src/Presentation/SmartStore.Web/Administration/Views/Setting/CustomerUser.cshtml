@@ -260,6 +260,24 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.TitleEnabled)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSettings.FirstNameRequired)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.CustomerSettings.FirstNameRequired)
+				@Html.ValidationMessageFor(model => model.CustomerSettings.FirstNameRequired)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSettings.LastNameRequired)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.CustomerSettings.LastNameRequired)
+				@Html.ValidationMessageFor(model => model.CustomerSettings.LastNameRequired)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.DateOfBirthEnabled)

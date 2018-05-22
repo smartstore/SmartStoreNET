@@ -126,6 +126,20 @@
 				"Letzter Import",
 				"The date on which resources were last downloaded and imported.",
 				"Das Datum, an dem zuletzt Ressourcen heruntergeladen und importiert worden sind.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields", "Registration", "Registrierung");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields", "Addresses", "Adressen");
+			
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.FirstNameRequired",
+				"First name required",
+				"Vorname ist erforderlich",
+				"Check the box if 'First name' is required.",
+				"Legt fest, ob die Eingabe des Vornamens erforderlich ist.");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.LastNameRequired",
+				"Last name required",
+				"Nachname ist erforderlich",
+				"Check the box if 'Last name' is required.",
+				"Legt fest, ob die Eingabe des Nachnamens erforderlich ist.");
 		}
 	}
 }

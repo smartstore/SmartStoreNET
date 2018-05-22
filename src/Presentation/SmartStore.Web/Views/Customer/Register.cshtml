@@ -44,8 +44,8 @@
 						</div>
 					}
 
-					@Html.ControlGroupFor(model => model.FirstName, required: true, breakpoint: "md")
-					@Html.ControlGroupFor(model => model.LastName, required: true, breakpoint: "md")
+					@Html.ControlGroupFor(model => model.FirstName, required: Model.FirstNameRequired, breakpoint: "md")
+					@Html.ControlGroupFor(model => model.LastName, required: Model.LastNameRequired, breakpoint: "md")
 
 					@if (Model.DateOfBirthEnabled)
 					{

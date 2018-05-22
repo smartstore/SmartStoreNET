@@ -102,7 +102,13 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.TitleEnabled")]
             public bool TitleEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DateOfBirthEnabled")]
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.FirstNameRequired")]
+			public bool FirstNameRequired { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.LastNameRequired")]
+			public bool LastNameRequired { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DateOfBirthEnabled")]
             public bool DateOfBirthEnabled { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CompanyEnabled")]
@@ -249,6 +255,12 @@ namespace SmartStore.Admin.Models.Settings
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms")]
 			public bool DisplayGdprConsentOnForms { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired")]
+			public bool FullNameOnContactUsRequired { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired")]
+			public bool FullNameOnProductRequestRequired { get; set; }
 		}
 		
 		#endregion

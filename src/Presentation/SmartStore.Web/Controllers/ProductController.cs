@@ -64,6 +64,7 @@ namespace SmartStore.Web.Controllers
         private readonly IDownloadService _downloadService;
         private readonly ILocalizationService _localizationService;
 		private readonly IBreadcrumb _breadcrumb;
+		private readonly Lazy<PrivacySettings> _privacySettings;
 
 		public ProductController(
 			ICommonServices services,
@@ -94,7 +95,8 @@ namespace SmartStore.Web.Controllers
 			CatalogHelper helper,
             IDownloadService downloadService,
             ILocalizationService localizationService,
-			IBreadcrumb breadcrumb)
+			IBreadcrumb breadcrumb,
+			Lazy<PrivacySettings> privacySettings)
         {
 			_services = services;
 			_manufacturerService = manufacturerService;
@@ -125,7 +127,8 @@ namespace SmartStore.Web.Controllers
 			_downloadService = downloadService;
 			_localizationService = localizationService;
 			_breadcrumb = breadcrumb;
-        }
+			_privacySettings = privacySettings;
+		}
 
 		#region Products
 
@@ -850,6 +853,7 @@ namespace SmartStore.Web.Controllers
 			model.ProductSeName = product.GetSeName();
 			model.SenderEmail = customer.Email;
 			model.SenderName = customer.GetFullName();
+			model.SenderNameRequired = _privacySettings.Value.FullNameOnProductRequestRequired;
 			model.SenderPhone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
 			model.Question = T("Products.AskQuestion.Question.Text").Text.FormatCurrentUI(model.ProductName);
 			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;

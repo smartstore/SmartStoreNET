@@ -22,8 +22,9 @@ namespace SmartStore.Web.Models.Common
         [AllowHtml]
         [SmartResourceDisplayName("ContactUs.FullName")]
         public string FullName { get; set; }
+		public bool FullNameRequired { get; set; }
 
-        public bool SuccessfullySent { get; set; }
+		public bool SuccessfullySent { get; set; }
         public string Result { get; set; }
 
         public bool DisplayCaptcha { get; set; }

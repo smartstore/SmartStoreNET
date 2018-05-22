@@ -11,6 +11,7 @@ namespace SmartStore.Core.Domain.Customers
 			EnableCookieConsent = true;
 			StoreLastIpAddress = false;
 			DisplayGdprConsentOnForms = true;
+			FullNameOnContactUsRequired = false;
 		}
 
 		/// <summary>
@@ -32,5 +33,15 @@ namespace SmartStore.Core.Domain.Customers
 		/// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
 		/// </summary>
 		public bool DisplayGdprConsentOnForms { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the full name field is required on contact us requests
+		/// </summary>
+		public bool FullNameOnContactUsRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the full name field is required on product requests
+		/// </summary>
+		public bool FullNameOnProductRequestRequired { get; set; }
 	}
 }

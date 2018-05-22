@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
@@ -17,6 +17,10 @@
 * #1450 Show the regular price only if it's higher than the final price
 * #1450 Do not ignore discounts with a negative amount
 * Set catalogsettings.showsharebutton to false as its not compliant with GDPR
+* Made form fields for first & last name in customer registration optional
+* Implemented settings to make form fields for first & last name required again
+* Made form field for full name in contact us & product request optional
+* Implemented settings to make form field for full name in contact us & product request required again
 * #1453 Import: Use [IGNORE] to ignore a field value on record level
 
 ### Bugfixes

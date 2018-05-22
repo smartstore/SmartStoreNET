@@ -76,7 +76,7 @@ namespace SmartStore.Services.Messages
 				["Subject"] = subject.NullEmpty(),
 				["Message"] = message.NullEmpty(),
 				["SenderEmail"] = senderEmail.NullEmpty(),
-				["SenderName"] = senderName.NullEmpty()
+				["SenderName"] = senderName.HasValue() ? senderName.NullEmpty() : senderEmail.NullEmpty()
 			};
 
 			var messageContext = MessageContext.Create(MessageTemplateNames.SystemContactUs, languageId, customer: customer);

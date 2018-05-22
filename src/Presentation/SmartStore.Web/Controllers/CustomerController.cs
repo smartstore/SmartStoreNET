@@ -527,7 +527,9 @@ namespace SmartStore.Web.Controllers
             model.VatRequired = _taxSettings.VatRequired;
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
-            model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
+			model.FirstNameRequired = _customerSettings.FirstNameRequired;
+			model.LastNameRequired = _customerSettings.LastNameRequired;
+			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.CompanyRequired = _customerSettings.CompanyRequired;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
@@ -802,7 +804,9 @@ namespace SmartStore.Web.Controllers
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
-            model.CompanyEnabled = _customerSettings.CompanyEnabled;
+			model.FirstNameRequired = _customerSettings.FirstNameRequired;
+			model.LastNameRequired = _customerSettings.LastNameRequired;
+			model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.CompanyRequired = _customerSettings.CompanyRequired;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddressRequired = _customerSettings.StreetAddressRequired;

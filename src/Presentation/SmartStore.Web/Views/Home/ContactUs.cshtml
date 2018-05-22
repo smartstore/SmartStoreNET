@@ -33,23 +33,10 @@
 				{
 					@Html.ValidationSummary(false)
 				}
-
-				<div class="form-group row">
-					@Html.LabelFor(model => model.FullName, new { @class = "col-sm-3 col-form-label required" })
-					<div class="col-sm-9">
-						@Html.TextBoxFor(model => model.FullName, new { @class = "form-control", placeholder = T("ContactUs.FullName.Hint") })
-						@Html.ValidationMessageFor(model => model.FullName)
-					</div>
-				</div>
-
-				<div class="form-group row">
-					@Html.LabelFor(model => model.Email, new { @class = "col-sm-3 col-form-label required" })
-					<div class="col-sm-9">
-						@Html.TextBoxFor(model => model.Email, new { @class = "form-control", placeholder = T("ContactUs.Email.Hint") })
-						@Html.ValidationMessageFor(model => model.Email)
-					</div>
-				</div>
-
+				
+				@Html.ControlGroupFor(model => model.FullName, required: Model.FullNameRequired, breakpoint: "sm")
+				@Html.ControlGroupFor(model => model.Email, required: true, breakpoint: "sm")
+				
 				<div class="form-group row">
 					@Html.LabelFor(model => model.Enquiry, new { @class = "col-sm-3 col-form-label required" })
 					<div class="col-sm-9">

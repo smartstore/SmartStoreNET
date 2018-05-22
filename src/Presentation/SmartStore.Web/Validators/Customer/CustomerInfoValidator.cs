@@ -11,11 +11,17 @@ namespace SmartStore.Web.Validators.Customer
         {
             RuleFor(x => x.Email).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.Email.Required"));
             RuleFor(x => x.Email).EmailAddress().WithMessage(localizationService.GetResource("Common.WrongEmail"));
-            RuleFor(x => x.FirstName).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.FirstName.Required"));
-            RuleFor(x => x.LastName).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.LastName.Required"));
-
-            //form fields
-            if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
+            
+			//form fields
+			if (customerSettings.FirstNameRequired)
+			{
+				RuleFor(x => x.FirstName).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.FirstName.Required"));
+			}
+			if (customerSettings.LastNameRequired)
+			{
+				RuleFor(x => x.LastName).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.LastName.Required"));
+			}
+			if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
             {
                 RuleFor(x => x.Company).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.Company.Required"));
             }

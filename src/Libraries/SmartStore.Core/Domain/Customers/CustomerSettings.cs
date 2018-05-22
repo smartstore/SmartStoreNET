@@ -23,6 +23,8 @@ namespace SmartStore.Core.Domain.Customers
 			NewsletterEnabled = true;
 			OnlineCustomerMinutes = 20;
 			StoreLastVisitedPage = true;
+			FirstNameRequired = false;
+			LastNameRequired = false;
 		}
 		
 		/// <summary>
@@ -162,10 +164,20 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool TitleEnabled { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether 'Date of Birth' is enabled
-        /// </summary>
-        public bool DateOfBirthEnabled { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether 'FirstName' is required
+		/// </summary>
+		public bool FirstNameRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether 'LastName' is required
+		/// </summary>
+		public bool LastNameRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether 'Date of Birth' is enabled
+		/// </summary>
+		public bool DateOfBirthEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether 'Company' is enabled

@@ -96,10 +96,10 @@
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs");
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs.Hint");
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms",
-				"Get privacy consent for contact requests",
-				"Einwilligungserklärung im Kontaktformular fordern",
-				"Specifies whether a checkbox will be displayed on the contact page which requests the user to agree on storage of his data.",
-				"Bestimmt ob im Kontaktformular eine Checkbox angezeigt wird, die den Benutzer auffordert der Speicherung seiner Daten zuzustimmen.");
+				"Get privacy consent for form submissions",
+				"Einwilligungserklärung in Formularen fordern",
+				"Specifies whether a checkbox is displayed in forms that prompts the user to agree to the processing of his data.",
+				"Bestimmt ob in Formularen eine Checkbox angezeigt wird, die den Benutzer auffordert der Verarbeitung seiner Daten zuzustimmen.");
 
 			builder.AddOrUpdate("GdprConsent.ValidationMessage",
 				"Please agree to the processing of your data.", 
@@ -126,6 +126,30 @@
 				"Letzter Import",
 				"The date on which resources were last downloaded and imported.",
 				"Das Datum, an dem zuletzt Ressourcen heruntergeladen und importiert worden sind.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields", "Registration", "Registrierung");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields", "Addresses", "Adressen");
+			
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.FirstNameRequired",
+				"First name required",
+				"Vorname ist erforderlich",
+				"Check the box if 'First name' is required.",
+				"Legt fest, ob die Angabe des Vornamens erforderlich ist.");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.LastNameRequired",
+				"Last name required",
+				"Nachname ist erforderlich",
+				"Check the box if 'Last name' is required.",
+				"Legt fest, ob die Angabe des Nachnamens erforderlich ist.");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired",
+				"Name in the contact form is required",
+				"Name im Kontaktformular ist erforderlich",
+				"Specifies whether the name is required in the contact form.",
+				"Legt fest, ob die Angabe des Namens im Kontaktformular erforderlich ist.");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired",
+				"Name in the product request is required",
+				"Name im Produktanfrage-Formular ist erforderlich",
+				"Specifies whether the name is required in the product request form.",
+				"Legt fest, ob die Angabe des Namens im Produktanfrage-Formular erforderlich ist.");
 		}
 	}
 }

@@ -10,6 +10,7 @@
 	using Core.Domain.Configuration;
 	using SmartStore.Core.Domain.Customers;
 	using SmartStore.Core.Domain.Seo;
+	using SmartStore.Core.Domain.Catalog;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -47,6 +48,13 @@
 			var displayPrivacyAgreementOnContactUs = settings.FirstOrDefault(x => x.Name == "CustomerSettings.DisplayPrivacyAgreementOnContactUs");
 			if (displayPrivacyAgreementOnContactUs != null) settings.Remove(displayPrivacyAgreementOnContactUs);
 
+
+			var showShareButtonName = TypeHelper.NameOf<CatalogSettings>(y => y.ShowShareButton, true);
+			var showShareButtonSetting = context.Set<Setting>().FirstOrDefault(x => x.Name == showShareButtonName);
+			if (showShareButtonSetting != null)
+			{
+				showShareButtonSetting.Value = "False";
+			}
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

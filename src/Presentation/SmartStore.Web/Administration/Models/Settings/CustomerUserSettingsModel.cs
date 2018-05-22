@@ -255,6 +255,9 @@ namespace SmartStore.Admin.Models.Settings
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms")]
 			public bool DisplayGdprConsentOnForms { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired")]
+			public bool FullNameOnContactUsRequired { get; set; }
 		}
 		
 		#endregion

@@ -802,5 +802,14 @@
 				@Html.ValidationMessageFor(model => model.PrivacySettings.DisplayGdprConsentOnForms)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+				@Html.ValidationMessageFor(model => model.PrivacySettings.FullNameOnContactUsRequired)
+			</td>
+		</tr>
 	</table>
 }

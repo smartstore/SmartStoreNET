@@ -96,10 +96,10 @@
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs");
 			builder.Delete("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs.Hint");
 			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms",
-				"Get privacy consent for contact requests",
-				"Einwilligungserklärung im Kontaktformular fordern",
-				"Specifies whether a checkbox will be displayed on the contact page which requests the user to agree on storage of his data.",
-				"Bestimmt ob im Kontaktformular eine Checkbox angezeigt wird, die den Benutzer auffordert der Speicherung seiner Daten zuzustimmen.");
+				"Get privacy consent for form submissions",
+				"Einwilligungserklärung in Formularen fordern",
+				"Specifies whether a checkbox is displayed in forms that prompts the user to agree to the processing of his data.",
+				"Bestimmt ob in Formularen eine Checkbox angezeigt wird, die den Benutzer auffordert der Verarbeitung seiner Daten zuzustimmen.");
 
 			builder.AddOrUpdate("GdprConsent.ValidationMessage",
 				"Please agree to the processing of your data.", 
@@ -140,6 +140,11 @@
 				"Nachname ist erforderlich",
 				"Check the box if 'Last name' is required.",
 				"Legt fest, ob die Eingabe des Nachnamens erforderlich ist.");
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired",
+				"Name in the contact form is required",
+				"Name im Kontaktformular ist erforderlich",
+				"Specifies whether the name is required in the contact form.",
+				"Legt fest, ob die Eingabe des Namens im Kontaktformular erforderlich ist.");
 		}
 	}
 }

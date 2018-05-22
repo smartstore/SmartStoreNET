@@ -2,6 +2,7 @@
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Validators.Common;
 using NUnit.Framework;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 {
@@ -9,11 +10,13 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
     public class ContactUsValidatorTests : BaseValidatorTests
     {
         private ContactUsValidator _validator;
-        
-        [SetUp]
+		private PrivacySettings _privacySettings;
+
+		[SetUp]
         public new void Setup()
         {
-            _validator = new ContactUsValidator(_localizationService);
+			_privacySettings = new PrivacySettings();
+			_validator = new ContactUsValidator(_localizationService, _privacySettings);
         }
         
         [Test]

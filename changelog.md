@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.1.5
 ### New Features
@@ -17,6 +17,7 @@
 * #1450 Show the regular price only if it's higher than the final price
 * #1450 Do not ignore discounts with a negative amount
 * Set catalogsettings.showsharebutton to false as its not compliant with GDPR
+* #1453 Import: Use [IGNORE] to ignore a field value on record level
 
 ### Bugfixes
 * Migration: take all same-named message templates into account

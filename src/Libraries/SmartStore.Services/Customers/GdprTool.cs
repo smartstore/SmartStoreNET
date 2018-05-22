@@ -318,11 +318,12 @@ namespace SmartStore.Services.Customers
 					}
 				}
 
-				// Anonymize Order IPs
-				foreach (var order in customer.Orders)
-				{
-					AnonymizeData(order, x => x.CustomerIp, IdentifierDataType.IpAddress, language);
-				}
+				//// Anonymize Order IPs
+				//// TBD: don't! doesn't feel right! wait for feedback.
+				//foreach (var order in customer.Orders)
+				//{
+				//	AnonymizeData(order, x => x.CustomerIp, IdentifierDataType.IpAddress, language);
+				//}
 
 				// SAVE!!!
 				//_services.DbContext.DetachAll(); // TEST

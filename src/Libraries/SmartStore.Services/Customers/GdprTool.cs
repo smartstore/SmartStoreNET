@@ -222,6 +222,9 @@ namespace SmartStore.Services.Customers
 
 			using (var scope = new DbContextScope(_services.DbContext, autoCommit: false))
 			{
+				// Set to deleted
+				customer.Deleted = true;
+				
 				// Delete shopping cart & wishlist (TBD: (mc) Really?!?)
 				_shoppingCartService.DeleteExpiredShoppingCartItems(DateTime.UtcNow, customer.Id);
 

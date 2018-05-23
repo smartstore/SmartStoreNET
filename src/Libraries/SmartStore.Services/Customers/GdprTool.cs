@@ -319,7 +319,7 @@ namespace SmartStore.Services.Customers
 				}
 
 				//// Anonymize Order IPs
-				//// TBD: don't! doesn't feel right! wait for feedback.
+				//// TBD: Don't! Doesn't feel right because of fraud detection etc.
 				//foreach (var order in customer.Orders)
 				//{
 				//	AnonymizeData(order, x => x.CustomerIp, IdentifierDataType.IpAddress, language);

@@ -55,6 +55,24 @@
 			{
 				showShareButtonSetting.Value = "False";
 			}
+			
+			var allowAnonymousUsersToEmailAFriendSetting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.AllowAnonymousUsersToEmailAFriend");
+			if (allowAnonymousUsersToEmailAFriendSetting != null)
+			{
+				allowAnonymousUsersToEmailAFriendSetting.Value = "False";
+			}
+
+			var allowAnonymousUsersToReviewProductSetting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.AllowAnonymousUsersToReviewProduct");
+			if (allowAnonymousUsersToReviewProductSetting != null)
+			{
+				allowAnonymousUsersToReviewProductSetting.Value = "False";
+			}
+
+			var allowAnonymousUsersToEmailWishlistSetting = context.Set<Setting>().FirstOrDefault(x => x.Name == "ShoppingCartSettings.AllowAnonymousUsersToEmailWishlist");
+			if (allowAnonymousUsersToEmailWishlistSetting != null)
+			{
+				allowAnonymousUsersToEmailWishlistSetting.Value = "False";
+			}
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

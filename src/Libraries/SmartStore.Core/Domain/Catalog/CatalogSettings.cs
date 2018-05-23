@@ -80,6 +80,8 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowProductsFromSubcategories = true;
             ApplyTierPricePercentageToAttributePriceAdjustments = false;
             AllowDifferingEmailAddressForEmailAFriend = false;
+			AllowAnonymousUsersToEmailAFriend = false;
+			AllowAnonymousUsersToReviewProduct = false;
         }
 
         /// <summary>

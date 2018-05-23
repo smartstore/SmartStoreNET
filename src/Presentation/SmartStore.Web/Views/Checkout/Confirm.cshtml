@@ -10,7 +10,8 @@
 
 	string termsLink = "<a id='terms-of-service-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
 	string disclaimerLink = "<a id='disclaimer-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
+	string privacyLink = "<a id='privacy-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
 
 	string consentZoneContent = Html.Widget("checkout_submit_data_consent").ToHtmlString();
 	bool consentZoneHasValue = consentZoneContent.HasValue();
@@ -47,13 +48,18 @@
 						{
 							<script type="text/javascript">
 								$(document).ready(function () {
+									var modal = $("#terms-of-service-modal .modal-body");
 									$("#terms-of-service-trigger").on("click", function (event) {
 										event.preventDefault();
-										$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("conditionsofuse", true)" frameBorder="0" class="h-100" />');
+										modal.html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("conditionsofuse", true)" frameBorder="0" class="h-100" />');
 									});
 									$("#disclaimer-trigger").on("click", function (event) {
 										event.preventDefault();
-										$("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("disclaimer", true)" frameBorder="0" class="h-100" />');
+										modal.html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("disclaimer", true)" frameBorder="0" class="h-100" />');
+									});
+									$("#privacy-trigger").on("click", function (event) {
+										event.preventDefault();
+										modal.html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("privacyinfo", true)" frameBorder="0" class="h-100" />');
 									});
 								});
 							</script>

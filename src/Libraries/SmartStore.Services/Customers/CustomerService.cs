@@ -36,6 +36,7 @@ namespace SmartStore.Services.Customers
 		private readonly HttpContextBase _httpContext;
 		private readonly IUserAgent _userAgent;
 		private readonly Lazy<IMessageModelProvider> _messageModelProvider;
+		private readonly Lazy<IGdprTool> _gdprTool;
 
 		public CustomerService(
             IRepository<Customer> customerRepository,
@@ -47,7 +48,8 @@ namespace SmartStore.Services.Customers
 			ICommonServices services,
 			HttpContextBase httpContext,
 			IUserAgent userAgent,
-			Lazy<IMessageModelProvider> messageModelProvider)
+			Lazy<IMessageModelProvider> messageModelProvider,
+			Lazy<IGdprTool> gdprTool)
         {
             _customerRepository = customerRepository;
             _customerRoleRepository = customerRoleRepository;
@@ -59,6 +61,7 @@ namespace SmartStore.Services.Customers
 			_httpContext = httpContext;
 			_userAgent = userAgent;
 			_messageModelProvider = messageModelProvider;
+			_gdprTool = gdprTool;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -272,8 +275,26 @@ namespace SmartStore.Services.Customers
             if (customer.IsSystemAccount)
                 throw new SmartException(string.Format("System customer account ({0}) cannot not be deleted", customer.SystemName));
 
+			// Soft delete
             customer.Deleted = true;
-            UpdateCustomer(customer);
+
+			// Anonymize IP addresses
+			var language = customer.GetLanguage();
+
+			_gdprTool.Value.AnonymizeData(customer, x => x.LastIpAddress, IdentifierDataType.IpAddress, language);
+
+			foreach (var post in customer.ForumPosts)
+			{
+				_gdprTool.Value.AnonymizeData(post, x => x.IPAddress, IdentifierDataType.IpAddress, language);
+			}
+
+			// Customer Content
+			foreach (var item in customer.CustomerContent)
+			{
+				_gdprTool.Value.AnonymizeData(item, x => x.IpAddress, IdentifierDataType.IpAddress, language);
+			}
+
+			UpdateCustomer(customer);
         }
 
         public virtual Customer GetCustomerById(int customerId)

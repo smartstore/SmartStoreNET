@@ -39,6 +39,7 @@ namespace SmartStore.Services.Tests.Customers
 		ICommonServices _services;
 		IUserAgent _userAgent;
 		Lazy<IMessageModelProvider> _messageModelProvider;
+		Lazy<IGdprTool> _gdprTool;
 
 		[SetUp]
         public new void SetUp()
@@ -130,9 +131,20 @@ namespace SmartStore.Services.Tests.Customers
 			_services.Expect(x => x.EventPublisher).Return(_eventPublisher);
 
 			_messageModelProvider = MockRepository.GenerateMock<Lazy<IMessageModelProvider>>();
+			_gdprTool = MockRepository.GenerateMock<Lazy<IGdprTool>>();
 
-			_customerService = new CustomerService(_customerRepo, _customerRoleRepo,
-                _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _rewardPointsSettings, _services, new FakeHttpContext("~/"), _userAgent, _messageModelProvider);
+			_customerService = new CustomerService(
+				_customerRepo, 
+				_customerRoleRepo,
+                _genericAttributeRepo, 
+				_rewardPointsHistoryRepo, 
+				_genericAttributeService,
+				_rewardPointsSettings, 
+				_services, 
+				new FakeHttpContext("~/"), 
+				_userAgent, 
+				_messageModelProvider, 
+				_gdprTool);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _rewardPointsSettings, _customerSettings, _storeContext, _eventPublisher);

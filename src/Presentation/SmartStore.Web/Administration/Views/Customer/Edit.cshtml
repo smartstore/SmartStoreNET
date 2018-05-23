@@ -36,9 +36,6 @@
 			<a href="@Url.Action("Export", new { id = Model.Id })" class="btn btn-secondary">
 				<span>@T("Common.Export")</span>
 			</a>
-			<a href="@Url.Action("Anonymize", new { id = Model.Id, pseudomyzeContent = true })" class="btn btn-danger">
-				<span>@T("Gdpr.Anonymize")</span>
-			</a>
 
 			@if (!Model.Deleted)
 			{

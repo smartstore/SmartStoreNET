@@ -16,6 +16,8 @@
 * Moved StoreLastIpAddress & DisplayPrivacyAgreementOnContactUs from customer settings to privacy settings tab
 * #1450 Show the regular price only if it's higher than the final price
 * #1450 Do not ignore discounts with a negative amount
+* (Soft) deleted customers can be edited now
+* Customer IP addresses will be anonymized on (soft) deletion
 * Set catalogsettings.showsharebutton to false as its not compliant with GDPR
 * Made form fields for first & last name in customer registration optional
 * Implemented settings to make form fields for first & last name required again

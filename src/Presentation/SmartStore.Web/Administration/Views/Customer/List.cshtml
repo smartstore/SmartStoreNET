@@ -294,7 +294,7 @@
 				SearchCompany: $('#@Html.FieldIdFor(model => model.SearchCompany)').val(),
 				SearchPhone: $('#@Html.FieldIdFor(model => model.SearchPhone)').val(),
 				SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val(),
-				SearchDeletedOnly: $('#@Html.FieldIdFor(model => model.SearchDeletedOnly)').val()
+				SearchDeletedOnly: $('#@Html.FieldIdFor(model => model.SearchDeletedOnly)').prop('checked')
 			};
 			e.data = searchModel;
 		}

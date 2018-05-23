@@ -250,7 +250,7 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-		private void PrepareCustomerModelForCreate(CustomerModel model)
+		protected virtual void PrepareCustomerModelForCreate(CustomerModel model)
 		{
 			string timeZoneId = (model.TimeZoneId.HasValue() ? model.TimeZoneId : _dateTimeHelper.DefaultStoreTimeZone.Id);
 
@@ -275,7 +275,8 @@ namespace SmartStore.Admin.Controllers
             }
 
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
-			//form fields
+
+			// form fields
 			model.GenderEnabled = _customerSettings.GenderEnabled;
 			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
 			model.CompanyEnabled = _customerSettings.CompanyEnabled;
@@ -300,7 +301,7 @@ namespace SmartStore.Admin.Controllers
 
 				if (_customerSettings.StateProvinceEnabled)
 				{
-					//states
+					// states
 					var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
 					if (states.Count > 0)
 					{
@@ -315,6 +316,89 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
+		}
+
+		protected virtual void PrepareCustomerModelForEdit(CustomerModel model, Customer customer)
+		{
+			model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+			model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
+			model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
+			model.Deleted = customer.Deleted;
+
+			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+			{
+				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+			}
+
+			model.DisplayVatNumber = _taxSettings.EuVatEnabled;
+			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
+				 .GetLocalizedEnum(_localizationService, _workContext);
+
+			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
+			model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
+			model.LastIpAddress = model.LastIpAddress;
+			model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
+
+			// form fields
+			model.GenderEnabled = _customerSettings.GenderEnabled;
+			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
+			model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
+			model.CompanyEnabled = _customerSettings.CompanyEnabled;
+			model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
+			model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
+			model.ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled;
+			model.CityEnabled = _customerSettings.CityEnabled;
+			model.CountryEnabled = _customerSettings.CountryEnabled;
+			model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
+			model.PhoneEnabled = _customerSettings.PhoneEnabled;
+			model.FaxEnabled = _customerSettings.FaxEnabled;
+
+			//countries and states
+			if (_customerSettings.CountryEnabled)
+			{
+				model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
+				foreach (var c in _countryService.GetAllCountries())
+				{
+					model.AvailableCountries.Add(new SelectListItem
+					{
+						Text = c.Name,
+						Value = c.Id.ToString(),
+						Selected = c.Id == model.CountryId
+					});
+				}
+
+				if (_customerSettings.StateProvinceEnabled)
+				{
+					//states
+					var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
+					if (states.Count > 0)
+					{
+						foreach (var s in states)
+						{
+							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+						}
+					}
+					else
+					{
+						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+					}
+				}
+			}
+
+			// customer roles
+			model.AvailableCustomerRoles = _customerService
+				.GetAllCustomerRoles(true)
+				.Select(cr => cr.ToModel())
+				.ToList();
+
+			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+
+			// reward points gistory
+			model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
+			model.AddRewardPointsValue = 0;
+
+			// external authentication records
+			model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
 		}
 
         [NonAction]
@@ -627,24 +711,9 @@ namespace SmartStore.Admin.Controllers
 				IsTaxExempt = customer.IsTaxExempt,
 				Active = customer.Active,
 				TimeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId),
-				UsernamesEnabled = _customerSettings.UsernamesEnabled,
-				AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames,
-				AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone,
-				DisplayVatNumber = _taxSettings.EuVatEnabled,
 				VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber),
-				VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId)).GetLocalizedEnum(_localizationService, _workContext),
-				CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
-				LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
-				LastIpAddress = customer.LastIpAddress,
-				LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage),
-				AffiliateId = customer.AffiliateId,
-				Deleted = customer.Deleted
+				AffiliateId = customer.AffiliateId
 			};
-			
-			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-			{
-				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
-			}
 
 			if (customer.AffiliateId != 0)
 			{
@@ -669,66 +738,9 @@ namespace SmartStore.Admin.Controllers
             model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
             model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
 
-            model.GenderEnabled = _customerSettings.GenderEnabled;
-            model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
-            model.CompanyEnabled = _customerSettings.CompanyEnabled;
-            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
-            model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
-            model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
-            model.ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled;
-            model.CityEnabled = _customerSettings.CityEnabled;
-            model.CountryEnabled = _customerSettings.CountryEnabled;
-            model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
-            model.PhoneEnabled = _customerSettings.PhoneEnabled;
-            model.FaxEnabled = _customerSettings.FaxEnabled;
-
-            //countries and states
-            if (_customerSettings.CountryEnabled)
-            {
-                model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
-                foreach (var c in _countryService.GetAllCountries())
-                {
-                    model.AvailableCountries.Add(new SelectListItem
-                    {
-                        Text = c.Name,
-                        Value = c.Id.ToString(),
-                        Selected = c.Id == model.CountryId
-                    });
-                }
-
-                if (_customerSettings.StateProvinceEnabled)
-                {
-                    //states
-                    var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
-					if (states.Count > 0)
-					{
-						foreach (var s in states)
-						{
-							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
-						}
-					}
-					else
-					{
-						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
-					}
-                }
-            }
-
-            //customer roles
-            model.AvailableCustomerRoles = _customerService
-                .GetAllCustomerRoles(true)
-                .Select(cr => cr.ToModel())
-                .ToList();
-
             model.SelectedCustomerRoleIds = customer.CustomerRoles.Select(cr => cr.Id).ToArray();
-            model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
 
-            //reward points gistory
-            model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
-            model.AddRewardPointsValue = 0;
-
-            //external authentication records
-            model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
+			PrepareCustomerModelForEdit(model, customer);
 
             return View(model);
         }
@@ -821,7 +833,7 @@ namespace SmartStore.Admin.Controllers
 
 					_customerService.UpdateCustomer(customer);
 
-                    //form fields
+                    // form fields
 					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
                     if (_customerSettings.GenderEnabled)
@@ -851,7 +863,7 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
 
-                    //customer number
+                    // customer number
                     if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
                     {
                         var customerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, "customer");
@@ -867,20 +879,20 @@ namespace SmartStore.Admin.Controllers
                         }
                     }
 
-                    //customer roles
+                    // customer roles
                     if (allowManagingCustomerRoles)
                     {
                         foreach (var customerRole in allCustomerRoles)
                         {
                             if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
                             {
-                                //new role
+                                // new role
                                 if (customer.CustomerRoles.Where(cr => cr.Id == customerRole.Id).Count() == 0)
                                     customer.CustomerRoles.Add(customerRole);
                             }
                             else
                             {
-                                //removed role
+                                // removed role
                                 if (customer.CustomerRoles.Where(cr => cr.Id == customerRole.Id).Count() > 0)
                                     customer.CustomerRoles.Remove(customerRole);
                             }
@@ -890,7 +902,7 @@ namespace SmartStore.Admin.Controllers
 
 					_eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
 
-                    //activity log
+                    // activity log
                     _customerActivityService.InsertActivity("EditCustomer", _localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id);
 
                     NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Updated"));
@@ -903,86 +915,8 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-
-            //If we got this far, something failed, redisplay form
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
-            model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
-            model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
-
-			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-			{
-				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
-			}
-
-            model.DisplayVatNumber = _taxSettings.EuVatEnabled;
-			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
-				 .GetLocalizedEnum(_localizationService, _workContext);
-
-            model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
-            model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
-            model.LastIpAddress = model.LastIpAddress;
-            model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
-
-            //form fields
-            model.GenderEnabled = _customerSettings.GenderEnabled;
-            model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
-            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
-            model.CompanyEnabled = _customerSettings.CompanyEnabled;
-            model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
-            model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
-            model.ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled;
-            model.CityEnabled = _customerSettings.CityEnabled;
-            model.CountryEnabled = _customerSettings.CountryEnabled;
-            model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
-            model.PhoneEnabled = _customerSettings.PhoneEnabled;
-            model.FaxEnabled = _customerSettings.FaxEnabled;
-
-            //countries and states
-            if (_customerSettings.CountryEnabled)
-            {
-                model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
-                foreach (var c in _countryService.GetAllCountries())
-                {
-                    model.AvailableCountries.Add(new SelectListItem
-                    {
-                        Text = c.Name,
-                        Value = c.Id.ToString(),
-                        Selected = c.Id == model.CountryId
-                    });
-                }
-
-                if (_customerSettings.StateProvinceEnabled)
-                {
-                    //states
-                    var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
-					if (states.Count > 0)
-					{
-						foreach (var s in states)
-						{
-							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
-						}
-					}
-					else
-					{
-						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
-					}
-                }
-            }
-
-            //customer roles
-            model.AvailableCustomerRoles = _customerService
-                .GetAllCustomerRoles(true)
-                .Select(cr => cr.ToModel())
-                .ToList();
-
-            model.AllowManagingCustomerRoles = allowManagingCustomerRoles;
-            
-			//reward points gistory
-            model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
-            model.AddRewardPointsValue = 0;
-            
-			//external authentication records
-            model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
+			// If we got this far, something failed, redisplay form
+			PrepareCustomerModelForEdit(model, customer);
 
             return View(model);
         }

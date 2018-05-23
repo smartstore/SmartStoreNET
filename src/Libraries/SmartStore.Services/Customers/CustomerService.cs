@@ -86,16 +86,18 @@ namespace SmartStore.Services.Customers
             bool loadOnlyWithShoppingCart, 
 			ShoppingCartType? sct, 
 			int pageIndex, 
-			int pageSize)
+			int pageSize,
+			bool deletedOnly = false)
         {
             var query = _customerRepository.Table;
+
             if (registrationFrom.HasValue)
                 query = query.Where(c => registrationFrom.Value <= c.CreatedOnUtc);
 
             if (registrationTo.HasValue)
                 query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
 
-            query = query.Where(c => !c.Deleted);
+            query = query.Where(c => c.Deleted == deletedOnly);
 
             if (customerRoleIds != null && customerRoleIds.Length > 0)
                 query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Intersect(customerRoleIds).Count() > 0);

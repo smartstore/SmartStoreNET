@@ -416,26 +416,29 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult CustomerList(GridCommand command, CustomerListModel model)
         {
-			// we use own own binder for searchCustomerRoleIds property 
+			// We use own own binder for searchCustomerRoleIds property 
 			var gridModel = new GridModel<CustomerModel>();
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
 			{
-				var searchDayOfBirth = 0;
-				var searchMonthOfBirth = 0;
-
-				if (!String.IsNullOrWhiteSpace(model.SearchDayOfBirth))
-					searchDayOfBirth = Convert.ToInt32(model.SearchDayOfBirth);
-
-				if (!String.IsNullOrWhiteSpace(model.SearchMonthOfBirth))
-					searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
-
-				var customers = _customerService.GetAllCustomers(null, null,
-					model.SearchCustomerRoleIds.ToIntArray(), model.SearchEmail, model.SearchUsername,
-					model.SearchFirstName, model.SearchLastName,
-					searchDayOfBirth, searchMonthOfBirth,
-					model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,
-					false, null, command.Page - 1, command.PageSize);
+				var customers = _customerService.GetAllCustomers(
+					null, // registrationFrom
+					null, // registrationTo
+					model.SearchCustomerRoleIds.ToIntArray(), // roleIds
+					model.SearchEmail,
+					model.SearchUsername,
+					model.SearchFirstName, 
+					model.SearchLastName,
+					model.SearchDayOfBirth.ToInt(),
+					model.SearchMonthOfBirth.ToInt(),
+					model.SearchCompany, 
+					model.SearchPhone, 
+					model.SearchZipPostalCode,
+					false, // loadOnlyWithShoppingCart
+					null, // shoppingCartType
+					command.Page - 1, 
+					command.PageSize,
+					model.SearchDeletedOnly);
 
 				gridModel.Data = customers.Select(PrepareCustomerModelForList);
 				gridModel.Total = customers.TotalCount;
@@ -612,37 +615,36 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var customer = _customerService.GetCustomerById(id);
-            if (customer == null || customer.Deleted)
+            if (customer == null /*|| customer.Deleted*/)
                 return RedirectToAction("List");
 
-            var model = new CustomerModel();
-            model.Id = customer.Id;
-            model.Email = customer.Email;
-            model.Username = customer.Username;
-            model.AdminComment = customer.AdminComment;
-            model.IsTaxExempt = customer.IsTaxExempt;
-            model.Active = customer.Active;
-            model.TimeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId);
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
-            model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
-            model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
+            var model = new CustomerModel
+			{
+				Id = customer.Id,
+				Email = customer.Email,
+				Username = customer.Username,
+				AdminComment = customer.AdminComment,
+				IsTaxExempt = customer.IsTaxExempt,
+				Active = customer.Active,
+				TimeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId),
+				UsernamesEnabled = _customerSettings.UsernamesEnabled,
+				AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames,
+				AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone,
+				DisplayVatNumber = _taxSettings.EuVatEnabled,
+				VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber),
+				VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId)).GetLocalizedEnum(_localizationService, _workContext),
+				CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
+				LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
+				LastIpAddress = customer.LastIpAddress,
+				LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage),
+				AffiliateId = customer.AffiliateId,
+				Deleted = customer.Deleted
+			};
 			
 			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
 			{
 				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
 			}
-
-            model.DisplayVatNumber = _taxSettings.EuVatEnabled;
-			model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
-			
-			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
-				.GetLocalizedEnum(_localizationService, _workContext);
-
-			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
-            model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
-            model.LastIpAddress = customer.LastIpAddress;
-            model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
-			model.AffiliateId = customer.AffiliateId;
 
 			if (customer.AffiliateId != 0)
 			{
@@ -651,7 +653,7 @@ namespace SmartStore.Admin.Controllers
 					model.AffiliateFullName = affiliate.Address.GetFullName();
 			}
             
-            //form fields
+            // Form fields
             model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
             model.LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
             model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);

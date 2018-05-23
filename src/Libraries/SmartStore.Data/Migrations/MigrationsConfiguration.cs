@@ -172,6 +172,8 @@
 			builder.AddOrUpdate("Checkout.TermsOfService.IAccept",
 				"I agree with the {0}terms of service{1} and I adhere to them unconditionally. I've read the {3}privacy terms{1} and agree that my data given by me can be stored electronically.",
 				"Ich habe {0}die AGB{1} und {2}das Widerrufsrecht{1} gelesen und bin mit der Geltung einverstanden. Ich habe die {3}Datenschutzerklärung{1} zur Kenntnis genommen und bin damit einverstanden, dass die von mir angegebenen Daten elektronisch erhoben und gespeichert werden.");
+
+			builder.AddOrUpdate("Admin.Customers.Customers.List.SearchDeletedOnly", "Only deactivated customers", "Nur deaktivierte Kunden");
 		}
 	}
 }

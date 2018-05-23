@@ -36,14 +36,17 @@
 			<a href="@Url.Action("Export", new { id = Model.Id })" class="btn btn-secondary">
 				<span>@T("Common.Export")</span>
 			</a>
-			@*<a href="@Url.Action("Anonymize", new { id = Model.Id, pseudomyzeContent = true })" class="btn btn-danger">
+			<a href="@Url.Action("Anonymize", new { id = Model.Id, pseudomyzeContent = true })" class="btn btn-danger">
 				<span>@T("Gdpr.Anonymize")</span>
-			</a>*@
+			</a>
 
-			<button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>
-				<span>@T("Admin.Common.Delete")</span>
-			</button>
+			@if (!Model.Deleted)
+			{
+				<button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger">
+					<i class="fa fa-trash-o"></i>
+					<span>@T("Admin.Common.Delete")</span>
+				</button>
+			}
 
 			@{ Html.RenderWidget("admin_button_toolbar_after"); }
 		</div>

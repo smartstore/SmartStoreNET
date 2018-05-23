@@ -36,6 +36,7 @@
 			@Html.SmartLabelFor(model => model.SearchEmail)
 			@Html.TextBoxFor(model => Model.SearchEmail, new { @class = "form-control" })
 		</div>
+
 		@if (Model.UsernamesEnabled)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -43,6 +44,7 @@
 				@Html.TextBoxFor(model => Model.SearchUsername, new { @class = "form-control" })
 			</div>
 		}
+
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchFirstName)
 			@Html.TextBoxFor(model => Model.SearchFirstName, new { @class = "form-control" })
@@ -51,6 +53,7 @@
 			@Html.SmartLabelFor(model => model.SearchLastName)
 			@Html.TextBoxFor(model => Model.SearchLastName, new { @class = "form-control" })
 		</div>
+
 		@if (Model.DateOfBirthEnabled)
 		{
 			var monthOfBirthValues = new List<SelectListItem>();
@@ -79,6 +82,7 @@
 				</div>
 			</div>
 		}
+
 		@if (Model.CompanyEnabled)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -86,6 +90,7 @@
 				@Html.TextBoxFor(model => Model.SearchCompany, new { @class = "form-control" })
 			</div>
 		}
+
 		@if (Model.PhoneEnabled)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -93,6 +98,7 @@
 				@Html.TextBoxFor(model => Model.SearchPhone, new { @class = "form-control" })
 			</div>
 		}
+
 		@if (Model.ZipPostalCodeEnabled)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -100,11 +106,19 @@
 				@Html.TextBoxFor(model => Model.SearchZipPostalCode, new { @class = "form-control" })
 			</div>
 		}
-		
+
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchCustomerRoleIds)
 			@*@Html.DropDownListFor(model => model.SearchCustomerRoleIds, Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })*@
 			@Html.DropDownList("SearchCustomerRoleIds", Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<div class="form-check form-control-plaintext">
+				@Html.CheckBoxFor(model => model.SearchDeletedOnly, new { @class = "form-check-input" })
+				<label class="form-check-label" for="SearchDeletedOnly">@Html.DisplayNameFor(model => model.SearchDeletedOnly)</label>
+			</div>	
 		</div>
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
@@ -279,7 +293,8 @@
 				SearchMonthOfBirth: $('#@Html.FieldIdFor(model => model.SearchMonthOfBirth)').val(),
 				SearchCompany: $('#@Html.FieldIdFor(model => model.SearchCompany)').val(),
 				SearchPhone: $('#@Html.FieldIdFor(model => model.SearchPhone)').val(),
-				SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val()
+				SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val(),
+				SearchDeletedOnly: $('#@Html.FieldIdFor(model => model.SearchDeletedOnly)').val()
 			};
 			e.data = searchModel;
 		}

@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Forums;
+using SmartStore.Services.Customers;
 using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -217,13 +218,17 @@ namespace SmartStore.Services.Customers
 		{
 			Guard.NotNull(customer, nameof(customer));
 
-			var language = GetLanguage(customer);
+			var language = customer.GetLanguage();
 			var customerName = customer.GetFullName() ?? customer.Username ?? customer.FindEmail();
 
 			using (var scope = new DbContextScope(_services.DbContext, autoCommit: false))
 			{
 				// Set to deleted
 				customer.Deleted = true;
+
+				// Unassign roles
+				customer.CustomerRoles.Clear();
+				customer.CustomerRoles.Add(_services.Resolve<ICustomerService>().GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests));
 				
 				// Delete shopping cart & wishlist (TBD: (mc) Really?!?)
 				_shoppingCartService.DeleteExpiredShoppingCartItems(DateTime.UtcNow, customer.Id);
@@ -371,7 +376,7 @@ namespace SmartStore.Services.Customers
 					return;
 				}
 
-				language = language ?? GetLanguage(entity as Customer);
+				language = language ?? (entity as Customer)?.GetLanguage();
 
 				switch (type)
 				{
@@ -449,23 +454,6 @@ namespace SmartStore.Services.Customers
 			{
 				return null;
 			}
-		}
-
-		private Language GetLanguage(Customer customer)
-		{
-			Language language = null;
-
-			if (customer != null)
-			{
-				language = _languageService.GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId));
-			}
-
-			if (language == null || !language.Published)
-			{
-				language = _services.WorkContext.WorkingLanguage;
-			}
-
-			return language;
 		}
 	}
 }

@@ -45,12 +45,12 @@ namespace SmartStore.Web.Framework.Filters
 					if (!filterContext.HttpContext.Request.IsAjaxRequest())
 					{
 						// add a validation message
-						filterContext.Controller.ViewData.ModelState.AddModelError("", Services.Value.Localization.GetResource("GdprConsent.ValidationMessage"));
+						filterContext.Controller.ViewData.ModelState.AddModelError("", Services.Value.Localization.GetResource("Gdpr.Consent.ValidationMessage"));
 					}
 					else
 					{
 						// notify
-						Notifier.Value.Error(Services.Value.Localization.GetResource("GdprConsent.ValidationMessage"));
+						Notifier.Value.Error(Services.Value.Localization.GetResource("Gdpr.Consent.ValidationMessage"));
 					}
 					
 					return;

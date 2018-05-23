@@ -119,13 +119,13 @@
 				"Specifies whether a checkbox is displayed in forms that prompts the user to agree to the processing of his data.",
 				"Bestimmt ob in Formularen eine Checkbox angezeigt wird, die den Benutzer auffordert der Verarbeitung seiner Daten zuzustimmen.");
 
-			builder.AddOrUpdate("GdprConsent.ValidationMessage",
+			builder.AddOrUpdate("Gdpr.Consent.ValidationMessage",
 				"Please agree to the processing of your data.", 
 				"Bitte stimmen Sie der Verarbeitung Ihrer Daten zu.");
 
 			builder.Delete("ContactUs.PrivacyAgreement.MustBeAccepted");
 			builder.Delete("ContactUs.PrivacyAgreement.DetailText");
-			builder.AddOrUpdate("GdprConsent.DetailText",
+			builder.AddOrUpdate("Gdpr.Consent.DetailText",
 				"Yes I've read the <a href=\"{0}\">privacy terms</a> and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.",
 				"Ja, ich habe die <a href=\"{0}\">Datenschutzerklärung</a> zur Kenntnis genommen und bin damit einverstanden, dass die von mir angegebenen Daten elektronisch erhoben und gespeichert werden. Meine Daten werden dabei nur zur Bearbeitung meiner Anfrage genutzt.");
 

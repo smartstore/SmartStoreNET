@@ -180,6 +180,12 @@
 			builder.AddOrUpdate("Admin.Common.Navigation", "Navigation", "Navigation");
 			builder.AddOrUpdate("Admin.Common.PDF", "PDF", "PDF");
 			builder.AddOrUpdate("Admin.Common.Footer", "Footer", "Footer");
+
+			builder.AddOrUpdate("Gdpr.Consent.DetailText.Small", "I agree to the <a href=\"{0}\">Privacy policy</a>.", "Mit den Bestimmungen zum <a href=\"{0}\">Datenschutz</a> bin ich einverstanden");
+
+			builder.AddOrUpdate("Account.Fields.Newsletter",
+				"I would like to subscribe to the newsletter. I agree to the <a href=\"{0}\" Privacy policy</a>. Unsubscription is possible at any time.", 
+				"Ich möchte den Newsletter abonnieren. Mit den Bestimmungen zum <a href=\"{0}\">Datenschutz</a> bin ich einverstanden. Eine Abmeldung ist jederzeit möglich.");
 		}
 	}
 }

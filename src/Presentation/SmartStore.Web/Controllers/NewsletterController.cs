@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Messages;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Models.Newsletter;
+using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
@@ -30,10 +31,21 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
+		[GdprConsent]
         public ActionResult Subscribe(bool subscribe, string email)
         {
             string result;
             var success = false;
+			var hasConsented = ViewData["GdprConsent"] != null ? (bool)ViewData["GdprConsent"] : false;
+
+			if (!hasConsented)
+			{
+				return Json(new
+				{
+					Success = success,
+					Result = String.Empty
+				});
+			}
 
 			if (!email.IsEmail())
 			{

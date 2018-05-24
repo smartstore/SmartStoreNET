@@ -36,6 +36,9 @@ namespace SmartStore.Web.Framework.Filters
 			
 			if (filterContext.HttpContext.Request.HttpMethod.Equals("POST") && hasConsentedToGdpr != null)
 			{
+				// set flag which can be accessed in corresponding action
+				filterContext.Controller.ViewData.Add("GdprConsent", hasConsentedToGdpr.Contains("true"));
+
 				if (hasConsentedToGdpr.Contains("true"))
 				{
 					GenericAttributeService.Value.SaveAttribute(customer, SystemCustomerAttributeNames.HasConsentedToGdpr, true);
@@ -68,7 +71,7 @@ namespace SmartStore.Web.Framework.Filters
 			if (!PrivacySettings.Value.DisplayGdprConsentOnForms)
 				return;
 
-			if (filterContext.IsChildAction)
+			if (filterContext.IsChildAction && !Small)
 				return;
 
 			var result = filterContext.Result;
@@ -78,14 +81,22 @@ namespace SmartStore.Web.Framework.Filters
 				return;
 			
 			WidgetProvider.Value.RegisterAction(
-				new[] { "gdpr_consent" },
+				new[] { !filterContext.IsChildAction ? "gdpr_consent" : "gdpr_consent_child_action" },
 				"GdprConsent",
 				"Common",
-				new { area = "" });
+				new { area = "", isSmall = Small });
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
 		{
+		}
+
+		bool _small = false;
+
+		public bool Small
+		{
+			get { return this._small; }
+			set { this._small = value; }
 		}
 	}
 }

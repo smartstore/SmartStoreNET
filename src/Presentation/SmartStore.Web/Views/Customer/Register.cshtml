@@ -209,7 +209,16 @@
 				{
 					<fieldset class="content-group">
 						<legend><span>@T("Account.Options")</span></legend>
-						@Html.ControlGroupFor(model => model.Newsletter, editorType: InputEditorType.Checkbox, breakpoint: "md")
+						<div class="form-group row">
+							<div class="col">
+								<div class="form-check">
+									@Html.EditorFor(model => model.Newsletter, new { @class = "form-check-input" })
+									<label class="form-check-label" for="Newsletter">
+										@T("Account.Fields.Newsletter", Url.RouteUrl("Topic", new { SeName = Url.TopicSeName("PrivacyInfo") }))
+									</label>
+								</div>
+							</div>
+						</div>
 					</fieldset>
 				}
 

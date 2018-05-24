@@ -421,7 +421,8 @@ namespace SmartStore.Web.Controllers
         }
 
 		[ChildActionOnly]
-        public ActionResult Footer()
+		[GdprConsent(Small = true)]
+		public ActionResult Footer()
         {
 			var store = _services.StoreContext.CurrentStore;
 			var allTopics = _topicService.GetAllTopics(store.Id);
@@ -892,7 +893,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult GdprConsent()
+		public ActionResult GdprConsent(bool isSmall)
 		{
 			if (!_privacySettings.DisplayGdprConsentOnForms)
 			{
@@ -909,7 +910,8 @@ namespace SmartStore.Web.Controllers
 
 			var model = new GdprConsentModel();
 			model.GdprConsent = false;
-			
+			model.SmallDisplay = isSmall;
+
 			return PartialView(model);
 		}
 	

@@ -215,6 +215,8 @@
 									</div>
 								</div>
 
+								@{ Html.RenderWidget("gdpr_consent_child_action"); }
+
 								@Html.ValidationMessageFor(x => x.NewsletterEmail)
 
 							</div>

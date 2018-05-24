@@ -46,16 +46,6 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
         }
 
         [Test]
-        public void Should_have_error_when_fullName_is_null_or_empty()
-        {
-            var model = new ContactUsModel();
-            model.FullName = null;
-            _validator.ShouldHaveValidationErrorFor(x => x.FullName, model);
-            model.FullName = "";
-            _validator.ShouldHaveValidationErrorFor(x => x.FullName, model);
-        }
-
-        [Test]
         public void Should_not_have_error_when_fullName_is_specified()
         {
             var model = new ContactUsModel();

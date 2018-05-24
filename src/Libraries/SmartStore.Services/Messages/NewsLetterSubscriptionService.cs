@@ -250,7 +250,7 @@ namespace SmartStore.Services.Messages
         {
             if (publishSubscriptionEvents)
             {
-                if (isSubscribe)
+				if (isSubscribe)
                 {
 					_services.EventPublisher.Publish(new EmailSubscribedEvent(email));
 				}

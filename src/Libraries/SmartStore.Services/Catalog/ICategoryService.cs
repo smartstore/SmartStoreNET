@@ -194,13 +194,13 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="treeNode">The category node</param>
 		/// <param name="languageId">The id of language. Pass <c>null</c> to skip localization.</param>
-		/// <param name="withAlias"><c>true</c> appends the category alias - if specified - to the name</param>
+		/// <param name="aliasPattern">How the category alias - if specified - should be appended to the category name (e.g. <c>({0})</c>)</param>
 		/// <param name="separator">The separator string</param>
 		/// <returns>Category breadcrumb path</returns>
 		string GetCategoryPath(
 			TreeNode<ICategoryNode> treeNode,
 			int? languageId = null,
-			bool withAlias = false,
+			string aliasPattern = null,
 			string separator = " » ");
 
 		/// <summary>
@@ -248,7 +248,7 @@ namespace SmartStore.Services.Catalog
 				var node = categoryService.GetCategoryTree(pc.CategoryId, false, storeId ?? 0);
 				if (node != null)
 				{
-					result = categoryService.GetCategoryPath(node, languageId, false, separator);
+					result = categoryService.GetCategoryPath(node, languageId, null, separator);
 				}
 			}
 

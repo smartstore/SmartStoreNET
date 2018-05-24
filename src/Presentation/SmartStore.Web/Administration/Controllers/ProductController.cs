@@ -1479,7 +1479,7 @@ namespace SmartStore.Admin.Controllers
 						return new ProductModel.ProductCategoryModel
 						{
 							Id = x.Id,
-							Category = node != null ? _categoryService.GetCategoryPath(node) : string.Empty,
+							Category = node != null ?  _categoryService.GetCategoryPath(node, aliasPattern: "<span class='badge badge-secondary'>{0}</span>") : string.Empty,
 							ProductId = x.ProductId,
 							CategoryId = x.CategoryId,
 							IsFeaturedProduct = x.IsFeaturedProduct,

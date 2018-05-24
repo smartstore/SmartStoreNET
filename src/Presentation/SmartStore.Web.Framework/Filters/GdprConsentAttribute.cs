@@ -63,7 +63,6 @@ namespace SmartStore.Web.Framework.Filters
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
-
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)

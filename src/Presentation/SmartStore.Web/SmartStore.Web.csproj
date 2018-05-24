@@ -370,7 +370,7 @@
     <Compile Include="Models\Checkout\CheckoutConfirmModel.cs" />
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
-    <Compile Include="Models\Common\CookieConsentModel.cs" />
+    <Compile Include="Models\Common\ConsentModel.cs" />
     <Compile Include="Models\Entity\EntityPickerModel.cs" />
     <Compile Include="Models\Common\CommentModel.cs" />
     <Compile Include="Models\Search\ISearchResultModel.cs" />

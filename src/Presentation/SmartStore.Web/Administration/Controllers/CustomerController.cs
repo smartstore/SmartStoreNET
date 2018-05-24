@@ -1758,29 +1758,6 @@ namespace SmartStore.Admin.Controllers
 			return File(Encoding.UTF8.GetBytes(json), "application/json", "customer-{0}.json".FormatInvariant(customer.Id));
 		}
 
-		public ActionResult Anonymize(int id /* customerId */, bool pseudomyzeContent = false)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-				return AccessDeniedView();
-
-			var customer = _customerService.GetCustomerById(id);
-			if (customer == null)
-				return HttpNotFound();
-
-			try
-			{
-				var msg = T("Gdpr.Anonymize.Success", customer.GetFullName() ?? customer.Username ?? customer.FindEmail());
-				_gdprTool.Value.AnonymizeCustomer(customer, pseudomyzeContent);
-				NotifySuccess(msg);
-			}
-			catch (Exception ex)
-			{
-				NotifyError(ex);
-			}
-
-			return RedirectToAction("Edit", new { id });
-		}
-
 		#endregion
 	}
 }

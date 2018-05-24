@@ -48,7 +48,6 @@ using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.UI.Captcha;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers

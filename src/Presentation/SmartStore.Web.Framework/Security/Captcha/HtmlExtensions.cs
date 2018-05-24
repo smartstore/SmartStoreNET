@@ -4,7 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 
-namespace SmartStore.Web.Framework.UI.Captcha
+namespace SmartStore.Web.Framework.Security
 {
 	public static class HtmlExtensions
     {

@@ -174,6 +174,12 @@
 				"Ich habe {0}die AGB{1} und {2}das Widerrufsrecht{1} gelesen und bin mit der Geltung einverstanden. Ich habe die {3}Datenschutzerklärung{1} zur Kenntnis genommen und bin damit einverstanden, dass die von mir angegebenen Daten elektronisch erhoben und gespeichert werden.");
 
 			builder.AddOrUpdate("Admin.Customers.Customers.List.SearchDeletedOnly", "Only deactivated customers", "Nur deaktivierte Kunden");
+			
+			builder.AddOrUpdate("Admin.Common.Global", "Global", "Global");
+			builder.AddOrUpdate("Admin.Common.News", "News", "News");
+			builder.AddOrUpdate("Admin.Common.Navigation", "Navigation", "Navigation");
+			builder.AddOrUpdate("Admin.Common.PDF", "PDF", "PDF");
+			builder.AddOrUpdate("Admin.Common.Footer", "Footer", "Footer");
 		}
 	}
 }

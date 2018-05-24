@@ -1,151 +1,201 @@
-﻿@model IEnumerable<ShipmentModel>
-
+﻿@using SmartStore.Core.Domain.Catalog;
+@model IEnumerable<ShipmentModel>
 @{
-    Layout = "_Print";
-    Html.AddTitleParts(T("Admin.Orders.Shipments.ViewDetails").Text);
+	Layout = "_Print";
+	Html.AddTitleParts(T("Admin.Orders.Shipments.ViewDetails").Text);
 
-    var pdfMode = ViewBag.PdfMode == true;
-    if (!pdfMode)
-    {
-        Html.AddBodyCssClass("screen");
-    }
+	var pdfMode = ViewBag.PdfMode == true;
+	if (!pdfMode)
+	{
+		Html.AddBodyCssClass("screen");
+	}
 }
 
 @functions {
-    private IHtmlString JoinValues(string[] values, string separator = " ")
-    {
-        var normalized = values.Where(x => x.HasValue());
-        return MvcHtmlString.Create(String.Join(separator, normalized));
-    }
+	private IHtmlString JoinValues(string[] values, string separator = " ")
+	{
+		var normalized = values.Where(x => x.HasValue());
+		return MvcHtmlString.Create(String.Join(separator, normalized));
+	}
 }
 
 <div class="container">
-    @foreach (var shipment in Model)
-    {
-        var company = shipment.MerchantCompanyInfo;
-        var address = shipment.ShippingAddress;
-        var showGtin = shipment.Items.Any(x => !String.IsNullOrEmpty(x.Gtin));
+	@foreach (var shipment in Model)
+	{
+		var company = shipment.MerchantCompanyInfo;
+		var address = shipment.ShippingAddress;
+		var showGtin = shipment.Items.Any(x => !String.IsNullOrEmpty(x.Gtin));
 
-        var colWidths = new int[] { 50, 20, 10 };
+		var colWidths = new int[] { 50, 20, 10 };
 
-        <div class="document">
-            @{ Html.RenderWidget("shipmentdetails_top"); }
+		<div class="document">
+			@{ Html.RenderWidget("shipmentdetails_top"); }
 
-            <!-- Address & Info -->
-            <div class="clearfix">
-                <div class="order-address mt-5 pull-left float-left">
-                    <div>
-                        <span class="header text-smallest">
-                            @{
-                                var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
-                                var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
-                            }
-                            @JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
-                        </span>
-                    </div>
-                    <div class="mt-2">
+			<!-- Address & Info -->
+			<div class="clearfix">
+				<div class="order-address mt-5 pull-left float-left">
+					<div>
+						<span class="header text-smallest">
+							@{
+								var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
+								var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
+							}
+							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
+						</span>
+					</div>
+					<div class="mt-2">
 						@Html.Raw(shipment.FormattedShippingAddress)
-                    </div>
-                </div>
+					</div>
+				</div>
 
-                @{ Html.RenderWidget("shipmentdetails_orderinfo_top"); }
+				@{ Html.RenderWidget("shipmentdetails_orderinfo_top"); }
 
-                <div class="order-info text-small float-right">
-                    <table>
-                        <tr>
-                            <td class="label">@T("PDFPackagingSlip.Shipment").Text.FormatWith(String.Empty):</td>
-                            <td class="value">@shipment.Id</td>
-                        </tr>
-                        <tr>
-                            <td class="label">@T("PDFPackagingSlip.Order").Text.FormatWith(String.Empty):</td>
-                            <td class="value">@shipment.OrderId</td>
-                        </tr>
-                        <tr>
-                            <td class="label">@T("PDFPackagingSlip.DeliveryDate"):</td>
-                            <td class="value">@shipment.DeliveryDate</td>
-                        </tr>
-                        @if (!String.IsNullOrEmpty(shipment.TrackingNumber))
-                        {
-                            <tr>
-                                <td class="label">@T("PDFPackagingSlip.TrackingNumber"):</td>
-                                <td class="value">@shipment.TrackingNumber</td>
-                            </tr>
-                        }
-                        <tr>
-                            <td class="label">@T("PDFPackagingSlip.ShippingMethod"):</td>
-                            <td class="value">@shipment.ShippingMethod</td>
-                        </tr>
-                    </table>
+				<div class="order-info text-small float-right">
+					<table>
+						<tr>
+							<td class="label">@T("PDFPackagingSlip.Shipment").Text.FormatWith(String.Empty):</td>
+							<td class="value">@shipment.Id</td>
+						</tr>
+						<tr>
+							<td class="label">@T("PDFPackagingSlip.Order").Text.FormatWith(String.Empty):</td>
+							<td class="value">@shipment.OrderId</td>
+						</tr>
+						<tr>
+							<td class="label">@T("PDFPackagingSlip.DeliveryDate"):</td>
+							<td class="value">@shipment.DeliveryDate</td>
+						</tr>
+						@if (!String.IsNullOrEmpty(shipment.TrackingNumber))
+						{
+							<tr>
+								<td class="label">@T("PDFPackagingSlip.TrackingNumber"):</td>
+								<td class="value">@shipment.TrackingNumber</td>
+							</tr>
+						}
+						<tr>
+							<td class="label">@T("PDFPackagingSlip.ShippingMethod"):</td>
+							<td class="value">@shipment.ShippingMethod</td>
+						</tr>
+					</table>
 
-                    @{ Html.RenderWidget("shipmentdetails_orderinfotable_after"); }
+					@{ Html.RenderWidget("shipmentdetails_orderinfotable_after"); }
 
-                </div>
-                @{ Html.RenderWidget("shipmentdetails_orderinfo_bottom"); }
-            </div>
+				</div>
+				@{ Html.RenderWidget("shipmentdetails_orderinfo_bottom"); }
+			</div>
 
-            @{ Html.RenderWidget("shipmentdetails_lines_before"); }
+			@{ Html.RenderWidget("shipmentdetails_lines_before"); }
 
-            <h3 style="margin-top: 100px">@T("PDFPackagingSlip.ProductListHeadline")</h3>
+			<h3 style="margin-top: 100px">@T("PDFPackagingSlip.ProductListHeadline")</h3>
 
 			<div class="table-responsive">
 				<table class="table order-summary">
 					<thead>
 						<tr>
 							<th class="text-left" style="width: @(colWidths[0])%">@T("PDFPackagingSlip.ProductName")</th>
-							<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.SKU")</th>
+							@if (shipment.ShowSku)
+							{
+								<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.SKU")</th>
+							}
 							@if (showGtin)
 							{
 								<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.Gtin")</th>
 							}
-							<th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.QTY")</th>
+							<th class="text-center" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.QTY")</th>
 							<th class="text-right" style="width: @(colWidths[1])%">@T("PDFPackagingSlip.Weight")</th>
 						</tr>
 					</thead>
-					<tbody>
-						@for (int i = 0; i < shipment.Items.Count; i++)
-						{
-							var item = shipment.Items[i];
-							@ShipmentLine(item, showGtin)
-						}
-					</tbody>
+					@foreach (var shipmentItem in shipment.Items)
+					{
+						<tbody>
+							@ShipmentLine(shipmentItem, showGtin, shipment.ShowSku)
+							@if (shipmentItem.ProductType == ProductType.BundledProduct)
+							{
+								@BundleItems(shipmentItem, showGtin, shipment.ShowSku)
+							}
+						</tbody>
+					}
 				</table>
 			</div>
-        </div>
-    }
+		</div>
+	}
 </div>
 
-@helper ShipmentLine(ShipmentModel.ShipmentItemModel item, bool showGtin)
+@helper ShipmentLine(ShipmentModel.ShipmentItemModel item, bool showGtin, bool showSku)
 {
-    <tr>
-        <td class="text-left">
-            @item.ProductName
+	<tr>
+		<td class="text-left">
+			@item.ProductName
 
-            @if (item.AttributeInfo.HasValue())
-            {
-                <div class="attributes  text-small">
-                    @Html.Raw(item.AttributeInfo)
-                </div>
-            }
-        </td>
-        
-        <td class="text-left">
-            @item.Sku
-        </td>
-        
-        @if (showGtin)
-        {
-            <td class="text-left">
-                @item.Gtin
-            </td>
-        }
-        <td class="text-left">
-            @item.QuantityInThisShipment
-        </td>
-        @*<td class="text-left">
-                @item.ItemDimensions
-            </td>*@
-        <td class="text-right">
-            @item.ItemWeight
-        </td>
-    </tr>
+			@if (item.AttributeInfo.HasValue())
+			{
+				<div class="attributes  text-small">
+					@Html.Raw(item.AttributeInfo)
+				</div>
+			}
+		</td>
+		@if (showSku)
+		{
+			<td class="text-left">
+				@item.Sku
+			</td>
+		}
+		@if (showGtin)
+		{
+			<td class="text-left">
+				@item.Gtin
+			</td>
+		}
+		<td class="text-center">
+			@item.QuantityInThisShipment
+		</td>
+		<td class="text-right">
+			@item.ItemWeight
+		</td>
+	</tr>
+}
+
+@helper BundleItems(ShipmentModel.ShipmentItemModel parentItem, bool showGtin, bool showSku)
+{
+	if (parentItem.BundleItems == null)
+	{
+		return;
+	}
+
+	foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
+	{
+		<tr class="child-row">
+			<td>
+				<div class="associated-product">
+					<div dir="auto">
+						@item.ProductName
+					</div>
+					@if (item.AttributeInfo.HasValue())
+					{
+						<div class="attributes text-small">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+					}
+				</div>
+			</td>
+			@if (showSku)
+			{
+				<td>&nbsp;</td>
+			}
+			@if (showGtin)
+			{
+				<td>&nbsp;</td>
+			}
+			<td class="text-center text-small">
+				@if (parentItem.BundlePerItemShoppingCart)
+				{
+					<text>@item.Quantity</text>
+				}
+				else
+				{
+					<text>&nbsp;</text>
+				}
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+	}
 }

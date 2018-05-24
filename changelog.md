@@ -24,6 +24,7 @@
 * Made form field for full name in contact us & product request optional
 * Implemented settings to make form field for full name in contact us & product request required again
 * #1453 Import: Use [IGNORE] to ignore a field value on record level
+* #1455 More detail on packing slip when bundled item
 
 ### Bugfixes
 * Migration: take all same-named message templates into account

@@ -5,8 +5,6 @@ using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Web.Framework.UI;
 using System;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -19,7 +17,7 @@ namespace SmartStore.Web.Framework.Filters
 		public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
 		public Lazy<IWidgetProvider> WidgetProvider { get; set; }
 		public Lazy<INotifier> Notifier { get; set; }
-
+		
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
 			if (!PrivacySettings.Value.DisplayGdprConsentOnForms)
@@ -69,33 +67,36 @@ namespace SmartStore.Web.Framework.Filters
 		{
 			if (!PrivacySettings.Value.DisplayGdprConsentOnForms)
 				return;
-
-			if (filterContext.IsChildAction && !Small)
+			
+			if (filterContext.HttpContext.Items.Contains("GdprConsentRendered"))
 				return;
-
+			
 			var result = filterContext.Result;
 
 			// should only run on a full view rendering result or HTML ContentResult
 			if (!result.IsHtmlViewResult())
 				return;
 			
+			if (!filterContext.IsChildAction)
+			{
+				WidgetProvider.Value.RegisterAction(
+					new[] { "gdpr_consent" },
+					"GdprConsent",
+					"Common",
+					new { area = "", isSmall = false });
+			}
+
 			WidgetProvider.Value.RegisterAction(
-				new[] { !filterContext.IsChildAction ? "gdpr_consent" : "gdpr_consent_child_action" },
+				new[] { "gdpr_consent_small" },
 				"GdprConsent",
 				"Common",
-				new { area = "", isSmall = Small });
+				new { area = "", isSmall = true });
+
+			filterContext.HttpContext.Items["GdprConsentRendered"] = true;
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
 		{
-		}
-
-		bool _small = false;
-
-		public bool Small
-		{
-			get { return this._small; }
-			set { this._small = value; }
 		}
 	}
 }

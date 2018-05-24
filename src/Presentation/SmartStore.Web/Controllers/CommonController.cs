@@ -421,7 +421,7 @@ namespace SmartStore.Web.Controllers
         }
 
 		[ChildActionOnly]
-		[GdprConsent(Small = true)]
+		[GdprConsent]
 		public ActionResult Footer()
         {
 			var store = _services.StoreContext.CurrentStore;

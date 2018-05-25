@@ -295,7 +295,7 @@
 		<Value>Last name is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Fields.Newsletter">
-		<Value>Newsletter</Value>
+		<Value>I would like to subscribe to the newsletter. I agree to the &lt;a href="{0}" Privacy policy&lt;/a&gt;. Unsubscription is possible at any time.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Fields.Password">
 		<Value>Password</Value>
@@ -3478,6 +3478,9 @@
 	<LocaleResource Name="Admin.Common.FoldersDeleted">
 		<Value>{0} folders were deleted</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Footer">
+		<Value>Footer</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.FtpStatus">
 		<Value>FTP status {0} ({1}).</Value>
 	</LocaleResource>
@@ -3498,6 +3501,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.GenericAttributes.NameAlreadyExists">
 		<Value>An attribute with the name "{0}" already exists</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Global">
+		<Value>Global</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Go">
 		<Value>Go</Value>
@@ -3547,8 +3553,14 @@
 	<LocaleResource Name="Admin.Common.MoveNow">
 		<Value>Move now</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Navigation">
+		<Value>Navigation</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.NewRecords">
 		<Value>New records</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.News">
+		<Value>News</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.No">
 		<Value>No</Value>
@@ -3561,6 +3573,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Of">
 		<Value>of</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.PDF">
+		<Value>PDF</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Placeholder">
 		<Value>Placeholder</Value>
@@ -4383,6 +4398,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Languages.Fields.LanguageCulture.Validation">
 		<Value>Language culture must be valid.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Languages.Fields.LastResourcesImportOn">
+		<Value>Last import</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Languages.Fields.LastResourcesImportOn.Hint">
+		<Value>The date on which resources were last downloaded and imported.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Languages.Fields.Name">
 		<Value>Name</Value>
@@ -5439,7 +5460,7 @@
 		<Value>Customer settings</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields">
-		<Value>Address form fields</Value>
+		<Value>Addresses</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityEnabled">
 		<Value>'City' enabled</Value>
@@ -5637,7 +5658,7 @@
 		<Value>Specifies whether customers can enter a customer number if the customer number doesn't contain a value yet.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerFormFields">
-		<Value>Customer form fields</Value>
+		<Value>Registration</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description">
 		<Value>You can create and manage the customer form fields available during registration below.</Value>
@@ -5708,12 +5729,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DisplayCustomerNumber.Hint">
 		<Value>Specifies whether customer numbers will be displayed to customers in their account area.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs">
-		<Value>Get privacy consent for contact requests</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs.Hint">
-		<Value>Specifies whether a checkbox will be displayed on the contact page which requests the user to agree on storage of his data.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationAutoRegisterEnabled">
 		<Value>Auto register enabled</Value>
 	</LocaleResource>
@@ -5734,6 +5749,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FaxRequired.Hint">
 		<Value>Check the box if 'Fax number' is required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FirstNameRequired">
+		<Value>First name required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FirstNameRequired.Hint">
+		<Value>Check the box if 'First name' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.GenderEnabled">
 		<Value>'Gender' enabled</Value>
@@ -5759,6 +5780,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.HideNewsletterBlock.Hint">
 		<Value>Check the box if you want to hide the newsletter subscription box.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.LastNameRequired">
+		<Value>Last name required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.LastNameRequired.Hint">
+		<Value>Check the box if 'Last name' is required.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.NewsletterEnabled">
 		<Value>'Newsletter' enabled</Value>
 	</LocaleResource>
@@ -5783,6 +5810,45 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PhoneRequired.Hint">
 		<Value>Check the box if 'Phone number' is required.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy">
+		<Value>Privacy</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext">
+		<Value>Cookie consent display text</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.CookieConsentBadgetext.Hint">
+		<Value>Specifies the text, that will be displayed to your customers if they havn't agreed to the usage of cookis yet.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms">
+		<Value>Get privacy consent for form submissions</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.DisplayGdprConsentOnForms.Hint">
+		<Value>Specifies whether a checkbox is displayed in forms that prompts the user to agree to the processing of his data.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent">
+		<Value>Enable cookie consent</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.EnableCookieConsent.Hint">
+		<Value>Specifies whether the cookie consent box will be displayed in the frontend.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired">
+		<Value>Name in the contact form is required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnContactUsRequired.Hint">
+		<Value>Specifies whether the name is required in the contact form.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired">
+		<Value>Name in the product request is required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.FullNameOnProductRequestRequired.Hint">
+		<Value>Specifies whether the name is required in the product request form.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress">
+		<Value>Store IP address</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.Privacy.StoreLastIpAddress.Hint">
+		<Value>Specifies whether to store the IP address in the customer data set.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.RegisterCustomerRole">
 		<Value>Customer role at registrations</Value>
 	</LocaleResource>
@@ -5806,12 +5872,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StateProvinceEnabled.Hint">
 		<Value>Set if 'State/province' is enabled.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StoreLastIpAddress">
-		<Value>Store IP address</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StoreLastIpAddress.Hint">
-		<Value>Specifies whether to store the IP address in the customer data set.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StoreLastVisitedPage">
 		<Value>Store last visited page</Value>
@@ -6388,6 +6448,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DetectBrowserUserLanguage.Hint">
 		<Value>Specifies whether the browser language of the visitor should be detected and assigned on his first visit (when inactive, the default store language will be assigned)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.EnableHoneypotProtection">
+		<Value>Enable Honeypot protection</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.EnableHoneypotProtection.Hint">
+		<Value>Honeypot is a simple but reliable bot detection method that does not require any captcha. If active, registration and contact forms are protected against bots and attackers.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.EncryptionKey">
 		<Value>Encryption private key</Value>
@@ -7239,7 +7305,7 @@
 		<Value>Consent for email transfer to third parties</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOver.Hint">
-		<Value>Specifies whether customers can agree to a transferring of their email address to third parties when ordering, and whether the checkbox is enabled by default during checkout.</Value>
+		<Value>Specifies whether customers can agree to a transferring of their email address to third parties when ordering, and whether the checkbox is enabled by default during checkout. Please note that the 'Show activated' option isn't legally compliant in line with the GDPR.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel">
 		<Value>Text for email transfer consent</Value>
@@ -9016,6 +9082,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.List.SearchDateOfBirth.Month">
 		<Value>Month</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Customers.Customers.List.SearchDeletedOnly">
+		<Value>Only deactivated customers</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.List.SearchEmail">
 		<Value>Email</Value>
@@ -13489,7 +13558,7 @@
 		<Value>Terms of service</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.TermsOfService.IAccept">
-		<Value>I agree with the terms of service and I adhere to them unconditionally</Value>
+		<Value>I agree with the {0}terms of service{1} and I adhere to them unconditionally. I've read the {3}privacy terms{1} and agree that my data given by me can be stored electronically.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.TermsOfService.PleaseAccept">
 		<Value>Please accept the terms of service before the next step.</Value>
@@ -14163,20 +14232,17 @@
 	<LocaleResource Name="ContactUs.FullName.Required">
 		<Value>Enter your name</Value>
 	</LocaleResource>
-	<LocaleResource Name="ContactUs.PrivacyAgreement">
-		<Value>Privacy consent</Value>
-	</LocaleResource>
-	<LocaleResource Name="ContactUs.PrivacyAgreement.DetailText">
-		<Value>Yes I've read the &lt;a href="{0}"&gt;privacy terms&lt;/a&gt; and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.</Value>
-	</LocaleResource>
-	<LocaleResource Name="ContactUs.PrivacyAgreement.MustBeAccepted">
-		<Value>Please agree to the storage of your data.</Value>
-	</LocaleResource>
 	<LocaleResource Name="ContactUs.YourEnquiryHasBeenSent">
 		<Value>Your enquiry has been successfully sent to the store owner.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Content.CopyrightNotice">
 		<Value>Copyright &amp;copy; {0} {1}. All rights reserved.</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieConsent.BadgeText">
+		<Value>{0} is using cookies, to guarantee the best shopping experience. Partially cookies will be set by third parties. &lt;a href='{1}'&gt;Privacy Info&lt;/a&gt;</Value>
+	</LocaleResource>
+	<LocaleResource Name="CookieConsent.Button">
+		<Value>Okay, got it</Value>
 	</LocaleResource>
 	<LocaleResource Name="Currencies">
 		<Value>Currencies</Value>
@@ -15208,6 +15274,30 @@
 	</LocaleResource>
 	<LocaleResource Name="Forum.WatchTopic">
 		<Value>Watch Topic</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.Anonymize">
+		<Value>Anonymize</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.Anonymize.Success">
+		<Value>The customer record '{0}' has been anonymized.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.Anonymous">
+		<Value>Anonymous</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.Consent.DetailText">
+		<Value>Yes I've read the &lt;a href="{0}"&gt;privacy terms&lt;/a&gt; and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.Consent.DetailText.Small">
+		<Value>I agree to the &lt;a href="{0}"&gt;Privacy policy&lt;/a&gt;.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.Consent.ValidationMessage">
+		<Value>Please agree to the processing of your data.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.DeletedLongText">
+		<Value>This content was deleted by the author.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gdpr.DeletedText">
+		<Value>Deleted</Value>
 	</LocaleResource>
 	<LocaleResource Name="GiftCardAttribute.For.Physical">
 		<Value>For: {0}</Value>

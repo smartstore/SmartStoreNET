@@ -399,6 +399,26 @@ namespace SmartStore.Web.Infrastructure.Installation
             SaveRange(_data.ManufacturerTemplates());
         }
 
+		private void PopulateTopics()
+		{
+			var topics = _data.Topics();
+			SaveRange(topics);
+
+			topics.Each(x =>
+			{
+				var slug = SeoHelper.GetSeName(x.SystemName, true, false).Truncate(400);
+
+				Save(new UrlRecord
+				{
+					EntityId = x.Id,
+					EntityName = "Topic",
+					LanguageId = 0,
+					IsActive = true,
+					Slug = slug
+				});
+			});
+		}
+
         private void AddProductTag(Product product, string tag)
         {
 			var productTag = _ctx.Set<ProductTag>().FirstOrDefault(pt => pt.Name == tag);
@@ -604,7 +624,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
-			Populate("PopulateTopics", _data.Topics());
+			Populate("PopulateTopics", PopulateTopics);
 			Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));

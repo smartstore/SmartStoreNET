@@ -21,8 +21,9 @@ namespace SmartStore.Web.Models.Catalog
         [AllowHtml]
         [SmartResourceDisplayName("Account.Fields.FullName")]
         public string SenderName { get; set; }
+		public bool SenderNameRequired { get; set; }
 
-        [AllowHtml]
+		[AllowHtml]
         [SmartResourceDisplayName("Account.Fields.Phone")]
         public string SenderPhone { get; set; }
 

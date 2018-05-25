@@ -52,8 +52,9 @@ namespace SmartStore.Services.Orders
         /// Deletes expired shopping cart items
         /// </summary>
         /// <param name="olderThanUtc">Older than date and time</param>
+		/// <param name="customerId"><c>null</c> to delete ALL cart items, or a customer id to only delete items of a single customer.</param>
         /// <returns>Number of deleted items</returns>
-        int DeleteExpiredShoppingCartItems(DateTime olderThanUtc);
+        int DeleteExpiredShoppingCartItems(DateTime olderThanUtc, int? customerId = null);
 
         /// <summary>
 		/// Validates required products (products which require other variant to be added to the cart)

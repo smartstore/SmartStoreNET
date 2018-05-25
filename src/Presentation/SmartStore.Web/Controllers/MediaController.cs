@@ -291,7 +291,7 @@ namespace SmartStore.Web.Controllers
 						{
 							// Call inner function
 							byte[] source = await getSourceBuffer(prevMime);
-							if (source == null)
+							if (source == null || source.Length == 0)
 							{
 								return NotFound(mime);
 							}

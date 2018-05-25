@@ -67,12 +67,12 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Adjust shipping rate (free shipping, additional charges, discounts)
         /// </summary>
-        /// <param name="shippingRate">Shipping rate to adjust</param>
+        /// <param name="shippingOption">Shipping option</param>
         /// <param name="cart">Cart</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Adjusted shipping rate</returns>
-		decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart, 
-			string shippingMethodName, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount);
+		decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart,
+			ShippingOption shippingOption, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount);
 
         /// <summary>
         /// Gets shopping cart additional shipping charge

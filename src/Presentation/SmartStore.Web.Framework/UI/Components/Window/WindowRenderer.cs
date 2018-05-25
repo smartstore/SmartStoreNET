@@ -44,12 +44,6 @@ namespace SmartStore.Web.Framework.UI
 				? (win.CloseOnBackdropClick ? "true" : "static")
 				: "false";
 
-			if (win.ContentUrl.HasValue())
-            {
-				// TBD: (BS4) does this still work?
-				win.HtmlAttributes["data-remote"] = win.ContentUrl;
-            }
-
             writer.AddAttributes(win.HtmlAttributes);
 
 			writer.RenderBeginTag("div"); // div.modal
@@ -132,10 +126,14 @@ namespace SmartStore.Web.Framework.UI
             writer.AddAttribute("class", "modal-body");
             writer.RenderBeginTag("div");
 
-            if (win.ContentUrl.IsEmpty() && win.Content != null)
-            {
-                win.Content.WriteTo(writer);
-            }
+			if (win.Content != null)
+			{
+				win.Content.WriteTo(writer);
+			}
+			else if (win.ContentUrl.HasValue())
+			{
+				writer.Write("<iframe class='modal-flex-fill-area' frameborder='0' src='{0}' />".FormatInvariant(win.ContentUrl));
+			}
 
             writer.RenderEndTag(); // div.modal-body
         }

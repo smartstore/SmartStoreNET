@@ -3,54 +3,56 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Logging;
 using SmartStore.GoogleAnalytics.Models;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
-using SmartStore.ComponentModel;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.GoogleAnalytics.Controllers
 {
-    public class WidgetsGoogleAnalyticsController : SmartController
+	public class WidgetsGoogleAnalyticsController : SmartController
     {
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
-		private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
         private readonly IOrderService _orderService;
         private readonly ICategoryService _categoryService;
 
-        public WidgetsGoogleAnalyticsController(IWorkContext workContext,
-			IStoreContext storeContext, IStoreService storeService,
-			ISettingService settingService, IOrderService orderService,
+        public WidgetsGoogleAnalyticsController(
+			IWorkContext workContext,
+			IStoreContext storeContext,
+			ISettingService settingService,
+			IOrderService orderService,
             ICategoryService categoryService)
         {
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-			this._storeService = storeService;
-            this._settingService = settingService;
-            this._orderService = orderService;
-            this._categoryService = categoryService;
-        }
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _settingService = settingService;
+            _orderService = orderService;
+            _categoryService = categoryService;
 
-        [AdminAuthorize, ChildActionOnly, LoadSetting]
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
+
+		[AdminAuthorize, ChildActionOnly, LoadSetting]
         public ActionResult Configure(GoogleAnalyticsSettings settings)
         {
             var model = new ConfigurationModel();
 			MiniMapper.Map(settings, model);
             
             model.ZoneId = settings.WidgetZone;
-            model.AvailableZones.Add(new SelectListItem() { Text = "<head> HTML tag", Value = "head_html_tag"});
-            model.AvailableZones.Add(new SelectListItem() { Text = "Before <body> end HTML tag", Value = "body_end_html_tag_before" });
+            model.AvailableZones.Add(new SelectListItem { Text = "<head> HTML tag", Value = "head_html_tag"});
+            model.AvailableZones.Add(new SelectListItem { Text = "Before <body> end HTML tag", Value = "body_end_html_tag_before" });
 
             return View(model);
         }
@@ -87,9 +89,9 @@ namespace SmartStore.GoogleAnalytics.Controllers
             var routeData = ((System.Web.UI.Page)this.HttpContext.CurrentHandler).RouteData;
 
             try
-            {
-                //Special case, if we are in last step of checkout, we can use order total for conversion value
-                if (routeData.Values["controller"].ToString().Equals("checkout", StringComparison.InvariantCultureIgnoreCase) &&
+            {			
+				// Special case, if we are in last step of checkout, we can use order total for conversion value
+				if (routeData.Values["controller"].ToString().Equals("checkout", StringComparison.InvariantCultureIgnoreCase) &&
                     routeData.Values["action"].ToString().Equals("completed", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var lastOrder = GetLastOrder();
@@ -113,67 +115,104 @@ namespace SmartStore.GoogleAnalytics.Controllers
 				null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 			return order;
         }
-        
-        private string GetTrackingScript()
+
+		private string GetOptOutCookieScript()
+		{
+			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
+			var script = @"
+				var gaProperty = '{GOOGLEID}'; 
+				var disableStr = 'ga-disable-' + gaProperty; 
+				if (document.cookie.indexOf(disableStr + '=true') > -1) { 
+					window[disableStr] = true;
+				} 
+				function gaOptout() { 
+					document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/'; 
+					window[disableStr] = true; 
+					alert('{NOTIFICATION}'); 
+				} 
+			";
+
+			script = script + "\n";
+			script = script.Replace("{GOOGLEID}", settings.GoogleId);
+			script = script.Replace("{NOTIFICATION}", T("Plugins.Widgets.GoogleAnalytics.OptOutNotification").JsText.ToHtmlString());
+
+			return script;
+		}
+		
+		private string GetTrackingScript()
         {
-			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
-            string analyticsTrackingScript = "";
-            analyticsTrackingScript = googleAnalyticsSettings.TrackingScript + "\n";
-            analyticsTrackingScript = analyticsTrackingScript.Replace("{GOOGLEID}", googleAnalyticsSettings.GoogleId);
-            analyticsTrackingScript = analyticsTrackingScript.Replace("{ECOMMERCE}", "");
-            return analyticsTrackingScript;
+			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
+            var script = "";
+            script = settings.TrackingScript + "\n";
+            script = script.Replace("{GOOGLEID}", settings.GoogleId);
+            script = script.Replace("{ECOMMERCE}", "");
+			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
+
+			return script;
         }
         
         private string GetEcommerceScript(Order order)
         {
-			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
+			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
             var usCulture = new CultureInfo("en-US");
-            string analyticsTrackingScript = "";
-			analyticsTrackingScript = googleAnalyticsSettings.TrackingScript + "\n";
-			analyticsTrackingScript = analyticsTrackingScript.Replace("{GOOGLEID}", googleAnalyticsSettings.GoogleId);
+            var script = "";
+			var ecScript = "";
 
-            string analyticsEcommerceScript = "";
-            if (order != null)
+			script = settings.TrackingScript + "\n";
+			script = script.Replace("{GOOGLEID}", settings.GoogleId);
+			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
+
+			if (order != null)
             {
-                analyticsEcommerceScript = googleAnalyticsSettings.EcommerceScript + "\n";
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{GOOGLEID}", googleAnalyticsSettings.GoogleId);
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{ORDERID}", order.GetOrderNumber());
-				analyticsEcommerceScript = analyticsEcommerceScript.Replace("{SITE}", _storeContext.CurrentStore.Url.Replace("http://", "").Replace("/", ""));
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{TOTAL}", order.OrderTotal.ToString("0.00", usCulture));
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{TAX}", order.OrderTax.ToString("0.00", usCulture));
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{SHIP}", order.OrderShippingInclTax.ToString("0.00", usCulture));
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{CITY}", order.BillingAddress == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.City));
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{STATEPROVINCE}", order.BillingAddress == null || order.BillingAddress.StateProvince == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.StateProvince.Name));
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{COUNTRY}", order.BillingAddress == null || order.BillingAddress.Country == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.Country.Name));
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{CURRENCY}", order.CustomerCurrencyCode);
+				var site = _storeContext.CurrentStore.Url
+					.EmptyNull()
+					.Replace("http://", "")
+					.Replace("https://", "")
+					.Replace("/", "");
+
+				ecScript = settings.EcommerceScript + "\n";
+                ecScript = ecScript.Replace("{GOOGLEID}", settings.GoogleId);
+                ecScript = ecScript.Replace("{ORDERID}", order.GetOrderNumber());
+				ecScript = ecScript.Replace("{SITE}", FixIllegalJavaScriptChars(site));
+                ecScript = ecScript.Replace("{TOTAL}", order.OrderTotal.ToString("0.00", usCulture));
+                ecScript = ecScript.Replace("{TAX}", order.OrderTax.ToString("0.00", usCulture));
+                ecScript = ecScript.Replace("{SHIP}", order.OrderShippingInclTax.ToString("0.00", usCulture));
+                ecScript = ecScript.Replace("{CITY}", order.BillingAddress == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.City));
+                ecScript = ecScript.Replace("{STATEPROVINCE}", order.BillingAddress == null || order.BillingAddress.StateProvince == null 
+					? "" 
+					: FixIllegalJavaScriptChars(order.BillingAddress.StateProvince.Name));
+                ecScript = ecScript.Replace("{COUNTRY}", order.BillingAddress == null || order.BillingAddress.Country == null 
+					? ""
+					: FixIllegalJavaScriptChars(order.BillingAddress.Country.Name));
+                ecScript = ecScript.Replace("{CURRENCY}", order.CustomerCurrencyCode);
 
                 var sb = new StringBuilder();
                 foreach (var item in order.OrderItems)
                 {
-                    string analyticsEcommerceDetailScript = googleAnalyticsSettings.EcommerceDetailScript;
-                    //get category
-                    string categ = "";
+                    var ecDetailScript = settings.EcommerceDetailScript;
                     var defaultProductCategory = _categoryService.GetProductCategoriesByProductId(item.ProductId).FirstOrDefault();
-                    if (defaultProductCategory != null)
-                        categ = defaultProductCategory.Category.Name;
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{ORDERID}", order.GetOrderNumber());
-                    //The SKU code is a required parameter for every item that is added to the transaction
-                    item.Product.MergeWithCombination(item.AttributesXml);
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTSKU}", FixIllegalJavaScriptChars(item.Product.Sku));
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{PRODUCTNAME}", FixIllegalJavaScriptChars(item.Product.Name));
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{CATEGORYNAME}", FixIllegalJavaScriptChars(categ));
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{UNITPRICE}", item.UnitPriceInclTax.ToString("0.00", usCulture));
-                    analyticsEcommerceDetailScript = analyticsEcommerceDetailScript.Replace("{QUANTITY}", item.Quantity.ToString());
-                    sb.AppendLine(analyticsEcommerceDetailScript);
+					var categoryName = defaultProductCategory != null
+						? defaultProductCategory.Category.Name
+						: "";
+
+					// The SKU code is a required parameter for every item that is added to the transaction.
+					item.Product.MergeWithCombination(item.AttributesXml);
+
+					ecDetailScript = ecDetailScript.Replace("{ORDERID}", order.GetOrderNumber());
+                    ecDetailScript = ecDetailScript.Replace("{PRODUCTSKU}", FixIllegalJavaScriptChars(item.Product.Sku));
+                    ecDetailScript = ecDetailScript.Replace("{PRODUCTNAME}", FixIllegalJavaScriptChars(item.Product.Name));
+                    ecDetailScript = ecDetailScript.Replace("{CATEGORYNAME}", FixIllegalJavaScriptChars(categoryName));
+                    ecDetailScript = ecDetailScript.Replace("{UNITPRICE}", item.UnitPriceInclTax.ToString("0.00", usCulture));
+                    ecDetailScript = ecDetailScript.Replace("{QUANTITY}", item.Quantity.ToString());
+
+                    sb.AppendLine(ecDetailScript);
                 }
 
-                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{DETAILS}", sb.ToString());
-
-                analyticsTrackingScript = analyticsTrackingScript.Replace("{ECOMMERCE}", analyticsEcommerceScript);
-
+                ecScript = ecScript.Replace("{DETAILS}", sb.ToString());
+                script = script.Replace("{ECOMMERCE}", ecScript);
             }
 
-            return analyticsTrackingScript;
+            return script;
         }
 
         private string FixIllegalJavaScriptChars(string text)

@@ -12,15 +12,22 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Core.Domain.Orders;
-using System.Text;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Html;
 using SmartStore.Utilities;
+using System.Collections.Generic;
 
 namespace SmartStore.Services.Messages
 {
 	public partial class MessageModelProvider
 	{
+		private void ApplyCustomerContentPart(IDictionary<string, object> model, CustomerContent content, MessageContext ctx)
+		{
+			model["CustomerId"] = content.CustomerId;
+			model["IpAddress"] = content.IpAddress;
+			model["CreatedOn"] = ToUserDate(content.CreatedOnUtc, ctx);
+			model["UpdatedOn"] = ToUserDate(content.UpdatedOnUtc, ctx);
+		}
+
 		private string BuildUrl(string url, MessageContext ctx)
 		{
 			return ctx.BaseUri.ToString().TrimEnd('/') + url;
@@ -67,12 +74,7 @@ namespace SmartStore.Services.Messages
 			var topicService = _services.Resolve<ITopicService>();
 
 			// Load by store
-			var topic = topicService.GetTopicBySystemName(topicSystemName, ctx.Store.Id);
-			if (topic == null)
-			{
-				// Not found. Let's find topic assigned to all stores
-				topic = topicService.GetTopicBySystemName(topicSystemName, 0);
-			}
+			var topic = topicService.GetTopicBySystemName(topicSystemName);
 
 			string body = topic?.GetLocalized(x => x.Body, ctx.Language);
 			if (body.HasValue())

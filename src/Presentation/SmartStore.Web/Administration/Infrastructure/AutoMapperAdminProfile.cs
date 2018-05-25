@@ -141,7 +141,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableLanguageSetId, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDownloadLanguages, mo => mo.Ignore())
-				.ForMember(dest => dest.FlagFileNames, mo => mo.Ignore());
+				.ForMember(dest => dest.FlagFileNames, mo => mo.Ignore())
+				.ForMember(dest => dest.LastResourcesImportOn, mo => mo.Ignore())
+				.ForMember(dest => dest.LastResourcesImportOnString, mo => mo.Ignore());
 			CreateMap<LanguageModel, Language>()
 				.ForMember(dest => dest.LocaleStringResources, mo => mo.Ignore());
 			//email account
@@ -185,6 +187,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
 			//topcis
 			CreateMap<Topic, TopicModel>()
+				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
 				.ForMember(dest => dest.WidgetWrapContent, mo => mo.MapFrom(x => x.WidgetWrapContent.HasValue ? x.WidgetWrapContent.Value : true))
 				.ForMember(dest => dest.Url, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
@@ -707,6 +710,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.PrefillLoginPwd, mo => mo.Ignore());
 			CreateMap<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>();
 			CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore());
+			CreateMap<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>();
+			CreateMap<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>()
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
 
 			CreateMap<ThemeSettings, ThemeListModel>()

@@ -5,10 +5,6 @@
 	using System.Data.Entity.Migrations;
 	using System.Linq;
 	using Setup;
-	using SmartStore.Utilities;
-	using SmartStore.Core.Domain.Media;
-	using Core.Domain.Configuration;
-	using SmartStore.Core.Domain.Customers;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{

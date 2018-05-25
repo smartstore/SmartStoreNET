@@ -11,6 +11,7 @@ using SmartStore.Services.Common;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Core.Domain;
 using SmartStore.Services.Customers;
+using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -28,8 +29,9 @@ namespace SmartStore.Web.Framework.Theming
 		private bool? _isHomePage;
 		private bool? _isMobileDevice;
         private bool? _isStoreClosed;
+		private bool? _enableHoneypot;
 
-        public WebViewPageHelper()
+		public WebViewPageHelper()
 		{
 			T = NullLocalizer.Instance;
 		}
@@ -40,9 +42,8 @@ namespace SmartStore.Web.Framework.Theming
 		public IThemeRegistry ThemeRegistry { get; set; }
 		public IThemeContext ThemeContext { get; set; }
 		public IMobileDeviceHelper MobileDeviceHelper { get; set; }
-        public StoreInformationSettings StoreInfoSettings { get; set; }
 
-        public void Initialize(ViewContext viewContext)
+		public void Initialize(ViewContext viewContext)
 		{
 			if (!_initialized)
 			{
@@ -150,14 +151,29 @@ namespace SmartStore.Web.Framework.Theming
             {
                 if (!_isStoreClosed.HasValue)
                 {
-                    _isStoreClosed = Services.WorkContext.CurrentCustomer.IsAdmin() && StoreInfoSettings.StoreClosedAllowForAdmins ?  false : StoreInfoSettings.StoreClosed;
+					var settings = Services.Settings.LoadSetting<StoreInformationSettings>(Services.StoreContext.CurrentStore.Id);
+					_isStoreClosed = Services.WorkContext.CurrentCustomer.IsAdmin() && settings.StoreClosedAllowForAdmins ?  false : settings.StoreClosed;
                 }
 
                 return _isStoreClosed.Value;
             }
         }
 
-        public IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
+		public bool EnableHoneypotProtection
+		{
+			get
+			{
+				if (!_enableHoneypot.HasValue)
+				{
+					var settings = Services.Settings.LoadSetting<SecuritySettings>(Services.StoreContext.CurrentStore.Id);
+					_enableHoneypot = settings.EnableHoneypotProtection;
+				}
+
+				return _enableHoneypot.Value;
+			}
+		}
+
+		public IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
 		{
 			IEnumerable<NotifyEntry> result = Enumerable.Empty<NotifyEntry>();
 

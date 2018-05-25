@@ -703,12 +703,12 @@ namespace SmartStore.Services.Catalog
 		public virtual string GetCategoryPath(
 			TreeNode<ICategoryNode> treeNode, 
 			int? languageId = null,
-			bool withAlias = false, 
+			string aliasPattern = null, 
 			string separator = " » ")
 		{
 			Guard.NotNull(treeNode, nameof(treeNode));
 
-			var lookupKey = "Path.{0}.{1}.{2}".FormatInvariant(separator, languageId ?? 0, withAlias);
+			var lookupKey = "Path.{0}.{1}.{2}".FormatInvariant(separator, languageId ?? 0, aliasPattern.HasValue());
 			var cachedPath = treeNode.GetMetadata<string>(lookupKey, false);
 
 			if (cachedPath != null)
@@ -721,14 +721,6 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var node in trail)
 			{
-				//if (!node.Value.Published)
-				//{
-				//	// If any parent is unpublished,
-				//	// this category is not visible: so, no path.
-				//	sb.Clear();
-				//	break;
-				//}
-
 				if (!node.IsRoot)
 				{
 					var cat = node.Value;
@@ -739,11 +731,10 @@ namespace SmartStore.Services.Catalog
 
 					sb.Append(name);
 
-					if (withAlias && cat.Alias.HasValue())
+					if (aliasPattern.HasValue() && cat.Alias.HasValue())
 					{
-						sb.Append(" (");
-						sb.Append(cat.Alias);
-						sb.Append(")");
+						sb.Append(" ");
+						sb.Append(string.Format(aliasPattern, cat.Alias));
 				}
 
 					if (node != treeNode)

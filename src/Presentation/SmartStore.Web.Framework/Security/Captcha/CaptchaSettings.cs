@@ -1,7 +1,7 @@
 ﻿
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.Web.Framework.UI.Captcha
+namespace SmartStore.Web.Framework.Security
 {
     public class CaptchaSettings : ISettings
     {

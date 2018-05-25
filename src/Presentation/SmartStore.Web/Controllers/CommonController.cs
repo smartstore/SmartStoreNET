@@ -34,12 +34,16 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Core.Plugins;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.Web.Controllers
 {
@@ -60,7 +64,8 @@ namespace SmartStore.Web.Controllers
 
 		private readonly StoreInformationSettings _storeInfoSettings;
 		private readonly CustomerSettings _customerSettings;
-        private readonly TaxSettings _taxSettings;
+		private readonly PrivacySettings _privacySettings;
+		private readonly TaxSettings _taxSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly ThemeSettings _themeSettings;
@@ -82,7 +87,7 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IShoppingCartService> _shoppingCartService;
 
 		private readonly IBreadcrumb _breadcrumb;
-
+		
 		public CommonController(
 			ICommonServices services,
 			ITopicService topicService,
@@ -96,8 +101,9 @@ namespace SmartStore.Web.Controllers
 			Lazy<ICompareProductsService> compareProductsService,
 			Lazy<IUrlRecordService> urlRecordService,
 			StoreInformationSettings storeInfoSettings,
-            CustomerSettings customerSettings, 
-            TaxSettings taxSettings, 
+            CustomerSettings customerSettings,
+			PrivacySettings privacySettings,
+			TaxSettings taxSettings, 
 			CatalogSettings catalogSettings,
             ShoppingCartSettings shoppingCartSettings,
             EmailAccountSettings emailAccountSettings,
@@ -132,7 +138,8 @@ namespace SmartStore.Web.Controllers
 
 			_storeInfoSettings = storeInfoSettings;
 			_customerSettings = customerSettings;
-            _taxSettings = taxSettings;
+			_privacySettings = privacySettings;
+			_taxSettings = taxSettings;
             _catalogSettings = catalogSettings;
             _shoppingCartSettings = shoppingCartSettings;
             _commonSettings = commonSettings;
@@ -155,7 +162,7 @@ namespace SmartStore.Web.Controllers
             _shoppingCartService = shoppingCartService;
 
 			_breadcrumb = breadcrumb;
-        }
+		}
 
         #region Utilities
 
@@ -414,7 +421,8 @@ namespace SmartStore.Web.Controllers
         }
 
 		[ChildActionOnly]
-        public ActionResult Footer()
+		[GdprConsent]
+		public ActionResult Footer()
         {
 			var store = _services.StoreContext.CurrentStore;
 			var allTopics = _topicService.GetAllTopics(store.Id);
@@ -448,20 +456,10 @@ namespace SmartStore.Web.Controllers
                 DisplayLoginLink = _customerSettings.UserRegistrationType == UserRegistrationType.Disabled
             };
 
-			model.TopicPageUrls = allTopics
-				.Where(x => !x.RenderAsWidget)
-				.GroupBy(x => x.SystemName)
-				.ToDictionary(x => x.Key.EmptyNull().ToLower(), x =>
-				{
-					if (x.Key.IsCaseInsensitiveEqual("contactus"))
-						return Url.RouteUrl("ContactUs");
-
-					return Url.RouteUrl("Topic", new { SystemName = x.Key });
-				});
-
-			if (model.TopicPageUrls.ContainsKey("shippinginfo"))
+			var shippingInfoUrl = Url.TopicUrl("shippinginfo");
+			if (shippingInfoUrl.HasValue())
 			{
-				model.LegalInfo = T("Tax.LegalInfoFooter", taxInfo, model.TopicPageUrls["shippinginfo"]);
+				model.LegalInfo = T("Tax.LegalInfoFooter", taxInfo, shippingInfoUrl);
 			}
 			else
 			{
@@ -505,7 +503,7 @@ namespace SmartStore.Web.Controllers
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
                 IsAuthenticated = customer.IsRegistered(),
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				HasContactUsPage = _topicService.GetTopicBySystemName("ContactUs", store.Id) != null,
+				HasContactUsPage = Url.TopicUrl("ContactUs").HasValue(),
                 DisplayLoginLink = _customerSettings.UserRegistrationType != UserRegistrationType.Disabled
             };
             
@@ -527,17 +525,6 @@ namespace SmartStore.Web.Controllers
                 ForumEnabled = _forumSettings.ForumsEnabled,
                 ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers(String.Empty, 0, 0).TotalCount > 0
             };
-
-            model.TopicPageUrls = allTopics
-                .Where(x => !x.RenderAsWidget)
-                .GroupBy(x => x.SystemName)
-                .ToDictionary(x => x.Key.EmptyNull().ToLower(), x =>
-                {
-                    if (x.Key.IsCaseInsensitiveEqual("contactus"))
-                        return Url.RouteUrl("ContactUs");
-
-                    return Url.RouteUrl("Topic", new { SystemName = x.Key });
-                });
 
             return PartialView(model);
         }
@@ -865,6 +852,69 @@ namespace SmartStore.Web.Controllers
 			}, TimeSpan.FromMinutes(1) /* 1 min. (just for the duration of pdf processing) */);
 		}
 
+		[ChildActionOnly]
+		public ActionResult CookieConsentBadge()
+		{
+			if (!_privacySettings.EnableCookieConsent)
+			{
+				return new EmptyResult();
+			}
+			
+			var model = new CookieConsentModel();
+
+			if (!_privacySettings.CookieConsentBadgetext.HasValue())
+			{
+				// loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
+				model.BadgeText = T("CookieConsent.BadgeText", 
+					_services.StoreContext.CurrentStore.Name, 
+					Url.RouteUrl("Topic", new { SeName = Url.TopicSeName("PrivacyInfo") }));
+			}
+			else
+			{
+				model.BadgeText = _privacySettings.GetLocalized(x => x.CookieConsentBadgetext).Value.FormatWith(
+					_services.StoreContext.CurrentStore.Name,
+					Url.RouteUrl("Topic", new { SystemName = "PrivacyInfo" })
+				);
+			}
+			
+			var consentCookie = this.Request.Cookies[CookieConsent.CONSENT_COOKIE_NAME];
+			if (consentCookie != null && consentCookie.Value == "true")
+				return new EmptyResult();
+
+			return PartialView(model);
+		}
+
+		[HttpPost]
+		public ActionResult CookieConsentBadge(CookieConsentModel model)
+		{
+			CookieConsent.SetCookieConsent(Response, true);
+
+			return new EmptyResult();
+		}
+
+		[ChildActionOnly]
+		public ActionResult GdprConsent(bool isSmall)
+		{
+			if (!_privacySettings.DisplayGdprConsentOnForms)
+			{
+				return new EmptyResult();
+			}
+
+			var customer = _services.WorkContext.CurrentCustomer;
+			var hasConsentedToGdpr = customer.GetAttribute<bool>(SystemCustomerAttributeNames.HasConsentedToGdpr);
+
+			if (hasConsentedToGdpr)
+			{
+				return new EmptyResult();
+			}
+
+			var model = new GdprConsentModel();
+			model.GdprConsent = false;
+			model.SmallDisplay = isSmall;
+
+			return PartialView(model);
+		}
+	
 		#endregion
 	}
 }

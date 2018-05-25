@@ -151,10 +151,10 @@ namespace SmartStore.Web.Framework
 			if (request == null)
 				return;
 
-			if (IsPluginPath(request) && WebHelper.IsStaticResourceRequested(request))
+			if (IsExtensionPath(request) && WebHelper.IsStaticResourceRequested(request))
 			{
-				// We're in debug mode and in dev environment, so we can be sure that 'PluginDebugViewVirtualPathProvider' is running
-				var file = HostingEnvironment.VirtualPathProvider.GetFile(request.AppRelativeCurrentExecutionFilePath) as DebugPluginVirtualFile;
+				// We're in debug mode and in dev environment
+				var file = HostingEnvironment.VirtualPathProvider.GetFile(request.AppRelativeCurrentExecutionFilePath) as DebugVirtualFile;
 				if (file != null)
 				{
 					context.Items["DebugFile"] = file;
@@ -169,7 +169,7 @@ namespace SmartStore.Web.Framework
 			if (context?.Response == null)
 				return;
 
-			var file = context.Items?["DebugFile"] as DebugPluginVirtualFile;
+			var file = context.Items?["DebugFile"] as DebugVirtualFile;
 			if (file != null)
 			{
 				context.Response.AddFileDependency(file.PhysicalPath);
@@ -202,9 +202,10 @@ namespace SmartStore.Web.Framework
 			}	
 		}
 
-		private bool IsPluginPath(HttpRequestBase request)
+		private bool IsExtensionPath(HttpRequestBase request)
 		{
-			var result = request.AppRelativeCurrentExecutionFilePath.StartsWith("~/Plugins/", StringComparison.InvariantCultureIgnoreCase);
+			var path = request.AppRelativeCurrentExecutionFilePath.ToLower();
+			var result = path.StartsWith("~/plugins/") || path.StartsWith("~/themes/");
 			return result;
 		}
 

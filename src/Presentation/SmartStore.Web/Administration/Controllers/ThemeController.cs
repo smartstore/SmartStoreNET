@@ -117,7 +117,6 @@ namespace SmartStore.Admin.Controllers
                     Author = manifest.Author,
 					Url = manifest.Url,
                     Version = manifest.Version,
-                    SupportsRtl = manifest.SupportRtl,
                     PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}{1}/preview.png".FormatInvariant(manifest.Location.EnsureEndsWith("/"), manifest.ThemeName),
                     IsActive = themeSettings.DefaultTheme == manifest.ThemeName,
 					State = manifest.State,

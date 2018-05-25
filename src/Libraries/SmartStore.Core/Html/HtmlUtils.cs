@@ -294,7 +294,7 @@ namespace SmartStore.Core.Html
 			{
 				if (node.Style.FontSize is string s && s.EndsWith("px"))
 				{
-					var size = s.Substring(0, s.Length - 2).Convert<int>();
+					var size = s.Substring(0, s.Length - 2).Convert<double>();
 					if (size > 0)
 					{
 						//node.Style.FontSize = Math.Round(((double)size / (double)baseFontSizePx), 4) + "em";

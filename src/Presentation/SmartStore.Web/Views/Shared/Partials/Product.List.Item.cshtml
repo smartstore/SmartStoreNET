@@ -55,14 +55,14 @@
 			}
 
 			<h3 @Html.LanguageAttributes(Model.Name) class="art-name">
-				<a href="@artDetailUrl" title="@Model.Name">
+				<a href="@artDetailUrl" title="@Model.Name.ToString()">
 					<span>@Model.Name</span>
 				</a>
 			</h3>
 
 			@if (list.ShowDescription)
 			{
-				<div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription">
+				<div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription.ToString()">
 					@Html.Raw(Model.ShortDescription.Value.Truncate(160, "..."))
 				</div>
 			}

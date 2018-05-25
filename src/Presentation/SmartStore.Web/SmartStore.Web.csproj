@@ -370,6 +370,7 @@
     <Compile Include="Models\Checkout\CheckoutConfirmModel.cs" />
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
+    <Compile Include="Models\Common\ConsentModel.cs" />
     <Compile Include="Models\Entity\EntityPickerModel.cs" />
     <Compile Include="Models\Common\CommentModel.cs" />
     <Compile Include="Models\Search\ISearchResultModel.cs" />
@@ -540,11 +541,6 @@
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Data\Samples\0000785-apple-iphone.png" />
-    <Content Include="App_Data\Samples\0000786-apple-iphone.png" />
-    <Content Include="App_Data\Samples\0000787-apple-iphone.jpg" />
-    <Content Include="App_Data\Samples\0000788-apple-iphone.png" />
-    <Content Include="App_Data\Samples\0000789-apple-iphone.jpg" />
     <Content Include="App_Data\Samples\0000904_samsung_125.jpeg" />
     <Content Include="App_Data\Samples\0000930_spiegel-bestseller.png" />
     <Content Include="App_Data\Samples\0000932_uberman-der-roman.jpeg" />
@@ -589,11 +585,9 @@
     <Content Include="App_Data\Samples\category_sports.jpg" />
     <Content Include="App_Data\Samples\category_sunglasses.jpg" />
     <Content Include="App_Data\Samples\category_watches.png" />
-    <Content Include="App_Data\Samples\clouds.png" />
     <Content Include="App_Data\Samples\company_logo.png" />
     <Content Include="App_Data\Samples\emblem_library.png" />
     <Content Include="App_Data\Samples\gift-card.jpg" />
-    <Content Include="App_Data\Samples\iphone.png" />
     <Content Include="App_Data\Samples\manufacturer-android.png" />
     <Content Include="App_Data\Samples\manufacturer-blackberry.png" />
     <Content Include="App_Data\Samples\manufacturer-canon.png" />
@@ -625,8 +619,6 @@
     <Content Include="App_Data\Samples\manufacturer_ubisoft.png" />
     <Content Include="App_Data\Samples\manufacturer_wb.png" />
     <Content Include="App_Data\Samples\manufacturer_wilson.png" />
-    <Content Include="App_Data\Samples\music.png" />
-    <Content Include="App_Data\Samples\packshot-net.png" />
     <Content Include="App_Data\Samples\productCustomFlakSunglasses_black_white.jpg" />
     <Content Include="App_Data\Samples\products_airpods_gold.jpg" />
     <Content Include="App_Data\Samples\products_airpods_lightblue.jpg" />
@@ -1783,6 +1775,9 @@
     <Content Include="Content\shared\_rtl-bs4.scss" />
     <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <Content Include="Themes\Flex\Content\_fonts.scss" />
+    <Content Include="Views\ShoppingCart\Partials\_RefreshCartScript.cshtml" />
+    <Content Include="Views\Common\Partials\CookieConsentBadge.cshtml" />
+    <Content Include="Views\Common\Partials\GdprConsent.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -26,7 +26,6 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
 using SmartStore.Web.Models.Common;
@@ -299,7 +298,8 @@ namespace SmartStore.Web.Controllers
 			return new RssActionResult { Feed = feed };
         }
 
-        public ActionResult BlogPost(int blogPostId)
+		[GdprConsent]
+		public ActionResult BlogPost(int blogPostId)
         {
             if (!_blogSettings.Enabled)
 				return HttpNotFound();
@@ -322,8 +322,9 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("BlogPost")]
         [FormValueRequired("add-comment")]
-        [CaptchaValidator]
-        public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
+        [ValidateCaptcha]
+		[GdprConsent]
+		public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
         {
             if (!_blogSettings.Enabled)
 				return HttpNotFound();

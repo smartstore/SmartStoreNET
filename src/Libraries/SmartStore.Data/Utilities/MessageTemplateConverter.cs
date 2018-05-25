@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
@@ -33,13 +31,14 @@ namespace SmartStore.Data.Utilities
 		/// </summary>
 		/// <param name="templateName">Name of template without extension, e.g. 'GiftCard.Notification'</param>
 		/// <param name="language">Language</param>
+		/// <param name="virtualRootPath">The virtual root path of templates to load, e.g. "~/Plugins/MyPlugins/EmailTemplates". Default is "~/App_Data/EmailTemplates".</param>
 		/// <returns>Deserialized template xml</returns>
-		public MessageTemplate Load(string templateName, Language language)
+		public MessageTemplate Load(string templateName, Language language, string virtualRootPath = null)
 		{
 			Guard.NotEmpty(templateName, nameof(templateName));
 			Guard.NotNull(language, nameof(language));
 
-			var dir = ResolveTemplateDirectory(language);
+			var dir = ResolveTemplateDirectory(language, virtualRootPath);
 			var fullPath = Path.Combine(dir.FullName, templateName + ".xml");
 
 			if (!File.Exists(fullPath))
@@ -54,12 +53,13 @@ namespace SmartStore.Data.Utilities
 		/// Loads all message templates from disk (~/App_Data/EmailTemplates/)
 		/// </summary>
 		/// <param name="language">Language</param>
+		/// <param name="virtualRootPath">The virtual root path of templates to load, e.g. "~/Plugins/MyPlugins/EmailTemplates". Default is "~/App_Data/EmailTemplates".</param>
 		/// <returns>List of deserialized template xml</returns>
-		public IEnumerable<MessageTemplate> LoadAll(Language language)
+		public IEnumerable<MessageTemplate> LoadAll(Language language, string virtualRootPath = null)
 		{
 			Guard.NotNull(language, nameof(language));
 
-			var dir = ResolveTemplateDirectory(language);
+			var dir = ResolveTemplateDirectory(language, virtualRootPath);
 			var files = dir.EnumerateFiles("*.xml", SearchOption.TopDirectoryOnly);
 
 			foreach (var file in files)
@@ -114,28 +114,32 @@ namespace SmartStore.Data.Utilities
 		/// <summary>
 		/// Imports all template xml files to MessageTemplate table
 		/// </summary>
-		public void ImportAll(Language language)
+		/// <param name="virtualRootPath">The virtual root path of templates to import, e.g. "~/Plugins/MyPlugins/EmailTemplates". Default is "~/App_Data/EmailTemplates".</param>
+		public void ImportAll(Language language, string virtualRootPath = null)
 		{
 			var table = _ctx.Set<MessageTemplate>();
 
-			var sourceTemplates = LoadAll(language);
+			var sourceTemplates = LoadAll(language, virtualRootPath);
 			var dbTemplatesMap = table
 				.ToList()
-				.ToDictionarySafe(x => x.Name, StringComparer.OrdinalIgnoreCase);
+				.ToMultimap(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 
 			foreach (var source in sourceTemplates)
 			{
-				if (dbTemplatesMap.TryGetValue(source.Name, out var target))
+				if (dbTemplatesMap.ContainsKey(source.Name))
 				{
-					if (source.To.HasValue()) target.To = source.To;
-					if (source.ReplyTo.HasValue()) target.ReplyTo = source.ReplyTo;
-					if (source.Subject.HasValue()) target.Subject = source.Subject;
-					if (source.ModelTypes.HasValue()) target.ModelTypes = source.ModelTypes;
-					if (source.Body.HasValue()) target.Body = source.Body;
+					foreach (var target in dbTemplatesMap[source.Name])
+					{
+						if (source.To.HasValue()) target.To = source.To;
+						if (source.ReplyTo.HasValue()) target.ReplyTo = source.ReplyTo;
+						if (source.Subject.HasValue()) target.Subject = source.Subject;
+						if (source.ModelTypes.HasValue()) target.ModelTypes = source.ModelTypes;
+						if (source.Body.HasValue()) target.Body = source.Body;
+					}
 				}
 				else
 				{
-					target = new MessageTemplate
+					var template = new MessageTemplate
 					{
 						Name = source.Name,
 						To = source.To,
@@ -147,17 +151,17 @@ namespace SmartStore.Data.Utilities
 						EmailAccountId = (_defaultEmailAccount?.Id).GetValueOrDefault(),
 					};
 
-					table.Add(target);
+					table.Add(template);
 				}
 			}
 
 			_ctx.SaveChanges();
 		}
 
-		private DirectoryInfo ResolveTemplateDirectory(Language language)
+		private DirectoryInfo ResolveTemplateDirectory(Language language, string virtualRootPath = null)
 		{
-			var rootPath = CommonHelper.MapPath("~/App_Data/EmailTemplates/");
-			var testPaths = new[] 
+			var rootPath = CommonHelper.MapPath(virtualRootPath.NullEmpty() ?? "~/App_Data/EmailTemplates/");
+			var testPaths = new[]
 			{
 				language.LanguageCulture,
 				language.GetTwoLetterISOLanguageName(),
@@ -171,7 +175,7 @@ namespace SmartStore.Data.Utilities
 					return new DirectoryInfo(path);
 				}
 			}
-			
+
 			throw new DirectoryNotFoundException($"Could not obtain an email templates path for language {language.LanguageCulture}. Fallback to 'en' failed, because directory does not exist.");
 		}
 
@@ -184,7 +188,7 @@ namespace SmartStore.Data.Utilities
 		{
 			var root = doc.Root;
 			var result = new MessageTemplate();
-			
+
 			foreach (var node in root.Nodes().OfType<XElement>())
 			{
 				var value = node.Value.Trim();

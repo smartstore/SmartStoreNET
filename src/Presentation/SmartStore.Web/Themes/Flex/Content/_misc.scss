@@ -30,6 +30,36 @@
     }
 }
 
+
+//
+// Cookie Consent
+// -------------------------------------------------
+.cookie-consent-panel-message {
+    background: $gray-800;
+	z-index: $zindex-fixed + 1;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 10px 20px;
+	color: #fff;
+	text-shadow: 0px 1px 0px #666;
+	border-top: 1px solid #222;
+	text-align: center;
+	line-height: 2;
+}
+.cookie-consent-panel-message .close {
+    color: #fff !important;
+}
+.cookie-consent-panel-message a {
+	color: inherit;
+	text-decoration: underline;
+}
+.cookie-consent-panel-message .popup {
+	display: none !important;
+}
+
 //
 // File Upload
 // -------------------------------------------------

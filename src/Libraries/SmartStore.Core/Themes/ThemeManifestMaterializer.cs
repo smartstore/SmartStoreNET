@@ -22,6 +22,7 @@ namespace SmartStore.Core.Themes
 			_manifest.BaseThemeName = folderData.BaseTheme;
             _manifest.Location = folderData.VirtualBasePath;
             _manifest.Path = folderData.FullPath;
+			_manifest.IsSymbolicLink = folderData.IsSymbolicLink;
             _manifest.ConfigurationNode = folderData.Configuration.DocumentElement;
         }
         
@@ -30,7 +31,6 @@ namespace SmartStore.Core.Themes
             var root = _manifest.ConfigurationNode;
 
 			_manifest.ThemeTitle = root.GetAttribute("title").NullEmpty() ?? _manifest.ThemeName;
-            _manifest.SupportRtl = root.GetAttribute("supportRTL").ToBool();
             _manifest.PreviewImageUrl = root.GetAttribute("previewImageUrl").NullEmpty() ?? "~/Themes/{0}/preview.png".FormatCurrent(_manifest.ThemeName);
             _manifest.PreviewText = root.GetAttribute("previewText").ToSafe();
             _manifest.Author = root.GetAttribute("author").ToSafe();

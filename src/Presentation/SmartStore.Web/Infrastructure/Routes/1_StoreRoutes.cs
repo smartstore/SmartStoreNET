@@ -79,14 +79,9 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "ShoppingCart", action = "Wishlist", customerGuid = UrlParameter.Optional },
 				new[] { "SmartStore.Web.Controllers" });
 
-			routes.MapLocalizedRoute("Topic",
+			routes.MapLocalizedRoute("TopicLegacy",
 				"t/{SystemName}",
-				new { controller = "Topic", action = "TopicDetails" },
-				new[] { "SmartStore.Web.Controllers" });
-
-			routes.MapLocalizedRoute("TopicPopup",
-				"t-popup/{SystemName}",
-				new { controller = "Topic", action = "TopicDetailsPopup" },
+				new { controller = "Topic", action = "TopicDetailsLegacy" },
 				new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("Search",
@@ -132,8 +127,8 @@ namespace SmartStore.Web.Infrastructure
 				new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("ProductsByTag",
-				"producttag/{productTagId}/{SeName}",
-				new { controller = "Catalog", action = "ProductsByTag", SeName = UrlParameter.Optional },
+				"producttag/{productTagId}/{*path}",
+				new { controller = "Catalog", action = "ProductsByTag" },
 				new { productTagId = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 

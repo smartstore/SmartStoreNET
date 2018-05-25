@@ -1928,10 +1928,45 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x. Title = "Zahlungsarten";
                     x.Body = "<p><p>Fügen Sie Informationen zu Zahlungsarten hier ein. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
                 });
-
         }
 
-        protected override void Alter(IList<ISettings> settings)
+		protected override void Alter(UrlRecord entity)
+		{
+			base.Alter(entity);
+
+			if (entity.EntityName == "Topic")
+			{
+				switch (entity.Slug)
+				{
+					case "aboutus":
+						entity.Slug = "ueber-uns";
+						break;
+					case "conditionsofuse":
+						entity.Slug = "agb";
+						break;
+					case "contactus":
+						entity.Slug = "kontakt";
+						break;
+					case "privacyinfo":
+						entity.Slug = "datenschutz";
+						break;
+					case "shippinginfo":
+						entity.Slug = "versand-und-rueckgabe";
+						break;
+					case "imprint":
+						entity.Slug = "impressum";
+						break;
+					case "disclaimer":
+						entity.Slug = "widerrufsrecht";
+						break;
+					case "paymentinfo":
+						entity.Slug = "zahlungsarten";
+						break;
+				}
+			}
+		}
+
+		protected override void Alter(IList<ISettings> settings)
         {
             base.Alter(settings);
 
@@ -4101,5 +4136,5 @@ namespace SmartStore.Web.Infrastructure.Installation
                 x.Name = "Einmal im Monat";
             });
         }
-    }
+	}
 }

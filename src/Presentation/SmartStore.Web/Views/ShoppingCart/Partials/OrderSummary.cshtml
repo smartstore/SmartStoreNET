@@ -1,8 +1,7 @@
 ﻿@model ShoppingCartModel
-@using SmartStore.Core.Domain.Orders;
 @using SmartStore.Web.Models.ShoppingCart;
 
-<div class="order-summary-content">
+<div class="order-summary-content cart-content" data-empty-text=@T("ShoppingCart.CartIsEmpty").JsText>
 
     @{ Html.RenderWidget("order_summary_content_before"); }
 
@@ -11,35 +10,6 @@
     @if (Model.DisplayCommentBox && !Model.IsEditable)
     {
         Html.RenderPartial("_CommentBox", Model);
-    }
-
-    @if (!Model.IsEditable && (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None || Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None))
-    {
-        <div class="card newsletter-subscription mb-3">
-            <div class="card-header h5">
-                <span>@T("Common.Options")</span>
-            </div>
-            <div class="card-body">
-                @if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
-                {
-                    <div class="form-check">
-						<input type="checkbox" id="SubscribeToNewsLetter" name="SubscribeToNewsLetter" class="form-check-input" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
-                        <label class="form-check-label" for="SubscribeToNewsLetter">
-                            <span>@T("Checkout.SubscribeToNewsLetter")</span>
-                        </label>
-                    </div>
-                }
-                @if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
-                {
-                    <div class="form-check">
-						<input type="checkbox" id="AcceptThirdPartyEmailHandOver" name="AcceptThirdPartyEmailHandOver" class="form-check-input" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
-                        <label class="form-check-label" for="AcceptThirdPartyEmailHandOver">
-                            <span>@Model.ThirdPartyEmailHandOverLabel</span>
-                        </label>
-                    </div>
-                }
-            </div>
-        </div>
     }
 
     @if (Model.Items.Count > 0)
@@ -197,8 +167,8 @@
 			.Render();
 	}
 
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script>
+        $(function () {
             $('a.download-user-agreement').on("click", function () {
                 var url = '@(Url.Action("GetUserAgreement", "Download"))?productId=' + $(this).attr('data-id'),
                     dialog = $('#user-agreement-modal');
@@ -219,85 +189,5 @@
 
 @if (Model.IsEditable)
 {
-    <script type="text/javascript">
-
-        var orderSummary = $(".order-summary-content");
-
-        // remove cart item & move to wishlist
-        orderSummary.on("click", ".ajax-action-link", function (e) {
-            e.preventDefault();
-            var link = $(this);
-            updateShoppingCartItems(link, link.data);
-            return false;
-        });
-
-        // quantity touchspin change
-        orderSummary.on('change', '.qty-input .form-control', function (e) {
-            e.preventDefault();
-            var link = $(this);
-            updateShoppingCartItems(link, { "sciItemId": link.data("sci-id"), "newQuantity": link.val() });
-            return false;
-        });
-
-        function updateShoppingCartItems(link, data) {
-
-            showThrobber();
-
-            $.ajax({
-                cache: false,
-                url: link.data("href"),
-                data: data,
-                type: 'POST',
-                success: function (response) {
-
-                    if (response.cartItemCount == 0) {
-                        orderSummary.html('<div class="alert alert-warning fade show">' + @T("ShoppingCart.CartIsEmpty").JsText + '</div>');
-                    }
-
-                    var cartBody = $(".cart-body");
-                    var totals = $("#order-totals");
-
-                    $("#start-checkout-buttons").toggleClass("d-none", !response.showCheckoutButtons);
-
-                    if (response.success) {
-                        // replace html
-                        cartBody.html(response.cartHtml);
-                        totals.html(response.totalsHtml);
-                    }
-
-                    displayNotification(response.message, response.success ? "success" : "error");
-
-                    // reinit qty ctls
-                    applyCommonPlugins(cartBody);
-
-                    // update shopbar
-                    ShopBar.loadSummary("cart", true);
-
-                    if (link.data("type") == "wishlist") {
-                        ShopBar.loadSummary("wishlist", true);
-                    }
-
-                    hideThrobber();
-                }
-            });
-        }
-
-        function showThrobber() {
-            var cnt = $("#cart-items");
-            var throbber = cnt.data('throbber');
-            if (!throbber) {
-                throbber = cnt.throbber({ white: true, small: true, message: '', show: false, speed: 0 }).data('throbber');
-            }
-
-            throbber.show();
-        }
-
-        function hideThrobber () {      	
-            var cnt = $("#cart-items");
-            _.delay(function () {
-                if(cnt.data("throbber")) cnt.data("throbber").hide();
-            }, 100);
-        }
-
-    </script>
+    Html.RenderPartial("_RefreshCartScript");
 }

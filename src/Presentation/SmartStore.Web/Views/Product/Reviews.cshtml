@@ -72,6 +72,12 @@
 						</div>
                     </div>
 
+					<div class="row justify-content-end">
+						<div class="col-sm-9">
+							@{ Html.RenderWidget("gdpr_consent"); }
+						</div>
+					</div>
+
                     if (Model.DisplayCaptcha)
                     {
                         <div class="captcha-box form-group row justify-content-end">

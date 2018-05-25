@@ -199,8 +199,8 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CustomerReportService>().As<ICustomerReportService>().InstancePerRequest();
 
 			builder.RegisterType<PermissionService>().As<IPermissionService>().InstancePerRequest();
-
 			builder.RegisterType<AclService>().As<IAclService>().InstancePerRequest();
+			builder.RegisterType<GdprTool>().As<IGdprTool>().InstancePerRequest();
 
 			builder.RegisterType<GeoCountryLookup>().As<IGeoCountryLookup>().InstancePerRequest();
 			builder.RegisterType<CountryService>().As<ICountryService>().InstancePerRequest();
@@ -691,6 +691,7 @@ namespace SmartStore.Web.Framework
 			{
 				pageHelperRegistration.PropertiesAutowired(PropertyWiringOptions.None);
 				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<SmartController>(-100);
+				builder.RegisterType<CookieConsentFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
 			}
 		}
 

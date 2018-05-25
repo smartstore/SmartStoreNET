@@ -42,20 +42,22 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
             validator.ShouldNotHaveValidationErrorFor(x => x.Email, model);
         }
 
-        [Test]
-        public void Should_have_error_when_firstName_is_null_or_empty()
-        {
-            var validator = new CustomerInfoValidator(_localizationService,
-                new CustomerSettings());
+  //      [Test]
+		//[Ignore("Names are optional since V3.1.5 (GDPR)")]
+  //      public void Should_have_error_when_firstName_is_null_or_empty()
+  //      {
+  //          var validator = new CustomerInfoValidator(_localizationService,
+  //              new CustomerSettings());
 
-            var model = new CustomerInfoModel();
-            model.FirstName = null;
-            validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
-            model.FirstName = "";
-            validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
-        }
+  //          var model = new CustomerInfoModel();
+  //          model.FirstName = null;
+  //          validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
+  //          model.FirstName = "";
+  //          validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
+  //      }
+
         [Test]
-        public void Should_not_have_error_when_firstName_is_specified()
+		public void Should_not_have_error_when_firstName_is_specified()
         {
             var validator = new CustomerInfoValidator(_localizationService,
                 new CustomerSettings());
@@ -65,18 +67,20 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
             validator.ShouldNotHaveValidationErrorFor(x => x.FirstName, model);
         }
 
-        [Test]
-        public void Should_have_error_when_lastName_is_null_or_empty()
-        {
-            var validator = new CustomerInfoValidator(_localizationService,
-                new CustomerSettings());
+  //      [Test]
+		//[Ignore("Names are optional since V3.1.5 (GDPR)")]
+		//public void Should_have_error_when_lastName_is_null_or_empty()
+  //      {
+  //          var validator = new CustomerInfoValidator(_localizationService,
+  //              new CustomerSettings());
 
-            var model = new CustomerInfoModel();
-            model.LastName = null;
-            validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
-            model.LastName = "";
-            validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
-        }
+  //          var model = new CustomerInfoModel();
+  //          model.LastName = null;
+  //          validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
+  //          model.LastName = "";
+  //          validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
+  //      }
+
         [Test]
         public void Should_not_have_error_when_lastName_is_specified()
         {

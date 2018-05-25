@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.ComponentModel;
@@ -20,6 +19,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
@@ -109,6 +109,88 @@ namespace SmartStore.Services.Messages
 			model["Store"] = CreateModelPart(messageContext.Store, messageContext);
 		}
 
+		public object CreateModelPart(object part, bool ignoreNullMembers, params string[] ignoreMemberNames)
+		{
+			Guard.NotNull(part, nameof(part));
+
+			var store = _services.StoreContext.CurrentStore;
+			var messageContext = new MessageContext
+			{
+				Language = _services.WorkContext.WorkingLanguage,
+				Store = store,
+				BaseUri = new Uri(_services.StoreService.GetHost(store)),
+				Model = new TemplateModel()
+			};
+			
+			if (part is Customer x)
+			{
+				// This case is not handled in AddModelPart core method.
+				messageContext.Customer = x;
+				messageContext.Model["Part"] = CreateModelPart(x, messageContext);
+			}
+			else
+			{
+				messageContext.Customer = _services.WorkContext.CurrentCustomer;
+				AddModelPart(part, messageContext, "Part");
+			}
+
+			object result = null;
+
+			if (messageContext.Model.Any())
+			{
+				result = messageContext.Model.FirstOrDefault().Value;
+
+				if (result is IDictionary<string, object> dict)
+				{
+					SanitizeModelDictionary(dict, ignoreNullMembers, ignoreMemberNames);
+				}
+			}
+
+			return result;
+		}
+
+		private void SanitizeModelDictionary(IDictionary<string, object> dict, bool ignoreNullMembers, params string[] ignoreMemberNames)
+		{
+			if (ignoreNullMembers || ignoreMemberNames.Length > 0)
+			{
+				foreach (var key in dict.Keys.ToArray())
+				{
+					var expando = dict as HybridExpando;
+					var value = dict[key];
+
+					if ((ignoreNullMembers && value == null) || ignoreMemberNames.Contains(key))
+					{
+						if (expando != null)
+							expando.Override(key, null); // INFO: we cannot remove entries from HybridExpando
+						else
+							dict.Remove(key);
+						continue;
+					}
+
+					if (value != null && value.GetType().IsSequenceType())
+					{
+						var ignoreMemberNames2 = ignoreMemberNames
+							.Where(x => x.StartsWith(key + ".", StringComparison.OrdinalIgnoreCase))
+							.Select(x => x.Substring(key.Length + 1))
+							.ToArray();
+
+						if (value is IDictionary<string, object> dict2)
+						{
+							SanitizeModelDictionary(dict2, ignoreNullMembers, ignoreMemberNames2);
+						}
+						else
+						{
+							var list = ((IEnumerable)value).OfType<IDictionary<string, object>>();
+							foreach (var dict3 in list)
+							{
+								SanitizeModelDictionary(dict3, ignoreNullMembers, ignoreMemberNames2);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		public virtual void AddModelPart(object part, MessageContext messageContext, string name = null)
 		{
 			Guard.NotNull(part, nameof(part));
@@ -182,9 +264,21 @@ namespace SmartStore.Services.Messages
 				case PrivateMessage x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
-				//case BackInStockSubscription x:
-				//	modelPart = CreateModelPart(x, messageContext);
-				//	break;
+				case IEnumerable<GenericAttribute> x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case PollVotingRecord x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case ProductReviewHelpfulness x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case ForumSubscription x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
+				case BackInStockSubscription x:
+					modelPart = CreateModelPart(x, messageContext);
+					break;
 				default:
 					var partType = part.GetType();
 					modelPart = part;
@@ -450,8 +544,8 @@ namespace SmartStore.Services.Messages
 			var currency = _services.WorkContext.WorkingCurrency;
 			var additionalShippingCharge = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(part.AdditionalShippingCharge, currency);
 			var additionalShippingChargeFormatted = _services.Resolve<IPriceFormatter>().FormatPrice(additionalShippingCharge, false, currency.CurrencyCode, false, messageContext.Language);
-			var url = productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml);
-			var pictureInfo = GetPictureFor(part, null);
+			var url = BuildUrl(productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml), messageContext);
+			var pictureInfo = GetPictureFor(part, attributesXml);
 			var name = part.GetLocalized(x => x.Name, messageContext.Language.Id).Value;
 			var alt = T("Media.Product.ImageAlternateTextFormat", messageContext.Language.Id, name).Text;
 			
@@ -472,7 +566,7 @@ namespace SmartStore.Services.Messages
 
 			if (shoppingCartSettings.ShowDeliveryTimes && part.IsShipEnabled)
 			{
-				if (deliveryTimeService.GetDeliveryTimeById(part.DeliveryTimeId ?? 0) is DeliveryTime dt)
+				if (deliveryTimeService.GetDeliveryTime(part) is DeliveryTime dt)
 				{
 					m["DeliveryTime"] = new Dictionary<string, object>
 					{
@@ -527,10 +621,10 @@ namespace SmartStore.Services.Messages
 				["WishlistUrl"] = BuildRouteUrl("Wishlist", new { customerGuid = part.CustomerGuid }, messageContext),
 				["EditUrl"] = BuildActionUrl("Edit", "Customer", new { id = part.Id, area = "admin" }, messageContext),
 				["PasswordRecoveryURL"] = pwdRecoveryToken == null ? null : BuildActionUrl("passwordrecoveryconfirm", "customer",
-					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email = email, area = "" },
+					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), email, area = "" },
 					messageContext),
 				["AccountActivationURL"] = accountActivationToken == null ? null : BuildActionUrl("activation", "customer",
-					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), email = email, area = "" },
+					new { token = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), email, area = "" },
 					messageContext),
 
 				// Addresses
@@ -652,6 +746,44 @@ namespace SmartStore.Services.Messages
 			};
 
 			PublishModelPartCreatedEvent<ProductReview>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(ProductReviewHelpfulness part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{ "ProductReviewId", part.ProductReviewId },
+				{ "ReviewTitle", part.ProductReview.Title },
+				{ "WasHelpful", part.WasHelpful }
+			};
+
+			ApplyCustomerContentPart(m, part, messageContext);
+
+			PublishModelPartCreatedEvent<ProductReviewHelpfulness>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(PollVotingRecord part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{ "PollAnswerId", part.PollAnswerId },
+				{ "PollAnswerName", part.PollAnswer.Name },
+				{ "PollId", part.PollAnswer.PollId }
+			};
+
+			ApplyCustomerContentPart(m, part, messageContext);
+
+			PublishModelPartCreatedEvent<PollVotingRecord>(part, m);
 
 			return m;
 		}
@@ -843,6 +975,60 @@ namespace SmartStore.Services.Messages
 			};
 
 			PublishModelPartCreatedEvent<RewardPointsHistory>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(IEnumerable<GenericAttribute> part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>();
+
+			foreach (var attr in part)
+			{
+				m[attr.Key] = attr.Value;
+			}
+
+			PublishModelPartCreatedEvent<IEnumerable<GenericAttribute>>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(ForumSubscription part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{  "SubscriptionGuid", part.SubscriptionGuid },
+				{  "CustomerId",  part.CustomerId },
+				{  "ForumId",  part.ForumId },
+				{  "TopicId",  part.TopicId },
+				{  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+			};
+
+			PublishModelPartCreatedEvent<ForumSubscription>(part, m);
+
+			return m;
+		}
+
+		protected virtual object CreateModelPart(BackInStockSubscription part, MessageContext messageContext)
+		{
+			Guard.NotNull(messageContext, nameof(messageContext));
+			Guard.NotNull(part, nameof(part));
+
+			var m = new Dictionary<string, object>
+			{
+				{  "StoreId", part.StoreId },
+				{  "CustomerId",  part.CustomerId },
+				{  "ProductId",  part.ProductId },
+				{  "CreatedOn", ToUserDate(part.CreatedOnUtc, messageContext) }
+			};
+
+			PublishModelPartCreatedEvent<BackInStockSubscription>(part, m);
 
 			return m;
 		}

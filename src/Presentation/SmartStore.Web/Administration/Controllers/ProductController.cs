@@ -319,6 +319,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				product.ProductTags.Remove(productTag);
 				_productService.UpdateProduct(product);
+				_services.DbContext.ChangeState(product, System.Data.Entity.EntityState.Modified);
 			}
 
 			foreach (string productTagName in productTags)
@@ -341,6 +342,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					product.ProductTags.Add(productTag);
 					_productService.UpdateProduct(product);
+					_services.DbContext.ChangeState(product, System.Data.Entity.EntityState.Modified);
 				}
 			}
 		}
@@ -1473,11 +1475,11 @@ namespace SmartStore.Admin.Controllers
 				var productCategoriesModel = productCategories
 					.Select(x =>
 					{
-						var node = _categoryService.GetCategoryTree(x.CategoryId);
+						var node = _categoryService.GetCategoryTree(x.CategoryId, true);
 						return new ProductModel.ProductCategoryModel
 						{
 							Id = x.Id,
-							Category = node != null ? _categoryService.GetCategoryPath(node) : string.Empty,
+							Category = node != null ?  _categoryService.GetCategoryPath(node, aliasPattern: "<span class='badge badge-secondary'>{0}</span>") : string.Empty,
 							ProductId = x.ProductId,
 							CategoryId = x.CategoryId,
 							IsFeaturedProduct = x.IsFeaturedProduct,

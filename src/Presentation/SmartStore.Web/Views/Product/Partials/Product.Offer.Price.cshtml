@@ -20,7 +20,7 @@
 	var oldPrice1 = priceModel.OldPrice;
 	var oldPrice1Label = T("Products.Price.OldPrice").Text;
 
-	var oldPrice2 = priceModel.PriceWithDiscount.HasValue() ? priceModel.Price : "";
+	var oldPrice2 = priceModel.PriceWithDiscountValue < priceModel.PriceValue ? priceModel.Price : "";
 	var oldPrice2Label = priceModel.NoteWithoutDiscount;
 
 	var basePriceEnabled = isBundleItem ? priceModel.BundleItemShowBasePrice : Model.IsBasePriceEnabled;

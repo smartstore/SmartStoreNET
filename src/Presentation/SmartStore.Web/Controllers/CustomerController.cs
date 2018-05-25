@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -34,7 +36,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI.Captcha;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
 
@@ -177,25 +179,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected MyAccountMenuModel GetMyAccountMenuModel(Customer customer, string selectedItem = null)
-        {
-            var model = new MyAccountMenuModel
-			{
-				HideAvatar = !_customerSettings.AllowCustomersToUploadAvatars,
-				HideRewardPoints = !_rewardPointsSettings.Enabled,
-				HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions,
-                HidePrivateMessages = !_forumSettings.AllowPrivateMessages,
-                UnreadMessageCount = GetUnreadPrivateMessages(),
-                HideReturnRequests = !_orderSettings.ReturnRequestsEnabled || _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount == 0,
-				HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab,
-				HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab,
-				SelectedItemToken = selectedItem
-			};
-
-            return model;
-        }
-
-        [NonAction]
         protected int GetUnreadPrivateMessages()
         {
             var result = 0;
@@ -249,17 +232,27 @@ namespace SmartStore.Web.Controllers
                 throw new ArgumentNullException("customer");
 
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
-            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-                model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (excludeProperties ? tzi.Id == model.TimeZoneId : tzi.Id == _dateTimeHelper.CurrentTimeZone.Id) });
+
+			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+			{
+				model.AvailableTimeZones.Add(new SelectListItem
+				{
+					Text = tzi.DisplayName,
+					Value = tzi.Id,
+					Selected = (excludeProperties ? tzi.Id == model.TimeZoneId : tzi.Id == _dateTimeHelper.CurrentTimeZone.Id)
+				});
+			}
 
             if (!excludeProperties)
             {
+				var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
+				var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
+
 				model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
                 model.Title = customer.GetAttribute<string>(SystemCustomerAttributeNames.Title);
                 model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
                 model.LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
                 model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
-                var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
                 if (dateOfBirth.HasValue)
                 {
                     model.DateOfBirthDay = dateOfBirth.Value.Day;
@@ -276,29 +269,26 @@ namespace SmartStore.Web.Controllers
                 model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
                 model.CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
-
-                //newsletter
-                var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
                 model.Newsletter = newsletter != null && newsletter.Active;
-
                 model.Signature = customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature);
-
                 model.Email = customer.Email;
                 model.Username = customer.Username;
             }
             else
             {
-                if (_customerSettings.UsernamesEnabled && !_customerSettings.AllowUsersToChangeUsernames)
-                    model.Username = customer.Username;
+				if (_customerSettings.UsernamesEnabled && !_customerSettings.AllowUsersToChangeUsernames)
+				{
+					model.Username = customer.Username;
+				}
             }
 
-            //countries and states
+            // Countries and states.
             if (_customerSettings.CountryEnabled)
             {
-                model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Address.SelectCountry"), Value = "0" });
+                model.AvailableCountries.Add(new SelectListItem { Text = T("Address.SelectCountry"), Value = "0" });
                 foreach (var c in _countryService.GetAllCountries())
                 {
-                    model.AvailableCountries.Add(new SelectListItem()
+                    model.AvailableCountries.Add(new SelectListItem
                     {
                         Text = c.GetLocalized(x => x.Name),
                         Value = c.Id.ToString(),
@@ -308,18 +298,26 @@ namespace SmartStore.Web.Controllers
 
                 if (_customerSettings.StateProvinceEnabled)
                 {
-                    //states
                     var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
-                    if (states.Count > 0)
-                    {
-                        foreach (var s in states)
-                            model.AvailableStates.Add(new SelectListItem() { Text = s.GetLocalized(x => x.Name), Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
-                    }
-                    else
-                        model.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Address.OtherNonUS"), Value = "0" });
-
+					if (states.Any())
+					{
+						foreach (var s in states)
+						{
+							model.AvailableStates.Add(new SelectListItem
+							{
+								Text = s.GetLocalized(x => x.Name),
+								Value = s.Id.ToString(),
+								Selected = (s.Id == model.StateProvinceId)
+							});
+						}
+					}
+					else
+					{
+						model.AvailableStates.Add(new SelectListItem { Text = T("Address.OtherNonUS"), Value = "0" });
+					}
                 }
             }
+
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
 				 .GetLocalizedEnum(_localizationService, _workContext);
@@ -347,12 +345,12 @@ namespace SmartStore.Web.Controllers
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.SignatureEnabled = _forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled;
-            model.DisplayCustomerNumber = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled
-                && _customerSettings.CustomerNumberVisibility != CustomerNumberVisibility.None;
+            model.DisplayCustomerNumber = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled 
+				&& _customerSettings.CustomerNumberVisibility != CustomerNumberVisibility.None;
 
             if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled
                 && (_customerSettings.CustomerNumberVisibility == CustomerNumberVisibility.Editable 
-                || (_customerSettings.CustomerNumberVisibility == CustomerNumberVisibility.EditableIfEmpty && String.IsNullOrEmpty(model.CustomerNumber))))
+                || (_customerSettings.CustomerNumberVisibility == CustomerNumberVisibility.EditableIfEmpty && model.CustomerNumber.IsEmpty())))
             {
                 model.CustomerNumberEnabled = true;
             }
@@ -361,14 +359,14 @@ namespace SmartStore.Web.Controllers
                 model.CustomerNumberEnabled = false;
             }
 
-            //external authentication
+            // External authentication.
             foreach (var ear in _openAuthenticationService.GetExternalIdentifiersFor(customer))
             {
                 var authMethod = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(ear.ProviderSystemName);
                 if (authMethod == null || !authMethod.IsMethodActive(_externalAuthenticationSettings))
                     continue;
 
-                model.AssociatedExternalAuthRecords.Add(new CustomerInfoModel.AssociatedExternalAuthModel()
+                model.AssociatedExternalAuthRecords.Add(new CustomerInfoModel.AssociatedExternalAuthModel
                 {
                     Id = ear.Id,
                     Email = ear.Email,
@@ -463,7 +461,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [CaptchaValidator]
+        [ValidateCaptcha]
         public ActionResult Login(LoginModel model, string returnUrl, bool captchaValid)
         {
             // Validate CAPTCHA.
@@ -513,7 +511,8 @@ namespace SmartStore.Web.Controllers
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Register()
+		[GdprConsent]
+		public ActionResult Register()
         {
 			//check whether registration is allowed
 			if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
@@ -527,7 +526,9 @@ namespace SmartStore.Web.Controllers
             model.VatRequired = _taxSettings.VatRequired;
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
-            model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
+			model.FirstNameRequired = _customerSettings.FirstNameRequired;
+			model.LastNameRequired = _customerSettings.LastNameRequired;
+			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.CompanyRequired = _customerSettings.CompanyRequired;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
@@ -583,9 +584,9 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [CaptchaValidator]
-        [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterModel model, string returnUrl, bool captchaValid)
+		[GdprConsent]
+		[ValidateAntiForgeryToken, ValidateCaptcha, ValidateHoneypot]
+		public ActionResult Register(RegisterModel model, string returnUrl, bool captchaValid)
         {
             //check whether registration is allowed
             if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)
@@ -801,7 +802,9 @@ namespace SmartStore.Web.Controllers
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
-            model.CompanyEnabled = _customerSettings.CompanyEnabled;
+			model.FirstNameRequired = _customerSettings.FirstNameRequired;
+			model.LastNameRequired = _customerSettings.LastNameRequired;
+			model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.CompanyRequired = _customerSettings.CompanyRequired;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddressRequired = _customerSettings.StreetAddressRequired;
@@ -967,9 +970,146 @@ namespace SmartStore.Web.Controllers
 
         #endregion
 
+		[ChildActionOnly]
 		public ActionResult MyAccountMenu(string selectedItem = null)
 		{
-			var model = GetMyAccountMenuModel(_workContext.CurrentCustomer, selectedItem);
+			var customer = _workContext.CurrentCustomer;
+			var menu = new List<MenuItem>();
+
+			// Info
+			menu.Add(new MenuItem
+			{
+				Id = "info",
+				Text = T("Account.CustomerInfo"),
+				Icon = "user-o",
+				Url = Url.Action("Info"),
+			});
+
+			// Addresses
+			menu.Add(new MenuItem
+			{
+				Id = "addresses",
+				Text = T("Account.CustomerAddresses"),
+				Icon = "address-book-o",
+				Url = Url.Action("Addresses"),
+			});
+
+			// Orders
+			menu.Add(new MenuItem
+			{
+				Id = "orders",
+				Text = T("Account.CustomerOrders"),
+				Icon = "file-text",
+				Url = Url.Action("Orders"),
+			});
+
+			// Return requests
+			if (_orderSettings.ReturnRequestsEnabled && _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount > 0)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "returnrequests",
+					Text = T("Account.CustomerReturnRequests"),
+					Icon = "truck",
+					Url = Url.Action("ReturnRequests"),
+				});
+			}
+
+			// Downloadable products
+			if (!_customerSettings.HideDownloadableProductsTab)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "downloads",
+					Text = T("Account.DownloadableProducts"),
+					Icon = "download",
+					Url = Url.Action("DownloadableProducts"),
+				});
+			}
+
+			// BackInStock subscriptions
+			if (!_customerSettings.HideBackInStockSubscriptionsTab)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "backinstock",
+					Text = T("Account.BackInStockSubscriptions"),
+					Icon = "bullhorn",
+					Url = Url.Action("BackInStockSubscriptions"),
+				});
+			}
+
+			// Reward points
+			if (_rewardPointsSettings.Enabled)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "rewardpoints",
+					Text = T("Account.RewardPoints"),
+					Icon = "certificate",
+					Url = Url.Action("RewardPoints"),
+				});
+			}
+
+			// Change password
+			menu.Add(new MenuItem
+			{
+				Id = "changepassword",
+				Text = T("Account.ChangePassword"),
+				Icon = "unlock-alt",
+				Url = Url.Action("ChangePassword"),
+			});
+
+			// Avatar
+			if (_customerSettings.AllowCustomersToUploadAvatars)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "avatar",
+					Text = T("Account.Avatar"),
+					Icon = "user-circle",
+					Url = Url.Action("Avatar"),
+				});
+			}
+
+			// Forum subscriptions
+			if (_forumSettings.ForumsEnabled && _forumSettings.AllowCustomersToManageSubscriptions)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "forumsubscriptions",
+					Text = T("Account.ForumSubscriptions"),
+					Icon = "bell",
+					Url = Url.Action("ForumSubscriptions"),
+				});
+			}
+
+			// Private messages
+			var numUnreadMessages = GetUnreadPrivateMessages();
+			if (_forumSettings.AllowPrivateMessages)
+			{
+				menu.Add(new MenuItem
+				{
+					Id = "privatemessages",
+					Text = T("PrivateMessages.Inbox"),
+					Icon = "envelope-o",
+					Url = Url.RouteUrl("PrivateMessages", new { tab = "inbox" }),
+					BadgeText = numUnreadMessages > 0 ? numUnreadMessages.ToString() : null,
+					BadgeStyle = BadgeStyle.Warning
+				});
+			}
+
+			var model = new MyAccountMenuModel
+			{
+				Root = new TreeNode<MenuItem>(new MenuItem { Id = "root" }, menu),
+				SelectedItemToken = selectedItem
+			};
+
+			// Event for plugins
+			var evt = new MenuCreatedEvent("MyAccount", model.Root, model.SelectedItemToken);
+			_services.EventPublisher.Publish(evt);
+			model.SelectedItemToken = evt.SelectedItemToken;
+
 			return PartialView(model);
 		}
 

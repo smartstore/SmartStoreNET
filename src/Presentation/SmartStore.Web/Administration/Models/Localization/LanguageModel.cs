@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Localization
 {
-    [Validator(typeof(LanguageValidator))]
+	[Validator(typeof(LanguageValidator))]
     public class LanguageModel : EntityModelBase, IStoreSelector
     {
         public LanguageModel()
@@ -54,5 +54,10 @@ namespace SmartStore.Admin.Models.Localization
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.AvailableLanguageSetId")]
         public int AvailableLanguageSetId { get; set; }
         public List<AvailableLanguageModel> AvailableDownloadLanguages { get; set; }
-    }
+
+		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LastResourcesImportOn")]
+		public DateTime? LastResourcesImportOn { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LastResourcesImportOn")]
+		public string LastResourcesImportOnString { get; set; }
+	}
 }

@@ -69,10 +69,15 @@
 							<td class="label">@T("PDFInvoice.Order#"):</td>
 							<td class="value">@order.OrderNumber</td>
 						</tr>
-						<tr>
-							<td class="label">Purchase Order Number:</td>
-							<td class="value">@order.PurchaseOrderNumber</td>
-						</tr>
+
+						@if (order.PurchaseOrderNumber.HasValue())
+						{ 
+							<tr>
+								<td class="label">@T("Order.PurchaseOrderNumber"):</td>
+								<td class="value">@order.PurchaseOrderNumber</td>
+							</tr>
+						}
+
 						<tr>
 							<td class="label">@T("Common.Date"):</td>
 							<td class="value">@order.CreatedOn.ToShortDateString().ReplaceNativeDigits()</td>

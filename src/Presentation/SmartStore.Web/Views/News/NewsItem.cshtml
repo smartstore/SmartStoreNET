@@ -37,7 +37,7 @@
 						{
 							<fieldset class="news-comment-form content-group mt-5">
 								<legend><span>@T("News.Comments.LeaveYourComment")</span></legend>
-
+								
 								@if (ViewContext.ViewData.ModelState.ContainsKey(""))
 								{
 									@Html.ValidationSummary(true)
@@ -52,6 +52,8 @@
 									@Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "form-control form-control-lg", placeholder = Html.DisplayNameFor(m => m.AddNewComment.CommentText), rows = "6" })
 									@Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
 								</div>
+
+								@{ Html.RenderWidget("gdpr_consent"); }
 
 								@if (Model.AddNewComment.DisplayCaptcha)
 								{

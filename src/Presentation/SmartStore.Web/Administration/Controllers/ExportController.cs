@@ -1060,7 +1060,7 @@ namespace SmartStore.Admin.Controllers
 					var category = item.Entity as Category;
 					var model = new ExportPreviewCategoryModel();
 					model.Id = category.Id;
-					model.Breadcrumb = ((ICategoryNode)category).GetCategoryPath(_categoryService, withAlias: true);
+					model.Breadcrumb = ((ICategoryNode)category).GetCategoryPath(_categoryService, aliasPattern: "({0})");
 					model.FullName = item.FullName;
 					model.Alias = item.Alias;
 					model.Published = category.Published;

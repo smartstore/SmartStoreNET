@@ -100,12 +100,13 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// Key for TopicModel caching
 		/// </summary>
 		/// <remarks>
-		/// {0} : topic id
+		/// {0} : topic id/systemname
 		/// {1} : language id
 		/// {2} : store id
 		/// </remarks>
-		public const string TOPIC_MODEL_KEY = "pres:topic:details-{0}-{1}-{2}";
-		public const string TOPIC_PATTERN_KEY = "pres:topic:details*";
+		public const string TOPIC_BY_SYSTEMNAME_KEY = "pres:topic:page.bysystemname-{0}-{1}-{2}";
+		public const string TOPIC_BY_ID_KEY = "pres:topic:page.byid-{0}-{1}-{2}";
+		public const string TOPIC_PATTERN_KEY = "pres:topic:page*";
 
 		/// <summary>
 		/// Key for TopicWidget caching
@@ -114,8 +115,8 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {0} : store id
 		/// {1} : language id
 		/// </remarks>
-		public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget*";
 		public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}";
+		public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget*";
 
 		/// <summary>
 		/// Key for CategoryTemplate caching
@@ -297,6 +298,8 @@ namespace SmartStore.Web.Infrastructure.Cache
 					_cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
+					_cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY);
+					_cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_PATTERN_KEY);
 				}
 			}
 			else if (entity is Manufacturer)

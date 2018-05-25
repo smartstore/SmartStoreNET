@@ -10,11 +10,6 @@ namespace SmartStore.Web.Models.Common
 	[Validator(typeof(ContactUsValidator))]
     public partial class ContactUsModel : ModelBase
     {
-        [SmartResourceDisplayName("ContactUs.PrivacyAgreement")]
-        public bool PrivacyAgreement { get; set; }
-
-        public bool DisplayPrivacyAgreement { get; set; }
-
         [AllowHtml]
         [SmartResourceDisplayName("ContactUs.Email")]
 		[DataType(DataType.EmailAddress)]
@@ -27,8 +22,9 @@ namespace SmartStore.Web.Models.Common
         [AllowHtml]
         [SmartResourceDisplayName("ContactUs.FullName")]
         public string FullName { get; set; }
+		public bool FullNameRequired { get; set; }
 
-        public bool SuccessfullySent { get; set; }
+		public bool SuccessfullySent { get; set; }
         public string Result { get; set; }
 
         public bool DisplayCaptcha { get; set; }

@@ -481,8 +481,6 @@ namespace SmartStore.PayPal.Services
 			if (method.IsCaseInsensitiveEqual("GET") && data.HasValue())
 				url = url.EnsureEndsWith("?") + data;
 
-			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
 			var request = (HttpWebRequest)WebRequest.Create(url);
 			request.Method = method;
 			request.Accept = "application/json";

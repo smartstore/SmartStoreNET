@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Topics
 {
@@ -13,16 +14,19 @@ namespace SmartStore.Services.Topics
     {
 		private readonly IRepository<Topic> _topicRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly IStoreMappingService _storeMappingService;
+		private readonly IEventPublisher _eventPublisher;
 
 		public TopicService(
 			IRepository<Topic> topicRepository,
 			IRepository<StoreMapping> storeMappingRepository,
+			IStoreMappingService storeMappingService,
 			IEventPublisher eventPublisher)
         {
             _topicRepository = topicRepository;
 			_storeMappingRepository = storeMappingRepository;
-            _eventPublisher = eventPublisher;
+			_storeMappingService = storeMappingService;
+			_eventPublisher = eventPublisher;
 
 			this.QuerySettings = DbQuerySettings.Default;
 		}
@@ -44,20 +48,25 @@ namespace SmartStore.Services.Topics
             return _topicRepository.GetById(topicId);
         }
 
-		public virtual Topic GetTopicBySystemName(string systemName, int storeId)
+		public virtual Topic GetTopicBySystemName(string systemName, int storeId = 0)
         {
-			Guard.NotEmpty(systemName, nameof(systemName));
+			if (systemName.IsEmpty())
+				return null;
 
-			var allTopics = GetAllTopics(storeId);
-
-			var topic = allTopics
+			var topic = _topicRepository.Table
+				.Where(x => x.SystemName == systemName)
 				.OrderBy(x => x.Id)
-				.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual(systemName));
+				.FirstOrDefaultCached("db.topic.bysysname-" + systemName);
+
+			if (storeId > 0 && topic != null && !_storeMappingService.Authorize(topic))
+			{
+				topic = null;
+			}
 
 			return topic;
         }
 
-		public virtual IList<Topic> GetAllTopics(int storeId)
+		public virtual IList<Topic> GetAllTopics(int storeId = 0)
         {
 			var query = _topicRepository.Table;
 

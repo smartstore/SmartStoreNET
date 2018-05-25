@@ -45,15 +45,16 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.Fields.Gender")]
         public string Gender { get; set; }
 
-        [SmartResourceDisplayName("Account.Fields.FirstName")]
+		public bool FirstNameRequired { get; set; }
+		public bool LastNameRequired { get; set; }
+		[SmartResourceDisplayName("Account.Fields.FirstName")]
         [AllowHtml]
         public string FirstName { get; set; }
         [SmartResourceDisplayName("Account.Fields.LastName")]
         [AllowHtml]
         public string LastName { get; set; }
 
-
-        public bool DateOfBirthEnabled { get; set; }
+		public bool DateOfBirthEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.DateOfBirth")]
         public int? DateOfBirthDay { get; set; }
         [SmartResourceDisplayName("Account.Fields.DateOfBirth")]

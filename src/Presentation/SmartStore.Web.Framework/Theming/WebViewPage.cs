@@ -65,7 +65,12 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-        protected bool HasMessages
+		public bool EnableHoneypotProtection
+		{
+			get { return _helper.EnableHoneypotProtection; }
+		}
+
+		protected bool HasMessages
 		{
 			get
 			{
@@ -161,29 +166,6 @@ namespace SmartStore.Web.Framework.Theming
                 base.Layout = value;
             }
         }
-
-        /// <summary>
-        /// Return a value indicating whether the working language and theme support RTL (right-to-left)
-        /// </summary>
-        /// <returns></returns>
-        public bool ShouldUseRtlTheme()
-        {
-			var lang = _helper.Services?.WorkContext?.WorkingLanguage;
-			if (lang == null)
-			{
-				return false;
-			}
-
-			var supportRtl = lang.Rtl;
-			if (supportRtl)
-			{
-				// Ensure that the active theme also supports it
-				var manifest = this.ThemeManifest;
-				supportRtl = manifest == null ? supportRtl : manifest.SupportRtl;
-			}
-
-			return supportRtl;
-		}
 
 		/// <summary>
 		/// Gets the manifest of the current active theme
@@ -322,7 +304,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			return _helper.LocalizationFileResolver.Resolve(culture, virtualPath, pattern, true, fallbackCulture);
 		}
-    }
+	}
 
     public abstract class WebViewPage : WebViewPage<dynamic>
     {

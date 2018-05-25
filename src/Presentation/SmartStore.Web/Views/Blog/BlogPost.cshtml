@@ -65,6 +65,8 @@
 									@Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
 								</div>
 
+								@{ Html.RenderWidget("gdpr_consent"); }
+
 								@if (Model.AddNewComment.DisplayCaptcha)
 								{
 									<div class="form-group">

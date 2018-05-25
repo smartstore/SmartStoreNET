@@ -25,7 +25,6 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.News;
@@ -271,7 +270,8 @@ namespace SmartStore.Web.Controllers
             return new RssActionResult { Feed = feed };
         }
 
-        public ActionResult NewsItem(int newsItemId)
+		[GdprConsent]
+		public ActionResult NewsItem(int newsItemId)
         {
             if (!_newsSettings.Enabled)
 				return HttpNotFound();
@@ -293,8 +293,9 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("NewsItem")]
         [FormValueRequired("add-comment")]
-        [CaptchaValidator]
-        public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, bool captchaValid)
+        [ValidateCaptcha]
+		[GdprConsent]
+		public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, bool captchaValid)
         {
             if (!_newsSettings.Enabled)
 				return HttpNotFound();

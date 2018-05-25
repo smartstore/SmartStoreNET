@@ -1,0 +1,29 @@
+﻿@model SmartStore.Web.Models.Common.CookieConsentModel
+@{
+	Layout = "";
+}
+
+@using (Ajax.BeginForm("CookieConsentBadge", "Common", null, new AjaxOptions()
+{
+	HttpMethod = "POST",
+	OnComplete = "OnConsented"
+}))
+{
+
+	<div class="cookie-consent-panel-message fade show">
+		<div class="d-flex">
+			<div class="align-self-center pr-3">
+				@Html.Raw(Model.BadgeText)
+			</div>
+			<div class="align-self-center ml-auto">
+				<button type="submit" class="btn btn-warning">@T("CookieConsent.Button")</button>
+			</div>
+		</div>
+	</div>
+}
+
+<script>
+    function OnConsented(context) {
+		$('.cookie-consent-panel-message').hide();
+    };
+</script>

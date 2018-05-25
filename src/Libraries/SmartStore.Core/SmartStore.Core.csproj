@@ -216,6 +216,7 @@
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
+    <Compile Include="Domain\Customers\PrivacySettings.cs" />
     <Compile Include="Domain\Customers\WalletHistory.cs" />
     <Compile Include="Domain\Customers\WalletPostingReason.cs" />
     <Compile Include="Domain\DataExchange\DataExchangeEnums.cs" />
@@ -258,6 +259,8 @@
     <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
     <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
     <Compile Include="IO\ImageHeader.cs" />
+    <Compile Include="IO\SymLink\FileSystemInfoExtensions.cs" />
+    <Compile Include="IO\SymLink\SymbolicLink.cs" />
     <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
     <Compile Include="IO\VirtualPath\IVirtualFolder.cs" />
     <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />

@@ -13,8 +13,6 @@ namespace SmartStore.Web.Framework.Seo
     /// </summary>
     public class GenericPathRoute : LocalizedRoute
     {
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the System.Web.Routing.Route class, using the specified URL pattern and handler class.
         /// </summary>
@@ -61,10 +59,6 @@ namespace SmartStore.Web.Framework.Seo
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
         }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         /// Returns information about the requested route.
@@ -136,7 +130,14 @@ namespace SmartStore.Web.Framework.Seo
                             data.Values["manufacturerid"] = urlRecord.EntityId;
                         }
                         break;
-                    case "newsitem":
+					case "topic":
+						{
+							data.Values["controller"] = "Topic";
+							data.Values["action"] = "TopicDetails";
+							data.Values["topicId"] = urlRecord.EntityId;
+						}
+						break;
+					case "newsitem":
                         {
                             data.Values["controller"] = "News";
                             data.Values["action"] = "NewsItem";
@@ -158,7 +159,5 @@ namespace SmartStore.Web.Framework.Seo
             }
             return data;
         }
-
-        #endregion
     }
 }

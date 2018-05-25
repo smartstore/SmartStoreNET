@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MessageTemplate>
 	<To>{{ Email.DisplayName }} &lt;{{ Email.Email }}&gt;</To>
-	<Subject>{ Store.Name } - Mindestlagerbestand von '{{ Product.Name | Truncate:30 }}' unterschritten.</Subject>
+	<Subject>{{ Store.Name }} - Mindestlagerbestand von '{{ Product.Name | Truncate:30 }}' unterschritten.</Subject>
 	<ModelTypes>Product</ModelTypes>
 	<Body><![CDATA[{% extends 'master' %}
 

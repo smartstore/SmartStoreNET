@@ -14,6 +14,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.GoogleAnalytics.Controllers
 {
@@ -37,9 +38,13 @@ namespace SmartStore.GoogleAnalytics.Controllers
             _settingService = settingService;
             _orderService = orderService;
             _categoryService = categoryService;
-        }
 
-        [AdminAuthorize, ChildActionOnly, LoadSetting]
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
+
+		[AdminAuthorize, ChildActionOnly, LoadSetting]
         public ActionResult Configure(GoogleAnalyticsSettings settings)
         {
             var model = new ConfigurationModel();
@@ -84,9 +89,9 @@ namespace SmartStore.GoogleAnalytics.Controllers
             var routeData = ((System.Web.UI.Page)this.HttpContext.CurrentHandler).RouteData;
 
             try
-            {
-                //Special case, if we are in last step of checkout, we can use order total for conversion value
-                if (routeData.Values["controller"].ToString().Equals("checkout", StringComparison.InvariantCultureIgnoreCase) &&
+            {			
+				// Special case, if we are in last step of checkout, we can use order total for conversion value
+				if (routeData.Values["controller"].ToString().Equals("checkout", StringComparison.InvariantCultureIgnoreCase) &&
                     routeData.Values["action"].ToString().Equals("completed", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var lastOrder = GetLastOrder();
@@ -110,16 +115,40 @@ namespace SmartStore.GoogleAnalytics.Controllers
 				null, null, null, null, null, null, null, null, 0, 1).FirstOrDefault();
 			return order;
         }
-        
-        private string GetTrackingScript()
+
+		private string GetOptOutCookieScript()
+		{
+			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
+			var script = @"
+				var gaProperty = '{GOOGLEID}'; 
+				var disableStr = 'ga-disable-' + gaProperty; 
+				if (document.cookie.indexOf(disableStr + '=true') > -1) { 
+					window[disableStr] = true;
+				} 
+				function gaOptout() { 
+					document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/'; 
+					window[disableStr] = true; 
+					alert('{NOTIFICATION}'); 
+				} 
+			";
+
+			script = script + "\n";
+			script = script.Replace("{GOOGLEID}", settings.GoogleId);
+			script = script.Replace("{NOTIFICATION}", T("Plugins.Widgets.GoogleAnalytics.OptOutNotification").JsText.ToHtmlString());
+
+			return script;
+		}
+		
+		private string GetTrackingScript()
         {
 			var settings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
             var script = "";
             script = settings.TrackingScript + "\n";
             script = script.Replace("{GOOGLEID}", settings.GoogleId);
             script = script.Replace("{ECOMMERCE}", "");
+			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
 
-            return script;
+			return script;
         }
         
         private string GetEcommerceScript(Order order)
@@ -131,8 +160,9 @@ namespace SmartStore.GoogleAnalytics.Controllers
 
 			script = settings.TrackingScript + "\n";
 			script = script.Replace("{GOOGLEID}", settings.GoogleId);
+			script = script.Replace("{OPTOUTCOOKIE}", GetOptOutCookieScript());
 
-            if (order != null)
+			if (order != null)
             {
 				var site = _storeContext.CurrentStore.Url
 					.EmptyNull()

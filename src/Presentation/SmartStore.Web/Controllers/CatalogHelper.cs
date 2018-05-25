@@ -32,8 +32,9 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
@@ -969,9 +970,9 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-				var topic = _topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id);
+				var shippingInfoUrl = _urlHelper.TopicUrl("ShippingInfo");
 
-				if (topic == null)
+				if (shippingInfoUrl.IsEmpty())
 				{
 					model.LegalInfo = T("Tax.LegalInfoProductDetail2",
 						product.IsTaxExempt ? "" : taxInfo,
@@ -984,7 +985,7 @@ namespace SmartStore.Web.Controllers
 						product.IsTaxExempt ? "" : taxInfo,
 						product.IsTaxExempt ? "" : defaultTaxRate,
 						additionalShippingCosts,
-						_urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" }));
+						shippingInfoUrl);
 				}
             }
 
@@ -1120,7 +1121,7 @@ namespace SmartStore.Web.Controllers
 
 						if (productBundleItem == null || isBundleItemPricing)
 						{
-							if (finalPriceWithoutDiscountBase != oldPriceBase && oldPriceBase > decimal.Zero)
+							if (oldPriceBase > decimal.Zero && oldPriceBase > finalPriceWithoutDiscountBase)
 							{
 								model.ProductPrice.OldPriceValue = oldPrice;
 								model.ProductPrice.OldPrice = _priceFormatter.FormatPrice(oldPrice);

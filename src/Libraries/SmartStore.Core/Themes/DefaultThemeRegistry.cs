@@ -435,7 +435,8 @@ namespace SmartStore.Core.Themes
 				RaiseBaseThemeChanged(baseThemeChangedArgs);
 			}
 
-			RaiseThemeFileChanged(new ThemeFileChangedEventArgs { 
+			RaiseThemeFileChanged(new ThemeFileChangedEventArgs
+			{ 
 				ChangeType = changeType,
 				FullPath = fullPath,
 				ThemeName = themeName,

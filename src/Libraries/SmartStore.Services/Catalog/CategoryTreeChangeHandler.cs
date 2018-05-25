@@ -199,6 +199,7 @@ namespace SmartStore.Services.Catalog
 				// INFO: 'Modified' case already handled in 'OnBeforeSave()'
 				// Hierarchy affecting change, nuke all.
 				cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
+				PublishEvent(CategoryTreeChangeReason.Hierarchy);
 				_invalidated = true;
 			}
 			else if (entity is Setting)

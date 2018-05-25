@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Common;
@@ -273,6 +275,20 @@ namespace SmartStore.Services.Customers
 			return null;
 		}
 
+		public static Language GetLanguage(this Customer customer)
+		{
+			if (customer == null)
+				return null;
+
+			var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId));
+
+			if (language == null || !language.Published)
+			{
+				language = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage;
+			}
+
+			return language;
+		}
 
 		#region Shopping cart
 

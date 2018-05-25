@@ -205,7 +205,7 @@ namespace SmartStore.Services.Orders
 			int cartItemId = shoppingCartItem.Id;
 
             // reset checkout data
-            if (resetCheckoutData)
+            if (resetCheckoutData && customer != null)
             {
 				_customerService.ResetCheckoutData(shoppingCartItem.Customer, shoppingCartItem.StoreId);
             }
@@ -217,7 +217,7 @@ namespace SmartStore.Services.Orders
 			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
 
 			// validate checkout attributes
-			if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
+			if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart && customer != null)
             {
 				var cart = GetCartItems(customer, ShoppingCartType.ShoppingCart, storeId);
 
@@ -227,7 +227,7 @@ namespace SmartStore.Services.Orders
             }
 
 			// delete child items
-			if (deleteChildCartItems)
+			if (deleteChildCartItems && customer != null)
 			{
 				var childCartItems = _sciRepository.Table
 					.Where(x => x.CustomerId == customer.Id && x.ParentItemId != null && x.ParentItemId.Value == cartItemId && x.Id != cartItemId)
@@ -253,22 +253,28 @@ namespace SmartStore.Services.Orders
 			}
 		}
 
-        public virtual int DeleteExpiredShoppingCartItems(DateTime olderThanUtc)
+        public virtual int DeleteExpiredShoppingCartItems(DateTime olderThanUtc, int? customerId = null)
         {
             var query =
 				from sci in _sciRepository.Table
 				where sci.UpdatedOnUtc < olderThanUtc && sci.ParentItemId == null
 				select sci;
 
+			if (customerId.GetValueOrDefault() > 0)
+			{
+				query = query.Where(x => x.CustomerId == customerId.Value);
+			}
+
             var cartItems = query.ToList();
 
 			foreach (var parentItem in cartItems)
 			{
-				var childItems = _sciRepository.Table
-					.Where(x => x.ParentItemId != null && x.ParentItemId.Value == parentItem.Id && x.Id != parentItem.Id).ToList();
+				var childItems = _sciRepository.Table.Where(x => x.ParentItemId == parentItem.Id && x.Id != parentItem.Id).ToList();
 
 				foreach (var childItem in childItems)
+				{
 					_sciRepository.Delete(childItem);
+				}		
 
 				_sciRepository.Delete(parentItem);
 			}

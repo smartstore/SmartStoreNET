@@ -6,6 +6,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -241,25 +242,5 @@ namespace SmartStore.Web.Framework.Controllers
 		//		JsonRequestBehavior = behavior
 		//	};
 		//}
-
-		/// <summary>
-		/// Allows redirects from within achild actions and keeps TempData
-		/// </summary>
-		private class PermissiveRedirectResult : ActionResult
-		{
-			private readonly string _url;
-
-			public PermissiveRedirectResult(string url)
-			{
-				_url = url;
-			}
-
-			public override void ExecuteResult(ControllerContext context)
-			{
-				var url = UrlHelper.GenerateContentUrl(_url, context.HttpContext);
-				context.Controller.TempData.Keep();
-				context.HttpContext.Response.Redirect(url, false);
-			}
-		}
 	}
 }

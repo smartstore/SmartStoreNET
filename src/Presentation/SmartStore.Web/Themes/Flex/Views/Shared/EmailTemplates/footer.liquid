@@ -9,8 +9,7 @@
 		<tr>
 			<td width="33%">
 				<p class="text-xs text-muted">
-					{{ Store.Name }}
-					{% if company.CompanyName %}<br/>{{ company.CompanyName }}{% endif %}
+					{% if company.CompanyName %}{{ company.CompanyName }}{% endif %}
 					{% if company.NameLine %}<br/>{{ company.NameLine | Join }}{% endif %}
 					{% if company.Street %}<br/>{{ company.Street }}{% endif %}
 					{% if company.Street2 %}<br/>{{ company.Street2 }}{% endif %}

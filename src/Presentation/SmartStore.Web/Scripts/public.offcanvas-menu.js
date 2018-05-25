@@ -342,7 +342,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        var languageOptions = "";
 	        var currencyOptions = "";
 
-	        if (!displayCurrencySelector && !displayCurrencySelector)
+	        if (!displayCurrencySelector && !displayLanguageSelector)
 	            return;
 	        else
 	            footer.removeClass("d-none");

@@ -26,6 +26,7 @@ namespace SmartStore.Core.Domain.Orders
             ShowBasePrice = true;
             ShowDeliveryTimes = true;
             ShowShortDesc = true;
+			AllowAnonymousUsersToEmailWishlist = false;
 		}
 		
 		/// <summary>

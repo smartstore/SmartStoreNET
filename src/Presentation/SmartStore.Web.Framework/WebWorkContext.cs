@@ -243,7 +243,7 @@ namespace SmartStore.Web.Framework
 
                 if (customer != null)
                 {
-					customerLangId = this.CurrentCustomer.GetAttribute<int>(
+					customerLangId = customer.GetAttribute<int>(
 						SystemCustomerAttributeNames.LanguageId,
 						_attrService,
 						_storeContext.CurrentStore.Id);

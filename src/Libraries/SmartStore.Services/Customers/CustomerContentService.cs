@@ -20,8 +20,7 @@ namespace SmartStore.Services.Customers
 
         public virtual void DeleteCustomerContent(CustomerContent content)
         {
-            if (content == null)
-                throw new ArgumentNullException("content");
+			Guard.NotNull(content, nameof(content));
 
             _contentRepository.Delete(content);
         }
@@ -33,14 +32,15 @@ namespace SmartStore.Services.Customers
                         where !approved.HasValue || c.IsApproved == approved &&
                         (customerId == 0 || c.CustomerId == customerId)
                         select c;
+
             var content = query.ToList();
             return content;
         }
 
-        public virtual IList<T> GetAllCustomerContent<T>(int customerId, bool? approved,
-            DateTime? fromUtc = null, DateTime? toUtc = null) where T : CustomerContent
+        public virtual IList<T> GetAllCustomerContent<T>(int customerId, bool? approved, DateTime? fromUtc = null, DateTime? toUtc = null) where T : CustomerContent
         {
             var query = _contentRepository.Table;
+
             if (approved.HasValue)
                 query = query.Where(c => c.IsApproved == approved);
             if (customerId > 0)
@@ -49,7 +49,9 @@ namespace SmartStore.Services.Customers
                 query = query.Where(c => fromUtc.Value <= c.CreatedOnUtc);
             if (toUtc.HasValue)
                 query = query.Where(c => toUtc.Value >= c.CreatedOnUtc);
+
             query = query.OrderByDescending(c => c.CreatedOnUtc);
+
             var content = query.OfType<T>().ToList();
             return content;
         }
@@ -65,18 +67,16 @@ namespace SmartStore.Services.Customers
 
         public virtual void InsertCustomerContent(CustomerContent content)
         {
-            if (content == null)
-                throw new ArgumentNullException("content");
+			Guard.NotNull(content, nameof(content));
 
-            _contentRepository.Insert(content);
+			_contentRepository.Insert(content);
         }
 
         public virtual void UpdateCustomerContent(CustomerContent content)
         {
-            if (content == null)
-                throw new ArgumentNullException("content");
+			Guard.NotNull(content, nameof(content));
 
-            _contentRepository.Update(content);
+			_contentRepository.Update(content);
         }
     }
 }

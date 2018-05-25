@@ -16,7 +16,7 @@
 			]
 		},
 		{
-			"name": "Global",
+			"name": "Admin.Common.Global",
 			"zones": [
 				"main_column_before",
 				"main_column_after",
@@ -45,7 +45,7 @@
 			]
 		},
 		{
-			"name": "News",
+			"name": "Admin.Common.News",
 			"zones": [
 				"newslist_page_before_items",
 				"newslist_page_after_items",
@@ -88,7 +88,7 @@
 			]
 		},
 		{
-			"name": "Navigation",
+			"name": "Admin.Common.Navigation",
 			"zones": [
 				"header_menu_top",
 				"header_menu_before",
@@ -112,7 +112,7 @@
 			]
 		},
 		{
-			"name": "PDF",
+			"name": "Admin.Common.PDF",
 			"zones": [
 				"invoice_footer_before",
 				"invoice_footer_after",
@@ -150,7 +150,7 @@
 			]
 		},
 		{
-			"name": "Footer",
+			"name": "Admin.Common.Footer",
 			"zones": [
 				"footer_top",
 				"footer_bottom",

@@ -111,6 +111,9 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.HideAdminMenuItemsBasedOnPermissions")]
             public bool HideAdminMenuItemsBasedOnPermissions { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.EnableHoneypotProtection")]
+			public bool EnableHoneypotProtection { get; set; }
 		}
 
 		public partial class CaptchaSettingsModel

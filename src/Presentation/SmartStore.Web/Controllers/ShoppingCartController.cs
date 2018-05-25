@@ -36,11 +36,11 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
@@ -711,17 +711,7 @@ namespace SmartStore.Web.Controllers
 
 			model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
-			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
-			model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
 			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
-
-			if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
-			{
-				model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage, true, false);
-
-				if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
-					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
-			}
 
             //reward points
             if (_rewardPointsSettings.Enabled && !cart.IsRecurring() && !_workContext.CurrentCustomer.IsGuest())
@@ -1852,9 +1842,10 @@ namespace SmartStore.Web.Controllers
 
             if (cart.RequiresShipping())
             {
-				if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) != null)
+				var shippingInfoUrl = Url.TopicUrl("ShippingInfo");
+				if (shippingInfoUrl.HasValue())
 				{
-					model.EstimateShipping.ShippingInfoUrl = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
+					model.EstimateShipping.ShippingInfoUrl = shippingInfoUrl;
 				}
 
                 var address = new Address
@@ -2224,7 +2215,7 @@ namespace SmartStore.Web.Controllers
             {
                 var cart = _workContext.CurrentCustomer.GetCartItems(isWishlist ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
                 
-                if(isWishlist)
+                if (isWishlist)
                 {
                     var model = new WishlistModel();
                     PrepareWishlistModel(model, cart);
@@ -2245,9 +2236,9 @@ namespace SmartStore.Web.Controllers
                 success = warnings.Count > 0 ? false : true,
                 SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(),
                 message = warnings,
-                cartHtml = cartHtml,
-                totalsHtml = totalsHtml,
-				showCheckoutButtons = showCheckoutButtons
+                cartHtml,
+                totalsHtml,
+				showCheckoutButtons
             });
         }
 
@@ -2470,8 +2461,9 @@ namespace SmartStore.Web.Controllers
             });
         }
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult EmailWishlist()
+        [RequireHttpsByConfig(SslRequirement.Yes)]
+		[GdprConsent]
+		public ActionResult EmailWishlist()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
                 return RedirectToRoute("HomePage");
@@ -2491,8 +2483,9 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("EmailWishlist")]
         [FormValueRequired("send-email")]
-        [CaptchaValidator]
-        public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, bool captchaValid)
+        [ValidateCaptcha]
+		[GdprConsent]
+		public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, bool captchaValid)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableWishlist) || !_shoppingCartSettings.EmailWishlistEnabled)
                 return RedirectToRoute("HomePage");

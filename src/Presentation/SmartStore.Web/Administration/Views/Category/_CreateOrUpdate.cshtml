@@ -343,7 +343,7 @@
                     @Html.SmartLabelFor(model => model.Locales[item].SeName)
                 </td>
                 <td class="adminData">
-                    @Html.TextAreaFor(model => model.Locales[item].SeName)
+                    @Html.EditorFor(model => model.Locales[item].SeName)
                     @Html.ValidationMessageFor(model => model.Locales[item].SeName)
                 </td>
             </tr>
@@ -382,10 +382,10 @@
                     @Html.SmartLabelFor(model => model.SeName)
                 </td>
                 <td class="adminData">
-					@Html.TextAreaFor(x => x.SeName)
+					@Html.EditorFor(x => x.SeName)
 					@if (Model.Id != 0)
 					{
-						@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = @Model.Id })
+						@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = Model.Id })
 					}
 					@Html.ValidationMessageFor(model => model.SeName)
                 </td>

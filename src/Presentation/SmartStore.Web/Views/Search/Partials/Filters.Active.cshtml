@@ -59,10 +59,10 @@
 	</div>
 }
 
-@if (activeFilters.Length > 0 && Model.SearchResult.TotalHitsCount == 0)
+@if (Model.SearchResult.TotalHitsCount == 0)
 {
 	<div class="alert alert-warning">
-		@T("Search.FilterNoResultsText")
+		@T(activeFilters.Length > 0 ? "Search.FilterNoResultsText" : "Search.NoResultsText")
 	</div>
 }
 

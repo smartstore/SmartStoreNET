@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Web.Models.Checkout
 {
@@ -19,5 +20,12 @@ namespace SmartStore.Web.Models.Checkout
 		public bool ShowEsdRevocationWaiverBox { get; set; }
 
 		public bool BypassPaymentMethodInfo { get; set; }
-    }
+
+		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+		public bool? SubscribeToNewsLetter { get; set; }
+
+		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
+		public string ThirdPartyEmailHandOverLabel { get; set; }
+		public bool? AcceptThirdPartyEmailHandOver { get; set; }
+	}
 }

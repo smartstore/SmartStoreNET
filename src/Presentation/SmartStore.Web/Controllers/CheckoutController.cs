@@ -346,6 +346,7 @@ namespace SmartStore.Web.Controllers
 		protected CheckoutConfirmModel PrepareConfirmOrderModel(IList<OrganizedShoppingCartItem> cart)
         {
             var model = new CheckoutConfirmModel();
+
             //min order amount validation
             bool minOrderTotalAmountOk = _orderProcessingService.ValidateMinOrderTotalAmount(cart);
             if (!minOrderTotalAmountOk)
@@ -357,7 +358,18 @@ namespace SmartStore.Web.Controllers
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 			model.ShowEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
 			model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
-            return model;
+			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
+			model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
+
+			if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+			{
+				model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage, true, false);
+
+				if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
+					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
+			}
+
+			return model;
         }
 
         [NonAction]
@@ -860,8 +872,8 @@ namespace SmartStore.Web.Controllers
 
                 var placeOrderExtraData = new Dictionary<string, string>();
                 placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
-				placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetterHidden"];
-				placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOverHidden"];
+				placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetter"];
+				placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOver"];
 
 				placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 

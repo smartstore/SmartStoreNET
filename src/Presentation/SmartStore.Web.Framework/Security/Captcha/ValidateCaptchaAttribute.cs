@@ -11,11 +11,11 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 
-namespace SmartStore.Web.Framework.UI.Captcha
+namespace SmartStore.Web.Framework.Security
 {
-	public class CaptchaValidatorAttribute : ActionFilterAttribute
+	public class ValidateCaptchaAttribute : ActionFilterAttribute
     {
-		public CaptchaValidatorAttribute()
+		public ValidateCaptchaAttribute()
 		{
 			Logger = NullLogger.Instance;
 		}

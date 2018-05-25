@@ -11,7 +11,7 @@
         <h1>@(Model.IsEditable ? T("Wishlist") : T("Wishlist.WishlistOf", Model.CustomerFullname))</h1>
     </div>
     <div class="page-body">
-        <div class="wishlist-content">
+        <div class="wishlist-content cart-content" data-empty-text=@T("Wishlist.CartIsEmpty").JsText>
             
             @{ Html.RenderWidget("wishlist_items_top"); }
 
@@ -96,85 +96,5 @@
 
 @if (Model.IsEditable)
 {
-    <script type="text/javascript">
-
-        var orderSummary = $(".wishlist-content");
-
-        // remove cart item & move to wishlist
-        orderSummary.on("click", ".ajax-action-link", function (e) {
-            e.preventDefault();
-            var link = $(this);
-            updateShoppingCartItems(link, link.data);
-            return false;
-        });
-
-        // quantity touchspin change
-        orderSummary.on('change', '.qty-input .form-control', function (e) {
-            e.preventDefault();
-            var link = $(this);
-            updateShoppingCartItems(link, { "sciItemId": link.data("sci-id"), "newQuantity": link.val(), "isCartPage": true, "isWishlist": true });
-            return false;
-        });
-
-        function updateShoppingCartItems(link, data) {
-
-            showThrobber();
-
-            $.ajax({
-                cache: false,
-                url: link.data("href"),
-                data: data,
-                type: 'POST',
-                success: function (response) {
-
-                    if (response.cartItemCount == 0) {
-                        orderSummary.html('<div class="alert alert-warning fade show">' + @T("Wishlist.CartIsEmpty").JsText + '</div>');
-                        $(".share-info").hide();
-                    }
-
-                    var cartBody = $(".cart-body");
-                    var totals = $("#order-totals");
-
-                    if (response.success) {
-                        // replace html
-                        cartBody.html(response.cartHtml);
-                        totals.html(response.totalsHtml);
-                    }
-
-                    displayNotification(response.message, response.success ? "success" : "error");
-
-                    // reinit qty ctls
-                    applyCommonPlugins(cartBody);
-
-                    // update shopbar
-                    ShopBar.loadSummary("wishlist", true);
-                    
-                    if (link.data("type") == "cart") {
-                        ShopBar.loadSummary("cart", true);
-                    }
-
-                    hideThrobber();
-                }
-            });
-        }
-
-        function showThrobber() {
-            var cnt = $("#cart-items");
-            var throbber = cnt.data('throbber');
-            if (!throbber) {
-                throbber = cnt.throbber({ white: true, small: true, message: '', show: false, speed: 0 }).data('throbber');
-            }
-
-            throbber.show();
-        }
-
-        function hideThrobber() {
-            var cnt = $("#cart-items");
-            _.delay(function () {
-            	if (cnt.data("throbber"))
-            		cnt.data("throbber").hide();
-            }, 100);
-        }
-
-    </script>
+	Html.RenderPartial("_RefreshCartScript");
 }

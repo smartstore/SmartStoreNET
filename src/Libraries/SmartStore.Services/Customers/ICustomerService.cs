@@ -34,12 +34,26 @@ namespace SmartStore.Services.Customers
         /// <param name="sct">Value indicating what shopping cart type to filter; userd when 'loadOnlyWithShoppingCart' param is 'true'</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="deletedOnly">Whether only (soft)-deleted records should be loaded</param>
         /// <returns>Customer collection</returns>
-        IPagedList<Customer> GetAllCustomers(DateTime? registrationFrom,
-           DateTime? registrationTo, int[] customerRoleIds, string email, string username,
-           string firstName, string lastName, int dayOfBirth, int monthOfBirth,
-           string company, string phone, string zipPostalCode,
-           bool loadOnlyWithShoppingCart, ShoppingCartType? sct, int pageIndex, int pageSize);
+        IPagedList<Customer> GetAllCustomers(
+			DateTime? registrationFrom,
+			DateTime? registrationTo, 
+			int[] customerRoleIds, 
+			string email, 
+			string username,
+			string firstName, 
+			string lastName, 
+			int dayOfBirth, 
+			int monthOfBirth,
+			string company, 
+			string phone, 
+			string zipPostalCode,
+			bool loadOnlyWithShoppingCart, 
+			ShoppingCartType? sct, 
+			int pageIndex, 
+			int pageSize, 
+			bool deletedOnly = false);
 
         /// <summary>
         /// Gets all customers by affiliate identifier

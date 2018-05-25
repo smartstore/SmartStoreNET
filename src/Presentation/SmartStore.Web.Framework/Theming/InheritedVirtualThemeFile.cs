@@ -7,17 +7,22 @@ namespace SmartStore.Web.Framework.Theming
 {
     internal class InheritedVirtualThemeFile : VirtualFile
     {
-        private readonly InheritedThemeFileResult _resolveResult;
-
 		public InheritedVirtualThemeFile(InheritedThemeFileResult resolveResult)
 			: base(DetermineVirtualPath(resolveResult))
         {
-            this._resolveResult = resolveResult;
+            ResolveResult = resolveResult;
         }
 
-        public override Stream Open()
+		public InheritedThemeFileResult ResolveResult { get; }
+
+		public string ResultVirtualPath
+		{
+			get { return ResolveResult.ResultVirtualPath ?? ResolveResult.OriginalVirtualPath; }
+		}
+
+		public override Stream Open()
         {
-			return new FileStream(_resolveResult.ResultPhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+			return new FileStream(ResolveResult.ResultPhysicalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         }
 
 		private static string DetermineVirtualPath(InheritedThemeFileResult resolveResult)

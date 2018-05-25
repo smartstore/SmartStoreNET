@@ -95,6 +95,8 @@ namespace SmartStore.Core.Domain.Seo
 		/// </summary>
 		public bool LoadAllUrlAliasesOnStartup { get; set; }
 
+		public bool RedirectLegacyTopicUrls { get; set; }
+
 		#region XML Sitemap
 
 		public bool XmlSitemapEnabled { get; set; }

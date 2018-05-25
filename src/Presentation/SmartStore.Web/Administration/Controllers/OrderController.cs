@@ -29,7 +29,6 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Pdf;
@@ -90,7 +89,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICatalogSearchService _catalogSearchService;
 
 		private readonly CatalogSettings _catalogSettings;
-        private readonly CurrencySettings _currencySettings;
         private readonly TaxSettings _taxSettings;
         private readonly MeasureSettings _measureSettings;
         private readonly PdfSettings _pdfSettings;
@@ -98,7 +96,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly SearchSettings _searchSettings;
 
-		private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
         private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
 
@@ -128,7 +125,6 @@ namespace SmartStore.Admin.Controllers
 			IProductAttributeParser productAttributeParser,
             IProductAttributeFormatter productAttributeFormatter, 
 			IShoppingCartService shoppingCartService,
-            ICheckoutAttributeFormatter checkoutAttributeFormatter, 
             IGiftCardService giftCardService, 
 			IDownloadService downloadService,
 			IShipmentService shipmentService, 
@@ -142,7 +138,6 @@ namespace SmartStore.Admin.Controllers
 			ICustomerActivityService customerActivityService,
 			ICatalogSearchService catalogSearchService,
 			CatalogSettings catalogSettings, 
-			CurrencySettings currencySettings, 
 			TaxSettings taxSettings,
             MeasureSettings measureSettings, 
 			PdfSettings pdfSettings, 
@@ -188,7 +183,6 @@ namespace SmartStore.Admin.Controllers
 			_catalogSearchService = catalogSearchService;
 
 			_catalogSettings = catalogSettings;
-            _currencySettings = currencySettings;
             _taxSettings = taxSettings;
             _measureSettings = measureSettings;
             _pdfSettings = pdfSettings;
@@ -196,7 +190,6 @@ namespace SmartStore.Admin.Controllers
 			_adminAreaSettings = adminAreaSettings;
 			_searchSettings = searchSettings;
 
-            _checkoutAttributeFormatter = checkoutAttributeFormatter;
             _pdfConverter = pdfConverter;
             _services = services;
 		}
@@ -711,15 +704,71 @@ namespace SmartStore.Admin.Controllers
             return model;
         }
 
-        [NonAction]
+		private ShipmentModel.ShipmentItemModel PrepareShipmentItemModel(
+			Order order,
+			OrderItem orderItem,
+			ShipmentItem shipmentItem,
+			MeasureDimension baseDimension,
+			MeasureWeight baseWeight)
+		{
+			orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
+
+			var language = _services.WorkContext.WorkingLanguage;
+			var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
+			var qtyInAllShipments = orderItem.GetShipmentItemsCount();
+
+			var model = new ShipmentModel.ShipmentItemModel
+			{
+				Id = shipmentItem?.Id ?? 0,
+				OrderItemId = orderItem.Id,
+				ProductId = orderItem.ProductId,
+				ProductName = orderItem.Product.Name,
+				ProductType = orderItem.Product.ProductType,
+				ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
+				ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
+				Sku = orderItem.Product.Sku,
+				Gtin = orderItem.Product.Gtin,
+				AttributeInfo = orderItem.AttributeDescription,
+				ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeight?.Name ?? "") : "",
+				ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", orderItem.Product.Length, orderItem.Product.Width, orderItem.Product.Height, baseDimension?.Name ?? ""),
+				QuantityOrdered = orderItem.Quantity,
+				QuantityInThisShipment = shipmentItem?.Quantity ?? 0,
+				QuantityInAllShipments = qtyInAllShipments,
+				QuantityToAdd = maxQtyToAdd
+			};
+
+			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
+			{
+				var bundleData = orderItem.GetBundleData();
+
+				model.BundlePerItemPricing = orderItem.Product.BundlePerItemPricing;
+				model.BundlePerItemShoppingCart = bundleData.Any(x => x.PerItemShoppingCart);
+
+				foreach (var bundleItem in bundleData)
+				{
+					var bundleItemModel = new ShipmentModel.BundleItemModel
+					{
+						Sku = bundleItem.Sku,
+						ProductName = bundleItem.ProductName,
+						ProductSeName = bundleItem.ProductSeName,
+						VisibleIndividually = bundleItem.VisibleIndividually,
+						Quantity = bundleItem.Quantity,
+						DisplayOrder = bundleItem.DisplayOrder,
+						AttributeInfo = bundleItem.AttributesInfo
+					};
+
+					model.BundleItems.Add(bundleItemModel);
+				}
+			}
+
+			return model;
+		}
+
+		[NonAction]
 		protected ShipmentModel PrepareShipmentModel(Shipment shipment, bool prepareProducts, bool prepareAddresses)
         {
-            // Measures
             var baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
-            var baseWeightIn = baseWeight != null ? baseWeight.Name : "";
             var baseDimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId);
-            var baseDimensionIn = baseDimension != null ? baseDimension.Name : "";
-
 			var orderStoreId = shipment.Order.StoreId;
 
 			var model = new ShipmentModel
@@ -731,13 +780,14 @@ namespace SmartStore.Admin.Controllers
 				PurchaseOrderNumber = shipment.Order.PurchaseOrderNumber,
 				ShippingMethod = shipment.Order.ShippingMethod,
                 TrackingNumber = shipment.TrackingNumber,
-                TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeightIn) : "",
+                TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeight?.Name ?? "") : "",
                 ShippedDate = shipment.ShippedDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc).ToString() : _localizationService.GetResource("Admin.Orders.Shipments.ShippedDate.NotYet"),
                 CanShip = !shipment.ShippedDateUtc.HasValue,
                 DeliveryDate = shipment.DeliveryDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc).ToString() : _localizationService.GetResource("Admin.Orders.Shipments.DeliveryDate.NotYet"),
                 CanDeliver = shipment.ShippedDateUtc.HasValue && !shipment.DeliveryDateUtc.HasValue,
                 DisplayPdfPackagingSlip = _pdfSettings.Enabled,
-            };
+				ShowSku = _catalogSettings.ShowProductSku
+			};
 
 			if (prepareAddresses)
 			{
@@ -763,33 +813,8 @@ namespace SmartStore.Admin.Controllers
                     if (orderItem == null)
                         continue;
 
-                    // Quantities
-                    var qtyInThisShipment = shipmentItem.Quantity;
-                    var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
-                    var qtyOrdered = orderItem.Quantity;
-                    var qtyInAllShipments = orderItem.GetShipmentItemsCount();
-
-                    orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                    var shipmentItemModel = new ShipmentModel.ShipmentItemModel
-                    {
-                        Id = shipmentItem.Id,
-                        OrderItemId = orderItem.Id,
-                        ProductId = orderItem.ProductId,
-						ProductName = orderItem.Product.Name,
-						ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
-						ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
-                        Sku = orderItem.Product.Sku,
-                        Gtin = orderItem.Product.Gtin,
-                        AttributeInfo = orderItem.AttributeDescription,
-                        ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
-                        ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", orderItem.Product.Length, orderItem.Product.Width, orderItem.Product.Height, baseDimensionIn),
-                        QuantityOrdered = qtyOrdered,
-                        QuantityInThisShipment = qtyInThisShipment,
-                        QuantityInAllShipments = qtyInAllShipments,
-                        QuantityToAdd = maxQtyToAdd,
-                    };
-
-                    model.Items.Add(shipmentItemModel);
+					var itemModel = PrepareShipmentItemModel(shipment.Order, orderItem, shipmentItem, baseDimension, baseWeight);
+                    model.Items.Add(itemModel);
                 }
             }
 
@@ -1042,7 +1067,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
@@ -1051,10 +1075,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
 		[HttpPost, ActionName("Edit")]
@@ -1074,10 +1098,10 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception exc)
 			{
-				NotifyError(exc, false);
+				NotifyError(exc);
 			}
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1089,21 +1113,22 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
             {
                 var errors = _orderProcessingService.Capture(order);
-                foreach (var error in errors)
-					NotifyError(error, false);
+				foreach (var error in errors)
+				{
+					NotifyError(error);
+				}
 			}
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
 			}
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1115,7 +1140,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
             
             try
@@ -1124,10 +1148,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1139,21 +1163,22 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 var errors = _orderProcessingService.Refund(order);
-                foreach (var error in errors)
-					NotifyError(error, false);
+				foreach (var error in errors)
+				{
+					NotifyError(error);
+				}
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1165,7 +1190,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1174,10 +1198,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1189,21 +1213,20 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 var errors = _orderProcessingService.Void(order);
                 foreach (var error in errors)
-					NotifyError(error, false);
+					NotifyError(error);
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
 
         [HttpPost, ActionName("Edit")]
@@ -1215,7 +1238,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1224,10 +1246,10 @@ namespace SmartStore.Admin.Controllers
             }
             catch (Exception exc)
             {
-                NotifyError(exc, false);
+                NotifyError(exc);
             }
 
-			return RedirectToAction("Edit", new { id = id });
+			return RedirectToAction("Edit", new { id });
 		}
         
         public ActionResult PartiallyRefundOrderPopup(int id, bool online)
@@ -1237,7 +1259,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             var model = new OrderModel();
@@ -1255,7 +1276,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -2122,62 +2142,37 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult AddShipment(int orderId)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				return AccessDeniedView();
+			}
 
             var order = _orderService.GetOrderById(orderId);
-            if (order == null)
-                //No order found with the specified id
-                return RedirectToAction("List");
+			if (order == null)
+			{
+				return RedirectToAction("List");
+			}
 
-            var model = new ShipmentModel()
+            var model = new ShipmentModel
             {
                 OrderId = order.Id,
             };
 
-            //measures
             var baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
-            var baseWeightIn = baseWeight != null ? baseWeight.Name : "";
             var baseDimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId);
-            var baseDimensionIn = baseDimension != null ? baseDimension.Name : "";
-
 
             foreach (var orderItem in order.OrderItems)
             {
-                //we can ship only shippable products
+                // We can ship only shippable products.
                 if (!orderItem.Product.IsShipEnabled)
                     continue;
 
-                //quantities
-                var qtyInThisShipment = 0;
-                var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
-                var qtyOrdered = orderItem.Quantity;
-                var qtyInAllShipments = orderItem.GetShipmentItemsCount();
-
-                //ensure that this product can be added to a shipment
-                if (maxQtyToAdd <= 0)
+                // Eensure that this product can be added to a shipment
+                if (orderItem.GetItemsCanBeAddedToShipmentCount() <= 0)
                     continue;
 
-                orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                var shipmentItemModel = new ShipmentModel.ShipmentItemModel()
-                {
-                    OrderItemId = orderItem.Id,
-					ProductId = orderItem.ProductId,
-					ProductName = orderItem.Product.Name,
-					ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
-					ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
-                    Sku = orderItem.Product.Sku,
-                    Gtin = orderItem.Product.Gtin,
-                    AttributeInfo = orderItem.AttributeDescription,
-                    ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
-                    ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", orderItem.Product.Length, orderItem.Product.Width, orderItem.Product.Height, baseDimensionIn),
-                    QuantityOrdered = qtyOrdered,
-                    QuantityInThisShipment = qtyInThisShipment,
-                    QuantityInAllShipments = qtyInAllShipments,
-                    QuantityToAdd = maxQtyToAdd
-                };
-
-                model.Items.Add(shipmentItemModel);
+				var itemModel = PrepareShipmentItemModel(order, orderItem, null, baseDimension, baseWeight);
+                model.Items.Add(itemModel);
             }
 
             return View(model);

@@ -701,7 +701,7 @@ namespace SmartStore.Services.DataExchange.Export
 					var node = _categoryService.Value.GetCategoryTree(pc.CategoryId, true, ctx.Store.Id);
 					if (node != null)
 					{
-						categoryPath = _categoryService.Value.GetCategoryPath(node, ctx.Projection.LanguageId, false, " > ");
+						categoryPath = _categoryService.Value.GetCategoryPath(node, ctx.Projection.LanguageId, null, " > ");
 					}
 				}
 

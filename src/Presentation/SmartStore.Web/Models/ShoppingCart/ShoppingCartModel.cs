@@ -60,13 +60,6 @@ namespace SmartStore.Web.Models.ShoppingCart
         public string CustomerComment { get; set; }
         public string MeasureUnitName { get; set; }
 
-		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
-		public bool? SubscribeToNewsLetter { get; set; }
-
-		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
-		public string ThirdPartyEmailHandOverLabel { get; set; }
-		public bool? AcceptThirdPartyEmailHandOver { get; set; }
-
 		public bool DisplayEsdRevocationWaiverBox { get; set; }
         public bool DisplayMoveToWishlistButton { get; set; }
 

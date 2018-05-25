@@ -61,28 +61,29 @@
                 var url = newsletterContainer.data("subscription-url");
 
                 newsletterContainer.find('#newsletter-subscribe-button').on("click", function () {
-
                     var email = $("#newsletter-email").val();
                     var subscribe = 'true';
                     var resultDisplay = $("#newsletter-result-block");
+					var gdprConsent = $(".footer-newsletter #GdprConsent").is(':checked');
 
                     if ($('#newsletter-unsubscribe').is(':checked')) {
                         subscribe = 'false';
                     }
-		    
+
                     $.ajax({
                         cache: false,
                         type: "POST",
                         url: url,
-                        data: { "subscribe": subscribe, "email": email },
-                        success: function (data) {
+						data: { "subscribe": subscribe, "email": email, "GdprConsent": subscribe == 'true' ? gdprConsent : true },
+						success: function (data) {
                             resultDisplay.html(data.Result);
                             if (data.Success) {
                                 $('#newsletter-subscribe-block').hide();
                                 resultDisplay.removeClass("alert-danger d-none").addClass("alert-success d-block");
                             }
-                            else {
-                                resultDisplay.removeClass("alert-success d-none").addClass("alert-danger d-block").fadeIn("slow").delay(2000).fadeOut("slow");
+							else {
+								if (data.Result != "")
+									resultDisplay.removeClass("alert-success d-none").addClass("alert-danger d-block").fadeIn("slow").delay(2000).fadeOut("slow");
                             }
                         },
                         error:function (xhr, ajaxOptions, thrownError){
@@ -103,7 +104,7 @@
 
         		list.slick({
 					infinite: false,
-					rtl: $("body").attr("dir") == "rtl",
+					rtl: $("html").attr("dir") == "rtl",
         			dots: true,
         			cssEase: 'ease-in-out',
         			speed: 300,

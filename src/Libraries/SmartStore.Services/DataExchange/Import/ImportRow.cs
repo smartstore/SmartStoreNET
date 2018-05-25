@@ -9,6 +9,7 @@ namespace SmartStore.Services.DataExchange.Import
 	public class ImportRow<T> where T : BaseEntity
 	{
 		private const string ExplicitNull = "[NULL]";
+		private const string ExplicitIgnore = "[IGNORE]";
 
 		private bool _initialized = false;
 		private T _entity;
@@ -193,7 +194,7 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 
 			object rawValue;
-			if (_row.TryGetValue(mapping.MappedName, out rawValue) && rawValue != null && rawValue != DBNull.Value)
+			if (_row.TryGetValue(mapping.MappedName, out rawValue) && rawValue != null && rawValue != DBNull.Value && !rawValue.ToString().IsCaseInsensitiveEqual(ExplicitIgnore))
 			{
 				value = rawValue.ToString().IsCaseInsensitiveEqual(ExplicitNull) 
 					? default(TProp) 
@@ -252,7 +253,7 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					// explicitly ignore this property
 				}
-				else if (_row.TryGetValue(mapping.MappedName, out value) && (value != null && value != DBNull.Value))
+				else if (_row.TryGetValue(mapping.MappedName, out value) && value != null && value != DBNull.Value && !value.ToString().IsCaseInsensitiveEqual(ExplicitIgnore))
 				{
 					// source contains field value. Set it.
 					TProp converted;

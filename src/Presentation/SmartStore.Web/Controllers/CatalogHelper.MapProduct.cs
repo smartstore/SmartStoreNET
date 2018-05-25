@@ -22,6 +22,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
@@ -186,14 +187,14 @@ namespace SmartStore.Web.Controllers
 				
 				if (settings.MapLegalInfo)
 				{
-					if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) == null)
+					var shippingInfoUrl = _urlHelper.TopicUrl("shippinginfo");
+					if (shippingInfoUrl.HasValue())
 					{
-						legalInfo = T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
+						legalInfo = T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoUrl);
 					}
 					else
 					{
-						var shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
-						legalInfo = T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoLink);
+						legalInfo = T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
 					}
 				}
 
@@ -611,7 +612,6 @@ namespace SmartStore.Web.Controllers
 			{
 				return finalPrice;
 			}
-
 			// Return if group has no associated products.
 			if (product.ProductType == ProductType.GroupedProduct && !associatedProducts.Any())
 			{
@@ -660,7 +660,7 @@ namespace SmartStore.Web.Controllers
 				? string.Format(ctx.Resources["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice))
 				: _priceFormatter.FormatPrice(finalPrice);
 
-			priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase > decimal.Zero;
+			priceModel.HasDiscount = oldPriceBase > decimal.Zero && oldPriceBase > finalPriceBase;
 			if (priceModel.HasDiscount)
 			{
 				priceModel.RegularPriceValue = oldPrice;
@@ -668,46 +668,42 @@ namespace SmartStore.Web.Controllers
 			}
 
 			// Calculate saving.
-			if (finalPrice > 0)
-			{
-				var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, ctx.BatchContext);
-				finalPriceWithDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithDiscount, out taxRate);
-				finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscount, ctx.Currency);
+			var finalPriceWithDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, true, 1, null, ctx.BatchContext);
+			finalPriceWithDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithDiscount, out taxRate);
+			finalPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithDiscount, ctx.Currency);
 
-				var finalPriceWithoutDiscount = finalPrice;
-				if (_catalogSettings.PriceDisplayType != PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+			var finalPriceWithoutDiscount = finalPrice;
+			if (_catalogSettings.PriceDisplayType != PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+			{
+				finalPriceWithoutDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
+				finalPriceWithoutDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithoutDiscount, out taxRate);
+				finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscount, ctx.Currency);
+			}
+
+			// Discounted price has priority over the old price (avoids differing percentage discount in product lists and detail page).
+			var regularPrice = finalPriceWithDiscount < finalPriceWithoutDiscount
+				? finalPriceWithoutDiscount
+				: oldPrice;
+
+			if (regularPrice > 0 && regularPrice > finalPriceWithDiscount)
+			{
+				priceModel.HasDiscount = true;
+				priceModel.SavingPercent = (float)((regularPrice - finalPriceWithDiscount) / regularPrice) * 100;
+				priceModel.SavingAmount = _priceFormatter.FormatPrice(regularPrice - finalPriceWithDiscount, true, false);
+
+				if (!priceModel.RegularPriceValue.HasValue)
 				{
-					finalPriceWithoutDiscount = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
-					finalPriceWithoutDiscount = _taxService.GetProductPrice(contextProduct, finalPriceWithoutDiscount, out taxRate);
-					finalPriceWithoutDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceWithoutDiscount, ctx.Currency);
+					priceModel.RegularPriceValue = regularPrice;
+					priceModel.RegularPrice = _priceFormatter.FormatPrice(regularPrice);
 				}
 
-				// Discounted price has priority over the old price (avoids differing percentage discount in product lists and detail page).
-				//var regularPrice = Math.Max(finalPriceWithoutDiscount, oldPrice);
-				var regularPrice = finalPriceWithDiscount < finalPriceWithoutDiscount
-					? finalPriceWithoutDiscount
-					: oldPrice;
-
-				if (regularPrice > 0 && regularPrice > finalPriceWithDiscount)
+				if (ctx.Model.ShowDiscountBadge)
 				{
-					priceModel.HasDiscount = true;
-					priceModel.SavingPercent = (float)((regularPrice - finalPriceWithDiscount) / regularPrice) * 100;
-					priceModel.SavingAmount = _priceFormatter.FormatPrice(regularPrice - finalPriceWithDiscount, true, false);
-
-					if (!priceModel.RegularPriceValue.HasValue)
+					item.Badges.Add(new ProductSummaryModel.Badge
 					{
-						priceModel.RegularPriceValue = regularPrice;
-						priceModel.RegularPrice = _priceFormatter.FormatPrice(regularPrice);
-					}
-
-					if (ctx.Model.ShowDiscountBadge)
-					{
-						item.Badges.Add(new ProductSummaryModel.Badge
-						{
-							Label = T("Products.SavingBadgeLabel", priceModel.SavingPercent.ToString("N0")),
-							Style = BadgeStyle.Danger
-						});
-					}
+						Label = T("Products.SavingBadgeLabel", priceModel.SavingPercent.ToString("N0")),
+						Style = BadgeStyle.Danger
+					});
 				}
 			}
 

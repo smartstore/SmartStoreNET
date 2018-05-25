@@ -14,6 +14,10 @@
             <li>Klicken Sie den Speichern-Button.</li>
             <li>Aktivieren Sie das Google Analytics Widget unter <b>CMS > Widgets</b> und Google Analytics wird in Ihre Webseite integriert.</li>
         </ul>
+		<p>
+			Um das Opt-Out-Cookie in Ihrer Datenschutzerklärung einzubinden verwenden Sie folgenden Code:
+		</p>
+		<pre>&lt;a href=&quot;javascript:gaOptout()&quot;&gt;Google Analytics deaktivieren&lt;/a&gt;</pre>
       ]]>
     </Value>
   </LocaleResource>
@@ -40,5 +44,8 @@
   </LocaleResource>
   <LocaleResource Name="EcommerceDetailScript.Hint">
     <Value>Kopieren Sie den von Google erzeugten Tracking-Code in dieses Feld. {ORDERID}, {PRODUCTSKU}, {PRODUCTNAME}, {CATEGORYNAME}, {UNITPRICE} und {QUANTITY} werden automatisch ersetzt.</Value>
+  </LocaleResource>
+  <LocaleResource Name="OptOutNotification">
+	<Value>Das Tracking ist jetzt deaktiviert</Value>
   </LocaleResource>
 </Language>

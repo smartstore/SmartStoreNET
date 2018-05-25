@@ -60,5 +60,8 @@ namespace SmartStore.Admin.Models.Customers
         [AllowHtml]
         public string SearchZipPostalCode { get; set; }
         public bool ZipPostalCodeEnabled { get; set; }
-    }
+
+		[SmartResourceDisplayName("Admin.Customers.Customers.List.SearchDeletedOnly")]
+		public bool SearchDeletedOnly { get; set; }
+	}
 }

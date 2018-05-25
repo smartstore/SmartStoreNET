@@ -50,13 +50,15 @@
 			}
 			else
 			{
-				<a class="stock-subscriber" data-toggle="modal" href="#backinstock-subscription-modal" rel="nofollow">
+				<a class="stock-subscriber" data-toggle="modal" href="@Url.Action("BackInStockSubscribe", new { id = @Model.Id })" rel="nofollow">
 					@T("BackInStockSubscriptions.NotifyMeWhenAvailable")
 				</a>
 				<script>
 					$(function () {
 						$("a.stock-subscriber").on('click', function (e) {
-							$("#backinstock-subscription-modal .modal-body").html('<iframe id="iframe-backinstocksubsription" src="@Url.Action("BackInStockSubscribe", new { id = @Model.Id })" width="600" height="170" scrolling="no" frameBorder="0" />');
+							e.preventDefault();
+							openPopup({ url: $(this).attr('href'), large: false, flex: false });
+							return false;
 						});
 					});
 				</script>
@@ -64,18 +66,3 @@
 		</div>
 	}
 </div>
-
-@if (Model.DisplayBackInStockSubscription && Model.IsCurrentCustomerRegistered)
-{
-	using (Html.BeginZoneContent("end", key: "backinstock-subscription-modal"))
-	{
-		Html.SmartStore().Window()
-			.Name("backinstock-subscription-modal")
-			.Size(WindowSize.Medium)
-			.FooterContent(@<text>
-				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-				<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
-			</text>)
-			.Render();
-	}
-}

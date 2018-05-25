@@ -293,7 +293,7 @@ namespace SmartStore.Admin.Controllers
 					categoryModel.Breadcrumb = x.GetCategoryPath(
 						_categoryService, 
 						languageId: _workContext.WorkingLanguage.Id, 
-						withAlias: true);
+						aliasPattern: "<span class='badge badge-secondary'>{0}</span>");
 					return categoryModel;
 				});
 
@@ -329,7 +329,7 @@ namespace SmartStore.Admin.Controllers
 				select new
 				{ 
 					id = c.Id.ToString(),
-					text = c.GetCategoryPath(_categoryService, withAlias: true), 
+					text = c.GetCategoryPath(_categoryService, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"), 
 					selected = c.Id == selectedId
 				};
 
@@ -347,7 +347,7 @@ namespace SmartStore.Admin.Controllers
 						return new
 						{
 							id = x,
-							text = _categoryService.GetCategoryPath(item),
+							text = _categoryService.GetCategoryPath(item, aliasPattern: "<span class='badge badge-secondary'>{0}</span>"),
 							selected = false
 						};
 					}
@@ -414,7 +414,7 @@ namespace SmartStore.Admin.Controllers
 
 				var item = new TreeViewItem
 				{
-					Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(text, x.Alias) : text,
+					Text = x.Alias.HasValue() ? "{0} <span class='badge badge-secondary'>{1}</span>".FormatCurrent(text, x.Alias) : text,
 					Encoded = x.Alias.IsEmpty(),
 					Value = x.Id.ToString(),
 					LoadOnDemand = (childCount > 0),

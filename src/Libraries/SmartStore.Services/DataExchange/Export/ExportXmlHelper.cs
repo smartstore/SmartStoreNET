@@ -294,6 +294,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("DisplayLocale", entity.DisplayLocale);
 			_writer.Write("ColorHexValue", entity.ColorHexValue);
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
+			_writer.Write("IsDefault", entity.IsDefault.ToString());
 
 			WriteLocalized(deliveryTime);
 

@@ -54,7 +54,7 @@
 		},
 		// ColorPicker
 		function (ctx) {
-			ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false });
+			ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false, align: SmartStore.globalization.culture.isRTL ? 'left' : 'right' });
 		},
 	];
 

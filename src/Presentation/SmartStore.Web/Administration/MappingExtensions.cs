@@ -954,13 +954,24 @@ namespace SmartStore.Admin
         {
             return Mapper.Map(model, destination);
         }
+		public static CustomerUserSettingsModel.PrivacySettingsModel ToModel(this PrivacySettings entity)
+		{
+			return Mapper.Map<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>(entity);
+		}
+		public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model)
+		{
+			return Mapper.Map<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>(model);
+		}
+		public static PrivacySettings ToEntity(this CustomerUserSettingsModel.PrivacySettingsModel model, PrivacySettings destination)
+		{
+			return Mapper.Map(model, destination);
+		}
+		#endregion
 
-        #endregion
 
+		#region Plugins
 
-        #region Plugins
-
-        public static PluginModel ToModel(this PluginDescriptor entity)
+		public static PluginModel ToModel(this PluginDescriptor entity)
         {
             return Mapper.Map<PluginDescriptor, PluginModel>(entity);
         }

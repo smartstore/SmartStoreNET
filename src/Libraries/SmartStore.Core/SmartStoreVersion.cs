@@ -42,7 +42,8 @@ namespace SmartStore.Core
 			new Version("2.2"),
             new Version("2.5"),
 			new Version("3.0"),
-			new Version("3.1")
+			new Version("3.1"),
+			new Version("3.1.5")
 		};
 
 		private const string HELP_BASEURL = "https://docs.smartstore.com/display/";

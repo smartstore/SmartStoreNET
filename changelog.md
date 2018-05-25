@@ -1,9 +1,15 @@
 ﻿# Release Notes
 
 ## SmartStore.NET 3.1.5
+
+### Highlights
+* Compliance with EU-GDPR requirements
+* Search engine friendly topic URLs
+* "Honeypot" bot detection for registration and contact forms.
+
 ### New Features
 * #1429 Search engine friendly topic URLs
-* Implemented cookie consent according to EU law
+* Implemented cookie consent according to EU-GDPR
 * Added checkboxes for data processing consent in all relevant forms
 * Implemented "Honeypot" bot detection for registration and contact forms.
 * Trusted Shops: Added consent checkbox to confirm order page for submission of customer email address to Trusted Shops if review widget is active

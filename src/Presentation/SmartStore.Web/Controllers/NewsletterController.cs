@@ -7,6 +7,7 @@ using SmartStore.Services.Messages;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Models.Newsletter;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Controllers
 {
@@ -53,7 +54,7 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				//subscribe/unsubscribe
+				// subscribe/unsubscribe
 				email = email.Trim();
 
 				var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(email, _storeContext.CurrentStore.Id);

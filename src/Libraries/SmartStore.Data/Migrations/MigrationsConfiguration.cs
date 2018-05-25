@@ -186,6 +186,12 @@
 			builder.AddOrUpdate("Account.Fields.Newsletter",
 				"I would like to subscribe to the newsletter. I agree to the <a href=\"{0}\" Privacy policy</a>. Unsubscription is possible at any time.", 
 				"Ich möchte den Newsletter abonnieren. Mit den Bestimmungen zum <a href=\"{0}\">Datenschutz</a> bin ich einverstanden. Eine Abmeldung ist jederzeit möglich.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.EnableHoneypotProtection",
+				"Enable Honeypot protection",
+				"Honeypot aktivieren",
+				"Honeypot is a simple but reliable bot detection method that does not require any captcha. If active, registration and contact forms are protected against bots and attackers.",
+				"Honeypot ist eine simple aber zuverlässige Bot-Erkennungsmethode, die ganz ohne Captcha auskommt. Wenn aktiv, werden Registrierungs- und Kontaktformular vor Bots und Angreifern geschützt.");
 		}
 	}
 }

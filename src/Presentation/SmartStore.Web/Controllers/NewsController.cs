@@ -293,7 +293,7 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("NewsItem")]
         [FormValueRequired("add-comment")]
-        [CaptchaValidator]
+        [ValidateCaptcha]
 		[GdprConsent]
 		public ActionResult NewsCommentAdd(int newsItemId, NewsItemModel model, bool captchaValid)
         {

@@ -267,6 +267,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SecuritySettings.EnableHoneypotProtection)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SecuritySettings.EnableHoneypotProtection)
+				@Html.ValidationMessageFor(model => model.SecuritySettings.EnableHoneypotProtection)
+			</td>
+		</tr>
+		<tr>
 			<td colspan="2">&nbsp;</td>
 		</tr>
 		<tr>
@@ -282,7 +291,7 @@
 			</td>
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.CaptchaSettings.Enabled,
-					Html.CheckBoxFor(model => model.CaptchaSettings.Enabled, new { data_toggler_for = "#pnlCaptchaSettings" }))
+					 Html.CheckBoxFor(model => model.CaptchaSettings.Enabled, new { data_toggler_for = "#pnlCaptchaSettings" }))
 				@Html.ValidationMessageFor(model => model.CaptchaSettings.Enabled)
 			</td>
 		</tr>

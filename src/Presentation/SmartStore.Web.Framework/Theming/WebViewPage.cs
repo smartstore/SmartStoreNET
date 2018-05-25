@@ -65,7 +65,12 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-        protected bool HasMessages
+		public bool EnableHoneypotProtection
+		{
+			get { return _helper.EnableHoneypotProtection; }
+		}
+
+		protected bool HasMessages
 		{
 			get
 			{
@@ -299,7 +304,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			return _helper.LocalizationFileResolver.Resolve(culture, virtualPath, pattern, true, fallbackCulture);
 		}
-    }
+	}
 
     public abstract class WebViewPage : WebViewPage<dynamic>
     {

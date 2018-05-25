@@ -100,7 +100,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost, ActionName("ContactUs")]
-		[CaptchaValidator]
+		[ValidateCaptcha, ValidateHoneypot]
 		[GdprConsent]
 		public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
 		{

@@ -687,7 +687,7 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost, ActionName("Reviews")]
 		[FormValueRequired("add-review")]
-		[CaptchaValidator]
+		[ValidateCaptcha]
 		[ValidateAntiForgeryToken]
 		[GdprConsent]
 		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, bool captchaValid)
@@ -861,7 +861,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost, ActionName("AskQuestion")]
-		[CaptchaValidator]
+		[ValidateCaptcha]
 		[GdprConsent]
 		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
 		{
@@ -929,7 +929,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost, ActionName("EmailAFriend")]
-		[CaptchaValidator]
+		[ValidateCaptcha]
 		[GdprConsent]
 		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, bool captchaValid)
 		{

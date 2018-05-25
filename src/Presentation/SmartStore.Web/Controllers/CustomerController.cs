@@ -461,7 +461,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [CaptchaValidator]
+        [ValidateCaptcha]
         public ActionResult Login(LoginModel model, string returnUrl, bool captchaValid)
         {
             // Validate CAPTCHA.
@@ -584,9 +584,8 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [CaptchaValidator]
-        [ValidateAntiForgeryToken]
 		[GdprConsent]
+		[ValidateAntiForgeryToken, ValidateCaptcha, ValidateHoneypot]
 		public ActionResult Register(RegisterModel model, string returnUrl, bool captchaValid)
         {
             //check whether registration is allowed

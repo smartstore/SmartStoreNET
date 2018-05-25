@@ -322,7 +322,7 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("BlogPost")]
         [FormValueRequired("add-comment")]
-        [CaptchaValidator]
+        [ValidateCaptcha]
 		[GdprConsent]
 		public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
         {

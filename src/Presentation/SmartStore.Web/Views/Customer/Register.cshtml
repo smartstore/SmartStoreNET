@@ -27,6 +27,13 @@
 				<fieldset class="content-group">
 					<legend><span>@T("Account.YourPersonalDetails")</span></legend>
 
+					@if (this.EnableHoneypotProtection)
+					{
+						<div class="d-none">
+							@Html.HoneypotField()
+						</div>
+					}
+
 					@if (Model.GenderEnabled)
 					{
 						<div class="form-group row">

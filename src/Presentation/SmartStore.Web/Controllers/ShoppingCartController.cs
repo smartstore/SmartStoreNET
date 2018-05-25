@@ -2483,7 +2483,7 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("EmailWishlist")]
         [FormValueRequired("send-email")]
-        [CaptchaValidator]
+        [ValidateCaptcha]
 		[GdprConsent]
 		public ActionResult EmailWishlistSend(WishlistEmailAFriendModel model, bool captchaValid)
         {

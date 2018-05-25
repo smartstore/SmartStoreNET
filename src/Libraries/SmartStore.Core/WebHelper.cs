@@ -42,19 +42,12 @@ namespace SmartStore.Core
 
         public WebHelper(HttpContextBase httpContext)
         {
-            this._httpContext = httpContext;
+            _httpContext = httpContext;
         }
 
         public virtual string GetUrlReferrer()
         {
-            string referrerUrl = null;
-
-            if (_httpContext != null &&
-                _httpContext.Request != null &&
-                _httpContext.Request.UrlReferrer != null)
-                referrerUrl = _httpContext.Request.UrlReferrer.ToString();
-
-            return referrerUrl.EmptyNull();
+            return _httpContext?.Request?.UrlReferrer?.ToString() ?? string.Empty;
         }
 
 		public virtual string GetClientIdent()
@@ -133,7 +126,7 @@ namespace SmartStore.Core
         public virtual string GetThisPageUrl(bool includeQueryString, bool useSsl)
         {
             string url = string.Empty;
-            if (_httpContext == null || _httpContext.Request == null)
+            if (_httpContext?.Request == null)
                 return url;
 
             if (includeQueryString)

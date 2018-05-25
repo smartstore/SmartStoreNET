@@ -6,8 +6,8 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Security
 {
-	public static class HtmlExtensions
-    {
+	public static class HtmlCaptchaExtensions
+	{
         public static string GenerateCaptcha(this HtmlHelper helper)
         {
 			var sb = new StringBuilder();

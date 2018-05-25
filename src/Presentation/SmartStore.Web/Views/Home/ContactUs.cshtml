@@ -33,7 +33,14 @@
 				{
 					@Html.ValidationSummary(false)
 				}
-				
+
+				if (this.EnableHoneypotProtection)
+				{
+					<div class="d-none">
+						@Html.HoneypotField()
+					</div>
+				}
+
 				@Html.ControlGroupFor(model => model.FullName, required: Model.FullNameRequired, breakpoint: "sm")
 				@Html.ControlGroupFor(model => model.Email, required: true, breakpoint: "sm")
 				

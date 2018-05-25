@@ -61,7 +61,6 @@
                 var url = newsletterContainer.data("subscription-url");
 
                 newsletterContainer.find('#newsletter-subscribe-button').on("click", function () {
-
                     var email = $("#newsletter-email").val();
                     var subscribe = 'true';
                     var resultDisplay = $("#newsletter-result-block");

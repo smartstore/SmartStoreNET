@@ -3,11 +3,12 @@
 ## SmartStore.NET 3.1.5
 ### New Features
 * #1429 Search engine friendly topic URLs
+* Implemented cookie consent according to EU law
+* Added checkboxes for data processing consent in all relevant forms
+* Implemented "Honeypot" bot detection for registration and contact forms.
 * Trusted Shops: Added consent checkbox to confirm order page for submission of customer email address to Trusted Shops if review widget is active
 * #1226 Shop-Connector: Added exchange of tier prices and delivery times
-* Implemented cookie consent according to EU law
 * #1439 Debitoor: Option whether to display the payment method and SKU on invoices
-* Added checkboxes for data processing consent in all relevant forms
 
 ### Improvements
 * Added double opt-in feature for newsletter subscriptions during checkout (confirm order)

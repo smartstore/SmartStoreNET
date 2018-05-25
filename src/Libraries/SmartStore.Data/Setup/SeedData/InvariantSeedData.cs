@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SmartStore.Core;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
@@ -47,10 +48,10 @@ namespace SmartStore.Data.Setup
 
 		public void Initialize(SmartObjectContext context)
 		{
-			this._ctx = context;
+			_ctx = context;
 
-			this._sampleImagesPath = CommonHelper.MapPath("~/App_Data/Samples/");
-			this._sampleDownloadsPath = CommonHelper.MapPath("~/App_Data/Samples/");
+			_sampleImagesPath = CommonHelper.MapPath("~/App_Data/Samples/");
+			_sampleDownloadsPath = CommonHelper.MapPath("~/App_Data/Samples/");
 		}
 
 		#region Mandatory data creators
@@ -3934,7 +3935,6 @@ namespace SmartStore.Data.Setup
 						Body = "<p>Put your shipping &amp; returns information here. You can edit this in the admin site.</p>"
 					},
 
-				//codehint: sm-add begin
 				new Topic
 					{
 						SystemName = "Imprint",
@@ -14790,6 +14790,10 @@ namespace SmartStore.Data.Setup
 		{
 		}
 
+		protected virtual void Alter(UrlRecord entity)
+		{
+		}
+
 		#endregion Alterations
 
 		#endregion Sample data creators
@@ -14818,6 +14822,53 @@ namespace SmartStore.Data.Setup
 			{
 				return this._sampleDownloadsPath;
 			}
+		}
+
+		public virtual UrlRecord CreateUrlRecordFor<T>(T entity) where T : BaseEntity, ISlugSupported, new()
+		{
+			var name = "";
+			var languageId = 0;
+
+			switch (entity)
+			{
+				case Category x:
+					name = x.Name;
+					break;
+				case Manufacturer x:
+					name = x.Name;
+					break;
+				case Product x:
+					name = x.Name;
+					break;
+				case BlogPost x:
+					name = x.Title;
+					languageId = x.LanguageId;
+					break;
+				case NewsItem x:
+					name = x.Title;
+					languageId = x.LanguageId;
+					break;
+				case Topic x:
+					name = SeoHelper.GetSeName(x.SystemName, true, false).Truncate(400);
+					break;
+			}
+
+			if (name.HasValue())
+			{
+				var result = new UrlRecord
+				{
+					EntityId = entity.Id,
+					EntityName = entity.GetUnproxiedType().Name,
+					LanguageId = languageId,
+					Slug = name,
+					IsActive = true
+				};
+
+				this.Alter(result);
+				return result;
+			}
+			
+			return null;
 		}
 
 		protected Picture CreatePicture(byte[] pictureBinary, string mimeType, string seoFilename)
@@ -14852,14 +14903,16 @@ namespace SmartStore.Data.Setup
 				info = new RegionInfo(locale);
 				if (info != null)
 				{
-					currency = new Currency();
-					currency.DisplayLocale = locale;
-					currency.Name = info.CurrencyNativeName;
-					currency.CurrencyCode = info.ISOCurrencySymbol;
-					currency.Rate = rate;
-					currency.CustomFormatting = formatting;
-					currency.Published = published;
-					currency.DisplayOrder = order;
+					currency = new Currency
+					{
+						DisplayLocale = locale,
+						Name = info.CurrencyNativeName,
+						CurrencyCode = info.ISOCurrencySymbol,
+						Rate = rate,
+						CustomFormatting = formatting,
+						Published = published,
+						DisplayOrder = order
+					};
 				}
 			}
 			catch

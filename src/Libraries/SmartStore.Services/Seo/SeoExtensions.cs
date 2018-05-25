@@ -303,12 +303,10 @@ namespace SmartStore.Services.Seo
 			int i = 2;
 			var tempSeName = seName;
 
-			extraSlugLookup = extraSlugLookup ?? ((s) => null);
-
 			while (true)
 			{
 				// check whether such slug already exists (and that it's not the current entity)
-				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup(tempSeName);
+				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup?.Invoke(tempSeName);
 				var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
 
 				if (!reserved1 && urlRecord != null && languageId.HasValue)

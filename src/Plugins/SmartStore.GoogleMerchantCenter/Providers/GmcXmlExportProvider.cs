@@ -30,7 +30,6 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		ExportFeatures.CanProjectDescription |
 		ExportFeatures.UsesSkuAsMpnFallback |
 		ExportFeatures.OffersBrandFallback |
-		ExportFeatures.CanIncludeMainPicture |
 		ExportFeatures.UsesSpecialPrice |
 		ExportFeatures.UsesAttributeCombination)]
 	public class GmcXmlExportProvider : ExportProviderBase
@@ -312,7 +311,6 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 						{
 							string category = (gmc == null ? null : gmc.Taxonomy);
 							string productType = product._CategoryPath;
-							string mainImageUrl = product._MainPictureUrl;
 							var price = (decimal)product.Price;
 							var uniqueId = (string)product._UniqueId;
 							var isParent = (bool)product._IsParent;
@@ -320,6 +318,11 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string gtin = product.Gtin;
 							string mpn = product.ManufacturerPartNumber;
 							var availability = defaultAvailability;
+							List<dynamic> productPictures = product.ProductPictures;
+							var pictureUrls = productPictures
+								.Select(x => (string)x.Picture._FullSizeImageUrl)
+								.Where(x => x.HasValue())
+								.ToList();
 
 							var attributeValues = !isParent && product._AttributeCombinationValues != null
 								? ((ICollection<ProductVariantAttributeValue>)product._AttributeCombinationValues).ToMultimap(x => x.ProductVariantAttribute.ProductAttributeId, x => x)
@@ -366,20 +369,19 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 							writer.WriteElementString("link", (string)product._DetailUrl);
 
-							if (mainImageUrl.HasValue())
+							if (pictureUrls.Any())
 							{
-								WriteString(writer, "image_link", mainImageUrl);
-							}
+								WriteString(writer, "image_link", pictureUrls.First());
 
-							if (config.AdditionalImages)
-							{
-								var imageCount = 0;
-								foreach (dynamic productPicture in product.ProductPictures)
+								if (config.AdditionalImages)
 								{
-									string pictureUrl = productPicture.Picture._ImageUrl;
-									if (pictureUrl.HasValue() && (mainImageUrl.IsEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(pictureUrl)) && ++imageCount <= 10)
+									var imageCount = 0;
+									foreach (var url in pictureUrls.Skip(1))
 									{
-										WriteString(writer, "additional_image_link", pictureUrl);
+										if (++imageCount <= 10)
+										{
+											WriteString(writer, "additional_image_link", url);
+										}
 									}
 								}
 							}

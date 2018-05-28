@@ -644,7 +644,10 @@ namespace SmartStore.Services.DataExchange.Export
             if (productContext.Combination != null)
             {
                 var pictureIds = productContext.Combination.GetAssignedPictureIds();
-                productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
+				if (pictureIds.Any())
+				{
+					productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
+				}
 
                 attributesXml = productContext.Combination.AttributesXml;
                 variantAttributes = _productAttributeParser.Value.DeserializeProductVariantAttributes(attributesXml);

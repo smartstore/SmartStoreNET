@@ -118,8 +118,8 @@ namespace SmartStore.Data.Migrations
 				"Bei der Suche nach weiteren verfügbaren Sprachen trat ein Fehler auf.");
 
 			builder.AddOrUpdate("Admin.Configuration.Languages.NoAvailableLanguagesFound",
-				"There were no other available languages found for version {0}. On <a href='http://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> you will find more details about available resources.",
-				"Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf <a href='http://translate.smartstore.com/ target='_blank''>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
+				"There were no other available languages found for version {0}. On <a href='https://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> you will find more details about available resources.",
+				"Es wurden keine weiteren verfügbaren Sprachen für Version {0} gefunden. Auf <a href='https://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Languages.InstalledLanguages",
 				"Installed Languages",
@@ -129,8 +129,8 @@ namespace SmartStore.Data.Migrations
 				"Verfügbare Sprachen");
 
 			builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages.Note",
-				"Click <b>Download</b> to install a new language including all localized resources. On <a href='http://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> you will find more details about available resources.",
-				"Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a href='http://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
+				"Click <b>Download</b> to install a new language including all localized resources. On <a href='https://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> you will find more details about available resources.",
+				"Klicken Sie auf <b>Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a href='https://translate.smartstore.com/' target='_blank'>translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
 
 			builder.AddOrUpdate("Common.Translated",
 				"Translated",

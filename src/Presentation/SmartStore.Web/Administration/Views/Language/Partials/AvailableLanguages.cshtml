@@ -88,7 +88,7 @@
 else
 {
     <div class="alert alert-warning">
-        @T("Admin.Configuration.Languages.NoAvailableLanguagesFound", SmartStoreVersion.CurrentFullVersion)
+        @Html.Raw(T("Admin.Configuration.Languages.NoAvailableLanguagesFound", SmartStoreVersion.CurrentFullVersion))
     </div>
 }
 

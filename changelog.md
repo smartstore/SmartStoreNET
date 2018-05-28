@@ -1,5 +1,13 @@
 ﻿# Release Notes
 
+## SmartStore.NET 3.5
+### Bugfixes
+* **GMC**:
+	* Export the product images if no attribute images are defined
+	* Do not export the first image twice for additional images
+	* Export image URL of full size image (not default size) for additional images
+
+
 ## SmartStore.NET 3.1.5
 
 ### Highlights

@@ -179,6 +179,8 @@
 			</div>
 
 			<div class="col-md-3">
+				@{ Html.RenderWidget("footer_col_4_before"); }
+				
 				@if (!Model.HideNewsletterBlock)
 				{
 					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))">
@@ -236,6 +238,8 @@
 						</div>
 					</div>
 				}
+
+				@{ Html.RenderWidget("footer_col_4_after"); }
 			</div>
 		</div>
 	</div>

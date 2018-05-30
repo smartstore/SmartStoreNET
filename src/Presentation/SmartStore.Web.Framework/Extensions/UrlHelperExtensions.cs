@@ -70,7 +70,7 @@ namespace SmartStore.Web.Framework
 		public static string TopicSeName(this UrlHelper urlHelper, string systemName)
 		{
 			var workContext = EngineContext.Current.Resolve<IWorkContext>();
-			var storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStoreIdIfMultiStoreMode;
+			var storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
 			var cache = EngineContext.Current.Resolve<ICacheManager>();
 
 			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id, storeId);

@@ -1,7 +1,9 @@
 ﻿# Release Notes
 
 ## SmartStore.NET 3.2
+
 ### Bugfixes
+* In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
 * **GMC**:
 	* Export the product images if no attribute images are defined
 	* Do not export the first image twice for additional images

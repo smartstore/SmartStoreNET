@@ -53,21 +53,22 @@ namespace SmartStore.Services.Topics
 			if (systemName.IsEmpty())
 				return null;
 
-			var topic = _topicRepository.Table
-				.Where(x => x.SystemName == systemName)
-				.OrderBy(x => x.Id)
-				.FirstOrDefaultCached("db.topic.bysysname-" + systemName);
+			var query = GetAllTopicsQuery(systemName, storeId);
+			var result = query.FirstOrDefaultCached("db.topic.bysysname-{0}-{1}".FormatInvariant(systemName, storeId));
 
-			if (storeId > 0 && topic != null && !_storeMappingService.Authorize(topic))
-			{
-				topic = null;
-			}
-
-			return topic;
+			return result;
         }
 
 		public virtual IList<Topic> GetAllTopics(int storeId = 0)
         {
+			var query = GetAllTopicsQuery(null, storeId);
+			var result = query.ToListCached("db.topic.all-" + storeId);
+
+			return result;
+		}
+
+		protected virtual IQueryable<Topic> GetAllTopicsQuery(string systemName, int storeId)
+		{
 			var query = _topicRepository.Table;
 
 			// Store mapping
@@ -87,9 +88,14 @@ namespace SmartStore.Services.Topics
 						select tGroup.FirstOrDefault();
 			}
 
+			if (systemName.HasValue())
+			{
+				query = query.Where(x => x.SystemName == systemName);
+			}
+
 			query = query.OrderBy(t => t.Priority).ThenBy(t => t.SystemName);
 
-			return query.ToListCached("db.topic.all-" + storeId);
+			return query;
 		}
 
         public virtual void InsertTopic(Topic topic)

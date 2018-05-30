@@ -10,7 +10,6 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 using SmartStore.Core.Localization;
-using SmartStore.Core.Domain.Topics;
 
 namespace SmartStore.Services.Seo
 {

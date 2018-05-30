@@ -243,10 +243,17 @@ namespace SmartStore.Web.Framework
 
                 if (customer != null)
                 {
-					customerLangId = customer.GetAttribute<int>(
-						SystemCustomerAttributeNames.LanguageId,
-						_attrService,
-						_storeContext.CurrentStore.Id);
+					if (customer.IsPdfConverter())
+					{
+						customerLangId = _httpContext.Request.QueryString["lid"].ToInt();
+					}
+					else
+					{
+						customerLangId = customer.GetAttribute<int>(
+							SystemCustomerAttributeNames.LanguageId,
+							_attrService,
+							_storeContext.CurrentStore.Id);
+					}
 				}
 
 				if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext.Request != null)

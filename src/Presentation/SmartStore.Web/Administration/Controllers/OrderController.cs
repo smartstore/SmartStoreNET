@@ -776,6 +776,7 @@ namespace SmartStore.Admin.Controllers
                 Id = shipment.Id,
                 OrderId = shipment.OrderId,
 				StoreId = orderStoreId,
+				LanguageId = shipment.Order.CustomerLanguageId,
 				OrderNumber = shipment.Order.GetOrderNumber(),
 				PurchaseOrderNumber = shipment.Order.PurchaseOrderNumber,
 				ShippingMethod = shipment.Order.ShippingMethod,
@@ -2371,7 +2372,7 @@ namespace SmartStore.Admin.Controllers
 
 			// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
 			var storeId = model[0].StoreId;
-			var routeValues = new RouteValueDictionary(new { storeId = storeId, area = "" });
+			var routeValues = new RouteValueDictionary(new { storeId, lid = Services.WorkContext.WorkingLanguage.Id, area = "" });
 			var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
 
 			var settings = new PdfConvertSettings

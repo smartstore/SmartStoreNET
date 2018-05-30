@@ -239,6 +239,7 @@ namespace SmartStore.Web.Controllers
             model.MerchantCompanyInfo = companyInfoSettings;
             model.Id = order.Id;
             model.StoreId = order.StoreId;
+			model.CustomerLanguageId = order.CustomerLanguageId;
             model.CustomerComment = order.CustomerOrderComment;
             model.OrderNumber = order.GetOrderNumber();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc);

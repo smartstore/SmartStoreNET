@@ -15,6 +15,7 @@ namespace SmartStore.Admin.Models.Orders
         }
 
 		public int StoreId { get; set; }
+		public int LanguageId { get; set; }
 		public string ShippingMethod { get; set; }
 		public Address ShippingAddress { get; set; }
 		public string FormattedShippingAddress { get; set; }

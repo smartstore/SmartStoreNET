@@ -72,8 +72,9 @@ namespace SmartStore.Web.Models.Order
 		public string OrderTotalRounding { get; set; }
         public string OrderTotal { get; set; }
         public string CustomerComment { get; set; }
+		public int CustomerLanguageId { get; set; }
 
-        public IList<GiftCard> GiftCards { get; set; }
+		public IList<GiftCard> GiftCards { get; set; }
 
         public bool ShowSku { get; set; }
 		public bool ShowProductImages { get; set; }

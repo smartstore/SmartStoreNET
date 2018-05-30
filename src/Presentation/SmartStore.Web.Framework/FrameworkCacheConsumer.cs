@@ -8,8 +8,10 @@ using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
+using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
 using SmartStore.Core.Themes;
 using SmartStore.Utilities;
@@ -86,6 +88,18 @@ namespace SmartStore.Web.Framework
 				{
 					_cacheManager.RemoveByPattern(TOPIC_SENAME_PATTERN_KEY);
 				}
+			}
+			else if (entry.Entity is StoreMapping sm)
+			{
+				var entityName = sm.EntityName.ToLowerInvariant();
+				if (entityName == "topic")
+				{
+					_cacheManager.RemoveByPattern(TOPIC_SENAME_PATTERN_KEY);
+				}
+			}
+			else if (entry.Entity is Topic)
+			{
+				_cacheManager.RemoveByPattern(TOPIC_SENAME_PATTERN_KEY);
 			}
 			else if (entry.Entity is Setting && entry.InitialState == EntityState.Modified)
 			{

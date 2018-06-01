@@ -1,15 +1,13 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Tax;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Tax;
 using SmartStore.Tax.Domain;
 using SmartStore.Tax.Models;
 using SmartStore.Tax.Services;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -18,64 +16,89 @@ namespace SmartStore.Tax.Controllers
 	[AdminAuthorize]
     public class TaxByRegionController : PluginControllerBase
     {
-        private readonly ITaxCategoryService _taxCategoryService;
+		private readonly ITaxRateService _taxRateService;
+		private readonly ITaxCategoryService _taxCategoryService;
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
-        private readonly ITaxRateService _taxRateService;
 
-		public TaxByRegionController(ITaxCategoryService taxCategoryService,
-            ICountryService countryService, IStateProvinceService stateProvinceService,
-            ITaxRateService taxRateService)
+		public TaxByRegionController(
+			ITaxRateService taxRateService,
+			ITaxCategoryService taxCategoryService,
+            ICountryService countryService,
+			IStateProvinceService stateProvinceService)
         {
-            this._taxCategoryService = taxCategoryService;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._taxRateService = taxRateService;
+			_taxRateService = taxRateService;
+			_taxCategoryService = taxCategoryService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
         }
 
+		private void PrepareModel(ByRegionTaxRateListModel model)
+		{
+			var taxCategories = _taxCategoryService.GetAllTaxCategories().ToDictionary(x => x.Id);
+			var taxRates = _taxRateService.GetAllTaxRates();
+			var countries = _countryService.GetAllCountries(true).ToDictionary(x => x.Id);
+			var stateProvinces = _stateProvinceService.GetAllStateProvinces(true).ToDictionary(x => x.Id);
+			var stateProvincesOfFirstCountry = stateProvinces.Values.Where(x => x.CountryId == countries.Values.FirstOrDefault().Id).ToList();
+			var unavailable = T("Common.Unavailable").Text;
 
-        public ActionResult Configure()
+			model.AvailableTaxCategories = taxCategories.Values.Select(x => new SelectListItem
+			{
+				Text = x.Name,
+				Value = x.Id.ToString()
+			})
+			.ToList();
+
+			model.AvailableCountries = countries.Values.Select(x => new SelectListItem
+			{
+				Text = x.Name,
+				Value = x.Id.ToString()
+			})
+			.ToList();
+
+			model.AvailableStates = stateProvincesOfFirstCountry.Select(x => new SelectListItem
+			{
+				Text = x.Name,
+				Value = x.Id.ToString()
+			})
+			.ToList();
+			model.AvailableStates.Insert(0, new SelectListItem { Text = "*", Value = "0" });
+
+			model.TaxRates = taxRates.Select(x =>
+			{
+				var m = new ByRegionTaxRateModel
+				{
+					Id = x.Id,
+					TaxCategoryId = x.TaxCategoryId,
+					CountryId = x.CountryId,
+					StateProvinceId = x.StateProvinceId,
+					Zip = x.Zip.HasValue() ? x.Zip : "*",
+					Percentage = x.Percentage
+				};
+
+				taxCategories.TryGetValue(x.TaxCategoryId, out TaxCategory tc);
+				m.TaxCategoryName = tc?.Name.EmptyNull();
+
+				countries.TryGetValue(x.CountryId, out Country c);
+				m.CountryName = c?.Name ?? unavailable;
+
+				stateProvinces.TryGetValue(x.StateProvinceId, out StateProvince s);
+				m.StateProvinceName = s?.Name ?? "*";
+
+				return m;
+			})
+			.ToList();
+		}
+
+		public ActionResult Configure()
         {
-            var taxCategories = _taxCategoryService.GetAllTaxCategories();
-            if (taxCategories.Count == 0)
-                return Content("No tax categories can be loaded");
+			var model = new ByRegionTaxRateListModel();
+			PrepareModel(model);
 
-            var model = new ByRegionTaxRateListModel();
-            foreach (var tc in taxCategories)
-                model.AvailableTaxCategories.Add(new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString() });
-            var countries = _countryService.GetAllCountries(true);
-            foreach (var c in countries)
-                model.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString() });
-            model.AvailableStates.Add(new SelectListItem() { Text = "*", Value = "0" });
-            var states = _stateProvinceService.GetStateProvincesByCountryId(countries.FirstOrDefault().Id);
-            if (states.Count > 0)
-            {
-                foreach (var s in states)
-                    model.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
-            }
-
-            model.TaxRates = _taxRateService.GetAllTaxRates()
-                .Select(x =>
-                {
-					var m = new ByRegionTaxRateModel
-                    {
-                        Id = x.Id,
-                        TaxCategoryId = x.TaxCategoryId,
-                        CountryId = x.CountryId,
-                        StateProvinceId = x.StateProvinceId,
-                        Zip = x.Zip,
-                        Percentage = x.Percentage,
-                    };
-                    var tc = _taxCategoryService.GetTaxCategoryById(x.TaxCategoryId);
-                    m.TaxCategoryName = (tc != null) ? tc.Name : "";
-                    var c = _countryService.GetCountryById(x.CountryId);
-                    m.CountryName = (c != null) ? c.Name : T("Common.Unavailable").Text;
-                    var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId);
-                    m.StateProvinceName = (s != null) ? s.Name : "*";
-                    m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";
-                    return m;
-                })
-                .ToList();
+			if (!model.AvailableTaxCategories.Any())
+			{
+				NotifyWarning(T("Plugins.Tax.CountryStateZip.NoTaxCategoriesFound"));
+			}
 
             return View(model);
         }
@@ -83,37 +106,18 @@ namespace SmartStore.Tax.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult RatesList(GridCommand command)
         {
-            var taxRatesModel = _taxRateService.GetAllTaxRates()
-                .Select(x =>
-                {
-					var m = new ByRegionTaxRateModel()
-                    {
-                        Id = x.Id,
-                        TaxCategoryId = x.TaxCategoryId,
-                        CountryId = x.CountryId,
-                        StateProvinceId = x.StateProvinceId,
-                        Zip = x.Zip,
-                        Percentage = x.Percentage,
-                    };
-                    var tc = _taxCategoryService.GetTaxCategoryById(x.TaxCategoryId);
-                    m.TaxCategoryName = (tc != null) ? tc.Name : "";
-                    var c = _countryService.GetCountryById(x.CountryId);
-                    m.CountryName = (c != null) ? c.Name : T("Common.Unavailable").Text;
-                    var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId);
-                    m.StateProvinceName = (s != null) ? s.Name : "*";
-                    m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";
-                    return m;
-                })
-                .ToList();
-			var model = new GridModel<ByRegionTaxRateModel>
+			var model = new ByRegionTaxRateListModel();
+			PrepareModel(model);
+
+			var data = new GridModel<ByRegionTaxRateModel>
             {
-                Data = taxRatesModel,
-                Total = taxRatesModel.Count
+                Data = model.TaxRates,
+                Total = model.TaxRates.Count
             };
 
             return new JsonResult
             {
-                Data = model
+                Data = data
             };
         }
 
@@ -151,7 +155,7 @@ namespace SmartStore.Tax.Controllers
                 return Configure();
             }
 
-            var taxRate = new TaxRate()
+            var taxRate = new TaxRate
             {
                 TaxCategoryId = model.AddTaxCategoryId,
                 CountryId = model.AddCountryId,
@@ -163,7 +167,6 @@ namespace SmartStore.Tax.Controllers
             _taxRateService.InsertTaxRate(taxRate);
 
 			NotifySuccess(T("Plugins.Tax.CountryStateZip.AddNewRecord.Success"));
-
 			return Json(new { Result = true });
 		}
     }

@@ -504,9 +504,7 @@ namespace SmartStore.Web.Framework
 
 		public static IHtmlString LanguageAttributes<T>(this HtmlHelper html, LocalizedValue<T> localizedValue)
 		{
-			Guard.NotNull(localizedValue, nameof(localizedValue));
-
-			if (!localizedValue.BidiOverride)
+			if (localizedValue == null || !localizedValue.BidiOverride)
 			{
 				return MvcHtmlString.Empty;
 			}

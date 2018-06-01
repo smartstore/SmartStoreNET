@@ -9,6 +9,7 @@
 	* Do not export the first image twice for additional images
 	* Export image URL of full size image (not default size) for additional images
 * Only display a zero search hits warning if at least one filter is activated
+* #1436 Order notification e-mails: display delivery time of product at the time of purchase
 
 
 ## SmartStore.NET 3.1.5

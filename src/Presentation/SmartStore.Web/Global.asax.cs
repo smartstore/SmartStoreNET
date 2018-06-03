@@ -20,7 +20,7 @@ using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Validators;
-
+using System.Net;
 
 namespace SmartStore.Web
 {
@@ -59,6 +59,10 @@ namespace SmartStore.Web
 
         protected void Application_Start()
         {	
+        	
+        	ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+
 			// we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
 			var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
             if (mobileDisplayMode != null)

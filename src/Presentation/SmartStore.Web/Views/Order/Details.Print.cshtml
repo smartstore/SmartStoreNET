@@ -233,6 +233,8 @@
 							<td class="value"><strong>@order.OrderTotal</strong></td>
 						</tr>
 					</table>
+
+					@{ Html.RenderWidget("invoice_aftertotal", order); }
 				</div>
 			</div>
 

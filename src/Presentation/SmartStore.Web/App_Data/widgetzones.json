@@ -126,6 +126,7 @@
 				"invoice_lines_before",
 				"invoice_checkoutattributes_before",
 				"invoice_ordertotals_before",
+				"invoice_aftertotal",
 				"invoice_ordernotes_before",
 				"invoice_bottom",
 				"pdfcatalog_cover_top",

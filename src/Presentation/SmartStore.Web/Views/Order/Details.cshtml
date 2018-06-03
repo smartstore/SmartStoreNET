@@ -260,6 +260,8 @@
 									<td class="cart-summary-value">@Model.OrderTotal</td>
 								</tr>
 							</table>
+
+							@{ Html.RenderWidget("orderdetails_page_aftertotal"); }
 						</div>
 					</div>
 				</div>
@@ -292,8 +294,6 @@
 				}
 			</div>
 		}
-
-        @{ Html.RenderWidget("orderdetails_page_aftertotal"); }
 
         @if (Model.Shipments.Count > 0)
         {

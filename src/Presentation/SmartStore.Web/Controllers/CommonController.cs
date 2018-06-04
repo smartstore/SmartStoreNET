@@ -242,6 +242,12 @@ namespace SmartStore.Web.Controllers
 				if (entityId > 0)
 				{
 					var activeSlug = _urlRecordService.Value.GetActiveSlug(entityId, controller, model.Id);
+					if (activeSlug.IsEmpty())
+					{
+						// Fallback to default value.
+						activeSlug = _urlRecordService.Value.GetActiveSlug(entityId, controller, 0);
+					}
+
 					if (activeSlug.HasValue())
 					{
 						var helper = new LocalizedUrlHelper(Request.ApplicationPath, activeSlug, false);

@@ -45,21 +45,35 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ProductName)
+            @Html.SmartLabelFor(model => model.CustomerId)
         </td>
         <td class="adminData">
 			<div class="form-control-plaintext">
-				<a href="@Url.Action("Edit", "Product", new { id = Model.ProductId })">@Model.ProductName (@Model.ProductSku.NaIfEmpty())</a>
+				<a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerFullName</a> (@Model.CustomerId)
 			</div>
         </td>
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CustomerId)
+            @Html.SmartLabelFor(model => model.ProductName)
         </td>
         <td class="adminData">
 			<div class="form-control-plaintext">
-				<a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerFullName (@Model.CustomerId)</a>
+				<div class="mb-1">
+					<a href="@Url.Action("Edit", "Product", new { id = Model.ProductId })">@Model.ProductName</a>
+				</div>
+				@if (Model.AttributeInfo.HasValue())
+				{
+					<div>
+						@Html.Raw(Model.AttributeInfo)
+					</div>
+				}
+				@if (Model.ProductSku.HasValue())
+				{
+					<div>
+						<span class="font-weight-medium">@T("Admin.Orders.Products.SKU")</span>: @Model.ProductSku
+					</div>
+				}
 			</div>
         </td>
     </tr>

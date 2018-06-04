@@ -107,6 +107,7 @@ namespace SmartStore.Admin.Controllers
 			model.ProductName = orderItem.Product.Name;
 			model.ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService);
 			model.ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint;
+			model.AttributeInfo = orderItem.AttributeDescription;
 			model.StoreName = (store != null ? store.Name : "".NaIfEmpty());
             model.OrderId = orderItem.OrderId;
 			model.OrderNumber = orderItem.Order.GetOrderNumber();
@@ -132,28 +133,28 @@ namespace SmartStore.Admin.Controllers
                 model.ReturnRequestStatusId = returnRequest.ReturnRequestStatusId;
             }
 
-			string unspec = _localizationService.GetResource("Common.Unspecified");
-			model.AvailableReasonForReturn.Add(new SelectListItem() { Text = unspec, Value = "" });
-			model.AvailableRequestedAction.Add(new SelectListItem() { Text = unspec, Value = "" });
+			string unspec = T("Common.Unspecified");
+			model.AvailableReasonForReturn.Add(new SelectListItem { Text = unspec, Value = "" });
+			model.AvailableRequestedAction.Add(new SelectListItem { Text = unspec, Value = "" });
 
-			// that's what we also offer in frontend
+			// That's what we also offer in frontend.
 			string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, orderItem.Order.CustomerLanguageId, true, false);
 			string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, orderItem.Order.CustomerLanguageId, true, false);
 
 			foreach (var rrr in returnRequestReasons.SplitSafe(","))
 			{
-				model.AvailableReasonForReturn.Add(new SelectListItem() { Text = rrr, Value = rrr, Selected = (rrr == returnRequest.ReasonForReturn) });
+				model.AvailableReasonForReturn.Add(new SelectListItem { Text = rrr, Value = rrr, Selected = (rrr == returnRequest.ReasonForReturn) });
 			}
 
 			foreach (var rra in returnRequestActions.SplitSafe(","))
 			{
-				model.AvailableRequestedAction.Add(new SelectListItem() { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
+				model.AvailableRequestedAction.Add(new SelectListItem { Text = rra, Value = rra, Selected = (rra == returnRequest.RequestedAction) });
 			}
 
 			var urlHelper = new UrlHelper(Request.RequestContext);
 
 			model.AutoUpdateOrderItem.Id = returnRequest.Id;
-			model.AutoUpdateOrderItem.Caption = _localizationService.GetResource("Admin.ReturnRequests.Accept.Caption");
+			model.AutoUpdateOrderItem.Caption = T("Admin.ReturnRequests.Accept.Caption");
 			model.AutoUpdateOrderItem.PostUrl = urlHelper.Action("Accept", "ReturnRequest");
 			model.AutoUpdateOrderItem.ShowUpdateTotals = (orderItem.Order.OrderStatusId <= (int)OrderStatus.Pending);
 			model.AutoUpdateOrderItem.ShowUpdateRewardPoints = (orderItem.Order.OrderStatusId > (int)OrderStatus.Pending && orderItem.Order.RewardPointsWereAdded);

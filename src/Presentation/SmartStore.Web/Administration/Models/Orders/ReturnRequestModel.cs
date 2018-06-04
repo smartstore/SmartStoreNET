@@ -9,7 +9,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    [Validator(typeof(ReturnRequestValidator))]
+	[Validator(typeof(ReturnRequestValidator))]
     public class ReturnRequestModel : EntityModelBase
     {
 		public ReturnRequestModel()
@@ -33,6 +33,7 @@ namespace SmartStore.Admin.Models.Orders
 
         public int ProductId { get; set; }
 		public string ProductSku { get; set; }
+		public string AttributeInfo { get; set; }
 
 		[SmartResourceDisplayName("Admin.ReturnRequests.Fields.Product")]
         public string ProductName { get; set; }

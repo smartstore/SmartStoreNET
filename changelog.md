@@ -2,6 +2,9 @@
 
 ## SmartStore.NET 3.2
 
+### New Features
+* #1459 BeezUp: Add option to only submit one category name per product
+
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
 * **GMC**:

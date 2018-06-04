@@ -6,6 +6,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Services.Security
 {
@@ -14,23 +15,17 @@ namespace SmartStore.Services.Security
         private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "aclrecord:entityid-name-{0}-{1}";
         private const string ACLRECORD_PATTERN_KEY = "aclrecord:*";
 
-
         private readonly IRepository<AclRecord> _aclRecordRepository;
-        private readonly IWorkContext _workContext;
+        private readonly Work<IWorkContext> _workContext;
         private readonly ICacheManager _cacheManager;
 		private bool? _hasActiveAcl;
 
-        public AclService(ICacheManager cacheManager, IWorkContext workContext,
-            IRepository<AclRecord> aclRecordRepository)
+        public AclService(ICacheManager cacheManager, Work<IWorkContext> workContext, IRepository<AclRecord> aclRecordRepository)
         {
             _cacheManager = cacheManager;
             _workContext = workContext;
             _aclRecordRepository = aclRecordRepository;
-
-			QuerySettings = DbQuerySettings.Default;
 		}
-
-		public DbQuerySettings QuerySettings { get; set; }
 
 		public bool HasActiveAcl 
 		{
@@ -146,7 +141,7 @@ namespace SmartStore.Services.Security
 
 		public bool Authorize(string entityName, int entityId)
 		{
-			return Authorize(entityName, entityId, _workContext.CurrentCustomer);
+			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer);
 		}
 
 		public virtual bool Authorize(string entityName, int entityId, Customer customer)
@@ -159,7 +154,7 @@ namespace SmartStore.Services.Security
 			if (customer == null)
 				return false;
 
-			if (QuerySettings.IgnoreAcl)
+			if (!HasActiveAcl)
 				return true;
 
 			foreach (var role1 in customer.CustomerRoles.Where(cr => cr.Active))

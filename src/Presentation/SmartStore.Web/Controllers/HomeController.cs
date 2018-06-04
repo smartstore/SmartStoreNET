@@ -7,7 +7,6 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Email;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -24,7 +23,6 @@ namespace SmartStore.Web.Controllers
 {
     public partial class HomeController : PublicControllerBase
 	{
-		private readonly ICommonServices _services;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
@@ -39,7 +37,6 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<PrivacySettings> _privacySettings;
 
 		public HomeController(
-			ICommonServices services,
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
 			Lazy<IManufacturerService> manufacturerService,
@@ -51,21 +48,21 @@ namespace SmartStore.Web.Controllers
 			Lazy<CommonSettings> commonSettings,
 			Lazy<SeoSettings> seoSettings,
 			Lazy<CustomerSettings> customerSettings,
-			Lazy<PrivacySettings> privacySettings)
+			Lazy<PrivacySettings> privacySettings,
+			Services.Directory.ICountryService countryService)
         {
-			this._services = services;
-			this._categoryService = categoryService;
-			this._productService = productService;
-			this._manufacturerService = manufacturerService;
-			this._catalogSearchService = catalogSearchService;
-			this._catalogHelper = catalogHelper;
-			this._topicService = topicService;
-			this._sitemapGenerator = sitemapGenerator;
-			this._captchaSettings = captchaSettings;
-			this._commonSettings = commonSettings;
-			this._seoSettings = seoSettings;
-            this._customerSettings = customerSettings;
-			this._privacySettings = privacySettings;
+			_categoryService = categoryService;
+			_productService = productService;
+			_manufacturerService = manufacturerService;
+			_catalogSearchService = catalogSearchService;
+			_catalogHelper = catalogHelper;
+			_topicService = topicService;
+			_sitemapGenerator = sitemapGenerator;
+			_captchaSettings = captchaSettings;
+			_commonSettings = commonSettings;
+			_seoSettings = seoSettings;
+            _customerSettings = customerSettings;
+			_privacySettings = privacySettings;
 		}
 		
         [RequireHttpsByConfig(SslRequirement.No)]
@@ -87,8 +84,8 @@ namespace SmartStore.Web.Controllers
 
             var model = new ContactUsModel
 			{
-				Email = _services.WorkContext.CurrentCustomer.Email,
-				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
+				Email = Services.WorkContext.CurrentCustomer.Email,
+				FullName = Services.WorkContext.CurrentCustomer.GetFullName(),
 				FullNameRequired = _privacySettings.Value.FullNameOnContactUsRequired,
 				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
                 MetaKeywords = topic?.GetLocalized(x => x.MetaKeywords),
@@ -112,10 +109,10 @@ namespace SmartStore.Web.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var customer = _services.WorkContext.CurrentCustomer;
+				var customer = Services.WorkContext.CurrentCustomer;
 				var email = model.Email.Trim();
 				var fullName = model.FullName;
-				var subject = T("ContactUs.EmailSubject", _services.StoreContext.CurrentStore.Name);
+				var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
 				var body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
 
 				// Required for some SMTP servers
@@ -132,7 +129,7 @@ namespace SmartStore.Web.Controllers
 				{
 					model.SuccessfullySent = true;
 					model.Result = T("ContactUs.YourEnquiryHasBeenSent");
-					_services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
+					Services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
 				}
 				else
 				{
@@ -166,7 +163,7 @@ namespace SmartStore.Web.Controllers
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult Sitemap()
 		{
-            return RedirectPermanent(_services.StoreContext.CurrentStore.Url);
+            return RedirectPermanent(Services.StoreContext.CurrentStore.Url);
 		}
     }
 }

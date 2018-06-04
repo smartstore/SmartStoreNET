@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -15,7 +13,6 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
@@ -30,20 +27,17 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
-using SmartStore.Web.Framework.Filters;
-using SmartStore.Core.Plugins;
-using SmartStore.Core.Caching;
 
 namespace SmartStore.Web.Controllers
 {
@@ -59,10 +53,11 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IThemeRegistry> _themeRegistry;
         private readonly Lazy<IForumService> _forumservice;
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
-		private readonly Lazy<ICompareProductsService> _compareProductsService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
+		private readonly IPageAssetsBuilder _pageAssetsBuilder;
+		private readonly Lazy<IPictureService> _pictureService;
+		private readonly Lazy<IManufacturerService> _manufacturerService;
 
-		private readonly StoreInformationSettings _storeInfoSettings;
 		private readonly CustomerSettings _customerSettings;
 		private readonly PrivacySettings _privacySettings;
 		private readonly TaxSettings _taxSettings;
@@ -74,17 +69,7 @@ namespace SmartStore.Web.Controllers
         private readonly BlogSettings _blogSettings;
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
-		private readonly Lazy<SecuritySettings> _securitySettings;
 		private readonly Lazy<SocialSettings> _socialSettings;
-		private readonly Lazy<MediaSettings> _mediaSettings;
-		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-		
-        private readonly IPriceFormatter _priceFormatter;
-		private readonly IPageAssetsBuilder _pageAssetsBuilder;
-		private readonly Lazy<IPictureService> _pictureService;
-		private readonly Lazy<IManufacturerService> _manufacturerService;
-		private readonly Lazy<IProductService> _productService;
-        private readonly Lazy<IShoppingCartService> _shoppingCartService;
 
 		private readonly IBreadcrumb _breadcrumb;
 		
@@ -98,10 +83,11 @@ namespace SmartStore.Web.Controllers
 			Lazy<IForumService> forumService,
             Lazy<IGenericAttributeService> genericAttributeService, 
 			Lazy<IMobileDeviceHelper> mobileDeviceHelper,
-			Lazy<ICompareProductsService> compareProductsService,
 			Lazy<IUrlRecordService> urlRecordService,
-			StoreInformationSettings storeInfoSettings,
-            CustomerSettings customerSettings,
+			IPageAssetsBuilder pageAssetsBuilder,
+			Lazy<IPictureService> pictureService,
+			Lazy<IManufacturerService> manufacturerService,
+			CustomerSettings customerSettings,
 			PrivacySettings privacySettings,
 			TaxSettings taxSettings, 
 			CatalogSettings catalogSettings,
@@ -112,17 +98,8 @@ namespace SmartStore.Web.Controllers
 			BlogSettings blogSettings, 
 			ForumSettings forumSettings,
             LocalizationSettings localizationSettings, 
-			Lazy<SecuritySettings> securitySettings,
 			Lazy<SocialSettings> socialSettings,
-			Lazy<MediaSettings> mediaSettings,
-			IOrderTotalCalculationService orderTotalCalculationService, 
-			IPriceFormatter priceFormatter,
             ThemeSettings themeSettings, 
-			IPageAssetsBuilder pageAssetsBuilder,
-			Lazy<IPictureService> pictureService,
-			Lazy<IManufacturerService> manufacturerService,
-			Lazy<IProductService> productService,
-            Lazy<IShoppingCartService> shoppingCartService,
 			IBreadcrumb breadcrumb)
         {
 			_services = services;
@@ -133,10 +110,11 @@ namespace SmartStore.Web.Controllers
             _themeRegistry = themeRegistry;
             _forumservice = forumService;
             _genericAttributeService = genericAttributeService;
-			_compareProductsService = compareProductsService;
 			_urlRecordService = urlRecordService;
+			_pageAssetsBuilder = pageAssetsBuilder;
+			_pictureService = pictureService;
+			_manufacturerService = manufacturerService;
 
-			_storeInfoSettings = storeInfoSettings;
 			_customerSettings = customerSettings;
 			_privacySettings = privacySettings;
 			_taxSettings = taxSettings;
@@ -147,19 +125,8 @@ namespace SmartStore.Web.Controllers
             _blogSettings = blogSettings;
             _forumSettings = forumSettings;
             _localizationSettings = localizationSettings;
-			_securitySettings = securitySettings;
 			_socialSettings = socialSettings;
-			_mediaSettings = mediaSettings;
-
-            _orderTotalCalculationService = orderTotalCalculationService;
-            _priceFormatter = priceFormatter;
-
             _themeSettings = themeSettings;
-			_pageAssetsBuilder = pageAssetsBuilder;
-			_pictureService = pictureService;
-			_manufacturerService = manufacturerService;
-			_productService = productService;
-            _shoppingCartService = shoppingCartService;
 
 			_breadcrumb = breadcrumb;
 		}

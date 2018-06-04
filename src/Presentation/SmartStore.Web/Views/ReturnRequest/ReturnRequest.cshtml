@@ -58,7 +58,7 @@
 										<span class="price">@item.UnitPrice</span>
 									</div>
 									<div class="cart-col cart-col-price" data-caption="@T("ReturnRequests.Products.Quantity")">
-										<select name="quantity@(item.Id)" class="form-control noskin">
+										<select name="quantity@(item.Id)" class="form-control">
 											@for (int i = 0; i <= item.Quantity; i++)
 											{
 												<option value="@(i)">@(i)</option>
@@ -77,7 +77,7 @@
 							@Html.LabelFor(model => model.ReturnReason, new { @class = "col-form-label" })
 						</div>
 						<div class="col-md-9">
-							@Html.DropDownListFor(model => model.ReturnReason, Model.AvailableReturnReasons, new { @class = "form-control noskin return-reasons" })
+							@Html.DropDownListFor(model => model.ReturnReason, Model.AvailableReturnReasons, new { @class = "form-control return-reasons" })
 						</div>
 					</div>
 					<div class="form-group row">
@@ -85,7 +85,7 @@
 							@Html.LabelFor(model => model.ReturnAction, new { @class = "col-form-label" })
 						</div>
 						<div class="col-md-9">
-							@Html.DropDownListFor(model => model.ReturnAction, Model.AvailableReturnActions, new { @class = "form-control noskin return-actions" })
+							@Html.DropDownListFor(model => model.ReturnAction, Model.AvailableReturnActions, new { @class = "form-control return-actions" })
 						</div>
 					</div>
 					<div class="form-group row">

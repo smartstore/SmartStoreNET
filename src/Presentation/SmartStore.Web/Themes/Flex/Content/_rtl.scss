@@ -478,9 +478,7 @@
 
 	#offcanvas-menu {
 		.menubar-link,
-		.manufacturer-container .ocm-item,
-		.category-container .ocm-item {
-
+		.ocm-item {
 			.ocm-link {
 				padding: 1rem 2rem 1rem 2.5rem;
 			}
@@ -489,6 +487,12 @@
 				right: auto;
 				left: 1rem;
 				content: "\f104";
+			}
+
+			&.selected:before,
+			&.expanded:before {
+				left: auto;
+				right: -1px;
 			}
 		}
 
@@ -516,10 +520,10 @@
 		}
 
 		.layer {
-			transform: translateX(30%);
+			transform: translate3d(30%, 0, 0);
 
 			&.show ~ .layer {
-				transform: translateX(-100%);
+				transform: translate3d(-100%, 0, 0);
 			}
 		}
 	}

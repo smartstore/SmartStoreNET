@@ -22,6 +22,8 @@
 		{
 			using (Html.BeginForm())
 			{
+				Html.HiddenFor(x => x.OrderId);
+
 				<h2 class="h4 font-weight-normal text-muted mb-4">@T("ReturnRequests.SelectProduct(s)")</h2>
 
 				Html.RenderWidget("returnrequest_before");

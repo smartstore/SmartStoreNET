@@ -586,6 +586,10 @@
     <Compile Include="Migrations\201805250724399_V315Resources.Designer.cs">
       <DependentUpon>201805250724399_V315Resources.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806051221399_RefundReturnRequests.cs" />
+    <Compile Include="Migrations\201806051221399_RefundReturnRequests.Designer.cs">
+      <DependentUpon>201806051221399_RefundReturnRequests.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1055,6 +1059,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201805250724399_V315Resources.resx">
       <DependentUpon>201805250724399_V315Resources.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806051221399_RefundReturnRequests.resx">
+      <DependentUpon>201806051221399_RefundReturnRequests.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

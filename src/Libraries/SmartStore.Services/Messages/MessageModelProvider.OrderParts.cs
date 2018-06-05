@@ -445,6 +445,7 @@ namespace SmartStore.Services.Messages
 				{ "CustomerComments", HtmlUtils.FormatText(part.CustomerComments, true, false, false, false, false, false).NullEmpty() },
 				{ "StaffNotes", HtmlUtils.FormatText(part.StaffNotes, true, false, false, false, false, false).NullEmpty() },
 				{ "Quantity", part.Quantity },
+				{ "RefundToWallet", part.RefundToWallet },
 				{ "Url", BuildActionUrl("Edit", "ReturnRequest", new { id = part.Id, area = "admin" }, messageContext) }
 			};
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Localization;
@@ -155,7 +156,6 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         public ActionResult ReturnRequestSubmit(int id /* orderId */, SubmitReturnRequestModel model, FormCollection form)
         {
-			var count = 0;
 			var order = _orderService.GetOrderById(id);
 			var customer = _workContext.CurrentCustomer;
 
@@ -193,16 +193,17 @@ namespace SmartStore.Web.Controllers
                     };
                     _workContext.CurrentCustomer.ReturnRequests.Add(rr);
                     _customerService.UpdateCustomer(customer);
-                    
+
+					model.AddedReturnRequestIds.Add(rr.Id);
+
 					// Notify store owner here (email).
-                    Services.MessageFactory.SendNewReturnRequestStoreOwnerNotification(rr, orderItem, _localizationSettings.DefaultAdminLanguageId);
-                    count++;
+					Services.MessageFactory.SendNewReturnRequestStoreOwnerNotification(rr, orderItem, _localizationSettings.DefaultAdminLanguageId);
                 }
             }
 
             model = PrepareReturnRequestModel(model, order);
 
-			if (count > 0)
+			if (model.AddedReturnRequestIds.Any())
 			{
 				model.Result = T("ReturnRequests.Submitted");
 				return View(model);

@@ -846,7 +846,7 @@ namespace SmartStore.Web.Controllers
 			{
 				model.BadgeText = _privacySettings.GetLocalized(x => x.CookieConsentBadgetext).Value.FormatWith(
 					_services.StoreContext.CurrentStore.Name,
-					Url.RouteUrl("Topic", new { SystemName = "PrivacyInfo" })
+					Url.RouteUrl("Topic", new { SeName = Url.TopicSeName("PrivacyInfo") })
 				);
 			}
 			

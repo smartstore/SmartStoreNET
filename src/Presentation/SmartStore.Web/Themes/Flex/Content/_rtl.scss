@@ -514,6 +514,14 @@
 				}
 			}
 		}
+
+		.layer {
+			transform: translateX(30%);
+
+			&.show ~ .layer {
+				transform: translateX(-100%);
+			}
+		}
 	}
 
 

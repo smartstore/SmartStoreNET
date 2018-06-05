@@ -125,7 +125,8 @@ $ocm-selected-color:                    $warning;
         &.has-children.animated:after {
             animation: fa-spin .6s infinite linear;
             margin-top: -9px;
-            @include fontastic('\e8d3');
+			font-family: fontastic;
+			content: '\e8d3' !important;
         }
 
         &.selected:before,
@@ -210,9 +211,9 @@ $ocm-selected-color:                    $warning;
         border-right: 1px solid $ocm-border-color;
 
         &.show {
-            transform: translateX(0);
+            transform: translateX(0) !important;
             z-index: 1;
-            border-color: none;
+            border-color: transparent;
         }
 
         &.show ~ .layer {

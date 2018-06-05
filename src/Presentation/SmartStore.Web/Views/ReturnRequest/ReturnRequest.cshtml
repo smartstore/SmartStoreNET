@@ -1,7 +1,5 @@
-﻿@model SubmitReturnRequestModel
-
-@using SmartStore.Web.Models.Order;
-
+﻿@using SmartStore.Web.Models.Order;
+@model SubmitReturnRequestModel
 @{
     Layout = "_Layout";
 
@@ -14,7 +12,7 @@
     </div>
 
     <div class="page-body">
-        @if (!String.IsNullOrEmpty(Model.Result))
+        @if (Model.Result.HasValue())
         {
             <div class="alert alert-success">
                 @Model.Result
@@ -25,6 +23,8 @@
 			using (Html.BeginForm())
 			{
 				<h2 class="h4 font-weight-normal text-muted mb-4">@T("ReturnRequests.SelectProduct(s)")</h2>
+
+				Html.RenderWidget("returnrequest_before");
 
 				<div class="card">
 					<div class="cart cart-editable mb-0">
@@ -98,11 +98,15 @@
 						</div>
 					</div>
 				</div>
+
+				Html.RenderWidget("returnrequest_after");
 			
-				<div class="buttons mt-5">
-					<button type="submit" name="submit-return-request" value="save" class="btn btn-primary btn-lg">
-						@T("ReturnRequests.Submit")
-					</button>
+				<div class="buttons row justify-content-end">
+					<div class="col-md-9 mt-3">
+						<button type="submit" name="submit-return-request" value="save" class="btn btn-primary btn-lg">
+							@T("ReturnRequests.Submit")
+						</button>
+					</div>
 				</div>
             }
         }

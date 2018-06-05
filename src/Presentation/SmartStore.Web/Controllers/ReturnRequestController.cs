@@ -155,31 +155,36 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         public ActionResult ReturnRequestSubmit(int id /* orderId */, SubmitReturnRequestModel model, FormCollection form)
         {
-            var order = _orderService.GetOrderById(id);
-            if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
+			var count = 0;
+			var order = _orderService.GetOrderById(id);
+			var customer = _workContext.CurrentCustomer;
+
+			if (order == null || order.Deleted || customer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
             if (!_orderProcessingService.IsReturnRequestAllowed(order))
                 return RedirectToRoute("HomePage");
 
-            int count = 0;
             foreach (var orderItem in order.OrderItems)
             {
-                int quantity = 0; //parse quantity
-                foreach (string formKey in form.AllKeys)
-                    if (formKey.Equals(string.Format("quantity{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        int.TryParse(form[formKey], out quantity);
-                        break;
-                    }
+                var quantity = 0;
+				foreach (var formKey in form.AllKeys)
+				{
+					if (formKey.Equals(string.Format("quantity{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
+					{
+						int.TryParse(form[formKey], out quantity);
+						break;
+					}
+				}
+
                 if (quantity > 0)
-                {
+                {				
                     var rr = new ReturnRequest
                     {
 						StoreId = _storeContext.CurrentStore.Id,
                         OrderItemId = orderItem.Id,
                         Quantity = quantity,
-                        CustomerId = _workContext.CurrentCustomer.Id,
+                        CustomerId = customer.Id,
                         ReasonForReturn = model.ReturnReason,
                         RequestedAction = model.ReturnAction,
                         CustomerComments = model.Comments,
@@ -187,23 +192,26 @@ namespace SmartStore.Web.Controllers
                         ReturnRequestStatus = ReturnRequestStatus.Pending
                     };
                     _workContext.CurrentCustomer.ReturnRequests.Add(rr);
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                    // notify store owner here (email)
+                    _customerService.UpdateCustomer(customer);
+                    
+					// Notify store owner here (email).
                     Services.MessageFactory.SendNewReturnRequestStoreOwnerNotification(rr, orderItem, _localizationSettings.DefaultAdminLanguageId);
-
                     count++;
                 }
             }
 
             model = PrepareReturnRequestModel(model, order);
-            if (count > 0)
-                model.Result = _localizationService.GetResource("ReturnRequests.Submitted");
-            else
-                model.Result = _localizationService.GetResource("ReturnRequests.NoItemsSubmitted");
 
-            return View(model);
-        }
+			if (count > 0)
+			{
+				model.Result = T("ReturnRequests.Submitted");
+				return View(model);
+			}
 
-        #endregion
-    }
+			NotifyWarning(T("ReturnRequests.NoItemsSubmitted"));
+			return ReturnRequest(id);
+		}
+
+		#endregion
+	}
 }

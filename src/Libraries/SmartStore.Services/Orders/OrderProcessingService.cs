@@ -1107,10 +1107,13 @@ namespace SmartStore.Services.Orders
                                 // Gift cards
                                 if (sc.Item.Product.IsGiftCard)
                                 {
-                                    string giftCardRecipientName, giftCardRecipientEmail, giftCardSenderName, giftCardSenderEmail, giftCardMessage;
-
-                                    _productAttributeParser.GetGiftCardAttribute(sc.Item.AttributesXml,
-                                        out giftCardRecipientName, out giftCardRecipientEmail, out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
+                                    _productAttributeParser.GetGiftCardAttribute(
+										sc.Item.AttributesXml,
+                                        out var giftCardRecipientName,
+										out var giftCardRecipientEmail, 
+										out var giftCardSenderName, 
+										out var giftCardSenderEmail, 
+										out var giftCardMessage);
 
                                     for (int i = 0; i < sc.Item.Quantity; i++)
                                     {
@@ -1177,10 +1180,13 @@ namespace SmartStore.Services.Orders
                                 // Gift cards
                                 if (orderItem.Product.IsGiftCard)
                                 {
-                                    string giftCardRecipientName, giftCardRecipientEmail, giftCardSenderName, giftCardSenderEmail, giftCardMessage;
-
-                                    _productAttributeParser.GetGiftCardAttribute(orderItem.AttributesXml,
-                                        out giftCardRecipientName, out giftCardRecipientEmail, out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
+                                    _productAttributeParser.GetGiftCardAttribute(
+										orderItem.AttributesXml,
+										out var giftCardRecipientName,
+										out var giftCardRecipientEmail,
+										out var giftCardSenderName,
+										out var giftCardSenderEmail,
+										out var giftCardMessage);
 
                                     for (int i = 0; i < orderItem.Quantity; i++)
                                     {

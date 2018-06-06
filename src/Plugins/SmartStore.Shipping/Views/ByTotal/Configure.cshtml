@@ -200,12 +200,12 @@
 						@Html.SmartLabelFor(model => model.AddCountryId)
 					</td>
 					<td class="adminData">
-						@Html.DropDownList("CountryId", Model.AvailableCountries, "*",
+						@Html.DropDownList("AddCountryId", Model.AvailableCountries, "*",
 						new
 						{
 							@class = "form-control country-input country-selector",
 							data_region_control_selector = "#AddStateProvinceId",
-							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }),
+							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary { { "area", "Admin" } }),
 							data_addAsterisk = "true",
 							data_addEmptyStateIfRequired = "false"
 						})

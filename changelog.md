@@ -16,6 +16,7 @@
 * "ArgumentNullException: The value must not be NULL" if a topic is password protected
 * Tax by region: Fixes after inserting a tax rate country column shows "Unavailable"
 * #1014 Switching to default language keeps specific URL alias of current page
+* Shipping by total: Fixes when inserting a record the country was not saved
 
 
 ## SmartStore.NET 3.1.5

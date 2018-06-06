@@ -22,7 +22,10 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.ID")]
         public override int Id { get; set; }
 
-        [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Order")]
+		[SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
+		public string StoreName { get; set; }
+
+		[SmartResourceDisplayName("Admin.ReturnRequests.Fields.Order")]
         public int OrderId { get; set; }
 		public string OrderNumber { get; set; }
 
@@ -40,10 +43,10 @@ namespace SmartStore.Admin.Models.Orders
 		public string ProductTypeName { get; set; }
 		public string ProductTypeLabelHint { get; set; }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
-		public string StoreName { get; set; }
+		[SmartResourceDisplayName("Admin.ReturnRequests.MaxRefundAmount")]
+		public string MaxRefundAmount { get; set; }
 
-        [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Quantity")]
+		[SmartResourceDisplayName("Admin.ReturnRequests.Fields.Quantity")]
         public int Quantity { get; set; }
 
         [AllowHtml]

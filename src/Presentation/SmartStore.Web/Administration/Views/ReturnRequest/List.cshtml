@@ -44,18 +44,18 @@
 			{
 				columns.Bound(x => x.Id)
 					.Centered()
-					.Width(80);
+					.Width(100);
 				columns.Bound(x => x.ProductName)
 					.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 				columns.Bound(x => x.Quantity)
-					.Width(80)
+					.Width(100)
 					.Centered();
 				columns.Bound(x => x.CustomerId)
 					.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
 					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerFullName #></a>");
 				columns.Bound(x => x.OrderId)
-					.Width(80)
+					.Width(100)
 					.Centered()
 					.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
 					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\"><#= OrderId #></a>");
@@ -66,11 +66,11 @@
 				columns.Bound(x => x.StoreName)
 					.Hidden(Model.AvailableStores.Count <= 1);
 				columns.Bound(x => x.Id)
-					.Width(100)
 					.Centered()
-					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-					.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-					.Title(T("Admin.Common.Edit").Text);
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+					.Title(String.Empty)
+					.HtmlAttributes(new { align = "right", @class = "omega" });
 			})
 			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ReturnRequest"))
@@ -81,8 +81,8 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        // search button
-        $('#btnSearch').click(function () {
+
+		$('#btnSearch').click(function () {
         	var grid = $('#returnrequests-grid').data('tGrid');
             grid.currentPage = 1;
             grid.ajaxRequest();

@@ -27,6 +27,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ICustomerService _customerService;
         private readonly LocalizationSettings _localizationSettings;
 		private readonly IOrderProcessingService _orderProcessingService;
+		private readonly IPriceFormatter _priceFormatter;
 		private readonly OrderSettings _orderSettings;
 		private readonly AdminAreaSettings _adminAreaSettings;
 
@@ -35,6 +36,7 @@ namespace SmartStore.Admin.Controllers
             ICustomerService customerService, 
             LocalizationSettings localizationSettings,
 			IOrderProcessingService orderProcessingService,
+			IPriceFormatter priceFormatter,
 			OrderSettings orderSettings,
 			AdminAreaSettings adminAreaSettings)
         {
@@ -42,6 +44,7 @@ namespace SmartStore.Admin.Controllers
             _customerService = customerService;
             _localizationSettings = localizationSettings;
 			_orderProcessingService = orderProcessingService;
+			_priceFormatter = priceFormatter;
 			_orderSettings = orderSettings;
 			_adminAreaSettings = adminAreaSettings;
         }
@@ -72,7 +75,9 @@ namespace SmartStore.Admin.Controllers
             if (orderItem == null)
                 return false;
 
-            model.Id = returnRequest.Id;
+			allStores.TryGetValue(returnRequest.StoreId, out Store store);
+
+			model.Id = returnRequest.Id;
             model.ProductId = orderItem.ProductId;
 			model.ProductSku = orderItem.Product.Sku;
 			model.ProductName = orderItem.Product.Name;
@@ -89,7 +94,7 @@ namespace SmartStore.Admin.Controllers
             model.CreatedOn = Services.DateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc);
 			model.UpdatedOn = Services.DateTimeHelper.ConvertToUserTime(returnRequest.UpdatedOnUtc, DateTimeKind.Utc);
 
-			if (allStores.Count > 1 && allStores.TryGetValue(returnRequest.StoreId, out Store store))
+			if (allStores.Count > 1)
 			{
 				model.StoreName = store?.Name;
 			}
@@ -140,9 +145,16 @@ namespace SmartStore.Admin.Controllers
 				model.AutoUpdateOrderItem.UpdateRewardPoints = orderItem.Order.RewardPointsWereAdded;
 
 				model.ReturnRequestInfo = TempData[AutoUpdateOrderItemContext.InfoKey] as string;
+
+				// The maximum amount that can be refunded for this return request.
+				var maxRefundAmount = Math.Max(orderItem.UnitPriceInclTax * returnRequest.Quantity, 0);
+				if (maxRefundAmount > decimal.Zero)
+				{
+					model.MaxRefundAmount = _priceFormatter.FormatPrice(orderItem.PriceInclTax, true, store.PrimaryStoreCurrency, Services.WorkContext.WorkingLanguage, true, true);
+				}
 			}
 
-            return true;
+			return true;
         }
 
         #endregion

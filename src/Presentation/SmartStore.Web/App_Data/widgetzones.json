@@ -189,8 +189,10 @@
 				"wishlist_items_top",
 				"offcanvas_wishlist_items_after",
 				"offcanvas_compare_items_after",
-				"returnrequest_before",
-				"returnrequest_after"
+				"returnrequest_wish_before",
+				"returnrequest_wish_after",				
+				"returnrequest_top",
+				"returnrequest_bottom"
 			]
 		},
 		{

@@ -35,7 +35,11 @@
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-			
+			builder.AddOrUpdate("Admin.ReturnRequests.MaxRefundAmount",
+				"Maximum refund amount",
+				"Maximaler Erstattungsbetrag",
+				"The maximum amount that can be refunded for this return request.",
+				"Der maximale Betrag, der für diesen Rücksendewunsch erstattet werden kann.");
 		}
 	}
 }

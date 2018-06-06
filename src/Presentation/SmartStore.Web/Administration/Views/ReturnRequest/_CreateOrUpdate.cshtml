@@ -1,5 +1,5 @@
-﻿@model ReturnRequestModel
-@using SmartStore.Core.Domain.Orders;
+﻿@using SmartStore.Core.Domain.Orders;
+@model ReturnRequestModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -23,26 +23,19 @@
 			</div>
         </td>
     </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.OrderId)
-        </td>
-        <td class="adminData">
-			<div class="form-control-plaintext">
-				<a href="@Url.Action("Edit", "Order", new { id = Model.OrderId })">@Model.OrderNumber</a>
-			</div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.StoreName)
-        </td>
-        <td class="adminData">
-			<div class="form-control-plaintext">
-				@Html.DisplayFor(model => model.StoreName)
-			</div>
-        </td>
-    </tr>
+	@if (Model.StoreName.HasValue())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StoreName)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Html.DisplayFor(model => model.StoreName)
+				</div>
+			</td>
+		</tr>
+	}
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.CustomerId)
@@ -50,6 +43,16 @@
         <td class="adminData">
 			<div class="form-control-plaintext">
 				<a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerFullName</a> (@Model.CustomerId)
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.OrderId)
+        </td>
+        <td class="adminData">
+			<div class="form-control-plaintext">
+				<a href="@Url.Action("Edit", "Order", new { id = Model.OrderId })">@Model.OrderNumber</a>
 			</div>
         </td>
     </tr>

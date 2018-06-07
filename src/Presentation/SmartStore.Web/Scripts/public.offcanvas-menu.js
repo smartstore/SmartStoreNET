@@ -66,7 +66,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
             }
 
             item.addClass("animated");                    
-
+			
             navigateToMenuItem(categoryId || 0, item.hasClass("navigate-back") ? "out" : "in");
             
             // stop event propagation
@@ -149,10 +149,9 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	                _.delay(function () {
 						cntSlideIn.addClass("show");
-                        
-	                    if (direction)
-							cntSlideOut.removeClass("show");
-                            
+					
+						if (direction)
+							cntSlideOut.removeClass("show");    
 	                }, 100);
 
 	                if (!direction) {

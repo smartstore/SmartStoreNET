@@ -206,20 +206,20 @@ $ocm-selected-color:                    $warning;
     .layer {
         transition: transform 0.3s ease-out;
         background: #fff;
-        transform: translate3d(-30%, 0, 0);
+        transform: translateX(-30%);
         z-index: 0;
         border-left: 1px solid $ocm-border-color;
         border-right: 1px solid $ocm-border-color;
 
         &.show {
-            transform: translate3d(0, 0, 0) !important;
-			-webkit-transform: translate3d(0, 0, 0) !important;
+            transform: translateX(0);
+			-webkit-transform: translateX(0);
             z-index: 1;
             border-color: transparent;
         }
 
         &.show ~ .layer {
-            transform: translate3d(100%, 0, 0);
+            transform: translateX(100%);
             z-index: 2;
         }
     }

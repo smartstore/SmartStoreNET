@@ -520,10 +520,14 @@
 		}
 
 		.layer {
-			transform: translate3d(30%, 0, 0);
+			transform: translateX(30%);
+
+			&.show {
+				transform: translateX(0);
+			}
 
 			&.show ~ .layer {
-				transform: translate3d(-100%, 0, 0);
+				transform: translateX(-100%);
 			}
 		}
 	}

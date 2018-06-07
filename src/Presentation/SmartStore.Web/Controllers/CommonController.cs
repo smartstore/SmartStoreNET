@@ -889,6 +889,11 @@ namespace SmartStore.Web.Controllers
 		{
 			CookieConsent.SetCookieConsent(Response, true);
 
+			if (!HttpContext.Request.IsAjaxRequest())
+			{
+				return RedirectToReferrer();
+			}
+			
 			return new EmptyResult();
 		}
 

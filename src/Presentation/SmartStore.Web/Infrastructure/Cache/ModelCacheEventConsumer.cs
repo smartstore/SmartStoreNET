@@ -393,6 +393,17 @@ namespace SmartStore.Web.Infrastructure.Cache
 			{
 				_cacheManager.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
 			}
+			else if (entity is LocalizedProperty lp)
+			{
+				if (lp.LocaleKeyGroup == nameof(Topic))
+				{
+					_cacheManager.RemoveByPattern(TOPIC_WIDGET_PATTERN_KEY);
+					if (state != EntityState.Added)
+					{
+						_cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);
+					}
+				}
+			}
 			else if (entity is Setting)
 			{
 				var setting = entity as Setting;

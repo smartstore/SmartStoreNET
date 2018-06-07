@@ -72,11 +72,6 @@ namespace SmartStore.Web.Controllers
 				RenderAsWidget = topic.RenderAsWidget
 			};
 
-			if (!topic.RenderAsWidget)
-			{
-				Services.DisplayControl.Announce(topic);
-			}
-
             return model;
         }
 
@@ -119,6 +114,11 @@ namespace SmartStore.Web.Controllers
 
 			ViewBag.IsPopup = popup;
 
+			if (!cacheModel.RenderAsWidget)
+			{
+				Services.DisplayControl.Announce(new Topic { Id = cacheModel.Id });
+			}
+
 			return View("TopicDetails", cacheModel);
 		}
 
@@ -143,6 +143,11 @@ namespace SmartStore.Web.Controllers
 
             ViewBag.BodyOnly = bodyOnly;
 			ViewBag.IsLead = isLead;
+
+			if (!cacheModel.RenderAsWidget)
+			{
+				Services.DisplayControl.Announce(new Topic { Id = cacheModel.Id });
+			}
 
 			return PartialView(cacheModel);
         }

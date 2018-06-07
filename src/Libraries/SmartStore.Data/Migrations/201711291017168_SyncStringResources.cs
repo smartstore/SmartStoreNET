@@ -83,7 +83,7 @@ namespace SmartStore.Data.Migrations
 			var allLanguages = context.Set<Language>().ToList();
 
 			// Accidents.
-			var accidents = resourceSet.Where(x => x.ResourceName == "Admin.Configuration.ActivityLog.ActivityLogTy pe").ToList();
+			var accidents = resourceSet.Where(x => x.ResourceName == "Admin.Configuration.ActivityLog.ActivityLogType").ToList();
 			if (accidents.Any())
 			{
 				accidents.Each(x => x.ResourceName = "Admin.Configuration.ActivityLog.ActivityLogType");

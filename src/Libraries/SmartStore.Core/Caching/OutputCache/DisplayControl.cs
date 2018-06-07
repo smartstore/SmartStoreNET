@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Utilities;
@@ -38,18 +39,19 @@ namespace SmartStore.Core.Caching
 			typeof(ProductManufacturer),
 			typeof(NewsItem),
 			typeof(NewsComment),
-			typeof(Topic)
+			typeof(Topic),
+			typeof(LocalizedProperty)
 		});
 
 		private readonly HashSet<BaseEntity> _entities = new HashSet<BaseEntity>();
-		private readonly Lazy<IRepository<ProductSpecificationAttribute>> _rsProductSpecAttr;
+		private readonly Lazy<IDbContext> _dbContext;
 
 		private bool _isIdle;
 		private bool? _isUncacheableRequest;
 
-		public DisplayControl(Lazy<IRepository<ProductSpecificationAttribute>> rsProductSpecAttr)
+		public DisplayControl(Lazy<IDbContext> dbContext)
 		{
-			_rsProductSpecAttr = rsProductSpecAttr;
+			_dbContext = dbContext;
 		}
 
 		public IDisposable BeginIdleScope()
@@ -91,9 +93,7 @@ namespace SmartStore.Core.Caching
 
 		public virtual IEnumerable<string> GetCacheControlTagsFor(BaseEntity entity)
 		{
-			Guard.NotNull(entity, nameof(entity));
-
-			if (entity.IsTransientRecord())
+			if (entity == null || entity.IsTransientRecord())
 			{
 				yield break;
 			}
@@ -150,7 +150,7 @@ namespace SmartStore.Core.Caching
 			{
 				// Determine all affected products (which are assigned to this attribute).
 				var specAttrId = ((SpecificationAttribute)entity).Id;
-				var affectedProductIds = _rsProductSpecAttr.Value.TableUntracked
+				var affectedProductIds = _dbContext.Value.Set<ProductSpecificationAttribute>().AsNoTracking()
 					.Where(x => x.SpecificationAttributeOption.SpecificationAttribute.Id == specAttrId)
 					.Select(x => x.ProductId)
 					.Distinct()
@@ -241,6 +241,50 @@ namespace SmartStore.Core.Caching
 			else if (type == typeof(Topic))
 			{
 				yield return "t" + entity.Id;
+			}
+			else if (type == typeof(LocalizedProperty))
+			{
+				var lp = (LocalizedProperty)entity;
+				string prefix = null;
+				BaseEntity targetEntity = null;
+
+				switch (lp.LocaleKeyGroup)
+				{
+					case nameof(Product):
+						prefix = "p";
+						break;
+					case nameof(Category):
+						prefix = "c";
+						break;
+					case nameof(Manufacturer):
+						prefix = "m";
+						break;
+					case nameof(Topic):
+						prefix = "t";
+						break;
+					case nameof(SpecificationAttribute):
+						targetEntity = _dbContext.Value.Set<SpecificationAttribute>().Find(lp.EntityId);
+						break;
+					case nameof(SpecificationAttributeOption):
+						targetEntity = _dbContext.Value.Set<SpecificationAttributeOption>().Find(lp.EntityId);
+						break;
+					case nameof(ProductVariantAttributeValue):
+						targetEntity = _dbContext.Value.Set<ProductVariantAttributeValue>().Find(lp.EntityId);
+						break;
+				}
+
+				if (prefix.HasValue())
+				{
+					yield return prefix + lp.EntityId;
+				}
+				else if (targetEntity != null)
+				{
+					var tags = GetCacheControlTagsFor(targetEntity);
+					foreach (var tag in tags)
+					{
+						yield return tag;
+					}
+				}
 			}
 		}
 

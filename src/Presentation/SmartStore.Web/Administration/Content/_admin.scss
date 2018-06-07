@@ -1276,6 +1276,7 @@ table.payment-method-features td {
     @include gradient-y($bgColor, darken($bgColor, 12%));
 	color: #fff;
 	text-shadow: 0px 1px 0px mix(#000, $bgColor, 30%);
+	border: none;
 	border-top: 1px solid darken($bgColor, 10%);
 	text-align: center;
 	a {

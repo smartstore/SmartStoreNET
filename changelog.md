@@ -4,6 +4,7 @@
 
 ### New Features
 * #1459 BeezUp: Add option to only submit one category name per product
+* Wallet: Allow customer to choose whether refund should be submitted to his wallet.
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

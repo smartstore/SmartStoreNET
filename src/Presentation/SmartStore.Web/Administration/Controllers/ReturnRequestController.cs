@@ -150,7 +150,7 @@ namespace SmartStore.Admin.Controllers
 				var maxRefundAmount = Math.Max(orderItem.UnitPriceInclTax * returnRequest.Quantity, 0);
 				if (maxRefundAmount > decimal.Zero)
 				{
-					model.MaxRefundAmount = _priceFormatter.FormatPrice(orderItem.PriceInclTax, true, store.PrimaryStoreCurrency, Services.WorkContext.WorkingLanguage, true, true);
+					model.MaxRefundAmount = _priceFormatter.FormatPrice(maxRefundAmount, true, store.PrimaryStoreCurrency, Services.WorkContext.WorkingLanguage, true, true);
 				}
 			}
 

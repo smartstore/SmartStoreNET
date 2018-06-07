@@ -295,28 +295,35 @@
                         return result;
                     }
 
-                    function updateNavState() {
+					function updateNavState() {
                         // updates megamenu status: arrows etc.
-                        var realNavWidth = 0;
+						var navWidth = 0;
+						var realNavWidth = 0;
+						var curMarginStart = 0;
+
                         navElems.each(function (i, el) { realNavWidth += parseFloat($(this).outerWidth(true)); });
+						realNavWidth = Math.floor(realNavWidth);
 
-						var curMarginStart = parseFloat(nav.css(marginX));
+						if (Modernizr.touchevents) {
+							navWidth = nav.width();
+							var offset = nav.position().left;
+							curMarginStart = rtl ? (offset - 1) * -1 : offset;
+						}
+						else {
+							navWidth = megamenu.width();
+							curMarginStart = parseFloat(nav.css(marginX));	
+						}
 
-                        if (realNavWidth > megamenu.width()) {
-                            // nav items don't fit in the megamenu container: display next arrow 
-                            megamenu.addClass('megamenu-blend--next');
-                        }
+                        // If nav items don't fit in the megamenu container: display next arrow, otherwise hide it. 
+						megamenu.toggleClass('megamenu-blend--next', realNavWidth > megamenu.width());
 
 						if (curMarginStart < 0) {
                             // user has scrolled: show prev arrow 
                             megamenu.addClass('megamenu-blend--prev');
 
-                            // determine whether we're at the end
-                            var endReached = nav.width() >= realNavWidth;
-                            if (endReached)
-                                megamenu.removeClass('megamenu-blend--next')
-                            else
-                                megamenu.addClass('megamenu-blend--next');
+                            // determine whether we reached the end
+							var endReached = navWidth + Math.abs(curMarginStart) >= realNavWidth;
+							megamenu.toggleClass('megamenu-blend--next', !endReached);
                         }
                         else {
                             // we're at the beginning: fade out prev arrow
@@ -328,7 +335,7 @@
                     if (Modernizr.touchevents) {
                         megamenu.tapstart(function () {
                             closeNow($(".nav-item.active .nav-link"));
-                        }).tapend(function () {
+                        }).tapmove(function () {
 							updateNavState();
                         });
                     }

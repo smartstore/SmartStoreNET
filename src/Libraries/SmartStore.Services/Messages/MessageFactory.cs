@@ -388,6 +388,7 @@ namespace SmartStore.Services.Messages
 
 		protected EmailAccount GetEmailAccountOfMessageTemplate(MessageTemplate messageTemplate, int languageId)
 		{
+			// Note that the email account to be used can be specified separately for each language, that's why we use GetLocalized here.
 			var accountId = messageTemplate.GetLocalized(x => x.EmailAccountId, languageId);
 			var account = _emailAccountService.GetEmailAccountById(accountId);
 

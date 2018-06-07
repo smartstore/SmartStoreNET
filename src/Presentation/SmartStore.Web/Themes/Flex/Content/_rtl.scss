@@ -532,6 +532,13 @@
 		}
 	}
 
+	&.wkit #offcanvas-menu .layer {
+		// Workaround for Chrome in RTL mode: https://stackoverflow.com/questions/28928992/offcanvas-menu-not-working-with-direction-rtl
+		// Reducing the transition duration from 300ms to 50ms seems to help, at least it is hard notice the glitch.
+		// Completely turning off the transition suppresses the transitionEnd event, which we actually need.
+		transition-duration: 0.05s;
+	}
+
 
 	#ocm-service {
 		.menubar-group {

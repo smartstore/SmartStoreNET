@@ -24,19 +24,6 @@ var summernote_image_upload_url;
 		}
 	});
 
-	// Editor toggling
-	$(document).on('click', '.note-editor-preview', function (e) {
-		var div = $(this);
-		var textarea = $(div.data("target"));
-		var lang = div.data("lang");
-
-		div.remove();
-		textarea
-			.removeClass('d-none')
-			.summernote($.extend(true, {}, summernote_global_config, { lang: lang, focus: true }));
-
-	});
-
 	summernote_global_config = {
 		disableDragAndDrop: false,
 		dialogsInBody: false,
@@ -220,4 +207,32 @@ var summernote_image_upload_url;
 			}
 		});
 	}
+
+	// Custom events
+	$(function () {
+		// Editor toggling
+		$(document).on('click', '.note-editor-preview', function (e) {
+			var div = $(this);
+			var textarea = $(div.data("target"));
+			var lang = div.data("lang");
+
+			div.remove();
+			textarea
+				.removeClass('d-none')
+				.summernote($.extend(true, {}, summernote_global_config, { lang: lang, focus: true }));
+		});
+
+		// Fix "CodeMirror too wide" issue
+		$(document).on('click', '.note-toolbar .btn-codeview', function (e) {
+			var wrapper = $(this).closest('.adminData');
+			if (wrapper.length) {
+				if ($(this).is('.active')) {
+					wrapper.css('overflow-x', 'auto');
+				}
+				else {
+					wrapper.css('overflow-x', '');
+				}
+			}
+		});
+	});
 })();

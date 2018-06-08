@@ -398,7 +398,6 @@ namespace SmartStore.Web.Controllers
 		public ActionResult Footer()
         {
 			var store = _services.StoreContext.CurrentStore;
-			var allTopics = _topicService.GetAllTopics(store.Id);
 			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(_services.WorkContext.CurrentCustomer, store.Id);
 
 			var taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
@@ -463,7 +462,6 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-			var store = _services.StoreContext.CurrentStore;
 			var customer = _services.WorkContext.CurrentCustomer;
 
             var model = new MenuModel
@@ -486,9 +484,6 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ServiceMenu()
         {
-            var store = _services.StoreContext.CurrentStore;
-            var allTopics = _topicService.GetAllTopics(store.Id);
-
             var model = new ServiceMenuModel
             {
                 RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,

@@ -119,7 +119,6 @@ namespace SmartStore.Admin.Controllers
 			else
 			{
 				model.Data = Enumerable.Empty<BlogPostModel>();
-
 				NotifyAccessDenied();
 			}
 

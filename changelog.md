@@ -15,7 +15,7 @@
 * Megamenu alpha/omega blends do not toggle correctly on touch devices
 * Summernote HTML editor exceeds parent container width when CodeMirror is activated
 * Only display a zero search hits warning if at least one filter is activated
-* #1436 Do not display delivery time in customer messages for order placed and order completed
+* #1436 Do not display delivery time in customer order completed messages
 * "ArgumentNullException: The value must not be NULL" if a topic is password protected
 * Tax by region: Fixes after inserting a tax rate country column shows "Unavailable"
 * #1014 Switching to default language keeps specific URL alias of current page

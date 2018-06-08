@@ -1151,20 +1151,9 @@ namespace SmartStore.Services.DataExchange.Export
 			// Init base things that are even required for preview. Init all other things (regular export) in ExportCoreOuter.
 			List<Store> result = null;
 
-			if (ctx.Projection.CurrencyId.HasValue)
-				ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId.Value);
-			else
-				ctx.ContextCurrency = _services.WorkContext.WorkingCurrency;
-
-			if (ctx.Projection.CustomerId.HasValue)
-				ctx.ContextCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
-			else
-				ctx.ContextCustomer = _services.WorkContext.CurrentCustomer;
-
-			if (ctx.Projection.LanguageId.HasValue)
-				ctx.ContextLanguage = _languageService.Value.GetLanguageById(ctx.Projection.LanguageId.Value);
-			else
-				ctx.ContextLanguage = _services.WorkContext.WorkingLanguage;
+			ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId ?? 0) ?? _services.WorkContext.WorkingCurrency;
+			ctx.ContextCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId ?? 0) ?? _services.WorkContext.CurrentCustomer;
+			ctx.ContextLanguage = _languageService.Value.GetLanguageById(ctx.Projection.LanguageId ?? 0) ?? _services.WorkContext.WorkingLanguage;
 
 			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
 			ctx.Languages = _languageService.Value.GetAllLanguages(true).ToDictionary(x => x.Id, x => x);

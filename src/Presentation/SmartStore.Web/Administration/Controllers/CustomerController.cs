@@ -1292,7 +1292,8 @@ namespace SmartStore.Admin.Controllers
             var model = new CustomerAddressModel();
             model.Address = new AddressModel();
             model.CustomerId = customerId;
-            model.Address.FirstNameEnabled = true;
+			model.Address.TitleEnabled = _addressSettings.TitleEnabled;
+			model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
             model.Address.LastNameEnabled = true;
             model.Address.LastNameRequired = true;
@@ -1388,6 +1389,7 @@ namespace SmartStore.Admin.Controllers
             var model = new CustomerAddressModel();
             model.CustomerId = customerId;
             model.Address = address.ToModel(_addressService);
+			model.Address.TitleEnabled = _addressSettings.TitleEnabled;
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
             model.Address.LastNameEnabled = true;
@@ -1453,6 +1455,7 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
             model.CustomerId = customer.Id;
             model.Address = address.ToModel(_addressService);
+			model.Address.TitleEnabled = _addressSettings.TitleEnabled;
             model.Address.FirstNameEnabled = true;
             model.Address.FirstNameRequired = true;
             model.Address.LastNameEnabled = true;

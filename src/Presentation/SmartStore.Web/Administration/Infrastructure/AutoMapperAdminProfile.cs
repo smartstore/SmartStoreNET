@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using System.Linq;
 using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
@@ -24,7 +22,6 @@ using SmartStore.Admin.Models.Themes;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
@@ -36,14 +33,12 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Seo;
 
@@ -83,6 +78,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AddressHtml, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStates, mo => mo.Ignore())
+				.ForMember(dest => dest.TitleEnabled, mo => mo.Ignore())
 				.ForMember(dest => dest.FirstNameEnabled, mo => mo.Ignore())
 				.ForMember(dest => dest.FirstNameRequired, mo => mo.Ignore())
 				.ForMember(dest => dest.LastNameEnabled, mo => mo.Ignore())
@@ -114,8 +110,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Country, mo => mo.Ignore())
 				.ForMember(dest => dest.StateProvince, mo => mo.Ignore())
-				.ForMember(dest => dest.Salutation, mo => mo.Ignore())
-				.ForMember(dest => dest.Title, mo => mo.Ignore());
+				.ForMember(dest => dest.Salutation, mo => mo.Ignore());
 
 			//countries
 			CreateMap<CountryModel, Country>()

@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Common
 {
-    [Validator(typeof(AddressValidator))]
+	[Validator(typeof(AddressValidator))]
     public partial class AddressModel : EntityModelBase
     {
         public AddressModel()
@@ -16,7 +16,10 @@ namespace SmartStore.Admin.Models.Common
             AvailableStates = new List<SelectListItem>();
         }
 
-        [SmartResourceDisplayName("Admin.Address.Fields.FirstName")]
+		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Title")]
+		public string Title { get; set; }
+
+		[SmartResourceDisplayName("Admin.Address.Fields.FirstName")]
         [AllowHtml]
         public string FirstName { get; set; }
 
@@ -82,6 +85,7 @@ namespace SmartStore.Admin.Models.Common
 
 		public string FormattedAddress { get; set; }
 
+		public bool TitleEnabled { get; set; }
 		public bool FirstNameEnabled { get; set; }
         public bool FirstNameRequired { get; set; }
         public bool LastNameEnabled { get; set; }

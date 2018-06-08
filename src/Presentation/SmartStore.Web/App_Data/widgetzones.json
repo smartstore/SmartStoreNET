@@ -4,7 +4,7 @@
 			"name": "Admin.ContentManagement.Homepage",
 			"zones": [
 				"home_page_top",
-				"home_page_after_intro", 
+				"home_page_after_intro",
 				"home_page_after_categories",
 				"home_page_after_products",
 				"home_page_after_bestsellers",
@@ -32,7 +32,6 @@
 				"head_html_tag"
 			]
 		},
-
 		{
 			"name": "Admin.ContentManagement.Blog",
 			"zones": [
@@ -42,6 +41,13 @@
 				"bloglist_page_before_posts",
 				"bloglist_page_inside_post",
 				"bloglist_page_after_posts"
+			]
+		},
+		{
+			"name": "Admin.ContentManagement.Topics",
+			"zones": [
+				"topic_body_before",
+				"topic_body_after"
 			]
 		},
 		{
@@ -160,7 +166,9 @@
 				"footer_col_2_after",
 				"footer_col_2_before",
 				"footer_col_3_after",
-				"footer_col_3_before"
+				"footer_col_3_before",
+				"footer_col_4_after",
+				"footer_col_4_before"
 			]
 		},
 		{
@@ -190,7 +198,7 @@
 				"offcanvas_wishlist_items_after",
 				"offcanvas_compare_items_after",
 				"returnrequest_wish_before",
-				"returnrequest_wish_after",				
+				"returnrequest_wish_after",
 				"returnrequest_top",
 				"returnrequest_bottom"
 			]

@@ -226,12 +226,7 @@ var summernote_image_upload_url;
 		$(document).on('click', '.note-toolbar .btn-codeview', function (e) {
 			var wrapper = $(this).closest('.adminData');
 			if (wrapper.length) {
-				if ($(this).is('.active')) {
-					wrapper.css('overflow-x', 'auto');
-				}
-				else {
-					wrapper.css('overflow-x', '');
-				}
+				wrapper.css('overflow-x', $(this).is('.active') ? 'auto' : '');
 			}
 		});
 	});

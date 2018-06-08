@@ -276,7 +276,8 @@ namespace SmartStore.Admin.Controllers
 
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
 
-			// form fields
+			// Form fields.
+			model.TitleEnabled = _customerSettings.TitleEnabled;
 			model.GenderEnabled = _customerSettings.GenderEnabled;
 			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
 			model.CompanyEnabled = _customerSettings.CompanyEnabled;
@@ -339,7 +340,8 @@ namespace SmartStore.Admin.Controllers
 			model.LastIpAddress = model.LastIpAddress;
 			model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
 
-			// form fields
+			// Form fields.
+			model.TitleEnabled = _customerSettings.TitleEnabled;
 			model.GenderEnabled = _customerSettings.GenderEnabled;
 			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
 			model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
@@ -353,7 +355,7 @@ namespace SmartStore.Admin.Controllers
 			model.PhoneEnabled = _customerSettings.PhoneEnabled;
 			model.FaxEnabled = _customerSettings.FaxEnabled;
 
-			//countries and states
+			// Countries and states.
 			if (_customerSettings.CountryEnabled)
 			{
 				model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
@@ -369,7 +371,7 @@ namespace SmartStore.Admin.Controllers
 
 				if (_customerSettings.StateProvinceEnabled)
 				{
-					//states
+					// States.
 					var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
 					if (states.Count > 0)
 					{
@@ -385,19 +387,14 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			// customer roles
 			model.AvailableCustomerRoles = _customerService
 				.GetAllCustomerRoles(true)
 				.Select(cr => cr.ToModel())
 				.ToList();
 
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
-
-			// reward points gistory
 			model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
 			model.AddRewardPointsValue = 0;
-
-			// external authentication records
 			model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
 		}
 
@@ -576,7 +573,7 @@ namespace SmartStore.Admin.Controllers
                     ModelState.AddModelError("", "Username is already registered");
             }
 
-            //validate customer roles
+            // Validate customer roles.
             var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
             var newCustomerRoles = new List<CustomerRole>();
 
@@ -594,7 +591,7 @@ namespace SmartStore.Admin.Controllers
             if (customerRolesError.HasValue())
                 ModelState.AddModelError("", customerRolesError);
 
-            bool allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+            var allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
             
             if (ModelState.IsValid)
             {
@@ -611,12 +608,14 @@ namespace SmartStore.Admin.Controllers
                 };
                 _customerService.InsertCustomer(customer);
                 
-                //form fields
+                // Form fields.
 				if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
                 if (_customerSettings.GenderEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
-                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
+				if (_customerSettings.TitleEnabled)
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Title, model.Title);
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
                 if (_customerSettings.DateOfBirthEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DateOfBirth, model.DateOfBirth);
@@ -649,7 +648,7 @@ namespace SmartStore.Admin.Controllers
 
                     if (customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
                     {
-                        this.NotifyError("Common.CustomerNumberAlreadyExists");
+                        NotifyError("Common.CustomerNumberAlreadyExists");
                     }
                     else
                     {
@@ -658,7 +657,7 @@ namespace SmartStore.Admin.Controllers
                 }
                     
 
-                //password
+                // Password.
                 if (!String.IsNullOrWhiteSpace(model.Password))
                 {
                     var changePassRequest = new ChangePasswordRequest(model.Email, false, _customerSettings.DefaultPasswordFormat, model.Password);
@@ -670,7 +669,7 @@ namespace SmartStore.Admin.Controllers
                     }
                 }
 
-                //customer roles
+                // Customer roles.
                 if (allowManagingCustomerRoles)
                 {
                     foreach (var customerRole in newCustomerRoles)
@@ -680,14 +679,13 @@ namespace SmartStore.Admin.Controllers
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
 
-                //activity log
-                _customerActivityService.InsertActivity("AddNewCustomer", _localizationService.GetResource("ActivityLog.AddNewCustomer"), customer.Id);
+                _customerActivityService.InsertActivity("AddNewCustomer", T("ActivityLog.AddNewCustomer"), customer.Id);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Added"));
+                NotifySuccess(T("Admin.Customers.Customers.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = customer.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
 			PrepareCustomerModelForCreate(model);
 
             return View(model);
@@ -721,9 +719,10 @@ namespace SmartStore.Admin.Controllers
 				if (affiliate != null && affiliate.Address != null)
 					model.AffiliateFullName = affiliate.Address.GetFullName();
 			}
-            
-            // Form fields
-            model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
+
+			// Form fields
+			model.Title = customer.GetAttribute<string>(SystemCustomerAttributeNames.Title);
+			model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
             model.LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
             model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
             model.DateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
@@ -839,7 +838,10 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
 
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
+					if (_customerSettings.TitleEnabled)
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Title, model.Title);
+
+					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
 
                     if (_customerSettings.DateOfBirthEnabled)

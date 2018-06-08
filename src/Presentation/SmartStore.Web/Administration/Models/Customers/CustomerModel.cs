@@ -39,8 +39,11 @@ namespace SmartStore.Admin.Models.Customers
 		[DataType(DataType.Password)]
         public string Password { get; set; }
 
-        //form fields & properties
-        public bool GenderEnabled { get; set; }
+		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Title")]
+		public string Title { get; set; }
+		public bool TitleEnabled { get; set; }
+
+		public bool GenderEnabled { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Gender")]
         public string Gender { get; set; }
 

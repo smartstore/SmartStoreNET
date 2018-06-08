@@ -39,6 +39,11 @@
             </div>
         }
 
+		@if (Model.TitleEnabled)
+		{
+			@Html.ControlGroupFor(model => model.Title, required: false, breakpoint: "lg")
+		}
+
         @Html.ControlGroupFor(model => model.FirstName, required: true, breakpoint: "lg")
         @Html.ControlGroupFor(model => model.LastName, required: true, breakpoint: "lg")
 

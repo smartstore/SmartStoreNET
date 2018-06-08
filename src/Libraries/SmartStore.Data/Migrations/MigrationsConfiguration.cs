@@ -40,6 +40,12 @@
 				"Maximaler Erstattungsbetrag",
 				"The maximum amount that can be refunded for this return request.",
 				"Der maximale Betrag, der für diesen Rücksendewunsch erstattet werden kann.");
+
+			builder.AddOrUpdate("Admin.Customers.Customers.Fields.Title",
+				"Title",
+				"Titel",
+				"Specifies the title.",
+				"Legt den Titel fest.");
 		}
 	}
 }

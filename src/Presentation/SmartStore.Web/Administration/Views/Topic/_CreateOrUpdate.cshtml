@@ -5,12 +5,17 @@
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("topic-edit").Style(TabsStyle.Material).Items(x =>
 {
-    x.Add().Text(T("Admin.ContentManagement.Topics.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
+	x.Add().Text(T("Admin.ContentManagement.Topics.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
-    
-    //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "topic-edit", this.Html, this.Model));
+
+	if (Model.Id > 0)
+	{
+		x.Add().Text(T("Admin.Common.GenericAttributes").Text).Content(TabGenericAttributes());
+	}
+	
+	// Generate an event
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "topic-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
@@ -280,4 +285,9 @@
 @helper TabStores()
 {
 	@Html.Partial("StoreSelector", Model)
+}
+
+@helper TabGenericAttributes()
+{
+    @Html.Action("GenericAttributes", "Common", new { entityName = "Topic", entityId = Model.Id })
 }

@@ -132,7 +132,21 @@ namespace SmartStore.Admin.Controllers
 			{
 				var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize).AlterQuery(q =>
 				{
-					return q.Where(x => true);
+					var q2 = q;
+
+					if (model.SystemName.HasValue())
+						q2 = q2.Where(x => x.SystemName.Contains(model.SystemName));
+
+					if (model.Title.HasValue())
+						q2 = q2.Where(x => x.Title.Contains(model.Title));
+
+					if (model.RenderAsWidget.HasValue)
+						q2 = q2.Where(x => x.RenderAsWidget == model.RenderAsWidget.Value);
+
+					if (model.WidgetZone.HasValue())
+						q2 = q2.Where(x => x.WidgetZone.Contains(model.WidgetZone));
+
+					return q2;
 				});
 				
 				gridModel.Data = topics.Select(x =>

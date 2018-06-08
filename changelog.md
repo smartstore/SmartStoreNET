@@ -3,6 +3,7 @@
 ## SmartStore.NET 3.2
 
 ### New Features
+* Implemented paging & filtering for Topic grid
 * #1459 BeezUp: Add option to only submit one category name per product
 * Wallet: Allow customer to choose whether refund should be submitted to his wallet.
 

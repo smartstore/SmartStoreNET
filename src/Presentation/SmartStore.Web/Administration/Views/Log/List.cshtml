@@ -140,7 +140,7 @@
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
             });
 
-            //wire up checkboxes. 
+            // Wire up checkboxes. 
             $(document).on('change', '#log-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {

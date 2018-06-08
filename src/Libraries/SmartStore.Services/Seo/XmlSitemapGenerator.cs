@@ -400,7 +400,10 @@ namespace SmartStore.Services.Seo
 
 		protected virtual IEnumerable<XmlSitemapNode> GetTopicNodes(string protocol)
 		{
-			var topics = _topicService.GetAllTopics(_services.StoreContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap && !t.RenderAsWidget);
+			var topics = _topicService.GetAllTopics(_services.StoreContext.CurrentStore.Id).AlterQuery(q =>
+			{
+				return q.Where(t => t.IncludeInSitemap && !t.RenderAsWidget);
+			});
 
 			_services.DbContext.DetachAll();
 

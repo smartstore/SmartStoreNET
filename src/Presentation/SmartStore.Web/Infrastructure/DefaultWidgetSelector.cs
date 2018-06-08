@@ -90,7 +90,11 @@ namespace SmartStore.Web.Infrastructure
             {
 				using (var scope = new DbContextScope(forceNoTracking: true))
 				{
-					var allTopicWidgets = _topicService.GetAllTopics(storeId).Where(x => x.RenderAsWidget).ToList();
+					var allTopicWidgets = _topicService.GetAllTopics(storeId).AlterQuery(q =>
+					{
+						return q.Where(x => x.RenderAsWidget);
+					});
+
 					var stubs = allTopicWidgets
 						.Select(t => 
 						{

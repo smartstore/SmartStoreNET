@@ -130,8 +130,11 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
 			{
-				var topics = _topicService.GetAllTopics(model.SearchStoreId);
-
+				var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize).AlterQuery(q =>
+				{
+					return q.Where(x => true);
+				});
+				
 				gridModel.Data = topics.Select(x =>
 				{
 					var item = x.ToModel();
@@ -141,12 +144,11 @@ namespace SmartStore.Admin.Controllers
 					return item;
 				});
 
-				gridModel.Total = topics.Count;
+				gridModel.Total = topics.TotalCount;
 			}
 			else
 			{
 				gridModel.Data = Enumerable.Empty<TopicModel>();
-
 				NotifyAccessDenied();
 			}
 

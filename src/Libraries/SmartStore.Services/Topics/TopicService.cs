@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
@@ -59,12 +60,10 @@ namespace SmartStore.Services.Topics
 			return result;
         }
 
-		public virtual IList<Topic> GetAllTopics(int storeId = 0)
+		public virtual IPagedList<Topic> GetAllTopics(int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue)
         {
 			var query = GetAllTopicsQuery(null, storeId);
-			var result = query.ToListCached("db.topic.all-" + storeId);
-
-			return result;
+			return new PagedList<Topic>(query, pageIndex, pageSize);
 		}
 
 		protected virtual IQueryable<Topic> GetAllTopicsQuery(string systemName, int storeId)

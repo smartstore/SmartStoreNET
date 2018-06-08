@@ -1,8 +1,11 @@
 ﻿@model TopicListModel
 @using Telerik.Web.Mvc.UI
+
 @{    
-    ViewBag.Title = T("Admin.ContentManagement.Topics").Text;
+	ViewBag.Title = T("Admin.ContentManagement.Topics").Text;
+	var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
 }
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-file-o"></i>
@@ -66,6 +69,8 @@
 			})
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Topic"))
 			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+			.PreserveGridState()
 			.EnableCustomBinding(true))
 </div>
 

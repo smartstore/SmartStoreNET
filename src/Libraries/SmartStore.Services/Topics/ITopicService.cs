@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Topics;
 
 namespace SmartStore.Services.Topics
@@ -34,13 +35,13 @@ namespace SmartStore.Services.Topics
         /// </summary>
 		/// <param name="storeId">Store identifier; pass 0 to load all records</param>
         /// <returns>Topics</returns>
-		IList<Topic> GetAllTopics(int storeId = 0);
+		IPagedList<Topic> GetAllTopics(int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue);
 
-        /// <summary>
-        /// Inserts a topic
-        /// </summary>
-        /// <param name="topic">Topic</param>
-        void InsertTopic(Topic topic);
+		/// <summary>
+		/// Inserts a topic
+		/// </summary>
+		/// <param name="topic">Topic</param>
+		void InsertTopic(Topic topic);
 
         /// <summary>
         /// Updates the topic

@@ -13,7 +13,7 @@
 	string privacyLink = "<a id='privacy-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
 	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
 
-	string consentZoneContent = Html.Widget("checkout_submit_data_consent").ToHtmlString();
+	string consentZoneContent = Html.Widget("checkout_submit_data_consent", false).ToHtmlString();
 	bool consentZoneHasValue = consentZoneContent.HasValue();
 }
 
@@ -99,7 +99,7 @@
 							</div>
 						}
 
-						@{ Html.RenderWidget("checkout_submit_data_consent"); }
+						@Html.Raw(consentZoneContent)
 					</div>
 				</div>
 			}

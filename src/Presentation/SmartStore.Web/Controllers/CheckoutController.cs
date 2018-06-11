@@ -419,36 +419,47 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			var store = _storeContext.CurrentStore;
+			var customer = _workContext.CurrentCustomer;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+			if (!cart.Any())
+			{
+				return RedirectToRoute("ShoppingCart");
+			}
 
-			if (cart.Count == 0)
-                return RedirectToRoute("ShoppingCart");
+			if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+			{
+				return new HttpUnauthorizedResult();
+			}
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
+            _customerService.ResetCheckoutData(customer, store.Id);
 
-            //reset checkout data
-            _customerService.ResetCheckoutData(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id);
-
-            //validation (cart)
-			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+            // Validate checkout attributes.
+			var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, true);
-            if (scWarnings.Count > 0)
-                return RedirectToRoute("ShoppingCart");
+			if (scWarnings.Any())
+			{
+				NotifyError(string.Join(Environment.NewLine, scWarnings));
+				return RedirectToRoute("ShoppingCart");
+			}
 
-            //validation (each shopping cart item)
+            // Valiadate each shopping cart item.
             foreach (var sci in cart)
             {
-                var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
+                var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer,
                     sci.Item.ShoppingCartType,
                     sci.Item.Product,
 					sci.Item.StoreId,
                     sci.Item.AttributesXml,
                     sci.Item.CustomerEnteredPrice,
                     sci.Item.Quantity,
-                    false, childItems: sci.ChildItems);
-                if (sciWarnings.Count > 0)
-                    return RedirectToRoute("ShoppingCart");
+                    false,
+					childItems: sci.ChildItems);
+
+				if (sciWarnings.Any())
+				{
+					return RedirectToRoute("ShoppingCart");
+				}
             }
 
             return RedirectToAction("BillingAddress");

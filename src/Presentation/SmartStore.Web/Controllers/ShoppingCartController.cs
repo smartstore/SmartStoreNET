@@ -657,10 +657,13 @@ namespace SmartStore.Web.Controllers
 		/// <param name="prepareAndDisplayOrderReviewData">A value indicating whether we should prepare review data (such as billing/shipping address, payment or shipping data entered during checkout)</param>
 		/// <returns>Model</returns>
 		[NonAction]
-		protected void PrepareShoppingCartModel(ShoppingCartModel model,
-			IList<OrganizedShoppingCartItem> cart, bool isEditable = true,
+		protected void PrepareShoppingCartModel(
+			ShoppingCartModel model,
+			IList<OrganizedShoppingCartItem> cart,
+			bool isEditable = true,
 			bool validateCheckoutAttributes = false,
-			bool prepareEstimateShippingIfEnabled = true, bool setEstimateShippingDefaultAddress = true,
+			bool prepareEstimateShippingIfEnabled = true, 
+			bool setEstimateShippingDefaultAddress = true,
 			bool prepareAndDisplayOrderReviewData = false)
 		{
 			if (cart == null)
@@ -1678,24 +1681,23 @@ namespace SmartStore.Web.Controllers
             
             ParseAndSaveCheckoutAttributes(cart, query);
 
-            //validate attributes
-			string checkoutAttributes = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+            // Validate checkout attributes.
+			var checkoutAttributes = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			var checkoutAttributeWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributes, true);
             if (checkoutAttributeWarnings.Count > 0)
             {
-                //something wrong, redisplay the page with warnings
                 var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, cart, validateCheckoutAttributes: true);
                 return View(model);
             }
 
-            // reward points
+            // Reward points.
             if (_rewardPointsSettings.Enabled)
             {   
                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, useRewardPoints, _storeContext.CurrentStore.Id);
             }
 
-            //everything is OK
+            // Everything is OK.
             if (customer.IsGuest())
             {
                 if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled)

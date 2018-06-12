@@ -128,7 +128,7 @@ namespace SmartStore.Web.Controllers
 			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName.ToLower(), _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => 
 			{
-				var topic = _topicService.GetTopicBySystemName(systemName);
+				var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id);
 				if (topic == null)
 					return null;
 

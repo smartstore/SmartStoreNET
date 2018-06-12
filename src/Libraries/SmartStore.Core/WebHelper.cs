@@ -612,7 +612,7 @@ namespace SmartStore.Core
 			Guard.NotEmpty(protocol, nameof(protocol));
 			Guard.NotEmpty(host, nameof(host));
 
-			string baseUrl = string.Format("{0}://{1}", protocol, host.TrimEnd('/'));
+			string baseUrl = protocol.EnsureEndsWith("://") + host.TrimEnd('/');
 
 			MatchEvaluator evaluator = (match) =>
 			{

@@ -30,22 +30,22 @@ namespace SmartStore.Services.Messages
 
 		private string BuildUrl(string url, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + url;
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + url.EnsureStartsWith("/");
 		}
 
 		private string BuildRouteUrl(object routeValues, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.RouteUrl(routeValues);
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + _urlHelper.RouteUrl(routeValues);
 		}
 
 		private string BuildRouteUrl(string routeName, object routeValues, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.RouteUrl(routeName, routeValues);
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + _urlHelper.RouteUrl(routeName, routeValues);
 		}
 
 		private string BuildActionUrl(string action, string controller, object routeValues, MessageContext ctx)
 		{
-			return ctx.BaseUri.ToString().TrimEnd('/') + _urlHelper.Action(action, controller, routeValues);
+			return ctx.BaseUri.GetLeftPart(UriPartial.Authority) + _urlHelper.Action(action, controller, routeValues);
 		}
 
 		private void PublishModelPartCreatedEvent<T>(T source, dynamic part) where T : class

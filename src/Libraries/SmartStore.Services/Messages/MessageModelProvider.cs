@@ -714,7 +714,7 @@ namespace SmartStore.Services.Messages
 			Guard.NotNull(part, nameof(part));
 
 			var protocol = messageContext.BaseUri.Scheme;
-			var host = messageContext.BaseUri.Authority;
+			var host = messageContext.BaseUri.Authority + messageContext.BaseUri.AbsolutePath;
 			var body = HtmlUtils.RelativizeFontSizes(part.Body.EmptyNull());
 
 			// We must render the body separately

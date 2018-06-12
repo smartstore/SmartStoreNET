@@ -22,6 +22,7 @@
 * #1014 Switching to default language keeps specific URL alias of current page
 * Shipping by total: Fixes when inserting a record the country was not saved
 * #1460 Editing of the customer title is missing on customer and address pages in the backend
+* #1447 Checkout button payment methods (Amazon, PayPal Express) won't work in conjunction with mandatory checkout attributes
 
 
 ## SmartStore.NET 3.1.5

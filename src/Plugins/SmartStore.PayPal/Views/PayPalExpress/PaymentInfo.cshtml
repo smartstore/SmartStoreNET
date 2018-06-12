@@ -1,14 +1,39 @@
 ﻿@model SmartStore.PayPal.Models.PayPalExpressPaymentInfoModel
 @{
     Layout = "";
-    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css"));
 }
 
 @if (Model.CurrentPageIsBasket)
 {
     <div id="paypal-checkout" class="my-2 ml-3">
-        <a href='@Url.Action("SubmitButton", "PayPalExpress", new { area = "SmartStore.PayPal" })'>
-            <img id="paypal-express-button" alt="" src="@Url.Content(Model.SubmitButtonImageUrl)" />
+        <a id="paypal-express-button" href="javascript:void(0)">
+            <img alt="" src="@Url.Content(Model.SubmitButtonImageUrl)" />
         </a>
     </div>
+
+	<script>
+		$(function () {
+
+			$('#paypal-express-button').on('click', function (e) {
+				e.preventDefault();
+
+				$.ajax({
+					type: 'POST',
+					url: '@Url.Action("SaveCartData", "ShoppingCart", new { area = "" })',
+					data: $('#startcheckout').closest('form').serialize(),
+					success: function (response) {
+						if (response.success) {
+							window.location = '@Url.Action("SubmitButton", "PayPalExpress", new { area = "SmartStore.PayPal" })';
+						}
+						else {
+							displayNotification(response.message, 'error');
+						}
+					}
+				});
+
+				return false;
+			});
+
+		});
+	</script>
 }

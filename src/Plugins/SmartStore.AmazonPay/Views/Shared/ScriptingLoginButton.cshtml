@@ -43,12 +43,25 @@
 					color: '@(Model.ButtonColor ?? "Gold")',
 					size:  '@(Model.ButtonSize ?? "small")',
 					language: '@(Model.LanguageCode ?? "de-DE")',
-					authorization: function() {
-						amazon.Login.authorize({
-								scope: scope
-							},
-							'@Html.Raw(Model.ButtonHandlerUrl)'
-						);
+					authorization: function () {
+						if (isAuthentication) {
+							amazon.Login.authorize({ scope: scope }, '@Html.Raw(Model.ButtonHandlerUrl)');
+						}
+						else {
+							$.ajax({
+								type: 'POST',
+								url: '@Url.Action("SaveCartData", "ShoppingCart", new { area = "" })',
+								data: $('#startcheckout').closest('form').serialize(),
+								success: function (response) {
+									if (response.success) {
+										amazon.Login.authorize({ scope: scope }, '@Html.Raw(Model.ButtonHandlerUrl)');
+									}
+									else {
+										displayNotification(response.message, 'error');
+									}
+								}
+							});
+						}
 					},
 					onError: function (e) {
 						displayNotification(e.getErrorCode() + ': ' + e.getErrorMessage(), 'error');

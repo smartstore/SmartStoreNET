@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Login and Pay with Amazon 3.1.5.1
+###Bugfixes
+* Checkout attributes were always ignored
+
 ##Login and Pay with Amazon 3.0.3.2
 ###Improvements
 * Supports merchants registered in the USA and Japan

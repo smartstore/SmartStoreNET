@@ -13,8 +13,8 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ManufacturerValidator))]
-    public class ManufacturerModel : EntityModelBase, ILocalizedModel<ManufacturerLocalizedModel>, IStoreSelector
-    {
+    public class ManufacturerModel : TabbableModel, ILocalizedModel<ManufacturerLocalizedModel>, IStoreSelector
+	{
         public ManufacturerModel()
         {
             Locales = new List<ManufacturerLocalizedModel>();

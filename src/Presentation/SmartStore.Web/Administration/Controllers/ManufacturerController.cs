@@ -24,6 +24,8 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -50,6 +52,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
+		private readonly IEventPublisher _eventPublisher;
 
 		#endregion
 
@@ -66,7 +69,8 @@ namespace SmartStore.Admin.Controllers
 			IDiscountService discountService,
 			IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings,
-			CatalogSettings catalogSettings)
+			CatalogSettings catalogSettings,
+			IEventPublisher eventPublisher)
         {
             this._categoryService = categoryService;
             this._manufacturerTemplateService = manufacturerTemplateService;
@@ -86,6 +90,7 @@ namespace SmartStore.Admin.Controllers
 			this._dateTimeHelper = dateTimeHelper;
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
+			_eventPublisher = eventPublisher;
 		}
 
         #endregion
@@ -391,7 +396,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Edit(ManufacturerModel model, bool continueEditing)
+		[ValidateInput(false)]
+		public ActionResult Edit(ManufacturerModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -404,11 +410,7 @@ namespace SmartStore.Admin.Controllers
             {
                 manufacturer = model.ToEntity(manufacturer);
 				MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
-
-				////TBD: is it really necessary here already?
-				//manufacturer.UpdatedOnUtc = DateTime.UtcNow;
-				//_manufacturerService.UpdateManufacturer(manufacturer);
-
+				
 				// search engine name
 				model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
 				_urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
@@ -433,9 +435,12 @@ namespace SmartStore.Admin.Controllers
 				}
 
 				manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
+				manufacturer.UpdatedOnUtc = DateTime.UtcNow;
 
 				// Commit now
 				_manufacturerService.UpdateManufacturer(manufacturer);
+				
+				_eventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
 
 				// update picture seo file name
 				UpdatePictureSeoNames(manufacturer);
@@ -449,8 +454,7 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Updated"));
                 return continueEditing ? RedirectToAction("Edit", manufacturer.Id) : RedirectToAction("List");
             }
-
-
+			
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);

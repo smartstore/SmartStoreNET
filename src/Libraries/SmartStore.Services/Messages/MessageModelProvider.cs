@@ -217,7 +217,7 @@ namespace SmartStore.Services.Messages
 					modelPart = CreateModelPart(x, messageContext);
 					break;
 				case Customer x:
-					//modelPart = CreateModelPart(x, messageContext);
+					modelPart = CreateModelPart(x, messageContext);
 					break;
 				case Address x:
 					modelPart = CreateModelPart(x, messageContext);

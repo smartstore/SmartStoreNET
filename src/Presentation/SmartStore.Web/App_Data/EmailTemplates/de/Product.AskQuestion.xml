@@ -4,7 +4,8 @@
 	<ReplyTo>{% if Message.SenderEmail %}{{ Message.SenderName }} &lt;{{ Message.SenderEmail }}&gt;{% endif %}</ReplyTo>
 	<Subject>{{ Store.Name }} - Frage zu '{{ Product.Name | Truncate:30 }}' von {{ Message.SenderName }}</Subject>
 	<ModelTypes>Customer, Product</ModelTypes>
-	<Body><![CDATA[{% extends 'master' %}
+	<Body>
+	  <![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
@@ -44,7 +45,7 @@
 
 {% if Customer.IsRegistered %}
   <p class="mt-4 mb-4 text-center">
-    <a class="btn btn-primary" href="{{ Customer.Url }}">Zum Kundenprofil</a>
+    <a class="btn btn-primary" href="{{ Customer.EditUrl }}">Zum Kundenprofil</a>
   </p>
 {% endif %}
 

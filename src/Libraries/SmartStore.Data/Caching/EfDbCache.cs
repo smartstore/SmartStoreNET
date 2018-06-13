@@ -23,7 +23,7 @@ namespace SmartStore.Data.Caching
 			typeof(QueuedEmail).Name
 		};
 
-		private const string KEYPREFIX = "efcache:*";
+		private const string KEYPREFIX = "efcache:";
 		private readonly object _lock = new object();
 
 		private bool _enabled;
@@ -248,8 +248,8 @@ namespace SmartStore.Data.Caching
 
 		public void Clear()
 		{
-			_cache.RemoveByPattern(KEYPREFIX);
-			_requestCache.Value.RemoveByPattern(KEYPREFIX);
+			_cache.RemoveByPattern(KEYPREFIX + "*");
+			_requestCache.Value.RemoveByPattern(KEYPREFIX + "*");
 		}
 
 		public virtual void InvalidateSets(IEnumerable<string> entitySets)

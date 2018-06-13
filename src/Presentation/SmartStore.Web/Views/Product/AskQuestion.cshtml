@@ -28,6 +28,13 @@
 			{
                 @Html.ValidationSummary(true)
 			}
+			
+			@if (this.EnableHoneypotProtection)
+			{
+				<div class="d-none">
+					@Html.HoneypotField()
+				</div>
+			}
 
             <div class="form-group">
                 @Html.LabelFor(model => model.SenderEmail, new { @class = "col-form-label required", @for = "SenderEmail" })

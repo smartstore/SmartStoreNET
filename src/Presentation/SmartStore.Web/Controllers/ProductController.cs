@@ -861,7 +861,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost, ActionName("AskQuestion")]
-		[ValidateCaptcha]
+		[ValidateCaptcha, ValidateHoneypot]
 		[GdprConsent]
 		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
 		{

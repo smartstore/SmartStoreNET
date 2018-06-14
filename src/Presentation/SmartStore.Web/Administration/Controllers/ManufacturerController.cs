@@ -52,45 +52,49 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
-		private readonly IEventPublisher _eventPublisher;
 
 		#endregion
 
 		#region Constructors
 
-		public ManufacturerController(ICategoryService categoryService, IManufacturerService manufacturerService,
-            IManufacturerTemplateService manufacturerTemplateService, IProductService productService,
-			IStoreService storeService,	IStoreMappingService storeMappingService,
-            IUrlRecordService urlRecordService, IPictureService pictureService,
-            ILanguageService languageService, ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
+		public ManufacturerController(
+			ICategoryService categoryService, 
+			IManufacturerService manufacturerService,
+            IManufacturerTemplateService manufacturerTemplateService, 
+			IProductService productService,
+			IStoreService storeService,	
+			IStoreMappingService storeMappingService,
+            IUrlRecordService urlRecordService, 
+			IPictureService pictureService,
+            ILanguageService languageService, 
+			ILocalizationService localizationService, 
+			ILocalizedEntityService localizedEntityService,
             IWorkContext workContext,
             ICustomerActivityService customerActivityService,
 			IPermissionService permissionService,
 			IDiscountService discountService,
 			IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings,
-			CatalogSettings catalogSettings,
-			IEventPublisher eventPublisher)
+			CatalogSettings catalogSettings)
         {
-            this._categoryService = categoryService;
-            this._manufacturerTemplateService = manufacturerTemplateService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._urlRecordService = urlRecordService;
-            this._pictureService = pictureService;
-            this._languageService = languageService;
-            this._localizationService = localizationService;
-            this._localizedEntityService = localizedEntityService;
-            this._workContext = workContext;
-            this._customerActivityService = customerActivityService;
-            this._permissionService = permissionService;
-			this._discountService = discountService;
-			this._dateTimeHelper = dateTimeHelper;
-            this._adminAreaSettings = adminAreaSettings;
-            this._catalogSettings = catalogSettings;
-			_eventPublisher = eventPublisher;
+            _categoryService = categoryService;
+            _manufacturerTemplateService = manufacturerTemplateService;
+            _manufacturerService = manufacturerService;
+            _productService = productService;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
+            _urlRecordService = urlRecordService;
+            _pictureService = pictureService;
+            _languageService = languageService;
+            _localizationService = localizationService;
+            _localizedEntityService = localizedEntityService;
+            _workContext = workContext;
+            _customerActivityService = customerActivityService;
+            _permissionService = permissionService;
+			_discountService = discountService;
+			_dateTimeHelper = dateTimeHelper;
+            _adminAreaSettings = adminAreaSettings;
+            _catalogSettings = catalogSettings;
 		}
 
         #endregion
@@ -440,7 +444,7 @@ namespace SmartStore.Admin.Controllers
 				// Commit now
 				_manufacturerService.UpdateManufacturer(manufacturer);
 				
-				_eventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
+				Services.EventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
 
 				// update picture seo file name
 				UpdatePictureSeoNames(manufacturer);

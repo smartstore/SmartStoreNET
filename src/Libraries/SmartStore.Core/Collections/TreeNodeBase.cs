@@ -34,6 +34,8 @@ namespace SmartStore.Collections
 			}
 			set
 			{
+				_id = value;
+
 				if (_parent != null)
 				{
 					var map = GetIdNodeMap();
@@ -52,8 +54,6 @@ namespace SmartStore.Collections
 						map[value] = this;
 					}
 				}
-
-				_id = value;
 			}
 		}
 
@@ -210,15 +210,6 @@ namespace SmartStore.Collections
 				// Detach from parent
 				_parent.Remove((T)this);
 			}
-			//else
-			//{
-			//	// Is a root node with a map: get rid of it.
-			//	if (_idNodeMap != null)
-			//	{
-			//		_idNodeMap.Clear();
-			//		_idNodeMap = null;
-			//	}
-			//}
 
 			if (index == null)
 			{
@@ -234,25 +225,19 @@ namespace SmartStore.Collections
 
 			_parent = newParent;
 
-			// Set current ID and all children's IDs in new id-node map
-			FixNodeIdMap(prevParent, newParent);
-
-			//if (_id != null)
-			//{
-			//	var map = GetIdNodeMap();
-			//	if (map != null)
-			//	{
-			//		map[_id] = (T)this;
-			//	}
-			//}
+			FixIdNodeMap(prevParent, newParent);
 		}
 
-		private void FixNodeIdMap(T prevParent, T newParent)
+		/// <summary>
+		/// Responsible for propagating node ids when detaching/attaching nodes
+		/// </summary>
+		private void FixIdNodeMap(T prevParent, T newParent)
 		{
 			ICollection<TreeNodeBase<T>> keyedNodes = null;
 
 			if (prevParent != null)
 			{
+				// A node is moved. We need to detach first.
 				keyedNodes = new List<TreeNodeBase<T>>();
 
 				// Detach ids from prev map
@@ -260,38 +245,50 @@ namespace SmartStore.Collections
 
 				Traverse(x => 
 				{
+					// Collect all child node's ids
 					if (x._id != null)
 					{
 						keyedNodes.Add(x);
 						if (prevMap.ContainsKey(x._id))
 						{
+							// Remove from map
 							prevMap.Remove(x._id);
 						}
 					}
 				}, true);
 			}
-			else if (_idNodeMap != null)
-			{
-				keyedNodes = _idNodeMap.Values;
 
-				// Get rid of *this map
-				_idNodeMap.Clear();
-				_idNodeMap = null;
+			if (keyedNodes == null && _idNodeMap != null)
+			{
+				// An orphan/root node is attached
+				keyedNodes = _idNodeMap.Values;
 			}
 
-			if (newParent != null && keyedNodes.Any())
+			if (newParent != null)
 			{
 				// Get new *root map
 				var map = newParent.GetIdNodeMap();
 
 				// Merge *this map with *root map
-				foreach (var node in keyedNodes)
+				if (keyedNodes != null)
 				{
-					map[node._id] = node;
+					foreach (var node in keyedNodes)
+					{
+						map[node._id] = node;
+					}
+
+					// Get rid of *this map after memorizing keyed nodes
+					if (_idNodeMap != null)
+					{
+						_idNodeMap.Clear();
+						_idNodeMap = null;
+					}
 				}
 
 				if (prevParent == null && _id != null)
 				{
+					// When *this was a root, but is keyed, then *this id
+					// was most likely missing in the prev id-node-map.
 					map[_id] = (T)this;
 				}
 			}
@@ -667,16 +664,7 @@ namespace SmartStore.Collections
 				var list = node._parent?._children;
 				if (list.Remove(node))
 				{
-					// Remove id from id node map
-					//if (node._id != null)
-					//{
-					//	var map = node.GetIdNodeMap();
-					//	if (map != null && map.ContainsKey(node._id))
-					//	{
-					//		map.Remove(node._id);
-					//	}
-					//}
-					node.FixNodeIdMap(node._parent, null);
+					node.FixIdNodeMap(node._parent, null);
 
 					FixIndexes(list, node._index, -1);
 
@@ -695,11 +683,7 @@ namespace SmartStore.Collections
 				_children.Clear();
 			}
 
-			var map = GetIdNodeMap();
-			if (map != null)
-			{
-				map.Clear();
-			}
+			FixIdNodeMap(_parent, null);
 		}
 
 		public void Traverse(Action<T> action, bool includeSelf = false)

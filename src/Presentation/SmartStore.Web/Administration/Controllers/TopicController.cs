@@ -3,55 +3,42 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Topics;
-using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
-using SmartStore.Services.Seo;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class TopicController : AdminControllerBase
     {
         private readonly ITopicService _topicService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IPermissionService _permissionService;
-		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly IEventPublisher _eventPublisher;
 		private readonly IUrlRecordService _urlRecordService;
 
 		public TopicController(
 			ITopicService topicService, 
 			ILanguageService languageService,
             ILocalizedEntityService localizedEntityService, 
-			ILocalizationService localizationService,
-			IPermissionService permissionService, 
-			IStoreService storeService,
             IStoreMappingService storeMappingService, 
-			IEventPublisher eventPublisher,
 			IUrlRecordService urlRecordService)
         {
             _topicService = topicService;
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
-            _localizationService = localizationService;
-            _permissionService = permissionService;
-			_storeService = storeService;
 			_storeMappingService = storeMappingService;
-            _eventPublisher = eventPublisher;
 			_urlRecordService = urlRecordService;
-
 		}
 
         [NonAction]
@@ -100,22 +87,59 @@ namespace SmartStore.Admin.Controllers
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
 			}
 
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
-        
-        public ActionResult Index()
+
+		private string GetTopicUrl(Topic topic)
+		{
+			string url = null;
+
+			try
+			{
+				if (topic.LimitedToStores)
+				{
+					var storeMappings = _storeMappingService.GetStoreMappings(topic);
+					if (storeMappings.FirstOrDefault(x => x.StoreId == Services.StoreContext.CurrentStore.Id) == null)
+					{
+						var storeMapping = storeMappings.FirstOrDefault();
+						if (storeMapping != null)
+						{
+							var store = Services.StoreService.GetStoreById(storeMapping.StoreId);
+							if (store != null)
+							{
+								var baseUri = new Uri(Services.StoreService.GetHost(store));
+								url = baseUri.GetLeftPart(UriPartial.Authority) + Url.RouteUrl("Topic", new { SeName = topic.GetSeName() });
+							}
+						}
+					}
+				}
+
+				if (url.IsEmpty())
+				{
+					url = Url.RouteUrl("Topic", new { SeName = topic.GetSeName() }, Request.Url.Scheme);
+				}
+			}
+			catch (Exception exception)
+			{
+				Logger.Error(exception);
+			}
+
+			return url;
+		}
+
+		public ActionResult Index()
         {
             return RedirectToAction("List");
         }
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
 			var model = new TopicListModel();
 
-			foreach (var s in _storeService.GetAllStores())
+			foreach (var s in Services.StoreService.GetAllStores())
 			{
 				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
 			}
@@ -128,7 +152,7 @@ namespace SmartStore.Admin.Controllers
         {
 			var gridModel = new GridModel<TopicModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
 			{
 				var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize).AlterQuery(q =>
 				{
@@ -175,7 +199,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var model = new TopicModel();
@@ -192,7 +216,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(TopicModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -208,14 +232,13 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-                // locales
                 UpdateLocales(topic, model);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Added"));
+                NotifySuccess(T("Admin.ContentManagement.Topics.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = topic.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
 			PrepareStoresMappingModel(model, null, true);
 
             return View(model);
@@ -223,7 +246,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var topic = _topicService.GetTopicById(id);
@@ -231,12 +254,10 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = topic.ToModel();
-            model.Url = Url.RouteUrl("Topic", new { SeName = topic.GetSeName() }, "http");
+			model.Url = GetTopicUrl(topic);
 			
-			//Store
 			PrepareStoresMappingModel(model, topic, false);
             
-			//locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Title = topic.GetLocalized(x => x.Title, languageId, false, false);
@@ -247,7 +268,6 @@ namespace SmartStore.Admin.Controllers
 				locale.SeName = topic.GetSeName(languageId, false, false);
             });
 
-
 			model.WidgetZone = topic.WidgetZone.SplitSafe(",");
 
 			return View(model);
@@ -257,7 +277,7 @@ namespace SmartStore.Admin.Controllers
         [ValidateInput(false)]
         public ActionResult Edit(TopicModel model, bool continueEditing, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var topic = _topicService.GetTopicById(model.Id);
@@ -283,20 +303,18 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-				//Stores
 				_storeMappingService.SaveStoreMappings<Topic>(topic, model.SelectedStoreIds);
                 
-				//locales
                 UpdateLocales(topic, model);
 
-                _eventPublisher.Publish(new ModelBoundEvent(model, topic, form));
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Updated"));
+                NotifySuccess(T("Admin.ContentManagement.Topics.Updated"));
                 return continueEditing ? RedirectToAction("Edit", topic.Id) : RedirectToAction("List");
             }
 
-			// If we got this far, something failed, redisplay form
-			model.Url = Url.RouteUrl("Topic", new { SeName = topic.GetSeName() }, "http");
+			// If we got this far, something failed, redisplay form.
+			model.Url = GetTopicUrl(topic);
 			PrepareStoresMappingModel(model, topic, true);
 
             return View(model);
@@ -305,7 +323,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var topic = _topicService.GetTopicById(id);
@@ -314,13 +332,13 @@ namespace SmartStore.Admin.Controllers
 
             if (topic.IsSystemTopic)
             {
-                NotifyError(_localizationService.GetResource("Admin.ContentManagement.Topics.CannotBeDeleted"));
+                NotifyError(T("Admin.ContentManagement.Topics.CannotBeDeleted"));
                 return RedirectToAction("List");
             }
             
             _topicService.DeleteTopic(topic);
 
-            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Deleted"));
+            NotifySuccess(T("Admin.ContentManagement.Topics.Deleted"));
             return RedirectToAction("List");
         }
     }

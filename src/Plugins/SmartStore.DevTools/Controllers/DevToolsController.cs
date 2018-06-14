@@ -8,7 +8,6 @@ using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.DevTools.Controllers
 {
-
     public class DevToolsController : SmartController
     {
         private readonly ICommonServices _services;

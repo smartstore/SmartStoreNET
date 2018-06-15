@@ -149,19 +149,18 @@
         		if (!content.length)
         			return;
 
-        		var height = initialHeight = content.height(),
+				var height = initialHeight = content.outerHeight(false),
                              outerHeight,
-                             winHeight = $(document).height(),
+                             winHeight = $(window).height(),
                              top,
-                             offset;
+                             offset = 0;
 
         		if (initial === true) {
         			top = content.offset().top;
-        			offset = content.outerHeight(false) - content.height();
-        			if ($('html').hasClass('wkit')) offset += 2; // dont know why!
-        			content.data("initial-height", initialHeight)
-                                       .data("initial-top", top)
-                                       .data("initial-offset", offset);
+					content
+						.data("initial-height", initialHeight)
+						.data("initial-offset", offset)
+						.data("initial-top", top);
         		}
         		else {
         			top = content.data("initial-top");
@@ -169,8 +168,7 @@
         			initialHeight = content.data("initial-height");
         		}
 
-        		content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
-
+				content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
 			};
 
 			if (!$('body').is('.popup.bare')) {

@@ -17,9 +17,9 @@ namespace SmartStore.DevTools.Filters
 			Lazy<IWidgetProvider> widgetProvider, 
 			ProfilerSettings profilerSettings)
 		{
-			this._services = services;
-			this._widgetProvider = widgetProvider;
-			this._profilerSettings = profilerSettings;
+			_services = services;
+			_widgetProvider = widgetProvider;
+			_profilerSettings = profilerSettings;
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)

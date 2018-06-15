@@ -99,7 +99,7 @@ Textvorschläge:</div><ul>
 		<Value>Eine Verschlüsselung von Zugangsdaten wird nicnt unterstützt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingBillingAddress">
-		<Value>Die Amazon Rechnungsanschrift des Kunden fehlt.</Value>
+		<Value>Die Amazon Rechnungsanschrift fehlt. Bitte hinterlegen Sie eine Rechnungsanschrift bei Amazon oder wählen Sie eine andere Zahlart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonDataProcessed">
 		<Value>Daten von Amazon wurden verarbeitet</Value>

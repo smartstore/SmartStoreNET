@@ -99,7 +99,7 @@ Text suggestions:</div><ul>
 		<Value>Encryption of access data is not supported.</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingBillingAddress">
-		<Value>Missing Amazon billing address of the customer.</Value>
+		<Value>Missing Amazon billing address of the customer. Please enter a billing address at Amazon or choose another payment method.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonDataProcessed">
 		<Value>Data from Amazon has been processed</Value>

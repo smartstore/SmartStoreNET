@@ -7,7 +7,8 @@ using SmartStore.Services.Messages;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Models.Newsletter;
 using SmartStore.Web.Framework.Filters;
-using SmartStore.Web.Framework.Security;
+using SmartStore.Services.Common;
+using SmartStore.Services;
 
 namespace SmartStore.Web.Controllers
 {
@@ -18,7 +19,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IStoreContext _storeContext;
         private readonly CustomerSettings _customerSettings;
 
-        public NewsletterController(
+		public NewsletterController(
             IWorkContext workContext,
 			INewsLetterSubscriptionService newsLetterSubscriptionService,
 			CustomerSettings customerSettings,
@@ -28,7 +29,7 @@ namespace SmartStore.Web.Controllers
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._customerSettings = customerSettings;
 			this._storeContext = storeContext;
-        }
+		}
 
         [HttpPost]
         [ValidateInput(false)]
@@ -37,7 +38,9 @@ namespace SmartStore.Web.Controllers
         {
             string result;
             var success = false;
-			var hasConsented = ViewData["GdprConsent"] != null ? (bool)ViewData["GdprConsent"] : false;
+			var customer = Services.WorkContext.CurrentCustomer;
+			var hasConsentedToGdpr = customer.GetAttribute<bool>(SystemCustomerAttributeNames.HasConsentedToGdpr);
+			var hasConsented = ViewData["GdprConsent"] != null ? (bool)ViewData["GdprConsent"] : hasConsentedToGdpr;
 
 			if (!hasConsented)
 			{

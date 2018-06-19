@@ -64,7 +64,8 @@
                     var email = $("#newsletter-email").val();
                     var subscribe = 'true';
                     var resultDisplay = $("#newsletter-result-block");
-					var gdprConsent = $(".footer-newsletter #GdprConsent").is(':checked');
+					var elemGdprConsent = $(".footer-newsletter #GdprConsent")
+					var gdprConsent = elemGdprConsent.length == 0 ? null : elemGdprConsent.is(':checked');
 
                     if ($('#newsletter-unsubscribe').is(':checked')) {
                         subscribe = 'false';

@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.Filters
 			var customer = Services.Value.WorkContext.CurrentCustomer;
 			var hasConsentedToGdpr = filterContext.HttpContext.Request.Form["GdprConsent"];
 			
-			if (filterContext.HttpContext.Request.HttpMethod.Equals("POST") && hasConsentedToGdpr != null)
+			if (filterContext.HttpContext.Request.HttpMethod.Equals("POST") && hasConsentedToGdpr.HasValue())
 			{
 				// set flag which can be accessed in corresponding action
 				filterContext.Controller.ViewData.Add("GdprConsent", hasConsentedToGdpr.Contains("true"));

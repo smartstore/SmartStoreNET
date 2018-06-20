@@ -150,6 +150,7 @@
     <Compile Include="Mapping\Media\MediaStorageMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
+    <Compile Include="Mapping\Tasks\ScheduleTaskHistoryMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
     <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
       <DependentUpon>201403112331027_Initial.cs</DependentUpon>

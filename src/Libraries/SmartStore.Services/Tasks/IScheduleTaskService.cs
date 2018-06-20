@@ -97,9 +97,25 @@ namespace SmartStore.Services.Tasks
 		/// <param name="task">ScheduleTask</param>
 		/// <returns>The next schedule or <c>null</c> if the task is disabled</returns>
 		DateTime? GetNextSchedule(ScheduleTask task);
+
+        #region Schedule task history
+
+        /// <summary>
+        /// Inserts a tass history entry.
+        /// </summary>
+        /// <param name="historyEntry">Task history entry.</param>
+        void InsertTaskHistory(ScheduleTaskHistory historyEntry);
+
+        /// <summary>
+        /// Updates a tass history entry.
+        /// </summary>
+        /// <param name="historyEntry">Task history entry.</param>
+        void UpdateTaskHistory(ScheduleTaskHistory historyEntry);
+
+        #endregion
     }
 
-	public static class IScheduleTaskServiceExtensions
+    public static class IScheduleTaskServiceExtensions
 	{
 		public static ScheduleTask GetTaskByType<T>(this IScheduleTaskService service) where T : ITask
 		{

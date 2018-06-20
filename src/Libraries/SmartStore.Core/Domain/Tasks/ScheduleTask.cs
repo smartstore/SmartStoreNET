@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
@@ -11,6 +12,8 @@ namespace SmartStore.Core.Domain.Tasks
 	[Hookable(false)]
 	public class ScheduleTask : BaseEntity, ICloneable<ScheduleTask>
     {
+        private ICollection<ScheduleTaskHistory> _scheduleTaskHistory;
+
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -74,10 +77,15 @@ namespace SmartStore.Core.Domain.Tasks
 		[Timestamp]
 		public byte[] RowVersion { get; set; }
 
-		/// <summary>
-		/// Gets a value indicating whether a task is running
-		/// </summary>
-		public bool IsRunning
+        /// <summary>
+        /// Indicates whether the task runs separately on each server.
+        /// </summary>
+        public bool RunPerMachine { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether a task is running
+        /// </summary>
+        public bool IsRunning
 		{
 			get
 			{
@@ -98,7 +106,22 @@ namespace SmartStore.Core.Domain.Tasks
 			}
 		}
 
-		public ScheduleTask Clone()
+        /// <summary>
+        /// Gets or sets the schedule task history.
+        /// </summary>
+        public virtual ICollection<ScheduleTaskHistory> ScheduleTaskHistory
+        {
+            get
+            {
+                return _scheduleTaskHistory ?? (_scheduleTaskHistory = new HashSet<ScheduleTaskHistory>());
+            }
+            protected set
+            {
+                _scheduleTaskHistory = value;
+            }
+        }
+
+        public ScheduleTask Clone()
 		{
 			return (ScheduleTask)this.MemberwiseClone();
 		}

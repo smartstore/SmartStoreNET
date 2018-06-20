@@ -1,27 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
-using SmartStore.Utilities;
-using SmartStore.Services.Helpers;
-using System.Data.Entity.Core;
-using System.Data.SqlClient;
 using SmartStore.Core.Logging;
-using SmartStore.Core;
+using SmartStore.Services.Helpers;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tasks
 {
     public partial class ScheduleTaskService : IScheduleTaskService
     {
         private readonly IRepository<ScheduleTask> _taskRepository;
-		private readonly IDateTimeHelper _dtHelper;
+        private readonly IRepository<ScheduleTaskHistory> _taskHistoryRepository;
+        private readonly IDateTimeHelper _dtHelper;
 
-		public ScheduleTaskService(IRepository<ScheduleTask> taskRepository, IDateTimeHelper dtHelper)
+		public ScheduleTaskService(
+            IRepository<ScheduleTask> taskRepository,
+            IRepository<ScheduleTaskHistory> taskHistoryRepository,
+            IDateTimeHelper dtHelper)
         {
             _taskRepository = taskRepository;
+            _taskHistoryRepository = taskHistoryRepository;
 			_dtHelper = dtHelper;
 
 			T = NullLocalizer.Instance;
@@ -306,5 +310,70 @@ namespace SmartStore.Services.Tasks
 				throw ex;
 			}
 		}
-	}
+
+
+        #region Schedule task history
+
+        public virtual void InsertTaskHistory(ScheduleTaskHistory historyEntry)
+        {
+            Guard.NotNull(historyEntry, nameof(historyEntry));
+
+            _taskHistoryRepository.Insert(historyEntry);
+        }
+
+        public virtual void UpdateTaskHistory(ScheduleTaskHistory historyEntry)
+        {
+            Guard.NotNull(historyEntry, nameof(historyEntry));
+
+            try
+            {
+                using (var scope = new DbContextScope(_taskHistoryRepository.Context, autoCommit: true))
+                {
+                    Retry.Run(() => _taskHistoryRepository.Update(historyEntry), 3, TimeSpan.FromMilliseconds(50), (attempt, exception) =>
+                    {
+                        var ex = exception as DbUpdateConcurrencyException;
+                        if (ex == null) return;
+
+                        var task = historyEntry.ScheduleTask;
+                        var entry = ex.Entries.Single();
+                        var current = (ScheduleTaskHistory)entry.CurrentValues.ToObject(); // from current scope
+                        var cronExpression = task.CronExpression;
+
+                        // Fetch CronExpression from database (these were possibly edited thru the backend).
+                        _taskRepository.Context.ReloadEntity(task);
+
+                        // Do we have to reschedule the task?
+                        var cronModified = cronExpression != task.CronExpression;
+
+                        // Copy execution specific data from current to reloaded entity.
+                        historyEntry.Error = current.Error;
+                        historyEntry.StartedOnUtc = current.StartedOnUtc;
+                        historyEntry.FinishedOnUtc = current.FinishedOnUtc;
+                        historyEntry.SucceededOnUtc = current.SucceededOnUtc;
+                        historyEntry.ProgressMessage = current.ProgressMessage;
+                        historyEntry.ProgressPercent = current.ProgressPercent;
+                        historyEntry.NextRunUtc = current.NextRunUtc;
+
+                        if (historyEntry.NextRunUtc.HasValue && cronModified)
+                        {
+                            // Reschedule task
+                            historyEntry.NextRunUtc = GetNextSchedule(task);
+                        }
+
+                        if (attempt == 3)
+                        {
+                            _taskHistoryRepository.Update(historyEntry);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                throw;
+            }
+        }
+
+        #endregion
+    }
 }

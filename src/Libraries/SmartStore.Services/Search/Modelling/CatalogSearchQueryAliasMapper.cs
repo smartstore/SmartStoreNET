@@ -297,8 +297,7 @@ namespace SmartStore.Services.Search.Modelling
 				options.Clear();
 
 				var optionIdMappings = _productVariantAttributeValueRepository.TableUntracked
-					.Expand(x => x.ProductVariantAttribute)
-					.Expand("ProductVariantAttribute.ProductAttribute")
+					.Expand(x => x.ProductVariantAttribute.ProductAttribute)
 					.Select(x => new
 					{
 						OptionId = x.Id,

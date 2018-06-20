@@ -606,8 +606,9 @@ namespace SmartStore.Services.Catalog
 				});
 
 			var map = new Multimap<int, ProductTag>();
+			var list = query.ToList();
 
-			foreach (var item in query.ToList())
+			foreach (var item in list)
 			{
 				foreach (var tag in item.Tags)
 					map.Add(item.ProductId, tag);
@@ -1033,7 +1034,7 @@ namespace SmartStore.Services.Catalog
 				orderby pbi.DisplayOrder
 				select pbi;
 
-			query = query.Expand(x => x.Product);
+			query = query.Include(x => x.Product);
 
 			var bundleItemData = new List<ProductBundleItemData>();
 
@@ -1053,7 +1054,7 @@ namespace SmartStore.Services.Catalog
 				orderby pbi.DisplayOrder
 				select pbi;
 
-			var map = query.Expand(x => x.Product)
+			var map = query.Include(x => x.Product)
 				.ToList()
 				.ToMultimap(x => x.BundleProductId, x => x);
 

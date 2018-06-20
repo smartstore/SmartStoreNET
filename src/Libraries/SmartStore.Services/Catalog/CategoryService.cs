@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -537,13 +538,15 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _requestCache.Get(key, () =>
             {
-				var query = from pc in _productCategoryRepository.Table.Expand(x => x.Category)
+				var query = from pc in _productCategoryRepository.Table
                             join c in _categoryRepository.Table on pc.CategoryId equals c.Id
                             where pc.ProductId == productId &&
                                   !c.Deleted &&
                                   (showHidden || c.Published)
                             orderby pc.DisplayOrder
                             select pc;
+
+				query = query.Include(x => x.Category);
 
 				var allProductCategories = query.ToList();
 				var result = new List<ProductCategory>();
@@ -571,11 +574,13 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
-				from pc in _productCategoryRepository.TableUntracked.Expand(x => x.Category).Expand(x => x.Category.Picture)
+				from pc in _productCategoryRepository.TableUntracked
 				join c in _categoryRepository.Table on pc.CategoryId equals c.Id
 				where productIds.Contains(pc.ProductId) && !c.Deleted && (showHidden || c.Published)
 				orderby pc.DisplayOrder
 				select pc;
+
+			query = query.Include(x => x.Category.Picture);
 
 			if (hasDiscountsApplied.HasValue)
 			{

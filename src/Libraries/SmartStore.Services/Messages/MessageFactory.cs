@@ -383,7 +383,7 @@ namespace SmartStore.Services.Messages
 				parts = bagParts.Concat(parts.Except(bagParts));
 			}		
 
-			modelParts = parts.ToArray();
+			modelParts = parts.Where(x => x != null).ToArray();
 		}
 
 		protected EmailAccount GetEmailAccountOfMessageTemplate(MessageTemplate messageTemplate, int languageId)

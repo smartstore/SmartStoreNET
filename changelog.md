@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -7,12 +7,16 @@
 * #1459 BeezUp: Add option to only submit one category name per product
 * Wallet: Allow customer to choose whether refund should be submitted to his wallet.
 
+### Improvements
+* (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
+
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
 * **GMC**:
 	* Export the product images if no attribute images are defined
 	* Do not export the first image twice for additional images
 	* Export image URL of full size image (not default size) for additional images
+* Media middleware: 0-byte files should be treated as missing.
 * Megamenu alpha/omega blends do not toggle correctly on touch devices
 * Summernote HTML editor exceeds parent container width when CodeMirror is activated
 * Only display a zero search hits warning if at least one filter is activated
@@ -245,7 +249,9 @@
 * MegaSearch: Localized labels of filters were never displayed
 * #1195 Exporter: don't send an email if no email account has been selected
 * Product lists sometimes show the wrong delivery time
-* #1192 Lucene indexing performance decreases the longer it takes
+* #1192 Lucene indexing 
+* 
+*  decreases the longer it takes
 * #1198 MegaSearch: never sort numeric range by label, always by value
 * Filter for attributes were always sorted by hit count
 * #1200 PayPal PLUS: Invalid request if the order amount is zero

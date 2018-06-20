@@ -121,8 +121,13 @@ namespace SmartStore.Services.Media
 				Extension = extension,
 				IsRemote = _fileSystem.IsCloudStorage
 			};
-			
-            return result;
+
+			if (file.Exists && file.Size <= 0)
+			{
+				result.Exists = false;
+			}
+
+			return result;
         }
 
 		public virtual CachedImageResult Get(IFile file, ProcessImageQuery query)
@@ -139,6 +144,11 @@ namespace SmartStore.Services.Media
 				Extension = file.Extension.TrimStart('.'),
 				IsRemote = _fileSystem.IsCloudStorage
 			};
+
+			if (file.Exists && file.Size <= 0)
+			{
+				result.Exists = false;
+			}
 
 			return result;
 		}
@@ -164,7 +174,7 @@ namespace SmartStore.Services.Media
 			
 			var file = _fileSystem.GetFile(cachedImage.File.Path);
 			cachedImage.File = file;
-			cachedImage.Exists = file.Exists;
+			cachedImage.Exists = file.Exists && file.Size > 0;
 		}
 
 		public virtual void Delete(Picture picture)

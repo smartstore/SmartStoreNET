@@ -64,14 +64,16 @@
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Attachments)
 			</td>
-			<td class="adminData form-control-plaintext">
-				@foreach (var attach in Model.Attachments)
-				{
-					<span class="mr-3">
-						<i class="fa fa-paperclip"></i>
-						<a href='@Url.Action("DownloadAttachment", new { id = attach.Id })'>@attach.Name</a>
-					</span>
-				}
+			<td class="adminData">
+				<div class="form-control-plaintext d-flex flex-wrap">
+					@foreach (var attach in Model.Attachments)
+					{
+						<span class="mr-3 d-block text-truncate" style="max-width: 17.5rem">
+							<i class="fa fa-paperclip pr-1"></i>
+							<a href='@Url.Action("DownloadAttachment", new { id = attach.Id })'>@attach.Name</a>
+						</span>
+					}
+				</div>
 			</td>
 		</tr>
 	}

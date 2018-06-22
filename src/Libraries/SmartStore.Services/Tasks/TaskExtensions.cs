@@ -1,32 +1,31 @@
-﻿using System.Linq;
+﻿using System;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Tasks
 {
     public static class TaskExtensions
     {
         /// <summary>
-        /// Gets the running history entry for a scheduled task.
+        /// Gets whether the schedule task is visible or not.
         /// </summary>
         /// <param name="task">Scheduled task.</param>
-        /// <param name="machineName">Machine name, can be <c>null</c>.</param>
-        /// <returns>Schedule task history entry.</returns>
-        public static ScheduleTaskHistory GetRunningHistoryEntry(this ScheduleTask task, string machineName)
+        /// <returns><c>true</c> task is visible, <c>false</c> task is not visible.</returns>
+        public static bool IsVisible(this ScheduleTask task)
         {
             Guard.NotNull(task, nameof(task));
-
-            var query = task.ScheduleTaskHistory.Where(x => x.IsRunning);
-            if (machineName.HasValue())
+            if (task.IsHidden)
             {
-                query = query.Where(x => x.MachineName == machineName);
+                return false;
             }
 
-            var entry = query
-                .OrderByDescending(x => x.StartedOnUtc)
-                .ThenByDescending(x => x.Id)
-                .FirstOrDefault();
+            var type = Type.GetType(task.Type);
+            if (type != null)
+            {
+                return PluginManager.IsActivePluginAssembly(type.Assembly);
+            }
 
-            return entry;
+            return false;
         }
     }
 }

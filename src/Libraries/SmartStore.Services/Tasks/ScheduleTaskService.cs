@@ -385,7 +385,7 @@ namespace SmartStore.Services.Tasks
 
         #region Schedule task history
 
-        private IQueryable<ScheduleTaskHistory> GetRunningTaskHistoriesQuery()
+        public virtual IList<ScheduleTaskHistory> GetRunningHistoryEntries()
         {
             var machineName = _env.MachineName;
 
@@ -403,27 +403,38 @@ namespace SmartStore.Services.Tasks
                     .ThenByDescending(x => x.Id)
                     .FirstOrDefault();
 
-            return groupQuery;
-        }
-
-        public virtual IList<ScheduleTaskHistory> GetRunningTaskHistories()
-        {
-            var query = GetRunningTaskHistoriesQuery();
-
-			return Retry.Run(
-				() => query.ToList(), 
+            return Retry.Run(
+				() => groupQuery.ToList(), 
 				3, TimeSpan.FromMilliseconds(100), 
 				RetryOnDeadlockException);
         }
 
-        public virtual void InsertTaskHistory(ScheduleTaskHistory historyEntry)
+        public virtual ScheduleTaskHistory GetRunningHistoryEntryByTaskId(int taskId)
+        {
+            if (taskId == 0)
+            {
+                return null;
+            }
+
+            var machineName = _env.MachineName;
+
+            var historyEntry = _taskHistoryRepository.TableUntracked.Expand(x => x.ScheduleTask)
+                .Where(x => x.ScheduleTaskId == taskId && x.IsRunning && x.MachineName == machineName)
+                .OrderByDescending(x => x.StartedOnUtc)
+                .ThenByDescending(x => x.Id)
+                .FirstOrDefault();
+
+            return historyEntry;
+        }
+
+        public virtual void InsertHistoryEntry(ScheduleTaskHistory historyEntry)
         {
             Guard.NotNull(historyEntry, nameof(historyEntry));
 
             _taskHistoryRepository.Insert(historyEntry);
         }
 
-        public virtual void UpdateTaskHistory(ScheduleTaskHistory historyEntry)
+        public virtual void UpdateHistoryEntry(ScheduleTaskHistory historyEntry)
         {
             Guard.NotNull(historyEntry, nameof(historyEntry));
 

@@ -104,19 +104,26 @@ namespace SmartStore.Services.Tasks
         /// Gets a list of currently running <see cref="ScheduleTaskHistory"/> instances.
         /// </summary>
         /// <returns>Task history entries.</returns>
-        IList<ScheduleTaskHistory> GetRunningTaskHistories();
+        IList<ScheduleTaskHistory> GetRunningHistoryEntries();
 
         /// <summary>
-        /// Inserts a tass history entry.
+        /// Get history entry by task identifier.
         /// </summary>
-        /// <param name="historyEntry">Task history entry.</param>
-        void InsertTaskHistory(ScheduleTaskHistory historyEntry);
+        /// <param name="taskId">Task identifier.</param>
+        /// <returns>Task history entry.</returns>
+        ScheduleTaskHistory GetRunningHistoryEntryByTaskId(int taskId);
 
         /// <summary>
-        /// Updates a tass history entry.
+        /// Inserts a task history entry.
         /// </summary>
         /// <param name="historyEntry">Task history entry.</param>
-        void UpdateTaskHistory(ScheduleTaskHistory historyEntry);
+        void InsertHistoryEntry(ScheduleTaskHistory historyEntry);
+
+        /// <summary>
+        /// Updates a task history entry.
+        /// </summary>
+        /// <param name="historyEntry">Task history entry.</param>
+        void UpdateHistoryEntry(ScheduleTaskHistory historyEntry);
 
         #endregion
     }

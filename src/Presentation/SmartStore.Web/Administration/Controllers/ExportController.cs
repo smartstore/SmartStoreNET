@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
+using SmartStore.Admin.Models.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
@@ -39,7 +39,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
 	public class ExportController : AdminControllerBase
 	{
 		private readonly IExportProfileService _exportService;
@@ -51,11 +51,13 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILanguageService _languageService;
 		private readonly ICurrencyService _currencyService;
 		private readonly IEmailAccountService _emailAccountService;
-		private readonly ICountryService _countryService;
+        private readonly IScheduleTaskService _scheduleTaskService;
+        private readonly ICountryService _countryService;
 		private readonly IDateTimeHelper _dateTimeHelper;
-		private readonly DataExchangeSettings _dataExchangeSettings;
+        private readonly AdminModelHelper _adminModelHelper;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly IDataExporter _dataExporter;
+        private readonly DataExchangeSettings _dataExchangeSettings;
         private readonly Lazy<CustomerSettings> _customerSettings;
 
 		public ExportController(
@@ -68,12 +70,14 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService,
 			ICurrencyService currencyService,
 			IEmailAccountService emailAccountService,
-			ICountryService countryService,
+            IScheduleTaskService scheduleTaskService,
+            ICountryService countryService,
 			IDateTimeHelper dateTimeHelper,
-			DataExchangeSettings dataExchangeSettings,
-			ITaskScheduler taskScheduler,
+            AdminModelHelper adminModelHelper,
+            ITaskScheduler taskScheduler,
 			IDataExporter dataExporter,
-			Lazy<CustomerSettings> customerSettings)
+            DataExchangeSettings dataExchangeSettings,
+            Lazy<CustomerSettings> customerSettings)
 		{
 			_exportService = exportService;
 			_pluginMediator = pluginMediator;
@@ -84,12 +88,14 @@ namespace SmartStore.Admin.Controllers
 			_languageService = languageService;
 			_currencyService = currencyService;
 			_emailAccountService = emailAccountService;
+            _scheduleTaskService = scheduleTaskService;
 			_countryService = countryService;
 			_dateTimeHelper = dateTimeHelper;
-			_dataExchangeSettings = dataExchangeSettings;
+            _adminModelHelper = adminModelHelper;
 			_taskScheduler = taskScheduler;
 			_dataExporter = dataExporter;
-			_customerSettings = customerSettings;
+            _dataExchangeSettings = dataExchangeSettings;
+            _customerSettings = customerSettings;
 		}
 
 		#region Utilities
@@ -613,7 +619,8 @@ namespace SmartStore.Admin.Controllers
 
 			var providers = _exportService.LoadAllExportProviders(0, false).ToList();
 			var profiles = _exportService.GetExportProfiles().ToList();
-			var model = new List<ExportProfileModel>();
+            var runningHistoryEntries = _scheduleTaskService.GetRunningHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
+            var model = new List<ExportProfileModel>();
 
 			foreach (var profile in profiles)
 			{
@@ -626,7 +633,9 @@ namespace SmartStore.Admin.Controllers
 					PrepareProfileModel(profileModel, profile, provider);
 
 					profileModel.FileCount = fileDetailsModel.FileCount;
-					profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Services.ApplicationEnvironment, Url);
+
+                    runningHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var runningEntry);
+                    profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, runningEntry) ?? new ScheduleTaskModel();
 
 					model.Add(profileModel);
 				}

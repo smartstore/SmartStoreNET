@@ -199,7 +199,7 @@ namespace SmartStore.Services.Tasks
                     updateTask = true;
                 }
 
-                _scheduledTaskService.UpdateTaskHistory(historyEntry);
+                _scheduledTaskService.UpdateHistoryEntry(historyEntry);
 
                 if (updateTask)
                 {

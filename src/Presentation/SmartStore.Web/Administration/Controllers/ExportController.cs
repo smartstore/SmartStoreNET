@@ -56,7 +56,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly DataExchangeSettings _dataExchangeSettings;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly IDataExporter _dataExporter;
-		private readonly Lazy<CustomerSettings> _customerSettings;
+        private readonly Lazy<CustomerSettings> _customerSettings;
 
 		public ExportController(
 			IExportProfileService exportService,
@@ -626,7 +626,7 @@ namespace SmartStore.Admin.Controllers
 					PrepareProfileModel(profileModel, profile, provider);
 
 					profileModel.FileCount = fileDetailsModel.FileCount;
-					profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Url);
+					profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Services.ApplicationEnvironment, Url);
 
 					model.Add(profileModel);
 				}

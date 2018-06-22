@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Tasks;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -9,21 +10,31 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Extensions
 {
-	public static class ScheduleTaskExtensions
+    public static class ScheduleTaskExtensions
 	{
-		public static ScheduleTaskModel ToScheduleTaskModel(this ScheduleTask task, ILocalizationService localization, IDateTimeHelper dateTimeHelper, UrlHelper urlHelper)
+        public static ScheduleTaskModel ToScheduleTaskModel(
+            this ScheduleTask task,
+            ILocalizationService localization,
+            IDateTimeHelper dateTimeHelper,
+            IApplicationEnvironment env,
+            UrlHelper urlHelper)
 		{
-			var now = DateTime.UtcNow;
+            Guard.NotNull(task, nameof(task));
+            Guard.NotNull(localization, nameof(localization));
+            Guard.NotNull(dateTimeHelper, nameof(dateTimeHelper));
+            Guard.NotNull(env, nameof(env));
+            Guard.NotNull(urlHelper, nameof(urlHelper));
 
-			TimeSpan? dueIn = null;
-			if (task.NextRunUtc.HasValue)
-			{
-				dueIn = task.NextRunUtc.Value - now;
-			}
+            var now = DateTime.UtcNow;
+            var nextRunPretty = string.Empty;
+			var isOverdue = false;
+            var runningEntry = task.GetRunningHistoryEntry(env.MachineName);
 
-			var nextRunPretty = "";
-			bool isOverdue = false;
-			if (dueIn.HasValue)
+            TimeSpan? dueIn = task.NextRunUtc.HasValue
+                ? task.NextRunUtc.Value - now
+                : (TimeSpan?)null;
+
+            if (dueIn.HasValue)
 			{
 				if (dueIn.Value.TotalSeconds > 0)
 				{
@@ -36,12 +47,6 @@ namespace SmartStore.Admin.Extensions
 				}
 			}
 
-			var isRunning = task.IsRunning;
-			var lastStartOn = task.LastStartUtc.HasValue ? dateTimeHelper.ConvertToUserTime(task.LastStartUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-			var lastEndOn = task.LastEndUtc.HasValue ? dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-			var lastSuccessOn = task.LastSuccessUtc.HasValue ? dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-			var nextRunOn = task.NextRunUtc.HasValue ? dateTimeHelper.ConvertToUserTime(task.NextRunUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-
 			var model = new ScheduleTaskModel
 			{
 				Id = task.Id,
@@ -50,34 +55,50 @@ namespace SmartStore.Admin.Extensions
 				CronDescription = CronExpression.GetFriendlyDescription(task.CronExpression),
 				Enabled = task.Enabled,
 				StopOnError = task.StopOnError,
-				LastStart = lastStartOn,
-				LastStartPretty = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",
-				LastEnd = lastEndOn,
-				LastEndPretty = lastEndOn.HasValue ? lastEndOn.Value.ToNativeString("G") : "",
-				LastSuccess = lastSuccessOn,
-				LastSuccessPretty = lastSuccessOn.HasValue ? lastSuccessOn.Value.ToNativeString("G") : "",
-				NextRun = nextRunOn,
 				NextRunPretty = nextRunPretty,
-				LastError = task.LastError.EmptyNull(),
-				IsRunning = isRunning,
+				LastError = runningEntry?.Error.EmptyNull(),
+				IsRunning = runningEntry != null,
 				CancelUrl = urlHelper.Action("CancelJob", "ScheduleTask", new { id = task.Id }),
 				ExecuteUrl = urlHelper.Action("RunJob", "ScheduleTask", new { id = task.Id }),
 				EditUrl = urlHelper.Action("Edit", "ScheduleTask", new { id = task.Id }),
-				ProgressPercent = task.ProgressPercent,
-				ProgressMessage = task.ProgressMessage,
+				ProgressPercent = runningEntry?.ProgressPercent,
+				ProgressMessage = runningEntry?.ProgressMessage,
 				IsOverdue = isOverdue,
-				Duration = ""
-			};
+				Duration = string.Empty,
+                LastStartPretty = string.Empty,
+                LastEndPretty = string.Empty,
+                LastSuccessPretty = string.Empty
+            };
 
-			var span = TimeSpan.Zero;
-			if (task.LastStartUtc.HasValue)
-			{
-				span = model.IsRunning ? now - task.LastStartUtc.Value : task.LastEndUtc.Value - task.LastStartUtc.Value;
-				if (span > TimeSpan.Zero)
-				{
-					model.Duration = span.ToString("g");
-				}
-			}
+            if (task.NextRunUtc.HasValue)
+            {
+                model.NextRun = dateTimeHelper.ConvertToUserTime(task.NextRunUtc.Value, DateTimeKind.Utc);
+            }
+
+            if (runningEntry != null)
+            {
+                model.LastStart = dateTimeHelper.ConvertToUserTime(runningEntry.StartedOnUtc, DateTimeKind.Utc);
+                model.LastStartPretty = runningEntry.StartedOnUtc.RelativeFormat(true, "f");
+
+                if (runningEntry.FinishedOnUtc.HasValue)
+                {
+                    model.LastEnd = dateTimeHelper.ConvertToUserTime(runningEntry.FinishedOnUtc.Value, DateTimeKind.Utc);
+                    model.LastEndPretty = runningEntry.FinishedOnUtc.Value.ToNativeString("G");
+                }
+                if (runningEntry.SucceededOnUtc.HasValue)
+                {
+                    model.LastSuccess = dateTimeHelper.ConvertToUserTime(runningEntry.SucceededOnUtc.Value, DateTimeKind.Utc);
+                    model.LastSuccessPretty = runningEntry.SucceededOnUtc.Value.ToNativeString("G");
+                }
+
+                var span = model.IsRunning 
+                    ? now - runningEntry.StartedOnUtc 
+                    : (runningEntry.FinishedOnUtc ?? runningEntry.StartedOnUtc) - runningEntry.StartedOnUtc;
+                if (span > TimeSpan.Zero)
+                {
+                    model.Duration = span.ToString("g");
+                }
+            }
 
 			return model;
 		}

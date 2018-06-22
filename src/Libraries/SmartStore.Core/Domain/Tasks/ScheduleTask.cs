@@ -71,12 +71,6 @@ namespace SmartStore.Core.Domain.Tasks
 		/// </summary>
 		public string ProgressMessage { get; set; }
 
-		/// <summary>
-		/// Concurrency Token
-		/// </summary>
-		[Timestamp]
-		public byte[] RowVersion { get; set; }
-
         /// <summary>
         /// Indicates whether the task runs separately on each server.
         /// </summary>

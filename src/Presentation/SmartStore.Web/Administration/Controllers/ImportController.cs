@@ -338,7 +338,7 @@ namespace SmartStore.Admin.Controllers
 
 				PrepareProfileModel(profileModel, profile, false);
 
-				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Url);
+				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Services.ApplicationEnvironment, Url);
 
 				model.Profiles.Add(profileModel);
 			}

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Web.Hosting;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Async;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Tasks
 {
@@ -22,8 +19,9 @@ namespace SmartStore.Services.Tasks
         private readonly Func<Type, ITask> _taskResolver;
 		private readonly IComponentContext _componentContext;
 		private readonly IAsyncState _asyncState;
+        private readonly IApplicationEnvironment _env;
 
-		public const string CurrentCustomerIdParamName = "CurrentCustomerId";
+        public const string CurrentCustomerIdParamName = "CurrentCustomerId";
 		public const string CurrentStoreIdParamName = "CurrentStoreId";
 
 		public TaskExecutor(
@@ -33,7 +31,8 @@ namespace SmartStore.Services.Tasks
 			//IWorkContext workContext,
 			IComponentContext componentContext,
 			IAsyncState asyncState,
-			Func<Type, ITask> taskResolver)
+			Func<Type, ITask> taskResolver,
+            IApplicationEnvironment env)
         {
             _scheduledTaskService = scheduledTaskService;
 			//_dbContext = dbContext;
@@ -41,6 +40,7 @@ namespace SmartStore.Services.Tasks
 			_componentContext = componentContext;
 			_asyncState = asyncState;
             _taskResolver = taskResolver;
+            _env = env;
 
             Logger = NullLogger.Instance;
 			T = NullLocalizer.Instance;
@@ -54,7 +54,6 @@ namespace SmartStore.Services.Tasks
 			IDictionary<string, string> taskParameters = null,
             bool throwOnError = false)
         {
-            // TODO:
 			//if (task.IsRunning)
    //             return;
 
@@ -71,7 +70,8 @@ namespace SmartStore.Services.Tasks
             var historyEntry = new ScheduleTaskHistory
             {
                 ScheduleTaskId = task.Id,
-                MachineName = HostingEnvironment.ApplicationID,
+                IsRunning = true,
+                MachineName = _env.MachineName,
                 StartedOnUtc = DateTime.UtcNow
             };
 
@@ -152,6 +152,7 @@ namespace SmartStore.Services.Tasks
                 var now = DateTime.UtcNow;
                 var updateTask = false;
 
+                historyEntry.IsRunning = false;
                 historyEntry.ProgressPercent = null;
                 historyEntry.ProgressMessage = null;
                 historyEntry.Error = lastError;
@@ -179,7 +180,7 @@ namespace SmartStore.Services.Tasks
                 try
                 {
                     //Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - task.LastStartUtc.Value).TotalMilliseconds);
-                    Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - historyEntry.StartedOnUtc.Value).TotalMilliseconds);
+                    Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - historyEntry.StartedOnUtc).TotalMilliseconds);
 
                     // Remove from AsyncState.
                     if (stateName.HasValue())
@@ -194,8 +195,8 @@ namespace SmartStore.Services.Tasks
 
                 if (task.Enabled)
 				{
-					//task.NextRunUtc = _scheduledTaskService.GetNextSchedule(task);
-                    historyEntry.NextRunUtc = _scheduledTaskService.GetNextSchedule(task);
+					task.NextRunUtc = _scheduledTaskService.GetNextSchedule(task);
+                    updateTask = true;
                 }
 
                 _scheduledTaskService.UpdateTaskHistory(historyEntry);

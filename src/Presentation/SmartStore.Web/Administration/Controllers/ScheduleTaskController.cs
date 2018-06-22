@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.Tasks;
+using SmartStore.Core;
+using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Helpers;
@@ -14,12 +16,10 @@ using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Core;
-using SmartStore.Core.Async;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class ScheduleTaskController : AdminControllerBase
     {
 		private readonly IScheduleTaskService _scheduleTaskService;
@@ -99,7 +99,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = _scheduleTaskService.GetAllTasks(true)
 				.Where(IsTaskVisible)
-				.Select(x => x.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url))
+				.Select(x => x.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Services.ApplicationEnvironment, Url))
 				.ToList();
 
             return View(model);
@@ -109,21 +109,38 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult GetRunningTasks()
 		{
-			if (!_scheduleTaskService.HasRunningTasks())
-				return Json(new EmptyResult());
+            var runningTaskHistories = _scheduleTaskService.GetRunningTaskHistories();
+            if (!runningTaskHistories.Any())
+            {
+                return Json(new EmptyResult());
+            }
 
-			var runningTasks = from t in _scheduleTaskService.GetRunningTasks()
-							   select new 
-							   {
- 								   id = t.Id,
-								   percent = t.ProgressPercent,
-								   message = t.ProgressMessage,
-							   };
+            var models = runningTaskHistories
+                .Select(x => new
+                {
+                    id = x.ScheduleTaskId,
+                    percent = x.ProgressPercent,
+                    message = x.ProgressMessage
+                })
+                .ToArray();
 
-			return Json(runningTasks.ToArray());
-		}
+            return Json(models);
 
-		[HttpPost]
+            //if (!_scheduleTaskService.HasRunningTasks())
+            //	return Json(new EmptyResult());
+
+            //var runningTasks = from t in _scheduleTaskService.GetRunningTasks()
+            //				   select new 
+            //				   {
+            //						   id = t.Id,
+            //					   percent = t.ProgressPercent,
+            //					   message = t.ProgressMessage,
+            //				   };
+
+            //return Json(runningTasks.ToArray());
+        }
+
+        [HttpPost]
 		public ActionResult GetTaskRunInfo(int id /* taskId */)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
@@ -135,7 +152,7 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 			}
 
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Services.ApplicationEnvironment, Url);
 
 			return Json(new 
 			{
@@ -209,7 +226,7 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 			}
 
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Services.ApplicationEnvironment, Url);
 			ViewBag.ReturnUrl = returnUrl;
 
 			return View(model);
@@ -288,7 +305,7 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.Cancellable = cancellable;
 			ViewBag.ReloadPage = reloadPage;
 
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Services.ApplicationEnvironment, Url);
 
 			return PartialView(model);
 		}
@@ -305,7 +322,7 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.HasPermission = _permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks);
 			ViewBag.ReturnUrl = returnUrl;
 
-			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Services.ApplicationEnvironment, Url);
 
 			return PartialView("_MinimalTaskWidget", model);
 		}

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
-using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
@@ -18,15 +18,18 @@ namespace SmartStore.Services.Tasks
         private readonly IRepository<ScheduleTask> _taskRepository;
         private readonly IRepository<ScheduleTaskHistory> _taskHistoryRepository;
         private readonly IDateTimeHelper _dtHelper;
+        private readonly IApplicationEnvironment _env;
 
-		public ScheduleTaskService(
+        public ScheduleTaskService(
             IRepository<ScheduleTask> taskRepository,
             IRepository<ScheduleTaskHistory> taskHistoryRepository,
-            IDateTimeHelper dtHelper)
+            IDateTimeHelper dtHelper,
+            IApplicationEnvironment env)
         {
             _taskRepository = taskRepository;
             _taskHistoryRepository = taskHistoryRepository;
 			_dtHelper = dtHelper;
+            _env = env;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -94,53 +97,80 @@ namespace SmartStore.Services.Tasks
         public virtual IList<ScheduleTask> GetPendingTasks()
         {
             var now = DateTime.UtcNow;
+            var machineName = _env.MachineName;
 
-            var query = from t in _taskRepository.Table
-						where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
-                        orderby t.NextRunUtc
-                        select t;
+            var query =
+                from t in _taskRepository.Table
+                where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
+                select new
+                {
+                    Task = t,
+                    LastHistoryEntry = t.ScheduleTaskHistory
+                        .Where(th => !t.RunPerMachine || (t.RunPerMachine && th.MachineName == machineName))
+                        .OrderByDescending(th => th.StartedOnUtc)
+                        .ThenByDescending(th => th.Id)
+                        .FirstOrDefault()
+                };
 
-			return Retry.Run(
-				() => query.ToList(),
-				3, TimeSpan.FromMilliseconds(100),
-				RetryOnDeadlockException);
+            var tasks = Retry.Run(
+                () => query.ToList(),
+                3, TimeSpan.FromMilliseconds(100),
+                RetryOnDeadlockException);
+
+            var pendingTasks = tasks
+                .Where(x => x.LastHistoryEntry == null || !x.LastHistoryEntry.IsRunning)
+                .Select(x => x.Task)
+                .ToList();
+
+            return pendingTasks;
+
+
+            //var query = from t in _taskRepository.Table
+            //            where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
+            //            orderby t.NextRunUtc
+            //            select t;
+
+    //        return Retry.Run(
+				//() => query.ToList(),
+				//3, TimeSpan.FromMilliseconds(100),
+				//RetryOnDeadlockException);
 		}
 
-		public virtual bool HasRunningTasks()
-		{
-			var query = GetRunningTasksQuery();
-			return query.Any();
-		}
+		//public virtual bool HasRunningTasks()
+		//{
+		//	var query = GetRunningTasksQuery();
+		//	return query.Any();
+		//}
 
-		public virtual bool IsTaskRunning(int taskId)
-		{
-			if (taskId <= 0)
-				return false;
+		//public virtual bool IsTaskRunning(int taskId)
+		//{
+		//	if (taskId <= 0)
+		//		return false;
 
-			var query = GetRunningTasksQuery();
-			query.Where(t => t.Id == taskId);
-			return query.Any();
-		}
+		//	var query = GetRunningTasksQuery();
+		//	query.Where(t => t.Id == taskId);
+		//	return query.Any();
+		//}
 
-		public virtual IList<ScheduleTask> GetRunningTasks()
-		{
-			var query = GetRunningTasksQuery();
+		//public virtual IList<ScheduleTask> GetRunningTasks()
+		//{
+		//	var query = GetRunningTasksQuery();
 
-			return Retry.Run(
-				() => query.ToList(), 
-				3, TimeSpan.FromMilliseconds(100), 
-				RetryOnDeadlockException);
-		}
+		//	return Retry.Run(
+		//		() => query.ToList(), 
+		//		3, TimeSpan.FromMilliseconds(100), 
+		//		RetryOnDeadlockException);
+		//}
 
-		private IQueryable<ScheduleTask> GetRunningTasksQuery()
-		{
-			var query = from t in _taskRepository.Table
-						where t.LastStartUtc.HasValue && t.LastStartUtc.Value > (t.LastEndUtc ?? DateTime.MinValue)
-						orderby t.LastStartUtc
-						select t;
+  //      private IQueryable<ScheduleTask> GetRunningTasksQuery()
+		//{
+  //          var query = from t in _taskRepository.Table
+  //                      where t.LastStartUtc.HasValue && t.LastStartUtc.Value > (t.LastEndUtc ?? DateTime.MinValue)
+  //                      orderby t.LastStartUtc
+  //                      select t;
 
-			return query;
-		}
+  //          return query;
+		//}
 
 
         public virtual void InsertTask(ScheduleTask task)
@@ -156,54 +186,56 @@ namespace SmartStore.Services.Tasks
 
 			try
 			{
-				using (var scope = new DbContextScope(_taskRepository.Context, autoCommit: true))
-				{
-					Retry.Run(() => _taskRepository.Update(task), 3, TimeSpan.FromMilliseconds(50), (attempt, exception) =>
-					{
-						var ex = exception as DbUpdateConcurrencyException;
-						if (ex == null) return;
+                _taskRepository.Update(task);
 
-						var entry = ex.Entries.Single();
-						var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
+    //            using (var scope = new DbContextScope(_taskRepository.Context, autoCommit: true))
+				//{
+				//	Retry.Run(() => _taskRepository.Update(task), 3, TimeSpan.FromMilliseconds(50), (attempt, exception) =>
+				//	{
+				//		var ex = exception as DbUpdateConcurrencyException;
+				//		if (ex == null) return;
 
-						// When 'StopOnError' is true, the 'Enabled' property could have been set to true on exception.
-						var prop = entry.Property("Enabled");
-						var enabledModified = !prop.CurrentValue.Equals(prop.OriginalValue);
+				//		var entry = ex.Entries.Single();
+				//		var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
 
-						// Save current cron expression
-						var cronExpression = task.CronExpression;
+				//		// When 'StopOnError' is true, the 'Enabled' property could have been set to true on exception.
+				//		var prop = entry.Property("Enabled");
+				//		var enabledModified = !prop.CurrentValue.Equals(prop.OriginalValue);
 
-						// Fetch Name, CronExpression, Enabled & StopOnError from database
-						// (these were possibly edited thru the backend)
-						_taskRepository.Context.ReloadEntity(task);
+				//		// Save current cron expression
+				//		var cronExpression = task.CronExpression;
 
-						// Do we have to reschedule the task?
-						var cronModified = cronExpression != task.CronExpression;
+				//		// Fetch Name, CronExpression, Enabled & StopOnError from database
+				//		// (these were possibly edited thru the backend)
+				//		_taskRepository.Context.ReloadEntity(task);
 
-						// Copy execution specific data from current to reloaded entity 
-						task.LastEndUtc = current.LastEndUtc;
-						task.LastError = current.LastError;
-						task.LastStartUtc = current.LastStartUtc;
-						task.LastSuccessUtc = current.LastSuccessUtc;
-						task.ProgressMessage = current.ProgressMessage;
-						task.ProgressPercent = current.ProgressPercent;
-						task.NextRunUtc = current.NextRunUtc;
-						if (enabledModified)
-						{
-							task.Enabled = current.Enabled;
-						}
-						if (task.NextRunUtc.HasValue && cronModified)
-						{
-							// reschedule task
-							task.NextRunUtc = GetNextSchedule(task);
-						}
+				//		// Do we have to reschedule the task?
+				//		var cronModified = cronExpression != task.CronExpression;
 
-						if (attempt == 3)
-						{
-							_taskRepository.Update(task);
-						}
-					});
-				}
+				//		// Copy execution specific data from current to reloaded entity 
+				//		task.LastEndUtc = current.LastEndUtc;
+				//		task.LastError = current.LastError;
+				//		task.LastStartUtc = current.LastStartUtc;
+				//		task.LastSuccessUtc = current.LastSuccessUtc;
+				//		task.ProgressMessage = current.ProgressMessage;
+				//		task.ProgressPercent = current.ProgressPercent;
+				//		task.NextRunUtc = current.NextRunUtc;
+				//		if (enabledModified)
+				//		{
+				//			task.Enabled = current.Enabled;
+				//		}
+				//		if (task.NextRunUtc.HasValue && cronModified)
+				//		{
+				//			// reschedule task
+				//			task.NextRunUtc = GetNextSchedule(task);
+				//		}
+
+				//		if (attempt == 3)
+				//		{
+				//			_taskRepository.Update(task);
+				//		}
+				//	});
+				//}
 			}
 			catch (Exception ex)
 			{
@@ -244,13 +276,13 @@ namespace SmartStore.Services.Tasks
 				task.NextRunUtc = GetNextSchedule(task);
 				if (isAppStart)
 				{
-					task.ProgressPercent = null;
-					task.ProgressMessage = null;
-					if (task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
-					{
-						task.LastEndUtc = task.LastStartUtc;
-						task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
-					}
+					//task.ProgressPercent = null;
+					//task.ProgressMessage = null;
+					//if (task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
+					//{
+					//	task.LastEndUtc = task.LastStartUtc;
+					//	task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
+					//}
 					FixTypeName(task);
 				}
 				else
@@ -265,7 +297,46 @@ namespace SmartStore.Services.Tasks
 				// to commit all changes in one go.
 				_taskRepository.Context.SaveChanges();
 			}
-		}
+
+            if (isAppStart)
+            {
+                // Empty progress information.
+                var entriesWithProgress = _taskHistoryRepository.Table
+                    .Where(x => x.ProgressPercent != null || !string.IsNullOrEmpty(x.ProgressMessage))
+                    .ToList();
+
+                if (entriesWithProgress.Any())
+                {
+                    foreach (var entry in entriesWithProgress)
+                    {
+                        entry.ProgressPercent = null;
+                        entry.ProgressMessage = null;
+                    }
+                    _taskHistoryRepository.UpdateRange(entriesWithProgress);
+                    _taskHistoryRepository.Context.SaveChanges();
+                }
+            }
+
+            if (isAppStart)
+            {
+                // Normalize invalid finish date.
+                var entriesWithInvalidDate = _taskHistoryRepository.Table
+                    .Where(x => x.FinishedOnUtc != null && x.FinishedOnUtc < x.StartedOnUtc)
+                    .ToList();
+
+                if (entriesWithInvalidDate.Any())
+                {
+                    string abnormalAbort = T("Admin.System.ScheduleTasks.AbnormalAbort");
+                    foreach (var entry in entriesWithInvalidDate)
+                    {
+                        entry.FinishedOnUtc = entry.StartedOnUtc;
+                        entry.Error = abnormalAbort;
+                    }
+                    _taskHistoryRepository.UpdateRange(entriesWithInvalidDate);
+                    _taskHistoryRepository.Context.SaveChanges();
+                }
+            }
+        }
 
 		private void FixTypeName(ScheduleTask task)
 		{
@@ -314,6 +385,37 @@ namespace SmartStore.Services.Tasks
 
         #region Schedule task history
 
+        private IQueryable<ScheduleTaskHistory> GetRunningTaskHistoriesQuery()
+        {
+            var machineName = _env.MachineName;
+
+            var query =
+                from t in _taskRepository.TableUntracked
+                join th in _taskHistoryRepository.TableUntracked on t.Id equals th.ScheduleTaskId
+                where th.IsRunning && th.MachineName == machineName
+                select th;
+
+            var groupQuery =
+                from th in query
+                group th by th.ScheduleTaskId into grp
+                select grp
+                    .OrderByDescending(x => x.StartedOnUtc)
+                    .ThenByDescending(x => x.Id)
+                    .FirstOrDefault();
+
+            return groupQuery;
+        }
+
+        public virtual IList<ScheduleTaskHistory> GetRunningTaskHistories()
+        {
+            var query = GetRunningTaskHistoriesQuery();
+
+			return Retry.Run(
+				() => query.ToList(), 
+				3, TimeSpan.FromMilliseconds(100), 
+				RetryOnDeadlockException);
+        }
+
         public virtual void InsertTaskHistory(ScheduleTaskHistory historyEntry)
         {
             Guard.NotNull(historyEntry, nameof(historyEntry));
@@ -327,50 +429,12 @@ namespace SmartStore.Services.Tasks
 
             try
             {
-                using (var scope = new DbContextScope(_taskHistoryRepository.Context, autoCommit: true))
-                {
-                    Retry.Run(() => _taskHistoryRepository.Update(historyEntry), 3, TimeSpan.FromMilliseconds(50), (attempt, exception) =>
-                    {
-                        var ex = exception as DbUpdateConcurrencyException;
-                        if (ex == null) return;
-
-                        var task = historyEntry.ScheduleTask;
-                        var entry = ex.Entries.Single();
-                        var current = (ScheduleTaskHistory)entry.CurrentValues.ToObject(); // from current scope
-                        var cronExpression = task.CronExpression;
-
-                        // Fetch CronExpression from database (these were possibly edited thru the backend).
-                        _taskRepository.Context.ReloadEntity(task);
-
-                        // Do we have to reschedule the task?
-                        var cronModified = cronExpression != task.CronExpression;
-
-                        // Copy execution specific data from current to reloaded entity.
-                        historyEntry.Error = current.Error;
-                        historyEntry.StartedOnUtc = current.StartedOnUtc;
-                        historyEntry.FinishedOnUtc = current.FinishedOnUtc;
-                        historyEntry.SucceededOnUtc = current.SucceededOnUtc;
-                        historyEntry.ProgressMessage = current.ProgressMessage;
-                        historyEntry.ProgressPercent = current.ProgressPercent;
-                        historyEntry.NextRunUtc = current.NextRunUtc;
-
-                        if (historyEntry.NextRunUtc.HasValue && cronModified)
-                        {
-                            // Reschedule task
-                            historyEntry.NextRunUtc = GetNextSchedule(task);
-                        }
-
-                        if (attempt == 3)
-                        {
-                            _taskHistoryRepository.Update(historyEntry);
-                        }
-                    });
-                }
+                _taskHistoryRepository.Update(historyEntry);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                Logger.Error(ex);
-                throw;
+                Logger.Error(exception);
+                // Do not throw.
             }
         }
 

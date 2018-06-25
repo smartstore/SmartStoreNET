@@ -18,7 +18,6 @@ using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
-using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
@@ -35,7 +34,6 @@ using SmartStore.Services.Pdf;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
-using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
@@ -48,7 +46,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
 	public partial class OrderController : AdminControllerBase
     {
         #region Fields
@@ -78,7 +76,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IGiftCardService _giftCardService;
         private readonly IDownloadService _downloadService;
 	    private readonly IShipmentService _shipmentService;
-		private readonly IStoreService _storeService;
 		private readonly ITaxService _taxService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly IEventPublisher _eventPublisher;
@@ -97,7 +94,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly SearchSettings _searchSettings;
 
         private readonly IPdfConverter _pdfConverter;
-        private readonly ICommonServices _services;
 
         #endregion
 
@@ -128,7 +124,6 @@ namespace SmartStore.Admin.Controllers
             IGiftCardService giftCardService, 
 			IDownloadService downloadService,
 			IShipmentService shipmentService, 
-			IStoreService storeService,
 			ITaxService taxService,
 			IPriceCalculationService priceCalculationService,
 			IEventPublisher eventPublisher,
@@ -144,8 +139,7 @@ namespace SmartStore.Admin.Controllers
 			AddressSettings addressSettings,
 			AdminAreaSettings adminAreaSettings,
 			SearchSettings searchSettings,
-			IPdfConverter pdfConverter, 
-			ICommonServices services)
+			IPdfConverter pdfConverter)
 		{
             _orderService = orderService;
             _orderReportService = orderReportService;
@@ -172,7 +166,6 @@ namespace SmartStore.Admin.Controllers
             _giftCardService = giftCardService;
             _downloadService = downloadService;
             _shipmentService = shipmentService;
-			_storeService = storeService;
 			_taxService = taxService;
 			_priceCalculationService = priceCalculationService;
 			_eventPublisher = eventPublisher;
@@ -191,7 +184,6 @@ namespace SmartStore.Admin.Controllers
 			_searchSettings = searchSettings;
 
             _pdfConverter = pdfConverter;
-            _services = services;
 		}
         
         #endregion
@@ -207,15 +199,16 @@ namespace SmartStore.Admin.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
-			var store = _storeService.GetStoreById(order.StoreId);
-			var primaryStoreCurrency = store.PrimaryStoreCurrency;
+            var language = _workContext.WorkingLanguage;
+			var store = Services.StoreService.GetStoreById(order.StoreId);
+			var currency = store?.PrimaryStoreCurrency ?? _workContext.WorkingCurrency;
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
 			model.StatusOrder = order.OrderStatus;
             model.OrderNumber = order.GetOrderNumber();
             model.OrderGuid = order.OrderGuid;
-			model.StoreName = (store != null ? store.Name : "".NaIfEmpty());
+			model.StoreName = store != null ? store.Name : "".NaIfEmpty();
             model.CustomerId = order.CustomerId;
 			model.CustomerName = order.Customer.GetFullName();
             model.CustomerIp = order.CustomerIp;
@@ -233,64 +226,67 @@ namespace SmartStore.Admin.Controllers
 			if (order.AffiliateId != 0)
 			{
 				var affiliate = _affiliateService.GetAffiliateById(order.AffiliateId);
-				if (affiliate != null && affiliate.Address != null)
-					model.AffiliateFullName = affiliate.Address.GetFullName();
+                if (affiliate != null && affiliate.Address != null)
+                {
+                    model.AffiliateFullName = affiliate.Address.GetFullName();
+                }
 			}
 
             #region Order totals
 
-            //subtotal
-            model.OrderSubtotalInclTax = _priceFormatter.FormatPrice(order.OrderSubtotalInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true);
-            model.OrderSubtotalExclTax = _priceFormatter.FormatPrice(order.OrderSubtotalExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false);
+            // Subtotal.
+            model.OrderSubtotalInclTax = _priceFormatter.FormatPrice(order.OrderSubtotalInclTax, true, currency, language, true);
+            model.OrderSubtotalExclTax = _priceFormatter.FormatPrice(order.OrderSubtotalExclTax, true, currency, language, false);
             model.OrderSubtotalInclTaxValue = order.OrderSubtotalInclTax;
             model.OrderSubtotalExclTaxValue = order.OrderSubtotalExclTax;
-            //discount (applied to order subtotal)
-            string orderSubtotalDiscountInclTaxStr = _priceFormatter.FormatPrice(order.OrderSubTotalDiscountInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true);
-            string orderSubtotalDiscountExclTaxStr = _priceFormatter.FormatPrice(order.OrderSubTotalDiscountExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false);
+            // Discount (applied to order subtotal).
+            var orderSubtotalDiscountInclTaxStr = _priceFormatter.FormatPrice(order.OrderSubTotalDiscountInclTax, true, currency, language, true);
+            var orderSubtotalDiscountExclTaxStr = _priceFormatter.FormatPrice(order.OrderSubTotalDiscountExclTax, true, currency, language, false);
             if (order.OrderSubTotalDiscountInclTax > decimal.Zero)
+            {
                 model.OrderSubTotalDiscountInclTax = orderSubtotalDiscountInclTaxStr;
+            }
             if (order.OrderSubTotalDiscountExclTax > decimal.Zero)
+            {
                 model.OrderSubTotalDiscountExclTax = orderSubtotalDiscountExclTaxStr;
+            }
             model.OrderSubTotalDiscountInclTaxValue = order.OrderSubTotalDiscountInclTax;
             model.OrderSubTotalDiscountExclTaxValue = order.OrderSubTotalDiscountExclTax;
 
-            //shipping
-            model.OrderShippingInclTax = _priceFormatter.FormatShippingPrice(order.OrderShippingInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true);
-            model.OrderShippingExclTax = _priceFormatter.FormatShippingPrice(order.OrderShippingExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false);
+            // Shipping.
+            model.OrderShippingInclTax = _priceFormatter.FormatShippingPrice(order.OrderShippingInclTax, true, currency, language, true);
+            model.OrderShippingExclTax = _priceFormatter.FormatShippingPrice(order.OrderShippingExclTax, true, currency, language, false);
             model.OrderShippingInclTaxValue = order.OrderShippingInclTax;
             model.OrderShippingExclTaxValue = order.OrderShippingExclTax;
 
-            //payment method additional fee
+            // Payment method additional fee.
             if (order.PaymentMethodAdditionalFeeInclTax != decimal.Zero)
             {
-                model.PaymentMethodAdditionalFeeInclTax = _priceFormatter.FormatPaymentMethodAdditionalFee(order.PaymentMethodAdditionalFeeInclTax, true, 
-					primaryStoreCurrency, _workContext.WorkingLanguage, true);
-                model.PaymentMethodAdditionalFeeExclTax = _priceFormatter.FormatPaymentMethodAdditionalFee(order.PaymentMethodAdditionalFeeExclTax, true, 
-					primaryStoreCurrency, _workContext.WorkingLanguage, false);
+                model.PaymentMethodAdditionalFeeInclTax = _priceFormatter.FormatPaymentMethodAdditionalFee(order.PaymentMethodAdditionalFeeInclTax, true, currency, language, true);
+                model.PaymentMethodAdditionalFeeExclTax = _priceFormatter.FormatPaymentMethodAdditionalFee(order.PaymentMethodAdditionalFeeExclTax, true, currency, language, false);
             }
             model.PaymentMethodAdditionalFeeInclTaxValue = order.PaymentMethodAdditionalFeeInclTax;
             model.PaymentMethodAdditionalFeeExclTaxValue = order.PaymentMethodAdditionalFeeExclTax;
 
-
-            //tax
-            model.Tax = _priceFormatter.FormatPrice(order.OrderTax, true, false);
-            SortedDictionary<decimal, decimal> taxRates = order.TaxRatesDictionary;
-            bool displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
-            bool displayTax = !displayTaxRates;
+            // Tax.
+            var taxRates = order.TaxRatesDictionary;
+            var displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
+            var displayTax = !displayTaxRates;
             foreach (var tr in order.TaxRatesDictionary)
             {
-                model.TaxRates.Add(new OrderModel.TaxRate()
+                model.TaxRates.Add(new OrderModel.TaxRate
                 {
                     Rate = _priceFormatter.FormatTaxRate(tr.Key),
                     Value = _priceFormatter.FormatPrice(tr.Value, true, false),
                 });
             }
+            model.Tax = _priceFormatter.FormatPrice(order.OrderTax, true, false);
             model.DisplayTaxRates = displayTaxRates;
             model.DisplayTax = displayTax;
             model.TaxValue = order.OrderTax;
             model.TaxRatesValue = order.TaxRates;
 
-			//discount
+			// Discount.
 			if (order.OrderDiscount > 0)
 			{
 				model.OrderTotalDiscount = _priceFormatter.FormatPrice(-order.OrderDiscount, true, false);
@@ -303,17 +299,17 @@ namespace SmartStore.Admin.Controllers
             }
             model.OrderTotalRoundingValue = order.OrderTotalRounding;
 
-            //gift cards
+            // Gift cards.
             foreach (var gcuh in order.GiftCardUsageHistory)
             {
-                model.GiftCards.Add(new OrderModel.GiftCard()
+                model.GiftCards.Add(new OrderModel.GiftCard
                 {
                     CouponCode = gcuh.GiftCard.GiftCardCouponCode,
                     Amount = _priceFormatter.FormatPrice(-gcuh.UsedValue, true, false),
                 });
             }
 
-            //reward points
+            // Reward points.
             if (order.RedeemedRewardPointsEntry != null)
             {
                 model.RedeemedRewardPoints = -order.RedeemedRewardPointsEntry.Points;
@@ -343,29 +339,31 @@ namespace SmartStore.Admin.Controllers
 
             if (order.AllowStoringCreditCardNumber)
             {
-                //card type
                 model.CardType = _encryptionService.DecryptText(order.CardType);
-                //cardholder name
                 model.CardName = _encryptionService.DecryptText(order.CardName);
-                //card number
                 model.CardNumber = _encryptionService.DecryptText(order.CardNumber);
-                //cvv
                 model.CardCvv2 = _encryptionService.DecryptText(order.CardCvv2);
-                //expiry date
-                string cardExpirationMonthDecrypted = _encryptionService.DecryptText(order.CardExpirationMonth);
-                if (!String.IsNullOrEmpty(cardExpirationMonthDecrypted) && cardExpirationMonthDecrypted != "0")
-                    model.CardExpirationMonth = cardExpirationMonthDecrypted;
-                string cardExpirationYearDecrypted = _encryptionService.DecryptText(order.CardExpirationYear);
-                if (!String.IsNullOrEmpty(cardExpirationYearDecrypted) && cardExpirationYearDecrypted != "0")
-                    model.CardExpirationYear = cardExpirationYearDecrypted;
-
                 model.AllowStoringCreditCardNumber = true;
+
+                // Expiration date.
+                var cardExpirationMonthDecrypted = _encryptionService.DecryptText(order.CardExpirationMonth);
+                if (cardExpirationMonthDecrypted.HasValue() && cardExpirationMonthDecrypted != "0")
+                {
+                    model.CardExpirationMonth = cardExpirationMonthDecrypted;
+                }
+                var cardExpirationYearDecrypted = _encryptionService.DecryptText(order.CardExpirationYear);
+                if (cardExpirationYearDecrypted.HasValue() && cardExpirationYearDecrypted != "0")
+                {
+                    model.CardExpirationYear = cardExpirationYearDecrypted;
+                }
             }
             else
             {
-                string maskedCreditCardNumberDecrypted = _encryptionService.DecryptText(order.MaskedCreditCardNumber);
-                if (!String.IsNullOrEmpty(maskedCreditCardNumberDecrypted))
+                var maskedCreditCardNumberDecrypted = _encryptionService.DecryptText(order.MaskedCreditCardNumber);
+                if (maskedCreditCardNumberDecrypted.HasValue())
+                {
                     model.CardNumber = maskedCreditCardNumberDecrypted;
+                }
             }
 
             if (order.AllowStoringDirectDebit)
@@ -381,7 +379,7 @@ namespace SmartStore.Admin.Controllers
                 model.AllowStoringDirectDebit = true;
             }
 
-            //purchase order number (we have to find a better to inject this information because it's related to a certain plugin)
+            // Purchase order number (we have to find a better to inject this information because it's related to a certain plugin).
             var pm = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
 			if (pm != null)
 			{
@@ -400,7 +398,7 @@ namespace SmartStore.Admin.Controllers
 				model.PaymentMethod = order.PaymentMethodSystemName;
 			}
 
-            //payment transaction info
+            // Payment transaction info.
             model.AuthorizationTransactionId = order.AuthorizationTransactionId;
             model.CaptureTransactionId = order.CaptureTransactionId;
             model.SubscriptionTransactionId = order.SubscriptionTransactionId;
@@ -409,7 +407,7 @@ namespace SmartStore.Admin.Controllers
 			model.StatusPayment = order.PaymentStatus;
             model.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext);
 
-            //payment method buttons
+            // Payment method buttons.
             model.CanCancelOrder = _orderProcessingService.CanCancelOrder(order);
 			model.CanCompleteOrder = _orderProcessingService.CanCompleteOrder(order);
             model.CanCapture = _orderProcessingService.CanCapture(order);
@@ -422,9 +420,9 @@ namespace SmartStore.Admin.Controllers
             model.CanVoidOffline = _orderProcessingService.CanVoidOffline(order);
 
             model.MaxAmountToRefund = order.OrderTotal - order.RefundedAmount;
-			model.MaxAmountToRefundFormatted =	_priceFormatter.FormatPrice(model.MaxAmountToRefund, true, primaryStoreCurrency, _workContext.WorkingLanguage, false, false);
+			model.MaxAmountToRefundFormatted =	_priceFormatter.FormatPrice(model.MaxAmountToRefund, true, currency, language, false, false);
 
-            //recurring payment record
+            // Recurring payment record.
             var recurringPayment = _orderService.SearchRecurringPayments(0, 0, order.Id, null, true).FirstOrDefault();
             if (recurringPayment != null)
             {
@@ -465,8 +463,6 @@ namespace SmartStore.Admin.Controllers
 
             if (order.ShippingStatus != ShippingStatus.ShippingNotRequired)
             {
-                model.IsShippable = true;
-
                 model.ShippingAddress = order.ShippingAddress.ToModel(_addressService);
                 model.ShippingAddress.FirstNameEnabled = true;
                 model.ShippingAddress.FirstNameRequired = true;
@@ -492,6 +488,7 @@ namespace SmartStore.Admin.Controllers
                 model.ShippingAddress.FaxEnabled = _addressSettings.FaxEnabled;
                 model.ShippingAddress.FaxRequired = _addressSettings.FaxRequired;
 
+                model.IsShippable = true;
                 model.ShippingMethod = order.ShippingMethod;
 				model.CanAddNewShipments = order.CanAddItemsToShipment();
 
@@ -506,18 +503,17 @@ namespace SmartStore.Admin.Controllers
 
 				var googleMapsUrl = CommonHelper.GetAppSetting<string>("g:MapsUrl");
 
-				model.ShippingAddressGoogleMapsUrl = googleMapsUrl.FormatInvariant(
-					Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower(),
-					Server.UrlEncode(googleAddressQuery));
+				model.ShippingAddressGoogleMapsUrl = googleMapsUrl.FormatInvariant(language.UniqueSeoCode.EmptyNull().ToLower(), Server.UrlEncode(googleAddressQuery));
 			}
 
             #endregion
 
             #region Products
+
             model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(order.CheckoutAttributeDescription));
             //model.CheckoutAttributeInfo = order.CheckoutAttributeDescription;
             //model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer, "", false);
-            bool hasDownloadableItems = false;
+            var hasDownloadableItems = false;
             foreach (var orderItem in order.OrderItems)
             {
                 if (orderItem.Product.IsDownload)
@@ -564,29 +560,29 @@ namespace SmartStore.Admin.Controllers
 
 						if (orderItemModel.BundlePerItemShoppingCart)
 						{
-							bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItem.PriceWithDiscount, true, primaryStoreCurrency, _workContext.WorkingLanguage, false);
+							bundleItemModel.PriceWithDiscount = _priceFormatter.FormatPrice(bundleItem.PriceWithDiscount, true, currency, language, false);
 						}
 
 						orderItemModel.BundleItems.Add(bundleItemModel);
 					}
 				}
 
-                //unit price
+                // Unit price.
                 orderItemModel.UnitPriceInclTaxValue = orderItem.UnitPriceInclTax;
                 orderItemModel.UnitPriceExclTaxValue = orderItem.UnitPriceExclTax;
 				orderItemModel.TaxRate = orderItem.TaxRate;
-                orderItemModel.UnitPriceInclTax = _priceFormatter.FormatPrice(orderItem.UnitPriceInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true, true);
-                orderItemModel.UnitPriceExclTax = _priceFormatter.FormatPrice(orderItem.UnitPriceExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false, true);
-                //discounts
+                orderItemModel.UnitPriceInclTax = _priceFormatter.FormatPrice(orderItem.UnitPriceInclTax, true, currency, language, true, true);
+                orderItemModel.UnitPriceExclTax = _priceFormatter.FormatPrice(orderItem.UnitPriceExclTax, true, currency, language, false, true);
+                // Discounts.
                 orderItemModel.DiscountInclTaxValue = orderItem.DiscountAmountInclTax;
                 orderItemModel.DiscountExclTaxValue = orderItem.DiscountAmountExclTax;
-                orderItemModel.DiscountInclTax = _priceFormatter.FormatPrice(orderItem.DiscountAmountInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true, true);
-                orderItemModel.DiscountExclTax = _priceFormatter.FormatPrice(orderItem.DiscountAmountExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false, true);
-                //subtotal
+                orderItemModel.DiscountInclTax = _priceFormatter.FormatPrice(orderItem.DiscountAmountInclTax, true, currency, language, true, true);
+                orderItemModel.DiscountExclTax = _priceFormatter.FormatPrice(orderItem.DiscountAmountExclTax, true, currency, language, false, true);
+                // Subtotal.
                 orderItemModel.SubTotalInclTaxValue = orderItem.PriceInclTax;
                 orderItemModel.SubTotalExclTaxValue = orderItem.PriceExclTax;
-                orderItemModel.SubTotalInclTax = _priceFormatter.FormatPrice(orderItem.PriceInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true, true);
-                orderItemModel.SubTotalExclTax = _priceFormatter.FormatPrice(orderItem.PriceExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false, true);
+                orderItemModel.SubTotalInclTax = _priceFormatter.FormatPrice(orderItem.PriceInclTax, true, currency, language, true, true);
+                orderItemModel.SubTotalExclTax = _priceFormatter.FormatPrice(orderItem.PriceExclTax, true, currency, language, false, true);
 
                 orderItemModel.AttributeInfo = orderItem.AttributeDescription;
 				if (orderItem.Product.IsRecurring)
@@ -595,10 +591,10 @@ namespace SmartStore.Admin.Controllers
 						orderItem.Product.RecurringCycleLength, orderItem.Product.RecurringCyclePeriod.GetLocalizedEnum(_localizationService, _workContext));
 				}
 
-                //return requests
+                // Return requests.
 				orderItemModel.ReturnRequests = _orderService.SearchReturnRequests(0, 0, orderItem.Id, null, 0, int.MaxValue).Select(x =>
 					{
-						return new OrderModel.ReturnRequestModel()
+						return new OrderModel.ReturnRequestModel
 						{
 							Id = x.Id,
 							Quantity = x.Quantity,
@@ -608,7 +604,7 @@ namespace SmartStore.Admin.Controllers
 					})
 					.ToList();
 
-                //gift cards
+                // Gift cards.
                 orderItemModel.PurchasedGiftCardIds = _giftCardService.GetGiftCardsByPurchasedWithOrderItemId(orderItem.Id)
                     .Select(gc => gc.Id).ToList();
 
@@ -617,7 +613,7 @@ namespace SmartStore.Admin.Controllers
 
             model.HasDownloadableProducts = hasDownloadableItems;
 
-			model.AutoUpdateOrderItem.Caption = _localizationService.GetResource("Admin.Orders.EditOrderDetails");
+			model.AutoUpdateOrderItem.Caption = T("Admin.Orders.EditOrderDetails");
 			model.AutoUpdateOrderItem.ShowUpdateTotals = (order.OrderStatusId <= (int)OrderStatus.Pending);
 			// UpdateRewardPoints only visible for unpending orders (see RewardPointsSettingsValidator).
 			model.AutoUpdateOrderItem.ShowUpdateRewardPoints = (order.OrderStatusId > (int)OrderStatus.Pending && order.RewardPointsWereAdded);
@@ -713,7 +709,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
 
-			var language = _services.WorkContext.WorkingLanguage;
+			var language = Services.WorkContext.WorkingLanguage;
 			var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
 			var qtyInAllShipments = orderItem.GetShipmentItemsCount();
 
@@ -794,8 +790,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.ShippingAddress = shipment.Order.ShippingAddress;
 
-				var store = _services.StoreService.GetStoreById(orderStoreId) ?? _services.StoreContext.CurrentStore;
-				var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
+				var store = Services.StoreService.GetStoreById(orderStoreId) ?? Services.StoreContext.CurrentStore;
+				var companyInfoSettings = Services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
 				model.MerchantCompanyInfo = companyInfoSettings;
 
 				if (model.ShippingAddress != null)
@@ -885,7 +881,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-			var allStores = _storeService.GetAllStores();
+			var allStores = Services.StoreService.GetAllStores();
 
 			model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
@@ -924,7 +920,7 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = orders.Select(x =>
 				{
-					var store = _storeService.GetStoreById(x.StoreId);
+					var store = Services.StoreService.GetStoreById(x.StoreId);
 
 					var orderModel = new OrderModel
 					{
@@ -2331,13 +2327,13 @@ namespace SmartStore.Admin.Controllers
 
 			if (!all && selectedIds.IsEmpty())
 			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				NotifyInfo(T("Admin.Common.ExportNoData"));
 				return RedirectToReferrer();
 			}
 
 			IList<Shipment> shipments;
 
-			using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, forceNoTracking: true))
+			using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
 				if (all)
 				{
@@ -2352,13 +2348,13 @@ namespace SmartStore.Admin.Controllers
 
 			if (shipments.Count == 0)
 			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				NotifyInfo(T("Admin.Common.ExportNoData"));
 				return RedirectToReferrer();
 			}
 
 			if (shipments.Count > 500)
 			{
-				NotifyWarning(_localizationService.GetResource("Admin.Common.ExportToPdf.TooManyItems"));
+				NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
 				return RedirectToReferrer();
 			}
 
@@ -2373,7 +2369,7 @@ namespace SmartStore.Admin.Controllers
 			// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
 			var storeId = model[0].StoreId;
 			var routeValues = new RouteValueDictionary(new { storeId, lid = Services.WorkContext.WorkingLanguage.Id, area = "" });
-			var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
+			var pdfSettings = Services.Settings.LoadSetting<PdfSettings>(storeId);
 
 			var settings = new PdfConvertSettings
 			{

@@ -340,7 +340,7 @@ namespace SmartStore.Services.Tasks
 
 		private void FixTypeName(ScheduleTask task)
 		{
-			// in versions prior V3 a double space could exist in ScheduleTask type name
+			// In versions prior V3 a double space could exist in ScheduleTask type name.
 			if (task.Type.IndexOf(",  ") > 0)
 			{
 				task.Type = task.Type.Replace(",  ", ", ");
@@ -377,7 +377,7 @@ namespace SmartStore.Services.Tasks
 
 			if (!isDeadLockException)
 			{
-				// we only want to retry on deadlock stuff
+				// We only want to retry on deadlock stuff.
 				throw ex;
 			}
 		}

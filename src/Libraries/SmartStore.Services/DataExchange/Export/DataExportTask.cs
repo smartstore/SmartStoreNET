@@ -22,7 +22,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public void Execute(TaskExecutionContext ctx)
 		{
-			var profileId = ctx.ScheduleTask.Alias.ToInt();
+			var profileId = ctx.ScheduleTaskHistory.ScheduleTask.Alias.ToInt();
 			var profile = _exportProfileService.GetExportProfileById(profileId);
 
 			// Load provider.

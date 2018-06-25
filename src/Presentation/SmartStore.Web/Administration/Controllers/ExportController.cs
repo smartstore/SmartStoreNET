@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -327,7 +328,11 @@ namespace SmartStore.Admin.Controllers
 			return model;
 		}
 
-		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
+		private void PrepareProfileModel(
+            ExportProfileModel model,
+            ExportProfile profile, 
+            Provider<IExportProvider> provider, 
+            ScheduleTaskHistory runningHistoryEntry)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
@@ -339,7 +344,7 @@ namespace SmartStore.Admin.Controllers
 			model.Enabled = profile.Enabled;
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
-			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
+			model.IsTaskRunning = runningHistoryEntry != null;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogPath());
 			model.HasActiveProvider = (provider != null);
@@ -630,12 +635,11 @@ namespace SmartStore.Admin.Controllers
 					var profileModel = new ExportProfileModel();
 					var fileDetailsModel = CreateFileDetailsModel(profile, provider, null);
 
-					PrepareProfileModel(profileModel, profile, provider);
+                    runningHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var runningHistoryEntry);
+                    PrepareProfileModel(profileModel, profile, provider, runningHistoryEntry);
 
 					profileModel.FileCount = fileDetailsModel.FileCount;
-
-                    runningHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var runningEntry);
-                    profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, runningEntry) ?? new ScheduleTaskModel();
+                    profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, runningHistoryEntry) ?? new ScheduleTaskModel();
 
 					model.Add(profileModel);
 				}
@@ -777,7 +781,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ExportProfileModel();
 
-			PrepareProfileModel(model, profile, provider);
+			PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetRunningHistoryEntryByTaskId(profile.SchedulingTaskId));
 			PrepareProfileModelForEdit(model, profile, provider);
 
 			return View(model);
@@ -800,7 +804,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				PrepareProfileModel(model, profile, provider);
+				PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetRunningHistoryEntryByTaskId(profile.SchedulingTaskId));
 				PrepareProfileModelForEdit(model, profile, provider);
 				return View(model);
 			}
@@ -824,7 +828,7 @@ namespace SmartStore.Admin.Controllers
 			if (profile.Name.IsEmpty())
 				profile.Name = provider.Metadata.SystemName;
 
-			// projection
+			// Projection.
 			if (model.Projection != null)
 			{
 				var projection = new ExportProjection
@@ -857,7 +861,7 @@ namespace SmartStore.Admin.Controllers
 				profile.Projection = XmlHelper.Serialize(projection);
 			}
 
-			// filtering
+			// Filtering.
 			if (model.Filter != null)
 			{
 				var filter = new ExportFilter
@@ -898,7 +902,7 @@ namespace SmartStore.Admin.Controllers
 				profile.Filtering = XmlHelper.Serialize(filter);
 			}
 
-			// provider configuration
+			// Provider configuration.
 			profile.ProviderConfigData = null;
 			try
 			{

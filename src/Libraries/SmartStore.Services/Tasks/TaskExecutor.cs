@@ -14,8 +14,6 @@ namespace SmartStore.Services.Tasks
     public class TaskExecutor : ITaskExecutor
     {
         private readonly IScheduleTaskService _scheduledTaskService;
-		//private readonly IDbContext _dbContext;
-		//private readonly IWorkContext _workContext;
         private readonly Func<Type, ITask> _taskResolver;
 		private readonly IComponentContext _componentContext;
 		private readonly IAsyncState _asyncState;
@@ -26,17 +24,12 @@ namespace SmartStore.Services.Tasks
 
 		public TaskExecutor(
 			IScheduleTaskService scheduledTaskService, 
-			//IDbContext dbContext,
- 		//	ICustomerService customerService,
-			//IWorkContext workContext,
 			IComponentContext componentContext,
 			IAsyncState asyncState,
 			Func<Type, ITask> taskResolver,
             IApplicationEnvironment env)
         {
             _scheduledTaskService = scheduledTaskService;
-			//_dbContext = dbContext;
-			//_workContext = workContext;
 			_componentContext = componentContext;
 			_asyncState = asyncState;
             _taskResolver = taskResolver;
@@ -117,9 +110,9 @@ namespace SmartStore.Services.Tasks
 				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
 				_asyncState.SetCancelTokenSource<ScheduleTask>(cts, stateName);
 
-				var ctx = new TaskExecutionContext(_componentContext, task)
+				var ctx = new TaskExecutionContext(_componentContext, historyEntry)
 				{
-					ScheduleTask = task.Clone(),
+                    ScheduleTaskHistory = historyEntry.Clone(),
 					CancellationToken = cts.Token,
 					Parameters = taskParameters ?? new Dictionary<string, string>()
 				};

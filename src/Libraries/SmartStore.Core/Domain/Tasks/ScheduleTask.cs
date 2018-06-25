@@ -1,7 +1,5 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using SmartStore.Core.Data.Hooks;
@@ -49,44 +47,15 @@ namespace SmartStore.Core.Domain.Tasks
         [Index("IX_NextRun_Enabled", 0)]
         public DateTime? NextRunUtc { get; set; }
 
-		[Index("IX_LastStart_LastEnd", 0)]
-        public DateTime? LastStartUtc { get; set; }
-
-		[Index("IX_LastStart_LastEnd", 1)]
-        public DateTime? LastEndUtc { get; set; }
-
-        public DateTime? LastSuccessUtc { get; set; }
-
-		public string LastError { get; set; }
-
+        /// <summary>
+        /// Indicates whether the task is hidden.
+        /// </summary>
         public bool IsHidden { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating the current percentual progress for a running task
-		/// </summary>
-		public int? ProgressPercent { get; set; }
-
-		/// <summary>
-		/// Gets or sets the current progress message for a running task
-		/// </summary>
-		public string ProgressMessage { get; set; }
 
         /// <summary>
         /// Indicates whether the task runs separately on each server.
         /// </summary>
         public bool RunPerMachine { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether a task is running
-        /// </summary>
-        public bool IsRunning
-		{
-			get
-			{
-				var result = LastStartUtc.HasValue && LastStartUtc.Value > LastEndUtc.GetValueOrDefault();
-				return result;
-			}
-		}
 
 		/// <summary>
 		/// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow )

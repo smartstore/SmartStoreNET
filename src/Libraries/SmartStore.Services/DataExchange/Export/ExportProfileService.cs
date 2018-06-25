@@ -78,7 +78,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				task = new ScheduleTask
 				{
-					CronExpression = "0 */6 * * *",     // every six hours
+					CronExpression = "0 */6 * * *",     // Every six hours.
 					Type = typeof(DataExportTask).AssemblyQualifiedNameWithoutVersion(),
 					Enabled = false,
 					StopOnError = false,
@@ -88,7 +88,6 @@ namespace SmartStore.Services.DataExchange.Export
 			else
 			{
 				task = cloneProfile.ScheduleTask.Clone();
-				task.LastEndUtc = task.LastStartUtc = task.LastSuccessUtc = null;
 			}
 
 			task.Name = string.Concat(name, " Task");

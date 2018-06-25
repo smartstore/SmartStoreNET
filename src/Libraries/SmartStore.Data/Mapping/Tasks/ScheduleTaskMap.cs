@@ -12,11 +12,8 @@ namespace SmartStore.Data.Mapping.Tasks
             Property(t => t.Name).HasMaxLength(500).IsRequired();
             Property(t => t.Type).HasMaxLength(800).IsRequired();
 			Property(t => t.Alias).HasMaxLength(500);
-			Property(t => t.LastError).HasMaxLength(1000);
-			Property(t => t.ProgressMessage).HasMaxLength(1000).IsOptional();
 			Property(t => t.CronExpression).HasMaxLength(1000);
 
-			Ignore(t => t.IsRunning);
 			Ignore(t => t.IsPending);
         }
     }

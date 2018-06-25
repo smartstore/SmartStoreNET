@@ -10,6 +10,7 @@ using SmartStore.Admin.Models.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.IO;
 using SmartStore.Services.Catalog.Importer;
 using SmartStore.Services.Customers.Importer;
@@ -112,7 +113,12 @@ namespace SmartStore.Admin.Controllers
 			return property;
 		}
 
-		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
+		private void PrepareProfileModel(
+            ImportProfileModel model, 
+            ImportProfile profile,
+            ScheduleTaskHistory runningHistoryEntry,
+            bool forEdit,
+            ColumnMap invalidMap = null)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
@@ -124,7 +130,7 @@ namespace SmartStore.Admin.Controllers
 			model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",").Distinct().ToArray();
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
-			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
+			model.IsTaskRunning = runningHistoryEntry != null;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
 			model.EntityTypeName = profile.EntityType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
@@ -334,11 +340,12 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var profile in profiles)
 			{
-				var profileModel = new ImportProfileModel();
-				PrepareProfileModel(profileModel, profile, false);
+                var profileModel = new ImportProfileModel();
+                runningHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var runningHistoryEntry);
 
-                runningHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var runningEntry);
-                profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, runningEntry) ?? new ScheduleTaskModel();
+                PrepareProfileModel(profileModel, profile, runningHistoryEntry, false);
+
+                profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, runningHistoryEntry) ?? new ScheduleTaskModel();
 
 				model.Profiles.Add(profileModel);
 			}
@@ -405,7 +412,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var model = new ImportProfileModel();
-			PrepareProfileModel(model, profile, true);
+			PrepareProfileModel(model, profile, _scheduleTaskService.GetRunningHistoryEntryByTaskId(profile.SchedulingTaskId), true);
 
 			return View(model);
 		}
@@ -464,7 +471,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (!ModelState.IsValid || hasErrors)
 			{
-				PrepareProfileModel(model, profile, true, map);
+				PrepareProfileModel(model, profile, _scheduleTaskService.GetRunningHistoryEntryByTaskId(profile.SchedulingTaskId), true, map);
 				return View(model);
 			}
 

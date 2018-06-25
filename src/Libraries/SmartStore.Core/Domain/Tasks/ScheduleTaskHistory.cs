@@ -5,7 +5,7 @@ using SmartStore.Core.Data.Hooks;
 namespace SmartStore.Core.Domain.Tasks
 {
     [Hookable(false)]
-    public class ScheduleTaskHistory : BaseEntity
+    public class ScheduleTaskHistory : BaseEntity, ICloneable<ScheduleTaskHistory>
     {
         /// <summary>
         /// Gets or sets the schedule task identifier.
@@ -60,5 +60,17 @@ namespace SmartStore.Core.Domain.Tasks
         /// Gets or sets the schedule task.
         /// </summary>
         public virtual ScheduleTask ScheduleTask { get; set; }
+
+        public ScheduleTaskHistory Clone()
+        {
+            var clone = (ScheduleTaskHistory)this.MemberwiseClone();
+            clone.ScheduleTask = this.ScheduleTask.Clone();
+            return clone;
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
     }
 }

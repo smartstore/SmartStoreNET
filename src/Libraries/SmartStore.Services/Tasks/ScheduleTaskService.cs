@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
@@ -19,17 +20,20 @@ namespace SmartStore.Services.Tasks
         private readonly IRepository<ScheduleTaskHistory> _taskHistoryRepository;
         private readonly IDateTimeHelper _dtHelper;
         private readonly IApplicationEnvironment _env;
+        private readonly Lazy<CommonSettings> _commonSettings;
 
         public ScheduleTaskService(
             IRepository<ScheduleTask> taskRepository,
             IRepository<ScheduleTaskHistory> taskHistoryRepository,
             IDateTimeHelper dtHelper,
-            IApplicationEnvironment env)
+            IApplicationEnvironment env,
+            Lazy<CommonSettings> commonSettings)
         {
             _taskRepository = taskRepository;
             _taskHistoryRepository = taskHistoryRepository;
 			_dtHelper = dtHelper;
             _env = env;
+            _commonSettings = commonSettings;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -278,21 +282,24 @@ namespace SmartStore.Services.Tasks
 			}
 		}
 
-
         #region Schedule task history
 
-        public virtual IList<ScheduleTaskHistory> GetRunningHistoryEntries()
+        public virtual IList<ScheduleTaskHistory> GetLastHistoryEntries(bool? isRunning = null)
         {
             var machineName = _env.MachineName;
 
-            var query =
-                from t in _taskRepository.TableUntracked
-                join th in _taskHistoryRepository.TableUntracked on t.Id equals th.ScheduleTaskId
-                where th.IsRunning && th.MachineName == machineName
+            var historyQuery =
+                from th in _taskHistoryRepository.TableUntracked
+                where th.MachineName == machineName
                 select th;
 
-            var groupQuery =
-                from th in query
+            if (isRunning.HasValue)
+            {
+                historyQuery = historyQuery.Where(x => x.IsRunning == isRunning.Value);
+            }
+
+            var query =
+                from th in historyQuery
                 group th by th.ScheduleTaskId into grp
                 select grp
                     .OrderByDescending(x => x.StartedOnUtc)
@@ -300,12 +307,12 @@ namespace SmartStore.Services.Tasks
                     .FirstOrDefault();
 
             return Retry.Run(
-				() => groupQuery.ToList(), 
-				3, TimeSpan.FromMilliseconds(100), 
-				RetryOnDeadlockException);
+                () => query.ToList(),
+                3, TimeSpan.FromMilliseconds(100),
+                RetryOnDeadlockException);
         }
 
-        public virtual ScheduleTaskHistory GetRunningHistoryEntryByTaskId(int taskId)
+        public virtual ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null)
         {
             if (taskId == 0)
             {
@@ -313,9 +320,15 @@ namespace SmartStore.Services.Tasks
             }
 
             var machineName = _env.MachineName;
+            var query = _taskHistoryRepository.TableUntracked.Expand(x => x.ScheduleTask)
+                .Where(x => x.ScheduleTaskId == taskId && x.MachineName == machineName);
 
-            var historyEntry = _taskHistoryRepository.TableUntracked.Expand(x => x.ScheduleTask)
-                .Where(x => x.ScheduleTaskId == taskId && x.IsRunning && x.MachineName == machineName)
+            if (isRunning.HasValue)
+            {
+                query = query.Where(x => x.IsRunning == isRunning.Value);
+            }
+
+            var historyEntry = query
                 .OrderByDescending(x => x.StartedOnUtc)
                 .ThenByDescending(x => x.Id)
                 .FirstOrDefault();
@@ -343,6 +356,50 @@ namespace SmartStore.Services.Tasks
                 Logger.Error(exception);
                 // Do not throw.
             }
+        }
+
+        public virtual void DeleteHistoryEntry(ScheduleTaskHistory historyEntry)
+        {
+            Guard.NotNull(historyEntry, nameof(historyEntry));
+
+            _taskHistoryRepository.Delete(historyEntry);
+        }
+
+        public virtual int DeleteHistoryEntries()
+        {
+            if (_commonSettings.Value.MaxScheduleHistoryAgeInDays <= 0)
+            {
+                return 0;
+            }
+
+            var count = 0;
+
+            try
+            {
+                using (var scope = new DbContextScope(_taskHistoryRepository.Context, autoCommit: false))
+                {
+                    IPagedList<ScheduleTaskHistory> pagedEntries = null;
+                    var pageIndex = 0;
+                    var oldestDate = DateTime.UtcNow.AddDays(_commonSettings.Value.MaxScheduleHistoryAgeInDays * -1);
+                    var query = _taskHistoryRepository.Table
+                        .Where(x => x.StartedOnUtc <= oldestDate && !x.IsRunning)
+                        .OrderBy(x => x.Id);
+
+                    do
+                    {
+                        pagedEntries = new PagedList<ScheduleTaskHistory>(query, pageIndex++, 100);
+                        pagedEntries.Each(x => DeleteHistoryEntry(x));
+                        count += scope.Commit();
+                    }
+                    while (pagedEntries.HasNextPage);
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception);
+            }
+
+            return count;
         }
 
         #endregion

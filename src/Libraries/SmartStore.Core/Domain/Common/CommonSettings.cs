@@ -9,7 +9,8 @@ namespace SmartStore.Core.Domain.Common
 			UseStoredProceduresIfSupported = true;
 			AutoUpdateEnabled = true;
 			EntityPickerPageSize = 48;
-		}
+            MaxScheduleHistoryAgeInDays = 30;
+        }
 		
 		public bool UseSystemEmailForContactUsForm { get; set; }
 
@@ -28,5 +29,10 @@ namespace SmartStore.Core.Domain.Common
 		/// Gets or sets the page size for the entity picker
 		/// </summary>
 		public int EntityPickerPageSize { get; set; }
-	}
+
+        /// <summary>
+        /// Gets or sets the maximum age of schedule history entries (in days).
+        /// </summary>
+        public int MaxScheduleHistoryAgeInDays { get; set; }
+    }
 }

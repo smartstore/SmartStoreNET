@@ -82,29 +82,43 @@ namespace SmartStore.Services.Tasks
         #region Schedule task history
 
         /// <summary>
-        /// Gets a list of currently running <see cref="ScheduleTaskHistory"/> instances.
+        /// Gets a list of last <see cref="ScheduleTaskHistory"/> instances.
         /// </summary>
-        /// <returns>Task history entries.</returns>
-        IList<ScheduleTaskHistory> GetRunningHistoryEntries();
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entries.</returns>
+        IList<ScheduleTaskHistory> GetLastHistoryEntries(bool? isRunning = null);
 
         /// <summary>
-        /// Get history entry by task identifier.
+        /// Get last history entry by task identifier.
         /// </summary>
         /// <param name="taskId">Task identifier.</param>
-        /// <returns>Task history entry.</returns>
-        ScheduleTaskHistory GetRunningHistoryEntryByTaskId(int taskId);
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
+        ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null);
 
         /// <summary>
-        /// Inserts a task history entry.
+        /// Inserts a <see cref="ScheduleTaskHistory"/> entry.
         /// </summary>
-        /// <param name="historyEntry">Task history entry.</param>
+        /// <param name="historyEntry"><see cref="ScheduleTaskHistory"/> entry.</param>
         void InsertHistoryEntry(ScheduleTaskHistory historyEntry);
 
         /// <summary>
-        /// Updates a task history entry.
+        /// Updates a <see cref="ScheduleTaskHistory"/> entry.
         /// </summary>
-        /// <param name="historyEntry">Task history entry.</param>
+        /// <param name="historyEntry"><see cref="ScheduleTaskHistory"/> entry.</param>
         void UpdateHistoryEntry(ScheduleTaskHistory historyEntry);
+
+        /// <summary>
+        /// Delete a <see cref="ScheduleTaskHistory"/> entry.
+        /// </summary>
+        /// <param name="historyEntry"><see cref="ScheduleTaskHistory"/> entry.</param>
+        void DeleteHistoryEntry(ScheduleTaskHistory historyEntry);
+
+        /// <summary>
+        /// Deletes old <see cref="ScheduleTaskHistory"/> entries.
+        /// </summary>
+        /// <returns>Number of deleted entries.</returns>
+        int DeleteHistoryEntries();
 
         #endregion
     }

@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Utilities;
 
 namespace SmartStore.Services.Tasks
 {
@@ -179,6 +180,8 @@ namespace SmartStore.Services.Tasks
                 {
                     _scheduledTaskService.UpdateTask(task);
                 }
+
+                Throttle.Check("Delete old schedule task history entries", TimeSpan.FromDays(1), () => _scheduledTaskService.DeleteHistoryEntries() > 0);
             }
         }
     }

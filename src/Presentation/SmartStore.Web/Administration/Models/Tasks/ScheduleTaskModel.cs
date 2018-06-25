@@ -23,6 +23,9 @@ namespace SmartStore.Admin.Models.Tasks
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.Enabled")]
         public bool Enabled { get; set; }
 
+        [SmartResourceDisplayName("Admin.System.ScheduleTasks.RunPerMachine")]
+        public bool RunPerMachine { get; set; }
+
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.StopOnError")]
         public bool StopOnError { get; set; }
 

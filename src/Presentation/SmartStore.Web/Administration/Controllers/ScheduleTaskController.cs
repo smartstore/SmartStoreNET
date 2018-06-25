@@ -69,12 +69,12 @@ namespace SmartStore.Admin.Controllers
 
             var models = new List<ScheduleTaskModel>();
             var tasks = _scheduleTaskService.GetAllTasks(true);
-            var runningHistoryEntries = _scheduleTaskService.GetRunningHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
+            var lastHistoryEntries = _scheduleTaskService.GetLastHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
 
             foreach (var task in tasks.Where(x => x.IsVisible()))
             {
-                runningHistoryEntries.TryGetValue(task.Id, out var runningEntry);
-                var model = _adminModelHelper.CreateScheduleTaskModel(task, runningEntry);
+                lastHistoryEntries.TryGetValue(task.Id, out var lastEntry);
+                var model = _adminModelHelper.CreateScheduleTaskModel(task, lastEntry);
                 if (model != null)
                 {
                     models.Add(model);
@@ -87,7 +87,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult GetRunningTasks()
 		{
-            var runningHistoryEntries = _scheduleTaskService.GetRunningHistoryEntries();
+            var runningHistoryEntries = _scheduleTaskService.GetLastHistoryEntries(true);
             if (!runningHistoryEntries.Any())
             {
                 return Json(new EmptyResult());
@@ -141,20 +141,23 @@ namespace SmartStore.Admin.Controllers
 			Thread.Sleep(200);
 
             // ...check and return suitable notifications
-            var runningEntry = _scheduleTaskService.GetRunningHistoryEntryByTaskId(id);
-            if (runningEntry != null)
+            var lastEntry = _scheduleTaskService.GetLastHistoryEntryByTaskId(id);
+            if (lastEntry != null)
             {
-                NotifyInfo(GetTaskMessage(runningEntry.ScheduleTask, "Admin.System.ScheduleTasks.RunNow.Progress"));
-            }
-            else
-            {
-                if (runningEntry.Error.HasValue())
+                if (lastEntry.IsRunning)
                 {
-                    NotifyError(runningEntry.Error);
+                    NotifyInfo(GetTaskMessage(lastEntry.ScheduleTask, "Admin.System.ScheduleTasks.RunNow.Progress"));
                 }
                 else
                 {
-                    NotifySuccess(GetTaskMessage(runningEntry.ScheduleTask , "Admin.System.ScheduleTasks.RunNow.Success"));
+                    if (lastEntry.Error.HasValue())
+                    {
+                        NotifyError(lastEntry.Error);
+                    }
+                    else
+                    {
+                        NotifySuccess(GetTaskMessage(lastEntry.ScheduleTask, "Admin.System.ScheduleTasks.RunNow.Success"));
+                    }
                 }
             }
 

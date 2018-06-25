@@ -332,7 +332,7 @@ namespace SmartStore.Admin.Controllers
             ExportProfileModel model,
             ExportProfile profile, 
             Provider<IExportProvider> provider, 
-            ScheduleTaskHistory runningHistoryEntry)
+            ScheduleTaskHistory lastHistoryEntry)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
@@ -344,7 +344,7 @@ namespace SmartStore.Admin.Controllers
 			model.Enabled = profile.Enabled;
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
-			model.IsTaskRunning = runningHistoryEntry != null;
+			model.IsTaskRunning = lastHistoryEntry?.IsRunning ?? false;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogPath());
 			model.HasActiveProvider = (provider != null);
@@ -624,7 +624,7 @@ namespace SmartStore.Admin.Controllers
 
 			var providers = _exportService.LoadAllExportProviders(0, false).ToList();
 			var profiles = _exportService.GetExportProfiles().ToList();
-            var runningHistoryEntries = _scheduleTaskService.GetRunningHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
+            var lastHistoryEntries = _scheduleTaskService.GetLastHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
             var model = new List<ExportProfileModel>();
 
 			foreach (var profile in profiles)
@@ -635,11 +635,11 @@ namespace SmartStore.Admin.Controllers
 					var profileModel = new ExportProfileModel();
 					var fileDetailsModel = CreateFileDetailsModel(profile, provider, null);
 
-                    runningHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var runningHistoryEntry);
-                    PrepareProfileModel(profileModel, profile, provider, runningHistoryEntry);
+                    lastHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var lastHistoryEntry);
+                    PrepareProfileModel(profileModel, profile, provider, lastHistoryEntry);
 
 					profileModel.FileCount = fileDetailsModel.FileCount;
-                    profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, runningHistoryEntry) ?? new ScheduleTaskModel();
+                    profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, lastHistoryEntry) ?? new ScheduleTaskModel();
 
 					model.Add(profileModel);
 				}
@@ -781,7 +781,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ExportProfileModel();
 
-			PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetRunningHistoryEntryByTaskId(profile.SchedulingTaskId));
+			PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetLastHistoryEntryByTaskId(profile.SchedulingTaskId));
 			PrepareProfileModelForEdit(model, profile, provider);
 
 			return View(model);
@@ -804,7 +804,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetRunningHistoryEntryByTaskId(profile.SchedulingTaskId));
+				PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetLastHistoryEntryByTaskId(profile.SchedulingTaskId));
 				PrepareProfileModelForEdit(model, profile, provider);
 				return View(model);
 			}

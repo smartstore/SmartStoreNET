@@ -227,10 +227,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 			profile.FolderName = FileSystemHelper.ValidateRootPath(profile.FolderName);
 
-			if (profile.FolderName == "~/")
-			{
-				throw new SmartException("Invalid export folder name.");
-			}
+            if (!FileSystemHelper.IsSafeRootPath(profile.FolderName))
+            {
+                throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.FolderName.Validate"));
+            }
 
 			_exportProfileRepository.Update(profile);
 		}

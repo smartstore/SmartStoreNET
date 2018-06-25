@@ -1,10 +1,8 @@
-﻿using System;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
+using System.Web;
 using SmartStore.Core;
 using SmartStore.Services.Stores;
-using SmartStore.Core.Async;
 
 namespace SmartStore.Services.Tasks
 {

@@ -47,9 +47,6 @@ namespace SmartStore.Services.Tasks
 			IDictionary<string, string> taskParameters = null,
             bool throwOnError = false)
         {
-			//if (task.IsRunning)
-   //             return;
-
 			if (AsyncRunner.AppShutdownCancellationToken.IsCancellationRequested)
 				return;
 
@@ -97,15 +94,6 @@ namespace SmartStore.Services.Tasks
 				instance = _taskResolver(taskType);
 				stateName = task.Id.ToString();
 
-                // Prepare and save entity.
-    //            task.LastStartUtc = DateTime.UtcNow;
-    //            task.LastEndUtc = null;
-    //            task.NextRunUtc = null;
-				//task.ProgressPercent = null;
-				//task.ProgressMessage = null;
-
-                //_scheduledTaskService.UpdateTask(task);
-
 				// Create & set a composite CancellationTokenSource which also contains the global app shoutdown token.
 				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
 				_asyncState.SetCancelTokenSource<ScheduleTask>(cts, stateName);
@@ -150,11 +138,6 @@ namespace SmartStore.Services.Tasks
                 historyEntry.ProgressMessage = null;
                 historyEntry.Error = lastError;
                 historyEntry.FinishedOnUtc = now;
-
-    //            task.ProgressPercent = null;
-				//task.ProgressMessage = null;
-				//task.LastError = lastError;
-				//task.LastEndUtc = now;
 				
 				if (faulted)
 				{
@@ -167,12 +150,10 @@ namespace SmartStore.Services.Tasks
 				else
 				{
                     historyEntry.SucceededOnUtc = now;
-					//task.LastSuccessUtc = now;
 				}
 
                 try
                 {
-                    //Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - task.LastStartUtc.Value).TotalMilliseconds);
                     Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - historyEntry.StartedOnUtc).TotalMilliseconds);
 
                     // Remove from AsyncState.

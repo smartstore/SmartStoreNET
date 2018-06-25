@@ -103,19 +103,6 @@ namespace SmartStore.Admin.Controllers
                 .ToArray();
 
             return Json(models);
-
-            //if (!_scheduleTaskService.HasRunningTasks())
-            //	return Json(new EmptyResult());
-
-            //var runningTasks = from t in _scheduleTaskService.GetRunningTasks()
-            //				   select new 
-            //				   {
-            //						   id = t.Id,
-            //					   percent = t.ProgressPercent,
-            //					   message = t.ProgressMessage,
-            //				   };
-
-            //return Json(runningTasks.ToArray());
         }
 
         [HttpPost]
@@ -170,26 +157,6 @@ namespace SmartStore.Admin.Controllers
                     NotifySuccess(GetTaskMessage(runningEntry.ScheduleTask , "Admin.System.ScheduleTasks.RunNow.Success"));
                 }
             }
-
-			//var task = _scheduleTaskService.GetTaskById(id);
-			//if (task != null)
-			//{
-			//	if (task.IsRunning)
-			//	{
-			//		NotifyInfo(GetTaskMessage(task, "Admin.System.ScheduleTasks.RunNow.Progress"));
-			//	}
-			//	else
-			//	{
-			//		if (task.LastError.HasValue())
-			//		{
-			//			NotifyError(task.LastError);
-			//		}
-			//		else
-			//		{
-			//			NotifySuccess(GetTaskMessage(task, "Admin.System.ScheduleTasks.RunNow.Success"));
-			//		}
-			//	}
-			//}
 
 			return RedirectToReferrer(returnUrl);
 		}

@@ -72,7 +72,7 @@ namespace SmartStore.Services.Tasks
 			}
 			catch (Exception exc)
 			{
-				// do not throw an exception if the underlying provider failed on Open.
+				// Do not throw an exception if the underlying provider failed on Open.
 				exc.Dump();
 			}
 
@@ -123,55 +123,7 @@ namespace SmartStore.Services.Tasks
                 .ToList();
 
             return pendingTasks;
-
-
-            //var query = from t in _taskRepository.Table
-            //            where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
-            //            orderby t.NextRunUtc
-            //            select t;
-
-    //        return Retry.Run(
-				//() => query.ToList(),
-				//3, TimeSpan.FromMilliseconds(100),
-				//RetryOnDeadlockException);
 		}
-
-		//public virtual bool HasRunningTasks()
-		//{
-		//	var query = GetRunningTasksQuery();
-		//	return query.Any();
-		//}
-
-		//public virtual bool IsTaskRunning(int taskId)
-		//{
-		//	if (taskId <= 0)
-		//		return false;
-
-		//	var query = GetRunningTasksQuery();
-		//	query.Where(t => t.Id == taskId);
-		//	return query.Any();
-		//}
-
-		//public virtual IList<ScheduleTask> GetRunningTasks()
-		//{
-		//	var query = GetRunningTasksQuery();
-
-		//	return Retry.Run(
-		//		() => query.ToList(), 
-		//		3, TimeSpan.FromMilliseconds(100), 
-		//		RetryOnDeadlockException);
-		//}
-
-  //      private IQueryable<ScheduleTask> GetRunningTasksQuery()
-		//{
-  //          var query = from t in _taskRepository.Table
-  //                      where t.LastStartUtc.HasValue && t.LastStartUtc.Value > (t.LastEndUtc ?? DateTime.MinValue)
-  //                      orderby t.LastStartUtc
-  //                      select t;
-
-  //          return query;
-		//}
-
 
         public virtual void InsertTask(ScheduleTask task)
         {
@@ -187,55 +139,6 @@ namespace SmartStore.Services.Tasks
 			try
 			{
                 _taskRepository.Update(task);
-
-    //            using (var scope = new DbContextScope(_taskRepository.Context, autoCommit: true))
-				//{
-				//	Retry.Run(() => _taskRepository.Update(task), 3, TimeSpan.FromMilliseconds(50), (attempt, exception) =>
-				//	{
-				//		var ex = exception as DbUpdateConcurrencyException;
-				//		if (ex == null) return;
-
-				//		var entry = ex.Entries.Single();
-				//		var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
-
-				//		// When 'StopOnError' is true, the 'Enabled' property could have been set to true on exception.
-				//		var prop = entry.Property("Enabled");
-				//		var enabledModified = !prop.CurrentValue.Equals(prop.OriginalValue);
-
-				//		// Save current cron expression
-				//		var cronExpression = task.CronExpression;
-
-				//		// Fetch Name, CronExpression, Enabled & StopOnError from database
-				//		// (these were possibly edited thru the backend)
-				//		_taskRepository.Context.ReloadEntity(task);
-
-				//		// Do we have to reschedule the task?
-				//		var cronModified = cronExpression != task.CronExpression;
-
-				//		// Copy execution specific data from current to reloaded entity 
-				//		task.LastEndUtc = current.LastEndUtc;
-				//		task.LastError = current.LastError;
-				//		task.LastStartUtc = current.LastStartUtc;
-				//		task.LastSuccessUtc = current.LastSuccessUtc;
-				//		task.ProgressMessage = current.ProgressMessage;
-				//		task.ProgressPercent = current.ProgressPercent;
-				//		task.NextRunUtc = current.NextRunUtc;
-				//		if (enabledModified)
-				//		{
-				//			task.Enabled = current.Enabled;
-				//		}
-				//		if (task.NextRunUtc.HasValue && cronModified)
-				//		{
-				//			// reschedule task
-				//			task.NextRunUtc = GetNextSchedule(task);
-				//		}
-
-				//		if (attempt == 3)
-				//		{
-				//			_taskRepository.Update(task);
-				//		}
-				//	});
-				//}
 			}
 			catch (Exception ex)
 			{
@@ -276,13 +179,6 @@ namespace SmartStore.Services.Tasks
 				task.NextRunUtc = GetNextSchedule(task);
 				if (isAppStart)
 				{
-					//task.ProgressPercent = null;
-					//task.ProgressMessage = null;
-					//if (task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
-					//{
-					//	task.LastEndUtc = task.LastStartUtc;
-					//	task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
-					//}
 					FixTypeName(task);
 				}
 				else

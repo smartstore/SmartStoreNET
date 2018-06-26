@@ -194,6 +194,7 @@ namespace SmartStore.Services.Messages
 			m.Discount = dislayDiscount ? cusDiscount : null;
 			m.RoundingDiff = cusRounding.NullEmpty();
 			m.Total = cusTotal;
+			m.IsGross = order.CustomerTaxDisplayType == TaxDisplayType.IncludingTax;
 
 			// TaxRates
 			m.TaxRates = !displayTaxRates ? (object[])null : taxRates.Select(x =>
@@ -310,7 +311,8 @@ namespace SmartStore.Services.Messages
 				{ "UnitPrice", FormatPrice(isNet ? part.UnitPriceExclTax : part.UnitPriceInclTax, part.Order, messageContext) },
 				{ "LineTotal", FormatPrice(isNet ? part.PriceExclTax : part.PriceInclTax, part.Order, messageContext) },
 				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) },
-				{ "BundleItems", bundleItems }
+				{ "BundleItems", bundleItems },
+				{ "IsGross", !isNet }
 			};
 
 			PublishModelPartCreatedEvent<OrderItem>(part, m);

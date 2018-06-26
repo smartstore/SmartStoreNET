@@ -11,7 +11,8 @@
 }
 
 <div class="block @(Model.IsBordered ? "block-boxed" : "") topic-widget topic-widget-@Model.SystemName">
-    @if (Model.ShowTitle) {
+    @if (Model.ShowTitle && Model.Title.HasValue())
+	{
 		<div class="block-title">
 			@Html.Raw("<" + Model.TitleTag + " " + @Html.LanguageAttributes(Model.TitleRtl, WorkContext.WorkingLanguage) + ">" + Model.Title + "</" + Model.TitleTag + ">")
 		</div>

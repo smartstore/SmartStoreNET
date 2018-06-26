@@ -10,6 +10,9 @@ using System.Security.Cryptography;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using SmartStore.ComponentModel;
+using System.Text;
+using Newtonsoft.Json;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SmartStore.Utilities
 {
@@ -264,6 +267,100 @@ namespace SmartStore.Utilities
 			}
 
 			return true;
+		}
+
+		public static long GetObjectSizeInBytes(object obj, HashSet<object> instanceLookup = null)
+		{
+			if (obj == null)
+				return 0;
+
+			var type = obj.GetType();
+			var genericArguments = type.GetGenericArguments();
+
+			long size = 0;
+
+			if (obj is string str)
+			{
+				size = Encoding.Default.GetByteCount(str);
+			}
+			else if (obj is StringBuilder sb)
+			{
+				size = Encoding.Default.GetByteCount(sb.ToString());
+			}
+			else if (type.IsEnum)
+			{
+				size = System.Runtime.InteropServices.Marshal.SizeOf(Enum.GetUnderlyingType(type));
+			}
+			else if (type.IsPredefinedSimpleType() || type.IsPredefinedGenericType())
+			{
+				//size = System.Runtime.InteropServices.Marshal.SizeOf(Nullable.GetUnderlyingType(type) ?? type); // crashes often
+				size = 8; // mean/average
+			}
+			else if (obj is Stream stream)
+			{
+				size = stream.Length;
+			}
+			else if (obj is IDictionary dic)
+			{
+				foreach (var item in dic.Values)
+				{
+					size += GetObjectSizeInBytes(item, instanceLookup);
+				}
+			}
+			else if (obj is IEnumerable e)
+			{
+				foreach (var item in e)
+				{
+					size += GetObjectSizeInBytes(item, instanceLookup);
+				}
+			}
+			else
+			{
+				if (instanceLookup == null)
+				{
+					instanceLookup = new HashSet<object>(ReferenceEqualityComparer.Default);
+				}
+
+				if (!type.IsValueType && instanceLookup.Contains(obj))
+				{
+					return 0;
+				}
+
+				instanceLookup.Add(obj);
+
+				var serialized = false;
+
+				if (type.IsSerializable && genericArguments.All(x => x.IsSerializable))
+				{
+					try
+					{
+						using (var s = new MemoryStream())
+						{
+							var formatter = new BinaryFormatter();
+							formatter.Serialize(s, obj);
+							size = s.Length;
+
+							serialized = true;
+						}
+					}
+					catch { }
+				}
+
+				if (!serialized)
+				{
+					// Serialization failed or is not supported: make JSON.
+					var json = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+					{
+						DateFormatHandling = DateFormatHandling.IsoDateFormat,
+						DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+						MaxDepth = 10,
+						ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+					});
+					size = Encoding.Default.GetByteCount(json);
+				}
+			}
+
+			return size;
 		}
 	}
 }

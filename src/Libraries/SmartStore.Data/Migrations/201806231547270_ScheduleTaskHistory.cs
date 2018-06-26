@@ -1,6 +1,8 @@
 namespace SmartStore.Data.Migrations
 {
     using System.Data.Entity.Migrations;
+    using System.Linq;
+    using SmartStore.Core.Domain.Tasks;
     using SmartStore.Data.Setup;
 
     public partial class ScheduleTaskHistory : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
@@ -63,6 +65,15 @@ namespace SmartStore.Data.Migrations
         {
             context.MigrateLocaleResources(MigrateLocaleResources);
             context.SaveChanges();
+
+            // Search index task is the first one to run per machine. Better not create a second plugin migration for these few lines.
+            var taskSet = context.Set<ScheduleTask>();
+            var indexingTask = taskSet.FirstOrDefault(x => x.Type == "SmartStore.MegaSearch.IndexingTask, SmartStore.MegaSearch");
+            if (indexingTask != null)
+            {
+                indexingTask.RunPerMachine = true;
+                context.SaveChanges();
+            }
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)

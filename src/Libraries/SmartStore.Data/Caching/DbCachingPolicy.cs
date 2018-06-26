@@ -57,7 +57,6 @@ namespace SmartStore.Data.Caching
 			typeof(ShippingMethod).Name,
 			typeof(StateProvince).Name,
 			typeof(Store).Name,
-			typeof(StoreMapping).Name,
 			typeof(TaxCategory).Name,
 			typeof(ThemeVariable).Name,
 			typeof(Topic).Name

@@ -7,6 +7,7 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Modelling
 {
+	[Serializable]
 	public sealed class CustomPropertiesDictionary : Dictionary<string, object>
 	{
 	}

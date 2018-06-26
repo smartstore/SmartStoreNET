@@ -5,12 +5,14 @@ using System.Threading;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Tasks;
 using SmartStore.Core.Async;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -21,17 +23,23 @@ namespace SmartStore.Admin.Controllers
         private readonly ITaskScheduler _taskScheduler;
 		private readonly IAsyncState _asyncState;
         private readonly AdminModelHelper _adminModelHelper;
+        private readonly AdminAreaSettings _adminAreaSettings;
+        private readonly CommonSettings _commonSettings;
 
         public ScheduleTaskController(
             IScheduleTaskService scheduleTaskService, 
             ITaskScheduler taskScheduler, 
 			IAsyncState asyncState,
-            AdminModelHelper adminModelHelper)
+            AdminModelHelper adminModelHelper,
+            AdminAreaSettings adminAreaSettings,
+            CommonSettings commonSettings)
         {
             _scheduleTaskService = scheduleTaskService;
 			_taskScheduler = taskScheduler;
 			_asyncState = asyncState;
             _adminModelHelper = adminModelHelper;
+            _adminAreaSettings = adminAreaSettings;
+            _commonSettings = commonSettings;
         }
 
 		private string GetTaskMessage(ScheduleTask task, string resourceKey)
@@ -189,6 +197,8 @@ namespace SmartStore.Admin.Controllers
             }
 
             ViewBag.ReturnUrl = returnUrl;
+            ViewBag.GridPageSize = _adminAreaSettings.GridPageSize;
+            ViewBag.MaxScheduleHistoryAgeInDays = _commonSettings.MaxScheduleHistoryAgeInDays;
 
             return View(model);
 		}
@@ -235,7 +245,47 @@ namespace SmartStore.Admin.Controllers
 			return returnResult;
 		}
 
-		[HttpPost]
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult HistoryList(GridCommand command, int taskId)
+        {
+            var gridModel = new GridModel<ScheduleTaskHistoryModel>();
+
+            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+            {
+                var history = _scheduleTaskService.GetHistoryEntriesByTaskId(taskId, command.Page - 1, command.PageSize);
+
+                gridModel.Total = history.TotalCount;
+                gridModel.Data = history.Select(x => _adminModelHelper.CreateScheduleTaskHistoryModel(x)).ToList();
+            }
+            else
+            {
+                gridModel.Data = Enumerable.Empty<ScheduleTaskHistoryModel>();
+                NotifyAccessDenied();
+            }
+
+            return new JsonResult
+            {
+                Data = gridModel
+            };
+        }
+
+        [GridAction(EnableCustomBinding = true)]
+        public ActionResult DeleteHistoryEntry(int id, GridCommand command)
+        {
+            var historyEntry = _scheduleTaskService.GetHistoryEntryById(id);
+
+            if (Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+            {
+                if (historyEntry != null)
+                {
+                    _scheduleTaskService.DeleteHistoryEntry(historyEntry);
+                }
+            }
+
+            return HistoryList(command, historyEntry.ScheduleTaskId);
+        }
+
+        [HttpPost]
 		public ActionResult FutureSchedules(string expression)
 		{
 			try

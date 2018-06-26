@@ -21,7 +21,7 @@
 	else
 	{
 		<span class="mr-1">@T("Admin.System.ScheduleTasks.LastStart"): </span>
-		<span class="text-muted">@(Model.LastStart.HasValue ? Model.LastStartPretty : T("Common.Never").Text)</span>
+		<span class="text-muted">@(Model.LastHistoryEntry.FinishedOn.HasValue ? Model.LastHistoryEntry.FinishedOnPretty : T("Common.Never").Text)</span>
 	}
 	@if (hasPermission)
 	{

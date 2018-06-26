@@ -48,8 +48,10 @@ namespace SmartStore.Services.Tasks
 			IDictionary<string, string> taskParameters = null,
             bool throwOnError = false)
         {
-			if (AsyncRunner.AppShutdownCancellationToken.IsCancellationRequested)
-				return;
+            if (AsyncRunner.AppShutdownCancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
 
             bool faulted = false;
 			bool canceled = false;
@@ -57,6 +59,7 @@ namespace SmartStore.Services.Tasks
             ITask instance = null;
 			string stateName = null;
 			Type taskType = null;
+            Exception exc = null;
 
             var historyEntry = new ScheduleTaskHistory
             {
@@ -111,6 +114,7 @@ namespace SmartStore.Services.Tasks
             }
             catch (Exception exception)
             {
+                exc = exception;
                 faulted = true;
 				canceled = exception is OperationCanceledException;
 				lastError = exception.Message.Truncate(995, "...");
@@ -122,11 +126,6 @@ namespace SmartStore.Services.Tasks
                 else
                 {
                     Logger.Error(exception, string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", exception.Message));
-                }
-
-                if (throwOnError)
-                {
-                    throw;
                 }
             }
             finally
@@ -182,6 +181,11 @@ namespace SmartStore.Services.Tasks
                 }
 
                 Throttle.Check("Delete old schedule task history entries", TimeSpan.FromDays(1), () => _scheduledTaskService.DeleteHistoryEntries() > 0);
+            }
+
+            if (throwOnError && exc != null)
+            {
+                throw exc;
             }
         }
     }

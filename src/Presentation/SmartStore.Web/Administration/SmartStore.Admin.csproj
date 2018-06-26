@@ -296,6 +296,7 @@
     <Compile Include="Models\Settings\PaymentSettingsModel.cs" />
     <Compile Include="Models\Settings\SearchSettingsModel.cs" />
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
+    <Compile Include="Models\Tasks\ScheduleTaskHistoryModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />

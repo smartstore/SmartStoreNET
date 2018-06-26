@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
@@ -95,6 +96,22 @@ namespace SmartStore.Services.Tasks
         /// <param name="isRunning">Filter by running entries.</param>
         /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
         ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null);
+
+        /// <summary>
+        /// Gets a list of last <see cref="ScheduleTaskHistory"/> for a task identifier.
+        /// </summary>
+        /// <param name="taskId">Task identifier.</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entries.</returns>
+        IPagedList<ScheduleTaskHistory> GetHistoryEntriesByTaskId(int taskId, int pageIndex, int pageSize);
+
+        /// <summary>
+        /// Get a history entry by identifier.
+        /// </summary>
+        /// <param name="id">History entry identifier.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
+        ScheduleTaskHistory GetHistoryEntryById(int id);
 
         /// <summary>
         /// Inserts a <see cref="ScheduleTaskHistory"/> entry.

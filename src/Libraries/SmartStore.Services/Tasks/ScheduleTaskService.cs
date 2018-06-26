@@ -336,6 +336,33 @@ namespace SmartStore.Services.Tasks
             return historyEntry;
         }
 
+        public virtual IPagedList<ScheduleTaskHistory> GetHistoryEntriesByTaskId(int taskId, int pageIndex, int pageSize)
+        {
+            if (taskId == 0)
+            {
+                return new PagedList<ScheduleTaskHistory>(new List<ScheduleTaskHistory>(), pageIndex, pageSize);
+            }
+
+            var query =
+                from th in _taskHistoryRepository.TableUntracked
+                where th.ScheduleTaskId == taskId
+                orderby th.StartedOnUtc descending, th.Id descending
+                select th;
+
+            var history = new PagedList<ScheduleTaskHistory>(query, pageIndex, pageSize);
+            return history;
+        }
+
+        public virtual ScheduleTaskHistory GetHistoryEntryById(int id)
+        {
+            if (id == 0)
+            {
+                return null;
+            }
+
+            return _taskHistoryRepository.GetById(id);
+        }
+
         public virtual void InsertHistoryEntry(ScheduleTaskHistory historyEntry)
         {
             Guard.NotNull(historyEntry, nameof(historyEntry));
@@ -361,6 +388,7 @@ namespace SmartStore.Services.Tasks
         public virtual void DeleteHistoryEntry(ScheduleTaskHistory historyEntry)
         {
             Guard.NotNull(historyEntry, nameof(historyEntry));
+            Guard.IsTrue(!historyEntry.IsRunning, nameof(historyEntry.IsRunning), "Cannot delete a running schedule task history entry.");
 
             _taskHistoryRepository.Delete(historyEntry);
         }
@@ -380,7 +408,7 @@ namespace SmartStore.Services.Tasks
                 {
                     IPagedList<ScheduleTaskHistory> pagedEntries = null;
                     var pageIndex = 0;
-                    var oldestDate = DateTime.UtcNow.AddDays(_commonSettings.Value.MaxScheduleHistoryAgeInDays * -1);
+                    var oldestDate = DateTime.UtcNow.AddDays(-1 * _commonSettings.Value.MaxScheduleHistoryAgeInDays);
                     var query = _taskHistoryRepository.Table
                         .Where(x => x.StartedOnUtc <= oldestDate && !x.IsRunning)
                         .OrderBy(x => x.Id);

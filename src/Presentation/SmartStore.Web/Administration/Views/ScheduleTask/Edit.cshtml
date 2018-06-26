@@ -1,9 +1,8 @@
-﻿@model ScheduleTaskModel
-@using SmartStore
+﻿@using SmartStore
 @using SmartStore.Core
+@model ScheduleTaskModel
 @{
 	ViewBag.Title = T("Admin.System.ScheduleTasks.EditTask") + " - " + Model.Name;
-	var cronHelpLink = GenerateHelpUrl(HelpTopic.CronExpressions);
 	var returnUrl = ((string)ViewBag.ReturnUrl).NullEmpty();
 }
 
@@ -27,7 +26,7 @@
 			<button type="submit" name="save" value="save-continue" class="btn btn-secondary">
 				<span>@T("Admin.Common.SaveContinue")</span>
 			</button>
-			@if (!Model.IsRunning)
+			@if (!Model.LastHistoryEntry.IsRunning)
 			{
 				<a href="@Model.ExecuteUrl" class="btn btn-secondary btn-to-danger">
 					<i class='fa fa-play'></i>
@@ -38,7 +37,18 @@
 	</div>
 	
 	@Html.ValidationSummary(false)
-	
+
+    @Html.SmartStore().TabStrip().Name("schedule-task-edit").Style(TabsStyle.Material).Items(x =>
+    {
+        x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
+        x.Add().Text(T("Common.History").Text).Content(TabHistory());
+    
+        EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "schedule-task-edit", this.Html, this.Model));
+    })
+}
+
+@helper TabGeneral()
+{
 	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
@@ -79,13 +89,13 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.LastStart)
+				@Html.SmartLabelFor(model => model.LastHistoryEntry.StartedOn)
 			</td>
 			<td class="adminData">
 				<div class="form-control-plaintext">
-					@if (Model.LastStart.HasValue)
+					@if (Model.LastHistoryEntry.Id != 0)
 					{
-						@Html.DisplayFor(model => model.LastStart)
+						@Html.DisplayFor(model => model.LastHistoryEntry.StartedOn)
 					}
 					else
 					{
@@ -94,40 +104,40 @@
 				</div>
 			</td>
 		</tr>
-		@if (Model.Duration.HasValue())
+		@if (Model.LastHistoryEntry.Duration.HasValue())
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Duration)
+					@Html.SmartLabelFor(model => model.LastHistoryEntry.Duration)
 				</td>
 				<td class="adminData">
 					<div class="form-control-plaintext">
-						@Html.DisplayFor(model => model.Duration)
+						@Html.DisplayFor(model => model.LastHistoryEntry.Duration)
 					</div>
 				</td>
 			</tr>
 		}
-		@if (Model.LastError.HasValue())
+		@if (Model.LastHistoryEntry.Error.HasValue())
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.LastError)
+					@Html.SmartLabelFor(model => model.LastHistoryEntry.Error)
 				</td>
 				<td class="adminData">
 					<div class="form-control-plaintext">
-						<span class="text-danger">@Html.DisplayFor(model => model.LastError)</span>
+						<span class="text-danger">@Html.DisplayFor(model => model.LastHistoryEntry.Error)</span>
 					</div>
 				</td>
 			</tr>
-			if (Model.LastSuccess.HasValue && Model.LastSuccess != Model.LastEnd)
+			if (Model.LastHistoryEntry.SucceededOn.HasValue && Model.LastHistoryEntry.SucceededOn != Model.LastHistoryEntry.FinishedOn)
 			{
 				<tr>
 					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.LastSuccess)
+						@Html.SmartLabelFor(model => model.LastHistoryEntry.SucceededOn)
 					</td>
 					<td class="adminData">
 						<div class="form-control-plaintext">
-							@Html.DisplayFor(model => model.LastSuccess)
+							@Html.DisplayFor(model => model.LastHistoryEntry.SucceededOn)
 						</div>
 					</td>
 				</tr>
@@ -158,7 +168,7 @@
 		<tr>
 			<td class="adminTitle">&nbsp;</td>
 			<td class="adminData">
-				<div class="muted">@T("Admin.System.ScheduleTasks.CronHelp", cronHelpLink)</div>
+				<div class="muted">@T("Admin.System.ScheduleTasks.CronHelp", GenerateHelpUrl(HelpTopic.CronExpressions))</div>
 			</td>
 		</tr>
 		<tr>
@@ -168,6 +178,78 @@
 			</td>
 		</tr>
 	</table>
+}
+
+@helper TabHistory()
+{
+    var maxScheduleHistoryAgeInDays = (int)ViewBag.MaxScheduleHistoryAgeInDays;
+    if (maxScheduleHistoryAgeInDays > 0)
+    {
+        <div class="alert alert-info">
+            @T("Admin.System.ScheduleTasks.AutomaticallyDeleteHistoryNote", maxScheduleHistoryAgeInDays)
+        </div>
+    }
+
+    <script type="text/javascript">
+	    function OnTaskHistoryGridRowDataBound(e) {
+		    if (e.dataItem.IsRunning) {
+                $(e.row).find('td:last .t-grid-delete').remove();
+		    }
+	    }
+    </script>
+    <div>
+		@(Html.Telerik().Grid<ScheduleTaskHistoryModel>()
+            .Name("schedule-task-history-grid")
+            .DataKeys(keys =>
+            {
+                keys.Add(x => x.Id).RouteKey("id");
+            })
+            .DataBinding(dataBinding =>
+            {
+                dataBinding.Ajax()
+                    .Select("HistoryList", "ScheduleTask", new { taskId = Model.Id })
+                    .Delete("DeleteHistoryEntry", "ScheduleTask");
+            })
+			.ClientEvents(e =>
+			{
+				e.OnRowDataBound("OnTaskHistoryGridRowDataBound");
+			})
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.StartedOn)
+                    .Title(T("Common.ExecutedOn"))
+                    .Width(260)
+                    .ClientTemplate(
+                        "<div>" +
+                        "<div><#= StartedOnString #></div>" +
+                        "<div class='muted'><#= StartedOnPretty #></div>" +
+                        "</div>");
+                columns.Bound(x => x.FinishedOn)
+                    .Title(T("Common.FinishedOn"))
+                    .Width(260)
+                    .ClientTemplate(
+                        "<div>" +
+                        "<div><#= FinishedOnString #></div>" +
+                        "<div class='muted'><#= FinishedOnPretty #></div>" +
+                        "</div>");
+                columns.Bound(x => x.Duration)
+                    .Width(260);
+                columns.Bound(x => x.Succeeded)
+                    .ClientTemplate(
+                        "<# if(Succeeded){ #>" + @Html.SymbolForBool("Succeeded") + "<# } #>" +
+                        "<# if(!Succeeded){ #><div class='text-danger pr-2'><span class='font-weight-medium'>" + T("Common.Error") + ":</span> <span><#= Error #></span></div><# } #>");
+                columns.Bound(x => x.MachineName);
+                columns.Command(commands =>
+                {
+                    commands.Delete().Localize(T);
+                })
+                .Width(200)
+                .HtmlAttributes(new { align = "right" });
+            })
+            .Pageable(settings => settings.PageSize((int)ViewBag.GridPageSize).Position(GridPagerPosition.Both))
+            .PreserveGridState()
+            .EnableCustomBinding(true))
+    </div>
 }
 
 <script>
@@ -193,7 +275,6 @@
 					$('#future-schedules').html(data);
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
-
 				}
 			});
 		}

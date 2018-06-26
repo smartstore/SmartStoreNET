@@ -67,11 +67,21 @@ namespace SmartStore.Data.Migrations
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
+            builder.AddOrUpdate("Common.History", "History", "Historie");
+            builder.AddOrUpdate("Common.ExecutedOn", "Executed on", "Ausgeführt am");
+            builder.AddOrUpdate("Common.FinishedOn", "Finished on", "Beendet am");
+            builder.AddOrUpdate("Common.Succeeded", "Succeeded", "Erfolgreich");
+            builder.AddOrUpdate("Common.MachineName", "Machine name", "Rechnername");
+
             builder.AddOrUpdate("Admin.System.ScheduleTasks.RunPerMachine",
-                "Run per server",
-                "Pro Server ausführen",
-                "Indicates whether the task is executed separately on each server.",
-                "Gibt an, ob die Aufgabe auf jedem Server separat ausgeführt wird.");
+                "Run per machine",
+                "Pro Rechner ausführen",
+                "Indicates whether the task is executed separately on each machine.",
+                "Gibt an, ob die Aufgabe auf jedem Rechner separat ausgeführt wird.");
+
+            builder.AddOrUpdate("Admin.System.ScheduleTasks.AutomaticallyDeleteHistoryNote",
+                "Entries older than {0} days are automatically deleted.",
+                "Einträge älter als {0} Tage werden automatisch gelöscht.");
         }
     }
 }

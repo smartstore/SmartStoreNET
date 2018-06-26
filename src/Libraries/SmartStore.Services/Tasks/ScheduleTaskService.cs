@@ -200,39 +200,39 @@ namespace SmartStore.Services.Tasks
 
             if (isAppStart)
             {
-                // Empty progress information.
-                var entriesWithProgress = _taskHistoryRepository.Table
-                    .Where(x => x.ProgressPercent != null || !string.IsNullOrEmpty(x.ProgressMessage))
+                // Normalize task history entries.
+                // That is, no task can run when the application starts and therefore no entry may be marked as running.
+                var entries = _taskHistoryRepository.Table
+                    .Where(x =>
+                        x.IsRunning ||
+                        x.ProgressPercent != null ||
+                        !string.IsNullOrEmpty(x.ProgressMessage) ||
+                        (x.FinishedOnUtc != null && x.FinishedOnUtc < x.StartedOnUtc)
+                    )
                     .ToList();
 
-                if (entriesWithProgress.Any())
-                {
-                    foreach (var entry in entriesWithProgress)
-                    {
-                        entry.ProgressPercent = null;
-                        entry.ProgressMessage = null;
-                    }
-                    _taskHistoryRepository.UpdateRange(entriesWithProgress);
-                    _taskHistoryRepository.Context.SaveChanges();
-                }
-            }
-
-            if (isAppStart)
-            {
-                // Normalize invalid finish date.
-                var entriesWithInvalidDate = _taskHistoryRepository.Table
-                    .Where(x => x.FinishedOnUtc != null && x.FinishedOnUtc < x.StartedOnUtc)
-                    .ToList();
-
-                if (entriesWithInvalidDate.Any())
+                if (entries.Any())
                 {
                     string abnormalAbort = T("Admin.System.ScheduleTasks.AbnormalAbort");
-                    foreach (var entry in entriesWithInvalidDate)
+                    foreach (var entry in entries)
                     {
-                        entry.FinishedOnUtc = entry.StartedOnUtc;
-                        entry.Error = abnormalAbort;
+                        var invalidTimeRange = entry.FinishedOnUtc.HasValue && entry.FinishedOnUtc < entry.StartedOnUtc;
+                        if (invalidTimeRange || entry.IsRunning)
+                        {
+                            entry.Error = abnormalAbort;
+                            entry.SucceededOnUtc = null;
+                        }
+
+                        entry.IsRunning = false;
+                        entry.ProgressPercent = null;
+                        entry.ProgressMessage = null;
+                        if (invalidTimeRange)
+                        {
+                            entry.FinishedOnUtc = entry.StartedOnUtc;
+                        }
                     }
-                    _taskHistoryRepository.UpdateRange(entriesWithInvalidDate);
+
+                    _taskHistoryRepository.UpdateRange(entries);
                     _taskHistoryRepository.Context.SaveChanges();
                 }
             }

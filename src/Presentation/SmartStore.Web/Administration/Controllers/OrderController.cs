@@ -379,26 +379,26 @@ namespace SmartStore.Admin.Controllers
                 model.AllowStoringDirectDebit = true;
             }
 
-            // Purchase order number (we have to find a better to inject this information because it's related to a certain plugin).
             var pm = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
 			if (pm != null)
 			{
-                if (pm.Metadata.SystemName.Equals("SmartStore.PurchaseOrderNumber", StringComparison.InvariantCultureIgnoreCase))
-				{
-					model.DisplayPurchaseOrderNumber = true;
-					model.PurchaseOrderNumber = order.PurchaseOrderNumber;
-				}
-
 				model.DisplayCompletePaymentNote = order.PaymentStatus == PaymentStatus.Pending && pm.Value.CanRePostProcessPayment(order);
 				model.PaymentMethod = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata);
-				model.PaymentMethodSystemName = order.PaymentMethodSystemName;
 			}
 			else
 			{
 				model.PaymentMethod = order.PaymentMethodSystemName;
 			}
 
+            // Purchase order number (we have to find a better to inject this information because it's related to a certain plugin).
+            if (order.PaymentMethodSystemName.IsCaseInsensitiveEqual("SmartStore.PurchaseOrderNumber"))
+            {
+                model.DisplayPurchaseOrderNumber = true;
+                model.PurchaseOrderNumber = order.PurchaseOrderNumber;
+            }
+
             // Payment transaction info.
+            model.PaymentMethodSystemName = order.PaymentMethodSystemName;
             model.AuthorizationTransactionId = order.AuthorizationTransactionId;
             model.CaptureTransactionId = order.CaptureTransactionId;
             model.SubscriptionTransactionId = order.SubscriptionTransactionId;

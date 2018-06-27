@@ -246,7 +246,14 @@ namespace SmartStore.Services.DataExchange.Export
 			int scheduleTaskId = profile.SchedulingTaskId;
 			var folder = profile.GetExportFolder();
 
-			_exportProfileRepository.Delete(profile);
+            var deployments = profile.Deployments.Where(x => !x.IsTransientRecord()).ToList();
+            if (deployments.Any())
+            {
+                _exportDeploymentRepository.DeleteRange(deployments);
+                _exportDeploymentRepository.Context.SaveChanges();
+            }
+
+            _exportProfileRepository.Delete(profile);
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(scheduleTaskId);
 			_scheduleTaskService.DeleteTask(scheduleTask);

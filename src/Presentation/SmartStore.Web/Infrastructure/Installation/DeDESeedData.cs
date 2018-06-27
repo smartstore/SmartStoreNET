@@ -1870,12 +1870,12 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("PrivacyInfo", x =>
                 {
                     x.Title = "Datenschutzerklärung";
-                    x.Body = "<p>Legen Sie Ihrer Datenschutzerkl&#228;rung hier fest. Sie können dies in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Legen Sie Ihre Datenschutzerkl&#228;rung hier fest. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("ShippingInfo", x =>
                 {
                     x.Title = "Versand und Rücksendungen";
-                    x.Body = "<p>Informationen zu Versand und Rücksendungen. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Informationen zu Versand und Rücksendungen. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("Imprint", x =>
                 {
@@ -1921,12 +1921,12 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Disclaimer", x =>
                 {
                     x.Title = "Widerrufsrecht";
-                    x.Body = "<p>Fügen Sie Ihr Widerrufsrecht hier ein. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Fügen Sie Ihr Widerrufsrecht hier ein. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("PaymentInfo", x =>
                 {
                     x. Title = "Zahlungsarten";
-                    x.Body = "<p><p>Fügen Sie Informationen zu Zahlungsarten hier ein. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Fügen Sie Informationen zu Zahlungsarten hier ein. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 });
         }
 

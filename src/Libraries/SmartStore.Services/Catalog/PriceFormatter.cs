@@ -142,8 +142,7 @@ namespace SmartStore.Services.Catalog
                     break;
             }
 
-            return FormatPrice(price, showCurrency, currency, 
-                language, priceIncludesTax, showTax);
+            return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
         }
 
         public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
@@ -179,7 +178,7 @@ namespace SmartStore.Services.Catalog
 					formatStr = _localizationService.GetResource("Products.InclTaxSuffix", language.Id, false);
 					if (string.IsNullOrEmpty(formatStr))
 					{
-						formatStr = "{0} incl tax";
+						formatStr = "{0} incl. tax";
 					}
 				}
 				else
@@ -187,7 +186,7 @@ namespace SmartStore.Services.Catalog
 					formatStr = _localizationService.GetResource("Products.ExclTaxSuffix", language.Id, false);
 					if (string.IsNullOrEmpty(formatStr))
 					{
-						formatStr = "{0} excl tax";
+						formatStr = "{0} excl. tax";
 					}
 				}
 				return string.Format(formatStr, currencyString);

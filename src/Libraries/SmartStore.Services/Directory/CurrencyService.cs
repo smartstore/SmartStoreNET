@@ -70,6 +70,7 @@ namespace SmartStore.Services.Directory
         {
             if (String.IsNullOrEmpty(currencyCode))
                 return null;
+
             return GetAllCurrencies(true).FirstOrDefault(c => c.CurrencyCode.ToLower() == currencyCode.ToLower());
         }
 

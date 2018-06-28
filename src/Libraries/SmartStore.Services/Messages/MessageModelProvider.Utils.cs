@@ -15,6 +15,8 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Html;
 using SmartStore.Utilities;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Messages
 {
@@ -122,6 +124,40 @@ namespace SmartStore.Services.Messages
 			var priceFormatter = _services.Resolve<IPriceFormatter>();
 
 			return priceFormatter.FormatPrice(currencyService.ConvertCurrency(price, currencyRate), true, customerCurrencyCode, false, language);
+		}
+
+		private Money FormatPrice2(decimal price, Order order, MessageContext messageContext)
+		{
+			return FormatPrice2(price, order.CustomerCurrencyCode, messageContext, order.CurrencyRate);
+		}
+
+		private Money FormatPrice2(decimal price, MessageContext messageContext, decimal exchangeRate = 0)
+		{
+			return FormatPrice2(price, (Currency)null, messageContext, exchangeRate);
+		}
+
+		private Money FormatPrice2(decimal price, string currencyCode, MessageContext messageContext, decimal exchangeRate = 0)
+		{
+			return FormatPrice2(
+				price,
+				_services.Resolve<ICurrencyService>().GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode },
+				messageContext,
+				exchangeRate);
+		}
+
+		private Money FormatPrice2(decimal price, Currency currency, MessageContext messageContext, decimal exchangeRate = 0)
+		{
+			if (exchangeRate != 0)
+			{
+				price = _services.Resolve<ICurrencyService>().ConvertCurrency(price, exchangeRate);
+			}
+
+			if (currency == null)
+			{
+				currency = _services.Resolve<IWorkContext>().WorkingCurrency;
+			}
+
+			return new Money(price, currency);
 		}
 
 		private PictureInfo GetPictureFor(Product product, string attributesXml)

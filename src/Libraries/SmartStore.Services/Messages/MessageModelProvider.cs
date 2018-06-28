@@ -542,8 +542,10 @@ namespace SmartStore.Services.Messages
 			var productUrlHelper = _services.Resolve<ProductUrlHelper>();
 
 			var currency = _services.WorkContext.WorkingCurrency;
-			var additionalShippingCharge = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(part.AdditionalShippingCharge, currency);
-			var additionalShippingChargeFormatted = _services.Resolve<IPriceFormatter>().FormatPrice(additionalShippingCharge, false, currency.CurrencyCode, false, messageContext.Language);
+			var additionalShippingCharge = new Money(
+				_services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(part.AdditionalShippingCharge, currency), 
+				currency, 
+				true);
 			var url = BuildUrl(productUrlHelper.GetProductUrl(part.Id, part.GetSeName(messageContext.Language.Id), attributesXml), messageContext);
 			var pictureInfo = GetPictureFor(part, attributesXml);
 			var name = part.GetLocalized(x => x.Name, messageContext.Language.Id).Value;
@@ -556,7 +558,7 @@ namespace SmartStore.Services.Messages
 				{ "Name", name },
 				{ "Description", part.GetLocalized(x => x.ShortDescription, messageContext.Language).Value.NullEmpty() },
 				{ "StockQuantity", part.StockQuantity },
-				{ "AdditionalShippingCharge", additionalShippingChargeFormatted.NullEmpty() },
+				{ "AdditionalShippingCharge", additionalShippingCharge },
 				{ "Url", url },
 				{ "Thumbnail", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.MessageProductThumbPictureSize, new Size(50, 50), alt) },
 				{ "ThumbnailLg", CreateModelPart(pictureInfo, messageContext, url, mediaSettings.ProductThumbPictureSize, new Size(120, 120), alt) },
@@ -633,7 +635,7 @@ namespace SmartStore.Services.Messages
 
 				// Reward Points
 				["RewardPointsAmount"] = rewardPointsAmount,
-				["RewardPointsBalance"] = _services.Resolve<IPriceFormatter>().FormatPrice(rewardPointsAmount, true, false),
+				["RewardPointsBalance"] = FormatPrice(rewardPointsAmount, messageContext),
 				["RewardPointsHistory"] = part.RewardPointsHistory.Count == 0 ? null : part.RewardPointsHistory.Select(x => CreateModelPart(x, messageContext)).ToList(),
 			};
 
@@ -654,7 +656,7 @@ namespace SmartStore.Services.Messages
 				{ "SenderEmail", part.SenderEmail.NullEmpty() },
 				{ "RecipientName", part.RecipientName.NullEmpty() },
 				{ "RecipientEmail", part.RecipientEmail.NullEmpty() },
-				{ "Amount", _services.Resolve<IPriceFormatter>().FormatPrice(part.Amount, true, false) },
+				{ "Amount", FormatPrice(part.Amount, messageContext) },
 				{ "CouponCode", part.GiftCardCouponCode.NullEmpty() }
 			};
 
@@ -667,12 +669,11 @@ namespace SmartStore.Services.Messages
 			m["Message"] = message;
 
 			// RemainingAmount
-			var remainingAmount = (string)null;
+			Money remainingAmount = null;
 			var order = part?.PurchasedWithOrderItem?.Order;
 			if (order != null)
 			{
-				var amount = _services.Resolve<ICurrencyService>().ConvertCurrency(part.GetGiftCardRemainingAmount(), order.CurrencyRate);
-				remainingAmount = _services.Resolve<IPriceFormatter>().FormatPrice(amount, true, false);
+				remainingAmount = FormatPrice(part.GetGiftCardRemainingAmount(), order, messageContext);
 			}
 			m["RemainingAmount"] = remainingAmount;
 

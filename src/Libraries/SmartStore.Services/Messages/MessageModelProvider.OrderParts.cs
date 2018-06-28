@@ -114,10 +114,10 @@ namespace SmartStore.Services.Messages
 			var taxSettings = _services.Settings.LoadSetting<TaxSettings>(messageContext.Store.Id);
 
 			var taxRates = new SortedDictionary<decimal, decimal>();
-			string cusTaxTotal = string.Empty;
-			string cusDiscount = string.Empty;
-			string cusRounding = string.Empty;
-			string cusTotal = string.Empty;
+			Money cusTaxTotal = null;
+			Money cusDiscount = null;
+			Money cusRounding = null;
+			Money cusTotal = null;
 
 			var subTotals = GetSubTotals(order, messageContext);
 
@@ -157,9 +157,7 @@ namespace SmartStore.Services.Messages
 					displayTaxRates = taxSettings.DisplayTaxRates && taxRates.Count > 0;
 					displayTax = !displayTaxRates;
 
-					var orderTaxInCustomerCurrency = currencyService.ConvertCurrency(order.OrderTax, order.CurrencyRate);
-					string taxStr = priceFormatter.FormatPrice(orderTaxInCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
-					cusTaxTotal = taxStr;
+					cusTaxTotal = FormatPrice(order.OrderTax, order, messageContext);
 				}
 			}
 
@@ -167,32 +165,31 @@ namespace SmartStore.Services.Messages
 			bool dislayDiscount = false;
 			if (order.OrderDiscount > decimal.Zero)
 			{
-				var orderDiscountInCustomerCurrency = currencyService.ConvertCurrency(order.OrderDiscount, order.CurrencyRate);
-				cusDiscount = priceFormatter.FormatPrice(-orderDiscountInCustomerCurrency, true, order.CustomerCurrencyCode, false, language);
+				cusDiscount = FormatPrice(-order.OrderDiscount, order, messageContext);
 				dislayDiscount = true;
 			}
 
 			// Total
 			var roundingAmount = decimal.Zero;
 			var orderTotal = order.GetOrderTotalInCustomerCurrency(currencyService, paymentService, out roundingAmount);
-			cusTotal = priceFormatter.FormatPrice(orderTotal, true, order.CustomerCurrencyCode, false, language);
+			cusTotal = FormatPrice(orderTotal, order.CustomerCurrencyCode, messageContext);
 
 			// Rounding
 			if (roundingAmount != decimal.Zero)
 			{
-				cusRounding = priceFormatter.FormatPrice(roundingAmount, true, order.CustomerCurrencyCode, false, language);
+				cusRounding = FormatPrice(roundingAmount, order.CustomerCurrencyCode, messageContext);
 			}
 
 			// Model
 			dynamic m = new ExpandoObject();
 
-			m.SubTotal = subTotals.SubTotal.NullEmpty();
+			m.SubTotal = subTotals.SubTotal;
 			m.SubTotalDiscount = subTotals.DisplaySubTotalDiscount ? subTotals.SubTotalDiscount : null;
 			m.Shipping = dislayShipping ? subTotals.ShippingTotal : null;
 			m.Payment = displayPaymentMethodFee ? subTotals.PaymentFee : null;
 			m.Tax = displayTax ? cusTaxTotal : null;
 			m.Discount = dislayDiscount ? cusDiscount : null;
-			m.RoundingDiff = cusRounding.NullEmpty();
+			m.RoundingDiff = cusRounding;
 			m.Total = cusTotal;
 			m.IsGross = order.CustomerTaxDisplayType == TaxDisplayType.IncludingTax;
 
@@ -228,41 +225,36 @@ namespace SmartStore.Services.Messages
 			return m;
 		}
 
-		private (string SubTotal, string SubTotalDiscount, string ShippingTotal, string PaymentFee, bool DisplaySubTotalDiscount) GetSubTotals(Order order, MessageContext messageContext)
+		private (Money SubTotal, Money SubTotalDiscount, Money ShippingTotal, Money PaymentFee, bool DisplaySubTotalDiscount) GetSubTotals(Order order, MessageContext messageContext)
 		{
 			var language = messageContext.Language;
 			var currencyService = _services.Resolve<ICurrencyService>();
 			var priceFormatter = _services.Resolve<IPriceFormatter>();
 
-			string cusSubTotal = string.Empty;
-			string cusSubTotalDiscount = string.Empty;
-			string cusShipTotal = string.Empty;
-			string cusPaymentMethodFee = string.Empty;
-			bool dislaySubTotalDiscount = false;
+			var isNet = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax;
 
-			var subTotal = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax ? order.OrderSubtotalExclTax : order.OrderSubtotalInclTax;
-			var subTotalDiscount = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax ? order.OrderSubTotalDiscountExclTax : order.OrderSubTotalDiscountInclTax;
-			var shipping = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax ? order.OrderShippingExclTax : order.OrderShippingInclTax;
-			var payment = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax ? order.PaymentMethodAdditionalFeeExclTax : order.PaymentMethodAdditionalFeeInclTax;
+			var subTotal = isNet ? order.OrderSubtotalExclTax : order.OrderSubtotalInclTax;
+			var subTotalDiscount = isNet ? order.OrderSubTotalDiscountExclTax : order.OrderSubTotalDiscountInclTax;
+			var shipping = isNet ? order.OrderShippingExclTax : order.OrderShippingInclTax;
+			var payment = isNet ? order.PaymentMethodAdditionalFeeExclTax : order.PaymentMethodAdditionalFeeInclTax;
 
 			// Subtotal
-			cusSubTotal = FormatPrice(subTotal, order, messageContext);
-
-			// Discount (applied to order subtotal)
-			var orderSubTotalDiscount = currencyService.ConvertCurrency(subTotalDiscount, order.CurrencyRate);
-			if (orderSubTotalDiscount > decimal.Zero)
-			{
-				cusSubTotalDiscount = priceFormatter.FormatPrice(-orderSubTotalDiscount, true, order.CustomerCurrencyCode, language, false, false);
-				dislaySubTotalDiscount = true;
-			}
+			var cusSubTotal = FormatPrice(subTotal, order, messageContext);
 
 			// Shipping
-			var orderShipping = currencyService.ConvertCurrency(shipping, order.CurrencyRate);
-			cusShipTotal = priceFormatter.FormatShippingPrice(orderShipping, true, order.CustomerCurrencyCode, language, false, false);
+			var cusShipTotal = FormatPrice(shipping, order, messageContext);
 
 			// Payment method additional fee
-			var paymentMethodAdditionalFee = currencyService.ConvertCurrency(payment, order.CurrencyRate);
-			cusPaymentMethodFee = priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFee, true, order.CustomerCurrencyCode, language, false, false);
+			var cusPaymentMethodFee = FormatPrice(payment, order, messageContext);
+
+			// Discount (applied to order subtotal)
+			Money cusSubTotalDiscount = null;
+			bool dislaySubTotalDiscount = false;
+			if (subTotalDiscount > decimal.Zero)
+			{
+				cusSubTotalDiscount = FormatPrice(-subTotalDiscount, order, messageContext);
+				dislaySubTotalDiscount = true;
+			}
 
 			return (cusSubTotal, cusSubTotalDiscount, cusShipTotal, cusPaymentMethodFee, dislaySubTotalDiscount);
 		}
@@ -334,7 +326,7 @@ namespace SmartStore.Services.Messages
 				{ "AttributeDescription", part.AttributesInfo.NullEmpty() },
 				{ "Quantity", part.Quantity > 1 && part.PerItemShoppingCart ? part.Quantity.ToString() : null },
 				{ "PerItemShoppingCart", part.PerItemShoppingCart },
-				{ "PriceWithDiscount", priceWithDiscount.NullEmpty() },
+				{ "PriceWithDiscount", priceWithDiscount },
 				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) }
 			};
 

@@ -6,7 +6,7 @@ using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore
 {
-	public class Money : IConvertible, IComparable, IComparable<Money>, IEquatable<Money>
+	public class Money : IConvertible, IFormattable, IComparable, IComparable<Money>, IEquatable<Money>
 	{
 		public Money(Currency currency)
 			: this(0m, currency)
@@ -14,30 +14,34 @@ namespace SmartStore
 		}
 
 		public Money(float amount, Currency currency)
-			: this((decimal)amount, currency)
+			: this((decimal)amount, currency, false)
 		{
 		}
 
 		public Money(double amount, Currency currency)
-			: this((decimal)amount, currency)
+			: this((decimal)amount, currency, false)
 		{
 		}
 
 		public Money(decimal amount, Currency currency)
+			: this(amount, currency, false)
+		{
+		}
+
+		public Money(decimal amount, Currency currency, bool hideCurrency)
 		{
 			Guard.NotNull(currency, nameof(currency));
 
 			Amount = amount;
 			Currency = currency;
+			HideCurrency = hideCurrency;
 		}
 
-		/// <summary>
-		/// The internal unrounded raw amount
-		/// </summary>
-		public decimal Amount
+		[IgnoreDataMember]
+		public bool HideCurrency
 		{
 			get;
-			set;
+			internal set;
 		}
 
 		[IgnoreDataMember]
@@ -52,7 +56,45 @@ namespace SmartStore
 		/// </summary>
 		public int DecimalDigits
 		{
-			get { return Currency.NumberFormat.CurrencyDecimalDigits; }
+			get => string.Equals(Currency?.CurrencyCode, "btc", StringComparison.OrdinalIgnoreCase) ? 8 : Currency.NumberFormat.CurrencyDecimalDigits;
+		}
+
+		/// <summary>
+		/// The internal unrounded raw amount
+		/// </summary>
+		public decimal Amount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Rounds the amount to the number of significant decimal digits
+		/// of the associated currency using MidpointRounding.AwayFromZero.
+		/// </summary>
+		public decimal RoundedAmount
+		{
+			get
+			{
+				return decimal.Round(Amount, DecimalDigits, MidpointRounding.AwayFromZero);
+			}
+		}
+
+		/// <summary>
+		/// Truncates the amount to the number of significant decimal digits
+		/// of the associated currency.
+		/// </summary>
+		public decimal TruncatedAmount
+		{
+			get => (decimal)((long)Math.Truncate(Amount * DecimalDigits)) / DecimalDigits;
+		}
+
+		/// <summary>
+		/// The formatted amount
+		/// </summary>
+		public string Formatted
+		{
+			get => ToString(true, false);
 		}
 
 		private static void GuardCurrenciesAreEqual(Money a, Money b)
@@ -171,14 +213,19 @@ namespace SmartStore
 
 		#region Format
 
+		string IFormattable.ToString(string format, IFormatProvider formatProvider)
+		{
+			return this.ToString(!HideCurrency, false);
+		}
+
 		string IConvertible.ToString(IFormatProvider provider)
 		{
-			return this.ToString(true, false);
+			return this.ToString(!HideCurrency, false);
 		}
 
 		public override string ToString()
 		{
-			return this.ToString(true, false);
+			return this.ToString(!HideCurrency, false);
 		}
 
 		public string ToString(bool showCurrency)
@@ -192,7 +239,7 @@ namespace SmartStore
 
 			if (Currency.CustomFormatting.HasValue())
 			{
-				return Amount.ToString(Currency.CustomFormatting, fmt);
+				return RoundedAmount.ToString(Currency.CustomFormatting, fmt);
 			}
 			else
 			{
@@ -202,7 +249,7 @@ namespace SmartStore
 					fmt.CurrencySymbol = !showCurrency ? "" : Currency.CurrencyCode;
 				}
 
-				return Amount.ToString("C", fmt);
+				return RoundedAmount.ToString("C", fmt);
 			}
 		}
 
@@ -210,66 +257,20 @@ namespace SmartStore
 
 		#region Convert
 
-		public static explicit operator bool(Money money)
-		{
-			// For truthy checks in templating
-			return money.Amount != 0;
-		}
-
-		public static explicit operator byte(Money money)
-		{
-			return System.Convert.ToByte(money.Amount);
-		}
-
-		public static explicit operator decimal(Money money)
-		{
-			return money.Amount;
-		}
-
-		public static explicit operator double(Money money)
-		{
-			return System.Convert.ToDouble(money.Amount);
-		}
-
-		public static explicit operator float(Money money)
-		{
-			return System.Convert.ToSingle(money.Amount);
-		}
-
-		public static explicit operator int(Money money)
-		{
-			return System.Convert.ToInt32(money.Amount);
-		}
-
-		public static explicit operator long(Money money)
-		{
-			return System.Convert.ToInt64(money.Amount);
-		}
-
-		public static explicit operator sbyte(Money money)
-		{
-			return System.Convert.ToSByte(money.Amount);
-		}
-
-		public static explicit operator short(Money money)
-		{
-			return System.Convert.ToInt16(money.Amount);
-		}
-
-		public static explicit operator ushort(Money money)
-		{
-			return System.Convert.ToUInt16(money.Amount);
-		}
-
-		public static explicit operator uint(Money money)
-		{
-			return System.Convert.ToUInt32(money.Amount);
-		}
-
-		public static explicit operator ulong(Money money)
-		{
-			return System.Convert.ToUInt64(money.Amount);
-		}
+		// For truthy checks in templating
+		public static explicit operator bool(Money money) => money.Amount != 0;
+		public static explicit operator string(Money money) => money.ToString(true, false);
+		public static explicit operator byte(Money money) => System.Convert.ToByte(money.Amount);
+		public static explicit operator decimal(Money money) => money.Amount;
+		public static explicit operator double(Money money) => System.Convert.ToDouble(money.Amount);
+		public static explicit operator float(Money money) => System.Convert.ToSingle(money.Amount);
+		public static explicit operator int(Money money) => System.Convert.ToInt32(money.Amount);
+		public static explicit operator long(Money money) => System.Convert.ToInt64(money.Amount);
+		public static explicit operator sbyte(Money money) => System.Convert.ToSByte(money.Amount);
+		public static explicit operator short(Money money) => System.Convert.ToInt16(money.Amount);
+		public static explicit operator ushort(Money money) => System.Convert.ToUInt16(money.Amount);
+		public static explicit operator uint(Money money) => System.Convert.ToUInt32(money.Amount);
+		public static explicit operator ulong(Money money) => System.Convert.ToUInt64(money.Amount);
 
 		TypeCode IConvertible.GetTypeCode() => TypeCode.Decimal;
 		object IConvertible.ToType(Type conversionType, IFormatProvider provider) => System.Convert.ChangeType(this.Amount, conversionType, provider);

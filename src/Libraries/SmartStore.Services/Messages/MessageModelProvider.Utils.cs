@@ -112,42 +112,28 @@ namespace SmartStore.Services.Messages
 				_services.DateTimeHelper.GetCustomerTimeZone(messageContext.Customer));
 		}
 
-		private string FormatPrice(decimal price, Order order, MessageContext messageContext)
+		private Money FormatPrice(decimal price, Order order, MessageContext messageContext)
 		{
-			return FormatPrice(price, order.CurrencyRate, order.CustomerCurrencyCode, messageContext);
+			return FormatPrice(price, order.CustomerCurrencyCode, messageContext, order.CurrencyRate);
 		}
 
-		private string FormatPrice(decimal price, decimal currencyRate, string customerCurrencyCode, MessageContext messageContext)
+		private Money FormatPrice(decimal price, MessageContext messageContext, decimal exchangeRate = 1)
 		{
-			var language = messageContext.Language;
-			var currencyService = _services.Resolve<ICurrencyService>();
-			var priceFormatter = _services.Resolve<IPriceFormatter>();
-
-			return priceFormatter.FormatPrice(currencyService.ConvertCurrency(price, currencyRate), true, customerCurrencyCode, false, language);
+			return FormatPrice(price, (Currency)null, messageContext, exchangeRate);
 		}
 
-		private Money FormatPrice2(decimal price, Order order, MessageContext messageContext)
+		private Money FormatPrice(decimal price, string currencyCode, MessageContext messageContext, decimal exchangeRate = 1)
 		{
-			return FormatPrice2(price, order.CustomerCurrencyCode, messageContext, order.CurrencyRate);
-		}
-
-		private Money FormatPrice2(decimal price, MessageContext messageContext, decimal exchangeRate = 0)
-		{
-			return FormatPrice2(price, (Currency)null, messageContext, exchangeRate);
-		}
-
-		private Money FormatPrice2(decimal price, string currencyCode, MessageContext messageContext, decimal exchangeRate = 0)
-		{
-			return FormatPrice2(
+			return FormatPrice(
 				price,
 				_services.Resolve<ICurrencyService>().GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode },
 				messageContext,
 				exchangeRate);
 		}
 
-		private Money FormatPrice2(decimal price, Currency currency, MessageContext messageContext, decimal exchangeRate = 0)
+		private Money FormatPrice(decimal price, Currency currency, MessageContext messageContext, decimal exchangeRate = 1)
 		{
-			if (exchangeRate != 0)
+			if (exchangeRate != 1)
 			{
 				price = _services.Resolve<ICurrencyService>().ConvertCurrency(price, exchangeRate);
 			}

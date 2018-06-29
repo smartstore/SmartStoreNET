@@ -29,6 +29,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
+using SmartStore.Core.Domain.Tax;
 
 namespace SmartStore.Web.Controllers
 {
@@ -64,6 +65,7 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
 		private readonly IBreadcrumb _breadcrumb;
 		private readonly Lazy<PrivacySettings> _privacySettings;
+		private readonly Lazy<TaxSettings> _taxSettings;
 
 		public ProductController(
 			ICommonServices services,
@@ -95,7 +97,8 @@ namespace SmartStore.Web.Controllers
             IDownloadService downloadService,
             ILocalizationService localizationService,
 			IBreadcrumb breadcrumb,
-			Lazy<PrivacySettings> privacySettings)
+			Lazy<PrivacySettings> privacySettings,
+            Lazy<TaxSettings> taxSettings)
         {
 			_services = services;
 			_manufacturerService = manufacturerService;
@@ -127,6 +130,7 @@ namespace SmartStore.Web.Controllers
 			_localizationService = localizationService;
 			_breadcrumb = breadcrumb;
 			_privacySettings = privacySettings;
+			_taxSettings = taxSettings;
 		}
 
 		#region Products
@@ -597,13 +601,30 @@ namespace SmartStore.Web.Controllers
 				var dataDictAddToCart = new ViewDataDictionary();
 				dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", m.Id);
 
+				decimal adjustment = decimal.Zero;
+				decimal taxRate = decimal.Zero;
+				var finalPriceWithDiscountBase = _taxService.GetProductPrice(product, product.Price, _services.WorkContext.CurrentCustomer, out taxRate);
+				
+				if (!_taxSettings.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax)
+				{
+					adjustment = (m.ProductPrice.PriceValue - finalPriceWithDiscountBase) / (taxRate / 100 + 1);
+				}
+				else if(_taxSettings.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.ExcludingTax)
+				{
+					adjustment = (m.ProductPrice.PriceValue - finalPriceWithDiscountBase) * (taxRate / 100 + 1);
+				}
+				else
+				{
+					adjustment = m.ProductPrice.PriceValue - finalPriceWithDiscountBase;
+				}
+
 				partials = new
 				{
 					Attrs = this.RenderPartialViewToString("Product.Attrs", m),
 					Price = this.RenderPartialViewToString("Product.Offer.Price", m),
 					Stock = this.RenderPartialViewToString("Product.StockInfo", m),
 					OfferActions = this.RenderPartialViewToString("Product.Offer.Actions", m, dataDictAddToCart),
-					TierPrices = this.RenderPartialViewToString("Product.TierPrices", _helper.CreateTierPriceModel(product, m.ProductPrice.PriceValue - product.Price)),
+					TierPrices = this.RenderPartialViewToString("Product.TierPrices", _helper.CreateTierPriceModel(product, adjustment)),
                     BundlePrice = product.ProductType == ProductType.BundledProduct ? this.RenderPartialViewToString("Product.Bundle.Price", m) : (string)null
 				};
 			}

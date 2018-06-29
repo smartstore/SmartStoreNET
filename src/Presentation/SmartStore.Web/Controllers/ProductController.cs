@@ -605,11 +605,11 @@ namespace SmartStore.Web.Controllers
 				decimal taxRate = decimal.Zero;
 				var finalPriceWithDiscountBase = _taxService.GetProductPrice(product, product.Price, _services.WorkContext.CurrentCustomer, out taxRate);
 				
-				if (!_taxSettings.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax)
+				if (!_taxSettings.Value.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax)
 				{
 					adjustment = (m.ProductPrice.PriceValue - finalPriceWithDiscountBase) / (taxRate / 100 + 1);
 				}
-				else if(_taxSettings.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.ExcludingTax)
+				else if(_taxSettings.Value.PricesIncludeTax && _services.WorkContext.TaxDisplayType == TaxDisplayType.ExcludingTax)
 				{
 					adjustment = (m.ProductPrice.PriceValue - finalPriceWithDiscountBase) * (taxRate / 100 + 1);
 				}

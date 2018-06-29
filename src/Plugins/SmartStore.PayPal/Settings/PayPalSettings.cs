@@ -105,10 +105,15 @@ namespace SmartStore.PayPal.Settings
 
 	public class PayPalPlusPaymentSettings : PayPalApiSettingsBase, ISettings
 	{
-		/// <summary>
-		/// Specifies other payment methods to be offered in payment wall
-		/// </summary>
-		public List<string> ThirdPartyPaymentMethods { get; set; }
+        public PayPalPlusPaymentSettings()
+        {
+            TransactMode = TransactMode.AuthorizeAndCapture;
+        }
+
+        /// <summary>
+        /// Specifies other payment methods to be offered in payment wall
+        /// </summary>
+        public List<string> ThirdPartyPaymentMethods { get; set; }
 
 		/// <summary>
 		/// Specifies whether to display the logo of a third party payment method

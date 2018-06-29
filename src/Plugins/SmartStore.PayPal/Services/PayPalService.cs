@@ -680,7 +680,7 @@ namespace SmartStore.PayPal.Services
 				{
 					session.AccessToken = (string)result.Json.access_token;
 
-					var expireSeconds = ((string)result.Json.expires_in).ToInt(5 * 60);
+					var expireSeconds = ((string)result.Json.expires_in).ToInt(30 * 60);
 					session.TokenExpiration = DateTime.UtcNow.AddSeconds(expireSeconds);
 				}
 				else
@@ -1165,7 +1165,21 @@ namespace SmartStore.PayPal.Services
 		public string ApprovalUrl { get; set; }
 		public Guid OrderGuid { get; private set; }
 		public PayPalPaymentInstruction PaymentInstruction { get; set; }
-	}
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("SessionExpired: " + SessionExpired.ToString());
+            sb.AppendLine("AccessToken: " + AccessToken.EmptyNull());
+            sb.AppendLine("TokenExpiration: " + TokenExpiration.ToString());
+            sb.AppendLine("PaymentId: " + PaymentId.EmptyNull());
+            sb.AppendLine("PayerId: " + PayerId.EmptyNull());
+            sb.AppendLine("ApprovalUrl: " + ApprovalUrl.EmptyNull());
+            sb.AppendLine("OrderGuid: " + OrderGuid.ToString());
+            sb.AppendLine("PaymentInstruction: " + (PaymentInstruction != null).ToString());
+            return sb.ToString();
+        }
+    }
 
 	[Serializable]
 	public class PayPalPaymentInstruction

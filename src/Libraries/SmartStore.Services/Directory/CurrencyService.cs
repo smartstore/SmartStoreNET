@@ -31,13 +31,13 @@ namespace SmartStore.Services.Directory
 			IProviderManager providerManager,
 			IStoreContext storeContext)
         {
-            this._currencyRepository = currencyRepository;
-			this._storeMappingService = storeMappingService;
-            this._currencySettings = currencySettings;
-            this._pluginFinder = pluginFinder;
-            this._eventPublisher = eventPublisher;
-			this._providerManager = providerManager;
-			this._storeContext = storeContext;
+            _currencyRepository = currencyRepository;
+			_storeMappingService = storeMappingService;
+            _currencySettings = currencySettings;
+            _pluginFinder = pluginFinder;
+            _eventPublisher = eventPublisher;
+			_providerManager = providerManager;
+			_storeContext = storeContext;
         }
 
         public virtual IList<ExchangeRate> GetCurrencyLiveRates(string exchangeRateCurrencyCode)
@@ -52,8 +52,7 @@ namespace SmartStore.Services.Directory
 
         public virtual void DeleteCurrency(Currency currency)
         {
-            if (currency == null)
-                throw new ArgumentNullException("currency");
+			Guard.NotNull(currency, nameof(currency));
             
             _currencyRepository.Delete(currency);
         }
@@ -68,9 +67,9 @@ namespace SmartStore.Services.Directory
 
         public virtual Currency GetCurrencyByCode(string currencyCode)
         {
-            if (String.IsNullOrEmpty(currencyCode))
-                return null;
-            return GetAllCurrencies(true).FirstOrDefault(c => c.CurrencyCode.ToLower() == currencyCode.ToLower());
+			Guard.NotNull(currencyCode, nameof(currencyCode));
+
+			return GetAllCurrencies(true).FirstOrDefault(c => c.CurrencyCode.ToLower() == currencyCode.ToLower());
         }
 
 		public virtual IList<Currency> GetAllCurrencies(bool showHidden = false, int storeId = 0)
@@ -96,24 +95,23 @@ namespace SmartStore.Services.Directory
 
         public virtual void InsertCurrency(Currency currency)
         {
-            if (currency == null)
-                throw new ArgumentNullException("currency");
+			Guard.NotNull(currency, nameof(currency));
 
-            _currencyRepository.Insert(currency);
+			_currencyRepository.Insert(currency);
         }
 
         public virtual void UpdateCurrency(Currency currency)
         {
-            if (currency == null)
-                throw new ArgumentNullException("currency");
+			Guard.NotNull(currency, nameof(currency));
 
-            _currencyRepository.Update(currency);
+			_currencyRepository.Update(currency);
         }
 
         public virtual decimal ConvertCurrency(decimal amount, decimal exchangeRate)
         {
             if (amount != decimal.Zero && exchangeRate != decimal.Zero)
                 return amount * exchangeRate;
+
             return decimal.Zero;
         }
 
@@ -122,11 +120,13 @@ namespace SmartStore.Services.Directory
             decimal result = amount;
             if (sourceCurrency.Id == targetCurrency.Id)
                 return result;
+
             if (result != decimal.Zero && sourceCurrency.Id != targetCurrency.Id)
             {
                 result = ConvertToPrimaryExchangeRateCurrency(result, sourceCurrency, store);
                 result = ConvertFromPrimaryExchangeRateCurrency(result, targetCurrency, store);
             }
+
             return result;
         }
 

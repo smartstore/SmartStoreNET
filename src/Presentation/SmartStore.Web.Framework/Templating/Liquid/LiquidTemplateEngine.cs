@@ -12,6 +12,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
+using SmartStore.Utilities;
 
 namespace SmartStore.Templating.Liquid
 {
@@ -32,7 +33,18 @@ namespace SmartStore.Templating.Liquid
 			_vpp = vpp;
 			_localizer = localizer;
 			_themeContext = themeContext;
-		
+
+			// Register Value type transformers
+			var allowedMoneyProps = new[] 
+			{
+				TypeHelper.NameOf<Money>(x => x.Amount),
+				TypeHelper.NameOf<Money>(x => x.RoundedAmount),
+				TypeHelper.NameOf<Money>(x => x.TruncatedAmount),
+				TypeHelper.NameOf<Money>(x => x.Formatted),
+				TypeHelper.NameOf<Money>(x => x.DecimalDigits)
+			};
+			Template.RegisterSafeType(typeof(Money), allowedMoneyProps, x => x);
+			
 			// Register tag "zone"
 			Template.RegisterTagFactory(new ZoneTagFactory(_services.Value.EventPublisher));
 

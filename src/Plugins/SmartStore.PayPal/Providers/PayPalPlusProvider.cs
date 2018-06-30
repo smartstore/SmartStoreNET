@@ -11,18 +11,14 @@ namespace SmartStore.PayPal
     [DisplayOrder(1)]
     public partial class PayPalPlusProvider : PayPalRestApiProviderBase<PayPalPlusPaymentSettings>
     {
-		public static string SystemName
-		{
-			get { return "Payments.PayPalPlus"; }
-		}
+        public PayPalPlusProvider() 
+            : base(SystemName)
+        {
+        }
 
-		public override PaymentMethodType PaymentMethodType
-		{
-			get
-			{
-				return PaymentMethodType.StandardAndRedirection;
-			}
-		}
+        public static string SystemName => "Payments.PayPalPlus";
+
+        public override PaymentMethodType PaymentMethodType => PaymentMethodType.StandardAndRedirection;
 
 		public override Type GetControllerType()
 		{

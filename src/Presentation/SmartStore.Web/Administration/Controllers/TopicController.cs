@@ -227,6 +227,12 @@ namespace SmartStore.Admin.Controllers
                 }
 
                 var topic = model.ToEntity();
+
+                if (model.WidgetZone != null)
+                {
+                    topic.WidgetZone = string.Join(",", model.WidgetZone);
+                }
+
                 _topicService.InsertTopic(topic);
 
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);

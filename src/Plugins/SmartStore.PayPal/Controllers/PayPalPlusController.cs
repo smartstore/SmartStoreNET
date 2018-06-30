@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
@@ -248,7 +249,8 @@ namespace SmartStore.PayPal.Controllers
 			var pppProvider = _paymentService.LoadPaymentMethodBySystemName(PayPalPlusProvider.SystemName, false, store.Id);
 
 			var methods = _paymentService.LoadActivePaymentMethods(customer, cart, store.Id, null, false);
-			var session = _httpContext.GetPayPalSessionData();
+			var session = _httpContext.GetPayPalState(PayPalPlusProvider.SystemName);
+            var redirectToConfirm = false;
 
 			var model = new PayPalPlusCheckoutModel();
 			model.ThirdPartyPaymentMethods = new List<PayPalPlusCheckoutModel.ThirdPartyPaymentMethod>();
@@ -287,7 +289,7 @@ namespace SmartStore.PayPal.Controllers
 
 			model.ThirdPartyFees = sb.ToString();
 
-			// we must create a new paypal payment each time the payment wall is rendered because otherwise patch payment can fail
+			// We must create a new paypal payment each time the payment wall is rendered because otherwise patch payment can fail
 			// with "Item amount must add up to specified amount subtotal (or total if amount details not specified)".
 			session.PaymentId = null;
 			session.ApprovalUrl = null;
@@ -302,10 +304,10 @@ namespace SmartStore.PayPal.Controllers
 				result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
 				if (result == null)
 				{
-					return RedirectToAction("Confirm", "Checkout", new { area = "" });
+                    // No payment required.
+                    redirectToConfirm = true;
 				}
-
-				if (result.Success && result.Json != null)
+				else if (result.Success && result.Json != null)
 				{
 					foreach (var link in result.Json.links)
 					{
@@ -329,7 +331,18 @@ namespace SmartStore.PayPal.Controllers
 
 			model.ApprovalUrl = session.ApprovalUrl;
 
-			if (session.SessionExpired)
+            // There have been cases where the token was lost for unexplained reasons, so it is additionally stored in the database.
+            var sessionData = session.AccessToken.HasValue() && session.PaymentId.HasValue()
+                ? JsonConvert.SerializeObject(session)
+                : null;
+            _genericAttributeService.SaveAttribute(customer, PayPalPlusProvider.SystemName + ".SessionData", sessionData, store.Id);
+
+            if (redirectToConfirm)
+            {
+                return RedirectToAction("Confirm", "Checkout", new { area = "" });
+            }
+
+            if (session.SessionExpired)
 			{
 				// Customer has been redirected because the session expired.
 				session.SessionExpired = false;
@@ -342,7 +355,10 @@ namespace SmartStore.PayPal.Controllers
 		[HttpPost]
 		public ActionResult PatchShipping()
 		{
-			var session = HttpContext.GetPayPalSessionData();
+            var store = Services.StoreContext.CurrentStore;
+            var customer = Services.WorkContext.CurrentCustomer;
+            var session = _httpContext.GetPayPalState(PayPalPlusProvider.SystemName, customer, store.Id, _genericAttributeService);
+
 			if (session.AccessToken.IsEmpty() || session.PaymentId.IsEmpty())
 			{
 				// Session expired. Reload payment wall and create new payment (we need the payment id).				
@@ -351,8 +367,6 @@ namespace SmartStore.PayPal.Controllers
 				return new JsonResult { Data = new { success = false, error = string.Empty, reload = true } };
 			}
 
-			var store = Services.StoreContext.CurrentStore;
-			var customer = Services.WorkContext.CurrentCustomer;
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
@@ -369,9 +383,13 @@ namespace SmartStore.PayPal.Controllers
 
 		public ActionResult CheckoutCompleted()
 		{
-			var instruct = _httpContext.Session[PayPalPlusProvider.CheckoutCompletedKey] as string;
+            var store = Services.StoreContext.CurrentStore;
+            var customer = Services.WorkContext.CurrentCustomer;
 
-			if (instruct.HasValue())
+            _genericAttributeService.SaveAttribute(customer, PayPalPlusProvider.SystemName + ".SessionData", (string)null, store.Id);
+
+            var instruct = _httpContext.Session[PayPalPlusProvider.CheckoutCompletedKey] as string;
+            if (instruct.HasValue())
 			{
 				return Content(instruct);
 			}
@@ -382,13 +400,13 @@ namespace SmartStore.PayPal.Controllers
 		[ValidateInput(false)]
 		public ActionResult CheckoutReturn(string systemName, string paymentId, string PayerID)
 		{
-			// Request.QueryString:
-			// paymentId: PAY-0TC88803RP094490KK4KM6AI, token (not the access token): EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
+            // Request.QueryString:
+            // paymentId: PAY-0TC88803RP094490KK4KM6AI, token (not the access token): EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
 
-			var customer = Services.WorkContext.CurrentCustomer;
-			var store = Services.StoreContext.CurrentStore;
+            var store = Services.StoreContext.CurrentStore;
+            var customer = Services.WorkContext.CurrentCustomer;
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
-			var session = _httpContext.GetPayPalSessionData();
+			var session = _httpContext.GetPayPalState(PayPalPlusProvider.SystemName);
 
 			if (systemName.IsEmpty())
 				systemName = PayPalPlusProvider.SystemName;

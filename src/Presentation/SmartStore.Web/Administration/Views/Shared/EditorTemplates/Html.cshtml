@@ -29,6 +29,12 @@
 	}
 }
 
+
+@Html.TextArea(string.Empty, /* Name suffix */
+		html, /* Initial value */
+		new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { area = "admin" }) }
+	)
+
 @if (lazy)
 {
 	<div class="note-editor-preview@(htmlIsEmpty ? " empty" : "")" data-target="#@id" @Html.Attr("data-lang", culture, culture != null)>
@@ -47,11 +53,6 @@
 }
 
 
-@Html.TextArea(string.Empty, /* Name suffix */
-	html, /* Initial value */
-	new { @class = "summernote-editor" + (lazy ? " d-none" : ""), data_file_browser_url = Url.Action("Index", "RoxyFileManager", new { area = "admin" }) }
-)
-
 <script>
 	summernote_image_upload_url = '@Html.Raw(Url.Action("ProcessRequest", "RoxyFileManager"))';
 	@if (!lazy)
@@ -62,5 +63,4 @@
 			});
 		</text>
 	}
-
 </script>

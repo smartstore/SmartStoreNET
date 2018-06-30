@@ -258,7 +258,7 @@ namespace SmartStore.Services.Customers
 			int pageSize)
         {
             var query = _customerRepository.Table
-				.Where(c => lastActivityFromUtc <= c.LastActivityDateUtc && !c.Deleted);
+				.Where(c => lastActivityFromUtc <= c.LastActivityDateUtc && !c.Deleted && string.IsNullOrEmpty(c.SystemName));
 
             if (customerRoleIds != null && customerRoleIds.Length > 0)
                 query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Intersect(customerRoleIds).Count() > 0);

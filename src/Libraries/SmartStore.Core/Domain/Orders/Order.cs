@@ -237,7 +237,7 @@ namespace SmartStore.Core.Domain.Orders
 		public decimal CreditBalance { get; set; }
 
 		/// <summary>
-		/// /// Gets or sets the order total rounding amount
+		/// Gets or sets the order total rounding amount
 		/// </summary>
 		[DataMember]
         public decimal OrderTotalRounding { get; set; }

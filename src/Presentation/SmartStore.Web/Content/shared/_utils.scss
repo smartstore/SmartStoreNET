@@ -282,6 +282,20 @@ table th {
 }
 
 
+// Sizing
+// -------------------------
+
+.h-medium     { min-height: 400px; }
+.h-tall       { min-height: 700px; }
+
+@each $breakpoint in (sm, md, lg, xl) {
+    @include media-breakpoint-up($breakpoint) {
+        .h-#{$breakpoint}-medium     { min-height: 400px; }
+        .h-#{$breakpoint}-tall       { min-height: 700px; }
+    }
+}
+
+
 // Misc utils
 // -------------------------
 

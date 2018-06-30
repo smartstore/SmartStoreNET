@@ -539,7 +539,6 @@ namespace SmartStore.Services.Catalog
             //tier prices
             if (product.HasTierPrices && !bundleItem.IsValid() && includeDiscounts)
             {
-
 				decimal? tierPrice = GetMinimumTierPrice(product, customer, quantity, context);
                 Discount appliedDiscountTest = null;
                 decimal discountAmountTest = GetDiscountAmount(product, customer, additionalCharge, quantity, out appliedDiscountTest, bundleItem);

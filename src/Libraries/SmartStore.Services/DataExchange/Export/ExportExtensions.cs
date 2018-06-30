@@ -49,20 +49,24 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <returns>Folder path</returns>
 		public static string GetExportFolder(this ExportProfile profile, bool content = false, bool create = false)
 		{
-			var path = CommonHelper.MapPath(string.Concat(profile.FolderName, content ? "/Content" : ""));
+            Guard.IsTrue(profile.FolderName.EmptyNull().Length > 2, nameof(profile.FolderName), "The export folder name must be at least 3 characters long.");
 
-			if (create && !System.IO.Directory.Exists(path))
-				System.IO.Directory.CreateDirectory(path);
+            var path = CommonHelper.MapPath(string.Concat(profile.FolderName, content ? "/Content" : ""));
 
-			return path;
-		}
+            if (create && !System.IO.Directory.Exists(path))
+            {
+                System.IO.Directory.CreateDirectory(path);
+            }
 
-		/// <summary>
-		/// Get log file path for an export profile
-		/// </summary>
-		/// <param name="profile">Export profile</param>
-		/// <returns>Log file path</returns>
-		public static string GetExportLogPath(this ExportProfile profile)
+            return path;
+        }
+
+        /// <summary>
+        /// Get log file path for an export profile
+        /// </summary>
+        /// <param name="profile">Export profile</param>
+        /// <returns>Log file path</returns>
+        public static string GetExportLogPath(this ExportProfile profile)
 		{
 			return Path.Combine(profile.GetExportFolder(), "log.txt");
 		}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -401,11 +402,13 @@ namespace SmartStore.Services.Catalog
 					(int)AttributeControlType.Boxes
 				};
 
-				var query = from x in _productVariantAttributeValueRepository.Table.Expand(y => y.ProductVariantAttribute.ProductAttribute)
+				var query = from x in _productVariantAttributeValueRepository.Table
 						  let attr = x.ProductVariantAttribute
 						  where productVariantAttributeValueIds.Contains(x.Id) && validTypeIds.Contains(attr.AttributeControlTypeId)
 						  orderby x.ProductVariantAttribute.DisplayOrder, x.DisplayOrder
 						  select x;
+
+				query = query.Include(y => y.ProductVariantAttribute.ProductAttribute);
 
 				return query.ToList();
 			});

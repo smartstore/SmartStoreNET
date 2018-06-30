@@ -180,16 +180,15 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
 			CreateMap<CampaignModel, Campaign>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
-			//topcis
-			CreateMap<Topic, TopicModel>()
-				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
-				.ForMember(dest => dest.WidgetWrapContent, mo => mo.MapFrom(x => x.WidgetWrapContent.HasValue ? x.WidgetWrapContent.Value : true))
-				.ForMember(dest => dest.Url, mo => mo.Ignore())
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableTitleTags, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableWidgetZones, mo => mo.Ignore());
+            //topcis
+            CreateMap<Topic, TopicModel>()
+                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+                .ForMember(dest => dest.WidgetWrapContent, mo => mo.MapFrom(x => x.WidgetWrapContent.HasValue ? x.WidgetWrapContent.Value : true))
+                .ForMember(dest => dest.Url, mo => mo.Ignore())
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableTitleTags, mo => mo.Ignore());
 
             CreateMap<TopicModel, Topic>()
                 .ForMember(dest => dest.IsSystemTopic, mo => mo.Ignore());

@@ -182,6 +182,7 @@
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\MiniMapper.cs" />
+    <Compile Include="Collections\ReferenceEqualityComparer.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\DictionaryConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EmailAddressConverter.cs" />
@@ -283,6 +284,7 @@
     <Compile Include="Logging\log4net\Log4netLoggerFactory.cs" />
     <Compile Include="Logging\log4net\SmartFileAppender.cs" />
     <Compile Include="Logging\LoggingModule.cs" />
+    <Compile Include="Money.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\PluginManager.Cache.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />

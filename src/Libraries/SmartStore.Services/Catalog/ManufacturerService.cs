@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -216,14 +217,13 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _requestCache.Get(key, () =>
 				{
-					var query = from pm in _productManufacturerRepository.Table.Expand(x => x.Manufacturer.Picture)
-								join m in _manufacturerRepository.Table on
-									pm.ManufacturerId equals m.Id
-								where pm.ProductId == productId &&
-									!m.Deleted &&
-									(showHidden || m.Published)
+					var query = from pm in _productManufacturerRepository.Table
+								join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
+								where pm.ProductId == productId && !m.Deleted && (showHidden || m.Published)
 								orderby pm.DisplayOrder
 								select pm;
+
+					query = query.Include(x => x.Manufacturer.Picture);
 
 					if (!showHidden)
 					{
@@ -274,10 +274,12 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
-				from pm in _productManufacturerRepository.TableUntracked.Expand(x => x.Manufacturer).Expand(x => x.Manufacturer.Picture)
+				from pm in _productManufacturerRepository.TableUntracked
 				//join m in _manufacturerRepository.TableUntracked on pm.ManufacturerId equals m.Id // Eager loading does not work with this join
 				where !pm.Manufacturer.Deleted && productIds.Contains(pm.ProductId)
 				select pm;
+
+			query = query.Include(x => x.Manufacturer.Picture);
 
 			var map = query
 				.OrderBy(x => x.ProductId)

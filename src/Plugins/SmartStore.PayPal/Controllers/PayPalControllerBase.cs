@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -100,10 +101,9 @@ namespace SmartStore.PayPal.Controllers
 
 		protected bool VerifyIPN(PayPalSettingsBase settings, string formString, out Dictionary<string, string> values)
 		{
-			// settings: multistore context not possible here. we need the custom value to determine what store it is.
-
-			var request = settings.GetPayPalWebRequest();
-			request.Method = "POST";
+            // Settings: multistore context not possible here. we need the custom value to determine what store it is.
+            var request = (HttpWebRequest)WebRequest.Create(settings.GetPayPalUrl());
+            request.Method = "POST";
 			request.ContentType = "application/x-www-form-urlencoded";
 			request.UserAgent = Request.UserAgent;
 

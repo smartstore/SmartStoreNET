@@ -15,6 +15,8 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Html;
 using SmartStore.Utilities;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Messages
 {
@@ -110,18 +112,38 @@ namespace SmartStore.Services.Messages
 				_services.DateTimeHelper.GetCustomerTimeZone(messageContext.Customer));
 		}
 
-		private string FormatPrice(decimal price, Order order, MessageContext messageContext)
+		private Money FormatPrice(decimal price, Order order, MessageContext messageContext)
 		{
-			return FormatPrice(price, order.CurrencyRate, order.CustomerCurrencyCode, messageContext);
+			return FormatPrice(price, order.CustomerCurrencyCode, messageContext, order.CurrencyRate);
 		}
 
-		private string FormatPrice(decimal price, decimal currencyRate, string customerCurrencyCode, MessageContext messageContext)
+		private Money FormatPrice(decimal price, MessageContext messageContext, decimal exchangeRate = 1)
 		{
-			var language = messageContext.Language;
-			var currencyService = _services.Resolve<ICurrencyService>();
-			var priceFormatter = _services.Resolve<IPriceFormatter>();
+			return FormatPrice(price, (Currency)null, messageContext, exchangeRate);
+		}
 
-			return priceFormatter.FormatPrice(currencyService.ConvertCurrency(price, currencyRate), true, customerCurrencyCode, false, language);
+		private Money FormatPrice(decimal price, string currencyCode, MessageContext messageContext, decimal exchangeRate = 1)
+		{
+			return FormatPrice(
+				price,
+				_services.Resolve<ICurrencyService>().GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode },
+				messageContext,
+				exchangeRate);
+		}
+
+		private Money FormatPrice(decimal price, Currency currency, MessageContext messageContext, decimal exchangeRate = 1)
+		{
+			if (exchangeRate != 1)
+			{
+				price = _services.Resolve<ICurrencyService>().ConvertCurrency(price, exchangeRate);
+			}
+
+			if (currency == null)
+			{
+				currency = _services.Resolve<IWorkContext>().WorkingCurrency;
+			}
+
+			return new Money(price, currency);
 		}
 
 		private PictureInfo GetPictureFor(Product product, string attributesXml)

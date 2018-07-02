@@ -12,6 +12,7 @@
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
+* Debitoor: Partially update customer instead of full update to not overwrite changes to not transferred fields
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

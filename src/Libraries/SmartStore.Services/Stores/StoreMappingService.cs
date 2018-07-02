@@ -10,8 +10,11 @@ namespace SmartStore.Services.Stores
 {
 	public partial class StoreMappingService : IStoreMappingService
 	{
-		private const string STOREMAPPING_BY_ENTITYID_NAME_KEY = "storemapping:entityid-name-{0}-{1}";
-		private const string STOREMAPPING_PATTERN_KEY = "storemapping:*";
+		/// <summary>
+		/// 0 = segment (EntityName.IdRange)
+		/// </summary>
+		const string STOREMAPPING_SEGMENT_KEY = "storemapping:{0}";
+		const string STOREMAPPING_SEGMENT_PATTERN = "storemapping:*";
 
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IStoreContext _storeContext;
@@ -39,7 +42,7 @@ namespace SmartStore.Services.Stores
 
 			_storeMappingRepository.Delete(storeMapping);
 
-			_cacheManager.RemoveByPattern(STOREMAPPING_PATTERN_KEY);
+			ClearCacheSegment(storeMapping.EntityName, storeMapping.EntityId);
 		}
 
 		public virtual StoreMapping GetStoreMappingById(int storeMappingId)
@@ -106,7 +109,7 @@ namespace SmartStore.Services.Stores
 
 			_storeMappingRepository.Insert(storeMapping);
 
-			_cacheManager.RemoveByPattern(STOREMAPPING_PATTERN_KEY);
+			ClearCacheSegment(storeMapping.EntityName, storeMapping.EntityId);
 		}
 
 		public virtual void InsertStoreMapping<T>(T entity, int storeId) where T : BaseEntity, IStoreMappingSupported
@@ -135,7 +138,7 @@ namespace SmartStore.Services.Stores
 
 			_storeMappingRepository.Update(storeMapping);
 
-			_cacheManager.RemoveByPattern(STOREMAPPING_PATTERN_KEY);
+			ClearCacheSegment(storeMapping.EntityName, storeMapping.EntityId);
 		}
 
 		public virtual int[] GetStoresIdsWithAccess(string entityName, int entityId)
@@ -145,17 +148,14 @@ namespace SmartStore.Services.Stores
 			if (entityId <= 0)
 				return new int[0];
 
-			string key = string.Format(STOREMAPPING_BY_ENTITYID_NAME_KEY, entityId, entityName);
-			return _cacheManager.Get(key, () =>
-			{
-				var query = from sm in _storeMappingRepository.Table
-							where sm.EntityId == entityId &&
-							sm.EntityName == entityName
-							select sm.StoreId;
+			var cacheSegment = GetCacheSegment(entityName, entityId);
 
-				var result = query.ToArray();
-				return result;
-			});
+			if (!cacheSegment.TryGetValue(entityId, out var storeIds))
+			{
+				return Array.Empty<int>();
+			}
+
+			return storeIds;
 		}
 
 		public bool Authorize(string entityName, int entityId)
@@ -177,17 +177,78 @@ namespace SmartStore.Services.Stores
 			if (QuerySettings.IgnoreMultiStore)
 				return true;
 
-			foreach (var storeIdWithAccess in GetStoresIdsWithAccess(entityName, entityId))
-			{
-				if (storeId == storeIdWithAccess)
-				{
-					// yes, we have such permission
-					return true;
-				}
-			}
-
-			// no permission granted
-			return false;
+			// Permission granted only when the id list contains the passed storeId
+			return GetStoresIdsWithAccess(entityName, entityId).Any(x => x == storeId);
 		}
+
+		#region Cache segmenting
+
+		protected virtual IDictionary<int, int[]> GetCacheSegment(string entityName, int entityId)
+		{
+			Guard.NotEmpty(entityName, nameof(entityName));
+
+			var segmentKey = GetSegmentKeyPart(entityName, entityId, out var minEntityId, out var maxEntityId);
+			var cacheKey = BuildCacheSegmentKey(segmentKey);
+
+			return _cacheManager.Get(cacheKey, () =>
+			{
+				var query = from sm in _storeMappingRepository.TableUntracked
+							where
+								sm.EntityId >= minEntityId &&
+								sm.EntityId <= maxEntityId &&
+								sm.EntityName == entityName
+							select sm;
+
+				var mappings = query.ToLookup(x => x.EntityId, x => x.StoreId);
+
+				var dict = new Dictionary<int, int[]>(mappings.Count);
+
+				foreach (var sm in mappings)
+				{
+					dict[sm.Key] = sm.ToArray();
+				}
+
+				return dict;
+			});
+		}
+
+		/// <summary>
+		/// Clears the cached segment from the cache
+		/// </summary>
+		protected virtual void ClearCacheSegment(string entityName, int entityId)
+		{
+			try
+			{
+				var segmentKey = GetSegmentKeyPart(entityName, entityId);
+				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey));
+			}
+			catch { }
+		}
+
+		private string BuildCacheSegmentKey(string segment)
+		{
+			return String.Format(STOREMAPPING_SEGMENT_KEY, segment);
+		}
+
+		private string GetSegmentKeyPart(string entityName, int entityId)
+		{
+			return GetSegmentKeyPart(entityName, entityId, out _, out _);
+		}
+
+		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
+		{
+			minId = 0;
+			maxId = 0;
+
+			// max 1000 values per cache item
+			var entityRange = Math.Ceiling((decimal)entityId / 1000) * 1000;
+
+			maxId = (int)entityRange;
+			minId = maxId - 999;
+
+			return (entityName + "." + entityRange.ToString()).ToLowerInvariant();
+		}
+
+		#endregion
 	}
 }

@@ -19,7 +19,7 @@ namespace SmartStore.Services.Localization
 		/// 0 = segment (keygroup.key.idrange), 1 = language id
 		/// </summary>
 		const string LOCALIZEDPROPERTY_SEGMENT_KEY = "localizedproperty:{0}-lang-{1}";
-		const string LOCALIZEDPROPERTY_SEGMENT_PATTERN = "localizedproperty:{0}";
+		const string LOCALIZEDPROPERTY_SEGMENT_PATTERN = "localizedproperty:{0}*";
 		const string LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN = "localizedproperty:*";
 
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
@@ -38,12 +38,12 @@ namespace SmartStore.Services.Localization
 			_cacheManager.RemoveByPattern(LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN);
 		}
 
-		protected virtual IDictionary<int, string> GetCachedPropertySegment(string localeKeyGroup, string localeKey, int entityId, int languageId)
+		protected virtual IDictionary<int, string> GetCacheSegment(string localeKeyGroup, string localeKey, int entityId, int languageId)
 		{
 			Guard.NotEmpty(localeKeyGroup, nameof(localeKeyGroup));
 			Guard.NotEmpty(localeKey, nameof(localeKey));
 
-			var segmentKey = GetSegmentKey(localeKeyGroup, localeKey, entityId, out var minEntityId, out var maxEntityId);
+			var segmentKey = GetSegmentKeyPart(localeKeyGroup, localeKey, entityId, out var minEntityId, out var maxEntityId);
 			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
 
 			// TODO: (MC) skip caching product.fulldescription (?), OR
@@ -69,21 +69,25 @@ namespace SmartStore.Services.Localization
 		/// <summary>
 		/// Clears the cached segment from the cache
 		/// </summary>
-		protected virtual void ClearCachedPropertySegment(string localeKeyGroup, string localeKey, int entityId, int? languageId = null)
+		protected virtual void ClearCacheSegment(string localeKeyGroup, string localeKey, int entityId, int? languageId = null)
 		{
-			if (IsInScope)
-				return;
-
-			var segmentKey = GetSegmentKey(localeKeyGroup, localeKey, entityId);
-
-			if (languageId.HasValue && languageId.Value > 0)
+			try
 			{
-				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey, languageId.Value));
+				if (IsInScope)
+					return;
+
+				var segmentKey = GetSegmentKeyPart(localeKeyGroup, localeKey, entityId);
+
+				if (languageId.HasValue && languageId.Value > 0)
+				{
+					_cacheManager.Remove(BuildCacheSegmentKey(segmentKey, languageId.Value));
+				}
+				else
+				{
+					_cacheManager.RemoveByPattern(LOCALIZEDPROPERTY_SEGMENT_PATTERN.FormatInvariant(segmentKey));
+				}
 			}
-			else
-			{
-				_cacheManager.RemoveByPattern(LOCALIZEDPROPERTY_SEGMENT_PATTERN.FormatInvariant(segmentKey));
-			}
+			catch { }
 		}
 
 		public virtual string GetLocalizedValue(int languageId, int entityId, string localeKeyGroup, string localeKey)
@@ -96,7 +100,7 @@ namespace SmartStore.Services.Localization
 			if (languageId <= 0)
 				return string.Empty;
 
-			var props = GetCachedPropertySegment(localeKeyGroup, localeKey, entityId, languageId);
+			var props = GetCacheSegment(localeKeyGroup, localeKey, entityId, languageId);
 
 			if (!props.TryGetValue(entityId, out var val))
 			{
@@ -158,12 +162,8 @@ namespace SmartStore.Services.Localization
 			_localizedPropertyRepository.Insert(property);
 			HasChanges = true;
 
-			try
-			{
-				// cache
-				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
-			}
-			catch { }
+			// cache
+			ClearCacheSegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
         }
 
         public virtual void UpdateLocalizedProperty(LocalizedProperty property)
@@ -174,24 +174,16 @@ namespace SmartStore.Services.Localization
 			_localizedPropertyRepository.Update(property);
 			HasChanges = true;
 
-			try
-			{
-				// cache
-				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
-			}
-			catch { }
+			// cache
+			ClearCacheSegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
 		}
 
 		public virtual void DeleteLocalizedProperty(LocalizedProperty property)
 		{
 			Guard.NotNull(property, nameof(property));
 
-			try
-			{
-				// cache
-				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
-			}
-			catch { }
+			// cache
+			ClearCacheSegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
 
 			// db
 			_localizedPropertyRepository.Delete(property);
@@ -282,12 +274,12 @@ namespace SmartStore.Services.Localization
 			return String.Format(LOCALIZEDPROPERTY_SEGMENT_KEY, segment, languageId);
 		}
 
-		private string GetSegmentKey(string localeKeyGroup, string localeKey, int entityId)
+		private string GetSegmentKeyPart(string localeKeyGroup, string localeKey, int entityId)
 		{
-			return GetSegmentKey(localeKeyGroup, localeKey, entityId, out var minId, out var maxId);
+			return GetSegmentKeyPart(localeKeyGroup, localeKey, entityId, out var minId, out var maxId);
 		}
 
-		private string GetSegmentKey(string localeKeyGroup, string localeKey, int entityId, out int minId, out int maxId)
+		private string GetSegmentKeyPart(string localeKeyGroup, string localeKey, int entityId, out int minId, out int maxId)
 		{
 			minId = 0;
 			maxId = 0;

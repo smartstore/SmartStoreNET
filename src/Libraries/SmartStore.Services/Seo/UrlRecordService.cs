@@ -16,7 +16,7 @@ namespace SmartStore.Services.Seo
 		/// </summary>
 		const string URLRECORD_SEGMENT_KEY = "urlrecord:{0}-lang-{1}";
 		const string URLRECORD_SEGMENT_PATTERN = "urlrecord:{0}*";
-		const string URLRECORD_ALL_PATTERN = "urlrecord:";
+		const string URLRECORD_ALL_PATTERN = "urlrecord:*";
 		const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
 
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Seo
 			try
 			{
 				// cache
-				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+				ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
 				HasChanges = true;
 
 				// db
@@ -83,7 +83,7 @@ namespace SmartStore.Services.Seo
 				HasChanges = true;
 
 				// cache
-				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+				ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
 			}
 			catch { }
         }
@@ -99,7 +99,7 @@ namespace SmartStore.Services.Seo
 				HasChanges = true;
 
 				// cache
-				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+				ClearCacheSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
 			}
 			catch { }
 		}
@@ -194,7 +194,7 @@ namespace SmartStore.Services.Seo
 			}
 			else
 			{
-				var slugs = GetCachedSlugsSegment(entityName, entityId, languageId);
+				var slugs = GetCacheSegment(entityName, entityId, languageId);
 
 				if (!slugs.TryGetValue(entityId, out slug))
 				{
@@ -380,14 +380,11 @@ namespace SmartStore.Services.Seo
 			return count;
 		}
 
-		protected virtual IDictionary<int, string> GetCachedSlugsSegment(string entityName, int entityId, int languageId)
+		protected virtual IDictionary<int, string> GetCacheSegment(string entityName, int entityId, int languageId)
 		{
 			Guard.NotEmpty(entityName, nameof(entityName));
 
-			int minEntityId = 0;
-			int maxEntityId = 0;
-
-			var segmentKey = GetSegmentKey(entityName, entityId, out minEntityId, out maxEntityId);
+			var segmentKey = GetSegmentKeyPart(entityName, entityId, out var minEntityId, out var maxEntityId);
 			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
 
 			return _cacheManager.Get(cacheKey, () =>
@@ -418,12 +415,12 @@ namespace SmartStore.Services.Seo
 		/// <summary>
 		/// Clears the cached segment from the cache
 		/// </summary>
-		protected virtual void ClearCachedSlugsSegment(string entityName, int entityId, int? languageId = null)
+		protected virtual void ClearCacheSegment(string entityName, int entityId, int? languageId = null)
 		{
 			if (IsInScope)
 				return;
 
-			var segmentKey = GetSegmentKey(entityName, entityId);
+			var segmentKey = GetSegmentKeyPart(entityName, entityId);
 
 			if (languageId.HasValue && languageId.Value > 0)
 			{
@@ -443,15 +440,12 @@ namespace SmartStore.Services.Seo
 			return String.Format(URLRECORD_SEGMENT_KEY, segment, languageId);
 		}
 
-		private string GetSegmentKey(string entityName, int entityId)
+		private string GetSegmentKeyPart(string entityName, int entityId)
 		{
-			int minId = 0;
-			int maxId = 0;
-
-			return GetSegmentKey(entityName, entityId, out minId, out maxId);
+			return GetSegmentKeyPart(entityName, entityId, out _, out _);
 		}
 
-		private string GetSegmentKey(string entityName, int entityId, out int minId, out int maxId)
+		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
 		{
 			minId = 0;
 			maxId = 0;

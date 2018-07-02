@@ -81,14 +81,15 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Common.History", "History", "Historie");
             builder.AddOrUpdate("Common.ExecutedOn", "Executed on", "Ausgeführt am");
             builder.AddOrUpdate("Common.FinishedOn", "Finished on", "Beendet am");
+            builder.AddOrUpdate("Common.Status", "Status", "Status");
             builder.AddOrUpdate("Common.Succeeded", "Succeeded", "Erfolgreich");
-            builder.AddOrUpdate("Common.MachineName", "Machine name", "Rechnername");
+            builder.AddOrUpdate("Common.MachineName", "Machine name", "Maschinenname");
 
             builder.AddOrUpdate("Admin.System.ScheduleTasks.RunPerMachine",
                 "Run per machine",
-                "Pro Rechner ausführen",
-                "Indicates whether the task is executed separately on each machine.",
-                "Gibt an, ob die Aufgabe auf jedem Rechner separat ausgeführt wird.");
+                "Pro Maschine ausführen",
+                "Indicates whether the task is executed decidedly on each machine of a web farm.",
+                "Gibt an, ob die Aufgabe auf jeder Maschine einer Webfarm dezidiert ausgeführt wird.");
 
             builder.AddOrUpdate("Admin.System.ScheduleTasks.AutomaticallyDeleteHistoryNote",
                 "Entries older than {0} days are automatically deleted.",

@@ -378,9 +378,9 @@ namespace SmartStore.Services.Tasks
             {
                 _taskHistoryRepository.Update(historyEntry);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                Logger.Error(exception);
+                Logger.Error(ex);
                 // Do not throw.
             }
         }
@@ -422,9 +422,9 @@ namespace SmartStore.Services.Tasks
                     while (pagedEntries.HasNextPage);
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                Logger.Error(exception);
+                Logger.Error(ex);
             }
 
             return count;

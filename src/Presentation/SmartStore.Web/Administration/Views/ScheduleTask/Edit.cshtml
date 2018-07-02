@@ -236,7 +236,7 @@
                     .Width(260);
                 columns.Bound(x => x.Succeeded)
                     .ClientTemplate(
-                        "<# if(Succeeded){ #>" + @Html.SymbolForBool("Succeeded") + "<# } #>" +
+                        "<# if(Succeeded){ #>" + @Html.SymbolForBool("Succeeded") + "<span class='ml-1'>" + T("Common.Succeeded") + "</span><# } #>" +
                         "<# if(!Succeeded){ #><div class='text-danger pr-2'><span class='font-weight-medium'>" + T("Common.Error") + ":</span> <span><#= Error #></span></div><# } #>");
                 columns.Bound(x => x.MachineName);
                 columns.Command(commands =>

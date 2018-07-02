@@ -27,7 +27,7 @@ namespace SmartStore.Admin.Models.Tasks
         public DateTime? SucceededOn { get; set; }
         public string SucceededOnPretty { get; set; }
 
-        [SmartResourceDisplayName("Common.Succeeded")]
+        [SmartResourceDisplayName("Common.Status")]
         public bool Succeeded => SucceededOn.HasValue;
 
         [SmartResourceDisplayName("Common.Error")]

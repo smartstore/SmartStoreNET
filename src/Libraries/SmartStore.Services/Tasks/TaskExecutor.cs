@@ -59,7 +59,7 @@ namespace SmartStore.Services.Tasks
             ITask instance = null;
 			string stateName = null;
 			Type taskType = null;
-            Exception exc = null;
+            Exception exception = null;
 
             var historyEntry = new ScheduleTaskHistory
             {
@@ -112,20 +112,20 @@ namespace SmartStore.Services.Tasks
 				Logger.DebugFormat("Executing scheduled task: {0}", task.Type);
 				instance.Execute(ctx);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                exc = exception;
+                exception = ex;
                 faulted = true;
-				canceled = exception is OperationCanceledException;
-				lastError = exception.Message.Truncate(995, "...");
+				canceled = ex is OperationCanceledException;
+				lastError = ex.Message.Truncate(995, "...");
 
                 if (canceled)
                 {
-                    Logger.Warn(exception, T("Admin.System.ScheduleTasks.Cancellation", task.Name));
+                    Logger.Warn(ex, T("Admin.System.ScheduleTasks.Cancellation", task.Name));
                 }
                 else
                 {
-                    Logger.Error(exception, string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", exception.Message));
+                    Logger.Error(ex, string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", ex.Message));
                 }
             }
             finally
@@ -162,9 +162,9 @@ namespace SmartStore.Services.Tasks
                         _asyncState.Remove<ScheduleTask>(stateName);
                     }
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    Logger.Error(exception);
+                    Logger.Error(ex);
                 }
 
                 if (task.Enabled)
@@ -183,9 +183,9 @@ namespace SmartStore.Services.Tasks
                 Throttle.Check("Delete old schedule task history entries", TimeSpan.FromDays(1), () => _scheduledTaskService.DeleteHistoryEntries() > 0);
             }
 
-            if (throwOnError && exc != null)
+            if (throwOnError && exception != null)
             {
-                throw exc;
+                throw exception;
             }
         }
     }

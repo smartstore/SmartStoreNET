@@ -406,9 +406,9 @@ namespace SmartStore.Services.Tasks
                 {
                     IPagedList<ScheduleTaskHistory> pagedEntries = null;
                     var pageIndex = 0;
-                    var oldestDate = DateTime.UtcNow.AddDays(-1 * _commonSettings.Value.MaxScheduleHistoryAgeInDays);
+                    var earliestDate = DateTime.UtcNow.AddDays(-1 * _commonSettings.Value.MaxScheduleHistoryAgeInDays);
                     var query = _taskHistoryRepository.Table
-                        .Where(x => x.StartedOnUtc <= oldestDate && !x.IsRunning)
+                        .Where(x => x.StartedOnUtc <= earliestDate && !x.IsRunning)
                         .OrderBy(x => x.Id);
 
                     do

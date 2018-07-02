@@ -17,6 +17,7 @@ namespace SmartStore.Data.Caching
 		private static readonly HashSet<string> _toxicSets = new HashSet<string>
 		{
 			typeof(ScheduleTask).Name,
+			typeof(ScheduleTaskHistory).Name,
 			typeof(Log).Name,
 			typeof(ActivityLog).Name,
 			typeof(QueuedEmail).Name

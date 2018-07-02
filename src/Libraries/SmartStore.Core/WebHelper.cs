@@ -640,7 +640,7 @@ namespace SmartStore.Core
 				return url;
 			}
 
-			if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			if (url.Contains("://"))
 			{
 				return url;
 			}

@@ -77,7 +77,7 @@ namespace SmartStore.Admin.Controllers
 
             var models = new List<ScheduleTaskModel>();
             var tasks = _scheduleTaskService.GetAllTasks(true);
-            var lastHistoryEntries = _scheduleTaskService.GetLastHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
+            var lastHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true).ToDictionarySafe(x => x.ScheduleTaskId);
 
             foreach (var task in tasks.Where(x => x.IsVisible()))
             {
@@ -95,7 +95,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult GetRunningTasks()
 		{
-            var runningHistoryEntries = _scheduleTaskService.GetLastHistoryEntries(true);
+            var runningHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true, true);
             if (!runningHistoryEntries.Any())
             {
                 return Json(new EmptyResult());
@@ -252,7 +252,7 @@ namespace SmartStore.Admin.Controllers
 
             if (Services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
             {
-                var history = _scheduleTaskService.GetHistoryEntriesByTaskId(taskId, command.Page - 1, command.PageSize);
+                var history = _scheduleTaskService.GetHistoryEntries(command.Page - 1, command.PageSize, taskId);
 
                 gridModel.Total = history.TotalCount;
                 gridModel.Data = history.Select(x => _adminModelHelper.CreateScheduleTaskHistoryModel(x)).ToList();

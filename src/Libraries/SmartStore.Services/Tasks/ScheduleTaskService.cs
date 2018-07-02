@@ -284,32 +284,47 @@ namespace SmartStore.Services.Tasks
 
         #region Schedule task history
 
-        public virtual IList<ScheduleTaskHistory> GetLastHistoryEntries(bool? isRunning = null)
+        public virtual IPagedList<ScheduleTaskHistory> GetHistoryEntries(
+            int pageIndex,
+            int pageSize,
+            int taskId = 0,
+            bool forCurrentMachine = false,
+            bool lastEntryOnly = false,
+            bool? isRunning = null)
         {
-            var machineName = _env.MachineName;
+            var query = _taskHistoryRepository.TableUntracked;
 
-            var historyQuery =
-                from th in _taskHistoryRepository.TableUntracked
-                where th.MachineName == machineName
-                select th;
-
+            if (taskId != 0)
+            {
+                query = query.Where(x => x.ScheduleTaskId == taskId);
+            }
+            if (forCurrentMachine)
+            {
+                var machineName = _env.MachineName;
+                query = query.Where(x => x.MachineName == machineName);
+            }
             if (isRunning.HasValue)
             {
-                historyQuery = historyQuery.Where(x => x.IsRunning == isRunning.Value);
+                query = query.Where(x => x.IsRunning == isRunning.Value);
             }
 
-            var query =
-                from th in historyQuery
-                group th by th.ScheduleTaskId into grp
-                select grp
-                    .OrderByDescending(x => x.StartedOnUtc)
-                    .ThenByDescending(x => x.Id)
-                    .FirstOrDefault();
+            if (lastEntryOnly)
+            {
+                query =
+                    from th in query
+                    group th by th.ScheduleTaskId into grp
+                    select grp
+                        .OrderByDescending(x => x.StartedOnUtc)
+                        .ThenByDescending(x => x.Id)
+                        .FirstOrDefault();
+            }
 
-            return Retry.Run(
-                () => query.ToList(),
-                3, TimeSpan.FromMilliseconds(100),
-                RetryOnDeadlockException);
+            query = query
+                .OrderByDescending(x => x.StartedOnUtc)
+                .ThenByDescending(x => x.Id);
+
+            var history = new PagedList<ScheduleTaskHistory>(query, pageIndex, pageSize);
+            return history;
         }
 
         public virtual ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null)
@@ -334,23 +349,6 @@ namespace SmartStore.Services.Tasks
                 .FirstOrDefault();
 
             return historyEntry;
-        }
-
-        public virtual IPagedList<ScheduleTaskHistory> GetHistoryEntriesByTaskId(int taskId, int pageIndex, int pageSize)
-        {
-            if (taskId == 0)
-            {
-                return new PagedList<ScheduleTaskHistory>(new List<ScheduleTaskHistory>(), pageIndex, pageSize);
-            }
-
-            var query =
-                from th in _taskHistoryRepository.TableUntracked
-                where th.ScheduleTaskId == taskId
-                orderby th.StartedOnUtc descending, th.Id descending
-                select th;
-
-            var history = new PagedList<ScheduleTaskHistory>(query, pageIndex, pageSize);
-            return history;
         }
 
         public virtual ScheduleTaskHistory GetHistoryEntryById(int id)

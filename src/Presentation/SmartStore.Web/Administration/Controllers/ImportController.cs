@@ -335,7 +335,7 @@ namespace SmartStore.Admin.Controllers
 				AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList()
 			};
 
-            var lastHistoryEntries = _scheduleTaskService.GetLastHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
+            var lastHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true).ToDictionarySafe(x => x.ScheduleTaskId);
             var profiles = _importProfileService.GetImportProfiles().ToList();
 
 			foreach (var profile in profiles)

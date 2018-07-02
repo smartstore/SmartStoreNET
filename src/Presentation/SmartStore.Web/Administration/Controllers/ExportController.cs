@@ -624,7 +624,7 @@ namespace SmartStore.Admin.Controllers
 
 			var providers = _exportService.LoadAllExportProviders(0, false).ToList();
 			var profiles = _exportService.GetExportProfiles().ToList();
-            var lastHistoryEntries = _scheduleTaskService.GetLastHistoryEntries().ToDictionarySafe(x => x.ScheduleTaskId);
+            var lastHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true).ToDictionarySafe(x => x.ScheduleTaskId);
             var model = new List<ExportProfileModel>();
 
 			foreach (var profile in profiles)

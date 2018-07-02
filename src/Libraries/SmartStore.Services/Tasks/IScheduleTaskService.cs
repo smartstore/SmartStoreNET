@@ -83,11 +83,22 @@ namespace SmartStore.Services.Tasks
         #region Schedule task history
 
         /// <summary>
-        /// Gets a list of last <see cref="ScheduleTaskHistory"/> instances.
+        /// Gets a list of last <see cref="ScheduleTaskHistory"/> entries.
         /// </summary>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="taskId">Task identifier.</param>
+        /// <param name="forCurrentMachine">Filter by current machine.</param>
+        /// <param name="lastEntryOnly">Return the last history entry only.</param>
         /// <param name="isRunning">Filter by running entries.</param>
         /// <returns><see cref="ScheduleTaskHistory"/> entries.</returns>
-        IList<ScheduleTaskHistory> GetLastHistoryEntries(bool? isRunning = null);
+        IPagedList<ScheduleTaskHistory> GetHistoryEntries(
+            int pageIndex,
+            int pageSize,
+            int taskId = 0,
+            bool forCurrentMachine = false,
+            bool lastEntryOnly = false,
+            bool? isRunning = null);
 
         /// <summary>
         /// Get last history entry by task identifier.
@@ -96,15 +107,6 @@ namespace SmartStore.Services.Tasks
         /// <param name="isRunning">Filter by running entries.</param>
         /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
         ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null);
-
-        /// <summary>
-        /// Gets a list of last <see cref="ScheduleTaskHistory"/> for a task identifier.
-        /// </summary>
-        /// <param name="taskId">Task identifier.</param>
-        /// <param name="pageIndex">Page index.</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns><see cref="ScheduleTaskHistory"/> entries.</returns>
-        IPagedList<ScheduleTaskHistory> GetHistoryEntriesByTaskId(int taskId, int pageIndex, int pageSize);
 
         /// <summary>
         /// Get a history entry by identifier.

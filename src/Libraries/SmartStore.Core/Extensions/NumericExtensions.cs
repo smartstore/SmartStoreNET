@@ -4,8 +4,26 @@ using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore
 {
-    public static class DecimalExtensions
-    {
+    public static class NumericExtensions
+	{
+		#region int
+
+		public static int GetRange(this int id, int size, out int lower)
+		{
+			lower = 0;
+
+			// max 1000 values per cache item
+			var range = (int)Math.Ceiling((decimal)id / size) * size;
+
+			lower = range - (size - 1);
+
+			return range;
+		}
+
+		#endregion
+
+		#region decimal
+
 		/// <summary>
 		/// Calculates the tax (percentage) from a gross and a net value.
 		/// </summary>
@@ -135,5 +153,7 @@ namespace SmartStore
 		{
 			return Math.Round(value, decimals).ToString("0.00", CultureInfo.InvariantCulture);
 		}
-    }
+
+		#endregion
+	}
 }

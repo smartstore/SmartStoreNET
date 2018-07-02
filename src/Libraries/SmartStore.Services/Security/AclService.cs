@@ -12,8 +12,11 @@ namespace SmartStore.Services.Security
 {
     public partial class AclService : IAclService
     {
-        private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "aclrecord:entityid-name-{0}-{1}";
-        private const string ACLRECORD_PATTERN_KEY = "aclrecord:*";
+		/// <summary>
+		/// 0 = segment (EntityName.IdRange)
+		/// </summary>
+		const string ACL_SEGMENT_KEY = "acl:range-{0}";
+		const string ACL_SEGMENT_PATTERN = "acl:range-*";
 
         private readonly IRepository<AclRecord> _aclRecordRepository;
         private readonly Work<IWorkContext> _workContext;
@@ -45,8 +48,8 @@ namespace SmartStore.Services.Security
 
             _aclRecordRepository.Delete(aclRecord);
 
-            _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
-        }
+			ClearCacheSegment(aclRecord.EntityName, aclRecord.EntityId);
+		}
 
         public virtual AclRecord GetAclRecordById(int aclRecordId)
         {
@@ -87,8 +90,8 @@ namespace SmartStore.Services.Security
 
 			_aclRecordRepository.Insert(aclRecord);
 
-            _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
-        }
+			ClearCacheSegment(aclRecord.EntityName, aclRecord.EntityId);
+		}
 
         public virtual void InsertAclRecord<T>(T entity, int customerRoleId) where T : BaseEntity, IAclSupported
         {
@@ -116,8 +119,8 @@ namespace SmartStore.Services.Security
 
 			_aclRecordRepository.Update(aclRecord);
 
-            _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
-        }
+			ClearCacheSegment(aclRecord.EntityName, aclRecord.EntityId);
+		}
 
 		public virtual int[] GetCustomerRoleIdsWithAccess(string entityName, int entityId)
 		{
@@ -126,17 +129,14 @@ namespace SmartStore.Services.Security
 			if (entityId <= 0)
 				return new int[0];
 
-			string key = string.Format(ACLRECORD_BY_ENTITYID_NAME_KEY, entityId, entityName);
-			return _cacheManager.Get(key, () =>
-			{
-				var query = from ur in _aclRecordRepository.Table
-							where ur.EntityId == entityId &&
-							ur.EntityName == entityName
-							select ur.CustomerRoleId;
+			var cacheSegment = GetCacheSegment(entityName, entityId);
 
-				var result = query.ToArray();
-				return result;
-			});
+			if (!cacheSegment.TryGetValue(entityId, out var roleIds))
+			{
+				return Array.Empty<int>();
+			}
+
+			return roleIds;
 		}
 
 		public bool Authorize(string entityName, int entityId)
@@ -172,5 +172,67 @@ namespace SmartStore.Services.Security
 			// no permission granted
 			return false;
 		}
+
+		#region Cache segmenting
+
+		protected virtual IDictionary<int, int[]> GetCacheSegment(string entityName, int entityId)
+		{
+			Guard.NotEmpty(entityName, nameof(entityName));
+
+			var segmentKey = GetSegmentKeyPart(entityName, entityId, out var minEntityId, out var maxEntityId);
+			var cacheKey = BuildCacheSegmentKey(segmentKey);
+
+			return _cacheManager.Get(cacheKey, () =>
+			{
+				var query = from sm in _aclRecordRepository.TableUntracked
+							where
+								sm.EntityId >= minEntityId &&
+								sm.EntityId <= maxEntityId &&
+								sm.EntityName == entityName
+							select sm;
+
+				var mappings = query.ToLookup(x => x.EntityId, x => x.CustomerRoleId);
+
+				var dict = new Dictionary<int, int[]>(mappings.Count);
+
+				foreach (var sm in mappings)
+				{
+					dict[sm.Key] = sm.ToArray();
+				}
+
+				return dict;
+			});
+		}
+
+		/// <summary>
+		/// Clears the cached segment from the cache
+		/// </summary>
+		protected virtual void ClearCacheSegment(string entityName, int entityId)
+		{
+			try
+			{
+				var segmentKey = GetSegmentKeyPart(entityName, entityId);
+				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey));
+			}
+			catch { }
+		}
+
+		private string BuildCacheSegmentKey(string segment)
+		{
+			return String.Format(ACL_SEGMENT_KEY, segment);
+		}
+
+		private string GetSegmentKeyPart(string entityName, int entityId)
+		{
+			return GetSegmentKeyPart(entityName, entityId, out _, out _);
+		}
+
+		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
+		{
+			maxId = entityId.GetRange(1000, out minId);
+			return (entityName + "." + maxId.ToString()).ToLowerInvariant();
+		}
+
+		#endregion
 	}
 }

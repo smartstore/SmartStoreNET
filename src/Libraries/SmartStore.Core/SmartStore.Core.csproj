@@ -246,7 +246,7 @@
     <Compile Include="Events\CommonMessages\AppStartedEvent.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
-    <Compile Include="Extensions\DecimalExtensions.cs" />
+    <Compile Include="Extensions\NumericExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
     <Compile Include="Extensions\RegexExtensions.cs" />
     <Compile Include="Extensions\RouteExtensions.cs" />

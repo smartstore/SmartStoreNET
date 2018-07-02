@@ -447,16 +447,8 @@ namespace SmartStore.Services.Seo
 
 		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
 		{
-			minId = 0;
-			maxId = 0;
-			
-			// max 1000 values per cache item
-			var entityRange = Math.Ceiling((decimal)entityId / 1000) * 1000;
-
-			maxId = (int)entityRange;
-			minId = maxId - 999;
-
-			return (entityName + "." + entityRange.ToString()).ToLowerInvariant();
+			maxId = entityId.GetRange(500, out minId);
+			return (entityName + "." + maxId.ToString()).ToLowerInvariant();
 		}
 	}
 }

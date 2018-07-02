@@ -13,8 +13,8 @@ namespace SmartStore.Services.Stores
 		/// <summary>
 		/// 0 = segment (EntityName.IdRange)
 		/// </summary>
-		const string STOREMAPPING_SEGMENT_KEY = "storemapping:{0}";
-		const string STOREMAPPING_SEGMENT_PATTERN = "storemapping:*";
+		const string STOREMAPPING_SEGMENT_KEY = "storemapping:range-{0}";
+		const string STOREMAPPING_SEGMENT_PATTERN = "storemapping:range-*";
 
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IStoreContext _storeContext;
@@ -237,16 +237,8 @@ namespace SmartStore.Services.Stores
 
 		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
 		{
-			minId = 0;
-			maxId = 0;
-
-			// max 1000 values per cache item
-			var entityRange = Math.Ceiling((decimal)entityId / 1000) * 1000;
-
-			maxId = (int)entityRange;
-			minId = maxId - 999;
-
-			return (entityName + "." + entityRange.ToString()).ToLowerInvariant();
+			maxId = entityId.GetRange(1000, out minId);
+			return (entityName + "." + maxId.ToString()).ToLowerInvariant();
 		}
 
 		#endregion

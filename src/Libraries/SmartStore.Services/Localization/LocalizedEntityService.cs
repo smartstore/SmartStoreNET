@@ -281,16 +281,8 @@ namespace SmartStore.Services.Localization
 
 		private string GetSegmentKeyPart(string localeKeyGroup, string localeKey, int entityId, out int minId, out int maxId)
 		{
-			minId = 0;
-			maxId = 0;
-
-			// max 500 values per cache item
-			var entityRange = Math.Ceiling((decimal)entityId / 500) * 500;
-
-			maxId = (int)entityRange;
-			minId = maxId - 499;
-
-			return (localeKeyGroup + "." + localeKey + "." + entityRange.ToString()).ToLowerInvariant();
+			maxId = entityId.GetRange(500, out minId);
+			return (localeKeyGroup + "." + localeKey + "." + maxId.ToString()).ToLowerInvariant();
 		}
 	}
 }

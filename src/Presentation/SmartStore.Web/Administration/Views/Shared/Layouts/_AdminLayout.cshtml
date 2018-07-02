@@ -28,8 +28,8 @@
 	@if (ViewData["warning.panel.message"] != null)
     {
 		<div class="alert warning-panel-message">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
             @Html.Raw(ViewData["warning.panel.message"])
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
 		</div>
     }
 	

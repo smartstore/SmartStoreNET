@@ -17,20 +17,21 @@
 		},
 		{
 			"name": "Admin.Common.Global",
-			"zones": [
-				"main_column_before",
-				"main_column_after",
-				"body_start_html_tag_after",
-				"content_before",
-				"after_teaser",
-				"aside_left_before",
-				"aside_left_after",
-				"aside_right_before",
-				"aside_right_after",
-				"content_after",
-				"body_end_html_tag_before",
-				"head_html_tag"
-			]
+      "zones": [
+        "main_column_before",
+        "main_column_after",
+        "body_start_html_tag_after",
+        "content_before",
+        "after_teaser",
+        "aside_left_before",
+        "aside_left_after",
+        "aside_right_before",
+        "aside_right_after",
+        "content_after",
+        "body_end_html_tag_before",
+        "head_html_tag",
+        "footer_before"
+      ]
 		},
 		{
 			"name": "Admin.ContentManagement.Blog",
@@ -158,18 +159,18 @@
 		},
 		{
 			"name": "Admin.Common.Footer",
-			"zones": [
-				"footer_top",
-				"footer_bottom",
-				"footer_col_1_after",
-				"footer_col_1_before",
-				"footer_col_2_after",
-				"footer_col_2_before",
-				"footer_col_3_after",
-				"footer_col_3_before",
-				"footer_col_4_after",
-				"footer_col_4_before"
-			]
+      "zones": [
+        "footer_top",
+        "footer_bottom",
+        "footer_col_1_after",
+        "footer_col_1_before",
+        "footer_col_2_after",
+        "footer_col_2_before",
+        "footer_col_3_after",
+        "footer_col_3_before",
+        "footer_col_4_after",
+        "footer_col_4_before"
+      ]
 		},
 		{
 			"name": "Common.Misc",

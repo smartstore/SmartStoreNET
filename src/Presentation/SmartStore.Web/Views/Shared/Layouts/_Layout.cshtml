@@ -116,6 +116,8 @@
             </section>
         </div>
 
+		@{ Html.RenderWidget("footer_before"); }
+
         @if (IsSectionDefined("footer"))
 		{
             @RenderSection("footer")

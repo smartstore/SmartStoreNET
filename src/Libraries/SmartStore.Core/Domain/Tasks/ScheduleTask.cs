@@ -53,21 +53,23 @@ namespace SmartStore.Core.Domain.Tasks
         public bool IsHidden { get; set; }
 
         /// <summary>
-        /// Indicates whether the task runs separately on each server.
+        /// Indicates whether the task is executed decidedly on each machine of a web farm.
         /// </summary>
         public bool RunPerMachine { get; set; }
 
 		/// <summary>
-		/// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow )
+		/// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow and is not running).
 		/// </summary>
 		public bool IsPending
 		{
 			get
 			{
-				var result = Enabled && NextRunUtc.HasValue && NextRunUtc <= DateTime.UtcNow;
+                var result = Enabled && NextRunUtc.HasValue && NextRunUtc <= DateTime.UtcNow && (LastHistoryEntry == null || !LastHistoryEntry.IsRunning);
 				return result;
 			}
 		}
+
+        public ScheduleTaskHistory LastHistoryEntry { get; set; }
 
         /// <summary>
         /// Gets or sets the schedule task history.

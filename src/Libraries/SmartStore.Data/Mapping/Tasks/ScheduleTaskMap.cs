@@ -15,6 +15,7 @@ namespace SmartStore.Data.Mapping.Tasks
 			Property(t => t.CronExpression).HasMaxLength(1000);
 
 			Ignore(t => t.IsPending);
+            Ignore(t => t.LastHistoryEntry);
         }
     }
 }

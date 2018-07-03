@@ -53,6 +53,16 @@ namespace SmartStore.Services.Tasks
                 return;
             }
 
+            if (task.LastHistoryEntry == null)
+            {
+                // The task was started manually.
+                task.LastHistoryEntry = _scheduledTaskService.GetLastHistoryEntryByTaskId(task.Id);
+            }
+            if (task?.LastHistoryEntry.IsRunning ?? false)
+            {
+                return;
+            }
+
             bool faulted = false;
 			bool canceled = false;
             string lastError = null;

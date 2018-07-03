@@ -103,18 +103,18 @@ namespace SmartStore.Services.Tasks
             var now = DateTime.UtcNow;
             var machineName = _env.MachineName;
 
-            var query =
+            var query = (
                 from t in _taskRepository.Table
                 where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
                 select new
                 {
                     Task = t,
-                    LastHistoryEntry = t.ScheduleTaskHistory
+                    LastEntry = t.ScheduleTaskHistory
                         .Where(th => !t.RunPerMachine || (t.RunPerMachine && th.MachineName == machineName))
                         .OrderByDescending(th => th.StartedOnUtc)
                         .ThenByDescending(th => th.Id)
                         .FirstOrDefault()
-                };
+                });
 
             var tasks = Retry.Run(
                 () => query.ToList(),
@@ -122,8 +122,12 @@ namespace SmartStore.Services.Tasks
                 RetryOnDeadlockException);
 
             var pendingTasks = tasks
-                .Where(x => x.LastHistoryEntry == null || !x.LastHistoryEntry.IsRunning)
-                .Select(x => x.Task)
+                .Select(x =>
+                {
+                    x.Task.LastHistoryEntry = x.LastEntry;
+                    return x.Task;
+                })
+                .Where(x => x.IsPending)
                 .ToList();
 
             return pendingTasks;
@@ -220,7 +224,6 @@ namespace SmartStore.Services.Tasks
                         if (invalidTimeRange || entry.IsRunning)
                         {
                             entry.Error = abnormalAbort;
-                            entry.SucceededOnUtc = null;
                         }
 
                         entry.IsRunning = false;
@@ -345,7 +348,13 @@ namespace SmartStore.Services.Tasks
             }
 
             var query = GetHistoryEntriesQuery(taskId, true, false, isRunning);
-            var entry = query.Expand(x => x.ScheduleTask).FirstOrDefault();
+            query = query.Expand(x => x.ScheduleTask);
+
+            var entry = Retry.Run(
+                () => query.FirstOrDefault(),
+                3, TimeSpan.FromMilliseconds(100),
+                RetryOnDeadlockException);
+
             return entry;
         }
 

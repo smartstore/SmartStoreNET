@@ -14,7 +14,7 @@ namespace SmartStore.Web.Controllers
     public class TaskSchedulerController : Controller
     {
         private readonly ITaskScheduler _taskScheduler;
-        private readonly IScheduleTaskService _scheduledTaskService;
+        private readonly IScheduleTaskService _scheduleTaskService;
         private readonly ITaskExecutor _taskExecutor;
 		private readonly ICustomerService _customerService;
 		private readonly ICommonServices _services;
@@ -22,13 +22,13 @@ namespace SmartStore.Web.Controllers
 
         public TaskSchedulerController(
 			ITaskScheduler taskScheduler,
-            IScheduleTaskService scheduledTaskService,
+            IScheduleTaskService scheduleTaskService,
             ITaskExecutor taskExecutor,
 			ICustomerService customerService,
 			ICommonServices services)
         {
 			_taskScheduler = taskScheduler;
-            _scheduledTaskService = scheduledTaskService;
+            _scheduleTaskService = scheduleTaskService;
             _taskExecutor = taskExecutor;
 			_customerService = customerService;
             _services = services;
@@ -45,7 +45,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-			var pendingTasks = _scheduledTaskService.GetPendingTasks();
+			var pendingTasks = _scheduleTaskService.GetPendingTasks();
 			var count = 0;
 			var taskParameters = QueryString.Current.ToDictionary();
 
@@ -60,11 +60,12 @@ namespace SmartStore.Web.Controllers
 
 				if (i > 0 /*&& (DateTime.UtcNow - _sweepStart).TotalMinutes > _taskScheduler.SweepIntervalMinutes*/)
 				{
-					// Maybe a subsequent Sweep call or another machine in a webfarm executed 
-					// successive tasks already.
-					// To be able to determine this, we need to reload the entity from the database.
-					// The TaskExecutor will exit when the task should be in running state then.
-					_services.DbContext.ReloadEntity(task);
+                    // Maybe a subsequent Sweep call or another machine in a webfarm executed 
+                    // successive tasks already.
+                    // To be able to determine this, we need to reload the entity from the database.
+                    // The TaskExecutor will exit when the task should be in running state then.
+                    _services.DbContext.ReloadEntity(task);
+                    task.LastHistoryEntry = _scheduleTaskService.GetLastHistoryEntryByTaskId(task.Id);
 				}
 
 				if (task.IsPending)
@@ -85,7 +86,7 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var task = _scheduledTaskService.GetTaskById(id);
+            var task = _scheduleTaskService.GetTaskById(id);
             if (task == null)
             {
                 return HttpNotFound();

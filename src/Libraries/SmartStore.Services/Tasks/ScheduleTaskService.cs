@@ -284,9 +284,7 @@ namespace SmartStore.Services.Tasks
 
         #region Schedule task history
 
-        public virtual IPagedList<ScheduleTaskHistory> GetHistoryEntries(
-            int pageIndex,
-            int pageSize,
+        protected virtual IQueryable<ScheduleTaskHistory> GetHistoryEntriesQuery(
             int taskId = 0,
             bool forCurrentMachine = false,
             bool lastEntryOnly = false,
@@ -323,8 +321,20 @@ namespace SmartStore.Services.Tasks
                 .OrderByDescending(x => x.StartedOnUtc)
                 .ThenByDescending(x => x.Id);
 
-            var history = new PagedList<ScheduleTaskHistory>(query, pageIndex, pageSize);
-            return history;
+            return query;
+        }
+
+        public virtual IPagedList<ScheduleTaskHistory> GetHistoryEntries(
+            int pageIndex,
+            int pageSize,
+            int taskId = 0,
+            bool forCurrentMachine = false,
+            bool lastEntryOnly = false,
+            bool? isRunning = null)
+        {
+            var query = GetHistoryEntriesQuery(taskId, forCurrentMachine, lastEntryOnly, isRunning);
+            var entries = new PagedList<ScheduleTaskHistory>(query, pageIndex, pageSize);
+            return entries;
         }
 
         public virtual ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null)
@@ -334,21 +344,9 @@ namespace SmartStore.Services.Tasks
                 return null;
             }
 
-            var machineName = _env.MachineName;
-            var query = _taskHistoryRepository.TableUntracked.Expand(x => x.ScheduleTask)
-                .Where(x => x.ScheduleTaskId == taskId && x.MachineName == machineName);
-
-            if (isRunning.HasValue)
-            {
-                query = query.Where(x => x.IsRunning == isRunning.Value);
-            }
-
-            var historyEntry = query
-                .OrderByDescending(x => x.StartedOnUtc)
-                .ThenByDescending(x => x.Id)
-                .FirstOrDefault();
-
-            return historyEntry;
+            var query = GetHistoryEntriesQuery(taskId, true, false, isRunning);
+            var entry = query.Expand(x => x.ScheduleTask).FirstOrDefault();
+            return entry;
         }
 
         public virtual ScheduleTaskHistory GetHistoryEntryById(int id)

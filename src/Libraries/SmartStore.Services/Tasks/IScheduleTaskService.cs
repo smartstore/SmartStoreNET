@@ -83,7 +83,7 @@ namespace SmartStore.Services.Tasks
         #region Schedule task history
 
         /// <summary>
-        /// Gets a list of last <see cref="ScheduleTaskHistory"/> entries.
+        /// Gets a list of <see cref="ScheduleTaskHistory"/> entries.
         /// </summary>
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
@@ -101,12 +101,36 @@ namespace SmartStore.Services.Tasks
             bool? isRunning = null);
 
         /// <summary>
+        /// Gets a list of <see cref="ScheduleTaskHistory"/> entries.
+        /// </summary>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <param name="task">Schedule task entity.</param>
+        /// <param name="forCurrentMachine">Filter by current machine.</param>
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entries.</returns>
+        IPagedList<ScheduleTaskHistory> GetHistoryEntries(
+            int pageIndex,
+            int pageSize,
+            ScheduleTask task,
+            bool forCurrentMachine = false,
+            bool? isRunning = null);
+
+        /// <summary>
         /// Get last history entry by task identifier.
         /// </summary>
         /// <param name="taskId">Task identifier.</param>
         /// <param name="isRunning">Filter by running entries.</param>
         /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
         ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null);
+
+        /// <summary>
+        /// Get last history entry for a task.
+        /// </summary>
+        /// <param name="task">Schedule task entity.</param>
+        /// <param name="isRunning">Filter by running entries.</param>
+        /// <returns><see cref="ScheduleTaskHistory"/> entry.</returns>
+        ScheduleTaskHistory GetLastHistoryEntryByTask(ScheduleTask task, bool? isRunning = null);
 
         /// <summary>
         /// Get a history entry by identifier.

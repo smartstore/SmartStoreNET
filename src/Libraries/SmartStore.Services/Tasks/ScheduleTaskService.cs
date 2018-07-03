@@ -327,6 +327,37 @@ namespace SmartStore.Services.Tasks
             return query;
         }
 
+        protected virtual IQueryable<ScheduleTaskHistory> GetHistoryEntriesQuery(
+            ScheduleTask task,
+            bool forCurrentMachine = false,
+            bool? isRunning = null)
+        {
+            _taskRepository.Context.LoadCollection(
+                task,
+                (ScheduleTask x) => x.ScheduleTaskHistory,
+                false,
+                (IQueryable<ScheduleTaskHistory> query) =>
+                {
+                    if (forCurrentMachine)
+                    {
+                        var machineName = _env.MachineName;
+                        query = query.Where(x => x.MachineName == machineName);
+                    }
+                    if (isRunning.HasValue)
+                    {
+                        query = query.Where(x => x.IsRunning == isRunning.Value);
+                    }
+
+                    query = query
+                        .OrderByDescending(x => x.StartedOnUtc)
+                        .ThenByDescending(x => x.Id);
+
+                    return query;
+                });
+
+            return task.ScheduleTaskHistory.AsQueryable();
+        }
+
         public virtual IPagedList<ScheduleTaskHistory> GetHistoryEntries(
             int pageIndex,
             int pageSize,
@@ -340,6 +371,23 @@ namespace SmartStore.Services.Tasks
             return entries;
         }
 
+        public virtual IPagedList<ScheduleTaskHistory> GetHistoryEntries(
+            int pageIndex,
+            int pageSize,
+            ScheduleTask task,
+            bool forCurrentMachine = false,
+            bool? isRunning = null)
+        {
+            if (task == null)
+            {
+                return new PagedList<ScheduleTaskHistory>(new List<ScheduleTaskHistory>(), pageIndex, pageSize);
+            }
+
+            var query = GetHistoryEntriesQuery(task, forCurrentMachine, isRunning);
+            var entries = new PagedList<ScheduleTaskHistory>(query, pageIndex, pageSize);
+            return entries;
+        }
+
         public virtual ScheduleTaskHistory GetLastHistoryEntryByTaskId(int taskId, bool? isRunning = null)
         {
             if (taskId == 0)
@@ -349,6 +397,23 @@ namespace SmartStore.Services.Tasks
 
             var query = GetHistoryEntriesQuery(taskId, true, false, isRunning);
             query = query.Expand(x => x.ScheduleTask);
+
+            var entry = Retry.Run(
+                () => query.FirstOrDefault(),
+                3, TimeSpan.FromMilliseconds(100),
+                RetryOnDeadlockException);
+
+            return entry;
+        }
+
+        public virtual ScheduleTaskHistory GetLastHistoryEntryByTask(ScheduleTask task, bool? isRunning = null)
+        {
+            if (task == null)
+            {
+                return null;
+            }
+
+            var query = GetHistoryEntriesQuery(task, true, isRunning);
 
             var entry = Retry.Run(
                 () => query.FirstOrDefault(),

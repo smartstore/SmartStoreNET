@@ -58,7 +58,7 @@ namespace SmartStore.Services.Tasks
                 // The task was started manually.
                 task.LastHistoryEntry = _scheduledTaskService.GetLastHistoryEntryByTaskId(task.Id);
             }
-            if (task?.LastHistoryEntry.IsRunning ?? false)
+            if (task.LastHistoryEntry?.IsRunning ?? false)
             {
                 return;
             }

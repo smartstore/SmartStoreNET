@@ -73,13 +73,16 @@
 }
 
 <div class="page topic-page" id="ph-topic">
-    <div id="ph-title">
-        <div class="page-title">
-            @Html.Raw("<" + Model.TitleTag + Html.LanguageAttributes(Model.Title) + " class=\"block-title\">")
-            @Html.Raw(Model.Title)
-            @Html.Raw("</" + Model.TitleTag + ">")
-        </div>
-    </div>
+	@if (Model.Title.HasValue())
+	{
+		<div id="ph-title">
+			<div class="page-title">
+				@Html.Raw("<" + Model.TitleTag + Html.LanguageAttributes(Model.Title) + " class=\"block-title\">")
+				@Html.Raw(Model.Title)
+				@Html.Raw("</" + Model.TitleTag + ">")
+			</div>
+		</div>
+	}
 
 	@{ Html.RenderWidget("topic_body_before"); }
 

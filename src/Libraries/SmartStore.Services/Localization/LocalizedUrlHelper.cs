@@ -67,8 +67,7 @@ namespace SmartStore.Services.Localization
 
         public string StripSeoCode()
         {
-            string seoCode;
-            if (IsLocalizedUrl(out seoCode))
+            if (IsLocalizedUrl(out var seoCode))
             {
                 this.RelativePath = this.RelativePath.Substring(seoCode.Length).TrimStart('/');
                 //if (this.RelativePath.IsEmpty())

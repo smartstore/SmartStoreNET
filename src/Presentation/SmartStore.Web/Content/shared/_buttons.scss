@@ -348,7 +348,7 @@ $btn-size-sm: $input-height-sm;
 			width: 1.4em;
 			text-align: left;
 			opacity: 0;
-			line-height: $line-height-base;
+			line-height: $line-height-base*0.825;
 			transition: opacity 0.2s ease-out;
 			transform: translateX(-100%);
 

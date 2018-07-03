@@ -287,42 +287,6 @@ namespace SmartStore.Services.Tasks
 
         #region Schedule task history
 
-        protected virtual int BatchDeleteHistoryEntries(List<int> historyEntryIds)
-        {
-            var count = 0;
-
-            try
-            {
-                if (historyEntryIds.Any())
-                {
-                    using (var scope = new DbContextScope(_taskHistoryRepository.Context, autoCommit: false))
-                    {
-                        var pageIndex = 0;
-                        IPagedList<int> pagedIds = null;
-
-                        do
-                        {
-                            pagedIds = new PagedList<int>(historyEntryIds, pageIndex++, 100);
-
-                            var entries = _taskHistoryRepository.Table
-                                .Where(x => pagedIds.Contains(x.Id))
-                                .ToList();
-
-                            entries.Each(x => DeleteHistoryEntry(x));
-                            count += scope.Commit();
-                        }
-                        while (pagedIds.HasNextPage);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-
-            return count;
-        }
-
         protected virtual IQueryable<ScheduleTaskHistory> GetHistoryEntriesQuery(
             int taskId = 0,
             bool forCurrentMachine = false,
@@ -437,8 +401,8 @@ namespace SmartStore.Services.Tasks
         public virtual int DeleteHistoryEntries()
         {
             var count = 0;
+            var idsToDelete = new HashSet<int>();
 
-            // First delete old entries.
             if (_commonSettings.Value.MaxScheduleHistoryAgeInDays > 0)
             {
                 var earliestDate = DateTime.UtcNow.AddDays(-1 * _commonSettings.Value.MaxScheduleHistoryAgeInDays);
@@ -447,10 +411,9 @@ namespace SmartStore.Services.Tasks
                     .Select(x => x.Id)
                     .ToList();
 
-                count += BatchDeleteHistoryEntries(ids);
+                idsToDelete.AddRange(ids);
             }
 
-            // Then delete if there are too many entries.
             // We have to group by task otherwise we would only keep entries from very frequently executed tasks.
             if (_commonSettings.Value.MaxNumberOfScheduleHistoryEntries > 0)
             {
@@ -464,12 +427,38 @@ namespace SmartStore.Services.Tasks
                         .Skip(_commonSettings.Value.MaxNumberOfScheduleHistoryEntries)
                         .Select(x => x.Id);
 
-                var ids = query
-                    .SelectMany(x => x)
-                    .Distinct()
-                    .ToList();
+                var ids = query.SelectMany(x => x).ToList();
 
-                count += BatchDeleteHistoryEntries(ids);
+                idsToDelete.AddRange(ids);
+            }
+
+            try
+            {
+                if (idsToDelete.Any())
+                {
+                    using (var scope = new DbContextScope(_taskHistoryRepository.Context, autoCommit: false))
+                    {
+                        var pageIndex = 0;
+                        IPagedList<int> pagedIds = null;
+
+                        do
+                        {
+                            pagedIds = new PagedList<int>(idsToDelete, pageIndex++, 100);
+
+                            var entries = _taskHistoryRepository.Table
+                                .Where(x => pagedIds.Contains(x.Id))
+                                .ToList();
+
+                            entries.Each(x => DeleteHistoryEntry(x));
+                            count += scope.Commit();
+                        }
+                        while (pagedIds.HasNextPage);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
 
             return count;

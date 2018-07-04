@@ -91,9 +91,9 @@ namespace SmartStore.Data.Migrations
                 "Indicates whether the task is executed decidedly on each machine of a web farm.",
                 "Gibt an, ob die Aufgabe auf jeder Maschine einer Webfarm dezidiert ausgeführt wird.");
 
-            builder.AddOrUpdate("Admin.System.ScheduleTasks.AutomaticallyDeleteHistoryNote",
-                "Entries older than {0} days are automatically deleted.",
-                "Einträge älter als {0} Tage werden automatisch gelöscht.");
+            builder.AddOrUpdate("Admin.System.ScheduleTasks.HistoryCleanupNote",
+                "The history is cleaned up once a day: maximum {0} entries and none older than {1} days.",
+                "Die Historie wird einmal täglich bereinigt: Maximal {0} Einträge und keine älter als {1} Tage.");
         }
     }
 }

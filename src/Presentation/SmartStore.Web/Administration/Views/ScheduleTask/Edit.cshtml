@@ -182,13 +182,10 @@
 
 @helper TabHistory()
 {
-    var maxScheduleHistoryAgeInDays = (int)ViewBag.MaxScheduleHistoryAgeInDays;
-    if (maxScheduleHistoryAgeInDays > 0)
-    {
-        <div class="alert alert-info">
-            @T("Admin.System.ScheduleTasks.AutomaticallyDeleteHistoryNote", maxScheduleHistoryAgeInDays)
-        </div>
-    }
+    <div class="alert alert-info alert-dismissible">
+        @Html.Raw((string)ViewBag.HistoryCleanupNote)
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
 
     <script type="text/javascript">
 	    function OnTaskHistoryGridRowDataBound(e) {

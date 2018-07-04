@@ -198,7 +198,9 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.GridPageSize = _adminAreaSettings.GridPageSize;
-            ViewBag.MaxScheduleHistoryAgeInDays = _commonSettings.MaxScheduleHistoryAgeInDays;
+            ViewBag.HistoryCleanupNote = T("Admin.System.ScheduleTasks.HistoryCleanupNote", 
+                _commonSettings.MaxNumberOfScheduleHistoryEntries, 
+                _commonSettings.MaxScheduleHistoryAgeInDays).Text;
 
             return View(model);
 		}

@@ -12,6 +12,7 @@ namespace SmartStore.Core.Caching
 	public class ObserveEntityContext
 	{
 		public IOutputCacheProvider OutputCacheProvider { get; set; }
+		public IDisplayControl DisplayControl { get; set; }
 		public BaseEntity Entity { get; set; }
 		public IHookedEntity EntityEntry { get; set; }
 		public bool Handled { get; set; }

@@ -243,10 +243,17 @@ namespace SmartStore.Web.Framework
 
                 if (customer != null)
                 {
-					customerLangId = customer.GetAttribute<int>(
-						SystemCustomerAttributeNames.LanguageId,
-						_attrService,
-						_storeContext.CurrentStore.Id);
+					if (customer.IsSystemAccount)
+					{
+						customerLangId = _httpContext.Request.QueryString["lid"].ToInt();
+					}
+					else
+					{
+						customerLangId = customer.GetAttribute<int>(
+							SystemCustomerAttributeNames.LanguageId,
+							_attrService,
+							_storeContext.CurrentStore.Id);
+					}
 				}
 
 				if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext.Request != null)
@@ -335,6 +342,9 @@ namespace SmartStore.Web.Framework
 
         private void SetCustomerLanguage(int languageId, int storeId)
         {
+            if (this.CurrentCustomer.IsSystemAccount)
+                return;
+
             _attrService.SaveAttribute(
                 this.CurrentCustomer,
                 SystemCustomerAttributeNames.LanguageId,

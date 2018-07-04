@@ -243,7 +243,7 @@ namespace SmartStore.Web.Framework
 
                 if (customer != null)
                 {
-					if (customer.IsPdfConverter())
+					if (customer.IsSystemAccount)
 					{
 						customerLangId = _httpContext.Request.QueryString["lid"].ToInt();
 					}
@@ -342,6 +342,9 @@ namespace SmartStore.Web.Framework
 
         private void SetCustomerLanguage(int languageId, int storeId)
         {
+            if (this.CurrentCustomer.IsSystemAccount)
+                return;
+
             _attrService.SaveAttribute(
                 this.CurrentCustomer,
                 SystemCustomerAttributeNames.LanguageId,

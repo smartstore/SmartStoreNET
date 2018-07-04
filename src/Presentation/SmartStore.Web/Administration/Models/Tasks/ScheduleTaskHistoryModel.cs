@@ -28,7 +28,7 @@ namespace SmartStore.Admin.Models.Tasks
         public string SucceededOnPretty { get; set; }
 
         [SmartResourceDisplayName("Common.Status")]
-        public bool Succeeded => SucceededOn.HasValue;
+        public bool Succeeded => SucceededOn.HasValue && Error.IsEmpty();
 
         [SmartResourceDisplayName("Common.Error")]
         public string Error { get; set; }

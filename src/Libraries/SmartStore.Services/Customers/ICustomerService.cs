@@ -65,6 +65,13 @@ namespace SmartStore.Services.Customers
         IPagedList<Customer> GetAllCustomers(int affiliateId, int pageIndex, int pageSize);
 
         /// <summary>
+        /// Gets all customers by role identifier
+        /// </summary>
+        /// <param name="roleId">Role identifier</param>
+        /// <returns>Customers</returns>
+        IList<Customer> GetAllCustomersByRoleId(int roleId);
+
+        /// <summary>
         /// Gets all customers by customer format (including deleted ones)
         /// </summary>
         /// <param name="passwordFormat">Password format</param>

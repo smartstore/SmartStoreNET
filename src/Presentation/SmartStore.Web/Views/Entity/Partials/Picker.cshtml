@@ -12,17 +12,17 @@
 			<div class="modal-header flex-wrap">
 				<h5 class="modal-title align-self-center">&nbsp;</h5>
 
-				@if (isProductPicker)
-				{
-					<input type="hidden" name="EntityType" value="@Model.EntityType" />
-					<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
-					<input type="hidden" name="ReturnField" value="@Model.ReturnField" />
-					<input type="hidden" name="MaxItems" value="@Model.MaxItems" />
-					<input type="hidden" name="PreselectedEntityIds" value="@Model.PreselectedEntityIds" />
-					<input type="hidden" name="DisableIf" value="@Model.DisableIf" />
-					<input type="hidden" name="DisableIds" value="@Model.DisableIds" />
-					<input type="hidden" name="PageIndex" value="@Model.PageIndex" />
+				<input type="hidden" name="EntityType" value="@Model.EntityType" />
+				<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
+				<input type="hidden" name="ReturnField" value="@Model.ReturnField" />
+				<input type="hidden" name="MaxItems" value="@Model.MaxItems" />
+				<input type="hidden" name="PreselectedEntityIds" value="@Model.PreselectedEntityIds" />
+				<input type="hidden" name="DisableIf" value="@Model.DisableIf" />
+				<input type="hidden" name="DisableIds" value="@Model.DisableIds" />
+				<input type="hidden" name="PageIndex" value="@Model.PageIndex" />
 
+                @if (isProductPicker)
+                {
 					@ProductSearchForm()
 				}
 			</div>

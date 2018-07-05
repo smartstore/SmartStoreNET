@@ -239,6 +239,16 @@ namespace SmartStore.Services.Customers
             return new PagedList<Customer>(query, pageIndex, pageSize);
         }
 
+        public virtual IList<Customer> GetAllCustomersByRoleId(int roleId)
+        {
+            var query = _customerRepository.Table
+                .Where(c => !c.Deleted && c.CustomerRoles.Select(cr => cr.Id).Contains(roleId))
+                .OrderByDescending(c => c.CreatedOnUtc);
+
+            var customers = query.ToList();
+            return customers;
+        }
+
         public virtual IList<Customer> GetAllCustomersByPasswordFormat(PasswordFormat passwordFormat)
         {
             int passwordFormatId = (int)passwordFormat;

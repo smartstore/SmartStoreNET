@@ -14,6 +14,7 @@ using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Models.Entity;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Web.Controllers
 {
@@ -26,7 +27,8 @@ namespace SmartStore.Web.Controllers
 		private readonly SearchSettings _searchSettings;
 		private readonly IPictureService _pictureService;
 		private readonly IManufacturerService _manufacturerService;
-		private readonly ICategoryService _categoryService;
+        private readonly ICustomerService _customerService;
+        private readonly ICategoryService _categoryService;
 		private readonly IProductService _productService;
 		private readonly CatalogHelper _catalogHelper;
 
@@ -38,7 +40,8 @@ namespace SmartStore.Web.Controllers
 			SearchSettings searchSettings,
 			IPictureService pictureService,
 			IManufacturerService manufacturerService,
-			ICategoryService categoryService,
+            ICustomerService customerService,
+            ICategoryService categoryService,
 			IProductService productService,
 			CatalogHelper catalogHelper)
         {
@@ -49,7 +52,8 @@ namespace SmartStore.Web.Controllers
 			_searchSettings = searchSettings;
 			_pictureService = pictureService;
 			_manufacturerService = manufacturerService;
-			_categoryService = categoryService;
+            _customerService = customerService;
+            _categoryService = categoryService;
 			_productService = productService;
 			_catalogHelper = catalogHelper;
         }
@@ -214,7 +218,124 @@ namespace SmartStore.Web.Controllers
 
 						#endregion
 					}
-				}
+
+                    if (model.EntityType.IsCaseInsensitiveEqual("category"))
+                    {
+                        #region Category
+
+                        var categories = _categoryService.GetAllCategories();
+                        var allPictureIds = categories.Select(x => x.PictureId.GetValueOrDefault());
+                        var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+
+                        model.SearchResult = categories
+                            .Select(x =>
+                            {
+                                var item = new EntityPickerModel.SearchResultModel
+                                {
+                                    Id = x.Id,
+                                    ReturnValue = x.Id.ToString(),
+                                    Title = x.Name,
+                                    Summary = x.Name,
+                                    SummaryTitle = x.Name,
+                                    Published = x.Published,
+                                    Selected = selIds.Contains(x.Id)
+                                };
+
+                                if (!item.Disable && disableIds.Contains(x.Id))
+                                {
+                                    item.Disable = true;
+                                }
+
+                                var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
+                                var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+
+                                item.ImageUrl = _pictureService.GetUrl(
+                                    allPictureInfos.Get(x.PictureId.GetValueOrDefault()),
+                                    _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+                                    fallbackType);
+
+                                return item;
+                            })
+                            .ToList();
+
+                        #endregion
+                    }
+
+                    if (model.EntityType.IsCaseInsensitiveEqual("manufacturer"))
+                    {
+                        #region Manufacturer
+
+                        var manufacturers = _manufacturerService.GetAllManufacturers();
+                        var allPictureIds = manufacturers.Select(x => x.PictureId.GetValueOrDefault());
+                        var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
+
+                        model.SearchResult = manufacturers
+                            .Select(x =>
+                            {
+                                var item = new EntityPickerModel.SearchResultModel
+                                {
+                                    Id = x.Id,
+                                    ReturnValue =  x.Id.ToString(),
+                                    Title = x.Name,
+                                    Summary = x.Name,
+                                    SummaryTitle = x.Name,
+                                    Published = x.Published,
+                                    Selected = selIds.Contains(x.Id)
+                                };
+                                
+                                if (!item.Disable && disableIds.Contains(x.Id))
+                                {
+                                    item.Disable = true;
+                                }
+                                
+                                var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
+                                var fallbackType = _catalogSettings.HideProductDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
+
+                                item.ImageUrl = _pictureService.GetUrl(
+                                    allPictureInfos.Get(x.PictureId.GetValueOrDefault()),
+                                    _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage,
+                                    fallbackType);
+
+                                return item;
+                            })
+                            .ToList();
+
+                        #endregion
+                    }
+
+                    if (model.EntityType.IsCaseInsensitiveEqual("customer"))
+                    {
+                        #region Customer
+
+                        var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;
+                        var customers = _customerService.GetAllCustomersByRoleId(registeredRoleId);
+                        
+                        model.SearchResult = customers
+                            .Select(x =>
+                            {
+                                var item = new EntityPickerModel.SearchResultModel
+                                {
+                                    Id = x.Id,
+                                    ReturnValue = x.Id.ToString(),
+                                    Title = x.Username,
+                                    Summary = x.GetFullName(),
+                                    SummaryTitle = x.GetFullName(),
+                                    Published = true,
+                                    Selected = selIds.Contains(x.Id)
+                                };
+
+                                if (!item.Disable && disableIds.Contains(x.Id))
+                                {
+                                    item.Disable = true;
+                                }
+                                
+                                return item;
+                            })
+                            .ToList();
+
+                        #endregion
+                    }
+                }
 			}
 			catch (Exception ex)
 			{

@@ -3,7 +3,7 @@ namespace SmartStore.Core.Domain.Customers
 {
     public static partial class SystemCustomerAttributeNames
     {
-        //Form fields
+        // Form fields
         public static string Title { get { return "Title"; } }
         public static string FirstName { get { return "FirstName"; } }
         public static string LastName { get { return "LastName"; } }
@@ -23,7 +23,7 @@ namespace SmartStore.Core.Domain.Customers
 		public static string TimeZoneId { get { return "TimeZoneId"; } }
         public static string CustomerNumber { get { return "CustomerNumber"; } }
 
-        //Other attributes
+        // Other attributes
 		public static string DiscountCouponCode { get { return "DiscountCouponCode"; } }
 		public static string GiftCardCouponCodes { get { return "GiftCardCouponCodes"; } }
 		public static string CheckoutAttributes { get { return "CheckoutAttributes"; } }
@@ -41,7 +41,7 @@ namespace SmartStore.Core.Domain.Customers
 		public static string WalletEnabled { get { return "WalletEnabled"; } }
 		public static string HasConsentedToGdpr { get { return "HasConsentedToGdpr"; } }
 
-		//depends on store
+		// Depends on store
 		public static string CurrencyId { get { return "CurrencyId"; } }
 		public static string LanguageId { get { return "LanguageId"; } }
 		public static string SelectedPaymentMethod { get { return "SelectedPaymentMethod"; } }

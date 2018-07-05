@@ -1,33 +1,42 @@
 ﻿using FluentValidation;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Services.Localization;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Validators.Customers
 {
 	public partial class CustomerValidator : AbstractValidator<CustomerModel>
     {
-        public CustomerValidator(ILocalizationService localizationService, CustomerSettings customerSettings)
+        public CustomerValidator(Localizer T, CustomerSettings customerSettings)
         {
-			//form fields
+			var prefix = "Admin.Customers.Customers.Fields.";
+
 			if (customerSettings.FirstNameRequired)
-				RuleFor(x => x.FirstName).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.FirstName.Required"));
+				RuleFor(x => x.FirstName).NotEmpty().WithMessage(T(prefix + "FirstName.Required"));
+
 			if (customerSettings.LastNameRequired)
-				RuleFor(x => x.LastName).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.LastName.Required"));
+				RuleFor(x => x.LastName).NotEmpty().WithMessage(T(prefix + "LastName.Required"));
+
 			if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
-                RuleFor(x => x.Company).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.Company.Required"));
+                RuleFor(x => x.Company).NotEmpty().WithMessage(T(prefix + "Company.Required"));
+
             if (customerSettings.StreetAddressRequired && customerSettings.StreetAddressEnabled)
-                RuleFor(x => x.StreetAddress).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.StreetAddress.Required"));
+                RuleFor(x => x.StreetAddress).NotEmpty().WithMessage(T(prefix + "StreetAddress.Required"));
+
             if (customerSettings.StreetAddress2Required && customerSettings.StreetAddress2Enabled)
-                RuleFor(x => x.StreetAddress2).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.StreetAddress2.Required"));
+                RuleFor(x => x.StreetAddress2).NotEmpty().WithMessage(Te(prefix + "StreetAddress2.Required"));
+
             if (customerSettings.ZipPostalCodeRequired && customerSettings.ZipPostalCodeEnabled)
-                RuleFor(x => x.ZipPostalCode).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.ZipPostalCode.Required"));
+                RuleFor(x => x.ZipPostalCode).NotEmpty().WithMessage(Te(prefix + "ZipPostalCode.Required"));
+
             if (customerSettings.CityRequired && customerSettings.CityEnabled)
-                RuleFor(x => x.City).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.City.Required"));
+                RuleFor(x => x.City).NotEmpty().WithMessage(T(prefix + "City.Required"));
+
             if (customerSettings.PhoneRequired && customerSettings.PhoneEnabled)
-                RuleFor(x => x.Phone).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.Phone.Required"));
+                RuleFor(x => x.Phone).NotEmpty().WithMessage(T(prefix + "Phone.Required"));
+
             if (customerSettings.FaxRequired && customerSettings.FaxEnabled)
-                RuleFor(x => x.Fax).NotEmpty().WithMessage(localizationService.GetResource("Admin.Customers.Customers.Fields.Fax.Required"));
+                RuleFor(x => x.Fax).NotEmpty().WithMessage(T(prefix + "Fax.Required"));
         }
     }
 }

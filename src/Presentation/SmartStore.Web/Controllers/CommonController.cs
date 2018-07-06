@@ -341,12 +341,14 @@ namespace SmartStore.Web.Controllers
 				_services.WorkContext.WorkingLanguage = language;
             }
 
+            var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, false);
+
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
-                var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, false);
-				helper.PrependSeoCode(_services.WorkContext.WorkingLanguage.UniqueSeoCode, true);
-                returnUrl = helper.GetAbsolutePath();
+                helper.PrependSeoCode(_services.WorkContext.WorkingLanguage.UniqueSeoCode, true);
             }
+
+            returnUrl = helper.GetAbsolutePath();
 
             return RedirectToReferrer(returnUrl);
         }

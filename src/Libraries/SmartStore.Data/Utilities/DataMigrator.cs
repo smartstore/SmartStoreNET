@@ -79,7 +79,7 @@ namespace SmartStore.Data.Utilities
 		/// <returns>The total count of fixed and updated product entities</returns>
 		public static int FixProductMainPictureIds(IDbContext context, DateTime? ifModifiedSinceUtc = null)
 		{
-			return FixProductMainPictureIds(context, false);
+			return FixProductMainPictureIds(context, false, ifModifiedSinceUtc);
 		}
 
 		/// <summary>

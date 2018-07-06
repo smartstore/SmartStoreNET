@@ -121,7 +121,7 @@
             @Html.SmartLabelFor(model => model.DomainEndings)
         </td>
         <td class="adminData">
-			@Html.ListBoxFor(model => model.DomainEndings, Model.AvailableDomainEndings, new { multiple = "multiple", data_tags = "true" })
+			@Html.ListBoxFor(model => model.DomainEndingsArray, Model.AvailableDomainEndings, new { multiple = "multiple", data_tags = "true" })
             @Html.ValidationMessageFor(model => model.DomainEndings)
         </td>
     </tr>

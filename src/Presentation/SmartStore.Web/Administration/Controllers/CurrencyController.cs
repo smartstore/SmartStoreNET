@@ -383,9 +383,12 @@ namespace SmartStore.Admin.Controllers
                 {
                     item.Selected = true;
                 }
-			}
+                
+            }
 
-			PrepareCurrencyModel(model, currency, false);
+            model.DomainEndingsArray = model.DomainEndings.SplitSafe(",").ToArray();
+
+            PrepareCurrencyModel(model, currency, false);
 
             return View(model);
         }
@@ -403,8 +406,9 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 currency = model.ToEntity(currency);
+                currency.DomainEndings = String.Join(",", model.DomainEndingsArray);
 
-				if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), false))
+                if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), false))
 				{
 					_currencyService.UpdateCurrency(currency);
                 

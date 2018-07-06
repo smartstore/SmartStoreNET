@@ -24,10 +24,10 @@ namespace SmartStore.Admin.Validators.Customers
                 RuleFor(x => x.StreetAddress).NotEmpty().WithMessage(T(prefix + "StreetAddress.Required"));
 
             if (customerSettings.StreetAddress2Required && customerSettings.StreetAddress2Enabled)
-                RuleFor(x => x.StreetAddress2).NotEmpty().WithMessage(Te(prefix + "StreetAddress2.Required"));
+                RuleFor(x => x.StreetAddress2).NotEmpty().WithMessage(T(prefix + "StreetAddress2.Required"));
 
             if (customerSettings.ZipPostalCodeRequired && customerSettings.ZipPostalCodeEnabled)
-                RuleFor(x => x.ZipPostalCode).NotEmpty().WithMessage(Te(prefix + "ZipPostalCode.Required"));
+                RuleFor(x => x.ZipPostalCode).NotEmpty().WithMessage(T(prefix + "ZipPostalCode.Required"));
 
             if (customerSettings.CityRequired && customerSettings.CityEnabled)
                 RuleFor(x => x.City).NotEmpty().WithMessage(T(prefix + "City.Required"));

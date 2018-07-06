@@ -6,6 +6,7 @@ using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.Admin.Validators.Settings;
 using SmartStore.ComponentModel;
+using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -1302,17 +1303,28 @@ namespace SmartStore.Admin.Controllers
                     _orderService.UpdateOrder(order);
                 }
 
-                // Update user information.
-                // Optimization - load only users with PasswordFormat.Encrypted.
-                var customers = _customerService.GetAllCustomersByPasswordFormat(PasswordFormat.Encrypted);
-                foreach (var customer in customers)
-                {
-                    string decryptedPassword = _encryptionService.DecryptText(customer.Password, oldEncryptionPrivateKey);
-                    string encryptedPassword = _encryptionService.EncryptText(decryptedPassword, newEncryptionPrivateKey);
+				// Update user information.
+				// Optimization - load only users with PasswordFormat.Encrypted.
 
-                    customer.Password = encryptedPassword;
-                    _customerService.UpdateCustomer(customer);
-                }
+				var query = _customerService.GetAllCustomersByPasswordFormat(PasswordFormat.Encrypted).SourceQuery;
+
+				for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+				{
+					var customers = new PagedList<Customer>(query, pageIndex, 1000);
+
+					foreach (var customer in customers)
+					{
+						string decryptedPassword = _encryptionService.DecryptText(customer.Password, oldEncryptionPrivateKey);
+						string encryptedPassword = _encryptionService.EncryptText(decryptedPassword, newEncryptionPrivateKey);
+
+						customer.Password = encryptedPassword;
+					}
+
+					Services.DbContext.SaveChanges();
+
+					if (!customers.HasNextPage)
+						break;
+				}
 
                 securitySettings.EncryptionKey = newEncryptionPrivateKey;
                 _services.Settings.SaveSetting(securitySettings);

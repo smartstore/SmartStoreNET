@@ -225,11 +225,8 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected void PrepareCustomerInfoModel(CustomerInfoModel model, Customer customer, bool excludeProperties)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(model, nameof(model));
+			Guard.NotNull(customer, nameof(customer));
 
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
 
@@ -245,13 +242,13 @@ namespace SmartStore.Web.Controllers
 
             if (!excludeProperties)
             {
-				var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
+				var dateOfBirth = customer.BirthDate;
 				var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
 
 				model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
-                model.Title = customer.GetAttribute<string>(SystemCustomerAttributeNames.Title);
-                model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
-                model.LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
+                model.Title = customer.Title;
+                model.FirstName = customer.FirstName;
+                model.LastName = customer.LastName;
                 model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
                 if (dateOfBirth.HasValue)
                 {
@@ -259,7 +256,7 @@ namespace SmartStore.Web.Controllers
                     model.DateOfBirthMonth = dateOfBirth.Value.Month;
                     model.DateOfBirthYear = dateOfBirth.Value.Year;
                 }
-                model.Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company);
+                model.Company = customer.Company;
                 model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
                 model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
                 model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
@@ -268,7 +265,7 @@ namespace SmartStore.Web.Controllers
                 model.StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                 model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
-                model.CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+                model.CustomerNumber = customer.CustomerNumber;
                 model.Newsletter = newsletter != null && newsletter.Active;
                 model.Signature = customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature);
                 model.Email = customer.Email;
@@ -620,6 +617,7 @@ namespace SmartStore.Web.Controllers
                 var registrationRequest = new CustomerRegistrationRequest(customer, model.Email,
                     _customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password, _customerSettings.DefaultPasswordFormat, isApproved);
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
+
                 if (registrationResult.Success)
                 {
                     // properties
@@ -627,6 +625,7 @@ namespace SmartStore.Web.Controllers
 					{
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
 					}
+
                     // VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
@@ -641,23 +640,27 @@ namespace SmartStore.Web.Controllers
 							Services.MessageFactory.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
 
-                    // form fields
-                    if (_customerSettings.GenderEnabled)
+					// form fields
+					customer.FirstName = model.FirstName;
+					customer.LastName = model.LastName;
+
+					if (_customerSettings.CompanyEnabled)
+						customer.Company = model.Company;
+
+					if (_customerSettings.DateOfBirthEnabled)
+					{
+						try
+						{
+							customer.BirthDate = new DateTime(model.DateOfBirthYear.Value, model.DateOfBirthMonth.Value, model.DateOfBirthDay.Value);
+						}
+						catch { }
+					}
+
+					if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && customer.CustomerNumber.IsEmpty())
+						customer.CustomerNumber = customer.Id.Convert<string>();
+
+					if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
-                    if (_customerSettings.DateOfBirthEnabled)
-                    {
-                        DateTime? dateOfBirth = null;
-                        try
-                        {
-                            dateOfBirth = new DateTime(model.DateOfBirthYear.Value, model.DateOfBirthMonth.Value, model.DateOfBirthDay.Value);
-                        }
-                        catch { }
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DateOfBirth, dateOfBirth);
-                    }
-                    if (_customerSettings.CompanyEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Company, model.Company);
                     if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)
@@ -674,8 +677,6 @@ namespace SmartStore.Web.Controllers
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, model.Phone);
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
-                    if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && String.IsNullOrEmpty(customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber)))
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, customer.Id);
 
                     // newsletter
                     if (_customerSettings.NewsletterEnabled)
@@ -721,10 +722,11 @@ namespace SmartStore.Web.Controllers
                     // Insert default address (if possible)
                     var defaultAddress = new Address
                     {
-                        FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName),
-                        LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName),
+						Title = customer.Title,
+						FirstName = customer.FirstName,
+                        LastName = customer.LastName,
                         Email = customer.Email,
-                        Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company),
+                        Company = customer.Company,
                         CountryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) > 0 ? 
                             (int?)customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId) : null,
                         StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId) > 0 ?
@@ -738,7 +740,7 @@ namespace SmartStore.Web.Controllers
                         CreatedOnUtc = customer.CreatedOnUtc
                     };
 
-                    if (this._addressService.IsAddressValid(defaultAddress))
+                    if (_addressService.IsAddressValid(defaultAddress))
                     {
                         // Some validation
                         if (defaultAddress.CountryId == 0)
@@ -748,12 +750,13 @@ namespace SmartStore.Web.Controllers
                         // Set default address
                         customer.Addresses.Add(defaultAddress);
                         customer.BillingAddress = defaultAddress;
-                        customer.ShippingAddress = defaultAddress;
-                        _customerService.UpdateCustomer(customer);
+                        customer.ShippingAddress = defaultAddress;    
                     }
 
-                    // Notifications
-                    if (_customerSettings.NotifyNewCustomerRegistration)
+					_customerService.UpdateCustomer(customer);
+
+					// Notifications
+					if (_customerSettings.NotifyNewCustomerRegistration)
                         Services.MessageFactory.SendCustomerRegisteredNotificationMessage(customer, _localizationSettings.DefaultAdminLanguageId);
                     
                     switch (_customerSettings.UserRegistrationType)
@@ -824,6 +827,7 @@ namespace SmartStore.Web.Controllers
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage;
+
             if (_customerSettings.CountryEnabled)
             {
                 model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Address.SelectCountry"), Value = "0" });
@@ -1123,7 +1127,7 @@ namespace SmartStore.Web.Controllers
 
             var model = new CustomerInfoModel();
             PrepareCustomerInfoModel(model, customer, false);
-
+			
             return View(model);
         }
 
@@ -1136,22 +1140,23 @@ namespace SmartStore.Web.Controllers
 
             var customer = _workContext.CurrentCustomer;
 
-            //email
-            if (String.IsNullOrEmpty(model.Email))
-                ModelState.AddModelError("", "Email is not provided.");
-            //username 
-            if (_customerSettings.UsernamesEnabled &&
-                this._customerSettings.AllowUsersToChangeUsernames)
+            // email
+            if (model.Email.IsEmpty())
+			{
+				ModelState.AddModelError("", "Email is not provided.");
+			}               
+
+            // username 
+            if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames && model.Username.IsEmpty())
             {
-                if (String.IsNullOrEmpty(model.Username))
-                    ModelState.AddModelError("", "Username is not provided.");
+				ModelState.AddModelError("", "Username is not provided.");
             }
 
             try
             {
                 if (ModelState.IsValid)
                 {
-                    //username 
+                    // username 
                     if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames)
                     {
                         if (!customer.Username.Equals(model.Username.Trim(), StringComparison.InvariantCultureIgnoreCase))
@@ -1162,7 +1167,8 @@ namespace SmartStore.Web.Controllers
                             _authenticationService.SignIn(customer, true);
                         }
                     }
-                    //email
+
+                    // email
                     if (!customer.Email.Equals(model.Email.Trim(), StringComparison.InvariantCultureIgnoreCase))
                     {
                         //change email
@@ -1174,12 +1180,13 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
-                    //properties
+                    // properties
                     if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 					{
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
 					}
-                    //VAT number
+
+                    // VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
 						var prevVatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
@@ -1191,53 +1198,52 @@ namespace SmartStore.Web.Controllers
 							_genericAttributeService.SaveAttribute(customer,
 									SystemCustomerAttributeNames.VatNumberStatusId,
 									(int)vatNumberStatus);
-							//send VAT number admin notification
+							// send VAT number admin notification
 							if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 								Services.MessageFactory.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
 						}
                     }
 
-                    //form fields
-                    if (_customerSettings.GenderEnabled)
+					// form fields
+					customer.FirstName = model.FirstName;
+					customer.LastName = model.LastName;
+
+					if (_customerSettings.GenderEnabled)
                     {
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
                     }
+
                     if (_customerSettings.TitleEnabled)
                     {
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Title, model.Title);
+						customer.Title = model.Title;
                     }
 
-                    if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
-                    {
-                        var customerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, "customer");
-                        var currentCustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
-
-                        if (model.CustomerNumber != currentCustomerNumber && customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
-                        {
-                            NotifyError("Common.CustomerNumberAlreadyExists");
-                        }
-                        else 
-                        {
-                            _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
-                        }
-                    }
-
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
+					// Customer number
+					if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
+					{
+						var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
+						if (model.CustomerNumber != customer.CustomerNumber && numberExists)
+						{
+							this.NotifyError("Common.CustomerNumberAlreadyExists");
+						}
+						else
+						{
+							customer.CustomerNumber = model.CustomerNumber;
+						}
+					}
 
                     if (_customerSettings.DateOfBirthEnabled)
                     {
-                        DateTime? dateOfBirth = null;
                         try
                         {
-                            dateOfBirth = new DateTime(model.DateOfBirthYear.Value, model.DateOfBirthMonth.Value, model.DateOfBirthDay.Value);
-                        }
+							customer.BirthDate = new DateTime(model.DateOfBirthYear.Value, model.DateOfBirthMonth.Value, model.DateOfBirthDay.Value);
+						}
                         catch { }
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DateOfBirth, dateOfBirth);
                     }
+
                     if (_customerSettings.CompanyEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Company, model.Company);
-                    if (_customerSettings.StreetAddressEnabled)
+						customer.Company = model.Company;
+					if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress2, model.StreetAddress2);
@@ -1254,7 +1260,7 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
 
-                    //newsletter
+                    // newsletter
                     if (_customerSettings.NewsletterEnabled)
                     {
 						_newsLetterSubscriptionService.AddNewsLetterSubscriptionFor(model.Newsletter, customer.Email, _storeContext.CurrentStore.Id);
@@ -1274,7 +1280,7 @@ namespace SmartStore.Web.Controllers
             }
 
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
             PrepareCustomerInfoModel(model, customer, true);
             return View(model);
         }

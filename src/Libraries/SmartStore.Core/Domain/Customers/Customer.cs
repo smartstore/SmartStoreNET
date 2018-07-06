@@ -144,13 +144,39 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
 		[DataMember, Index("IX_Customer_LastActivity")]
 		public DateTime LastActivityDateUtc { get; set; }
-        
-        #region Navigation properties
 
-        /// <summary>
-        /// Gets or sets customer generated content
-        /// </summary>
-        public virtual ICollection<ExternalAuthenticationRecord> ExternalAuthenticationRecords
+		/// <summary>
+		/// For future use
+		/// </summary>
+		public string Salutation { get; set; }
+
+		[DataMember]
+		public string Title { get; set; }
+
+		[DataMember]
+		public string FirstName { get; set; }
+
+		[DataMember]
+		public string LastName { get; set; }
+
+		[DataMember, Index("IX_Customer_FullName")]
+		public string FullName { get; set; }
+
+		[DataMember, Index("IX_Customer_Company")]
+		public string Company { get; set; }
+
+		[DataMember, Index("IX_Customer_CustomerNumber")]
+		public string CustomerNumber { get; set; }
+
+		[DataMember, Index("IX_Customer_BirthDate")]
+		public DateTime? BirthDate { get; set; }
+
+		#region Navigation properties
+
+		/// <summary>
+		/// Gets or sets customer generated content
+		/// </summary>
+		public virtual ICollection<ExternalAuthenticationRecord> ExternalAuthenticationRecords
         {
 			get { return _externalAuthenticationRecords ?? (_externalAuthenticationRecords = new HashSet<ExternalAuthenticationRecord>()); }
             protected set { _externalAuthenticationRecords = value; }

@@ -170,7 +170,7 @@ namespace SmartStore.Web.Controllers
             string dateOfBirth = string.Empty;
             if (_customerSettings.DateOfBirthEnabled)
             {
-                var dob = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
+                var dob = customer.BirthDate;
                 if (dob.HasValue)
                 {
                     dateOfBirthEnabled = true;

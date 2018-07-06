@@ -144,20 +144,9 @@ namespace SmartStore.Services.Customers
 			if (customer == null)
 				return string.Empty;
 
-			var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName).NullEmpty();
-			var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName).NullEmpty();
-
-			if (firstName != null && lastName != null)
+			if (customer.FullName.HasValue())
 			{
-				return firstName + " " + lastName;
-			}
-			else if (firstName != null)
-			{
-				return firstName;
-			}
-			else if (lastName != null)
-			{
-				return lastName;
+				return customer.FullName;
 			}
 
 			string name = customer.BillingAddress?.GetFullName();
@@ -212,12 +201,12 @@ namespace SmartStore.Services.Customers
                     result = customer.Username;
                     break;
 				case CustomerNameFormat.ShowFirstName:
-					result = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
+					result = customer.FirstName;
 					break;
 				case CustomerNameFormat.ShowNameAndCity:
 					{
-						var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
-						var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
+						var firstName = customer.FirstName;
+						var lastName = customer.LastName;
 						var city = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
 
 						if (firstName.IsEmpty())

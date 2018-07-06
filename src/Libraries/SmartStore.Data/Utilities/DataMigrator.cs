@@ -16,6 +16,8 @@ using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using System.Text.RegularExpressions;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Data.Utilities
 {
@@ -272,6 +274,114 @@ namespace SmartStore.Data.Utilities
 			}
 
 			return ctx.SaveChanges();
+		}
+
+		#endregion
+
+		#region MoveCustomerFields (V3.2)
+
+		/// <summary>
+		/// Moves several customer fields saved as generic attributes to customer entity (Title, FirstName, LastName, BirthDate, Company, CustomerNumber)
+		/// </summary>
+		/// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
+		/// <returns>The total count of fixed and updated customer entities</returns>
+		public static int MoveCustomerFields(IDbContext context)
+		{
+			var ctx = context as SmartObjectContext;
+			if (ctx == null)
+				throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+
+			// We delete attrs only if the WHOLE migration succeeded
+			var attrIdsToDelete = new List<int>(1000);
+			var gaTable = context.Set<GenericAttribute>();
+			var candidates = new[] { "Title", "FirstName", "LastName", "Company", "CustomerNumber", "DateOfBirth" };
+
+			var query = gaTable
+				.AsNoTracking()
+				.Where(x => x.KeyGroup == "Customer" && candidates.Contains(x.Key))
+				.OrderBy(x => x.Id);
+
+			int numUpdated = 0;
+
+			using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+			{
+				for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
+				{
+					var attrs = new PagedList<GenericAttribute>(query, pageIndex, 250);
+
+					var customerIds = attrs.Select(a => a.EntityId).Distinct().ToArray();
+					var customers = context.Set<Customer>()
+						.Where(x => customerIds.Contains(x.Id))
+						.ToDictionary(x => x.Id);
+
+					// Move attrs one by one to customer
+					foreach (var attr in attrs)
+					{
+						var customer = customers.Get(attr.EntityId);
+						if (customer == null)
+							continue;
+
+						switch (attr.Key)
+						{
+							case "Title":
+								customer.Title = attr.Value?.Truncate(100);
+								break;
+							case "FirstName":
+								customer.FirstName = attr.Value?.Truncate(225);
+								break;
+							case "LastName":
+								customer.LastName = attr.Value?.Truncate(225);
+								break;
+							case "Company":
+								customer.Company = attr.Value?.Truncate(255);
+								break;
+							case "CustomerNumber":
+								customer.CustomerNumber = attr.Value?.Truncate(100);
+								break;
+							case "DateOfBirth":
+								customer.BirthDate = attr.Value?.Convert<DateTime?>();
+								break;
+						}
+
+						// Update FullName
+						var parts = new[] { customer.Title, customer.FirstName, customer.LastName };
+						customer.FullName = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
+
+						attrIdsToDelete.Add(attr.Id);
+					}
+
+					// Save batch
+					numUpdated += scope.Commit();
+
+					// Breathe
+					context.DetachAll();
+
+					if (!attrs.HasNextPage)
+						break;
+				}
+
+				// Everything worked out, now delete all orpahned attributes
+				if (attrIdsToDelete.Count > 0)
+				{
+					try
+					{
+						// Don't rollback migration when this fails
+						var stubs = attrIdsToDelete.Select(x => new GenericAttribute { Id = x }).ToList();
+						foreach (var chunk in stubs.Slice(500))
+						{
+							chunk.Each(x => gaTable.Attach(x));
+							gaTable.RemoveRange(chunk);
+							scope.Commit();
+						}
+					}
+					catch (Exception ex)
+					{
+						var msg = ex.Message;
+					}
+				}
+			}
+
+			return numUpdated;
 		}
 
 		#endregion

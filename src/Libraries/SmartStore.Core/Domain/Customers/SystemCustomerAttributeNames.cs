@@ -4,12 +4,7 @@ namespace SmartStore.Core.Domain.Customers
     public static partial class SystemCustomerAttributeNames
     {
         // Form fields
-        public static string Title { get { return "Title"; } }
-        public static string FirstName { get { return "FirstName"; } }
-        public static string LastName { get { return "LastName"; } }
-        public static string Gender { get { return "Gender"; } }
-        public static string DateOfBirth { get { return "DateOfBirth"; } }
-        public static string Company { get { return "Company"; } }
+		public static string Gender { get { return "Gender"; } }
         public static string StreetAddress { get { return "StreetAddress"; } }
         public static string StreetAddress2 { get { return "StreetAddress2"; } }
         public static string ZipPostalCode { get { return "ZipPostalCode"; } }
@@ -20,8 +15,7 @@ namespace SmartStore.Core.Domain.Customers
         public static string Fax { get { return "Fax"; } }
 		public static string VatNumber { get { return "VatNumber"; } }
 		public static string VatNumberStatusId { get { return "VatNumberStatusId"; } }
-		public static string TimeZoneId { get { return "TimeZoneId"; } }
-        public static string CustomerNumber { get { return "CustomerNumber"; } }
+		public static string TimeZoneId { get { return "TimeZoneId"; } }    
 
         // Other attributes
 		public static string DiscountCouponCode { get { return "DiscountCouponCode"; } }

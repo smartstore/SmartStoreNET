@@ -69,8 +69,15 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 			{
-				var customers = _customerService.GetAllCustomers(null, null, null, null, null, null, null,
-					0, 0, null, null, null, true, ShoppingCartType.ShoppingCart, command.Page - 1, command.PageSize);
+				var q = new CustomerSearchQuery
+				{
+					OnlyWithCart = true,
+					CartType = ShoppingCartType.ShoppingCart,
+					PageIndex = command.Page - 1,
+					PageSize = command.PageSize
+				};
+
+				var customers = _customerService.SearchCustomers(q);
 				
 				gridModel.Data = customers.Select(x =>
 				{
@@ -160,8 +167,15 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 			{
-				var customers = _customerService.GetAllCustomers(null, null, null, null, null, null, null,
-					0, 0, null, null, null,	true, ShoppingCartType.Wishlist, command.Page - 1, command.PageSize);
+				var q = new CustomerSearchQuery
+				{
+					OnlyWithCart = true,
+					CartType = ShoppingCartType.Wishlist,
+					PageIndex = command.Page - 1,
+					PageSize = command.PageSize
+				};
+
+				var customers = _customerService.SearchCustomers(q);
 
 				gridModel.Data = customers.Select(x =>
 				{

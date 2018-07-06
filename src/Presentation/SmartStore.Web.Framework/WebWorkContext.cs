@@ -79,10 +79,8 @@ namespace SmartStore.Web.Framework
                 if (_cachedCustomer != null)
                     return _cachedCustomer;
 
-                Customer customer = null;
-
 				// Is system account?
-				if (TryGetSystemAccount(out customer))
+				if (TryGetSystemAccount(out var customer))
 				{
 					// Get out quickly. Bots tend to overstress the shop.
 					_cachedCustomer = customer;

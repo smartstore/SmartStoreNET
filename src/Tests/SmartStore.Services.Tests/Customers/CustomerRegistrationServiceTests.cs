@@ -143,6 +143,7 @@ namespace SmartStore.Services.Tests.Customers
 				_services, 
 				new FakeHttpContext("~/"), 
 				_userAgent, 
+				new CustomerSettings(),
 				_messageModelProvider, 
 				_gdprTool);
 

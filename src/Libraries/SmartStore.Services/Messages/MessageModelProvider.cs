@@ -616,7 +616,7 @@ namespace SmartStore.Services.Messages
 				["FullName"] = GetDisplayNameForCustomer(part).NullEmpty(),
 				["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty(),
 				["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
-				["CustomerNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber).NullEmpty(),
+				["CustomerNumber"] = part.CustomerNumber.NullEmpty(),
 				["IsRegistered"] = part.IsRegistered(),
 
 				// URLs

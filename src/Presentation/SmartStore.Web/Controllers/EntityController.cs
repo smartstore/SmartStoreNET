@@ -308,7 +308,15 @@ namespace SmartStore.Web.Controllers
                         #region Customer
 
                         var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;
-                        var customers = _customerService.GetAllCustomersByRoleId(registeredRoleId);
+
+						var q = new CustomerSearchQuery
+						{
+							CustomerRoleIds = new int[] { registeredRoleId },
+							PageIndex = model.PageIndex,
+							PageSize = model.PageSize
+						};
+
+                        var customers = _customerService.SearchCustomers(q);
                         
                         model.SearchResult = customers
                             .Select(x =>

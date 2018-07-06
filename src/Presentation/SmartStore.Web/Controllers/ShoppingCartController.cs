@@ -1215,8 +1215,8 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult UploadFileCheckoutAttribute(string controlId)
         {
-            var postedFile = this.Request.Files["file"].ToPostedFileResult();
-            if (postedFile != null && postedFile.FileName.HasValue())
+			var postedFile = Request.ToPostedFileResult();
+			if (postedFile != null && postedFile.FileName.HasValue())
             {
                 int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
                 if (postedFile.Size > fileMaxSize)
@@ -1224,12 +1224,12 @@ namespace SmartStore.Web.Controllers
                     return Json(new
                     {
                         success = false,
-                        message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024))
-                    });
+                        message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)),
+						downloadGuid = Guid.Empty
+					});
                 }
                 else
                 {
-                    //save an uploaded file
                     var download = new Download
                     {
                         DownloadGuid = Guid.NewGuid(),

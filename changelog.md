@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -32,6 +32,7 @@
 * #1460 Editing of the customer title is missing on customer and address pages in the backend
 * #1447 Checkout button payment methods (Amazon, PayPal Express) won't work in conjunction with mandatory checkout attributes
 * When creating a topic, the widget zone input shows System.String[]
+* Switching the language always redirected to the home page if SEO friendly URLs was deactivated.
 
 
 ## SmartStore.NET 3.1.5

@@ -140,9 +140,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdatePictureSeoNames(Manufacturer manufacturer)
         {
-			var picture = _pictureService.GetPictureById(manufacturer.PictureId.GetValueOrDefault());
-            if (picture != null)
-                _pictureService.SetSeoFilename(picture.Id, _pictureService.GetPictureSeName(manufacturer.Name));
+			_pictureService.SetSeoFilename(manufacturer.PictureId.GetValueOrDefault(), _pictureService.GetPictureSeName(manufacturer.Name));
         }
 
         [NonAction]

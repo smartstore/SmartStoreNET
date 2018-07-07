@@ -41,7 +41,7 @@ fieldset.content-group {
 	font-weight: $font-weight-medium;
 }
 
-.form-group.required > label:after {
+.required > label:after {
     content: ' *';
 }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -60,5 +60,13 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias")]
 		public string Alias { get; set; }
+	}
+
+	public partial class SpecificationAttributeValidator : AbstractValidator<SpecificationAttributeModel>
+	{
+		public SpecificationAttributeValidator()
+		{
+			RuleFor(x => x.Name).NotNull();
+		}
 	}
 }

@@ -398,11 +398,6 @@
     <Compile Include="Models\Messages\QueuedEmailModel.cs" />
     <Compile Include="Models\Settings\TaxSettingsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Validators\Catalog\CategoryValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductTagValidator.cs" />
-    <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductAttributeOptionModelValidator.cs" />
-    <Compile Include="Validators\Catalog\CopyProductValidator.cs" />
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
@@ -433,14 +428,9 @@
     <Compile Include="Validators\Messages\EmailAccountValidator.cs" />
     <Compile Include="Validators\Directory\StateProvinceValidator.cs" />
     <Compile Include="Validators\Directory\CountryValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductReviewValidator.cs" />
     <Compile Include="Validators\Orders\ReturnRequestValidator.cs" />
     <Compile Include="Validators\Orders\RecurringPaymentValidator.cs" />
     <Compile Include="Validators\Discounts\DiscountValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductVariantAttributeValueModelValidator.cs" />
-    <Compile Include="Validators\Catalog\SpecificationAttributeOptionValidator.cs" />
-    <Compile Include="Validators\Catalog\SpecificationAttributeValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductAttributeValidator.cs" />
     <Compile Include="Validators\Customers\CustomerRoleValidator.cs" />
     <Compile Include="Validators\Customers\CustomerValidator.cs" />
     <Compile Include="Validators\Forums\ForumGroupValidator.cs" />
@@ -453,7 +443,6 @@
     <Compile Include="Validators\Directory\CurrencyValidator.cs" />
     <Compile Include="Validators\Localization\LanguageResourceValidator.cs" />
     <Compile Include="Validators\Localization\LanguageValidator.cs" />
-    <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\filemanager\css\images\animated-overlay.gif" />

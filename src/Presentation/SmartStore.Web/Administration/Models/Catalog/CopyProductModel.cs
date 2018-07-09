@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -27,4 +27,12 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Copy.Published")]
         public bool Published { get; set; }
     }
+
+	public partial class CopyProductValidator : AbstractValidator<CopyProductModel>
+	{
+		public CopyProductValidator()
+		{
+			RuleFor(x => x.NumberOfCopies).NotEmpty().GreaterThan(0);
+		}
+	}
 }

@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using System.Linq;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Customers;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Catalog;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -756,4 +756,39 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BundleTitleText")]
 		public string BundleTitleText { get; set; }
     }
+
+	public partial class ProductValidator : AbstractValidator<ProductModel>
+	{
+		public ProductValidator(Localizer T)
+		{
+			RuleFor(x => x.Name).NotEmpty();
+
+			When(x => x.LoadedTabs != null && x.LoadedTabs.Contains("Inventory", StringComparer.OrdinalIgnoreCase), () =>
+			{
+				RuleFor(x => x.OrderMinimumQuantity).GreaterThan(0); // dont't remove "Admin.Validation.ValueGreaterZero" resource. It is used elsewhere.
+				RuleFor(x => x.OrderMaximumQuantity).GreaterThan(0);
+			});
+
+			// validate PAnGV
+			When(x => x.BasePriceEnabled && x.LoadedTabs != null && x.LoadedTabs.Contains("Price"), () =>
+			{
+				RuleFor(x => x.BasePriceMeasureUnit).NotEmpty().WithMessage(T("Admin.Catalog.Products.Fields.BasePriceMeasureUnit.Required"));
+				RuleFor(x => x.BasePriceBaseAmount)
+					.NotEmpty().WithMessage(T("Admin.Catalog.Products.Fields.BasePriceBaseAmount.Required"))
+					.GreaterThan(0).WithMessage(T("Admin.Catalog.Products.Fields.BasePriceBaseAmount.Required"));
+				RuleFor(x => x.BasePriceAmount)
+					.NotEmpty().WithMessage(T("Admin.Catalog.Products.Fields.BasePriceAmount.Required"))
+					.GreaterThan(0).WithMessage(T("Admin.Catalog.Products.Fields.BasePriceAmount.Required"));
+			});
+		}
+	}
+
+	public partial class ProductVariantAttributeValueModelValidator : AbstractValidator<ProductModel.ProductVariantAttributeValueModel>
+	{
+		public ProductVariantAttributeValueModelValidator()
+		{
+			RuleFor(x => x.Name).NotEmpty();
+			RuleFor(x => x.Quantity).GreaterThanOrEqualTo(1).When(x => x.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage);
+		}
+	}
 }

@@ -52,6 +52,22 @@
                 "Bitte einen gültigen, relativen Ordnerpfad für die zu exportierenden Daten eingeben. Der Pfad muss mindestens 3 Zeichen lang und nicht der Anwendungsordner sein.");
 
             builder.AddOrUpdate("Admin.Catalog.Customers.CustomerSearchType", "Search in:", "Suche in:");
+
+			// Get rid of duplicate validator resource entries
+			builder.Delete(
+				"Admin.Catalog.Products.Fields.Name.Required",
+				"Admin.Catalog.Categories.Fields.Name.Required",
+				"Admin.Catalog.Manufacturers.Fields.Name.Required",
+				"Admin.Validation.RequiredField",
+				"Admin.Catalog.Attributes.ProductAttributes.Fields.Name.Required",
+				"Admin.Catalog.ProductReviews.Fields.Title.Required",
+				"Admin.Catalog.ProductReviews.Fields.ReviewText.Required",
+				"Admin.Catalog.ProductTags.Fields.Name.Required",
+				"Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name.Required",
+				"Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Quantity.GreaterOrEqualToOne",
+				"Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Name.Required",
+				"Admin.Catalog.Attributes.SpecificationAttributes.Fields.Name.Required"
+			);
         }
     }
 }

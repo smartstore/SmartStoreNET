@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -153,4 +152,12 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SeName { get; set; }
     }
+
+	public partial class ManufacturerValidator : AbstractValidator<ManufacturerModel>
+	{
+		public ManufacturerValidator()
+		{
+			RuleFor(x => x.Name).NotNull();
+		}
+	}
 }

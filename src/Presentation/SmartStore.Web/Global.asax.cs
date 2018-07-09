@@ -26,6 +26,8 @@ using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.Validators;
 using System.Net;
+using FluentValidation;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Web
 {
@@ -124,10 +126,7 @@ namespace SmartStore.Web
 			AreaRegistration.RegisterAllAreas();
 
 			// Fluent validation
-			FluentValidationModelValidatorProvider.Configure(x =>
-			{
-				x.ValidatorFactory = new SmartValidatorFactory();
-			});
+			InitializeFluentValidator();
 			
 			// Routes
 			RegisterRoutes(RouteTable.Routes, engine, installed);
@@ -167,6 +166,29 @@ namespace SmartStore.Web
 				// Install filter
 				GlobalFilters.Filters.Add(new HandleInstallFilter());
 			}
+		}
+
+		private static void InitializeFluentValidator()
+		{
+			FluentValidationModelValidatorProvider.Configure(x =>
+			{
+				x.ValidatorFactory = new SmartValidatorFactory();
+			});
+
+			// Setup our custom DisplayName handling
+			var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
+			ValidatorOptions.DisplayNameResolver = (type, member, expression) =>
+			{
+				string name = null;
+
+				var attr = member.GetAttribute<SmartResourceDisplayName>(true);
+				if (attr != null)
+				{
+					name = attr.DisplayName;
+				}
+
+				return name ?? originalDisplayNameResolver.Invoke(type, member, expression);
+			};
 		}
 
 		private void RegisterVirtualPathProviders()

@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Customers;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -206,4 +203,12 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SeName { get; set; }
     }
+
+	public partial class CategoryValidator : AbstractValidator<CategoryModel>
+	{
+		public CategoryValidator()
+		{
+			RuleFor(x => x.Name).NotNull();
+		}
+	}
 }

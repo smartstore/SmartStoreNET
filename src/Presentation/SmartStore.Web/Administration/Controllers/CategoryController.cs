@@ -57,12 +57,13 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly IEventPublisher _eventPublisher;
+        private readonly Lazy<IGenericAttributeService> _genericAttributeService;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
+        public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
             IManufacturerService manufacturerService, IProductService productService, 
             ICustomerService customerService,
             IUrlRecordService urlRecordService, IPictureService pictureService, ILanguageService languageService,
@@ -74,7 +75,8 @@ namespace SmartStore.Admin.Controllers
 			IDateTimeHelper dateTimeHelper,
 			AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            Lazy<IGenericAttributeService> genericAttributeService)
         {
             this._categoryService = categoryService;
             this._categoryTemplateService = categoryTemplateService;
@@ -97,6 +99,7 @@ namespace SmartStore.Admin.Controllers
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
 			this._eventPublisher = eventPublisher;
+            _genericAttributeService = genericAttributeService;
         }
 
         #endregion
@@ -248,6 +251,11 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Index()
         {
+            var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
+
+            if (customerChoice != null && customerChoice.Equals("Tree"))
+                return RedirectToAction("Tree");
+
             return RedirectToAction("List");
         }
 
@@ -256,7 +264,13 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			var allStores = _storeService.GetAllStores();
+            var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
+            if (customerChoice == null || customerChoice.Equals("Tree"))
+            {
+                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "List");
+            }
+            
+            var allStores = _storeService.GetAllStores();
 			var model = new CategoryListModel
 			{
 				GridPageSize = _adminAreaSettings.GridPageSize
@@ -366,7 +380,13 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			var allStores = _storeService.GetAllStores();
+            var customerChoice = _genericAttributeService.Value.GetAttribute<string>("Customer", _workContext.CurrentCustomer.Id, "AdminCategoriesType");
+            if (customerChoice == null || customerChoice.Equals("List"))
+            {
+                _genericAttributeService.Value.SaveAttribute<string>(_workContext.CurrentCustomer, "AdminCategoriesType", "Tree");
+            }
+            
+            var allStores = _storeService.GetAllStores();
 			var model = new CategoryTreeModel();
 
 			foreach (var store in allStores)
@@ -551,7 +571,7 @@ namespace SmartStore.Admin.Controllers
                 _customerActivityService.InsertActivity("AddNewCategory", _localizationService.GetResource("ActivityLog.AddNewCategory"), category.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Added"));
-                return continueEditing ? RedirectToAction("Edit", new { id = category.Id }) : RedirectToAction("List");
+                return continueEditing ? RedirectToAction("Edit", new { id = category.Id }) : RedirectToAction("Index");
             }
 
             //If we got this far, something failed, redisplay form
@@ -582,7 +602,7 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(id);
             if (category == null || category.Deleted)
-                return RedirectToAction("List");
+                return RedirectToAction("Index");
 
             var model = category.ToModel();
 
@@ -629,7 +649,7 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(model.Id);
             if (category == null || category.Deleted)
-                return RedirectToAction("List");
+                return RedirectToAction("Index");
 
             if (ModelState.IsValid)
             {
@@ -684,7 +704,7 @@ namespace SmartStore.Admin.Controllers
                 _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Updated"));
-                return continueEditing ? RedirectToAction("Edit", category.Id) : RedirectToAction("List");
+                return continueEditing ? RedirectToAction("Edit", category.Id) : RedirectToAction("Index");
             }
 
 
@@ -733,14 +753,14 @@ namespace SmartStore.Admin.Controllers
 			
             var category = _categoryService.GetCategoryById(id);
             if (category == null)
-                return RedirectToAction("List");
+                return RedirectToAction("Index");
 
 			_categoryService.DeleteCategory(category, deleteType.IsCaseInsensitiveEqual("deletechilds"));
 
             _customerActivityService.InsertActivity("DeleteCategory", _localizationService.GetResource("ActivityLog.DeleteCategory"), category.Name);
 
             NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Deleted"));
-            return RedirectToAction("List");
+            return RedirectToAction("Index");
         }
 
 

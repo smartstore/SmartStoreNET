@@ -15,6 +15,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Models.Entity;
 using SmartStore.Services.Customers;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Web.Controllers
 {
@@ -80,9 +81,21 @@ namespace SmartStore.Web.Controllers
 					.ToList();
 
 				ViewBag.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			}
+            }
+            else if (model.EntityType.IsCaseInsensitiveEqual("customer"))
+            {
+                ViewBag.AvailableCustomerSearchTypes = new List<SelectListItem> {
+                    new SelectListItem { Text = "Name", Value = "Name", Selected = true },
+                    new SelectListItem { Text = "Email", Value = "Email" }
+                };
 
-			return PartialView(model);
+                if (_services.Settings.GetSettingByKey<CustomerNumberMethod>("CustomerSettings.CustomerNumberMethod") != CustomerNumberMethod.Disabled)
+                {
+                    ViewBag.AvailableCustomerSearchTypes.Add(new SelectListItem { Text = T("Account.Fields.CustomerNumber"), Value = "CustomerNumber" });
+                }
+            }
+
+            return PartialView(model);
 		}
 
 		[HttpPost]
@@ -218,12 +231,11 @@ namespace SmartStore.Web.Controllers
 
 						#endregion
 					}
-
-                    if (model.EntityType.IsCaseInsensitiveEqual("category"))
+                    else if (model.EntityType.IsCaseInsensitiveEqual("category"))
                     {
                         #region Category
-
-                        var categories = _categoryService.GetAllCategories();
+                        
+                       var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true);
                         var allPictureIds = categories.Select(x => x.PictureId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
 
@@ -235,7 +247,7 @@ namespace SmartStore.Web.Controllers
                                     Id = x.Id,
                                     ReturnValue = x.Id.ToString(),
                                     Title = x.Name,
-                                    Summary = x.Name,
+                                    Summary = x.Description.Truncate(120, "..."),
                                     SummaryTitle = x.Name,
                                     Published = x.Published,
                                     Selected = selIds.Contains(x.Id)
@@ -260,12 +272,11 @@ namespace SmartStore.Web.Controllers
 
                         #endregion
                     }
-
-                    if (model.EntityType.IsCaseInsensitiveEqual("manufacturer"))
+                    else  if (model.EntityType.IsCaseInsensitiveEqual("manufacturer"))
                     {
                         #region Manufacturer
 
-                        var manufacturers = _manufacturerService.GetAllManufacturers();
+                        var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchTerm, model.PageIndex, model.PageSize, showHidden: true);
                         var allPictureIds = manufacturers.Select(x => x.PictureId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
 
@@ -277,7 +288,6 @@ namespace SmartStore.Web.Controllers
                                     Id = x.Id,
                                     ReturnValue =  x.Id.ToString(),
                                     Title = x.Name,
-                                    Summary = x.Name,
                                     SummaryTitle = x.Name,
                                     Published = x.Published,
                                     Selected = selIds.Contains(x.Id)
@@ -302,19 +312,32 @@ namespace SmartStore.Web.Controllers
 
                         #endregion
                     }
-
-                    if (model.EntityType.IsCaseInsensitiveEqual("customer"))
+                    else if (model.EntityType.IsCaseInsensitiveEqual("customer"))
                     {
                         #region Customer
 
                         var registeredRoleId = _customerService.GetCustomerRoleBySystemName("Registered").Id;
 
-						var q = new CustomerSearchQuery
-						{
-							CustomerRoleIds = new int[] { registeredRoleId },
-							PageIndex = model.PageIndex,
-							PageSize = model.PageSize
-						};
+                        var searchTermName = String.Empty;
+                        var searchTermEmail = String.Empty;
+                        var searchTermCustomerNumber = String.Empty;
+
+                        if (model.CustomerSearchType.IsCaseInsensitiveEqual("Name"))
+                            searchTermName = model.SearchTerm;
+                        else if(model.CustomerSearchType.IsCaseInsensitiveEqual("Email"))
+                            searchTermEmail = model.SearchTerm;
+                        else if (model.CustomerSearchType.IsCaseInsensitiveEqual("CustomerNumber"))
+                            searchTermCustomerNumber = model.SearchTerm;
+
+                        var q = new CustomerSearchQuery
+                        {
+                            SearchTerm = searchTermName,
+                            Email = searchTermEmail,
+                            CustomerNumber = searchTermCustomerNumber,
+                            CustomerRoleIds = new int[] { registeredRoleId },
+                            PageIndex = model.PageIndex,
+                            PageSize = model.PageSize
+                        };
 
                         var customers = _customerService.SearchCustomers(q);
                         

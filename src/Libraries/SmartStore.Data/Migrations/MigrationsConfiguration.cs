@@ -50,6 +50,8 @@
             builder.AddOrUpdate("Admin.DataExchange.Export.FolderName.Validate",
                 "Please enter a valid, relative folder path for the export data. The path must be at least 3 characters long and not the application folder.",
                 "Bitte einen gültigen, relativen Ordnerpfad für die zu exportierenden Daten eingeben. Der Pfad muss mindestens 3 Zeichen lang und nicht der Anwendungsordner sein.");
+
+            builder.AddOrUpdate("Admin.Catalog.Customers.CustomerSearchType", "Search in:", "Suche in:");
         }
-	}
+    }
 }

@@ -19,7 +19,7 @@ namespace SmartStore.Web.Models.Entity
 
 		public List<SearchResultModel> SearchResult { get; set; }
 
-		#region Products
+		#region SearchProperties
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
 		public string ProductName { get; set; }
@@ -36,9 +36,12 @@ namespace SmartStore.Web.Models.Entity
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
 		public int ProductTypeId { get; set; }
 
-		#endregion
+        [SmartResourceDisplayName("Admin.Catalog.Customers.CustomerSearchType")]
+        public string CustomerSearchType { get; set; }
 
-		public class SearchResultModel : EntityModelBase
+        #endregion
+
+        public class SearchResultModel : EntityModelBase
 		{
 			public string ReturnValue { get; set; }
 			public string Title { get; set; }

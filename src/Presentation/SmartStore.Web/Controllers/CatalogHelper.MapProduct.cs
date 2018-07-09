@@ -289,7 +289,7 @@ namespace SmartStore.Web.Controllers
 					batchContext.Clear();
 
 					// don't show stuff without data at all
-					model.ShowDescription = model.ShowDescription && model.Items.Any(x => x.ShortDescription.Value.HasValue());
+					model.ShowDescription = model.ShowDescription && model.Items.Any(x => x.ShortDescription?.Value?.HasValue() == true);
 					model.ShowBrand = model.ShowBrand && model.Items.Any(x => x.Manufacturer != null);
 
 					return model;

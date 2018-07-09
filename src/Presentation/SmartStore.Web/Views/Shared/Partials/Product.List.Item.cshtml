@@ -63,7 +63,7 @@
 			@if (list.ShowDescription)
 			{
 				<div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription.ToString()">
-					@Html.Raw(Model.ShortDescription.Value.Truncate(160, "..."))
+					@Html.Raw(Model.ShortDescription.Truncate(160, "..."))
 				</div>
 			}
 

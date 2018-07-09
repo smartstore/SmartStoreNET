@@ -79,7 +79,7 @@ namespace SmartStore.Services.Localization
 		{
 			if (obj == null)
 			{
-				return default(T);
+				return default;
 			}
 
 			return obj.Value;

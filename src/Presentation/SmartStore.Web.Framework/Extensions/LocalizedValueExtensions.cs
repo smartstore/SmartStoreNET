@@ -11,17 +11,17 @@ namespace SmartStore.Web.Framework
 	{
 		public static bool HasValue(this LocalizedValue<string> value)
 		{
-			return value.Value.HasValue();
+			return value?.Value?.HasValue() == true;
 		}
 
 		public static bool IsEmpty(this LocalizedValue<string> value)
 		{
-			return value.Value.IsEmpty();
+			return value?.Value?.IsEmpty() == false;
 		}
 
 		public static string Truncate(this LocalizedValue<string> value, int maxLength, string suffix = "")
 		{
-			return value.Value.Truncate(maxLength, suffix);
+			return value?.Value?.Truncate(maxLength, suffix);
 		}
 	}
 }

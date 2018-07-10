@@ -423,10 +423,12 @@ $mixed-megamenu-bg:             $megamenu-bg;
         left: 10px;
     }
 }
-.megamenu.simple .navbar-nav .nav-item.active:before{ 
+.megamenu.simple .navbar-nav .nav-item.active:before { 
     border-bottom: 10px solid $dropdown-bg;
 }
-.boxed .megamenu-dropdown-container.simple .dropdown-menu {
-    margin-left: 20px;
-}
 
+@media screen {
+    .boxed .megamenu-dropdown-container.simple .dropdown-menu {
+        margin-left: 20px;
+    }
+}

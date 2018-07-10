@@ -187,7 +187,6 @@ namespace SmartStore.Web.Infrastructure
 
             #endregion
 
-
 			#region Request scoped widgets (provided by IWidgetProvider)
 
 			var requestScopedWidgets = _widgetProvider.GetWidgets(widgetZone);

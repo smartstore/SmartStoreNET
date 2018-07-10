@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Routing;
 using SmartStore.Collections;
-using SmartStore.Utilities;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
 using SmartStore.Core.IO;
 using System.Web;

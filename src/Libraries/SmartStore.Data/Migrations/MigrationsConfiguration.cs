@@ -53,6 +53,35 @@
 
             builder.AddOrUpdate("Admin.Catalog.Customers.CustomerSearchType", "Search in:", "Suche in:");
 
+			// Fix some FluentValidation german translations
+			builder.AddOrUpdate("Validation.LengthValidator")
+				.Value("de", "'{PropertyName}' muss zwischen {MinLength} und {MaxLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+			builder.AddOrUpdate("Validation.MinimumLengthValidator")
+				.Value("de", "'{PropertyName}' muss mind. {MinLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+			builder.AddOrUpdate("Validation.MaximumLengthValidator")
+				.Value("de", "'{PropertyName}' darf max. {MaxLength} Zeichen lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+			builder.AddOrUpdate("Validation.ExactLengthValidator")
+				.Value("de", "'{PropertyName}' muss genau {MaxLength} lang sein. Sie haben {TotalLength} Zeichen eingegeben.");
+			builder.AddOrUpdate("Validation.ExclusiveBetweenValidator")
+				.Value("de", "'{PropertyName}' muss größer als {From} und kleiner als {To} sein. Sie haben '{Value}' eingegeben.");
+			builder.AddOrUpdate("Validation.InclusiveBetweenValidator")
+				.Value("de", "'{PropertyName}' muss zwischen {From} and {To} liegen. Sie haben '{Value}' eingegeben.");
+			builder.AddOrUpdate("Validation.NotNullValidator")
+				.Value("de", "'{PropertyName}' ist erforderlich.");
+			builder.AddOrUpdate("Validation.NotEmptyValidator")
+				.Value("de", "'{PropertyName}' ist erforderlich.");
+			builder.AddOrUpdate("Validation.LessThanValidator")
+				.Value("de", "'{PropertyName}' muss kleiner sein als '{ComparisonValue}'.");
+			builder.AddOrUpdate("Validation.RegularExpressionValidator")
+				.Value("de", "'{PropertyName}' entspricht nicht dem erforderlichen Muster.");
+			builder.AddOrUpdate("Validation.ScalePrecisionValidator")
+				.Value("de", "'{PropertyName}' darf insgesamt nicht mehr als {expectedPrecision} Ziffern enthalten, unter Berücksichtigung von {expectedScale} Dezimalstellen. {digits} Ziffern und {actualScale} Dezimalstellen wurden gefunden.");
+
+			// Some new resources for custom validators
+			builder.AddOrUpdate("Validation.CreditCardCvvNumberValidator",
+				"'{PropertyName}' is invalid.",
+				"'{PropertyName}' ist ungültig.");
+
 			// Get rid of duplicate validator resource entries
 			builder.Delete(
 				"Admin.Catalog.Products.Fields.Name.Required",
@@ -153,8 +182,9 @@
                 "Admin.Validation.UsernamePassword",
                 "Admin.DataExchange.Export.FileNamePattern.Validate",
                 "Admin.DataExchange.Export.Partition.Validate",
-                "Admin.Common.WrongEmail"
-            );
+                "Admin.Common.WrongEmail",
+				"Payment.CardCode.Wrong"
+			);
 
             // Get rid of duplicate CreatedOn resources also
             builder.Delete(

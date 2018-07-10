@@ -107,9 +107,8 @@
       <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation, Version=6.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentValidation.6.4.1\lib\Net45\FluentValidation.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.7.4.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="JavaScriptEngineSwitcher.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
       <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.2.4.0\lib\net45\JavaScriptEngineSwitcher.Core.dll</HintPath>
@@ -392,6 +391,7 @@
     <Compile Include="UI\SiteMap\SiteMapBuiltEvent.cs" />
     <Compile Include="UI\SiteMap\SiteMapService.cs" />
     <Compile Include="UI\WidgetZoneModel.cs" />
+    <Compile Include="Validators\FluentValidatorExtensions.cs" />
     <Compile Include="Validators\SmartBaseValidator.cs" />
     <Compile Include="Validators\SmartValidatorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -443,8 +443,7 @@
     <Compile Include="UI\WidgetProvider.cs" />
     <Compile Include="UI\WidgetRouteInfo.cs" />
     <Compile Include="Extensions\UrlHelperExtensions.cs" />
-    <Compile Include="Validators\ValidatorExtensions .cs" />
-    <Compile Include="Validators\CreditCardPropertyValidator.cs" />
+    <Compile Include="Validators\ValidatorLanguageManager.cs" />
     <Compile Include="WebApi\AutofacWebApiDependencyResolver.cs" />
     <Compile Include="WebApi\AutofacWebApiDependencyScope.cs" />
     <Compile Include="WebApi\Configuration\IWebApiConfigurationProvider.cs" />

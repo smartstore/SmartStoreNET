@@ -175,7 +175,8 @@ namespace SmartStore.Web
 				x.ValidatorFactory = new SmartValidatorFactory();
 			});
 
-			
+			// Setup custom resources
+			ValidatorOptions.LanguageManager = new ValidatorLanguageManager();
 
 			// Setup our custom DisplayName handling
 			var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;

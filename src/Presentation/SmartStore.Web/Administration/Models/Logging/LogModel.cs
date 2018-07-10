@@ -37,7 +37,7 @@ namespace SmartStore.Admin.Models.Logging
         [AllowHtml]
         public string ReferrerUrl { get; set; }
 
-        [SmartResourceDisplayName("Admin.System.Log.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]

@@ -54,7 +54,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		public bool IsPrimaryStoreCurrency { get; set; }

@@ -47,7 +47,7 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string Body { get; set; }
 
-        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.SentTries")]

@@ -33,7 +33,7 @@ namespace SmartStore.Admin.Models.Forums
         [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]

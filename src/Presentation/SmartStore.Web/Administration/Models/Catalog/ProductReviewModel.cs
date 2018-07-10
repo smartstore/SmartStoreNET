@@ -39,7 +39,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.IsApproved")]
         public bool IsApproved { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.ProductReviews.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
     }
 

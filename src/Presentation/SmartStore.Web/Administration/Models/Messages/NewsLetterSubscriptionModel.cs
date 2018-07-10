@@ -17,7 +17,7 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.Promotions.NewsLetterSubscriptions.Fields.Active")]
         public bool Active { get; set; }
 
-        [SmartResourceDisplayName("Admin.Promotions.NewsLetterSubscriptions.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store")]

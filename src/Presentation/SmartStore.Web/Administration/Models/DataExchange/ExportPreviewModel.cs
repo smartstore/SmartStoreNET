@@ -65,7 +65,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Orders.Fields.OrderTotal")]
 		public decimal OrderTotal { get; set; }
 
-		[SmartResourceDisplayName("Admin.Orders.Fields.CreatedOn")]
+		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Orders.Fields.Store")]
@@ -127,7 +127,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Active")]
 		public bool Active { get; set; }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.CreatedOn")]
+		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
@@ -142,7 +142,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Promotions.NewsLetterSubscriptions.Fields.Active")]
 		public bool Active { get; set; }
 
-		[SmartResourceDisplayName("Admin.Promotions.NewsLetterSubscriptions.Fields.CreatedOn")]
+		[SmartResourceDisplayName("Common.CreatedOn")]
 		public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store")]

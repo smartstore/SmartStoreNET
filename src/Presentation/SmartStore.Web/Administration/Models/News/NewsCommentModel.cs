@@ -28,7 +28,7 @@ namespace SmartStore.Admin.Models.News
         [SmartResourceDisplayName("Admin.ContentManagement.News.Comments.Fields.CommentText")]
         public string CommentText { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.News.Comments.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
     }

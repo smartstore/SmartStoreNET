@@ -145,7 +145,7 @@ namespace SmartStore.Admin.Models.Customers
         public bool DisplayVatNumber { get; set; }
 
         //registration date
-        [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
         public DateTime LastActivityDate { get; set; }
@@ -256,7 +256,7 @@ namespace SmartStore.Admin.Models.Customers
 			[SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
 			public string StoreName { get; set; }
 
-            [SmartResourceDisplayName("Admin.Customers.Customers.Orders.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 
@@ -264,9 +264,11 @@ namespace SmartStore.Admin.Models.Customers
         {
             [SmartResourceDisplayName("Admin.Customers.Customers.ActivityLog.ActivityLogType")]
             public string ActivityLogTypeName { get; set; }
+
             [SmartResourceDisplayName("Admin.Customers.Customers.ActivityLog.Comment")]
             public string Comment { get; set; }
-            [SmartResourceDisplayName("Admin.Customers.Customers.ActivityLog.CreatedOn")]
+
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

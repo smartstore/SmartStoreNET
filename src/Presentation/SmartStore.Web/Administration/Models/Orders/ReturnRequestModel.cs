@@ -76,7 +76,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Status")]
         public string ReturnRequestStatusStr { get; set; }
 
-        [SmartResourceDisplayName("Admin.ReturnRequests.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		[SmartResourceDisplayName("Common.UpdatedOn")]

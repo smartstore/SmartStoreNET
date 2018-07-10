@@ -41,7 +41,7 @@ namespace SmartStore.Admin.Models.Blogs
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Comments")]
         public int Comments { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOnUtc { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.StartDate")]
@@ -62,7 +62,7 @@ namespace SmartStore.Admin.Models.Blogs
         [AllowHtml]
         public string MetaTitle { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
 		// Store mapping

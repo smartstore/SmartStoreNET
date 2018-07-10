@@ -45,7 +45,7 @@ namespace SmartStore.Admin.Models.Affiliates
             [SmartResourceDisplayName("Admin.Affiliates.Orders.OrderTotal")]
             public string OrderTotal { get; set; }
 
-            [SmartResourceDisplayName("Admin.Affiliates.Orders.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Models.Orders
             [SmartResourceDisplayName("Admin.RecurringPayments.History.ShippingStatus")]
             public string ShippingStatus { get; set; }
 
-            [SmartResourceDisplayName("Admin.RecurringPayments.History.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

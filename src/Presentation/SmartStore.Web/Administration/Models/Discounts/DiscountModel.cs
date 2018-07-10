@@ -120,7 +120,7 @@ namespace SmartStore.Admin.Models.Discounts
             [SmartResourceDisplayName("Admin.Promotions.Discounts.History.Order")]
             public int OrderId { get; set; }
 
-            [SmartResourceDisplayName("Admin.Promotions.Discounts.History.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

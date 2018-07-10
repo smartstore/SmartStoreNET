@@ -155,6 +155,38 @@
                 "Admin.DataExchange.Export.Partition.Validate",
                 "Admin.Common.WrongEmail"
             );
+
+            // Get rid of duplicate CreatedOn resources also
+            builder.Delete(
+                "Admin.Affiliates.Orders.CreatedOn",
+                "Admin.ContentManagement.Blog.Comments.Fields.CreatedOn",
+                "Admin.ContentManagement.Blog.BlogPosts.Fields.CreatedOn",
+                "Admin.ContentManagement.Blog.BlogPosts.Fields.CreatedOn",
+                "Admin.Catalog.ProductReviews.Fields.CreatedOn",
+                "Admin.Customers.Customers.Fields.CreatedOn",
+                "Admin.Customers.Customers.Orders.CreatedOn",
+                "Admin.Customers.Customers.ActivityLog.CreatedOn",
+                "Admin.Orders.Fields.CreatedOn",
+                "Admin.Customers.Customers.Fields.CreatedOn",
+                "Admin.Promotions.NewsLetterSubscriptions.Fields.CreatedOn",
+                "Admin.Configuration.Currencies.Fields.CreatedOn",
+                "Admin.Promotions.Discounts.History.CreatedOn",
+                "Admin.ContentManagement.Forums.ForumGroup.Fields.CreatedOn",
+                "Admin.ContentManagement.Forums.Forum.Fields.CreatedOn",
+                "Admin.Configuration.ActivityLog.ActivityLog.Fields.CreatedOn",
+                "Admin.System.Log.Fields.CreatedOn",
+                "Admin.Promotions.Campaigns.Fields.CreatedOn",
+                "Admin.Promotions.NewsLetterSubscriptions.Fields.CreatedOn",
+                "Admin.System.QueuedEmails.Fields.CreatedOn",
+                "Admin.ContentManagement.News.Comments.Fields.CreatedOn",
+                "Admin.ContentManagement.News.NewsItems.Fields.CreatedOn",
+                "Admin.GiftCards.Fields.CreatedOn",
+                "Admin.GiftCards.History.CreatedOn",
+                "Admin.Orders.Fields.CreatedOn",
+                "Admin.Orders.OrderNotes.Fields.CreatedOn",
+                "Admin.RecurringPayments.History.CreatedOn",
+                "Admin.ReturnRequests.Fields.CreatedOn"
+            );
         }
     }
 }

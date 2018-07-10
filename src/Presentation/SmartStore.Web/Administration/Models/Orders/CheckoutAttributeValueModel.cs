@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Orders;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
@@ -47,5 +47,13 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+    }
+
+    public partial class CheckoutAttributeValueValidator : AbstractValidator<CheckoutAttributeValueModel>
+    {
+        public CheckoutAttributeValueValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
     }
 }

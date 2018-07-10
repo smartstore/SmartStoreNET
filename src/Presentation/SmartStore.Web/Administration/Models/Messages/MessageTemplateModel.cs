@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
-using System.Web.Script.Serialization;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using Newtonsoft.Json;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Messages;
 using SmartStore.Collections;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Services.Messages;
+using System.Collections.Generic;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace SmartStore.Admin.Models.Messages
 {
@@ -117,5 +115,14 @@ namespace SmartStore.Admin.Models.Messages
 
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
 		public int? Attachment3FileId { get; set; }
+    }
+
+    public partial class MessageTemplateValidator : AbstractValidator<MessageTemplateModel>
+    {
+        public MessageTemplateValidator()
+        {
+            RuleFor(x => x.Subject).NotEmpty();
+            RuleFor(x => x.Body).NotEmpty();
+        }
     }
 }

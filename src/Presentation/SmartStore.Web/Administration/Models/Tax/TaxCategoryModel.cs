@@ -1,8 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Tax
 {
@@ -15,5 +15,13 @@ namespace SmartStore.Admin.Models.Tax
 
         [SmartResourceDisplayName("Admin.Configuration.Tax.Categories.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
+    }
+
+    public partial class TaxCategoryValidator : AbstractValidator<TaxCategoryModel>
+    {
+        public TaxCategoryValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
     }
 }

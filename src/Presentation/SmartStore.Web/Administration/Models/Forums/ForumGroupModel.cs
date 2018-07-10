@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Forums;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Forums
 {
@@ -63,4 +62,12 @@ namespace SmartStore.Admin.Models.Forums
 		[AllowHtml]
 		public string Description { get; set; }
 	}
+
+    public partial class ForumGroupValidator : AbstractValidator<ForumGroupModel>
+    {
+        public ForumGroupValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 }

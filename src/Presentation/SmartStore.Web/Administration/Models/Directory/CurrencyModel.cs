@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Directory;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -106,5 +107,37 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+    }
+
+    public partial class CurrencyValidator : AbstractValidator<CurrencyModel>
+    {
+        public CurrencyValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty().Length(1, 50);
+            RuleFor(x => x.CurrencyCode).NotEmpty().Length(1, 5);
+            RuleFor(x => x.Rate).GreaterThan(0);
+            RuleFor(x => x.CustomFormatting).Length(0, 50);
+            RuleFor(x => x.DisplayLocale)
+                .Must(x =>
+                {
+                    try
+                    {
+                        if (String.IsNullOrEmpty(x))
+                            return true;
+                        var culture = new CultureInfo(x);
+                        return culture != null;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
+                .WithMessage(T("Admin.Configuration.Currencies.Fields.DisplayLocale.Validation"));
+
+            RuleFor(x => x.RoundNumDecimals)
+                .InclusiveBetween(0, 8)
+                .When(x => x.RoundOrderItemsEnabled)
+                .WithMessage(T("Admin.Configuration.Currencies.Fields.RoundOrderItemsEnabled.Validation"));
+        }
     }
 }

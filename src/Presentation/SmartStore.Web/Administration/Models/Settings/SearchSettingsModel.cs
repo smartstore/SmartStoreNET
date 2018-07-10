@@ -6,6 +6,9 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Web.Framework.Validators;
+using FluentValidation;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -92,4 +95,20 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.CommonFacet.Alias")]
 		public string Alias { get; set; }
 	}
+
+    public class SearchSettingValidator : SmartValidatorBase<SearchSettingsModel>
+    {
+        private const int MAX_INSTANT_SEARCH_ITEMS = 16;
+
+        public SearchSettingValidator(Localizer T, Func<string, bool> addRule)
+        {
+            if (addRule("InstantSearchNumberOfProducts"))
+            {
+                RuleFor(x => x.InstantSearchNumberOfProducts)
+                    .Must(x => x >= 1 && x <= MAX_INSTANT_SEARCH_ITEMS)
+                    .When(x => x.InstantSearchEnabled)
+                    .WithMessage(T("Admin.Validation.ValueRange").Text.FormatInvariant(1, MAX_INSTANT_SEARCH_ITEMS));
+            }
+        }
+    }
 }

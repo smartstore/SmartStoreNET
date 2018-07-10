@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Common;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Common
 {
-	[Validator(typeof(AddressValidator))]
+    [Validator(typeof(AddressValidator))]
     public partial class AddressModel : EntityModelBase
     {
         public AddressModel()
@@ -109,5 +110,67 @@ namespace SmartStore.Admin.Models.Common
         public bool PhoneRequired { get; set; }
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
+    }
+
+    public partial class AddressValidator : AbstractValidator<AddressModel>
+    {
+        public AddressValidator(Localizer T)
+        {
+            RuleFor(x => x.FirstName)
+                .NotEmpty()
+                .When(x => x.FirstNameEnabled && x.FirstNameRequired);
+
+            RuleFor(x => x.LastName)
+                .NotEmpty()
+                .When(x => x.LastNameEnabled && x.LastNameRequired);
+
+            RuleFor(x => x.Email)
+                .NotEmpty()
+                .EmailAddress()
+                .When(x => x.EmailEnabled && x.EmailRequired);
+
+            RuleFor(x => x.Company)
+                .NotEmpty()
+                .When(x => x.CompanyEnabled && x.CompanyRequired);
+
+            RuleFor(x => x.CountryId)
+                .NotEmpty()
+                .When(x => x.CountryEnabled);
+
+            RuleFor(x => x.CountryId)
+                .NotEqual(0)
+                .WithMessage(T("Admin.Address.Fields.Country.Required"))
+                .When(x => x.CountryEnabled);
+
+            RuleFor(x => x.City)
+                .NotEmpty()
+                .When(x => x.CityEnabled && x.CityRequired);
+
+            RuleFor(x => x.Address1)
+                .NotEmpty()
+                .When(x => x.StreetAddressEnabled && x.StreetAddressRequired);
+
+            RuleFor(x => x.Address2)
+                .NotEmpty()
+                .When(x => x.StreetAddress2Enabled && x.StreetAddress2Required);
+
+            RuleFor(x => x.ZipPostalCode)
+                .NotEmpty()
+                .When(x => x.ZipPostalCodeEnabled && x.ZipPostalCodeRequired);
+
+            RuleFor(x => x.PhoneNumber)
+                .NotEmpty()
+                .When(x => x.PhoneEnabled && x.PhoneRequired);
+
+            RuleFor(x => x.FaxNumber)
+                .NotEmpty()
+                .When(x => x.FaxEnabled && x.FaxRequired);
+
+            RuleFor(x => x.EmailMatch)
+                .NotEmpty()
+                .Equal(x => x.Email)
+                .WithMessage(T("Admin.Address.Fields.EmailMatch.MustMatchEmail"))
+                .When(x => x.ValidateEmailAddress);
+        }
     }
 }

@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -68,5 +67,17 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
+    }
+
+    public partial class CountryValidator : AbstractValidator<CountryModel>
+    {
+        public CountryValidator()
+        {
+            RuleFor(x => x.Name).NotNull();
+            RuleFor(x => x.TwoLetterIsoCode).NotEmpty();
+            RuleFor(x => x.TwoLetterIsoCode).Length(2);
+            RuleFor(x => x.ThreeLetterIsoCode).NotEmpty();
+            RuleFor(x => x.ThreeLetterIsoCode).Length(3);
+        }
     }
 }

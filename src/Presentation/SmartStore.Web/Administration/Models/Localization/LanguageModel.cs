@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Localization;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Localization
 {
-	[Validator(typeof(LanguageValidator))]
+    [Validator(typeof(LanguageValidator))]
     public class LanguageModel : EntityModelBase, IStoreSelector
     {
         public LanguageModel()
@@ -60,4 +62,32 @@ namespace SmartStore.Admin.Models.Localization
 		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LastResourcesImportOn")]
 		public string LastResourcesImportOnString { get; set; }
 	}
+
+    public partial class LanguageValidator : AbstractValidator<LanguageModel>
+    {
+        public LanguageValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty();
+
+            RuleFor(x => x.LanguageCulture)
+                .Must(x =>
+                {
+                    try
+                    {
+                        var culture = new CultureInfo(x);
+                        return culture != null;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
+                .WithMessage(T("Admin.Configuration.Languages.Fields.LanguageCulture.Validation"));
+
+            RuleFor(x => x.UniqueSeoCode).NotEmpty();
+            RuleFor(x => x.UniqueSeoCode)
+                //.Length(2)	// Never validates.
+                .Length(x => 2);
+        }
+    }
 }

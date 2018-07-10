@@ -1,10 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Tasks;
+using SmartStore.Core.Localization;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Tasks
 {
@@ -40,5 +42,14 @@ namespace SmartStore.Admin.Models.Tasks
 		public string ExecuteUrl { get; set; }
 
         public ScheduleTaskHistoryModel LastHistoryEntry { get; set; }
+    }
+
+    public partial class ScheduleTaskValidator : AbstractValidator<ScheduleTaskModel>
+    {
+        public ScheduleTaskValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.CronExpression).Must(x => CronExpression.IsValid(x)).WithMessage(T("Admin.System.ScheduleTasks.InvalidCronExpression"));
+        }
     }
 }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
-using SmartStore.Admin.Models.Common;
+﻿using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Settings;
-using SmartStore.Admin.Validators.Settings;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
@@ -49,11 +44,15 @@ using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public partial class SettingController : AdminControllerBase
 	{
 		#region Fields
@@ -1514,7 +1513,7 @@ namespace SmartStore.Admin.Controllers
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
 
-			var validator = new SearchSettingValidator(Services.Localization, x =>
+			var validator = new SearchSettingValidator(T, x =>
 			{
 				return storeScope == 0 || StoreDependingSettings.IsOverrideChecked(settings, x, form);
 			});

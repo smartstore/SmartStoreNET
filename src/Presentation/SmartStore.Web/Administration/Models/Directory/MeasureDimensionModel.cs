@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -27,5 +27,14 @@ namespace SmartStore.Admin.Models.Directory
 
         [SmartResourceDisplayName("Admin.Configuration.Measures.Dimensions.Fields.IsPrimaryWeight")]
         public bool IsPrimaryDimension { get; set; }
+    }
+
+    public partial class MeasureDimensionValidator : AbstractValidator<MeasureDimensionModel>
+    {
+        public MeasureDimensionValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.SystemKeyword).NotEmpty();
+        }
     }
 }

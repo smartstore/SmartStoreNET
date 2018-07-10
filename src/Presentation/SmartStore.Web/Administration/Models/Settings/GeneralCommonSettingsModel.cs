@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Settings;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	[Validator(typeof(GeneralCommonSettingsValidator))]
+    [Validator(typeof(GeneralCommonSettingsValidator))]
 	public partial class GeneralCommonSettingsModel : ModelBase
     {
         public GeneralCommonSettingsModel()
@@ -334,5 +334,16 @@ namespace SmartStore.Admin.Models.Settings
 		}
 
         #endregion
+    }
+
+    public partial class GeneralCommonSettingsValidator : AbstractValidator<GeneralCommonSettingsModel>
+    {
+        public GeneralCommonSettingsValidator()
+        {
+            RuleFor(x => x.ContactDataSettings.CompanyEmailAddress).EmailAddress();
+            RuleFor(x => x.ContactDataSettings.ContactEmailAddress).EmailAddress();
+            RuleFor(x => x.ContactDataSettings.SupportEmailAddress).EmailAddress();
+            RuleFor(x => x.ContactDataSettings.WebmasterEmailAddress).EmailAddress();
+        }
     }
 }

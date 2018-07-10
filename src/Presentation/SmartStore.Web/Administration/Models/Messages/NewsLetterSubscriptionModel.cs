@@ -1,9 +1,9 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Messages;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Messages
 {
@@ -22,5 +22,13 @@ namespace SmartStore.Admin.Models.Messages
 
 		[SmartResourceDisplayName("Admin.Common.Store")]
 		public string StoreName { get; set; }
+    }
+
+    public partial class NewsLetterSubscriptionValidator : AbstractValidator<NewsLetterSubscriptionModel>
+    {
+        public NewsLetterSubscriptionValidator()
+        {
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        }
     }
 }

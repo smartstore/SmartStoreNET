@@ -1,8 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Polls;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Polls
 {
@@ -24,5 +24,13 @@ namespace SmartStore.Admin.Models.Polls
         //in our case it's pollAnswer.DisplayOrder
         public int DisplayOrder1 { get; set; }
 
+    }
+
+    public partial class PollAnswerValidator : AbstractValidator<PollAnswerModel>
+    {
+        public PollAnswerValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
     }
 }

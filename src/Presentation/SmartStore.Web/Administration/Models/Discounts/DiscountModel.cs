@@ -1,15 +1,15 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Discounts;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Discounts
 {
-	[Validator(typeof(DiscountValidator))]
+    [Validator(typeof(DiscountValidator))]
     public class DiscountModel : EntityModelBase
     {
         public DiscountModel()
@@ -147,4 +147,12 @@ namespace SmartStore.Admin.Models.Discounts
 
 		#endregion
 	}
+
+    public partial class DiscountValidator : AbstractValidator<DiscountModel>
+    {
+        public DiscountValidator()
+        {
+            RuleFor(x => x.Name).NotNull();
+        }
+    }
 }

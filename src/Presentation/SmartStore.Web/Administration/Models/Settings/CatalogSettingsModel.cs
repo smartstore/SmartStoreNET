@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Settings;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -293,4 +293,12 @@ namespace SmartStore.Admin.Models.Settings
 
         #endregion 
 	}
+
+    public partial class CatalogSettingsValidator : AbstractValidator<CatalogSettingsModel>
+    {
+        public CatalogSettingsValidator()
+        {
+            RuleFor(x => x.LabelAsNewForMaxDays).LessThan(1000);
+        }
+    }
 }

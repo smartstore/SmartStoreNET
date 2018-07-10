@@ -1,12 +1,11 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Polls;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Polls
 {
@@ -52,4 +51,12 @@ namespace SmartStore.Admin.Models.Polls
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 	}
+
+    public partial class PollValidator : AbstractValidator<PollModel>
+    {
+        public PollValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
 }

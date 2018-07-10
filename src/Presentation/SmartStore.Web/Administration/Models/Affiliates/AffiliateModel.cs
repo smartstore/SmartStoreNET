@@ -1,13 +1,10 @@
-﻿using System;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Common;
-using SmartStore.Admin.Validators.Affiliates;
+﻿using SmartStore.Admin.Models.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
 
 namespace SmartStore.Admin.Models.Affiliates
 {
-    [Validator(typeof(AffiliateValidator))]
     public class AffiliateModel : EntityModelBase
     {
         public AffiliateModel()

@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Orders;
+﻿using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
-	[Validator(typeof(ReturnRequestValidator))]
     public class ReturnRequestModel : EntityModelBase
     {
 		public ReturnRequestModel()

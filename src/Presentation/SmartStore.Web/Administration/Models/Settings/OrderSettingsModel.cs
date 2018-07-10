@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Settings;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -72,8 +74,7 @@ namespace SmartStore.Admin.Models.Settings
 
 		public IList<OrderSettingsLocalizedModel> Locales { get; set; }
     }
-
-
+    
 	public class OrderSettingsLocalizedModel : ILocalizedModelLocal
 	{
 		public int LanguageId { get; set; }
@@ -84,4 +85,19 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestActions")]
 		public string ReturnRequestActions { get; set; }
 	}
+
+    public partial class OrderSettingsValidator : AbstractValidator<OrderSettingsModel>
+    {
+        public OrderSettingsValidator(Localizer T)
+        {
+            RuleFor(x => x.GiftCards_Activated_OrderStatusId).NotEqual((int)OrderStatus.Pending)
+                .WithMessage(T("Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Awarded.Pending"));
+
+            RuleFor(x => x.GiftCards_Deactivated_OrderStatusId).NotEqual((int)OrderStatus.Pending)
+                .WithMessage(T("Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Canceled.Pending"));
+
+            RuleFor(x => x.OrderListPageSize)
+                .GreaterThan(0);
+        }
+    }
 }

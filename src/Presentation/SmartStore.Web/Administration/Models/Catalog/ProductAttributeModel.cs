@@ -66,7 +66,7 @@ namespace SmartStore.Admin.Models.Catalog
 	{
 		public ProductAttributeValidator()
 		{
-			RuleFor(x => x.Name).NotNull();
+			RuleFor(x => x.Name).NotEmpty();
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Models.Catalog
 	{
 		public SpecificationAttributeOptionValidator()
 		{
-			RuleFor(x => x.Name).NotNull();
+			RuleFor(x => x.Name).NotEmpty();
 		}
 	}
 }

@@ -175,6 +175,8 @@ namespace SmartStore.Web
 				x.ValidatorFactory = new SmartValidatorFactory();
 			});
 
+			
+
 			// Setup our custom DisplayName handling
 			var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
 			ValidatorOptions.DisplayNameResolver = (type, member, expression) =>

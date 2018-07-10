@@ -266,7 +266,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        //[ChildActionOnly]
         public ActionResult CatalogMenu(int currentCategoryId, int currentProductId = 0)
         {
 			var model = _helper.PrepareCategoryNavigationModel(currentCategoryId, currentProductId);

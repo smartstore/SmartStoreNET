@@ -183,10 +183,13 @@ namespace SmartStore.Web
 			{
 				string name = null;
 
-				var attr = member.GetAttribute<SmartResourceDisplayName>(true);
-				if (attr != null)
+				if (HostingEnvironment.IsHosted)
 				{
-					name = attr.DisplayName;
+					var attr = member.GetAttribute<SmartResourceDisplayName>(true);
+					if (attr != null)
+					{
+						name = attr.DisplayName;
+					}
 				}
 
 				return name ?? originalDisplayNameResolver.Invoke(type, member, expression);

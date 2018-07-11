@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Web.Validators.Boards;
 using SmartStore.Services.Localization;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Boards
 {
@@ -37,6 +37,14 @@ namespace SmartStore.Web.Models.Boards
 
         public bool IsCustomerAllowedToSubscribe { get; set; }
         public bool Subscribed { get; set; }
+    }
 
+    public class EditForumTopicValidator : AbstractValidator<EditForumTopicModel>
+    {
+        public EditForumTopicValidator()
+        {
+            RuleFor(x => x.Subject).NotEmpty();
+            RuleFor(x => x.Text).NotEmpty();
+        }
     }
 }

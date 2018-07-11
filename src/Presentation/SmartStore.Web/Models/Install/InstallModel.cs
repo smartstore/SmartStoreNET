@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.Install;
+using SmartStore.Web.Infrastructure.Installation;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Install
 {
@@ -56,5 +57,19 @@ namespace SmartStore.Web.Models.Install
         public List<SelectListItem> AvailableAppLanguages { get; set; }
         public string MediaStorage { get; set; }
         public List<SelectListItem> AvailableMediaStorages { get; set; }
+    }
+
+    public class InstallValidator : AbstractValidator<InstallModel>
+    {
+        public InstallValidator(IInstallationLocalizationService locService)
+        {
+            RuleFor(x => x.AdminEmail).NotEmpty();
+            RuleFor(x => x.AdminEmail).EmailAddress();
+            RuleFor(x => x.AdminPassword).NotEmpty();
+            RuleFor(x => x.ConfirmPassword).NotEmpty();
+            RuleFor(x => x.AdminPassword).Equal(x => x.ConfirmPassword).WithMessage(locService.GetResource("PasswordsDoNotMatch"));
+            RuleFor(x => x.DataProvider).NotEmpty();
+            RuleFor(x => x.PrimaryLanguage).NotEmpty();
+        }
     }
 }

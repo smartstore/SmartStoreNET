@@ -1,21 +1,20 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Web.Models.Common;
-using SmartStore.Web.Models.Customer;
-using SmartStore.Web.Validators.Common;
 using NUnit.Framework;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Web.Models.Common;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 {
     [TestFixture]
     public class AddressValidatorTests : BaseValidatorTests
     {
+        private Localizer T;
+
         [Test]
         public void Should_have_error_when_email_is_null_or_empty()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings());
+            var validator = new AddressValidator(T, new AddressSettings());
 
             var model = new AddressModel();
             model.Email = null;
@@ -23,21 +22,21 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             model.Email = "";
             validator.ShouldHaveValidationErrorFor(x => x.Email, model);
         }
+
         [Test]
         public void Should_have_error_when_email_is_wrong_format()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings());
+            var validator = new AddressValidator(T, new AddressSettings());
 
             var model = new AddressModel();
             model.Email = "adminexample.com";
             validator.ShouldHaveValidationErrorFor(x => x.Email, model);
         }
+
         [Test]
         public void Should_not_have_error_when_email_is_correct_format()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings());
+            var validator = new AddressValidator(T, new AddressSettings());
 
             var model = new AddressModel();
             model.Email = "admin@example.com";
@@ -47,8 +46,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
         [Test]
         public void Should_have_error_when_firstName_is_null_or_empty()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings());
+            var validator = new AddressValidator(T, new AddressSettings());
 
             var model = new AddressModel();
             model.FirstName = null;
@@ -56,11 +54,11 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             model.FirstName = "";
             validator.ShouldHaveValidationErrorFor(x => x.FirstName, model);
         }
+
         [Test]
         public void Should_not_have_error_when_firstName_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings());
+            var validator = new AddressValidator(T, new AddressSettings());
 
             var model = new AddressModel();
             model.FirstName = "John";
@@ -70,8 +68,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
         [Test]
         public void Should_have_error_when_lastName_is_null_or_empty()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings());
+            var validator = new AddressValidator(T, new AddressSettings());
 
             var model = new AddressModel();
             model.LastName = null;
@@ -79,11 +76,11 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             model.LastName = "";
             validator.ShouldHaveValidationErrorFor(x => x.LastName, model);
         }
+
         [Test]
         public void Should_not_have_error_when_lastName_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings());
+            var validator = new AddressValidator(T, new AddressSettings());
 
             var model = new AddressModel();
             model.LastName = "Smith";
@@ -96,12 +93,12 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new AddressModel();
 
             //required
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    CompanyEnabled = true,
-                    CompanyRequired = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                CompanyEnabled = true,
+                CompanyRequired = true
+            });
+
             model.Company = null;
             validator.ShouldHaveValidationErrorFor(x => x.Company, model);
             model.Company = "";
@@ -109,25 +106,24 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 
 
             //not required
-            validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    CompanyEnabled = true,
-                    CompanyRequired = false
-                });
+            validator = new AddressValidator(T, new AddressSettings
+            {
+                CompanyEnabled = true,
+                CompanyRequired = false
+            });
             model.Company = null;
             validator.ShouldNotHaveValidationErrorFor(x => x.Company, model);
             model.Company = "";
             validator.ShouldNotHaveValidationErrorFor(x => x.Company, model);
         }
+
         [Test]
         public void Should_not_have_error_when_company_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    CompanyEnabled = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                CompanyEnabled = true
+            });
 
             var model = new AddressModel();
             model.Company = "Company";
@@ -140,37 +136,35 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new AddressModel();
 
             //required
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    StreetAddressEnabled = true,
-                    StreetAddressRequired = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                StreetAddressEnabled = true,
+                StreetAddressRequired = true
+            });
             model.Address1 = null;
             validator.ShouldHaveValidationErrorFor(x => x.Address1, model);
             model.Address1 = "";
             validator.ShouldHaveValidationErrorFor(x => x.Address1, model);
 
             //not required
-            validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    StreetAddressEnabled = true,
-                    StreetAddressRequired = false
-                });
+            validator = new AddressValidator(T, new AddressSettings
+            {
+                StreetAddressEnabled = true,
+                StreetAddressRequired = false
+            });
             model.Address1 = null;
             validator.ShouldNotHaveValidationErrorFor(x => x.Address1, model);
             model.Address1 = "";
             validator.ShouldNotHaveValidationErrorFor(x => x.Address1, model);
         }
+
         [Test]
         public void Should_not_have_error_when_streetaddress_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    StreetAddressEnabled = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                StreetAddressEnabled = true
+            });
 
             var model = new AddressModel();
             model.Address1 = "Street address";
@@ -183,37 +177,35 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new AddressModel();
 
             //required
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    StreetAddress2Enabled = true,
-                    StreetAddress2Required = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                StreetAddress2Enabled = true,
+                StreetAddress2Required = true
+            });
             model.Address2 = null;
             validator.ShouldHaveValidationErrorFor(x => x.Address2, model);
             model.Address2 = "";
             validator.ShouldHaveValidationErrorFor(x => x.Address2, model);
 
             //not required
-            validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    StreetAddress2Enabled = true,
-                    StreetAddress2Required = false
-                });
+            validator = new AddressValidator(T, new AddressSettings
+            {
+                StreetAddress2Enabled = true,
+                StreetAddress2Required = false
+            });
             model.Address2 = null;
             validator.ShouldNotHaveValidationErrorFor(x => x.Address2, model);
             model.Address2 = "";
             validator.ShouldNotHaveValidationErrorFor(x => x.Address2, model);
         }
+
         [Test]
         public void Should_not_have_error_when_streetaddress2_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    StreetAddress2Enabled = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                StreetAddress2Enabled = true
+            });
 
             var model = new AddressModel();
             model.Address2 = "Street address 2";
@@ -226,12 +218,11 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new AddressModel();
 
             //required
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    ZipPostalCodeEnabled = true,
-                    ZipPostalCodeRequired = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                ZipPostalCodeEnabled = true,
+                ZipPostalCodeRequired = true
+            });
             model.ZipPostalCode = null;
             validator.ShouldHaveValidationErrorFor(x => x.ZipPostalCode, model);
             model.ZipPostalCode = "";
@@ -239,8 +230,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 
 
             //not required
-            validator = new AddressValidator(_localizationService,
-                new AddressSettings()
+            validator = new AddressValidator(T, new AddressSettings
                 {
                     ZipPostalCodeEnabled = true,
                     ZipPostalCodeRequired = false
@@ -250,14 +240,14 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             model.ZipPostalCode = "";
             validator.ShouldNotHaveValidationErrorFor(x => x.ZipPostalCode, model);
         }
+
         [Test]
         public void Should_not_have_error_when_zippostalcode_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    StreetAddress2Enabled = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                StreetAddress2Enabled = true
+            });
 
             var model = new AddressModel();
             model.ZipPostalCode = "zip";
@@ -270,12 +260,11 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new AddressModel();
 
             //required
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    CityEnabled = true,
-                    CityRequired = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                CityEnabled = true,
+                CityRequired = true
+            });
             model.City = null;
             validator.ShouldHaveValidationErrorFor(x => x.City, model);
             model.City = "";
@@ -283,25 +272,24 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 
 
             //not required
-            validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    CityEnabled = true,
-                    CityRequired = false
-                });
+            validator = new AddressValidator(T, new AddressSettings
+            {
+                CityEnabled = true,
+                CityRequired = false
+            });
             model.City = null;
             validator.ShouldNotHaveValidationErrorFor(x => x.City, model);
             model.City = "";
             validator.ShouldNotHaveValidationErrorFor(x => x.City, model);
         }
+
         [Test]
         public void Should_not_have_error_when_city_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    CityEnabled = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                CityEnabled = true
+            });
 
             var model = new AddressModel();
             model.City = "City";
@@ -314,37 +302,35 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new AddressModel();
 
             //required
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    PhoneEnabled = true,
-                    PhoneRequired = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings()
+            {
+                PhoneEnabled = true,
+                PhoneRequired = true
+            });
             model.PhoneNumber = null;
             validator.ShouldHaveValidationErrorFor(x => x.PhoneNumber, model);
             model.PhoneNumber = "";
             validator.ShouldHaveValidationErrorFor(x => x.PhoneNumber, model);
 
             //not required
-            validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    PhoneEnabled = true,
-                    PhoneRequired = false
-                });
+            validator = new AddressValidator(T, new AddressSettings()
+            {
+                PhoneEnabled = true,
+                PhoneRequired = false
+            });
             model.PhoneNumber = null;
             validator.ShouldNotHaveValidationErrorFor(x => x.PhoneNumber, model);
             model.PhoneNumber = "";
             validator.ShouldNotHaveValidationErrorFor(x => x.PhoneNumber, model);
         }
+
         [Test]
         public void Should_not_have_error_when_phone_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    PhoneEnabled = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings()
+            {
+                PhoneEnabled = true
+            });
 
             var model = new AddressModel();
             model.PhoneNumber = "Phone";
@@ -357,12 +343,11 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new AddressModel();
 
             //required
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    FaxEnabled = true,
-                    FaxRequired = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings()
+            {
+                FaxEnabled = true,
+                FaxRequired = true
+            });
             model.FaxNumber = null;
             validator.ShouldHaveValidationErrorFor(x => x.FaxNumber, model);
             model.FaxNumber = "";
@@ -370,25 +355,24 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 
 
             //not required
-            validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    FaxEnabled = true,
-                    FaxRequired = false
-                });
+            validator = new AddressValidator(T, new AddressSettings
+            {
+                FaxEnabled = true,
+                FaxRequired = false
+            });
             model.FaxNumber = null;
             validator.ShouldNotHaveValidationErrorFor(x => x.FaxNumber, model);
             model.FaxNumber = "";
             validator.ShouldNotHaveValidationErrorFor(x => x.FaxNumber, model);
         }
+
         [Test]
         public void Should_not_have_error_when_fax_is_specified()
         {
-            var validator = new AddressValidator(_localizationService,
-                new AddressSettings()
-                {
-                    FaxEnabled = true
-                });
+            var validator = new AddressValidator(T, new AddressSettings
+            {
+                FaxEnabled = true
+            });
 
             var model = new AddressModel();
             model.FaxNumber = "Fax";

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
-using SmartStore.Web.Validators.News;
+using System;
 
 namespace SmartStore.Web.Models.News
 {
@@ -27,5 +26,23 @@ namespace SmartStore.Web.Models.News
 
 		public AddNewsCommentModel AddNewComment { get; set; }
 		public CommentListModel Comments { get; set; }
+    }
+
+    public class NewsItemValidator : AbstractValidator<NewsItemModel>
+    {
+        public NewsItemValidator()
+        {
+            RuleFor(x => x.AddNewComment.CommentTitle)
+                .NotEmpty()
+                .When(x => x.AddNewComment != null);
+
+            RuleFor(x => x.AddNewComment.CommentTitle)
+                .Length(1, 200)
+                .When(x => x.AddNewComment != null && !string.IsNullOrEmpty(x.AddNewComment.CommentTitle));
+
+            RuleFor(x => x.AddNewComment.CommentText)
+                .NotEmpty()
+                .When(x => x.AddNewComment != null);
+        }
     }
 }

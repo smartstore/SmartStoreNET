@@ -1,8 +1,7 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Models.Common;
-using SmartStore.Web.Validators.Common;
 using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 {
@@ -16,7 +15,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
         public new void Setup()
         {
 			_privacySettings = new PrivacySettings();
-			_validator = new ContactUsValidator(_localizationService, _privacySettings);
+			_validator = new ContactUsValidator(_privacySettings);
         }
         
         [Test]

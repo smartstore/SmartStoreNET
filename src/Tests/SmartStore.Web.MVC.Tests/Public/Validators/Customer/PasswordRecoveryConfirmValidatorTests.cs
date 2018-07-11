@@ -1,8 +1,8 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Web.Models.Customer;
-using SmartStore.Web.Validators.Customer;
 using NUnit.Framework;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Localization;
+using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
 {
@@ -11,12 +11,13 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
     {
         private PasswordRecoveryConfirmValidator _validator;
         private CustomerSettings _customerSettings;
-        
+        private Localizer T;
+
         [SetUp]
         public new void Setup()
         {
             _customerSettings = new CustomerSettings();
-            _validator = new PasswordRecoveryConfirmValidator(_localizationService, _customerSettings);
+            _validator = new PasswordRecoveryConfirmValidator(T, _customerSettings);
         }
 
         [Test]
@@ -85,7 +86,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
         public void Should_validate_newPassword_is_length()
         {
             _customerSettings.PasswordMinLength = 5;
-            _validator = new PasswordRecoveryConfirmValidator(_localizationService, _customerSettings);
+            _validator = new PasswordRecoveryConfirmValidator(T, _customerSettings);
 
             var model = new PasswordRecoveryConfirmModel();
             model.NewPassword = "1234";

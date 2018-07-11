@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.Catalog;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Catalog
 {
@@ -83,5 +83,15 @@ namespace SmartStore.Web.Models.Catalog
         public int HelpfulYesTotal { get; set; }
 
         public int HelpfulNoTotal { get; set; }
+    }
+
+    public class ProductReviewsValidator : AbstractValidator<ProductReviewsModel>
+    {
+        public ProductReviewsValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty();
+            RuleFor(x => x.Title).Length(1, 200).When(x => !string.IsNullOrEmpty(x.Title));
+            RuleFor(x => x.ReviewText).NotEmpty();
+        }
     }
 }

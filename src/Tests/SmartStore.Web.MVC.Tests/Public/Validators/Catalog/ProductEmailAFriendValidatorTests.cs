@@ -1,7 +1,6 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Models.Catalog;
-using SmartStore.Web.Validators.Catalog;
 using NUnit.Framework;
+using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Catalog
 {
@@ -13,7 +12,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Catalog
         [SetUp]
         public new void Setup()
         {
-            _validator = new ProductEmailAFriendValidator(_localizationService);
+            _validator = new ProductEmailAFriendValidator();
         }
         
         [Test]

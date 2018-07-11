@@ -1,7 +1,6 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Models.Boards;
-using SmartStore.Web.Validators.Boards;
 using NUnit.Framework;
+using SmartStore.Web.Models.Boards;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Boards
 {
@@ -13,7 +12,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Boards
         [SetUp]
         public new void Setup()
         {
-            _validator = new EditForumTopicValidator(_localizationService);
+            _validator = new EditForumTopicValidator();
         }
 
         [Test]

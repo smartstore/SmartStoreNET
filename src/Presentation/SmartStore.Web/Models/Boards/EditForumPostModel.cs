@@ -1,8 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Web.Validators.Boards;
 using SmartStore.Services.Localization;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Boards
 {
@@ -24,5 +24,13 @@ namespace SmartStore.Web.Models.Boards
 
         public bool IsCustomerAllowedToSubscribe { get; set; }
         public bool Subscribed { get; set; }
+    }
+
+    public class EditForumPostValidator : AbstractValidator<EditForumPostModel>
+    {
+        public EditForumPostValidator()
+        {
+            RuleFor(x => x.Text).NotEmpty();
+        }
     }
 }

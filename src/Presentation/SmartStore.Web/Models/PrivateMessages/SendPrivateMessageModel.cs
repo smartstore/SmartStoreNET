@@ -1,7 +1,7 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.PrivateMessages;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.PrivateMessages
 {
@@ -19,5 +19,14 @@ namespace SmartStore.Web.Models.PrivateMessages
 
         [AllowHtml]
         public string Message { get; set; }
+    }
+
+    public class SendPrivateMessageValidator : AbstractValidator<SendPrivateMessageModel>
+    {
+        public SendPrivateMessageValidator()
+        {
+            RuleFor(x => x.Subject).NotEmpty();
+            RuleFor(x => x.Message).NotEmpty();
+        }
     }
 }

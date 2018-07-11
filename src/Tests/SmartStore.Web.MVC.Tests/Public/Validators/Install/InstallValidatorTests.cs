@@ -1,9 +1,8 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Infrastructure.Installation; 
-using SmartStore.Web.Models.Install;
-using SmartStore.Web.Validators.Install;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Web.Infrastructure.Installation;
+using SmartStore.Web.Models.Install;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Install
 {

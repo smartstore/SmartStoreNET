@@ -30,7 +30,7 @@ namespace SmartStore.Admin.Models.Forums
         [AllowHtml]
         public string Description { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Forums.ForumGroup.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Common.CreatedOn")]

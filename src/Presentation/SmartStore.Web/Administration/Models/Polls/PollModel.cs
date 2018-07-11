@@ -36,7 +36,7 @@ namespace SmartStore.Admin.Models.Polls
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.AllowGuestsToVote")]
         public bool AllowGuestsToVote { get; set; } 	
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.StartDate")]

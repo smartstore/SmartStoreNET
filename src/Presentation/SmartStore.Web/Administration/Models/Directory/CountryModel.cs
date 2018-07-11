@@ -43,7 +43,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.Published")]
         public bool Published { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.NumberOfStates")]

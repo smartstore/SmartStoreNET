@@ -51,7 +51,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.Published")]
         public bool Published { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Common.CreatedOn")]

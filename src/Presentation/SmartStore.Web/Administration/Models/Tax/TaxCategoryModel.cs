@@ -13,7 +13,7 @@ namespace SmartStore.Admin.Models.Tax
         [AllowHtml]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Tax.Categories.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
     }
 

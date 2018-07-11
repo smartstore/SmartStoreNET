@@ -22,7 +22,7 @@ namespace SmartStore.Admin.Models.Directory
         [UIHint("Decimal8")]
         public decimal Ratio { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Measures.Weights.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Measures.Weights.Fields.IsPrimaryWeight")]

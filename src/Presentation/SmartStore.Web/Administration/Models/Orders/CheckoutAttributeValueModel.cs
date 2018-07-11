@@ -33,7 +33,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.IsPreSelected")]
         public bool IsPreSelected { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder {get;set;}
 
         public IList<CheckoutAttributeValueLocalizedModel> Locales { get; set; }

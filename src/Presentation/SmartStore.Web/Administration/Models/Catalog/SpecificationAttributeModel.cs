@@ -26,7 +26,7 @@ namespace SmartStore.Admin.Models.Catalog
 		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias")]
 		public string Alias { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.AllowFiltering")]

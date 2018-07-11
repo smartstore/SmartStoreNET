@@ -70,7 +70,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Deleted")]
         public bool Deleted { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Common.CreatedOn")]
@@ -114,7 +114,7 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 
-            [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.DisplayOrder")]
+            [SmartResourceDisplayName("Common.DisplayOrder")]
             //we don't name it DisplayOrder because Telerik has a small bug 
             //"if we have one more editor with the same name on a page, it doesn't allow editing"
             //in our case it's category.DisplayOrder

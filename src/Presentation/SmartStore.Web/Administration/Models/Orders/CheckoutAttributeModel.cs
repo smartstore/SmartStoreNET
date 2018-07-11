@@ -47,7 +47,7 @@ namespace SmartStore.Admin.Models.Orders
         [AllowHtml]
         public string AttributeControlTypeName { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
         
         public IList<CheckoutAttributeLocalizedModel> Locales { get; set; }

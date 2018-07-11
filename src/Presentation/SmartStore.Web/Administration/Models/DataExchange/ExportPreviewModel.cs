@@ -86,7 +86,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Published")]
 		public bool Published { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
@@ -101,7 +101,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Published")]
 		public bool Published { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]

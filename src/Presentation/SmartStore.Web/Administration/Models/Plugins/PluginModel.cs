@@ -41,7 +41,7 @@ namespace SmartStore.Admin.Models.Plugins
         [AllowHtml]
         public string Author { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.DisplayOrder")] 
+        [SmartResourceDisplayName("Common.DisplayOrder")] 
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Configure")]

@@ -39,7 +39,7 @@ namespace SmartStore.Admin.Models.Stores
 		[UIHint("Picture")]
 		public int LogoPictureId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.HtmlBodyId")]

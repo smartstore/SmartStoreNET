@@ -275,6 +275,52 @@
                 "Wishlist.EmailAFriend.FriendEmail.Required",
                 "Wishlist.EmailAFriend.YourEmailAddress.Required"
             );
+
+            // remove duplicate resources for display order
+            builder.Delete(
+                "Admin.Catalog.Categories.Fields.DisplayOrder",
+                "Admin.Catalog.Categories.Products.Fields.DisplayOrder",
+                "Admin.Catalog.Manufacturers.Fields.DisplayOrder",
+                "Admin.Catalog.Manufacturers.Products.Fields.DisplayOrder",
+                "Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.DisplayOrder",
+                "Admin.Catalog.Products.BundleItems.Fields.DisplayOrder",
+                "Admin.Catalog.Products.Fields.HomePageDisplayOrder",
+                "Admin.Catalog.Products.SpecificationAttributes.Fields.DisplayOrder",
+                "Admin.Catalog.Products.Pictures.Fields.DisplayOrder",
+                "Admin.Catalog.Products.Categories.Fields.DisplayOrder",
+                "Admin.Catalog.Products.Manufacturers.Fields.DisplayOrder",
+                "Admin.Catalog.Products.RelatedProducts.Fields.DisplayOrder",
+                "Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder",
+                "Admin.Catalog.Products.BundleItems.Fields.DisplayOrder",
+                "Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.DisplayOrder",
+                "Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.DisplayOrder",
+                "Admin.Catalog.Products.SpecificationAttributes.Fields.DisplayOrder",
+                "Admin.Catalog.Attributes.SpecificationAttributes.Fields.DisplayOrder",
+                "Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.DisplayOrder",
+                "Admin.Catalog.Categories.Fields.DisplayOrder",
+                "Admin.Catalog.Manufacturers.Fields.DisplayOrder",
+                "Admin.Configuration.Countries.Fields.DisplayOrder",
+                "Admin.Configuration.Currencies.Fields.DisplayOrder",
+                "Admin.Configuration.DeliveryTimes.Fields.DisplayOrder",
+                "Admin.Configuration.Measures.Dimensions.Fields.DisplayOrder",
+                "Admin.Configuration.Measures.Weights.Fields.DisplayOrder",
+                "Admin.Configuration.Countries.States.Fields.DisplayOrder",
+                "Admin.ContentManagement.Forums.ForumGroup.Fields.DisplayOrder",
+                "Admin.ContentManagement.Forums.Forum.Fields.DisplayOrder",
+                "Admin.Configuration.Languages.Fields.DisplayOrder",
+                "Admin.Catalog.Attributes.CheckoutAttributes.Fields.DisplayOrder",
+                "Admin.Catalog.Attributes.CheckoutAttributes.Values.Fields.DisplayOrder",
+                "Admin.Configuration.Plugins.Fields.DisplayOrder",
+                "Admin.ContentManagement.Polls.Answers.Fields.DisplayOrder",
+                "Admin.ContentManagement.Polls.Fields.DisplayOrder",
+                "Admin.Configuration.Shipping.Methods.Fields.DisplayOrder",
+                "Admin.Configuration.Stores.Fields.DisplayOrder",
+                "Admin.Configuration.Tax.Categories.Fields.DisplayOrder"
+            );
+
+            builder.AddOrUpdate("Common.DisplayOrder.Hint",
+                "Specifies display order. 1 represents the top of the list.",
+                "Legt die Anzeige-Priorität fest. 1 steht bspw. für das erste Element in der Liste.");
         }
     }
 }

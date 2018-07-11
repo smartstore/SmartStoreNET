@@ -45,7 +45,7 @@ namespace SmartStore.Admin.Models.Localization
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Published")]
         public bool Published { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]

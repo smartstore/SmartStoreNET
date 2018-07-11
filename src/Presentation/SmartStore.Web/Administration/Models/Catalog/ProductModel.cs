@@ -83,7 +83,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.HomePageDisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int HomePageDisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaKeywords")]
@@ -422,7 +422,7 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.ShowOnProductPage")]
             public bool? ShowOnProductPage { get; set; }
 
-            [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.DisplayOrder")]
+            [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
 
             public IList<SelectListItem> AvailableAttributes { get; set; }
@@ -440,7 +440,7 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Products.Pictures.Fields.Picture")]
             public string PictureUrl { get; set; }
 
-            [SmartResourceDisplayName("Admin.Catalog.Products.Pictures.Fields.DisplayOrder")]
+            [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
         }
         
@@ -457,7 +457,7 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Products.Categories.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 
-            [SmartResourceDisplayName("Admin.Catalog.Products.Categories.Fields.DisplayOrder")]
+            [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
         }
 
@@ -474,7 +474,7 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Products.Manufacturers.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 
-            [SmartResourceDisplayName("Admin.Catalog.Products.Manufacturers.Fields.DisplayOrder")]
+            [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
         }
 
@@ -489,7 +489,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public string ProductTypeName { get; set; }
 			public string ProductTypeLabelHint { get; set; }
             
-            [SmartResourceDisplayName("Admin.Catalog.Products.RelatedProducts.Fields.DisplayOrder")]
+            [SmartResourceDisplayName("Common.DisplayOrder")]
             public int DisplayOrder { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
@@ -508,7 +508,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public string ProductTypeName { get; set; }
 			public string ProductTypeLabelHint { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder")]
+			[SmartResourceDisplayName("Common.DisplayOrder")]
 			public int DisplayOrder { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
@@ -535,7 +535,7 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Quantity")]
 			public int Quantity { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.DisplayOrder")]
+			[SmartResourceDisplayName("Common.DisplayOrder")]
 			public int DisplayOrder { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Discount")]
@@ -621,7 +621,7 @@ namespace SmartStore.Admin.Models.Catalog
 			//we don't name it DisplayOrder because Telerik has a small bug 
 			//"if we have one more editor with the same name on a page, it doesn't allow editing"
 			//in our case it's category.DisplayOrder
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.DisplayOrder")]
+			[SmartResourceDisplayName("Common.DisplayOrder")]
 			public int DisplayOrder1 { get; set; }
 
 			public string ViewEditUrl { get; set; }
@@ -683,7 +683,7 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.IsPreSelected")]
 			public bool IsPreSelected { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.DisplayOrder")]
+			[SmartResourceDisplayName("Common.DisplayOrder")]
 			public int DisplayOrder { get; set; }
  
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ValueTypeId")]

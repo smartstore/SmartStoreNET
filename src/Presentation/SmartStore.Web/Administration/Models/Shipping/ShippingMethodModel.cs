@@ -27,7 +27,7 @@ namespace SmartStore.Admin.Models.Shipping
         [AllowHtml]
         public string Description { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.IgnoreCharges")]

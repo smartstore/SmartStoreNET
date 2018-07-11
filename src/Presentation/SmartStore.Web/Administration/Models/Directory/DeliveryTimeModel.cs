@@ -31,7 +31,7 @@ namespace SmartStore.Admin.Models.Directory
         [AllowHtml]
         public string ColorHexValue { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.DeliveryTimes.Fields.IsDefault")]

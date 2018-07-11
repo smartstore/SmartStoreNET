@@ -25,7 +25,7 @@ namespace SmartStore.Admin.Models.Catalog
 		[AllowHtml, SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias")]
 		public string Alias { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder {get;set;}
         
         public IList<SpecificationAttributeOptionLocalizedModel> Locales { get; set; }

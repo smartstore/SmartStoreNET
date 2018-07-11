@@ -1,8 +1,8 @@
-﻿using System.Globalization;
-using System.Threading;
-using SmartStore.Tests;
-using SmartStore.Web.Framework.Validators;
+﻿using FluentValidation;
 using NUnit.Framework;
+using SmartStore.Tests;
+using System.Globalization;
+using System.Threading;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators
 {
@@ -17,7 +17,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 
             _validator = new TestValidator {
-				v => v.RuleFor(x => x.CreditCard).IsCreditCard()
+				v => v.RuleFor(x => x.CreditCard).CreditCard()
 			};
         }
 

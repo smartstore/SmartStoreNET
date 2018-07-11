@@ -203,21 +203,6 @@
       <LocaleResource Name="YesEnterIban">
         <Value>Yes</Value>
       </LocaleResource>
-      <LocaleResource Name="DirectDebitAccountHolderRequired">
-        <Value>Please enter the name of the account holder.</Value>
-      </LocaleResource>
-      <LocaleResource Name="DirectDebitAccountNumberRequired">
-        <Value>Please enter your account number.</Value>
-      </LocaleResource>
-      <LocaleResource Name="DirectDebitBankCodeRequired">
-        <Value>Please enter the bank code.</Value>
-      </LocaleResource>
-      <LocaleResource Name="DirectDebitIBANRequired">
-        <Value>Please enter the IBAN (International Bank Account Number).</Value>
-      </LocaleResource>
-      <LocaleResource Name="DirectDebitBICRequired">
-        <Value>Please enter the BIC (Bank Interchange Code).</Value>
-      </LocaleResource>
     </Children>
   </LocaleResource>
 

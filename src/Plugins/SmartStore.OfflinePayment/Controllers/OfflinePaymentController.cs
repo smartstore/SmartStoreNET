@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Autofac;
+﻿using Autofac;
 using FluentValidation;
 using FluentValidation.Results;
 using SmartStore.OfflinePayment.Models;
 using SmartStore.OfflinePayment.Settings;
-using SmartStore.OfflinePayment.Validators;
 using SmartStore.Services;
+using SmartStore.Services.Media;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
-using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Theming;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 
 namespace SmartStore.OfflinePayment.Controllers
 {
 
-	public class OfflinePaymentController : PaymentControllerBase
+    public class OfflinePaymentController : PaymentControllerBase
     {
 		private readonly IComponentContext _ctx;
 		private readonly HttpContextBase _httpContext;
@@ -150,7 +149,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			{
 				if (type == "Manual")
 				{
-					validator = new ManualPaymentInfoValidator(Services.Localization);
+					validator = new ManualPaymentInfoValidator(T);
 					var model = new ManualPaymentInfoModel
 					{
 						CardholderName = form["CardholderName"],
@@ -161,7 +160,7 @@ namespace SmartStore.OfflinePayment.Controllers
 				}
 				else if (type == "DirectDebit")
 				{
-					validator = new DirectDebitPaymentInfoValidator(Services.Localization);
+					validator = new DirectDebitPaymentInfoValidator();
 					var model = new DirectDebitPaymentInfoModel
 					{
 						EnterIBAN = form["EnterIBAN"],

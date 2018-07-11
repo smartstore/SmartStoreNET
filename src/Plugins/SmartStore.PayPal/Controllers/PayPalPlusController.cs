@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Mvc;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
@@ -13,7 +7,6 @@ using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Validators;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -27,10 +20,16 @@ using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.Theming;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public class PayPalPlusController : PayPalRestApiControllerBase<PayPalPlusPaymentSettings>
+    public class PayPalPlusController : PayPalRestApiControllerBase<PayPalPlusPaymentSettings>
 	{
 		private readonly HttpContextBase _httpContext;
 		private readonly PluginMediator _pluginMediator;
@@ -191,7 +190,7 @@ namespace SmartStore.PayPal.Controllers
 			var oldSecret = settings.Secret;
 			var oldProfileId = settings.ExperienceProfileId;
 
-			var validator = new PayPalPlusConfigValidator(Services.Localization, x =>
+			var validator = new PayPalPlusConfigValidator(T, x =>
 			{
 				return storeScope == 0 || storeDependingSettingHelper.IsOverrideChecked(settings, x, form);
 			});

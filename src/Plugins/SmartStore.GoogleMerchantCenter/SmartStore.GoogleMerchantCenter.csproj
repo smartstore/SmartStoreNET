@@ -193,7 +193,6 @@
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Services\IGoogleFeedService.cs" />
     <Compile Include="Services\GoogleFeedService.cs" />
-    <Compile Include="Validators\ProfileConfigurationValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

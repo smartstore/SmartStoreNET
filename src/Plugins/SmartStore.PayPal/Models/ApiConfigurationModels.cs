@@ -4,6 +4,10 @@ using SmartStore.ComponentModel;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Validators;
+using SmartStore.Core.Localization;
+using System;
+using FluentValidation;
 
 namespace SmartStore.PayPal.Models
 {
@@ -104,8 +108,7 @@ namespace SmartStore.PayPal.Models
 			}
         }
     }
-
-
+    
 	public class PayPalPlusConfigurationModel : ApiConfigurationModel
 	{
 		public PayPalPlusConfigurationModel()
@@ -143,4 +146,27 @@ namespace SmartStore.PayPal.Models
 			}
 		}
 	}
+
+    public class PayPalPlusConfigValidator : SmartValidatorBase<PayPalPlusConfigurationModel>
+    {
+        public PayPalPlusConfigValidator(Localizer T, Func<string, bool> addRule)
+        {
+            if (addRule("ClientId"))
+            {
+                RuleFor(x => x.ClientId).NotEmpty();
+            }
+
+            if (addRule("Secret"))
+            {
+                RuleFor(x => x.Secret).NotEmpty();
+            }
+
+            if (addRule("ThirdPartyPaymentMethods"))
+            {
+                RuleFor(x => x.ThirdPartyPaymentMethods)
+                    .Must(x => x == null || x.Count <= 5)
+                    .WithMessage(T("Plugins.Payments.PayPalPlus.ValidateThirdPartyPaymentMethods"));
+            }
+        }
+    }
 }

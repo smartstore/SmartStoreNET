@@ -48,8 +48,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<CommonSettings> commonSettings,
 			Lazy<SeoSettings> seoSettings,
 			Lazy<CustomerSettings> customerSettings,
-			Lazy<PrivacySettings> privacySettings,
-			Services.Directory.ICountryService countryService)
+			Lazy<PrivacySettings> privacySettings)
         {
 			_categoryService = categoryService;
 			_productService = productService;

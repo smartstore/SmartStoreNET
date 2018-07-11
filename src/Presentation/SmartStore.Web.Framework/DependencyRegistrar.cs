@@ -415,7 +415,7 @@ namespace SmartStore.Web.Framework
 						}
 						catch
 						{
-							//return new SmartObjectContext();
+							// return new SmartObjectContext();
 							return null;
 						}
 

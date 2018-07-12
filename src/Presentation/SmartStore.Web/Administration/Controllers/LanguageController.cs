@@ -407,7 +407,7 @@ namespace SmartStore.Admin.Controllers
                 var language = model.ToEntity();
                 _languageService.InsertLanguage(language);
 
-				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
+				SaveStoreMappings(language, model);
 
 				var plugins = _pluginFinder.GetPluginDescriptors(true);
 				var filterLanguages = new List<Language>() { language };
@@ -511,7 +511,7 @@ namespace SmartStore.Admin.Controllers
                 language = model.ToEntity(language);
                 _languageService.UpdateLanguage(language);
 
-				_storeMappingService.SaveStoreMappings(language, model.SelectedStoreIds);
+				SaveStoreMappings(language, model);
 
                 NotifySuccess(T("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");

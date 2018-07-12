@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Seo;
 using System.Web.Routing;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Web.Controllers
 {
@@ -20,6 +21,7 @@ namespace SmartStore.Web.Controllers
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly IAclService _aclService;
 		private readonly ILocalizationService _localizationService;
         private readonly ICacheManager _cacheManager;
 		private readonly SeoSettings _seoSettings;
@@ -30,6 +32,7 @@ namespace SmartStore.Web.Controllers
             IWorkContext workContext,
 			IStoreContext storeContext,
 			IStoreMappingService storeMappingService,
+			IAclService aclService,
 			ICacheManager cacheManager,
 			SeoSettings seoSettings)
         {
@@ -37,6 +40,7 @@ namespace SmartStore.Web.Controllers
             _workContext = workContext;
 			_storeContext = storeContext;
 			_storeMappingService = storeMappingService;
+			_aclService = aclService;
 			_localizationService = localizationService;
             _cacheManager = cacheManager;
 			_seoSettings = seoSettings;
@@ -83,7 +87,7 @@ namespace SmartStore.Web.Controllers
 			if (!_seoSettings.RedirectLegacyTopicUrls)
 				return HttpNotFound();
 
-			var topic = _topicService.GetTopicBySystemName(systemName);
+			var topic = _topicService.GetTopicBySystemName(systemName, 0, false);
 			if (topic == null)
 				return HttpNotFound();
 
@@ -96,7 +100,7 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult TopicDetails(int topicId, bool popup = false)
 		{
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_ID_KEY, topicId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_ID_KEY, topicId, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, _workContext.CurrentCustomer.GetRolesIdent());
 			var cacheModel = _cacheManager.Get(cacheKey, () => 
 			{
 				var topic = _topicService.GetTopicById(topicId);
@@ -104,6 +108,9 @@ namespace SmartStore.Web.Controllers
 					return null;
 
 				if (!_storeMappingService.Authorize(topic))
+					return null;
+
+				if (!_aclService.Authorize(topic))
 					return null;
 
 				return PrepareTopicModel(topic);
@@ -125,14 +132,11 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult TopicBlock(string systemName, bool bodyOnly = false, bool isLead = false)
         {
-			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName.ToLower(), _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_BY_SYSTEMNAME_KEY, systemName.ToLower(), _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, _workContext.CurrentCustomer.GetRolesIdent());
             var cacheModel = _cacheManager.Get(cacheKey, () => 
 			{
-				var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id);
+				var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id, true);
 				if (topic == null)
-					return null;
-
-				if (!_storeMappingService.Authorize(topic))
 					return null;
 
 				return PrepareTopicModel(topic);
@@ -168,6 +172,11 @@ namespace SmartStore.Web.Controllers
 
             var topic = _topicService.GetTopicById(id);
 
+			if (!_aclService.Authorize(topic))
+			{
+				topic = null;
+			}
+
             if (topic != null)
             {
                 if (topic.Password != null && topic.Password.Equals(password))
@@ -181,6 +190,7 @@ namespace SmartStore.Web.Controllers
                     error = _localizationService.GetResource("Topic.WrongPassword");
                 }
             }
+
             return Json(new { Authenticated = authResult, Title = title, Body = body, Error = error });
         }
     }

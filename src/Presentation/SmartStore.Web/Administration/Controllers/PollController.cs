@@ -168,7 +168,7 @@ namespace SmartStore.Admin.Controllers
 
                 _pollService.InsertPoll(poll);
 
-				_storeMappingService.SaveStoreMappings<Poll>(poll, model.SelectedStoreIds);
+				SaveStoreMappings(poll, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
@@ -219,7 +219,7 @@ namespace SmartStore.Admin.Controllers
 
                 _pollService.UpdatePoll(poll);
 
-				_storeMappingService.SaveStoreMappings<Poll>(poll, model.SelectedStoreIds);
+				SaveStoreMappings(poll, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");

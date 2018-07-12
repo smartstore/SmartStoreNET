@@ -208,7 +208,7 @@ namespace SmartStore.Admin.Controllers
 			else
 				_paymentService.UpdatePaymentMethod(paymentMethod);
 
-			_storeMappingService.SaveStoreMappings(paymentMethod, model.SelectedStoreIds);
+			SaveStoreMappings(paymentMethod, model);
 
 			foreach (var localized in model.Locales)
 			{

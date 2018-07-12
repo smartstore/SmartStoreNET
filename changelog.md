@@ -1,9 +1,10 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
 ### New Features
 * #1144 Enable multi server search index
+* Made Topic ACL enabled
 * Implemented paging & filtering for Topic grid
 * **BeezUp**:
 	* #1459 Add option to only submit one category name per product

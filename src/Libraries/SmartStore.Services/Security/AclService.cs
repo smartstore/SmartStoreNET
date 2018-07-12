@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Security
 {
@@ -21,13 +22,20 @@ namespace SmartStore.Services.Security
         private readonly IRepository<AclRecord> _aclRecordRepository;
         private readonly Work<IWorkContext> _workContext;
         private readonly ICacheManager _cacheManager;
+		private readonly ICustomerService _customerService;
+
 		private bool? _hasActiveAcl;
 
-        public AclService(ICacheManager cacheManager, Work<IWorkContext> workContext, IRepository<AclRecord> aclRecordRepository)
+        public AclService(
+			ICacheManager cacheManager, 
+			Work<IWorkContext> workContext, 
+			IRepository<AclRecord> aclRecordRepository,
+			ICustomerService customerService)
         {
             _cacheManager = cacheManager;
             _workContext = workContext;
             _aclRecordRepository = aclRecordRepository;
+			_customerService = customerService;
 		}
 
 		public bool HasActiveAcl 
@@ -83,8 +91,30 @@ namespace SmartStore.Services.Security
 			return aclRecords;
 		}
 
+		public virtual void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported
+		{
+			var existingAclRecords = GetAclRecords(entity);
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
 
-        public virtual void InsertAclRecord(AclRecord aclRecord)
+			foreach (var customerRole in allCustomerRoles)
+			{
+				if (selectedCustomerRoleIds != null && selectedCustomerRoleIds.Contains(customerRole.Id))
+				{
+					// New role
+					if (!existingAclRecords.Any(x => x.CustomerRoleId == customerRole.Id))
+						InsertAclRecord(entity, customerRole.Id);
+				}
+				else
+				{
+					// Removed role
+					var aclRecordToDelete = existingAclRecords.FirstOrDefault(x => x.CustomerRoleId == customerRole.Id);
+					if (aclRecordToDelete != null)
+						DeleteAclRecord(aclRecordToDelete);
+				}
+			}
+		}
+
+		public virtual void InsertAclRecord(AclRecord aclRecord)
         {
 			Guard.NotNull(aclRecord, nameof(aclRecord));
 

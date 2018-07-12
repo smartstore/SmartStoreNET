@@ -21,7 +21,8 @@ namespace SmartStore.Services.Stores
 		private readonly IStoreService _storeService;
 		private readonly ICacheManager _cacheManager;
 
-		public StoreMappingService(ICacheManager cacheManager,
+		public StoreMappingService(
+			ICacheManager cacheManager,
 			IStoreContext storeContext,
 			IStoreService storeService,
 			IRepository<StoreMapping> storeMappingRepository)

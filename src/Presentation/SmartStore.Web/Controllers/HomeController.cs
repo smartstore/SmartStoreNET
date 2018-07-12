@@ -79,7 +79,7 @@ namespace SmartStore.Web.Controllers
 		[GdprConsent]
 		public ActionResult ContactUs()
 		{
-            var topic = _topicService.Value.GetTopicBySystemName("ContactUs");
+            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
 
             var model = new ContactUsModel
 			{

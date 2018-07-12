@@ -6,6 +6,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Media;
 using SmartStore.Services.Topics;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Security;
 using System.Web.Routing;
 
 namespace SmartStore.Web.Framework
@@ -69,16 +70,18 @@ namespace SmartStore.Web.Framework
 
 		public static string TopicSeName(this UrlHelper urlHelper, string systemName)
 		{
-			var workContext = EngineContext.Current.Resolve<IWorkContext>();
-			var storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
-			var cache = EngineContext.Current.Resolve<ICacheManager>();
+			var container = EngineContext.Current.ContainerManager;
 
-			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id, storeId);
+			var workContext = container.Resolve<IWorkContext>();
+			var storeId = container.Resolve<IStoreContext>().CurrentStore.Id;
+			var cache = container.Resolve<ICacheManager>();
+
+			var cacheKey = string.Format(FrameworkCacheConsumer.TOPIC_SENAME_BY_SYSTEMNAME, systemName.ToLower(), workContext.WorkingLanguage.Id, storeId, workContext.CurrentCustomer.GetRolesIdent());
 			var seName = cache.Get(cacheKey, () =>
 			{
-				var topicService = EngineContext.Current.Resolve<ITopicService>();
-				var topic = topicService.GetTopicBySystemName(systemName, storeId);
-
+				var topicService = container.Resolve<ITopicService>();
+				var topic = topicService.GetTopicBySystemName(systemName, storeId, true);
+				
 				return topic?.GetSeName() ?? string.Empty;
 			});
 

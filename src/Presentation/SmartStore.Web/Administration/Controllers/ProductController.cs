@@ -476,64 +476,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		protected void UpdateProductAcl(Product product, ProductModel model)
-		{
-			product.SubjectToAcl = model.SubjectToAcl;
-
-			var existingAclRecords = _aclService.GetAclRecords(product);
-			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-			foreach (var customerRole in allCustomerRoles)
-			{
-				if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-				{
-					//new role
-					if (existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).Count() == 0)
-						_aclService.InsertAclRecord(product, customerRole.Id);
-				}
-				else
-				{
-					//removed role
-					var aclRecordToDelete = existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).FirstOrDefault();
-					if (aclRecordToDelete != null)
-						_aclService.DeleteAclRecord(aclRecordToDelete);
-				}
-			}
-		}
-
-		[NonAction]
-		protected void UpdateStoreMappings(Product product, ProductModel model)
-		{
-			product.LimitedToStores = model.LimitedToStores;
-
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(product);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-					{
-						_storeMappingService.InsertStoreMapping(product, store.Id);
-					}
-				}
-				else
-				{
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-					{
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-					}
-				}
-			}
-		}
-
-		[NonAction]
-		private void UpdateLocales(Product product, ProductModel model, bool general, bool seo, bool bundles)
-		{
-			// TODO: Obsolete
-		}
-
-		[NonAction]
 		private void UpdateLocales(ProductTag productTag, ProductTagModel model)
 		{
 			foreach (var localized in model.Locales)
@@ -1324,10 +1266,10 @@ namespace SmartStore.Admin.Controllers
 						UpdateProductSeo(product, model);
 						break;
 					case "acl":
-						UpdateProductAcl(product, model);
+						SaveAclMappings(product, model);
 						break;
 					case "stores":
-						UpdateStoreMappings(product, model);
+						SaveStoreMappings(product, model);
 						break;
 				}
 			}

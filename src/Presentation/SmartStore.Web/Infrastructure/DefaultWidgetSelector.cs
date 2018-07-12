@@ -84,7 +84,7 @@ namespace SmartStore.Web.Infrastructure
             #region Topic Widgets
 
             // add special "topic widgets" to the list
-			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, storeId, _workContext.WorkingLanguage.Id);
+			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, storeId, _workContext.WorkingLanguage.Id, _workContext.CurrentCustomer.GetRolesIdent());
             // get topic widgets from STATIC cache
 			var topicWidgets = _services.Cache.Get(allTopicsCacheKey, () =>
             {

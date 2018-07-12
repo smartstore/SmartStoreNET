@@ -173,12 +173,12 @@ namespace SmartStore.Admin.Controllers
                 newsItem.CreatedOnUtc = DateTime.UtcNow;
                 _newsService.InsertNews(newsItem);
 
-                //search engine name
+                // search engine name
                 var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<NewsItem>(newsItem, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(newsItem, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
@@ -231,12 +231,12 @@ namespace SmartStore.Admin.Controllers
                 newsItem.EndDateUtc = model.EndDate;
                 _newsService.UpdateNews(newsItem);
 
-                //search engine name
+                // search engine name
                 var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<NewsItem>(newsItem, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(newsItem, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");

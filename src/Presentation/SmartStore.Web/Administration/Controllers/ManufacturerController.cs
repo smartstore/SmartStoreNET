@@ -353,7 +353,7 @@ namespace SmartStore.Admin.Controllers
 				UpdatePictureSeoNames(manufacturer);
 				
 				// Stores
-				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
+				SaveStoreMappings(manufacturer, model);
 
                 // activity log
                 _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
@@ -448,7 +448,7 @@ namespace SmartStore.Admin.Controllers
 				UpdatePictureSeoNames(manufacturer);
 				
 				// Stores
-				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
+				SaveStoreMappings(manufacturer, model);
 
                 // activity log
                 _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);

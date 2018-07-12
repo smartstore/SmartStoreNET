@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -26,19 +27,25 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IUrlRecordService _urlRecordService;
+		private readonly IAclService _aclService;
+		private readonly ICustomerService _customerService;
 
 		public TopicController(
 			ITopicService topicService, 
 			ILanguageService languageService,
             ILocalizedEntityService localizedEntityService, 
             IStoreMappingService storeMappingService, 
-			IUrlRecordService urlRecordService)
+			IUrlRecordService urlRecordService,
+			IAclService aclService,
+			ICustomerService customerService)
         {
             _topicService = topicService;
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
 			_storeMappingService = storeMappingService;
 			_urlRecordService = urlRecordService;
+			_aclService = aclService;
+			_customerService = customerService;
 		}
 
         [NonAction]
@@ -88,6 +95,26 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+		}
+
+		[NonAction]
+		private void PrepareAclModel(TopicModel model, Topic topic, bool excludeProperties)
+		{
+			Guard.NotNull(model, nameof(model));
+
+			if (!excludeProperties)
+			{
+				if (topic != null)
+				{
+					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(topic);
+				}
+				else
+				{
+					model.SelectedCustomerRoleIds = new int[0];
+				}
+			}
+
+			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
 		}
 
 		private string GetTopicUrl(Topic topic)
@@ -154,7 +181,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
 			{
-				var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize).AlterQuery(q =>
+				var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize, true).AlterQuery(q =>
 				{
 					var q2 = q;
 
@@ -203,10 +230,10 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new TopicModel();
-			//Stores
+		
 			PrepareStoresMappingModel(model, null, false);
-            //locales
-            AddLocales(_languageService, model.Locales);
+			PrepareAclModel(model, null, false);
+			AddLocales(_languageService, model.Locales);
 
             model.TitleTag = "h1";
 
@@ -238,7 +265,9 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-                UpdateLocales(topic, model);
+				SaveStoreMappings(topic, model);
+				SaveAclMappings(topic, model);
+				UpdateLocales(topic, model);
 
                 NotifySuccess(T("Admin.ContentManagement.Topics.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = topic.Id }) : RedirectToAction("List");
@@ -246,8 +275,9 @@ namespace SmartStore.Admin.Controllers
 
             // If we got this far, something failed, redisplay form.
 			PrepareStoresMappingModel(model, null, true);
+			PrepareAclModel(model, null, true);
 
-            return View(model);
+			return View(model);
         }
 
         public ActionResult Edit(int id)
@@ -263,8 +293,9 @@ namespace SmartStore.Admin.Controllers
 			model.Url = GetTopicUrl(topic);
 			
 			PrepareStoresMappingModel(model, topic, false);
-            
-            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			PrepareAclModel(model, topic, false);
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Title = topic.GetLocalized(x => x.Title, languageId, false, false);
                 locale.Body = topic.GetLocalized(x => x.Body, languageId, false, false);
@@ -309,9 +340,9 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
 				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-				_storeMappingService.SaveStoreMappings<Topic>(topic, model.SelectedStoreIds);
-                
-                UpdateLocales(topic, model);
+				SaveStoreMappings(topic, model);
+				SaveAclMappings(topic, model);
+				UpdateLocales(topic, model);
 
                 Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 
@@ -322,8 +353,9 @@ namespace SmartStore.Admin.Controllers
 			// If we got this far, something failed, redisplay form.
 			model.Url = GetTopicUrl(topic);
 			PrepareStoresMappingModel(model, topic, true);
+			PrepareAclModel(model, topic, true);
 
-            return View(model);
+			return View(model);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -351,7 +383,7 @@ namespace SmartStore.Admin.Controllers
 		// AJAX
 		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false)
 		{
-			var query = from x in _topicService.GetAllTopics().SourceQuery
+			var query = from x in _topicService.GetAllTopics(showHidden: true).SourceQuery
 						where (includeWidgets || !x.RenderAsWidget)
 						select x;
 

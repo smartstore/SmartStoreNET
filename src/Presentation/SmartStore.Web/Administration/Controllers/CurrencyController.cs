@@ -343,7 +343,7 @@ namespace SmartStore.Admin.Controllers
                 
                 UpdateLocales(currency, model);
 				
-				_storeMappingService.SaveStoreMappings(currency, model.SelectedStoreIds);
+				SaveStoreMappings(currency, model);
 
                 NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
@@ -414,7 +414,7 @@ namespace SmartStore.Admin.Controllers
                 
 					UpdateLocales(currency, model);
 				
-					_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
+					SaveStoreMappings(currency, model);
 
 					NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Updated"));
 					return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");

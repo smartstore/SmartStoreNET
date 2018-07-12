@@ -164,7 +164,7 @@ namespace SmartStore.Admin.Controllers
 
 				UpdateLocales(model, forumGroup);
 
-				_storeMappingService.SaveStoreMappings<ForumGroup>(forumGroup, model.SelectedStoreIds);
+				SaveStoreMappings(forumGroup, model);
 
                 NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Added"));
 
@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
 
 				UpdateLocales(model, forumGroup);
 
-				_storeMappingService.SaveStoreMappings<ForumGroup>(forumGroup, model.SelectedStoreIds);
+				SaveStoreMappings(forumGroup, model);
 
                 NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Updated"));
 

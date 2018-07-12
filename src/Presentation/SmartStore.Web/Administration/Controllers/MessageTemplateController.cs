@@ -217,7 +217,7 @@ namespace SmartStore.Admin.Controllers
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
 				
 				// Stores
-				_storeMappingService.SaveStoreMappings<MessageTemplate>(messageTemplate, model.SelectedStoreIds);
+				SaveStoreMappings(messageTemplate, model);
                 
 				// locales
                 UpdateLocales(messageTemplate, model);

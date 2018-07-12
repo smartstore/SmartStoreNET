@@ -5,8 +5,9 @@
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("topic-edit").Style(TabsStyle.Material).Items(x =>
 {
-	x.Add().Text(T("Admin.ContentManagement.Topics.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
+	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
 	if (Model.Id > 0)
@@ -285,6 +286,11 @@
 @helper TabStores()
 {
 	@Html.Partial("StoreSelector", Model)
+}
+
+@helper TabAcl()
+{
+	@Html.Partial("AclSelector", Model)
 }
 
 @helper TabGenericAttributes()

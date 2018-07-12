@@ -10,7 +10,7 @@ using System.Web.Mvc;
 namespace SmartStore.Admin.Models.Topics
 {
     [Validator(typeof(TopicValidator))]
-    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector
+    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>, IStoreSelector, IAclSelector
     {       
         public TopicModel()
         {
@@ -32,6 +32,11 @@ namespace SmartStore.Admin.Models.Topics
 		public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
+
+		// ACL
+		public bool SubjectToAcl { get; set; }
+		public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+		public int[] SelectedCustomerRoleIds { get; set; }
 
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]

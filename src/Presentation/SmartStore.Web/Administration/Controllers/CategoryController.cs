@@ -209,29 +209,6 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
 		}
 
-        [NonAction]
-        protected void SaveCategoryAcl(Category category, CategoryModel model)
-        {
-            var existingAclRecords = _aclService.GetAclRecords(category);
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            foreach (var customerRole in allCustomerRoles)
-            {
-                if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-                {
-                    //new role
-                    if (existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).Count() == 0)
-                        _aclService.InsertAclRecord(category, customerRole.Id);
-                }
-                else
-                {
-                    //removed role
-                    var aclRecordToDelete = existingAclRecords.Where(acl => acl.CustomerRoleId == customerRole.Id).FirstOrDefault();
-                    if (aclRecordToDelete != null)
-                        _aclService.DeleteAclRecord(aclRecordToDelete);
-                }
-            }
-        }
-
 		[NonAction]
 		private void PrepareStoresMappingModel(CategoryModel model, Category category, bool excludeProperties)
 		{
@@ -559,11 +536,11 @@ namespace SmartStore.Admin.Controllers
                 //update picture seo file name
                 UpdatePictureSeoNames(category);
 
-                //ACL (customer roles)
-                SaveCategoryAcl(category, model);
+                // ACL (customer roles)
+                SaveAclMappings(category, model);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<Category>(category, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(category, model);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
@@ -632,9 +609,7 @@ namespace SmartStore.Admin.Controllers
 
             PrepareTemplatesModel(model);
             PrepareCategoryModel(model, category, false);
-
             PrepareAclModel(model, category, false);
-
 			PrepareStoresMappingModel(model, category, false);
 
             return View(model);
@@ -686,24 +661,24 @@ namespace SmartStore.Admin.Controllers
                 }
                 _categoryService.UpdateCategory(category);
 
-                //update "HasDiscountsApplied" property
+                // update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
 
-                //update picture seo file name
+                // update picture seo file name
                 UpdatePictureSeoNames(category);
 
-                //ACL
-                SaveCategoryAcl(category, model);
+                // ACL
+                SaveAclMappings(category, model);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<Category>(category, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(category, model);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
                 //activity log
                 _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Updated"));
+                NotifySuccess(T("Admin.Catalog.Categories.Updated"));
                 return continueEditing ? RedirectToAction("Edit", category.Id) : RedirectToAction("Index");
             }
 

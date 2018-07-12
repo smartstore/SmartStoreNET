@@ -103,9 +103,10 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {0} : topic id/systemname
 		/// {1} : language id
 		/// {2} : store id
+		/// {3} : role ids
 		/// </remarks>
-		public const string TOPIC_BY_SYSTEMNAME_KEY = "pres:topic:page.bysystemname-{0}-{1}-{2}";
-		public const string TOPIC_BY_ID_KEY = "pres:topic:page.byid-{0}-{1}-{2}";
+		public const string TOPIC_BY_SYSTEMNAME_KEY = "pres:topic:page.bysystemname-{0}-{1}-{2}-{3}";
+		public const string TOPIC_BY_ID_KEY = "pres:topic:page.byid-{0}-{1}-{2}-{3}";
 		public const string TOPIC_PATTERN_KEY = "pres:topic:page*";
 
 		/// <summary>
@@ -114,8 +115,9 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// <remarks>
 		/// {0} : store id
 		/// {1} : language id
+		/// {2} : role ids
 		/// </remarks>
-		public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}";
+		public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}-{2}";
 		public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget*";
 
 		/// <summary>

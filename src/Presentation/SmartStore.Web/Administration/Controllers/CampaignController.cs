@@ -118,7 +118,7 @@ namespace SmartStore.Admin.Controllers
                 campaign.CreatedOnUtc = DateTime.UtcNow;
                 _campaignService.InsertCampaign(campaign);
 
-				_storeMappingService.SaveStoreMappings<Campaign>(campaign, model.SelectedStoreIds);
+				SaveStoreMappings(campaign, model);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
@@ -162,7 +162,7 @@ namespace SmartStore.Admin.Controllers
                 campaign = model.ToEntity(campaign);
                 _campaignService.UpdateCampaign(campaign);
 
-				_storeMappingService.SaveStoreMappings<Campaign>(campaign, model.SelectedStoreIds);
+				SaveStoreMappings(campaign, model);
 
                 NotifySuccess(T("Admin.Promotions.Campaigns.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");

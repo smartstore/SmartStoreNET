@@ -773,12 +773,9 @@ select.is-invalid + .select2:not(.select2-container--open) {
  */
 
 .input-group .select2-container--bootstrap {
-	display: table;
-	table-layout: fixed;
-	position: relative;
+    flex: 1 1 auto;
+    width: 1%;
 	z-index: 2;
-	float: left;
-	width: 100%;
 	margin-bottom: 0;
 	/**
    * Adjust z-index like Bootstrap does to show the focus-box-shadow

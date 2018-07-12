@@ -347,5 +347,46 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(T("Admin.ContentManagement.Topics.Deleted"));
             return RedirectToAction("List");
         }
+
+		// AJAX
+		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false)
+		{
+			var query = from x in _topicService.GetAllTopics().SourceQuery
+						where (includeWidgets || !x.RenderAsWidget)
+						select x;
+
+			if (useTitles)
+			{
+				query = query.Where(x => !string.IsNullOrEmpty(x.Title));
+				query = query.OrderBy(x => x.Title);
+			}
+			else
+			{
+				query = query.OrderBy(x => x.SystemName);
+			}
+
+			var topics = query.ToList();
+
+			if (label.HasValue())
+			{
+				var labelTopic = new Topic();
+				if (useTitles)
+					labelTopic.Title = label;
+				else
+					labelTopic.SystemName = label;
+
+				topics.Insert(0, labelTopic);
+			}
+
+			var list = from x in topics
+					   select new
+					   {
+						   id = x.Id.ToString(),
+						   text = useTitles ? x.Title : x.SystemName,
+						   selected = x.Id == selectedId
+					   };
+
+			return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+		}
     }
 }

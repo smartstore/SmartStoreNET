@@ -187,7 +187,7 @@ namespace SmartStore.Admin.Controllers
 
 		#region List
 
-		//ajax
+		// AJAX
 		public ActionResult AllManufacturers(string label, int selectedId)
         {
             var manufacturers = _manufacturerService.GetAllManufacturers(true);

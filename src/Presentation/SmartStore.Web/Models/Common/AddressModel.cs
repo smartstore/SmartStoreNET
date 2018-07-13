@@ -60,10 +60,12 @@ namespace SmartStore.Web.Models.Common
         [AllowHtml]
         public string CountryName { get; set; }
         public bool CountryEnabled { get; set; }
+        public bool CountryRequired { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.StateProvince")]
         public int? StateProvinceId { get; set; }
         public bool StateProvinceEnabled { get; set; }
+        public bool StateProvinceRequired { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.StateProvince")]
         [AllowHtml]

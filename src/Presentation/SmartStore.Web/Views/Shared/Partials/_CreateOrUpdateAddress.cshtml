@@ -82,16 +82,16 @@
     @if (Model.CountryEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.CountryId, new { @class = "col-{0}-3 col-form-label required".FormatInvariant(breakpoint) })
+            @Html.LabelFor(model => model.CountryId, new { @class = "col-{0}-3 col-form-label{1}".FormatInvariant(breakpoint, Model.CountryRequired ? " required" : "") })
             <div class="col-@breakpoint-9">
                 @Html.DropDownList("CountryId", Model.AvailableCountries,
-				new
-				{
-					@class = "form-control country-input country-selector",
-					data_region_control_selector = "#Address_StateProvinceId",
-					data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
-					data_addEmptyStateIfRequired = "true"
-				})
+                new
+                {
+                    @class = "form-control country-input country-selector",
+                    data_region_control_selector = "#Address_StateProvinceId",
+                    data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
+                    data_addEmptyStateIfRequired = "true"
+                })
                 @Html.ValidationMessageFor(model => model.CountryId)
             </div>
         </div>
@@ -100,7 +100,7 @@
     @if (Model.CountryEnabled && Model.StateProvinceEnabled)
     {
         <div class="form-group row">
-            @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-{0}-3 col-form-label".FormatInvariant(breakpoint) })
+            @Html.LabelFor(model => model.StateProvinceId, new { @class = "col-{0}-3 col-form-label{1}".FormatInvariant(breakpoint, Model.StateProvinceRequired ? " required" : "") })
             <div class="col-@breakpoint-9">
                 @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.StateProvinceId)

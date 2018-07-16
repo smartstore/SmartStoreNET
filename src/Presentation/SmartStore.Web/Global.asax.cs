@@ -184,7 +184,7 @@ namespace SmartStore.Web
 			{
 				string name = null;
 
-				if (HostingEnvironment.IsHosted)
+				if (HostingEnvironment.IsHosted && member != null)
 				{
 					var attr = member.GetAttribute<SmartResourceDisplayName>(true);
 					if (attr != null)

@@ -282,6 +282,33 @@
 		};
 	}
 
+    window.renderGoogleRecaptcha = function (containerId, sitekey, invisible) {
+        var frm = $('#' + containerId).closest('form');
+
+        if (frm.length === 0)
+            return;
+
+        var holderId = grecaptcha.render(containerId, {
+            sitekey: sitekey,
+            size: invisible ? 'invisible' : undefined,
+            badge: 'bottomleft',
+            callback: function (token) {
+                if (invisible && frm) {
+                    frm[0].submit();
+                }
+            }
+        });
+
+        if (invisible) {
+            frm.on('submit', function (e) {
+                if ($.validator === undefined || frm.valid() == true) {
+                    e.preventDefault();
+                    grecaptcha.execute(holderId);
+                }
+            });
+        }
+    }
+
     // on document ready
 	$(function () {
 		var rtl = SmartStore.globalization.culture.isRTL;

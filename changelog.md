@@ -6,6 +6,7 @@
 * #1144 Enable multi server search index
 * Made Topic ACL enabled
 * Implemented paging & filtering for Topic grid
+* New security option: Use invisible reCAPTCHA
 * **BeezUp**:
 	* #1459 Add option to only submit one category name per product
 	* Allow to specify export categories per product

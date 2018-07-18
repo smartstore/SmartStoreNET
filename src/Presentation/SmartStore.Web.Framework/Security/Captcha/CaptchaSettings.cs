@@ -17,5 +17,6 @@ namespace SmartStore.Web.Framework.Security
         public bool ShowOnProductReviewPage { get; set; }
         public string ReCaptchaPublicKey { get; set; }
         public string ReCaptchaPrivateKey { get; set; }
-    }
+		public bool UseInvisibleReCaptcha { get; set; }
+	}
 }

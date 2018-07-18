@@ -298,6 +298,15 @@
 		<tbody id="pnlCaptchaSettings">
 			<tr>
 				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.UseInvisibleReCaptcha)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnLoginPage)
 				</td>
 				<td class="adminData">

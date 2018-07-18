@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
@@ -8,30 +9,34 @@ namespace SmartStore.Web.Framework.Security
 {
 	public static class HtmlCaptchaExtensions
 	{
-        public static string GenerateCaptcha(this HtmlHelper helper)
+        public static IHtmlString GenerateCaptcha(this HtmlHelper helper)
         {
-			var sb = new StringBuilder();
             var captchaSettings = EngineContext.Current.Resolve<CaptchaSettings>();
 			var workContext = EngineContext.Current.Resolve<IWorkContext>();
 			var widgetUrl = CommonHelper.GetAppSetting<string>("g:RecaptchaWidgetUrl");
-			var elementId = "GoogleRecaptchaWidget";
+			var ident = CommonHelper.GenerateRandomDigitCode(5).ToString();
+			var elementId = "recaptcha" + ident;
+			var siteKey = captchaSettings.ReCaptchaPublicKey;
+			var callbackName = "recaptchaOnload" + ident;
 
-			var url = "{0}?onload=googleRecaptchaOnloadCallback&render=explicit&hl={1}".FormatInvariant(
+			var url = "{0}?onload={1}&render=explicit&hl={2}".FormatInvariant(
 				widgetUrl,
+				callbackName,
 				workContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower()
 			);
 
-			sb.AppendLine("<script type=\"text/javascript\">");
-			sb.AppendLine("var googleRecaptchaOnloadCallback = function() {");
-			sb.AppendLine("  grecaptcha.render('{0}', {{".FormatInvariant(elementId));
-			sb.AppendLine("    'sitekey' : '{0}'".FormatInvariant(captchaSettings.ReCaptchaPublicKey));
-			sb.AppendLine("  });");
-			sb.AppendLine("};");
-			sb.AppendLine("</script>");
-			sb.AppendLine("<div id=\"{0}\"></div>".FormatInvariant(elementId));
-			sb.AppendLine("<script src=\"{0}\" async defer></script>".FormatInvariant(url));
+			var script = new[] 
+			{
+				"<script>",
+				"	var {0} = function() {{".FormatInvariant(callbackName),
+				"		renderGoogleRecaptcha('{0}', '{1}', {2});".FormatInvariant(elementId, siteKey, captchaSettings.UseInvisibleReCaptcha.ToString().ToLower()),
+				"	};",
+				"</script>",
+				"<div id='{0}' class='g-recaptcha'></div>".FormatInvariant(elementId, siteKey),
+				"<script src='{0}' async defer></script>".FormatInvariant(url),
+			}.StrJoin("");
 
-			return sb.ToString();
+			return MvcHtmlString.Create(script);
         }
     }
 }

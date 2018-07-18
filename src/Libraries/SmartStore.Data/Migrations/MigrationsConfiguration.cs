@@ -321,6 +321,12 @@
             builder.AddOrUpdate("Common.DisplayOrder.Hint",
                 "Specifies display order. 1 represents the top of the list.",
                 "Legt die Anzeige-Priorität fest. 1 steht bspw. für das erste Element in der Liste.");
-        }
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.UseInvisibleReCaptcha",
+				"Use invisible reCAPTCHA",
+				"Unsichtbaren reCAPTCHA verwenden",
+				"Does not require the user to click on a checkbox, instead it is invoked directly when the user submits a form. By default only the most suspicious traffic will be prompted to solve a captcha.",
+				"Der Benutzer muss nicht auf ein Kontrollkästchen klicken, sondern die Validierung erfolgt direkt beim Absenden eines Formulars. Nur bei 'verdächtigem' Traffic wird der Benutzer aufgefordert, ein Captcha zu lösen.");
+		}
     }
 }

@@ -155,6 +155,9 @@ namespace SmartStore.Admin.Models.Settings
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPrivateKey")]
 			[AllowHtml]
 			public string ReCaptchaPrivateKey { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.UseInvisibleReCaptcha")]
+			public bool UseInvisibleReCaptcha { get; set; }
 		}
 
 		public partial class PdfSettingsModel

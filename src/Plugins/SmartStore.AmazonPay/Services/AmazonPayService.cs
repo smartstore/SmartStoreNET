@@ -988,7 +988,9 @@ namespace SmartStore.AmazonPay.Services
 								{
 									// Must be redirected to checkout payment page.
 									_httpContext.Session["AmazonPayFailedPaymentReason"] = id;
-									_httpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
+
+                                    var urlHelper = new UrlHelper(_httpContext.Request.RequestContext);
+                                    _httpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 								}
 							}
 						}
@@ -1125,7 +1127,9 @@ namespace SmartStore.AmazonPay.Services
 						{
 							// Must be redirected to checkout payment page.
 							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
-							_httpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
+
+                            var urlHelper = new UrlHelper(_httpContext.Request.RequestContext);
+                            _httpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 						}
 					}
 				}

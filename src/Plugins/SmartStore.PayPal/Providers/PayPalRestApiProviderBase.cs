@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web;
+using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
@@ -102,7 +103,8 @@ namespace SmartStore.PayPal
                 result.AddError(T("Plugins.SmartStore.PayPal.SessionExpired"));
 
                 // Redirect to payment wall and create new payment (we need the payment id).
-                HttpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
+                var urlHelper = new UrlHelper(HttpContext.Request.RequestContext);
+                HttpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 
                 return result;
 			}

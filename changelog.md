@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -34,7 +34,8 @@
 * #1447 Checkout button payment methods (Amazon, PayPal Express) won't work in conjunction with mandatory checkout attributes
 * When creating a topic, the widget zone input shows System.String[]
 * Switching the language always redirected to the home page if SEO friendly URLs was deactivated.
-* Fixes file upload of a checkout attribute was not stored on cart page.
+* File upload of a checkout attribute was not stored on cart page.
+* Redirecting within checkout may have displayed an incorrect URL in the browser.
 
 
 ## SmartStore.NET 3.1.5

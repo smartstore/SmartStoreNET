@@ -36,6 +36,7 @@
 * Switching the language always redirected to the home page if SEO friendly URLs was deactivated.
 * File upload of a checkout attribute was not stored on cart page.
 * Redirecting within checkout may have displayed an incorrect URL in the browser.
+* Server cannot modify cookies after HTTP headers have been sent.
 
 
 ## SmartStore.NET 3.1.5

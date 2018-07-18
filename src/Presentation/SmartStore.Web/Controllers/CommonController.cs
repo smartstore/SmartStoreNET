@@ -855,7 +855,7 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult CookieConsentBadge(CookieConsentModel model)
+		public ActionResult SetCookieConsentBadge(CookieConsentModel model)
 		{
 			CookieConsent.SetCookieConsent(Response, true);
 

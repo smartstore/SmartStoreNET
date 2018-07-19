@@ -18,7 +18,7 @@
 				}
 				else
 				{
-					@Html.Raw(Model.Parent.SearchResult.Highlight(hit.Label, "<span class='instasearch-match'>", "</span>", false))
+					@Html.Raw(Model.Parent.SearchResult.Highlight(hit.Label, "<span class='instasearch-match pl-1'>", "</span>", false))
 				}
 				@if (hit.Tag.HasValue())
 				{

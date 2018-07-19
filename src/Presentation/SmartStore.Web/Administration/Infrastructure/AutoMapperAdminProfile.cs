@@ -46,35 +46,33 @@ namespace SmartStore.Admin.Infrastructure
 {
 	public class AutoMapperAdminProfile : Profile
 	{
-		class OptionalFkConverter : ITypeConverter<int, int?>
+		class OptionalFkConverter : ITypeConverter<int?, int?>, ITypeConverter<int, int?>
 		{
-			public int? Convert(int source, int? destination, ResolutionContext context)
+            public int? Convert(int? source, int? destination, ResolutionContext context)
+            {
+                return source;
+            }
+
+            public int? Convert(int source, int? destination, ResolutionContext context)
 			{
-				//var srcName = context.PropertyMap.SourceMember.Name;
-
-				//if (context.PropertyMap.SourceMember.MemberType == MemberTypes.Property && srcName.EndsWith("Id") && !context.SourceType.IsNullable())
-				//{
-				//	var src = (int)context.SourceValue;
-				//	return src == 0 ? (int?)null : src;
-				//}
-
-				//return (int?)context.SourceValue;
-				
-				return source == 0 ? (int?)null : source;
+                return source == 0 ? (int?)null : source;
 			}
 		}
 
-		public AutoMapperAdminProfile()
+        public AutoMapperAdminProfile()
 		{
-			// TODO remove 'CreatedOnUtc' ignore mappings because now presentation layer models have 'CreatedOn' property and core entities have 'CreatedOnUtc' property (distinct names)
+            // TODO remove 'CreatedOnUtc' ignore mappings because now presentation layer models have 'CreatedOn' property and core entities have 'CreatedOnUtc' property (distinct names)
 
-			// special mapper, that avoids DbUpdate exceptions in cases where
-			// optional (nullable) int FK properties are 0 instead of null 
-			// after mapping model > entity.
-			CreateMap<int, int?>().ConvertUsing(new OptionalFkConverter());
+            // special mapper, that avoids DbUpdate exceptions in cases where
+            // optional (nullable) int FK properties are 0 instead of null 
+            // after mapping model > entity.
+            // if type is nullable source value shouldn't be touched
+            var fkConverter = new OptionalFkConverter();
+            CreateMap<int?, int?>().ConvertUsing(fkConverter);
+            CreateMap<int, int?>().ConvertUsing(fkConverter);
 
-			//address
-			CreateMap<Address, AddressModel>()
+            //address
+            CreateMap<Address, AddressModel>()
 				.ForMember(dest => dest.AddressHtml, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStates, mo => mo.Ignore())

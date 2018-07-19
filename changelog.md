@@ -16,6 +16,7 @@
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
 * Debitoor: Partially update customer instead of full update to avoid all fields being overwritten
+* #1479 Show in messages the delivery time at the time of purchase
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

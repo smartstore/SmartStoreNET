@@ -84,16 +84,16 @@ namespace SmartStore.Admin.Controllers
 		private readonly IAffiliateService _affiliateService;
 		private readonly ICustomerActivityService _customerActivityService;
 		private readonly ICatalogSearchService _catalogSearchService;
+        private readonly IPdfConverter _pdfConverter;
 
-		private readonly CatalogSettings _catalogSettings;
+        private readonly CatalogSettings _catalogSettings;
         private readonly TaxSettings _taxSettings;
         private readonly MeasureSettings _measureSettings;
         private readonly PdfSettings _pdfSettings;
         private readonly AddressSettings _addressSettings;
 		private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly SearchSettings _searchSettings;
-
-        private readonly IPdfConverter _pdfConverter;
+        private readonly ShoppingCartSettings _shoppingCartSettings;
 
         #endregion
 
@@ -132,14 +132,15 @@ namespace SmartStore.Admin.Controllers
 			IAffiliateService affiliateService,
 			ICustomerActivityService customerActivityService,
 			ICatalogSearchService catalogSearchService,
-			CatalogSettings catalogSettings, 
+            IPdfConverter pdfConverter,
+            CatalogSettings catalogSettings, 
 			TaxSettings taxSettings,
             MeasureSettings measureSettings, 
 			PdfSettings pdfSettings, 
 			AddressSettings addressSettings,
 			AdminAreaSettings adminAreaSettings,
 			SearchSettings searchSettings,
-			IPdfConverter pdfConverter)
+            ShoppingCartSettings shoppingCartSettings)
 		{
             _orderService = orderService;
             _orderReportService = orderReportService;
@@ -174,16 +175,16 @@ namespace SmartStore.Admin.Controllers
 			_affiliateService = affiliateService;
 			_customerActivityService = customerActivityService;
 			_catalogSearchService = catalogSearchService;
+            _pdfConverter = pdfConverter;
 
-			_catalogSettings = catalogSettings;
+            _catalogSettings = catalogSettings;
             _taxSettings = taxSettings;
             _measureSettings = measureSettings;
             _pdfSettings = pdfSettings;
             _addressSettings = addressSettings;
 			_adminAreaSettings = adminAreaSettings;
 			_searchSettings = searchSettings;
-
-            _pdfConverter = pdfConverter;
+            _shoppingCartSettings = shoppingCartSettings;
 		}
         
         #endregion
@@ -1899,10 +1900,13 @@ namespace SmartStore.Admin.Controllers
 
             if (warnings.Count == 0)
             {
-                //attributes
-                string attributeDescription = _productAttributeFormatter.FormatAttributes(product, attributes, order.Customer);
+                var attributeDescription = _productAttributeFormatter.FormatAttributes(product, attributes, order.Customer);
+                var displayDeliveryTime = 
+                    _shoppingCartSettings.ShowDeliveryTimes &&
+                    product.DeliveryTimeId.HasValue &&
+                    product.IsShipEnabled &&
+                    product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 
-                //save item
                 var orderItem = new OrderItem
                 {
                     OrderItemGuid = Guid.NewGuid(),
@@ -1921,7 +1925,9 @@ namespace SmartStore.Admin.Controllers
                     DownloadCount = 0,
                     IsDownloadActivated = false,
                     LicenseDownloadId = 0,
-					ProductCost = _priceCalculationService.GetProductCost(product, attributes)
+					ProductCost = _priceCalculationService.GetProductCost(product, attributes),
+                    DeliveryTimeId = product.GetDeliveryTimeIdAccordingToStock(_catalogSettings),
+                    DisplayDeliveryTime = displayDeliveryTime
                 };
 
 				if (product.ProductType == ProductType.BundledProduct)
@@ -1944,7 +1950,7 @@ namespace SmartStore.Admin.Controllers
                 order.OrderItems.Add(orderItem);
                 _orderService.UpdateOrder(order);
 
-                //gift cards
+                // Gift cards.
                 if (product.IsGiftCard)
                 {
                     for (int i = 0; i < orderItem.Quantity; i++)
@@ -1985,12 +1991,11 @@ namespace SmartStore.Admin.Controllers
 					TempData[AutoUpdateOrderItemContext.InfoKey] = context.ToString(_localizationService);
 				}
 
-                //redirect to order details page
+                // Redirect to order details page.
                 return RedirectToAction("Edit", "Order", new { id = order.Id });
             }
             else
             {
-                //errors
                 var model = PrepareAddProductToOrderModel(order.Id, product.Id);
                 model.Warnings.AddRange(warnings);
                 return View(model);

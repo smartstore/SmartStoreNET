@@ -199,8 +199,9 @@ namespace SmartStore.Services.Catalog
         public static bool DisplayDeliveryTimeAccordingToStock(this Product product, CatalogSettings catalogSettings)
         {
 			Guard.NotNull(product, nameof(product));
+            Guard.NotNull(catalogSettings, nameof(catalogSettings));
 
-			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+            if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
 				if (catalogSettings.DeliveryTimeIdForEmptyStock.HasValue && product.StockQuantity <= 0)
 					return true;
@@ -211,13 +212,32 @@ namespace SmartStore.Services.Catalog
             return true;
         }
 
-		/// <summary>
-		/// Indicates whether the product is labeled as NEW.
-		/// </summary>
-		/// <param name="product">Product entity</param>
-		/// <param name="catalogSettings">Catalog settings</param>
-		/// <returns>Whether the product is labeled as NEW</returns>
-		public static bool IsNew(this Product product, CatalogSettings catalogSettings)
+        public static int? GetDeliveryTimeIdAccordingToStock(this Product product, CatalogSettings catalogSettings)
+        {
+            Guard.NotNull(catalogSettings, nameof(catalogSettings));
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            if ((product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+                && catalogSettings.DeliveryTimeIdForEmptyStock.HasValue
+                && product.StockQuantity <= 0)
+            {
+                return catalogSettings.DeliveryTimeIdForEmptyStock.Value;
+            }
+
+            return product.DeliveryTimeId;
+        }
+
+        /// <summary>
+        /// Indicates whether the product is labeled as NEW.
+        /// </summary>
+        /// <param name="product">Product entity</param>
+        /// <param name="catalogSettings">Catalog settings</param>
+        /// <returns>Whether the product is labeled as NEW</returns>
+        public static bool IsNew(this Product product, CatalogSettings catalogSettings)
 		{
 			if (catalogSettings.LabelAsNewForMaxDays.HasValue)
 			{

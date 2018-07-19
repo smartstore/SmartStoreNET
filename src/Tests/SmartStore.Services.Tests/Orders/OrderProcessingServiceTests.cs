@@ -226,7 +226,8 @@ namespace SmartStore.Services.Tests.Orders
 				_newsLetterSubscriptionService,
 				_paymentSettings, _rewardPointsSettings,
                 _orderSettings, _taxSettings, _localizationSettings,
-                _currencySettings, _shoppingCartSettings);
+                _currencySettings, _shoppingCartSettings,
+                _catalogSettings);
         }
         
         [Test]

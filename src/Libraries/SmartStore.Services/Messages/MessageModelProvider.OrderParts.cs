@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
@@ -266,7 +267,8 @@ namespace SmartStore.Services.Messages
 
 			var productAttributeParser = _services.Resolve<IProductAttributeParser>();
 			var downloadService = _services.Resolve<IDownloadService>();
-			var order = part.Order;
+            var deliveryTimeService = _services.Resolve<IDeliveryTimeService>();
+            var order = part.Order;
 			var isNet = order.CustomerTaxDisplayType == TaxDisplayType.ExcludingTax;
 			var product = part.Product;
 			product.MergeWithCombination(part.AttributesXml, productAttributeParser);
@@ -304,8 +306,21 @@ namespace SmartStore.Services.Messages
 				{ "LineTotal", FormatPrice(isNet ? part.PriceExclTax : part.PriceInclTax, part.Order, messageContext) },
 				{ "Product", CreateModelPart(product, messageContext, part.AttributesXml) },
 				{ "BundleItems", bundleItems },
-				{ "IsGross", !isNet }
-			};
+				{ "IsGross", !isNet },
+                { "DisplayDeliveryTime", part.DisplayDeliveryTime },
+            };
+
+            if (part.DeliveryTimeId.HasValue)
+            {
+                if (deliveryTimeService.GetDeliveryTimeById(part.DeliveryTimeId ?? 0) is DeliveryTime dt)
+                {
+                    m["DeliveryTime"] = new Dictionary<string, object>
+                    {
+                        { "Color", dt.ColorHexValue },
+                        { "Name", dt.GetLocalized(x => x.Name, messageContext.Language).Value },
+                    };
+                }
+            }
 
 			PublishModelPartCreatedEvent<OrderItem>(part, m);
 

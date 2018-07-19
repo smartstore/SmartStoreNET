@@ -55,9 +55,9 @@
 							{% endfor %}
 						</div>
 					{% endif %}
-					{% if product.DeliveryTime and Context.TemplateName != "OrderCompleted.CustomerNotification" %}
+					{% if item.DisplayDeliveryTime && item.DeliveryTime %}
 						<div class="text-sm">
-							{{ 'Products.DeliveryTime' | T }} <span style="color: {{ product.DeliveryTime.Color }}">{{ product.DeliveryTime.Name }}</span>
+							{{ 'Products.DeliveryTime' | T }} <span style="color: {{ item.DeliveryTime.Color }}">{{ item.DeliveryTime.Name }}</span>
 						</div>
 					{% endif %}
 					{% if item.AttributeDescription %}

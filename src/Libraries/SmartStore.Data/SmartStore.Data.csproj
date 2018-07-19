@@ -603,6 +603,10 @@
     <Compile Include="Migrations\201807122120062_TopicAcl.Designer.cs">
       <DependentUpon>201807122120062_TopicAcl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807191020207_OrderItemDeliveryTime.cs" />
+    <Compile Include="Migrations\201807191020207_OrderItemDeliveryTime.Designer.cs">
+      <DependentUpon>201807191020207_OrderItemDeliveryTime.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1084,6 +1088,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807122120062_TopicAcl.resx">
       <DependentUpon>201807122120062_TopicAcl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807191020207_OrderItemDeliveryTime.resx">
+      <DependentUpon>201807191020207_OrderItemDeliveryTime.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

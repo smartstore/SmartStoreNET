@@ -11,9 +11,13 @@ namespace SmartStore.Web.Models.Topics
 
         public bool IsPasswordProtected { get; set; }
 
-        public LocalizedValue<string> Title { get; set; }
+		public LocalizedValue<string> ShortTitle { get; set; }
 
-        public LocalizedValue<string> Body { get; set; }
+		public LocalizedValue<string> Title { get; set; }
+
+		public LocalizedValue<string> Intro { get; set; }
+
+		public LocalizedValue<string> Body { get; set; }
 
         public string MetaKeywords { get; set; }
 

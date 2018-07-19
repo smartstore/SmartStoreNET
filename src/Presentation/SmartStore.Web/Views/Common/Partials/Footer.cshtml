@@ -4,12 +4,12 @@
 @{ 
 	var footerLinks = new List<Tuple<string, string>>
 	{
-		// Item1 = TopicUrl, Item2 = Locale Resource Key
-		new Tuple<string, string>(Url.TopicUrl("aboutus"), "AboutUs"),
-		new Tuple<string, string>(Url.TopicUrl("imprint"), "Imprint"),
-		new Tuple<string, string>(Url.TopicUrl("disclaimer"), "Disclaimer"),
-		new Tuple<string, string>(Url.TopicUrl("privacyinfo"), "PrivacyNotice"),
-		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), "ConditionsOfUse")
+		// Item1 = TopicUrl, Item2 = LinkText
+		new Tuple<string, string>(Url.TopicUrl("aboutus"), Url.TopicLinkText("aboutus")),
+		new Tuple<string, string>(Url.TopicUrl("imprint"), Url.TopicLinkText("imprint")),
+		new Tuple<string, string>(Url.TopicUrl("disclaimer"), Url.TopicLinkText("disclaimer")),
+		new Tuple<string, string>(Url.TopicUrl("privacyinfo"), Url.TopicLinkText("privacyinfo")),
+		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), Url.TopicLinkText("conditionsofuse"))
 	};
 
 	var socialLinks = new List<Tuple<string, string>>();
@@ -133,11 +133,11 @@
 							}
 							@if (shippingInfoUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@shippingInfoUrl">@T("ShippingReturns")</a></li>
+								<li><a class="footer-link" href="@shippingInfoUrl">@Url.TopicLinkText("shippinginfo")</a></li>
 							}
 							@if (paymentInfoUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@paymentInfoUrl">@T("Paymentinfo")</a></li>
+								<li><a class="footer-link" href="@paymentInfoUrl">@Url.TopicLinkText("paymentinfo")</a></li>
 							}
 
                             @{ Html.RenderWidget("footer_col_2_after"); }
@@ -162,7 +162,7 @@
 							{
 								if (link.Item1.HasValue())
 								{
-									<li><a class="footer-link" href="@link.Item1">@T(link.Item2)</a></li>
+									<li><a class="footer-link" href="@link.Item1">@link.Item2</a></li>
 								}
 							}
 

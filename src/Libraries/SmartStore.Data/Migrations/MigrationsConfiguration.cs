@@ -327,6 +327,18 @@
 				"Unsichtbaren reCAPTCHA verwenden",
 				"Does not require the user to click on a checkbox, instead it is invoked directly when the user submits a form. By default only the most suspicious traffic will be prompted to solve a captcha.",
 				"Der Benutzer muss nicht auf ein Kontrollkästchen klicken, sondern die Validierung erfolgt direkt beim Absenden eines Formulars. Nur bei 'verdächtigem' Traffic wird der Benutzer aufgefordert, ein Captcha zu lösen.");
+
+			builder.AddOrUpdate("Admin.ContentManagement.Topics.Fields.ShortTitle",
+				"Short title",
+				"Kurztitel",
+				"Optional. Used as link text. If empty, 'Title' sets the link text.",
+				"Optional. Wird u.A. als Linktext verwendet. Wenn leer, stellt 'Titel' den Linktext.");
+
+			builder.AddOrUpdate("Admin.ContentManagement.Topics.Fields.Intro",
+				"Intro",
+				"Intro",
+				"Optional. Short introduction / teaser.",
+				"Optional. Einleitung / Teaser.");
 		}
     }
 }

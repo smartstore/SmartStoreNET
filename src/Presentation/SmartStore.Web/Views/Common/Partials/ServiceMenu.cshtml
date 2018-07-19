@@ -6,11 +6,11 @@
 
 	var links = new List<Tuple<string, string>>
 	{
-		// Item1 = TopicUrl, Item2 = Locale Resource Key
-		new Tuple<string, string>(Url.TopicUrl("aboutus"), "AboutUs"),
-		new Tuple<string, string>(Url.TopicUrl("disclaimer"), "Disclaimer"),
-		new Tuple<string, string>(Url.TopicUrl("shippinginfo"), "ShippingReturns"),
-		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), "ConditionsOfUse")
+		// Item1 = TopicUrl, Item2 = LinkText
+		new Tuple<string, string>(Url.TopicUrl("aboutus"), Url.TopicLinkText("aboutus")),
+		new Tuple<string, string>(Url.TopicUrl("disclaimer"), Url.TopicLinkText("disclaimer")),
+		new Tuple<string, string>(Url.TopicUrl("shippinginfo"), Url.TopicLinkText("shippinginfo")),
+		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), Url.TopicLinkText("conditionsofuse"))
 	};
 }
 
@@ -37,7 +37,7 @@
 {
 	if (link.Item1.HasValue())
 	{
-		<a href="@link.Item1" class="dropdown-item">@T(link.Item2)</a>
+		<a href="@link.Item1" class="dropdown-item">@link.Item2</a>
 	}
 }
 

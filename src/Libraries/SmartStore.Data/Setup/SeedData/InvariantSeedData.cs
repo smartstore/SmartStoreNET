@@ -3891,7 +3891,7 @@ namespace SmartStore.Data.Setup
 						SystemName = "ContactUs",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "",
+						Title = "Contact us",
 						Body = "<p>Put your contact information here. You can edit this in the admin site.</p>"
 					},
 				new Topic
@@ -3923,6 +3923,7 @@ namespace SmartStore.Data.Setup
 						SystemName = "PrivacyInfo",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
+						ShortTitle = "Privacy",
 						Title = "Privacy policy",
 						Body = "<p><strong></strong></p>"
 					},

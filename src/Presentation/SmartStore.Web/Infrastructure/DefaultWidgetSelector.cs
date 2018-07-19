@@ -100,6 +100,7 @@ namespace SmartStore.Web.Infrastructure
 						{
 							var locTitle = t.GetLocalized(x => t.Title);
 							var locBody = t.GetLocalized(x => t.Body, detectEmptyHtml: true);
+
 							return new TopicWidgetStub
 							{
 								Id = t.Id,
@@ -107,8 +108,10 @@ namespace SmartStore.Web.Infrastructure
 								WrapContent = !t.WidgetWrapContent.HasValue || t.WidgetWrapContent.Value,
 								ShowTitle = t.WidgetShowTitle,
 								SystemName = t.SystemName.SanitizeHtmlId(),
+								ShortTitle = t.GetLocalized(x => x.ShortTitle),
 								Title = locTitle,
 								TitleRtl = locTitle.CurrentLanguage.Rtl,
+								Intro = t.GetLocalized(x => x.Intro),
 								Body = locBody,
 								BodyRtl = locBody.CurrentLanguage.Rtl,
 								TitleTag = t.TitleTag,
@@ -151,8 +154,10 @@ namespace SmartStore.Web.Infrastructure
 											WrapContent = widget.WrapContent,
 											ShowTitle = widget.ShowTitle,
 											IsBordered = widget.Bordered,
-											Title = !widget.Title.HasValue() ? null : widget.Title,
+											ShortTitle = widget.ShortTitle.NullEmpty(),
+											Title = widget.Title.NullEmpty(),
 											TitleTag = widget.TitleTag ?? "h3",
+											Intro = widget.Intro.NullEmpty(),
 											Html = widget.Body,
 											HtmlRtl = widget.BodyRtl,
 											TitleRtl = widget.TitleRtl
@@ -210,7 +215,9 @@ namespace SmartStore.Web.Infrastructure
 		public bool WrapContent { get; set; }
 		public bool ShowTitle { get; set; }
 		public bool Bordered { get; set; }
+		public string ShortTitle { get; set; }
 		public string Title { get; set; }
+		public string Intro { get; set; }
 		public string Body { get; set; }
 		public bool TitleRtl { get; set; }
 		public bool BodyRtl { get; set; }

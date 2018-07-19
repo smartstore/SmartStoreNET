@@ -56,11 +56,19 @@ namespace SmartStore.Admin.Models.Topics
         [AllowHtml]
         public string Url { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
+		[AllowHtml]
+		public string ShortTitle { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
+		[AllowHtml]
+		public string Intro { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
 
@@ -103,7 +111,10 @@ namespace SmartStore.Admin.Models.Topics
 
         public bool IsSystemTopic { get; set; }
 
-        public IList<SelectListItem> AvailableTitleTags { get; private set; }
+		[SmartResourceDisplayName("Common.Published")]
+		public bool IsPublished { get; set; }
+
+		public IList<SelectListItem> AvailableTitleTags { get; private set; }
 
         public IList<TopicLocalizedModel> Locales { get; set; }
     }
@@ -112,11 +123,19 @@ namespace SmartStore.Admin.Models.Topics
     {
         public int LanguageId { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.ShortTitle")]
+		[AllowHtml]
+		public string ShortTitle { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Title")]
         [AllowHtml]
         public string Title { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Intro")]
+		[AllowHtml]
+		public string Intro { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Body")]
         [AllowHtml]
         public string Body { get; set; }
 

@@ -78,7 +78,7 @@ namespace SmartStore.Services.Topics
 			var entityName = nameof(Topic);
 			var joinApplied = false;
 
-			var query = _topicRepository.Table;
+			var query = _topicRepository.Table.Where(x => showHidden || x.IsPublished);
 
 			if (systemName.HasValue())
 			{

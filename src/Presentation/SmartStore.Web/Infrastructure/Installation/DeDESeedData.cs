@@ -1869,12 +1869,14 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter("PrivacyInfo", x =>
                 {
-                    x.Title = "Datenschutzerklärung";
+					x.ShortTitle = "Datenschutz";
+					x.Title = "Datenschutzerklärung";
                     x.Body = "<p>Legen Sie Ihre Datenschutzerkl&#228;rung hier fest. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("ShippingInfo", x =>
                 {
-                    x.Title = "Versand und Rücksendungen";
+					x.ShortTitle = "Versandinfos";
+					x.Title = "Versand und Rücksendungen";
                     x.Body = "<p>Informationen zu Versand und Rücksendungen. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("Imprint", x =>

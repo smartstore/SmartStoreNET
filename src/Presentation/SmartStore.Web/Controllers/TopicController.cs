@@ -66,8 +66,10 @@ namespace SmartStore.Web.Controllers
                 Id = topic.Id,
                 SystemName = topic.SystemName,
                 IsPasswordProtected = topic.IsPasswordProtected,
-                Title = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Title),
-                Body = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Body, detectEmptyHtml: true),
+				ShortTitle = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.ShortTitle),
+				Title = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Title),
+				Intro = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Intro),
+				Body = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Body, detectEmptyHtml: true),
                 MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic.GetLocalized(x => x.MetaTitle),
@@ -88,7 +90,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			var topic = _topicService.GetTopicBySystemName(systemName, 0, false);
-			if (topic == null)
+			if (topic == null || !topic.IsPublished)
 				return HttpNotFound();
 
 			var routeValues = new RouteValueDictionary { ["SeName"] = topic.GetSeName() };
@@ -104,7 +106,7 @@ namespace SmartStore.Web.Controllers
 			var cacheModel = _cacheManager.Get(cacheKey, () => 
 			{
 				var topic = _topicService.GetTopicById(topicId);
-				if (topic == null)
+				if (topic == null || !topic.IsPublished)
 					return null;
 
 				if (!_storeMappingService.Authorize(topic))
@@ -136,7 +138,7 @@ namespace SmartStore.Web.Controllers
             var cacheModel = _cacheManager.Get(cacheKey, () => 
 			{
 				var topic = _topicService.GetTopicBySystemName(systemName, _storeContext.CurrentStore.Id, true);
-				if (topic == null)
+				if (topic == null || !topic.IsPublished)
 					return null;
 
 				return PrepareTopicModel(topic);

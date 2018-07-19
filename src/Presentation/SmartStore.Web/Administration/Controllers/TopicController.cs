@@ -53,32 +53,15 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                               x => x.Title,
-                                                               localized.Title,
-                                                               localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.ShortTitle, localized.ShortTitle, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.Title, localized.Title, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.Intro, localized.Intro, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.Body, localized.Body, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
 
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.Body,
-                                                           localized.Body,
-                                                           localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.MetaKeywords,
-                                                           localized.MetaKeywords,
-                                                           localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.MetaDescription,
-                                                           localized.MetaDescription,
-                                                           localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.MetaTitle,
-                                                           localized.MetaTitle,
-                                                           localized.LanguageId);
-
-				var seName = topic.ValidateSeName(localized.SeName, localized.Title, false);
+				var seName = topic.ValidateSeName(localized.SeName, localized.Title.NullEmpty() ?? localized.ShortTitle, false);
 				_urlRecordService.SaveSlug(topic, seName, localized.LanguageId);
 
 			}
@@ -189,7 +172,7 @@ namespace SmartStore.Admin.Controllers
 						q2 = q2.Where(x => x.SystemName.Contains(model.SystemName));
 
 					if (model.Title.HasValue())
-						q2 = q2.Where(x => x.Title.Contains(model.Title));
+						q2 = q2.Where(x => x.Title.Contains(model.Title) || x.ShortTitle.Contains(model.Title));
 
 					if (model.RenderAsWidget.HasValue)
 						q2 = q2.Where(x => x.RenderAsWidget == model.RenderAsWidget.Value);
@@ -297,8 +280,10 @@ namespace SmartStore.Admin.Controllers
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.Title = topic.GetLocalized(x => x.Title, languageId, false, false);
-                locale.Body = topic.GetLocalized(x => x.Body, languageId, false, false);
+				locale.ShortTitle = topic.GetLocalized(x => x.ShortTitle, languageId, false, false);
+				locale.Title = topic.GetLocalized(x => x.Title, languageId, false, false);
+				locale.Intro = topic.GetLocalized(x => x.Intro, languageId, false, false);
+				locale.Body = topic.GetLocalized(x => x.Body, languageId, false, false);
                 locale.MetaKeywords = topic.GetLocalized(x => x.MetaKeywords, languageId, false, false);
                 locale.MetaDescription = topic.GetLocalized(x => x.MetaDescription, languageId, false, false);
                 locale.MetaTitle = topic.GetLocalized(x => x.MetaTitle, languageId, false, false);

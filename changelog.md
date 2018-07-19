@@ -6,6 +6,7 @@
 * #1144 Enable multi server search index
 * Made Topic ACL enabled
 * Implemented paging & filtering for Topic grid
+* Topics: added **IsPublished**, **Short Title** (link text) and **Intro** (teaser) properties.
 * New security option: Use invisible reCAPTCHA
 * **BeezUp**:
 	* #1459 Add option to only submit one category name per product

@@ -146,7 +146,7 @@ namespace SmartStore.Web.Framework.UI
             }
             set
             {
-				if (_url != null)
+				if (_url != value)
 				{
 					_url = value;
 					_routeName = _controllerName = (string)(_actionName = null);

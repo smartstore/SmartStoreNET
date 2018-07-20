@@ -180,7 +180,7 @@ namespace SmartStore.Admin.Controllers
 					if (model.WidgetZone.HasValue())
 						q2 = q2.Where(x => x.WidgetZone.Contains(model.WidgetZone));
 
-					return q2;
+					return q2.OrderBy(x => x.SystemName);
 				});
 				
 				gridModel.Data = topics.Select(x =>

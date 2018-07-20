@@ -10,7 +10,7 @@ namespace SmartStore.Web.Infrastructure
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            //generic URLs
+            // Generic URLs
             routes.MapGenericPathRoute("GenericUrl",
                 "{*generic_se_name}",
                 new { controller = "Common", action = "GenericUrl" },

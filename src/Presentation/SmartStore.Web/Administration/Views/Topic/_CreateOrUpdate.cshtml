@@ -23,7 +23,7 @@
 
 @helper TabInfo()
 { 
-    <table class="adminContent">
+    <table class="adminContent mb-3">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SystemName)
@@ -101,7 +101,7 @@
                 @Html.SmartLabelFor(model => model.RenderAsWidget)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget, #pnlWidgetWrapContent" })
+				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget" })
                 @Html.ValidationMessageFor(model => model.RenderAsWidget)
             </td>
         </tr>
@@ -125,7 +125,7 @@
 				</td>
 			</tr>
 		</tbody>
-		<tbody id="pnlWidgetWrapContent hide">
+		<tbody id="pnlWidgetWrapContent">
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.WidgetShowTitle)

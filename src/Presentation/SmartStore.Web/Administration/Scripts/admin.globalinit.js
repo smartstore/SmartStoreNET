@@ -5,7 +5,7 @@
 	var _commonPluginFactories = [
 		// panel toggling
 		function (ctx) {
-			ctx.find('input[type=checkbox][data-toggler-for]').each(function (i, el) {
+            ctx.find('input[type=checkbox][data-toggler-for]').each(function (i, el) {
 				SmartStore.Admin.togglePanel(el, false);
 			});
 		},

@@ -77,7 +77,7 @@ namespace SmartStore.Web.Framework.Seo
                 var urlRecord = urlRecordService.GetBySlug(slug);
                 if (urlRecord == null)
                 {
-                    //no URL record found
+                    // no URL record found
 					data.Values["controller"] = "Error";
 					data.Values["action"] = "NotFound";
                     return data;				
@@ -105,7 +105,8 @@ namespace SmartStore.Web.Framework.Seo
                     }
                 }
 
-                // process URL
+				// process URL
+				data.DataTokens["UrlRecord"] = urlRecord;
 				data.Values["SeName"] = urlRecord.Slug;
                 switch (urlRecord.EntityName.ToLowerInvariant())
                 {

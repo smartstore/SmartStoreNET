@@ -171,11 +171,6 @@ namespace SmartStore
 
 		public static T GetItem<T>(this HttpContext httpContext, string key, Func<T> factory = null, bool forceCreation = true)
 		{
-			if (httpContext?.Items == null)
-			{
-				return default(T);
-			}
-
 			return GetItem<T>(new HttpContextWrapper(httpContext), key, factory, forceCreation);
 		}
 

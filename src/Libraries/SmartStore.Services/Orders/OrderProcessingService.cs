@@ -1321,7 +1321,7 @@ namespace SmartStore.Services.Orders
 						// notes, messages
 						_orderService.AddOrderNote(order, T("Admin.OrderNotice.OrderPlaced"));
 						
-                        //send email notifications
+                        // send email notifications
                         var msg = _messageFactory.SendOrderPlacedStoreOwnerNotification(order, _localizationSettings.DefaultAdminLanguageId);
                         if (msg?.Email?.Id != null)
                         {

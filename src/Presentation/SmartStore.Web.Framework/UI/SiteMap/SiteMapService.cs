@@ -10,6 +10,7 @@ namespace SmartStore.Web.Framework.UI
 	{
 		private readonly IEnumerable<ISiteMap> _siteMaps;
 		private TreeNode<MenuItem> _currentNode;
+		private bool _currentNodeResolved;
 
 		public SiteMapService(IEnumerable<ISiteMap> siteMaps)
 		{
@@ -31,10 +32,10 @@ namespace SmartStore.Web.Framework.UI
 
 		public TreeNode<MenuItem> GetCurrentNode(string mapName, ControllerContext controllerContext)
 		{
-			if (_currentNode == null)
+			if (!_currentNodeResolved)
 			{
-				var map = GetSiteMap(mapName);
-				_currentNode = map.Root.SelectNode(x => x.Value.IsCurrent(controllerContext), true) ?? map.Root;
+				_currentNode = GetSiteMap(mapName).Root.SelectNode(x => x.Value.IsCurrent(controllerContext), true);
+				_currentNodeResolved = true;
 			}
 
 			return _currentNode;

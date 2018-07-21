@@ -406,7 +406,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 currency = model.ToEntity(currency);
-                currency.DomainEndings = String.Join(",", model.DomainEndingsArray);
+                currency.DomainEndings = string.Join(",", model.DomainEndingsArray ?? new string[0]);
 
                 if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), false))
 				{

@@ -630,7 +630,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			var strValue = _httpContext.Request?.Unvalidated.Form?[key] ?? _httpContext.Request?.Unvalidated.QueryString?[key];
 
-			if (strValue != null)
+			if (strValue.HasValue())
 			{
 				value = strValue.Convert<T>();
 				return true;

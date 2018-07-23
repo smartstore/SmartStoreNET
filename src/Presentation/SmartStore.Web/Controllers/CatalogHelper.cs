@@ -1159,6 +1159,8 @@ namespace SmartStore.Web.Controllers
                                 model.ProductPrice.NoteWithDiscount = T("Products.Bundle.PriceWithDiscount.Note");
                             }
 
+                            var basePriceAdjustment = (_priceCalculationService.GetFinalPrice(product, true) - finalPriceWithDiscount) * (-1);
+
                             model.BasePriceInfo = product.GetBasePriceInfo(
                                 _localizationService, 
                                 _priceFormatter, 
@@ -1166,8 +1168,8 @@ namespace SmartStore.Web.Controllers
                                 _taxService, 
                                 _priceCalculationService,
 								customer,
-                                currency, 
-                                (product.Price - finalPriceWithDiscount) * (-1));
+                                currency,
+                                basePriceAdjustment);
 						}
 
 						// Calculate saving.

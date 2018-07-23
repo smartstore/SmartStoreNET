@@ -276,7 +276,6 @@ namespace SmartStore.Web.Controllers
 				DisableWishlistButton = product.DisableWishlistButton
 			};
 
-			model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, customer, currency);
 			model.ProductUrl = _productUrlHelper.GetProductUrl(model.ProductSeName, sci);
 
 			if (item.BundleItem != null)
@@ -410,7 +409,9 @@ namespace SmartStore.Web.Controllers
 					model.Discount = _priceFormatter.FormatPrice(itemDiscount);
 				}
 
-                model.BasePrice = product.GetBasePriceInfo(
+				var basePriceAdjustment = (_priceCalculationService.GetFinalPrice(product, true) - _priceCalculationService.GetUnitPrice(sci, true)) * (-1);
+
+				model.BasePrice = product.GetBasePriceInfo(
                     _localizationService, 
                     _priceFormatter,
                     _currencyService,
@@ -418,7 +419,7 @@ namespace SmartStore.Web.Controllers
                     _priceCalculationService,
 					customer,
                     currency,
-                    (product.Price - _priceCalculationService.GetUnitPrice(sci, true)) * (-1)
+                    basePriceAdjustment
                 );
 			}
 

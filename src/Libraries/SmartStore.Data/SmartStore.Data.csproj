@@ -606,6 +606,7 @@
     <Compile Include="Migrations\201807191020207_OrderItemDeliveryTime.cs" />
     <Compile Include="Migrations\201807191020207_OrderItemDeliveryTime.Designer.cs">
       <DependentUpon>201807191020207_OrderItemDeliveryTime.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201807201157391_DownloadVersions.cs" />
     <Compile Include="Migrations\201807201157391_DownloadVersions.Designer.cs">
       <DependentUpon>201807201157391_DownloadVersions.cs</DependentUpon>
@@ -1094,6 +1095,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807191020207_OrderItemDeliveryTime.resx">
       <DependentUpon>201807191020207_OrderItemDeliveryTime.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807201157391_DownloadVersions.resx">
       <DependentUpon>201807201157391_DownloadVersions.cs</DependentUpon>
     </EmbeddedResource>

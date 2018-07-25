@@ -105,7 +105,7 @@ namespace SmartStore.Services.Catalog
 				{
 					if (product.IsDownload)
 					{
-						downloadId = CopyDownload(product.DownloadId)?.Id;
+						downloadId = CopyDownload(product.Id, "Product")?.Id;
 					}
 
 					if (product.HasSampleDownload)
@@ -145,8 +145,8 @@ namespace SmartStore.Services.Catalog
 						RequiredProductIds = product.RequiredProductIds,
 						AutomaticallyAddRequiredProducts = product.AutomaticallyAddRequiredProducts,
 						IsDownload = product.IsDownload,
-						DownloadId = downloadId ?? 0,
-						UnlimitedDownloads = product.UnlimitedDownloads,
+						//DownloadId = downloadId ?? 0,
+						//UnlimitedDownloads = product.UnlimitedDownloads,
 						MaxNumberOfDownloads = product.MaxNumberOfDownloads,
 						DownloadExpirationDays = product.DownloadExpirationDays,
 						DownloadActivationType = product.DownloadActivationType,
@@ -364,9 +364,11 @@ namespace SmartStore.Services.Catalog
 			_services.DbContext.SaveChanges();
 		}
 
-		private Download CopyDownload(int downloadId)
+		private Download CopyDownload(int productId, string entityName = "")
 		{
-			var download = _downloadService.GetDownloadById(downloadId);
+			var download = _downloadService.GetDownloadsByEntityId(productId, entityName)
+                .OrderByDescending(x => x.FileVersion)
+                .FirstOrDefault();
 
 			if (download == null)
 			{

@@ -18,21 +18,75 @@ using SmartStore.Core.IO;
 using System.Text.RegularExpressions;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Media;
+using System.Data.Entity.Migrations;
 
 namespace SmartStore.Data.Utilities
 {
 	public static class DataMigrator
 	{
-		#region Product.MainPicture
+        #region Download.ProductId
 
-		/// <summary>
-		/// Fixes 'MainPictureId' property of a single product entity
-		/// </summary>
-		/// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
-		/// <param name="entities">When <c>null</c>, Product.ProductPictures gets called.</param>
-		/// <param name="product">Product to fix</param>
-		/// <returns><c>true</c> when value was fixed</returns>
-		public static bool FixProductMainPictureId(IDbContext context, Product product, IEnumerable<ProductPicture> entities = null)
+        /// <summary>
+        /// Sets EntityId &  EntityName for download table
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static int SetDownloadProductId(IDbContext context)
+        {
+            var ctx = context as SmartObjectContext;
+            if (ctx == null)
+                throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
+
+#pragma warning disable 612, 618
+            // Get all products with a download 
+            var productQuery = from p in ctx.Set<Product>().AsNoTracking()
+                        where (p.DownloadId != 0)
+                        orderby p.Id
+                        select new { p.Id, p.DownloadId };
+#pragma warning restore 612, 618
+
+            var downloads = context.Set<Download>().Select(x => x).ToDictionary(x => x.Id);
+            
+            int pageIndex = -1;
+            while (true)
+            {
+                var products = PagedList.Create(productQuery, ++pageIndex, 100);
+                
+                foreach (var p in products)
+                {
+                    try
+                    {
+                        if (downloads.TryGetValue(p.DownloadId, out var download))
+                        {
+                            download.EntityId = p.Id;
+                            download.EntityName = "Product";
+                        }
+                    }
+                    catch { }
+                }
+
+                context.SaveChanges();
+
+                if (!products.HasNextPage)
+                    break;
+            }
+
+            return 0;
+        }
+
+        #endregion
+
+        #region Product.MainPicture
+
+        /// <summary>
+        /// Fixes 'MainPictureId' property of a single product entity
+        /// </summary>
+        /// <param name="context">Database context (must be <see cref="SmartObjectContext"/>)</param>
+        /// <param name="entities">When <c>null</c>, Product.ProductPictures gets called.</param>
+        /// <param name="product">Product to fix</param>
+        /// <returns><c>true</c> when value was fixed</returns>
+        public static bool FixProductMainPictureId(IDbContext context, Product product, IEnumerable<ProductPicture> entities = null)
 		{
 			Guard.NotNull(product, nameof(product));
 

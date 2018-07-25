@@ -354,8 +354,8 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.RequiredProductIds);	// TODO: global scope
 				row.SetProperty(context.Result, (x) => x.AutomaticallyAddRequiredProducts);
 				row.SetProperty(context.Result, (x) => x.IsDownload);
-				row.SetProperty(context.Result, (x) => x.DownloadId);
-				row.SetProperty(context.Result, (x) => x.UnlimitedDownloads, true);
+				//row.SetProperty(context.Result, (x) => x.DownloadId);
+				//row.SetProperty(context.Result, (x) => x.UnlimitedDownloads, true);
 				row.SetProperty(context.Result, (x) => x.MaxNumberOfDownloads, 10);
 				row.SetProperty(context.Result, (x) => x.DownloadExpirationDays);
 				row.SetProperty(context.Result, (x) => x.DownloadActivationTypeId, 1);

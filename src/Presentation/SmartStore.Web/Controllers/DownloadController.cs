@@ -10,6 +10,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Web.Framework.Controllers;
+using System.Linq;
 
 namespace SmartStore.Web.Controllers
 {
@@ -83,7 +84,7 @@ namespace SmartStore.Web.Controllers
 			return GetFileContentResultFor(download, product);
         }
 
-		public ActionResult GetDownload(Guid id, bool agree = false)
+		public ActionResult GetDownload(Guid id, bool agree = false, string fileVersion = "")
         {
 			if (id == Guid.Empty)
 				return HttpNotFound();
@@ -114,7 +115,17 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            var download = _downloadService.GetDownloadById(product.DownloadId);
+            var download = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
+                .OrderByDescending(x => x.FileVersion)
+                .FirstOrDefault();
+
+            if (fileVersion.HasValue())
+            {
+                download = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
+                    .Where(x => x.FileVersion.Equals(fileVersion))
+                    .FirstOrDefault();
+            }
+
             if (download == null)
             {
                 hasNotification = true;
@@ -134,7 +145,7 @@ namespace SmartStore.Web.Controllers
             
             if (hasNotification)
             {
-                return RedirectToAction("UserAgreement", "Customer", new { id = id });
+                return RedirectToAction("UserAgreement", "Customer", new { id = id, fileVersion = fileVersion });
             }
             
             if (download.UseDownloadUrl)
@@ -190,7 +201,6 @@ namespace SmartStore.Web.Controllers
                     NotifyError(T("Account.CustomerOrders.NotYourOrder"));
                     return RedirectToAction("DownloadableProducts", "Customer");
                 }
-                    
             }
 
             var download = _downloadService.GetDownloadById(orderItem.LicenseDownloadId.HasValue ? orderItem.LicenseDownloadId.Value : 0);

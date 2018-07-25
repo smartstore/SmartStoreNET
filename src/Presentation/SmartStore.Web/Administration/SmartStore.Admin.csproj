@@ -97,6 +97,11 @@
       <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Bin\NuGet.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SmartStore.Licensing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\SmartStore.Licensing\SmartStore.Licensing.dll</HintPath>
@@ -591,6 +596,7 @@
     <Content Include="Views\Shared\Layouts\_AdminBareLayout.cshtml" />
     <Content Include="Views\Setting\Payment.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SelectList.cshtml" />
+    <Content Include="Views\Product\_CreateOrUpdate.Downloads.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

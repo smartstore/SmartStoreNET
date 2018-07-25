@@ -146,11 +146,23 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsDownload")]
 		public bool IsDownload { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Download")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.NewVersionDownloadId")]
+        [UIHint("Download")]
+        public int? NewVersionDownloadId { get; set; }
+
+        [SmartResourceDisplayName("Common.Download.Version")]
+        public string NewVersion { get; set; }
+
+        public List<DownloadVersion> DownloadVersions { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Download")]
 		[UIHint("Download")]
 		public int? DownloadId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.UnlimitedDownloads")]
+        [SmartResourceDisplayName("Common.Download.Version")]
+        public string DownloadFileVersion { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.UnlimitedDownloads")]
 		public bool UnlimitedDownloads { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.MaxNumberOfDownloads")]
@@ -176,7 +188,10 @@ namespace SmartStore.Admin.Models.Catalog
 		[AllowHtml]
 		public string UserAgreementText { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsRecurring")]
+        [AllowHtml]
+        public string AddChangelog { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsRecurring")]
 		public bool IsRecurring { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.RecurringCycleLength")]
@@ -757,6 +772,17 @@ namespace SmartStore.Admin.Models.Catalog
 		public string BundleTitleText { get; set; }
     }
 
+    public class DownloadVersion
+    {
+        public int? DownloadId { get; set; }
+
+        public string FileName { get; set; }
+
+        public string DownloadUrl { get; set; }
+
+        public string FileVersion { get; set; }
+    }
+    
 	public partial class ProductValidator : AbstractValidator<ProductModel>
 	{
 		public ProductValidator(Localizer T)
@@ -780,7 +806,9 @@ namespace SmartStore.Admin.Models.Catalog
 					.NotEmpty().WithMessage(T("Admin.Catalog.Products.Fields.BasePriceAmount.Required"))
 					.GreaterThan(0).WithMessage(T("Admin.Catalog.Products.Fields.BasePriceAmount.Required"));
 			});
-		}
+
+            
+        }
 	}
 
 	public partial class ProductVariantAttributeValueModelValidator : AbstractValidator<ProductModel.ProductVariantAttributeValueModel>

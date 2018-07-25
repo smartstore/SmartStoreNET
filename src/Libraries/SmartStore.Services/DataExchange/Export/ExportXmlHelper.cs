@@ -502,7 +502,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("RequiredProductIds", entity.RequiredProductIds);
 			_writer.Write("AutomaticallyAddRequiredProducts", entity.AutomaticallyAddRequiredProducts.ToString());
 			_writer.Write("IsDownload", entity.IsDownload.ToString());
-			_writer.Write("DownloadId", entity.DownloadId.ToString());
+			//_writer.Write("DownloadId", entity.DownloadId.ToString());
 			_writer.Write("UnlimitedDownloads", entity.UnlimitedDownloads.ToString());
 			_writer.Write("MaxNumberOfDownloads", entity.MaxNumberOfDownloads.ToString());
 			_writer.Write("DownloadExpirationDays", entity.DownloadExpirationDays.HasValue ? entity.DownloadExpirationDays.Value.ToString() : "");

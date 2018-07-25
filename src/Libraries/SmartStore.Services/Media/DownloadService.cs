@@ -69,6 +69,20 @@ namespace SmartStore.Services.Media
 			// sort by passed identifier sequence
 			return downloads.OrderBySequence(downloadIds).ToList();
 		}
+        
+        public virtual IList<Download> GetDownloadsByEntityId(int entityId, string entityName)
+        {
+            if (entityId == 0)
+                return new List<Download>();
+
+            var query = from dl in _downloadRepository.Table
+                        where dl.EntityId == entityId && dl.EntityName.Equals(entityName)
+                        select dl;
+
+            var downloads = query.OrderBy(x => x.FileVersion);
+
+            return downloads.ToList();
+        }
 
         public virtual Download GetDownloadByGuid(Guid downloadGuid)
         {

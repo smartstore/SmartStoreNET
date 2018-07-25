@@ -339,6 +339,20 @@
 				"Intro",
 				"Optional. Short introduction / teaser.",
 				"Optional. Einleitung / Teaser.");
-		}
+			
+            builder.AddOrUpdate("Common.Download.Versions", "Versions", "Versionen");
+            builder.AddOrUpdate("Common.Download.Version", "Version", "Version");
+            builder.AddOrUpdate("Common.Download.Delete", "Delete download", "Download löschen");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.NewVersionDownloadId", 
+                "New download version",
+                "Neue Version des Downloads",
+                "Upload a new version of the download file here.",
+                "Laden Sie hier eine neue Version der Download-Datei hoch.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Download.VersionDelete", "Delete this file version of the download.", "Diese Dateiversion des Downloads löschen.");
+            builder.AddOrUpdate("Admin.Catalog.Products.Download.AddChangelog", "Edit changelog", "Changelog bearbeiten");
+            builder.AddOrUpdate("Customer.Downloads.NoChangelogAvailable", "No changelog information available.", "Keine Changelog-Informationen verfügbar.");
+        }
     }
 }

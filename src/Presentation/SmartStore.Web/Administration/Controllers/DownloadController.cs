@@ -49,10 +49,12 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-		public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null)
+		public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
 			var download = new Download
 			{
+                EntityId = entityId,
+                EntityName = entityName,
 				DownloadGuid = Guid.NewGuid(),
 				UseDownloadUrl = true,
 				DownloadUrl = downloadUrl,
@@ -72,7 +74,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-		public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null)
+		public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null, int entityId = 0, string entityName = "")
         {
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
@@ -80,8 +82,10 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
-			var download = new Download
+            var download = new Download
             {
+                EntityId = entityId,
+                EntityName = entityName,
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
@@ -92,7 +96,7 @@ namespace SmartStore.Admin.Controllers
                 IsNew = true,
 				IsTransient = true,
 				UpdatedOnUtc = DateTime.UtcNow
-			};
+            };
 
             _downloadService.InsertDownload(download, postedFile.Buffer);
 
@@ -100,11 +104,51 @@ namespace SmartStore.Admin.Controllers
             { 
                 success = true, 
 				downloadId = download.Id,
-				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName, entityId = entityId, entityName = entityName })
             });
         }
 
-		[HttpPost]
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult AddChangelog(int downloadId, string changelogText)
+        {
+            var success = false;
+
+            var download = _downloadService.GetDownloadById(downloadId);
+            if (download != null)
+            {
+                download.Changelog = changelogText;
+                _downloadService.UpdateDownload(download);
+                success = true;
+            }
+            
+            return Json(new
+            {
+                success = success
+            });
+        }
+
+        [HttpPost]
+        public ActionResult GetChangelogText(int downloadId)
+        {
+            var success = false;
+            var changeLogText = String.Empty;
+
+            var download = _downloadService.GetDownloadById(downloadId);
+            if (download != null)
+            {
+                changeLogText = download.Changelog;
+                success = true;
+            }
+
+            return Json(new
+            {
+                success = success,
+                changelog = changeLogText
+            });
+        }
+
+        [HttpPost]
 		public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
 		{
 			// We don't actually delete here. We just return the editor in it's init state

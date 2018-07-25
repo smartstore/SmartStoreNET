@@ -42,31 +42,104 @@
 				</dl>
 			</div>
 
-			@if (item.DownloadId > 0 || item.LicenseId > 0)
-			{
-				<div class="card-footer d-flex p-0">
-					@if (item.DownloadId > 0)
-					{
-						<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("GetDownload", "Download", new { id = item.OrderItemGuid })" rel="nofollow">
-							<i class="fa fa-download"></i>
-							<span>@T("DownloadableProducts.Fields.Download")</span>
-						</a>
-					}
-					else
-					{
-						<a class="btn btn-secondary btn-flat rounded-0 disabled" href="javascript:void(0)" rel="nofollow">
-                            <span>@T("DownloadableProducts.Fields.Download.NA")</span>
-						</a>
-					}
+			@if (item.IsDownloadAllowed || item.LicenseId > 0)
+            {
+                <div class="card-footer p-0">
+                    <div class="d-flex">
+                        @if (item.IsDownloadAllowed)
+                        {
+                            <a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("GetDownload", "Download", new { id = item.OrderItemGuid })" rel="nofollow">
+                                <i class="fa fa-download"></i>
+                                <span>@T("DownloadableProducts.Fields.Download")</span>
+                            </a>
 
-					@if (item.LicenseId > 0)
-					{
-						<a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("GetLicense", "Download", new { id = item.OrderItemGuid })" rel="nofollow">
-							<span>@T("DownloadableProducts.Fields.DownloadLicense")</span>
-						</a>
-					}
-				</div>
-			}
+                            if (item.DownloadVersions.Count > 1)
+                            {
+                                <a class="btn btn-secondary btn-flat rounded-0" data-toggle="collapse" href="#download-versions-@item.OrderId" rel="nofollow">
+                                    <i class="fa fa-info"></i>
+                                    <span>@T("Common.Download.Versions")</span>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <a class="btn btn-secondary btn-flat rounded-0 disabled" href="javascript:void(0)" rel="nofollow">
+                                <span>@T("DownloadableProducts.Fields.Download.NA")</span>
+                            </a>
+                        }
+
+                        @if (item.LicenseId > 0)
+                        {
+                            <a class="btn btn-secondary btn-flat rounded-0" href="@Url.Action("GetLicense", "Download", new { id = item.OrderItemGuid })" rel="nofollow">
+                                <span>@T("DownloadableProducts.Fields.DownloadLicense")</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+
+                if (item.IsDownloadAllowed && item.DownloadVersions.Count > 1)
+                {
+                    <div class="collapse download-versions" id="download-versions-@item.OrderId">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">#</th>
+                                    <th scope="col">@T("Common.Download.Version")</th>
+                                </tr>
+                            </thead>
+                            <tbody id="download-versions">
+                                @foreach (var download in item.DownloadVersions)
+                                {
+                                    <tr data-toggle="collapse" data-target="#download-@download.DownloadId" class="download-version">
+                                        <th scope="row">
+                                            <i class="fa fa-fw fa-angle-right"></i>
+                                        </th>
+                                        <td>
+                                            @download.FileVersion
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("GetDownload", "Download", new { id = item.OrderItemGuid, fileVersion = download.FileVersion })" class="download-link">
+                                                @download.FileName
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr id="download-@download.DownloadId" class="download-changelog collapse bg-light">
+                                        <td colspan="3">
+                                            <div>
+                                                @if (download.Changelog.HasValue())
+                                                {
+                                                    @Html.Raw(download.Changelog)
+                                                }
+                                                else
+                                                {
+                                                    @T("Customer.Downloads.NoChangelogAvailable")
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>   
+                }
+            }
 		</div>
 	}
 </div>
+
+<script type="text/javascript">
+
+	$(function () {
+        $('.download-versions .download-changelog').on('show.bs.collapse hide.bs.collapse', function (e) {
+            var icon = $(e.target).prev().find("i");
+            icon.toggleClass("fa-angle-down", e.type == "show");
+        });
+
+        $('.download-versions .download-link').on("click", function (e) {
+            e.stopPropagation();
+        });
+	});
+
+</script>

@@ -1548,9 +1548,23 @@ namespace SmartStore.Web.Controllers
 				itemModel.ProductUrl = _productUrlHelper.GetProductUrl(item.ProductId, itemModel.ProductSeName, item.AttributesXml);
 
                 model.Items.Add(itemModel);
+                
+                itemModel.IsDownloadAllowed = _downloadService.IsDownloadAllowed(item);
 
-                if (_downloadService.IsDownloadAllowed(item))
-                    itemModel.DownloadId = item.Product.DownloadId;
+                if (itemModel.IsDownloadAllowed)
+                {
+                    itemModel.DownloadVersions = _downloadService.GetDownloadsByEntityId(item.Product.Id, "Product")
+                        .OrderByDescending(x => x.FileVersion)
+                        .Select(x => new DownloadVersion
+                        {
+                            FileVersion = x.FileVersion,
+                            FileName = string.Concat(x.Filename, x.Extension),
+                            DownloadGuid = x.DownloadGuid,
+                            Changelog = x.Changelog,
+                            DownloadId = x.Id
+                        })
+                        .ToList();
+                }
 
                 if (_downloadService.IsLicenseDownloadAllowed(item))
                     itemModel.LicenseId = item.LicenseDownloadId ?? 0;
@@ -1559,7 +1573,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        public ActionResult UserAgreement(Guid id /* orderItemId */)
+        public ActionResult UserAgreement(Guid id /* orderItemId */, string fileVersion = "")
         {
 			if (id == Guid.Empty)
 				return HttpNotFound();
@@ -1570,8 +1584,7 @@ namespace SmartStore.Web.Controllers
                 NotifyError(_services.Localization.GetResource("Customer.UserAgreement.OrderItemNotFound"));
                 return RedirectToRoute("HomePage");
             }
-				
-
+			
             var product = orderItem.Product;
             if (product == null || !product.HasUserAgreement)
             {
@@ -1582,6 +1595,7 @@ namespace SmartStore.Web.Controllers
             var model = new UserAgreementModel();
             model.UserAgreementText = product.UserAgreementText;
 			model.OrderItemGuid = id;
+            model.FileVersion = fileVersion;
             
             return View(model);
         }

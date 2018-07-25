@@ -65,8 +65,8 @@ namespace SmartStore.Core.Domain.Catalog
 		private ICollection<TierPrice> _tierPrices;
 		private ICollection<Discount> _appliedDiscounts;
 		private ICollection<ProductBundleItem> _productBundleItems;
-
-		private int _stockQuantity;
+        
+        private int _stockQuantity;
         private int _backorderModeId;
 		private string _sku;
 		private string _gtin;
@@ -297,8 +297,9 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the download identifier
 		/// </summary>
-		[DataMember]
-		public int DownloadId { get; set; }
+		[Obsolete]
+        [DataMember]
+        public int DownloadId { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this downloadable product can be downloaded unlimited number of times
@@ -1138,5 +1139,5 @@ namespace SmartStore.Core.Domain.Catalog
 			get { return _productBundleItems ?? (_productBundleItems = new HashSet<ProductBundleItem>()); }
 			protected set { _productBundleItems = value; }
 		}
-	}
+    }
 }

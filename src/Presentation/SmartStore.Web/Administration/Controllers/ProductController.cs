@@ -48,6 +48,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using NuGet;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -239,8 +240,8 @@ namespace SmartStore.Admin.Controllers
 			p.GiftCardTypeId = m.GiftCardTypeId;
 			
 			p.IsDownload = m.IsDownload;
-			p.DownloadId = m.DownloadId ?? 0;
-			p.UnlimitedDownloads = m.UnlimitedDownloads;
+			//p.DownloadId = m.DownloadId ?? 0;
+			//p.UnlimitedDownloads = m.UnlimitedDownloads;
 			p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
 			p.DownloadExpirationDays = m.DownloadExpirationDays;
 			p.DownloadActivationTypeId = m.DownloadActivationTypeId;
@@ -248,6 +249,27 @@ namespace SmartStore.Admin.Controllers
 			p.UserAgreementText = m.UserAgreementText;
 			p.HasSampleDownload = m.HasSampleDownload;
 			p.SampleDownloadId = m.SampleDownloadId == 0 ? (int?)null : m.SampleDownloadId;
+
+            if (m.NewVersionDownloadId != 0 && m.NewVersionDownloadId != null)
+            {               
+                // set version info & product id for new download
+                var newVersion = _downloadService.GetDownloadById((int)m.NewVersionDownloadId);
+                newVersion.FileVersion = m.NewVersion != null ? m.NewVersion : String.Empty;
+                newVersion.EntityId = p.Id;
+                newVersion.IsTransient = false;
+                _downloadService.UpdateDownload(newVersion, newVersion.MediaStorage.Data);
+            }
+            else if(m.DownloadFileVersion.HasValue())
+            {
+                var download = _downloadService.GetDownloadsByEntityId(p.Id, "Product")
+                    .OrderByDescending(x => x.FileVersion)
+                    .FirstOrDefault();
+
+                download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
+                download.EntityId = p.Id;
+                download.IsTransient = false;
+                _downloadService.UpdateDownload(download);
+            }
 
 			p.IsRecurring = m.IsRecurring;
 			p.RecurringCycleLength = m.RecurringCycleLength;
@@ -511,13 +533,17 @@ namespace SmartStore.Admin.Controllers
 
 			var nameChanged = editMode ? _dbContext.IsPropertyModified(p, x => x.Name) : false;
 			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
-			
-			// Handle Download transiency
-			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.DownloadId);
-			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
 
-			// SEO
-			m.SeName = p.ValidateSeName(m.SeName, p.Name, true, _urlRecordService, _seoSettings);
+            // Handle Download transiency
+            var download = _downloadService.GetDownloadsByEntityId(p.Id, "Product")
+                .OrderByDescending(x => x.FileVersion)
+                .FirstOrDefault();
+
+            MediaHelper.UpdateDownloadTransientStateFor(p, x => download.Id);
+			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
+            
+            // SEO
+            m.SeName = p.ValidateSeName(m.SeName, p.Name, true, _urlRecordService, _seoSettings);
 			_urlRecordService.SaveSlug(p, m.SeName, 0);
 
 			if (editMode)
@@ -773,7 +799,26 @@ namespace SmartStore.Admin.Controllers
 				})
 				.ToList();
 
-			if (setPredefinedValues)
+            // downloads
+            model.DownloadVersions = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
+                .OrderByDescending(x => x.FileVersion)
+                .Select(x => new DownloadVersion
+                {
+                    FileVersion = x.FileVersion,
+                    DownloadId = x.Id,
+                    FileName = string.Concat(x.Filename, x.Extension),
+                    DownloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = x.Id })
+                })
+                .ToList();
+
+            var currentDownload = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
+                .OrderByDescending(x => x.FileVersion)
+                .FirstOrDefault();
+
+            model.DownloadId = currentDownload.Id;
+            model.DownloadFileVersion = currentDownload != null ? currentDownload.FileVersion : String.Empty;
+            
+            if (setPredefinedValues)
 			{
 				model.MaximumCustomerEnteredPrice = 1000;
 				model.MaxNumberOfDownloads = 10;
@@ -1097,6 +1142,18 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
+            if (model.DownloadFileVersion.HasValue() && model.DownloadId != null)
+            {
+                try
+                {
+                    var test = new SemanticVersion(model.DownloadFileVersion).ToString();
+                }
+                catch
+                {
+                    ModelState.AddModelError("FileVersion", "Fileversion no good");
+                }
+            } 
+
             if (ModelState.IsValid)
             {
 				var product = new Product();
@@ -1211,7 +1268,19 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 			}
 
-			if (ModelState.IsValid)
+            if (model.DownloadFileVersion.HasValue() && model.DownloadId != null)
+            {
+                try
+                {
+                    var test = new SemanticVersion(model.DownloadFileVersion).ToString();
+                }
+                catch
+                {
+                    ModelState.AddModelError("FileVersion", "Fileversion no good");
+                }
+            } 
+
+            if (ModelState.IsValid)
             {
 				MapModelToProduct(model, product, form);
 				UpdateDataOfExistingProduct(product, model, true);
@@ -3824,11 +3893,28 @@ namespace SmartStore.Admin.Controllers
 			};
 		}
 
-		#endregion
+        #endregion
 
-		#region Hidden normalizers
+        #region downloads
 
-		public ActionResult FixProductMainPictureIds(DateTime? ifModifiedSinceUtc = null)
+        public ActionResult DeleteDownloadVersion(int downloadId, int productId)
+        {
+            if (downloadId == 0)
+                NotifySuccess("Der Download wurde nicht gefunden.");
+
+            var download = _downloadService.GetDownloadById(downloadId);
+            _downloadService.DeleteDownload(download);
+
+            NotifySuccess("Der Download wurde erfolgreich gelöscht.");
+
+            return RedirectToAction("Edit", new { id = productId });
+        }
+        
+        #endregion
+
+        #region Hidden normalizers
+
+        public ActionResult FixProductMainPictureIds(DateTime? ifModifiedSinceUtc = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();

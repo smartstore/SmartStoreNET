@@ -22,6 +22,14 @@ namespace SmartStore.Services.Media
 		IList<Download> GetDownloadsByIds(int[] downloadIds);
 
         /// <summary>
+		/// Gets downloads by product id
+		/// </summary>
+		/// <param name="entityId">EntityId</param>
+        /// <param name="entityName">EntityName</param>
+		/// <returns>List of download entities</returns>
+        IList<Download> GetDownloadsByEntityId(int entityId, string entityName);
+
+        /// <summary>
         /// Gets a download by GUID
         /// </summary>
         /// <param name="downloadGuid">Download GUID</param>

@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -12,6 +12,8 @@
 	* #1459 Add option to only submit one category name per product
 	* Allow to specify export categories per product
 * Wallet: Allow customer to choose whether refund should be submitted to his wallet.
+* Added option to display preview pictures in product lists
+* Added option to add multiple file versions to product download section
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).

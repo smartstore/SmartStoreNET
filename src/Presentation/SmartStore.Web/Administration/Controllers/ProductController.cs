@@ -239,38 +239,6 @@ namespace SmartStore.Admin.Controllers
 			p.IsGiftCard = m.IsGiftCard;
 			p.GiftCardTypeId = m.GiftCardTypeId;
 			
-			p.IsDownload = m.IsDownload;
-			//p.DownloadId = m.DownloadId ?? 0;
-			//p.UnlimitedDownloads = m.UnlimitedDownloads;
-			p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
-			p.DownloadExpirationDays = m.DownloadExpirationDays;
-			p.DownloadActivationTypeId = m.DownloadActivationTypeId;
-			p.HasUserAgreement = m.HasUserAgreement;
-			p.UserAgreementText = m.UserAgreementText;
-			p.HasSampleDownload = m.HasSampleDownload;
-			p.SampleDownloadId = m.SampleDownloadId == 0 ? (int?)null : m.SampleDownloadId;
-
-            if (m.NewVersionDownloadId != 0 && m.NewVersionDownloadId != null)
-            {               
-                // set version info & product id for new download
-                var newVersion = _downloadService.GetDownloadById((int)m.NewVersionDownloadId);
-                newVersion.FileVersion = m.NewVersion != null ? m.NewVersion : String.Empty;
-                newVersion.EntityId = p.Id;
-                newVersion.IsTransient = false;
-                _downloadService.UpdateDownload(newVersion, newVersion.MediaStorage.Data);
-            }
-            else if(m.DownloadFileVersion.HasValue())
-            {
-                var download = _downloadService.GetDownloadsByEntityId(p.Id, "Product")
-                    .OrderByDescending(x => x.FileVersion)
-                    .FirstOrDefault();
-
-                download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
-                download.EntityId = p.Id;
-                download.IsTransient = false;
-                _downloadService.UpdateDownload(download);
-            }
-
 			p.IsRecurring = m.IsRecurring;
 			p.RecurringCycleLength = m.RecurringCycleLength;
 			p.RecurringCyclePeriodId = m.RecurringCyclePeriodId;
@@ -296,7 +264,46 @@ namespace SmartStore.Admin.Controllers
 			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();		
 		}
 
-		[NonAction]
+        [NonAction]
+        protected void UpdateProductDownloads(Product product, ProductModel model)
+        {
+            var p = product;
+            var m = model;
+
+            p.IsDownload = m.IsDownload;
+            //p.DownloadId = m.DownloadId ?? 0;
+            //p.UnlimitedDownloads = m.UnlimitedDownloads;
+            p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
+            p.DownloadExpirationDays = m.DownloadExpirationDays;
+            p.DownloadActivationTypeId = m.DownloadActivationTypeId;
+            p.HasUserAgreement = m.HasUserAgreement;
+            p.UserAgreementText = m.UserAgreementText;
+            p.HasSampleDownload = m.HasSampleDownload;
+            p.SampleDownloadId = m.SampleDownloadId == 0 ? (int?)null : m.SampleDownloadId;
+
+            if (m.NewVersionDownloadId != 0 && m.NewVersionDownloadId != null)
+            {
+                // set version info & product id for new download
+                var newVersion = _downloadService.GetDownloadById((int)m.NewVersionDownloadId);
+                newVersion.FileVersion = m.NewVersion != null ? m.NewVersion : String.Empty;
+                newVersion.EntityId = p.Id;
+                newVersion.IsTransient = false;
+                _downloadService.UpdateDownload(newVersion, newVersion.MediaStorage.Data);
+            }
+            else if (m.DownloadFileVersion.HasValue())
+            {
+                var download = _downloadService.GetDownloadsByEntityId(p.Id, "Product")
+                    .OrderByDescending(x => x.FileVersion)
+                    .FirstOrDefault();
+
+                download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
+                download.EntityId = p.Id;
+                download.IsTransient = false;
+                _downloadService.UpdateDownload(download);
+            }
+        }
+        
+        [NonAction]
 		protected void UpdateProductTags(Product product, params string[] rawProductTags)
 		{
 			Guard.NotNull(product, nameof(product));
@@ -835,6 +842,7 @@ namespace SmartStore.Admin.Controllers
 				model.AllowCustomerReviews = true;
 				model.Published = true;
 				model.VisibleIndividually = true;
+                model.HasPreviewPicture = false;
 			}
 		}
 
@@ -1150,7 +1158,7 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch
                 {
-                    ModelState.AddModelError("FileVersion", "Fileversion no good");
+                    ModelState.AddModelError("FileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
                 }
             } 
 
@@ -1276,7 +1284,7 @@ namespace SmartStore.Admin.Controllers
                 }
                 catch
                 {
-                    ModelState.AddModelError("FileVersion", "Fileversion no good");
+                    ModelState.AddModelError("FileVersion", T("Admin.Catalog.Products.Download.SemanticVersion.NotValid"));
                 }
             } 
 
@@ -1331,7 +1339,10 @@ namespace SmartStore.Admin.Controllers
 					case "discounts":
 						UpdateProductDiscounts(product, model);
 						break;
-					case "seo":
+                    case "downloads":
+                        UpdateProductDownloads(product, model);
+                        break;
+                    case "seo":
 						UpdateProductSeo(product, model);
 						break;
 					case "acl":

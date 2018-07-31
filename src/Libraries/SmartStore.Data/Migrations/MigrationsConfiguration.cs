@@ -353,6 +353,11 @@
             builder.AddOrUpdate("Admin.Catalog.Products.Download.VersionDelete", "Delete this file version of the download.", "Diese Dateiversion des Downloads löschen.");
             builder.AddOrUpdate("Admin.Catalog.Products.Download.AddChangelog", "Edit changelog", "Changelog bearbeiten");
             builder.AddOrUpdate("Customer.Downloads.NoChangelogAvailable", "No changelog information available.", "Keine Changelog-Informationen verfügbar.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Download.SemanticVersion.NotValid",
+                "The specified version information is not valid. Please enter the version number in the correct format (e.g.: 1.0.0.0, 2.0 or 3.1.5).", 
+                "Die angegebenen Versionsinformationen sind nicht gültig. Bitte geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).");
+            
         }
     }
 }

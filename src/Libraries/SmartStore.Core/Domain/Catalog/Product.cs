@@ -901,10 +901,16 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int? MainPictureId { get; set; }
 
-		/// <summary>
-		/// Gets or sets the product type
+        /// <summary>
+		/// Gets or sets a value that indictaes whether the product has a preview picture
 		/// </summary>
 		[DataMember]
+        public bool HasPreviewPicture { get; set; }
+
+        /// <summary>
+        /// Gets or sets the product type
+        /// </summary>
+        [DataMember]
 		public ProductType ProductType
 		{
 			get

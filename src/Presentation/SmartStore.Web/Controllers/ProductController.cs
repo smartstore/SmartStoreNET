@@ -562,7 +562,12 @@ namespace SmartStore.Web.Controllers
 				// Update image gallery.
 				var pictures = _pictureService.GetPicturesByProductId(productId);
 
-				if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
+                if (product.HasPreviewPicture && pictures.Count > 1)
+                {
+                    pictures.RemoveAt(0);
+                }
+
+                if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
 				{
 					// All pictures rendered... only index is required.
 					var picture = m.GetAssignedPicture(_pictureService, pictures);

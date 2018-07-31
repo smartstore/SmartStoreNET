@@ -481,7 +481,16 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
+        [NonAction]
+        protected void UpdateProductPictures(Product product, ProductModel model)
+        {
+            var p = product;
+            var m = model;
+
+            p.HasPreviewPicture = m.HasPreviewPicture;
+        }
+
+        [NonAction]
 		protected void UpdateProductDiscounts(Product product, ProductModel model)
 		{
 			var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToSkus, null, true);
@@ -1341,6 +1350,9 @@ namespace SmartStore.Admin.Controllers
 						break;
                     case "downloads":
                         UpdateProductDownloads(product, model);
+                        break;
+                    case "pictures":
+                        UpdateProductPictures(product, model);
                         break;
                     case "seo":
 						UpdateProductSeo(product, model);

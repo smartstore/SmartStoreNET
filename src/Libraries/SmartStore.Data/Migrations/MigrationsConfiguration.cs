@@ -357,6 +357,12 @@
             builder.AddOrUpdate("Admin.Catalog.Products.Download.SemanticVersion.NotValid",
                 "The specified version information is not valid. Please enter the version number in the correct format (e.g.: 1.0.0.0, 2.0 or 3.1.5).", 
                 "Die angegebenen Versionsinformationen sind nicht gültig. Bitte geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.HasPreviewPicture",
+                "Has preview picture",
+                "Hat Vorschaubild",
+                "If this option is activated, the first image is used as a preview image in product lists and is no longer displayed in the product detail view.",
+                "Wenn diese Option aktiviert ist wird das erste Bild als Vorschaubild in Produktlisten genutzt und in der Produktdetailanischt nicht mehr angezeigt.");
             
         }
     }

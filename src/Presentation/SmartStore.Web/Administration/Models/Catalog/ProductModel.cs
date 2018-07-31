@@ -373,11 +373,13 @@ namespace SmartStore.Admin.Models.Catalog
 		public int NumberOfAvailableProductAttributes { get; set; }
 
         //pictures
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasPreviewPicture")]
+        public bool HasPreviewPicture { get; set; }
         public ProductPictureModel AddPictureModel { get; set; }
         public IList<ProductPictureModel> ProductPictureModels { get; set; }
-
-		//discounts
-		public List<Discount> AvailableDiscounts { get; set; }
+        
+        //discounts
+        public List<Discount> AvailableDiscounts { get; set; }
 		public int[] SelectedDiscountIds { get; set; }
 
 		//add specification attribute model

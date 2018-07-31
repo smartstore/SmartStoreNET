@@ -387,7 +387,13 @@ namespace SmartStore.Web.Controllers
 
 				// pictures
 				var pictures = _pictureService.GetPicturesByProductId(product.Id);
-				PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationPictureIds, isAssociatedProduct, productBundleItem, combination);
+
+                if (product.HasPreviewPicture && pictures.Count > 1)
+                {
+                    pictures.RemoveAt(0);
+                }
+
+                PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationPictureIds, isAssociatedProduct, productBundleItem, combination);
 
 				return model;
 			}
@@ -575,8 +581,8 @@ namespace SmartStore.Web.Controllers
 					}
 
 					if (defaultPicture == null)
-					{
-						model.GalleryStartIndex = 0;
+					{    
+                        model.GalleryStartIndex = 0;
 						defaultPicture = pictures.First();
 					}
 				}

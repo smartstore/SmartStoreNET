@@ -116,7 +116,7 @@ namespace SmartStore.Web.Controllers
 					{
 						#region Product
 
-						model.SearchTerm = model.ProductName.TrimSafe();
+						model.SearchTerm = model.SearchTerm.TrimSafe();
 
 						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
 						var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
@@ -235,7 +235,7 @@ namespace SmartStore.Web.Controllers
                     {
                         #region Category
                         
-                       var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true);
+                        var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true);
                         var allPictureIds = categories.Select(x => x.PictureId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
 

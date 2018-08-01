@@ -134,7 +134,7 @@
 			}
 			<div class="col">
 				@(Html.SmartStore().FileUploader()
-					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, }))
+					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
 					.AcceptedFileTypes("")
 					.IconCssClass(MinimalMode ? "fa fa-upload" : "")
 					.ButtonOutlineStyle(hasFile)

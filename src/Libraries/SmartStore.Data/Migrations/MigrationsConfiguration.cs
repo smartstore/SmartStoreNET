@@ -363,7 +363,12 @@
                 "Hat Vorschaubild",
                 "If this option is activated, the first image is used as a preview image in product lists and is no longer displayed in the product detail view.",
                 "Wenn diese Option aktiviert ist wird das erste Bild als Vorschaubild in Produktlisten genutzt und in der Produktdetailanischt nicht mehr angezeigt.");
-            
+
+            builder.AddOrUpdate("Products.Free", "Free", "Kostenlos");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.ProductTags.Hint",
+                "Product tags are keywords that this product can also be identified by. Enter a list of the tags to be associated with this product. The more products associated with a particular tag, the larger it will show on the tag cloud.",
+                "Eine Liste von Schlüsselwörtern, die das Produkt taxonomisch charakterisieren. Je mehr Produkte einem Schlüsselwort (Tag) zugeordnet sind, desto mehr visuelles Gewicht erhält das Tag.");
         }
     }
 }

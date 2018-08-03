@@ -541,6 +541,16 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
+            // free product badge
+            if (item.Price.PriceValue == 0)
+            {
+                item.Badges.Add(new ProductSummaryModel.Badge
+                {
+                    Label = T("Products.Free"),
+                    Style = BadgeStyle.Success
+                });
+            }
+
 			model.Items.Add(item);
 		}
 

@@ -611,6 +611,10 @@
     <Compile Include="Migrations\201807201157391_DownloadVersions.Designer.cs">
       <DependentUpon>201807201157391_DownloadVersions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808051119578_Merge4.cs" />
+    <Compile Include="Migrations\201808051119578_Merge4.Designer.cs">
+      <DependentUpon>201808051119578_Merge4.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1098,6 +1102,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807201157391_DownloadVersions.resx">
       <DependentUpon>201807201157391_DownloadVersions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808051119578_Merge4.resx">
+      <DependentUpon>201808051119578_Merge4.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

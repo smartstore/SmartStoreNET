@@ -35,7 +35,23 @@
         });
 	</script>
 
-	<table class="adminContent mb-5">
+    <table class="adminContent mb-5">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+                    <div class="head">@T("Common.Options")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.HasPreviewPicture)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.HasPreviewPicture)
+				@Html.ValidationMessageFor(model => model.HasPreviewPicture)
+			</td>
+		</tr>
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">

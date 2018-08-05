@@ -216,12 +216,18 @@ $art-border-color:              #ddd;
         position: absolute;
         z-index: 1;
         left: 0;
-        top: 2rem;
+        top: 0rem;
         width: 100%;
         text-align: center;
         color: $gray-500;
     }
-	img {
+}
+
+.art-picture.no-default-picture {
+    &:before {
+        top: 2rem;
+    }
+    img {
 		display: none;
 	}
 }

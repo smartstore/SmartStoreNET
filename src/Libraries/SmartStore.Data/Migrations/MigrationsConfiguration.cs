@@ -353,6 +353,22 @@
             builder.AddOrUpdate("Admin.Catalog.Products.Download.VersionDelete", "Delete this file version of the download.", "Diese Dateiversion des Downloads löschen.");
             builder.AddOrUpdate("Admin.Catalog.Products.Download.AddChangelog", "Edit changelog", "Changelog bearbeiten");
             builder.AddOrUpdate("Customer.Downloads.NoChangelogAvailable", "No changelog information available.", "Keine Changelog-Informationen verfügbar.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Download.SemanticVersion.NotValid",
+                "The specified version information is not valid. Please enter the version number in the correct format (e.g.: 1.0.0.0, 2.0 or 3.1.5).", 
+                "Die angegebenen Versionsinformationen sind nicht gültig. Bitte geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.HasPreviewPicture",
+                "Has preview picture",
+                "Hat Vorschaubild",
+                "If this option is activated, the first image is used as a preview image in product lists and is no longer displayed in the product detail view.",
+                "Wenn diese Option aktiviert ist wird das erste Bild als Vorschaubild in Produktlisten genutzt und in der Produktdetailanischt nicht mehr angezeigt.");
+
+            builder.AddOrUpdate("Products.Free", "Free", "Kostenlos");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.ProductTags.Hint",
+                "Product tags are keywords that this product can also be identified by. Enter a list of the tags to be associated with this product. The more products associated with a particular tag, the larger it will show on the tag cloud.",
+                "Eine Liste von Schlüsselwörtern, die das Produkt taxonomisch charakterisieren. Je mehr Produkte einem Schlüsselwort (Tag) zugeordnet sind, desto mehr visuelles Gewicht erhält das Tag.");
         }
     }
 }

@@ -615,6 +615,10 @@
     <Compile Include="Migrations\201807311708428_ProductPreviewPicture.Designer.cs">
       <DependentUpon>201807311708428_ProductPreviewPicture.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808051818238_Merge4.cs" />
+    <Compile Include="Migrations\201808051818238_Merge4.Designer.cs">
+      <DependentUpon>201808051818238_Merge4.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1105,6 +1109,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807311708428_ProductPreviewPicture.resx">
       <DependentUpon>201807311708428_ProductPreviewPicture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808051818238_Merge4.resx">
+      <DependentUpon>201808051818238_Merge4.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

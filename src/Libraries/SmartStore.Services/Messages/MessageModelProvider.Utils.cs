@@ -74,7 +74,7 @@ namespace SmartStore.Services.Messages
 			var topicService = _services.Resolve<ITopicService>();
 
 			// Load by store
-			var topic = topicService.GetTopicBySystemName(topicSystemName);
+			var topic = topicService.GetTopicBySystemName(topicSystemName, ctx.StoreId ?? 0);
 
 			string body = topic?.GetLocalized(x => x.Body, ctx.Language);
 			if (body.HasValue())

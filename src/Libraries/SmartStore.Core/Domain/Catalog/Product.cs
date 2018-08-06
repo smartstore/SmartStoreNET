@@ -297,8 +297,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// <summary>
 		/// Gets or sets the download identifier
 		/// </summary>
-		[Obsolete]
-        [DataMember]
+		[Obsolete("Since version 3.2 more than one download can be assigned to a product. See property Download.EntityId and Download.EntityName.")]
         public int DownloadId { get; set; }
 
 		/// <summary>

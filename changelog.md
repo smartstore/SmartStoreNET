@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -43,6 +43,7 @@
 * Redirecting within checkout may have displayed an incorrect URL in the browser.
 * Server cannot modify cookies after HTTP headers have been sent.
 * Wrong base price on product and cart page when a special price is active.
+* In a multi-store, message templates may have loaded the wrong disclaimer and conditions-of-use text.
 
 
 ## SmartStore.NET 3.1.5

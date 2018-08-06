@@ -569,6 +569,7 @@ namespace SmartStore.Services.DataExchange.Export
 			dynamic result = new DynamicEntity(product);
 
 			result.AppliedDiscounts = null;
+            result.Downloads = null;
 			result.TierPrices = null;
 			result.ProductAttributes = null;
 			result.ProductAttributeCombinations = null;
@@ -601,7 +602,7 @@ namespace SmartStore.Services.DataExchange.Export
 				ToDeliveryTime(ctx, result, product.DeliveryTimeId);
 				ToQuantityUnit(ctx, result, product.QuantityUnitId);
 
-				result._Localized = GetLocalized(ctx, product,
+                result._Localized = GetLocalized(ctx, product,
 					x => x.Name,
 					x => x.ShortDescription,
 					x => x.FullDescription,
@@ -821,7 +822,16 @@ namespace SmartStore.Services.DataExchange.Export
 					.ToList();
 			}
 
-			dynObject.ProductTags = productTags
+            if (product.IsDownload)
+            {
+                var downloads = ctx.ProductExportContext.Downloads.GetOrLoad(product.Id);
+
+                dynObject.Downloads = downloads
+                    .Select(x => ToDynamic(ctx, x))
+                    .ToList();
+            }
+
+            dynObject.ProductTags = productTags
 				.Select(x =>
 				{
 					dynamic dyn = new DynamicEntity(x);
@@ -1051,7 +1061,16 @@ namespace SmartStore.Services.DataExchange.Export
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExporterContext ctx, ProductSpecificationAttribute psa)
+        private dynamic ToDynamic(DataExporterContext ctx, Download download)
+        {
+            if (download == null)
+                return null;
+
+            dynamic result = new DynamicEntity(download);
+            return result;
+        }
+
+        private dynamic ToDynamic(DataExporterContext ctx, ProductSpecificationAttribute psa)
 		{
 			if (psa == null)
 				return null;

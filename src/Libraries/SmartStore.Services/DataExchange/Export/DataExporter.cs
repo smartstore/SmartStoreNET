@@ -82,7 +82,8 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
 		private readonly Lazy<IQuantityUnitService> _quantityUnitService;
 		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
-		private readonly Lazy<ProductUrlHelper> _productUrlHelper;
+        private readonly Lazy<IDownloadService> _downloadService;
+        private readonly Lazy<ProductUrlHelper> _productUrlHelper;
 
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
@@ -129,7 +130,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<IDeliveryTimeService> deliveryTimeService,
 			Lazy<IQuantityUnitService> quantityUnitService,
 			Lazy<ICatalogSearchService> catalogSearchService,
-			Lazy<ProductUrlHelper> productUrlHelper,
+            Lazy<IDownloadService> downloadService,
+            Lazy<ProductUrlHelper> productUrlHelper,
 			Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
@@ -173,6 +175,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_deliveryTimeService = deliveryTimeService;
 			_quantityUnitService = quantityUnitService;
 			_catalogSearchService = catalogSearchService;
+            _downloadService = downloadService;
 			_productUrlHelper = productUrlHelper;
 
 			_customerRepository = customerRepository;
@@ -687,7 +690,8 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _productService.Value.GetBundleItemsByProductIds(x, showHidden),
 				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
-				x => _productService.Value.GetProductTagsByProductIds(x)
+				x => _productService.Value.GetProductTagsByProductIds(x),
+                x => _downloadService.Value.GetDownloadsByEntityIds(x, nameof(Product))
 			);
 
 			return context;

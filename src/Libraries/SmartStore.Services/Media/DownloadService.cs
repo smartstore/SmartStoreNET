@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -13,7 +14,7 @@ using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
-	public partial class DownloadService : IDownloadService
+    public partial class DownloadService : IDownloadService
     {
         private readonly IRepository<Download> _downloadRepository;
         private readonly IEventPublisher _eventPubisher;
@@ -82,6 +83,22 @@ namespace SmartStore.Services.Media
             var downloads = query.OrderBy(x => x.FileVersion);
 
             return downloads.ToList();
+        }
+
+        public virtual Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName)
+        {
+            Guard.NotNull(entityIds, nameof(entityIds));
+            Guard.NotEmpty(entityName, nameof(entityName));
+
+            var query = _downloadRepository.TableUntracked
+                .Where(x => entityIds.Contains(x.EntityId) && x.EntityName == entityName);
+
+            var map = query
+                .OrderBy(x => x.FileVersion)
+                .ToList()
+                .ToMultimap(x => x.EntityId, x => x);
+
+            return map;
         }
 
         public virtual Download GetDownloadByGuid(Guid downloadGuid)

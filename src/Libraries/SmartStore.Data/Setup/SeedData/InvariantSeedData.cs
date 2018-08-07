@@ -7516,7 +7516,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_blue-gray-classic-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-blue-gray-classic-black-1").Id.ToString()
             });
 
             #endregion blue-gray-classic-black
@@ -7535,7 +7535,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_gray-course-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-gray-course-black").Id.ToString()
             });
 
             #endregion gray-course-black
@@ -7554,7 +7554,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_gray-course-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-brown-course-havana").Id.ToString()
             });
 
             #endregion brown-course-havana
@@ -7573,7 +7573,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-green-classic-havana-black").Id.ToString()
             });
 
             #endregion green-classic-havana-black
@@ -7594,7 +7594,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-blue-gray-classic-black-1").Id.ToString()
             });
 
             #endregion green-classic-havana-black
@@ -7613,7 +7613,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-blue-gray-classic-black-1").Id.ToString()
             });
 
             #endregion green-classic-rayban-black
@@ -7633,7 +7633,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = true,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-gray-course-black").Id.ToString()
             });
 
             #endregion gray-course-havana-black
@@ -7652,7 +7652,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-gray-course-black").Id.ToString()
             });
 
             #endregion gray-course-rayban-black
@@ -7671,7 +7671,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-green-classic-havana-black").Id.ToString()
             });
 
             #endregion green-classic-rayban-black
@@ -7690,7 +7690,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-green-classic-havana-black").Id.ToString()
             });
 
             #endregion gray-course-rayban-black
@@ -7710,7 +7710,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-brown-course-havana").Id.ToString()
             });
 
             #endregion brown-course-havana-black
@@ -7729,7 +7729,7 @@ namespace SmartStore.Data.Setup
                 AllowOutOfStockOrders = true,
                 IsActive = false,
                 //Price = 299M,
-                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename.EndsWith("_green-classic-havana-black")).Id.ToString()
+                AssignedPictureIds = picturesWayfarer.First(x => x.SeoFilename == "wayfarer-brown-course-havana").Id.ToString()
             });
 
             #endregion brown-course-rayban-black
@@ -10144,9 +10144,10 @@ namespace SmartStore.Data.Setup
 		{
 			#region definitions
 
-			var sampleImagesPath = _sampleImagesPath;
 			var productTemplate = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
 			var firstDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 0);
+            var secondDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 1);
+            var thirdDeliveryTime = _ctx.Set<DeliveryTime>().First(sa => sa.DisplayOrder == 2);
             var specialPriceEndDate = DateTime.UtcNow.AddMonths(1);
 
             #endregion definitions
@@ -10180,16 +10181,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
+            AddProductPicture(productTitleistSM6TourChrome, "product_titleist_sm6_tour_chrome.jpg");
 
-            productTitleistSM6TourChrome.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_titleist_sm6_tour_chrome.jpg"), "image/png", GetSeName(productTitleistSM6TourChrome.Name)),
-                DisplayOrder = 1,
-            });
+            productTitleistSM6TourChrome.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
 
             productTitleistSM6TourChrome.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10223,16 +10220,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            productTitleistProV1x.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
+            AddProductPicture(productTitleistProV1x, "product_titleist-pro-v1x.jpg");
 
-            productTitleistProV1x.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_titleist-pro-v1x.jpg"), "image/png", GetSeName(productTitleistProV1x.Name)),
-                DisplayOrder = 1,
-            });
+            productTitleistProV1x.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
 
             productTitleistProV1x.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10266,22 +10259,13 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productSupremeGolfball, "product_supremeGolfball_1.jpg", "golfball-1");
+            AddProductPicture(productSupremeGolfball, "product_supremeGolfball_2.jpg", "golfball-2");
+
             productSupremeGolfball.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
-
-            productSupremeGolfball.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_supremeGolfball_1.jpg"), "image/png", GetSeName(productSupremeGolfball.Name)),
-                DisplayOrder = 1,
-            });
-
-            productSupremeGolfball.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_supremeGolfball_2.jpg"), "image/png", GetSeName(productSupremeGolfball.Name)),
-                DisplayOrder = 1,
-            });
 
             productSupremeGolfball.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10315,16 +10299,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            productGBBEpicSubZeroDriver.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
+            AddProductPicture(productGBBEpicSubZeroDriver, "product_gbb-epic-sub-zero-driver.jpg");
 
-            productGBBEpicSubZeroDriver.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gbb-epic-sub-zero-driver.jpg"), "image/png", GetSeName(productGBBEpicSubZeroDriver.Name)),
-                DisplayOrder = 1,
-            });
+            productGBBEpicSubZeroDriver.ProductCategories.Add(new ProductCategory { Category = categoryGolf, DisplayOrder = 1 });
 
             productGBBEpicSubZeroDriver.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10365,17 +10345,13 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single(),
+                DeliveryTimeId = thirdDeliveryTime.Id,
                 HasTierPrices = true
             };
 
-            productNikeStrikeFootball.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
+            AddProductPicture(productNikeStrikeFootball, "products_nike-strike-football.jpg");
 
-            productNikeStrikeFootball.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_nike-strike-football.jpg"), "image/png", GetSeName(productNikeStrikeFootball.Name)),
-                DisplayOrder = 1,
-            });
+            productNikeStrikeFootball.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
 
             productNikeStrikeFootball.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10430,16 +10406,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
+            AddProductPicture(productNikeEvoPowerBall, "product_nike-vopower-53-trainer-hs-ball.jpg");
 
-            productNikeEvoPowerBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_nike-vopower-53-trainer-hs-ball.jpg"), "image/png", GetSeName(productNikeEvoPowerBall.Name)),
-                DisplayOrder = 1,
-            });
+            productNikeEvoPowerBall.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
 
             productNikeEvoPowerBall.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10490,47 +10462,22 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_white.png", "official-game-ball-white");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_red.png", "official-game-ball-red");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_yellow.png", "official-game-ball-yellow");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_blue.png", "official-game-ball-blue");
+            AddProductPicture(productTorfabrikOfficialGameBall, "product_torfabrik-offizieller-spielball_green.png", "official-game-ball-green");
+
             productTorfabrikOfficialGameBall.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
-
-            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_white.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "white"),
-                DisplayOrder = 1,
-            });
-
-            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_red.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "red"),
-                DisplayOrder = 1,
-            });
-
-            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_yellow.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "yellow"),
-                DisplayOrder = 1,
-            });
-
-            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_blue.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "blue"),
-                DisplayOrder = 1,
-            });
-
-            productTorfabrikOfficialGameBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_torfabrik-offizieller-spielball_green.png"), "image/png", GetSeName(productTorfabrikOfficialGameBall.Name) + "green"),
-                DisplayOrder = 1,
-            });
 
             productTorfabrikOfficialGameBall.ProductManufacturers.Add(new ProductManufacturer
             {
                 Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Adidas").Single(),
                 DisplayOrder = 1,
             });
-
 
             productTorfabrikOfficialGameBall.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -10575,52 +10522,18 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-white.png", "adidas-tango-pasadena-ball-white");
+            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-yellow.jpg", "adidas-tango-pasadena-ball-yellow");
+            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-red.jpg", "adidas-tango-pasadena-ball-red");
+            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-green.jpg", "adidas-tango-pasadena-ball-green");
+            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-gray.jpg", "adidas-tango-pasadena-ball-gray");
+            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-brown.jpg", "adidas-tango-pasadena-ball-brown");
+            AddProductPicture(productAdidasTangoSalaBall, "product_adidas-tango-pasadena-ball-blue.jpg", "adidas-tango-pasadena-ball-blue");
+
             productAdidasTangoSalaBall.ProductCategories.Add(new ProductCategory { Category = categorySoccer, DisplayOrder = 1 });
-
-            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-white.png"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-white"),
-                DisplayOrder = 1,
-            });
-
-            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-yellow.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-yellow"),
-                DisplayOrder = 1,
-            });
-
-            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-red.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-red"),
-                DisplayOrder = 1,
-            });
-
-            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-green.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-green"),
-                DisplayOrder = 1,
-            });
-
-            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-gray.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-gray"),
-                DisplayOrder = 1,
-            });
-
-            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-brown.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-brown"),
-                DisplayOrder = 1,
-            });
-
-            productAdidasTangoSalaBall.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_adidas-tango-pasadena-ball-blue.jpg"), "image/png", GetSeName(productAdidasTangoSalaBall.Name) + "-blue"),
-                DisplayOrder = 1,
-            });
 
             productAdidasTangoSalaBall.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10678,17 +10591,13 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single(),
+                DeliveryTimeId = thirdDeliveryTime.Id,
                 HasTierPrices = true
             };
 
-            productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory { Category = categoryBasketball, DisplayOrder = 1 });
+            AddProductPicture(productEvolutionHighSchoolGameBasketball, "product_evolution-high-school-game-basketball.jpg");
 
-            productEvolutionHighSchoolGameBasketball.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_evolution-high-school-game-basketball.jpg"), "image/png", GetSeName(productEvolutionHighSchoolGameBasketball.Name)),
-                DisplayOrder = 1,
-            });
+            productEvolutionHighSchoolGameBasketball.ProductCategories.Add(new ProductCategory { Category = categoryBasketball, DisplayOrder = 1 });
 
             productEvolutionHighSchoolGameBasketball.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10726,16 +10635,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            productAllCourtBasketball.ProductCategories.Add(new ProductCategory { Category = categoryBasketball, DisplayOrder = 1 });
+            AddProductPicture(productAllCourtBasketball, "product_all-court-basketball.png");
 
-            productAllCourtBasketball.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_all-court-basketball.png"), "image/png", GetSeName(productAllCourtBasketball.Name)),
-                DisplayOrder = 1,
-            });
+            productAllCourtBasketball.ProductCategories.Add(new ProductCategory { Category = categoryBasketball, DisplayOrder = 1 });
 
             productAllCourtBasketball.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10775,28 +10680,14 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_1.jpg", "rayban-top-bar-1");
+            AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_2.jpg", "rayban-top-bar-2");
+            AddProductPicture(productRayBanTopBar, "product_RayBanTopBar_3.jpg", "rayban-top-bar-3");
+
             productRayBanTopBar.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
-
-            productRayBanTopBar.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_RayBanTopBar_1.jpg"), "image/png", GetSeName(productRayBanTopBar.Name)),
-                DisplayOrder = 1,
-            });
-
-            productRayBanTopBar.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_RayBanTopBar_2.jpg"), "image/png", GetSeName(productRayBanTopBar.Name)),
-                DisplayOrder = 1,
-            });
-
-            productRayBanTopBar.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_RayBanTopBar_3.jpg"), "image/png", GetSeName(productRayBanTopBar.Name)),
-                DisplayOrder = 1,
-            });
 
             productRayBanTopBar.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10830,46 +10721,17 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_1.jpg", "wayfarer-blue-gray-classic-black-1");
+            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_2.jpg", "wayfarer-blue-gray-classic-black-2");
+            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_3.jpg", "wayfarer-gray-course-black");
+            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_4.jpg", "wayfarer-brown-course-havana");
+            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_5.jpg", "wayfarer-green-classic-havana-black");
+            AddProductPicture(productOriginalWayfarer, "product_productOriginalWayfarer_6.jpg", "wayfarer-blue-gray-classic-black-3");
+
             productOriginalWayfarer.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
-
-            productOriginalWayfarer.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_1.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_blue-gray-classic-black"),
-                DisplayOrder = 1,
-            });
-
-            productOriginalWayfarer.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_2.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_blue-gray-classic-black"),
-                DisplayOrder = 1,
-            });
-
-            productOriginalWayfarer.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_3.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_gray-course-black"),
-                DisplayOrder = 1,
-            });
-
-            productOriginalWayfarer.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_4.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_brown-course-havana"),
-                DisplayOrder = 1,
-            });
-
-            productOriginalWayfarer.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_5.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_green-classic-havana-black"),
-                DisplayOrder = 1,
-            });
-
-            productOriginalWayfarer.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_productOriginalWayfarer_6.jpg"), "image/png", GetSeName(productOriginalWayfarer.Name) + "_blue-gray-classic-black"),
-                DisplayOrder = 1,
-            });
 
             productOriginalWayfarer.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10903,16 +10765,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
-            productRadarEVPrizmSportsSunglasses.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
+            AddProductPicture(productRadarEVPrizmSportsSunglasses, "product_radar_ev_prizm.jpg");
 
-            productRadarEVPrizmSportsSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_radar_ev_prizm.jpg"), "image/png", GetSeName(productRadarEVPrizmSportsSunglasses.Name)),
-                DisplayOrder = 1,
-            });
+            productRadarEVPrizmSportsSunglasses.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
 
             productRadarEVPrizmSportsSunglasses.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -10946,264 +10804,58 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlakSunglasses.jpg", "custom_flak");
+            AddProductPicture(productCustomFlakSunglasses, "productCustomFlakSunglasses_black_white.jpg", "custom_flak_black_white");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_gray.jpg", "custom_flak_matteblack_gray");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_clear.jpg", "custom_flak_matteblack_clear");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_jadeiridium.jpg", "custom_flak_matteblack_jadeiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_positiverediridium.jpg", "custom_flak_matteblack_positiverediridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_rubyiridium.jpg", "custom_flak_matteblack_rubyiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_sapphireiridium.jpg", "custom_flak_matteblack_sapphireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_violetiridium.jpg", "custom_flak_matteblack_violetiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_24kiridium.jpg", "custom_flak_matteblack_24kiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_matteblack_fireiridium.jpg", "custom_flak_matteblack_fireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_24kiridium.jpg", "custom_flak_orangeflare_24kiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_clear.jpg", "custom_flak_orangeflare_clear");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_fireiridium.jpg", "custom_flak_orangeflare_fireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_gray.jpg", "custom_flak_orangeflare_gray");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_jadeiridium.jpg", "custom_flak_orangeflare_jadeiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_positiverediridium.jpg", "custom_flak_orangeflare_positiverediridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_rubyiridium.jpg", "custom_flak_orangeflare_rubyiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_sapphireiridium.jpg", "custom_flak_orangeflare_sapphireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_orangeflare_violetiridium.jpg", "custom_flak_orangeflare_violetiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_24kiridium.jpg", "custom_flak_polishedwhite_24kiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_clear.jpg", "custom_flak_polishedwhite_clear");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_fireiridium.jpg", "custom_flak_polishedwhite_fireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_gray.jpg", "custom_flak_polishedwhite_gray");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_jadeiridium.jpg", "custom_flak_polishedwhite_jadeiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_rubyiridium.jpg", "custom_flak_polishedwhite_rubyiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_sapphireiridium.jpg", "custom_flak_polishedwhite_sapphireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_violetiridium.jpg", "custom_flak_polishedwhite_violetiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_polishedwhite_positiverediridium.jpg", "custom_flak_polishedwhite_positiverediridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_24kiridium.jpg", "custom_flak_redline_24kiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_clear.jpg", "custom_flak_redline_clear");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_fireiridium.jpg", "custom_flak_redline_fireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_gray.jpg", "custom_flak_redline_gray");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_jadeiridium.jpg", "custom_flak_redline_jadeiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_positiverediridium.jpg", "custom_flak_redline_positiverediridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_rubyiridium.jpg", "custom_flak_redline_rubyiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_sapphireiridium.jpg", "custom_flak_redline_sapphireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_redline_violetiridium.jpg", "custom_flak_redline_violetiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_24kiridium.jpg", "custom_flak_skyblue_24kiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_clear.jpg", "custom_flak_skyblue_clear");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_fireiridium.jpg", "custom_flak_skyblue_fireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_gray.jpg", "custom_flak_skyblue_gray");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_jadeiridium.jpg", "custom_flak_skyblue_jadeiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_positiverediridium.jpg", "custom_flak_skyblue_positiverediridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_rubyiridium.jpg", "custom_flak_skyblue_rubyiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_sapphireiridium.jpg", "custom_flak_skyblue_sapphireiridium");
+            AddProductPicture(productCustomFlakSunglasses, "product_CustomFlak_skyblue_violetiridium.jpg", "custom_flak_skyblue_violetiridium");
+
             productCustomFlakSunglasses.ProductCategories.Add(new ProductCategory { Category = categorySunglasses, DisplayOrder = 1 });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlakSunglasses.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlakSunglasses.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "productCustomFlakSunglasses_black_white.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "productCustomFlakSunglasses_black_white.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_gray.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_clear.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_jadeiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_positiverediridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_rubyiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_sapphireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_violetiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_24kiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_matteblack_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_matteblack_fireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_24kiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_clear.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_fireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_gray.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_jadeiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_positiverediridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_rubyiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_sapphireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_orangeflare_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_orangeflare_violetiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_24kiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_clear.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_fireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_gray.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_jadeiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_rubyiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_sapphireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_violetiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_polishedwhite_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_polishedwhite_positiverediridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_24kiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_clear.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_fireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_gray.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_jadeiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_positiverediridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_rubyiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_sapphireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_redline_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_redline_violetiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_24kiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_24kiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_clear.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_clear.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_fireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_fireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_gray.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_gray.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_jadeiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_jadeiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_positiverediridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_positiverediridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_rubyiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_rubyiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_sapphireiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_sapphireiridium.jpg"),
-                DisplayOrder = 1,
-            });
-            productCustomFlakSunglasses.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_CustomFlak_skyblue_violetiridium.jpg"), "image/png", GetSeName(productCustomFlakSunglasses.Name) + "product_CustomFlak_skyblue_violetiridium.jpg"),
-                DisplayOrder = 1,
-            });
-
-
 
             productCustomFlakSunglasses.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -11212,7 +10864,6 @@ namespace SmartStore.Data.Setup
             });
 
             #endregion product Custom Flak Sunglasses
-
 
 
             #endregion category sunglasses
@@ -11247,52 +10898,18 @@ namespace SmartStore.Data.Setup
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
                 IsFreeShipping = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
-            
+
+            AddProductPicture(productIphoneplus, "product_iphone-plus_all_colors.jpg", "iphone-plus-all-colors");
+            AddProductPicture(productIphoneplus, "product_iphoneplus_1.jpg", "iphone-plus-default");
+            AddProductPicture(productIphoneplus, "product_iphone-plus_red.jpg", "iphone-plus-red");
+            AddProductPicture(productIphoneplus, "product_iphone-plus_silver.jpg", "iphone-plus-silver");
+            AddProductPicture(productIphoneplus, "product_iphone-plus_black.jpg", "iphone-plus-black");
+            AddProductPicture(productIphoneplus, "product_iphone-plus_rose.jpg", "iphone-plus-rose");
+            AddProductPicture(productIphoneplus, "product_iphone-plus_gold.jpg", "iphone-plus-gold");
+
             productIphoneplus.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
-
-            productIphoneplus.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_all_colors.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
-                DisplayOrder = 1,
-            });
-
-            productIphoneplus.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_1.jpg"), "image/png", GetSeName(productIphoneplus.Name)),
-                DisplayOrder = 2,
-            });
-
-            productIphoneplus.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_red.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-red"),
-                DisplayOrder = 2,
-            });
-            
-            productIphoneplus.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_silver.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-silver"),
-                DisplayOrder = 2,
-            });
-
-            productIphoneplus.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_black.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-black"),
-                DisplayOrder = 2,
-            });
-
-            productIphoneplus.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_rose.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-rose"),
-                DisplayOrder = 2,
-            });
-
-            productIphoneplus.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphone-plus_gold.jpg"), "image/png", GetSeName(productIphoneplus.Name) + "-gold"),
-                DisplayOrder = 2,
-            });
 
             productIphoneplus.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -11355,22 +10972,13 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productWatchSeries2, "product_watchseries2_1.jpg", "watchseries-1");
+            AddProductPicture(productWatchSeries2, "product_watchseries2_2.jpg", "watchseries-2");
+
             productWatchSeries2.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
-
-            productWatchSeries2.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_watchseries2_1.jpg"), "image/png", GetSeName(productWatchSeries2.Name)),
-                DisplayOrder = 1,
-            });
-
-            productWatchSeries2.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_watchseries2_2.jpg"), "image/png", GetSeName(productWatchSeries2.Name)),
-                DisplayOrder = 2,
-            });
 
             productWatchSeries2.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -11432,46 +11040,17 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productAirpods, "products_airpods_white.jpg", "airpods-white");
+            AddProductPicture(productAirpods, "products_airpods_turquoise.jpg", "airpods-turquoise");
+            AddProductPicture(productAirpods, "products_airpods_lightblue.jpg", "airpods-lightblue");
+            AddProductPicture(productAirpods, "products_airpods_rose.jpg", "airpods-rose");
+            AddProductPicture(productAirpods, "products_airpods_gold.jpg", "airpods-gold");
+            AddProductPicture(productAirpods, "products_airpods_mint.jpg", "airpods-mint");
+
             productAirpods.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
-
-            productAirpods.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_white.jpg"), "image/png", GetSeName(productAirpods.Name) + "-white"),
-                DisplayOrder = 1,
-            });
-
-            productAirpods.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_turquoise.jpg"), "image/png", GetSeName(productAirpods.Name) + "-turquoise"),
-                DisplayOrder = 2,
-            });
-
-            productAirpods.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_lightblue.jpg"), "image/png", GetSeName(productAirpods.Name) + "-lightblue"),
-                DisplayOrder = 3,
-            });
-
-            productAirpods.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_rose.jpg"), "image/png", GetSeName(productAirpods.Name) + "-rose"),
-                DisplayOrder = 4,
-            });
-
-            productAirpods.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_gold.jpg"), "image/png", GetSeName(productAirpods.Name) + "-gold"),
-                DisplayOrder = 5,
-            });
-
-            productAirpods.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_mint.jpg"), "image/png", GetSeName(productAirpods.Name) + "-mint"),
-                DisplayOrder = 6,
-            });
 
             productAirpods.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -11506,43 +11085,19 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single(),
+                DeliveryTimeId = thirdDeliveryTime.Id,
                 BundleTitleText = "Bundle includes",
                 BundlePerItemPricing = true,
                 BundlePerItemShoppingCart = true
             };
-            
+
+            AddProductPicture(productAppleProHipsterBundle, "product_ultimate-apple-pro-hipster-bundle.jpg", "apple-pro-hipster-bundle");
+            AddProductPicture(productAppleProHipsterBundle, "products_airpods_white.jpg", "bundle-airpods-white");
+            AddProductPicture(productAppleProHipsterBundle, "product_watchseries2_2.jpg", "bundle-watchseries");
+            AddProductPicture(productAppleProHipsterBundle, "product_iphoneplus_2.jpg", "bundle-iphoneplus");
+            AddProductPicture(productAppleProHipsterBundle, "category_apple.png", "bundle-apple");
+
             productAppleProHipsterBundle.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
-
-            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ultimate-apple-pro-hipster-bundle.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
-                DisplayOrder = 1,
-            });
-
-            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_airpods_white.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
-                DisplayOrder = 2,
-            });
-
-            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_watchseries2_2.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
-                DisplayOrder = 2,
-            });
-
-            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_iphoneplus_2.jpg"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
-                DisplayOrder = 2,
-            });
-
-            productAppleProHipsterBundle.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_apple.png"), "image/png", GetSeName(productAppleProHipsterBundle.Name)),
-                DisplayOrder = 2,
-            });
 
             productAppleProHipsterBundle.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -11581,76 +11136,22 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(product97ipad, "product_ipad_1.jpg", "ipad-1");
+            AddProductPicture(product97ipad, "product_ipad_2.jpg", "ipad-2");
+            AddProductPicture(product97ipad, "product_97-ipad-yellow.jpg", "ipad-yellow");
+            AddProductPicture(product97ipad, "product_97-ipad-turquoise.jpg", "ipad-turquoise");
+            AddProductPicture(product97ipad, "product_97-ipad-lightblue.jpg", "ipad-lightblue");
+            AddProductPicture(product97ipad, "product_97-ipad-purple.jpg", "ipad-purple");
+            AddProductPicture(product97ipad, "product_97-ipad-mint.jpg", "ipad-mint");
+            AddProductPicture(product97ipad, "product_97-ipad-rose.jpg", "ipad-rose");
+            AddProductPicture(product97ipad, "product_97-ipad-spacegray.jpg", "ipad-spacegray");
+            AddProductPicture(product97ipad, "product_97-ipad-gold.jpg", "ipad-gold");
+            AddProductPicture(product97ipad, "product_97-ipad-silver.jpg", "ipad-silver");
+
             product97ipad.ProductCategories.Add(new ProductCategory { Category = categoryApple, DisplayOrder = 1 });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ipad_1.jpg"), "image/png", GetSeName(product97ipad.Name)),
-                DisplayOrder = 1,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ipad_2.jpg"), "image/png", GetSeName(product97ipad.Name)),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-yellow.jpg"), "image/png", GetSeName(product97ipad.Name) + "-yellow"),
-                DisplayOrder = 2,
-            });
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-turquoise.jpg"), "image/png", GetSeName(product97ipad.Name) + "-turquoise"),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-lightblue.jpg"), "image/png", GetSeName(product97ipad.Name) + "-lightblue"),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-purple.jpg"), "image/png", GetSeName(product97ipad.Name) + "-purple"),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-mint.jpg"), "image/png", GetSeName(product97ipad.Name) + "-mint"),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-rose.jpg"), "image/png", GetSeName(product97ipad.Name) + "-rose"),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-spacegray.jpg"), "image/png", GetSeName(product97ipad.Name) + "-spacegray"),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-gold.jpg"), "image/png", GetSeName(product97ipad.Name) + "-gold"),
-                DisplayOrder = 2,
-            });
-
-            product97ipad.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_97-ipad-silver.jpg"), "image/png", GetSeName(product97ipad.Name) + "-silver"),
-                DisplayOrder = 2,
-            });
-
 
             product97ipad.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -11724,16 +11225,11 @@ namespace SmartStore.Data.Setup
 				StockQuantity = 10000,
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
-                DisplayOrder = 1
-                
+                DisplayOrder = 1                
 			};
 
+            AddProductPicture(product10GiftCard, "product_gift_card_10.png");
             product10GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
-
-            product10GiftCard.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_10.png"), "image/png", GetSeName(product10GiftCard.Name))
-			});
 
             #endregion product10GiftCard
 
@@ -11764,12 +11260,8 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 2
             };
 
+            AddProductPicture(product25GiftCard, "product_gift_card_25.png");
             product25GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
-
-			product25GiftCard.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_25.png"), "image/png", GetSeName(product25GiftCard.Name))
-			});
 
 			#endregion product25GiftCard
 
@@ -11800,12 +11292,8 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 3
             };
 
+            AddProductPicture(product50GiftCard, "product_gift_card_50.png");
             product50GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
-
-			product50GiftCard.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_50.png"), "image/png", GetSeName(product50GiftCard.Name))
-			});
 
             #endregion product50GiftCard
 
@@ -11836,12 +11324,8 @@ namespace SmartStore.Data.Setup
                 DisplayOrder = 4,
             };
 
+            AddProductPicture(product100GiftCard, "product_gift_card_100.png");
             product100GiftCard.ProductCategories.Add(new ProductCategory { Category = categoryGiftCards, DisplayOrder = 1 });
-
-            product100GiftCard.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_gift_card_100.png"), "image/png", GetSeName(product100GiftCard.Name)),
-            });
 
             #endregion product100GiftCard
 
@@ -11877,13 +11361,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true
 			};
 
+            AddProductPicture(productBooksUberMan, "0000932_uberman-der-roman.jpeg");
             productBooksUberMan.ProductCategories.Add(new ProductCategory { Category = categorySpiegelBestseller, DisplayOrder = 1 });
-
-			productBooksUberMan.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000932_uberman-der-roman.jpeg"), "image/jpeg", GetSeName(productBooksUberMan.Name)),
-				DisplayOrder = 1,
-			});
 
 			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
@@ -11931,16 +11410,11 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksGefangeneDesHimmels, "0000935_der-gefangene-des-himmels-roman_300.jpeg");
             productBooksGefangeneDesHimmels.ProductCategories.Add(new ProductCategory { Category = categorySpiegelBestseller, DisplayOrder = 1 });
-
-			productBooksGefangeneDesHimmels.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000935_der-gefangene-des-himmels-roman_300.jpeg"), "image/jpeg", GetSeName(productBooksGefangeneDesHimmels.Name)),
-				DisplayOrder = 1,
-			});
 
 			productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
@@ -11992,17 +11466,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksBestGrillingRecipes, "product_bestgrillingrecipes.jpg");
             productBooksBestGrillingRecipes.ProductCategories.Add(new ProductCategory { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
             
-			productBooksBestGrillingRecipes.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_bestgrillingrecipes.jpg"), "image/jpeg", GetSeName(productBooksBestGrillingRecipes.Name)),
-				DisplayOrder = 1,
-			});
-
 			productBooksBestGrillingRecipes.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
@@ -12052,16 +11521,11 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 1).Single()
-			};
+                DeliveryTimeId = secondDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksCookingForTwo, "product_cookingfortwo.jpg");
             productBooksCookingForTwo.ProductCategories.Add(new ProductCategory { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
-
-			productBooksCookingForTwo.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_cookingfortwo.jpg"), "image/jpeg", GetSeName(productBooksCookingForTwo.Name)),
-				DisplayOrder = 1,
-			});
 
 			productBooksCookingForTwo.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
@@ -12112,17 +11576,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
-			};
+                DeliveryTimeId = thirdDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksAutosDerSuperlative, "0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg");
             productBooksAutosDerSuperlative.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
             
-			productBooksAutosDerSuperlative.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg"), "image/jpeg", GetSeName(productBooksAutosDerSuperlative.Name)),
-				DisplayOrder = 1,
-			});
-
 			productBooksAutosDerSuperlative.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
@@ -12172,16 +11631,11 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksBildatlasMotorraeder, "0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg");
             productBooksBildatlasMotorraeder.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
-
-			productBooksBildatlasMotorraeder.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg"), "image/jpeg", GetSeName(productBooksBildatlasMotorraeder.Name)),
-				DisplayOrder = 1,
-			});
 
 			productBooksBildatlasMotorraeder.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
@@ -12232,16 +11686,11 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksAutoBuch, "0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg");
             productBooksAutoBuch.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
-
-			productBooksAutoBuch.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg"), "image/jpeg", GetSeName(productBooksAutoBuch.Name)),
-				DisplayOrder = 1,
-			});
 
 			productBooksAutoBuch.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
@@ -12292,19 +11741,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksFastCars, "0000946_fast-cars-bildkalender-2013_300.jpeg");
             productBooksFastCars.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
 
-			//pictures
-			productBooksFastCars.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000946_fast-cars-bildkalender-2013_300.jpeg"), "image/jpeg", GetSeName(productBooksFastCars.Name)),
-				DisplayOrder = 1,
-			});
-
-			//attributes
 			productBooksFastCars.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
@@ -12354,19 +11796,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 1).Single()
-			};
+                DeliveryTimeId = secondDeliveryTime.Id
+            };
 
+            AddProductPicture(productBooksMotorradAbenteuer, "0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg");
             productBooksMotorradAbenteuer.ProductCategories.Add(new ProductCategory { Category = categoryBooks, DisplayOrder = 1 });
 
-			//pictures
-			productBooksMotorradAbenteuer.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg"), "image/jpeg", GetSeName(productBooksMotorradAbenteuer.Name)),
-				DisplayOrder = 1,
-			});
-
-			//attributes
 			productBooksMotorradAbenteuer.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
 			{
 				AllowFiltering = true,
@@ -12426,13 +11861,8 @@ namespace SmartStore.Data.Setup
                 HasSampleDownload = true
             };
 
+            AddProductPicture(productBooksStoneOfTheWise, "stone_of_wisdom.jpg");
             productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
-
-            productBooksStoneOfTheWise.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "stone_of_wisdom.jpg"), "image/jpeg", GetSeName(productBooksStoneOfTheWise.Name)),
-                DisplayOrder = 1,
-            });
 
             productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12488,13 +11918,8 @@ namespace SmartStore.Data.Setup
                 HasSampleDownload = true
             };
 
+            AddProductPicture(productInstantDownloadVivaldi, "vivaldi.jpg");
             productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
-
-            productInstantDownloadVivaldi.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "vivaldi.jpg"), "image/jpeg", GetSeName(productInstantDownloadVivaldi.Name)),
-                DisplayOrder = 1,
-            });
 
             productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12542,13 +11967,8 @@ namespace SmartStore.Data.Setup
                 HasSampleDownload = true
             };
 
+            AddProductPicture(productInstantDownloadBeethoven, "Beethoven.jpg");
             productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
-
-            productInstantDownloadBeethoven.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "Beethoven.jpg"), "image/jpeg", GetSeName(productInstantDownloadBeethoven.Name)),
-                DisplayOrder = 1,
-            });
 
             productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
@@ -12599,16 +12019,11 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productTRANSOCEANCHRONOGRAPH, "product_transocean-chronograph.jpg");
             productTRANSOCEANCHRONOGRAPH.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
-
-            productTRANSOCEANCHRONOGRAPH.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_transocean-chronograph.jpg"), "image/png", GetSeName(productTRANSOCEANCHRONOGRAPH.Name)),
-                DisplayOrder = 1,
-            });
 
             productTRANSOCEANCHRONOGRAPH.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -12707,22 +12122,13 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productTissotTTouchExpertSolar, "product_tissot-t-touch-expert-solar.jpg", "tissot-1");
+            AddProductPicture(productTissotTTouchExpertSolar, "product_tissot-t-touch-expert-solar-t091_2.jpg", "tissot-2");
+
             productTissotTTouchExpertSolar.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
-
-            productTissotTTouchExpertSolar.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_tissot-t-touch-expert-solar.jpg"), "image/png", GetSeName(productTissotTTouchExpertSolar.Name)),
-                DisplayOrder = 1,
-            });
-
-            productTissotTTouchExpertSolar.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_tissot-t-touch-expert-solar-t091_2.jpg"), "image/png", GetSeName(productTissotTTouchExpertSolar.Name)),
-                DisplayOrder = 1,
-            });
 
             productTissotTTouchExpertSolar.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -12821,16 +12227,11 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
+                DeliveryTimeId = thirdDeliveryTime.Id
             };
 
+            AddProductPicture(productSeikoSRPA49K1, "product_SeikoSRPA49K1.jpg");
             productSeikoSRPA49K1.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
-
-            productSeikoSRPA49K1.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_SeikoSRPA49K1.jpg"), "image/png", GetSeName(productSeikoSRPA49K1.Name)),
-                DisplayOrder = 1,
-            });
 
             productSeikoSRPA49K1.ProductManufacturers.Add(new ProductManufacturer
             {
@@ -12921,16 +12322,11 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
-			};
+                DeliveryTimeId = thirdDeliveryTime.Id
+            };
 
+            AddProductPicture(productWatchesCertinaDSPodiumBigSize, "product_certina_ds_podium_big.png");
             productWatchesCertinaDSPodiumBigSize.ProductCategories.Add(new ProductCategory { Category = categoryWatches, DisplayOrder = 1 });
-
-			productWatchesCertinaDSPodiumBigSize.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_certina_ds_podium_big.png"), "image/png", GetSeName(productWatchesCertinaDSPodiumBigSize.Name)),
-				DisplayOrder = 1,
-			});
 
 			productWatchesCertinaDSPodiumBigSize.ProductManufacturers.Add(new ProductManufacturer
 			{
@@ -13033,22 +12429,14 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
+				DeliveryTimeId = firstDeliveryTime.Id
 			};
 
-			productPs3.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
-			productPs3.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 4 });
+            AddProductPicture(productPs3, "product_ps4_w_controller.jpg", "ps4-w-controller");
+            AddProductPicture(productPs3, "product_ps4_wo_controller.jpg", "ps4-wo-single");
 
-			productPs3.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ps4_w_controller.jpg"), "image/png", GetSeName(productPs3.Name) + "-controller"),
-				DisplayOrder = 1
-			});
-			productPs3.ProductPictures.Add(new ProductPicture
-            {
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_ps4_wo_controller.jpg"), "image/jpeg", GetSeName(productPs3.Name) + "-single"),
-				DisplayOrder = 2
-			});
+            productPs3.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
+			productPs3.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 4 });
 
             var productDualshock4Controller = new Product
 			{
@@ -13071,17 +12459,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productDualshock4Controller, "product_dualshock4.jpg");
             productDualshock4Controller.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
             productDualshock4Controller.ProductCategories.Add(new ProductCategory { Category = categoryGamingAccessories, DisplayOrder = 1 });
-
-            productDualshock4Controller.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dualshock4.jpg"), "image/png", GetSeName(productDualshock4Controller.Name)),
-				DisplayOrder = 1
-			});
 
 
 			var productMinecraft = new Product
@@ -13107,17 +12490,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productMinecraft, "product_minecraft.jpg");
             productMinecraft.ProductManufacturers.Add(new ProductManufacturer {	Manufacturer = manuSony,	DisplayOrder = 1 });
             productMinecraft.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 4 });
-
-            productMinecraft.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_minecraft.jpg"), "image/jpeg", GetSeName("Minecraft - Playstation 4 Edition")),
-				DisplayOrder = 1
-			});
 
 
 			var productBundlePs3AssassinCreed = new Product
@@ -13141,21 +12519,16 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime,
-				ShowOnHomePage = true,
+                DeliveryTimeId = firstDeliveryTime.Id,
+                ShowOnHomePage = true,
 				BundleTitleText = "Bundle includes",
 				BundlePerItemPricing = true,
 				BundlePerItemShoppingCart = true
 			};
 
+            AddProductPicture(productBundlePs3AssassinCreed, "ps4_bundle_minecraft.jpg");
 			productBundlePs3AssassinCreed.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
 			productBundlePs3AssassinCreed.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 1 });
-
-			productBundlePs3AssassinCreed.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ps4_bundle_minecraft.jpg"), "image/png", GetSeName(productBundlePs3AssassinCreed.Name)),
-				DisplayOrder = 1
-			});
 
 			#endregion bundlePs3AssassinCreed
 
@@ -13183,22 +12556,14 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
-			productPs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
+            AddProductPicture(productPs4, "product_sony_ps4.png", "sony-ps4");
+            AddProductPicture(productPs4, "product_sony_dualshock4_wirelesscontroller.png", "sony-ps4-dualshock");
+
+            productPs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
 			productPs4.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 5 });
-
-			productPs4.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps4.png"), "image/png", GetSeName(productPs4.Name)),
-				DisplayOrder = 1
-			});
-            productPs4.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_dualshock4_wirelesscontroller.png"), "image/png", GetSeName(productPs4.Name)),
-                DisplayOrder = 1
-            });
 
 
             var productPs4Camera = new Product
@@ -13221,17 +12586,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productPs4Camera, "product_sony_ps4_camera.png");
 			productPs4Camera.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
 			productPs4Camera.ProductCategories.Add(new ProductCategory { Category = categoryGamingAccessories, DisplayOrder = 3 });
-
-			productPs4Camera.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps4_camera.png"), "image/png", GetSeName(productPs4Camera.Name)),
-				DisplayOrder = 1
-			});
 
 
 			var productBundlePs4 = new Product
@@ -13256,18 +12616,13 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime,
-				BundleTitleText = "Bundle includes"
+                DeliveryTimeId = firstDeliveryTime.Id,
+                BundleTitleText = "Bundle includes"
 			};
 
+            AddProductPicture(productBundlePs4, "product_sony_ps4_bundle.png");
 			productBundlePs4.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
 			productBundlePs4.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 2 });
-
-			productBundlePs4.ProductPictures.Add(new ProductPicture
-			{
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps4_bundle.png"), "image/png", GetSeName(productBundlePs4.Name)),
-				DisplayOrder = 1
-			});
 
 			#endregion bundlePs4
 
@@ -13296,14 +12651,9 @@ namespace SmartStore.Data.Setup
 				ShowOnHomePage = true
 			};
 
+            AddProductPicture(productGroupAccessories, "category_gaming_accessories.png");
 			productGroupAccessories.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
 			productGroupAccessories.ProductCategories.Add(new ProductCategory { Category = categoryGaming, DisplayOrder = 3 });
-
-			productGroupAccessories.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName(productGroupAccessories.Name)),
-				DisplayOrder = 1
-			});
 
 			#endregion groupAccessories
 
@@ -13329,17 +12679,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productPrinceOfPersia, "products_princeofpersia.jpg");
 			productPrinceOfPersia.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuUbisoft, DisplayOrder = 1 });
 			productPrinceOfPersia.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 2 });
-
-			productPrinceOfPersia.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "products_princeofpersia.jpg"), "image/jpeg", GetSeName(productPrinceOfPersia.Name)),
-				DisplayOrder = 1
-			});
 
             #endregion Ps3PlusOneGame
 
@@ -13367,17 +12712,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = firstDeliveryTime
+                DeliveryTimeId = firstDeliveryTime.Id
             };
 
+            AddProductPicture(productHorizonZeroDown, "product_horizon.jpg");
             productHorizonZeroDown.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuSony, DisplayOrder = 1 });
             productHorizonZeroDown.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 2 });
-
-            productHorizonZeroDown.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_horizon.jpg"), "image/jpeg", GetSeName(productHorizonZeroDown.Name)),
-                DisplayOrder = 1
-            });
 
             #endregion Horizon Zero Down
 
@@ -13405,17 +12745,12 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsShipEnabled = true,
-                DeliveryTime = firstDeliveryTime
+                DeliveryTimeId = firstDeliveryTime.Id
             };
 
+            AddProductPicture(productFifa17, "product_fifa17.jpg");
             productFifa17.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuEASports, DisplayOrder = 1 });
             productFifa17.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 2 });
-
-            productFifa17.ProductPictures.Add(new ProductPicture
-            {
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_fifa17.jpg"), "image/jpeg", GetSeName(productFifa17.Name)),
-                DisplayOrder = 1
-            });
 
             #endregion Fifa 17
 
@@ -13442,17 +12777,12 @@ namespace SmartStore.Data.Setup
 				NotifyAdminForQuantityBelow = 1,
 				AllowBackInStockSubscriptions = false,
 				IsShipEnabled = true,
-				DeliveryTime = firstDeliveryTime
-			};
+                DeliveryTimeId = firstDeliveryTime.Id
+            };
 
+            AddProductPicture(productLegoWorlds, "product_legoworlds.jpg");
             productLegoWorlds.ProductManufacturers.Add(new ProductManufacturer { Manufacturer = manuWarnerHomme, DisplayOrder = 1 });
             productLegoWorlds.ProductCategories.Add(new ProductCategory { Category = categoryGamingGames, DisplayOrder = 3 });
-
-            productLegoWorlds.ProductPictures.Add(new ProductPicture
-			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_legoworlds.jpg"), "image/jpeg", GetSeName(productLegoWorlds.Name)),
-				DisplayOrder = 1
-			});
 
             #endregion Lego Worlds
 
@@ -14348,21 +13678,30 @@ namespace SmartStore.Data.Setup
 			return picture;
 		}
 
-        protected void AddProductPictures(
+        protected void AddProductPicture(
             Product product,
             string imageName,
+            string seName = null,
             int displayOrder = 1)
         {
-            var mimeType = imageName.EndsWith(".png") ? "image/png" : "image/jpg";
+            string mimeType = null;
+            if (imageName.EndsWith(".png"))
+            {
+                mimeType = "image/png";
+            }
+            else if (imageName.EndsWith(".gif"))
+            {
+                mimeType = "image/gif";
+            }
 
             product.ProductPictures.Add(new ProductPicture
             {
-                Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + imageName), mimeType, GetSeName(product.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(_sampleImagesPath + imageName), mimeType ?? "image/jpeg", seName ?? GetSeName(product.Name)),
                 DisplayOrder = displayOrder
             });
         }
 
-		protected string GetSeName(string name)
+        protected string GetSeName(string name)
 		{
 			return SeoHelper.GetSeName(name, true, false);
 		}

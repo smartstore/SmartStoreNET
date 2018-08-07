@@ -296,6 +296,8 @@ namespace SmartStore.Web.Infrastructure.Installation
             var products = _data.Products();
 			SaveRange(products);
 
+            _data.AddDownloads(products);
+
 			// Fix MainPictureId
 			DataMigrator.FixProductMainPictureIds(_ctx);
 

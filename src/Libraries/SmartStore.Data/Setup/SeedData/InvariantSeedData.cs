@@ -9,7 +9,6 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
@@ -31,12 +30,11 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
-using SmartStore.Data;
 using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
 {
-	public abstract class InvariantSeedData
+    public abstract class InvariantSeedData
 	{
 		private SmartObjectContext _ctx;
 		private string _sampleImagesPath;
@@ -10149,9 +10147,6 @@ namespace SmartStore.Data.Setup
 			// Pictures
 			var sampleImagesPath = this._sampleImagesPath;
 
-			// Downloads
-			var sampleDownloadsPath = this._sampleDownloadsPath;
-
 			// Templates
 			var productTemplate = _ctx.Set<ProductTemplate>().First(x => x.ViewPath == "Product");
 
@@ -12802,33 +12797,18 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsDownload = true,
-                HasSampleDownload = true,
-                SampleDownload = new Download
-                {
-                    DownloadGuid = Guid.NewGuid(),
-                    ContentType = "application/pdf",
-                    MediaStorage = new MediaStorage
-                    {
-                        Data = File.ReadAllBytes(sampleDownloadsPath + "Stone_of_the_wise_preview.pdf")
-                    },
-                    Extension = ".pdf",
-                    Filename = "Stone_of_the_wise_preview",
-                    IsNew = true,
-                    UpdatedOnUtc = DateTime.UtcNow
-                }
+                HasSampleDownload = true
             };
 
-            productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
+            productBooksStoneOfTheWise.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
 
-            //pictures
-            productBooksStoneOfTheWise.ProductPictures.Add(new ProductPicture()
+            productBooksStoneOfTheWise.ProductPictures.Add(new ProductPicture
             {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "stone_of_wisdom.jpg"), "image/jpeg", GetSeName(productBooksStoneOfTheWise.Name)),
                 DisplayOrder = 1,
             });
 
-            //attributes
-            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -12836,7 +12816,7 @@ namespace SmartStore.Data.Setup
                 // Edition -> bound
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
             });
-            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -12844,7 +12824,7 @@ namespace SmartStore.Data.Setup
                 // Category -> cars
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
             });
-            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productBooksStoneOfTheWise.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -12852,7 +12832,6 @@ namespace SmartStore.Data.Setup
                 // Language -> German
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
             });
-
 
             #endregion product Books Stone of the Wise
 
@@ -12880,38 +12859,18 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsDownload = true,
-                HasSampleDownload = true,
-                SampleDownload = new Download
-                {
-                    DownloadGuid = Guid.NewGuid(),
-                    ContentType = "audio/mp3",
-                    MediaStorage = new MediaStorage
-                    {
-                        Data = File.ReadAllBytes(sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3")
-                    },
-                    Extension = ".mp3",
-                    Filename = "vivaldi-four-seasons-spring",
-                    IsNew = true,
-                    UpdatedOnUtc = DateTime.UtcNow
-                }
+                HasSampleDownload = true
             };
 
-            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
+            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
 
-            #region pictures
-
-            //pictures
-            productInstantDownloadVivaldi.ProductPictures.Add(new ProductPicture()
+            productInstantDownloadVivaldi.ProductPictures.Add(new ProductPicture
             {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "vivaldi.jpg"), "image/jpeg", GetSeName(productInstantDownloadVivaldi.Name)),
                 DisplayOrder = 1,
             });
 
-            #endregion pictures
-
-            #region SpecificationAttributes
-            //attributes
-            productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -12919,7 +12878,7 @@ namespace SmartStore.Data.Setup
                 // mp3 quality > 320 kbit/S
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
             });
-            productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productInstantDownloadVivaldi.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -12927,8 +12886,6 @@ namespace SmartStore.Data.Setup
                 // genre > classic
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
             });
-
-            #endregion SpecificationAttributes
 
             #endregion Antonio Vivildi: then spring
 
@@ -12956,38 +12913,18 @@ namespace SmartStore.Data.Setup
                 NotifyAdminForQuantityBelow = 1,
                 AllowBackInStockSubscriptions = false,
                 IsDownload = true,
-                HasSampleDownload = true,
-                SampleDownload = new Download()
-                {
-                    DownloadGuid = Guid.NewGuid(),
-                    ContentType = "audio/mp3",
-                    MediaStorage = new MediaStorage
-                    {
-                        Data = File.ReadAllBytes(sampleDownloadsPath + "beethoven-fur-elise.mp3")
-                    },
-                    Extension = ".mp3",
-                    Filename = "beethoven-fur-elise.mp3",
-                    IsNew = true,
-                    UpdatedOnUtc = DateTime.UtcNow
-                }
+                HasSampleDownload = true
             };
 
-            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory() { Category = categoryDigitalProducts, DisplayOrder = 1 });
+            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory { Category = categoryDigitalProducts, DisplayOrder = 1 });
 
-            #region pictures
-
-            //pictures
-            productInstantDownloadBeethoven.ProductPictures.Add(new ProductPicture()
+            productInstantDownloadBeethoven.ProductPictures.Add(new ProductPicture
             {
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "Beethoven.jpg"), "image/jpeg", GetSeName(productInstantDownloadBeethoven.Name)),
                 DisplayOrder = 1,
             });
 
-            #endregion pictures
-
-            #region SpecificationAttributes
-            //attributes
-            productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -12995,7 +12932,7 @@ namespace SmartStore.Data.Setup
                 // mp3 quality > 320 kbit/S
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 18).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 3).Single()
             });
-            productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+            productInstantDownloadBeethoven.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute
             {
                 AllowFiltering = true,
                 ShowOnProductPage = true,
@@ -13003,8 +12940,6 @@ namespace SmartStore.Data.Setup
                 // genre > classic
                 SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 19).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 6).Single()
             });
-
-            #endregion SpecificationAttributes
 
             #endregion Beethoven für Elise
 
@@ -14206,7 +14141,76 @@ namespace SmartStore.Data.Setup
 			return entities;
 		}
 
-		public void AssignGroupedProducts(IList<Product> savedProducts)
+        public void AddDownloads(IList<Product> savedProducts)
+        {
+            // Sample downloads.
+            var sampleDownloadSkus = new List<string> { "P-1017", "P-1016", "P-6001" };
+            var sampleDownloadProducts = savedProducts
+                .Where(x => sampleDownloadSkus.Contains(x.Sku))
+                .ToDictionary(x => x.Sku);
+
+            foreach (var product in sampleDownloadProducts.Values)
+            {
+                if (product.Sku.IsCaseInsensitiveEqual("P-1017"))
+                {
+                    product.SampleDownload = new Download
+                    {
+                        EntityId = product.Id,
+                        EntityName = nameof(Product),
+                        DownloadGuid = Guid.NewGuid(),
+                        ContentType = "audio/mp3",
+                        MediaStorage = new MediaStorage
+                        {
+                            Data = File.ReadAllBytes(_sampleDownloadsPath + "beethoven-fur-elise.mp3")
+                        },
+                        Extension = ".mp3",
+                        Filename = "beethoven-fur-elise.mp3",
+                        IsNew = true,
+                        UpdatedOnUtc = DateTime.UtcNow
+                    };
+                }
+                else if (product.Sku.IsCaseInsensitiveEqual("P-1016"))
+                {
+                    product.SampleDownload = new Download
+                    {
+                        EntityId = product.Id,
+                        EntityName = nameof(Product),
+                        DownloadGuid = Guid.NewGuid(),
+                        ContentType = "audio/mp3",
+                        MediaStorage = new MediaStorage
+                        {
+                            Data = File.ReadAllBytes(_sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3")
+                        },
+                        Extension = ".mp3",
+                        Filename = "vivaldi-four-seasons-spring",
+                        IsNew = true,
+                        UpdatedOnUtc = DateTime.UtcNow
+                    };
+                }
+                else if (product.Sku.IsCaseInsensitiveEqual("P-6001"))
+                {
+                    product.SampleDownload = new Download
+                    {
+                        EntityId = product.Id,
+                        EntityName = nameof(Product),
+                        DownloadGuid = Guid.NewGuid(),
+                        ContentType = "application/pdf",
+                        MediaStorage = new MediaStorage
+                        {
+                            Data = File.ReadAllBytes(_sampleDownloadsPath + "Stone_of_the_wise_preview.pdf")
+                        },
+                        Extension = ".pdf",
+                        Filename = "Stone_of_the_wise_preview",
+                        IsNew = true,
+                        UpdatedOnUtc = DateTime.UtcNow
+                    };
+                }
+            }
+
+            _ctx.SaveChanges();
+        }
+
+        public void AssignGroupedProducts(IList<Product> savedProducts)
 		{
 			int productGamingAccessoriesId = savedProducts.First(x => x.Sku == "Sony-GroupAccessories").Id;
 			var gamingAccessoriesSkus = new List<string>() { "Sony-PS399004", "PD-Minecraft4ps4", "Sony-PS410037", "Sony-PS410040" };
@@ -14222,10 +14226,9 @@ namespace SmartStore.Data.Setup
 					//_ctx.Entry(x).State = System.Data.Entity.EntityState.Modified;
 				});
 
-			_ctx.SaveChanges();			
+			_ctx.SaveChanges();
 		}
 
-		#region ForumGroups
 		public IList<ForumGroup> ForumGroups()
 		{
 			var forumGroupGeneral = new ForumGroup
@@ -14243,9 +14246,7 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
-		#endregion ForumGroups
 
-		#region Forums
 		public IList<Forum> Forums()
 		{
 			var newProductsForum = new Forum
@@ -14280,9 +14281,6 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
-		#endregion Forums
-
-		#region Discounts
 
 		public IList<Discount> Discounts()
 		{
@@ -14318,9 +14316,6 @@ namespace SmartStore.Data.Setup
 			return entities;
 		}
 
-		#endregion Discounts
-
-		#region Deliverytimes
 		public IList<DeliveryTime> DeliveryTimes()
 		{
 			var entities = new List<DeliveryTime>()
@@ -14347,10 +14342,6 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
-
-		#endregion Deliverytimes
-
-        #region QuantityUnits
 
         public IList<QuantityUnit> QuantityUnits()
         {
@@ -14386,9 +14377,6 @@ namespace SmartStore.Data.Setup
             return entities;
         }
 
-        #endregion
-
-		#region BlogPost
 		public IList<BlogPost> BlogPosts()
 		{
 			var defaultLanguage = _ctx.Set<Language>().FirstOrDefault();
@@ -14419,9 +14407,7 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
-		#endregion BlogPost
 
-		#region NewsItems
 		public IList<NewsItem> NewsItems()
 		{
 			var defaultLanguage = _ctx.Set<Language>().FirstOrDefault();
@@ -14456,9 +14442,7 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
-		#endregion NewsItems
 
-		#region PollAnswer
 		public IList<PollAnswer> PollAnswers()
 		{
 			var pollAnswer1 = new PollAnswer()
@@ -14510,9 +14494,7 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
-		#endregion PollAnswer
 
-		#region Polls
 		public IList<Poll> Polls()
 		{
 			var defaultLanguage = _ctx.Set<Language>().FirstOrDefault();
@@ -14602,8 +14584,6 @@ namespace SmartStore.Data.Setup
 			this.Alter(entities);
 			return entities;
 		}
-		#endregion Polls
-
 
 		#region Alterations
 

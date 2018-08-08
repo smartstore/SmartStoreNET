@@ -93,7 +93,10 @@ namespace SmartStore.Admin.Models.Stores
         public StoreValidator(Localizer T)
         {
             RuleFor(x => x.Name).NotEmpty();
-            RuleFor(x => x.Url).NotEmpty();
+
+            RuleFor(x => x.Url)
+                .Must(x => x.HasValue() && x.IsWebUrl())
+                .WithMessage(T("Admin.Validation.Url"));
 
             RuleFor(x => x.HtmlBodyId).Matches(@"^([A-Za-z])(\w|\-)*$")
                 .WithMessage(T("Admin.Configuration.Stores.Fields.HtmlBodyId.Validation"));

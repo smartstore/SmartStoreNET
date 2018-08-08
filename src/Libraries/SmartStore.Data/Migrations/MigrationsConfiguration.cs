@@ -359,10 +359,10 @@
                 "Die angegebenen Versionsinformationen sind nicht gültig. Bitte geben Sie die Versionsnummer in korrektem Format an (z.B.: 1.0.0.0, 2.0 oder 3.1.5).");
 
             builder.AddOrUpdate("Admin.Catalog.Products.Fields.HasPreviewPicture",
-                "Has preview picture",
-                "Hat Vorschaubild",
-                "If this option is activated, the first image is used as a preview image in product lists and is no longer displayed in the product detail view.",
-                "Wenn diese Option aktiviert ist wird das erste Bild als Vorschaubild in Produktlisten genutzt und in der Produktdetailanischt nicht mehr angezeigt.");
+				"Exclude first image from gallery",
+				"Erstes Bild aus Gallerie ausschließen",
+				"Activate this option if the first image should be displayed as a preview in product lists but not in the product detail gallery.",
+                "Aktivieren Sie diese Option, wenn das erste Bild als Vorschau in Produktlisten, nicht aber in der Produktdetail-Gallerie angezeigt werden soll.");
 
             builder.AddOrUpdate("Products.Free", "Free", "Kostenlos");
 

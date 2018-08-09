@@ -372,8 +372,8 @@ namespace SmartStore.Services.Configuration
 
 				if (settingType.HasAttribute<JsonPersistAttribute>(true))
 				{
-					//SaveSettingsJson<T>(settings);
-					//return;
+					SaveSettingsJson(settings);
+					return;
 				}
 
 				/* We do not clear cache after each setting update.

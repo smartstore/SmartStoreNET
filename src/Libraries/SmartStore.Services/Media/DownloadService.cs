@@ -88,10 +88,10 @@ namespace SmartStore.Services.Media
 								 where x.EntityId == entityId && x.EntityName == entityName
 								 select x).ToList();
 
-				if (downloads.Count > 0)
+				if (downloads.Any())
 				{
 					var idsOrderedByVersion = downloads
-						.Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion) })
+						.Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion.HasValue() ? x.FileVersion : "1.0.0.0") })
 						.OrderBy(x => x.Version)
 						.Select(x => x.Id);
 
@@ -99,7 +99,6 @@ namespace SmartStore.Services.Media
 
 					return downloads;
 				}
-
 			}
 
 			return new List<Download>();

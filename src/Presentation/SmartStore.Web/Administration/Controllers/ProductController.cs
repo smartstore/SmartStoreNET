@@ -292,9 +292,7 @@ namespace SmartStore.Admin.Controllers
             }
             else if (m.DownloadFileVersion.HasValue())
             {
-                var download = _downloadService.GetDownloadsByEntityId(p.Id, "Product")
-                    .OrderByDescending(x => x.FileVersion)
-                    .FirstOrDefault();
+                var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
 
                 download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
                 download.EntityId = p.Id;
@@ -551,9 +549,7 @@ namespace SmartStore.Admin.Controllers
 			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
 
             // Handle Download transiency
-            var download = _downloadService.GetDownloadsByEntityId(p.Id, "Product")
-                .OrderByDescending(x => x.FileVersion)
-                .FirstOrDefault();
+            var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
 
             MediaHelper.UpdateDownloadTransientStateFor(p, x => download.Id);
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
@@ -816,8 +812,7 @@ namespace SmartStore.Admin.Controllers
 				.ToList();
 
             // downloads
-            model.DownloadVersions = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
-                .OrderByDescending(x => x.FileVersion)
+            model.DownloadVersions = _downloadService.GetDownloadsFor(product)
                 .Select(x => new DownloadVersion
                 {
                     FileVersion = x.FileVersion,
@@ -827,12 +822,10 @@ namespace SmartStore.Admin.Controllers
                 })
                 .ToList();
 
-            var currentDownload = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
-                .OrderByDescending(x => x.FileVersion)
-                .FirstOrDefault();
+            var currentDownload = _downloadService.GetDownloadsFor(product).FirstOrDefault();
 
             model.DownloadId = currentDownload.Id;
-            model.DownloadFileVersion = currentDownload != null ? currentDownload.FileVersion : String.Empty;
+            model.DownloadFileVersion = (currentDownload?.FileVersion).EmptyNull();
             
             if (setPredefinedValues)
 			{

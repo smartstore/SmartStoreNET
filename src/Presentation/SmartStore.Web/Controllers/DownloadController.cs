@@ -115,16 +115,18 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            var download = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
-                .OrderByDescending(x => x.FileVersion)
-                .FirstOrDefault();
+			Download download;
 
             if (fileVersion.HasValue())
             {
-                download = _downloadService.GetDownloadsByEntityId(product.Id, "Product")
+                download = _downloadService.GetDownloadsFor(product)
                     .Where(x => x.FileVersion.Equals(fileVersion))
                     .FirstOrDefault();
             }
+			else
+			{
+				download = _downloadService.GetDownloadsFor(product).FirstOrDefault();
+			}
 
             if (download == null)
             {
@@ -145,7 +147,7 @@ namespace SmartStore.Web.Controllers
             
             if (hasNotification)
             {
-                return RedirectToAction("UserAgreement", "Customer", new { id = id, fileVersion = fileVersion });
+                return RedirectToAction("UserAgreement", "Customer", new { id, fileVersion });
             }
             
             if (download.UseDownloadUrl)

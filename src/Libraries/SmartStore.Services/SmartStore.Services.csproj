@@ -109,6 +109,9 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
     <Reference Include="NCrontab, Version=3.2.20120.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ncrontab.3.3.0\lib\net35\NCrontab.dll</HintPath>
       <Private>True</Private>
@@ -120,6 +123,9 @@
     <Reference Include="NReco.PdfGenerator, Version=1.1.15.0, Culture=neutral, PublicKeyToken=231663d50a41b451, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NReco.PdfGenerator.1.1.15\lib\net20\NReco.PdfGenerator.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NuGet.Core.2.14.0\lib\net40-Client\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="PreMailer.Net, Version=1.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\PreMailer.Net.1.5.5\lib\net45\PreMailer.Net.dll</HintPath>

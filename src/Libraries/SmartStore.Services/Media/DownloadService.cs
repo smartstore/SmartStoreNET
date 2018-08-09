@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NuGet;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -71,30 +73,48 @@ namespace SmartStore.Services.Media
 			return downloads.OrderBySequence(downloadIds).ToList();
 		}
         
-        public virtual IList<Download> GetDownloadsByEntityId(int entityId, string entityName)
-        {
-            if (entityId == 0)
-                return new List<Download>();
+		public virtual IList<Download> GetDownloadsFor<TEntity>(TEntity entity) where TEntity : BaseEntity
+		{
+			Guard.NotNull(entity, nameof(entity));
 
-            var query = from dl in _downloadRepository.Table
-                        where dl.EntityId == entityId && dl.EntityName.Equals(entityName)
-                        select dl;
+			return GetDownloadsFor(entity.Id, entity.GetUnproxiedType().Name);
+		}
 
-            var downloads = query.OrderBy(x => x.FileVersion);
+		public virtual IList<Download> GetDownloadsFor(int entityId, string entityName)
+		{
+			if (entityId > 0)
+			{
+				var downloads = (from x in _downloadRepository.Table
+								 where x.EntityId == entityId && x.EntityName == entityName
+								 select x).ToList();
 
-            return downloads.ToList();
-        }
+				if (downloads.Count > 0)
+				{
+					var idsOrderedByVersion = downloads
+						.Select(x => new { x.Id, Version = new SemanticVersion(x.FileVersion) })
+						.OrderBy(x => x.Version)
+						.Select(x => x.Id);
 
-        public virtual Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName)
+					downloads = new List<Download>(downloads.OrderBySequence(idsOrderedByVersion));
+
+					return downloads;
+				}
+
+			}
+
+			return new List<Download>();
+		}
+
+		public virtual Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName)
         {
             Guard.NotNull(entityIds, nameof(entityIds));
             Guard.NotEmpty(entityName, nameof(entityName));
 
             var query = _downloadRepository.TableUntracked
-                .Where(x => entityIds.Contains(x.EntityId) && x.EntityName == entityName);
+                .Where(x => entityIds.Contains(x.EntityId) && x.EntityName == entityName)
+				.OrderBy(x => x.FileVersion);
 
             var map = query
-                .OrderBy(x => x.FileVersion)
                 .ToList()
                 .ToMultimap(x => x.EntityId, x => x);
 

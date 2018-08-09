@@ -366,9 +366,7 @@ namespace SmartStore.Services.Catalog
 
 		private Download CopyDownload(int productId, string entityName = "")
 		{
-			var download = _downloadService.GetDownloadsByEntityId(productId, entityName)
-                .OrderByDescending(x => x.FileVersion)
-                .FirstOrDefault();
+			var download = _downloadService.GetDownloadsFor(productId, entityName).FirstOrDefault();
 
 			if (download == null)
 			{

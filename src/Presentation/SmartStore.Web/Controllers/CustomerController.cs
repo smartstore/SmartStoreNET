@@ -1553,8 +1553,7 @@ namespace SmartStore.Web.Controllers
 
                 if (itemModel.IsDownloadAllowed)
                 {
-                    itemModel.DownloadVersions = _downloadService.GetDownloadsByEntityId(item.Product.Id, "Product")
-                        .OrderByDescending(x => x.FileVersion)
+                    itemModel.DownloadVersions = _downloadService.GetDownloadsFor(item.Product)
                         .Select(x => new DownloadVersion
                         {
                             FileVersion = x.FileVersion,

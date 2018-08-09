@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 
@@ -22,21 +23,28 @@ namespace SmartStore.Services.Media
 		/// <returns>List of download entities</returns>
 		IList<Download> GetDownloadsByIds(int[] downloadIds);
 
-        /// <summary>
+		/// <summary>
+		/// Gets downloads assigned to an entity
+		/// </summary>
+		/// <param name="entity">Entity to get download for</param>
+		/// <returns>List of download entities sorted by FileVersion</returns>
+		IList<Download> GetDownloadsFor<TEntity>(TEntity entity) where TEntity : BaseEntity;
+
+		/// <summary>
 		/// Gets downloads by entity identifier
 		/// </summary>
 		/// <param name="entityId">Entity identifier</param>
-        /// <param name="entityName">Entity name</param>
+		/// <param name="entityName">Entity name</param>
 		/// <returns>List of download entities</returns>
-        IList<Download> GetDownloadsByEntityId(int entityId, string entityName);
+		IList<Download> GetDownloadsFor(int entityId, string entityName);
 
-        /// <summary>
-        /// Gets downloads by entity identifiers
-        /// </summary>
-        /// <param name="entityIds">Entity identifiers</param>
-        /// <param name="entityName">Entity name</param>
-        /// <returns>Multimap of download entities</returns>
-        Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName);
+		/// <summary>
+		/// Gets downloads by entity identifiers
+		/// </summary>
+		/// <param name="entityIds">Entity identifiers</param>
+		/// <param name="entityName">Entity name</param>
+		/// <returns>Multimap of download entities</returns>
+		Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName);
 
         /// <summary>
         /// Gets a download by GUID

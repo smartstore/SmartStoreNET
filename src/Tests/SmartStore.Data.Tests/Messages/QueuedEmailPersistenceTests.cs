@@ -77,7 +77,9 @@ namespace SmartStore.Data.Tests.Messages
 				UpdatedOnUtc = DateTime.UtcNow,
 				DownloadGuid = Guid.NewGuid(),
 				Extension = "txt",
-				Filename = "file"
+				Filename = "file",
+                EntityName = "QueuedEmailAttachment",
+                EntityId = 1
 			};
 
 			// add attachment

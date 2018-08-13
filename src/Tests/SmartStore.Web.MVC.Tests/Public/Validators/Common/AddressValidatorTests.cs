@@ -2,15 +2,12 @@
 using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Models.Common;
-using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 {
     [TestFixture]
     public class AddressValidatorTests : BaseValidatorTests
     {
-        private Localizer T;
-
         [Test]
         public void Should_have_error_when_email_is_null_or_empty()
         {

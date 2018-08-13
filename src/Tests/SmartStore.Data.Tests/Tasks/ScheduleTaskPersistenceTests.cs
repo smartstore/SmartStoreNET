@@ -29,7 +29,7 @@ namespace SmartStore.Data.Tests.Tasks
             fromDb.Type.ShouldEqual("some type 1");
             fromDb.Enabled.ShouldEqual(true);
             fromDb.StopOnError.ShouldEqual(true);
-            fromDb.NextRunUtc.ShouldEqual(new DateTime(2020, 01, 01));
+            fromDb.NextRunUtc.ShouldEqual(new DateTime(2020, 01, 02));
             fromDb.RunPerMachine.ShouldEqual(true);
         }
     }

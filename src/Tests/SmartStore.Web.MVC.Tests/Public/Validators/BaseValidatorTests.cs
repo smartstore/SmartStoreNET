@@ -1,20 +1,16 @@
-﻿using SmartStore.Services.Localization;
-using NUnit.Framework;
-using Rhino.Mocks;
+﻿using NUnit.Framework;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators
 {
     [TestFixture]
     public abstract class BaseValidatorTests
     {
-        protected ILocalizationService _localizationService;
-        
+        protected Localizer T = NullLocalizer.Instance;
+
         [SetUp]
         public void Setup()
         {
-            //set up localziation service used by almost all validators
-            _localizationService = MockRepository.GenerateMock<ILocalizationService>();
-            _localizationService.Expect(l => l.GetResource("")).Return("Invalid").IgnoreArguments();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using FluentValidation.TestHelper;
 using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Localization;
 using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
@@ -11,7 +10,6 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
     {
         private ChangePasswordValidator _validator;
         private CustomerSettings _customerSettings;
-        private Localizer T;
 
         [SetUp]
         public new void Setup()

@@ -293,11 +293,13 @@ namespace SmartStore.Admin.Controllers
             else if (m.DownloadFileVersion.HasValue())
             {
                 var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
-
-                download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
-                download.EntityId = p.Id;
-                download.IsTransient = false;
-                _downloadService.UpdateDownload(download);
+                if (download != null)
+                {
+                    download.FileVersion = new SemanticVersion(m.DownloadFileVersion).ToString();
+                    download.EntityId = p.Id;
+                    download.IsTransient = false;
+                    _downloadService.UpdateDownload(download);
+                }
             }
         }
         
@@ -550,8 +552,10 @@ namespace SmartStore.Admin.Controllers
 
             // Handle Download transiency
             var download = _downloadService.GetDownloadsFor(p).FirstOrDefault();
-
-            MediaHelper.UpdateDownloadTransientStateFor(p, x => download.Id);
+            if (download != null)
+            {
+                MediaHelper.UpdateDownloadTransientStateFor(p, x => download.Id);
+            }
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
             
             // SEO
@@ -658,9 +662,25 @@ namespace SmartStore.Admin.Controllers
 				{
 					model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
 				}
-			}
 
-			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
+                // downloads
+                model.DownloadVersions = _downloadService.GetDownloadsFor(product)
+                    .Select(x => new DownloadVersion
+                    {
+                        FileVersion = x.FileVersion,
+                        DownloadId = x.Id,
+                        FileName = string.Concat(x.Filename, x.Extension),
+                        DownloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = x.Id })
+                    })
+                    .ToList();
+
+                var currentDownload = _downloadService.GetDownloadsFor(product).FirstOrDefault();
+
+                model.DownloadId = currentDownload?.Id;
+                model.DownloadFileVersion = (currentDownload?.FileVersion).EmptyNull();
+            }
+
+            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.Name;
 			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId)?.Name;
 
@@ -810,22 +830,6 @@ namespace SmartStore.Admin.Controllers
 					Selected = product != null && x.Id == product.CountryOfOriginId
 				})
 				.ToList();
-
-            // downloads
-            model.DownloadVersions = _downloadService.GetDownloadsFor(product)
-                .Select(x => new DownloadVersion
-                {
-                    FileVersion = x.FileVersion,
-                    DownloadId = x.Id,
-                    FileName = string.Concat(x.Filename, x.Extension),
-                    DownloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = x.Id })
-                })
-                .ToList();
-
-            var currentDownload = _downloadService.GetDownloadsFor(product).FirstOrDefault();
-
-            model.DownloadId = currentDownload.Id;
-            model.DownloadFileVersion = (currentDownload?.FileVersion).EmptyNull();
             
             if (setPredefinedValues)
 			{

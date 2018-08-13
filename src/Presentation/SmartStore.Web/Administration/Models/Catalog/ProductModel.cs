@@ -32,6 +32,7 @@ namespace SmartStore.Admin.Models.Catalog
 			AddSpecificationAttributeModel = new AddProductSpecificationAttributeModel();
 			AvailableManageInventoryMethods = new List<SelectListItem>();
 			AvailableCountries = new List<SelectListItem>();
+            DownloadVersions = new List<DownloadVersion>();
 		}
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ID")]

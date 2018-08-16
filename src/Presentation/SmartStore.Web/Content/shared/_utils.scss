@@ -296,6 +296,23 @@ table th {
 }
 
 
+//
+// Flip
+// --------------------------------------------------
+
+.flip-h {
+    transform: scale(-1, 1) !important;
+}
+
+.flip-v {
+    transform: scale(1, -1) !important;
+}
+
+.flip-hv {
+    transform: scale(-1, -1) !important;
+}
+
+
 // Misc utils
 // -------------------------
 

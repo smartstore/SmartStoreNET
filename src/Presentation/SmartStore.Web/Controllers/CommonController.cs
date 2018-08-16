@@ -597,7 +597,7 @@ namespace SmartStore.Web.Controllers
                 "/bin/",
 				"/Exchange/",
                 "/Country/GetStatesByCountryId",
-                "/Install",
+                "/Install$",
                 "/Product/SetReviewHelpfulness",
             };
             var localizableDisallowPaths = new List<string>()
@@ -611,7 +611,7 @@ namespace SmartStore.Web.Controllers
                 "/Boards/TopicCreate",
                 "/Boards/TopicMove",
                 "/Boards/TopicWatch",
-                "/Cart",
+                "/Cart$",
                 "/Checkout",
                 "/Product/ClearCompareList",
                 "/CompareProducts",
@@ -630,7 +630,7 @@ namespace SmartStore.Web.Controllers
                 "/Customer/RewardPoints",
                 "/PrivateMessages",
                 "/Newsletter/SubscriptionActivation",
-                "/Order",
+                "/Order$",
                 "/PasswordRecovery",
                 "/Poll/Vote",
                 "/ReturnRequest",
@@ -639,11 +639,11 @@ namespace SmartStore.Web.Controllers
                 "/Wishlist",
                 "/Product/AskQuestion",
                 "/Product/EmailAFriend",
-				"/Search",
-				"/Config",
-				"/Settings",
-				"/Login",
-				"/Register"
+				//"/Search",
+				"/Config$",
+				"/Settings$",
+				"/Login$",
+				"/Register$"
             };
 
 

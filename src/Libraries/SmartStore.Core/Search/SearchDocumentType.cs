@@ -9,6 +9,7 @@
 		Attribute,
 		AttributeValue,
 		Variant,
-		VariantValue
+		VariantValue,
+        ForumPost = 50
 	}
 }

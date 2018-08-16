@@ -54,8 +54,9 @@
 					if (initId) {
 						// Add the option tag to the select element,
 						// otherwise the current val() will not be resolved.
-						var $option = select.find('option').filter(function (i, elm) {
-							return elm.value === initId;
+                        var $option = select.find('option').filter(function (i, elm) {
+                            // Do not === otherwise infinite loop ;-)
+							return elm.value == initId;
 						});
 
 						if ($option.length === 0) {

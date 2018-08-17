@@ -289,10 +289,11 @@
 				}
 			});
 		}
-
-
-
 	}); // $.fn.extend
 
+    // Shorter aliases
+    $.fn.gap = $.fn.cushioning; 
+    $.fn.hgap = $.fn.horizontalCushioning; 
+    $.fn.vgap = $.fn.verticalCushioning; 
 
 })(jQuery);

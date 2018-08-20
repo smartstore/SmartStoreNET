@@ -581,11 +581,6 @@ namespace SmartStore.Services.Forums
             return forumPost;
         }
 
-        public virtual IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, string keywords, int pageIndex, int pageSize)
-        {
-            return GetAllPosts(forumTopicId, customerId, keywords, true, pageIndex, pageSize);
-        }
-
         public virtual IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, string keywords, bool ascSort, int pageIndex, int pageSize)
         {
             var query = _forumPostRepository.Table;

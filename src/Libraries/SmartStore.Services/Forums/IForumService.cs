@@ -155,18 +155,6 @@ namespace SmartStore.Services.Forums
         /// <param name="forumTopicId">The forum topic identifier</param>
         /// <param name="customerId">The customer identifier</param>
         /// <param name="keywords">Keywords</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>Posts</returns>
-        IPagedList<ForumPost> GetAllPosts(int forumTopicId,
-            int customerId, string keywords, int pageIndex, int pageSize);
-
-        /// <summary>
-        /// Gets all forum posts
-        /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
-        /// <param name="customerId">The customer identifier</param>
-        /// <param name="keywords">Keywords</param>
         /// <param name="ascSort">Sort order</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>

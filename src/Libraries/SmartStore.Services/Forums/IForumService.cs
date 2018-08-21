@@ -10,11 +10,7 @@ namespace SmartStore.Services.Forums
     /// </summary>
     public partial interface IForumService
     {
-        /// <summary>
-        /// Deletes a forum group
-        /// </summary>
-        /// <param name="forumGroup">Forum group</param>
-        void DeleteForumGroup(ForumGroup forumGroup);
+        #region Group
 
         /// <summary>
         /// Gets a forum group
@@ -30,6 +26,12 @@ namespace SmartStore.Services.Forums
 		IList<ForumGroup> GetAllForumGroups(bool showHidden = false);
 
         /// <summary>
+        /// Deletes a forum group
+        /// </summary>
+        /// <param name="forumGroup">Forum group</param>
+        void DeleteForumGroup(ForumGroup forumGroup);
+
+        /// <summary>
         /// Inserts a forum group
         /// </summary>
         /// <param name="forumGroup">Forum group</param>
@@ -41,11 +43,9 @@ namespace SmartStore.Services.Forums
         /// <param name="forumGroup">Forum group</param>
         void UpdateForumGroup(ForumGroup forumGroup);
 
-        /// <summary>
-        /// Deletes a forum
-        /// </summary>
-        /// <param name="forum">Forum</param>
-        void DeleteForum(Forum forum);
+        #endregion
+
+        #region Forum
 
         /// <summary>
         /// Gets a forum
@@ -62,6 +62,12 @@ namespace SmartStore.Services.Forums
         IList<Forum> GetAllForumsByGroupId(int forumGroupId);
 
         /// <summary>
+        /// Deletes a forum
+        /// </summary>
+        /// <param name="forum">Forum</param>
+        void DeleteForum(Forum forum);
+
+        /// <summary>
         /// Inserts a forum
         /// </summary>
         /// <param name="forum">Forum</param>
@@ -73,11 +79,9 @@ namespace SmartStore.Services.Forums
         /// <param name="forum">Forum</param>
         void UpdateForum(Forum forum);
 
-        /// <summary>
-        /// Deletes a forum topic
-        /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
-        void DeleteTopic(ForumTopic forumTopic);
+        #endregion
+
+        #region Topic
 
         /// <summary>
         /// Gets a forum topic
@@ -93,6 +97,13 @@ namespace SmartStore.Services.Forums
         /// <param name="increaseViews">The value indicating whether to increase forum topic views</param>
         /// <returns>Forum Topic</returns>
         ForumTopic GetTopicById(int forumTopicId, bool increaseViews);
+
+        /// <summary>
+        /// Gets forum topics by identifiers
+        /// </summary>
+        /// <param name="topicIds">Array of topic identifiers</param>
+        /// <returns>List of topics</returns>
+        IList<ForumTopic> GetTopicsByIds(int[] topicIds);
 
         /// <summary>
         /// Gets all forum topics
@@ -116,6 +127,12 @@ namespace SmartStore.Services.Forums
         IList<ForumTopic> GetActiveTopics(int forumId, int topicCount);
 
         /// <summary>
+        /// Deletes a forum topic
+        /// </summary>
+        /// <param name="forumTopic">Forum topic</param>
+        void DeleteTopic(ForumTopic forumTopic);
+
+        /// <summary>
         /// Inserts a forum topic
         /// </summary>
         /// <param name="forumTopic">Forum topic</param>
@@ -137,10 +154,17 @@ namespace SmartStore.Services.Forums
         ForumTopic MoveTopic(int forumTopicId, int newForumId);
 
         /// <summary>
-        /// Deletes a forum post
+        /// Calculates topic page index by post identifier
         /// </summary>
-        /// <param name="forumPost">Forum post</param>
-        void DeletePost(ForumPost forumPost);
+        /// <param name="forumTopicId">Topic identifier</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="postId">Post identifier</param>
+        /// <returns>Page index</returns>
+        int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId);
+
+        #endregion
+
+        #region Post
 
         /// <summary>
         /// Gets a forum post
@@ -163,6 +187,12 @@ namespace SmartStore.Services.Forums
             string keywords, bool ascSort, int pageIndex, int pageSize);
 
         /// <summary>
+        /// Deletes a forum post
+        /// </summary>
+        /// <param name="forumPost">Forum post</param>
+        void DeletePost(ForumPost forumPost);
+
+        /// <summary>
         /// Inserts a forum post
         /// </summary>
         /// <param name="forumPost">The forum post</param>
@@ -175,11 +205,9 @@ namespace SmartStore.Services.Forums
         /// <param name="forumPost">Forum post</param>
         void UpdatePost(ForumPost forumPost);
 
-        /// <summary>
-        /// Deletes a private message
-        /// </summary>
-        /// <param name="privateMessage">Private message</param>
-        void DeletePrivateMessage(PrivateMessage privateMessage);
+        #endregion
+
+        #region Private message
 
         /// <summary>
         /// Gets a private message
@@ -206,6 +234,12 @@ namespace SmartStore.Services.Forums
             string keywords, int pageIndex, int pageSize);
 
         /// <summary>
+        /// Deletes a private message
+        /// </summary>
+        /// <param name="privateMessage">Private message</param>
+        void DeletePrivateMessage(PrivateMessage privateMessage);
+
+        /// <summary>
         /// Inserts a private message
         /// </summary>
         /// <param name="privateMessage">Private message</param>
@@ -217,11 +251,9 @@ namespace SmartStore.Services.Forums
         /// <param name="privateMessage">Private message</param>
         void UpdatePrivateMessage(PrivateMessage privateMessage);
 
-        /// <summary>
-        /// Deletes a forum subscription
-        /// </summary>
-        /// <param name="forumSubscription">Forum subscription</param>
-        void DeleteSubscription(ForumSubscription forumSubscription);
+        #endregion
+
+        #region Subscription
 
         /// <summary>
         /// Gets a forum subscription
@@ -243,6 +275,12 @@ namespace SmartStore.Services.Forums
             int topicId, int pageIndex, int pageSize);
 
         /// <summary>
+        /// Deletes a forum subscription
+        /// </summary>
+        /// <param name="forumSubscription">Forum subscription</param>
+        void DeleteSubscription(ForumSubscription forumSubscription);
+
+        /// <summary>
         /// Inserts a forum subscription
         /// </summary>
         /// <param name="forumSubscription">Forum subscription</param>
@@ -253,6 +291,8 @@ namespace SmartStore.Services.Forums
         /// </summary>
         /// <param name="forumSubscription">Forum subscription</param>
         void UpdateSubscription(ForumSubscription forumSubscription);
+
+        #endregion
 
         /// <summary>
         /// Check whether customer is allowed to create new topics
@@ -323,14 +363,5 @@ namespace SmartStore.Services.Forums
         /// <param name="customer">Customer</param>
         /// <returns>True if allowed, otherwise false</returns>
         bool IsCustomerAllowedToSubscribe(Customer customer);
-
-        /// <summary>
-        /// Calculates topic page index by post identifier
-        /// </summary>
-        /// <param name="forumTopicId">Topic identifier</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="postId">Post identifier</param>
-        /// <returns>Page index</returns>
-        int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId);
     }
 }

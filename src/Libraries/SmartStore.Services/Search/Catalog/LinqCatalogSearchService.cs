@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
@@ -17,8 +16,8 @@ using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Search
 {
-	public partial class LinqCatalogSearchService : ICatalogSearchService
-	{
+    public partial class LinqCatalogSearchService : LinqSearchServiceBase, ICatalogSearchService
+    {
 		private static int[] _priceThresholds = new int[] { 10, 25, 50, 100, 250, 500, 1000 };
 
 		private readonly IProductService _productService;
@@ -69,83 +68,7 @@ namespace SmartStore.Services.Search
 
 		public ILogger Logger { get; set; }
 
-		#region Utilities
-
-		private void FlattenFilters(ICollection<ISearchFilter> filters, List<ISearchFilter> result)
-		{
-			foreach (var filter in filters)
-			{
-				var combinedFilter = filter as ICombinedSearchFilter;
-				if (combinedFilter != null)
-				{
-					FlattenFilters(combinedFilter.Filters, result);
-				}
-				else
-				{
-					result.Add(filter);
-				}
-			}
-		}
-
-		private ISearchFilter FindFilter(ICollection<ISearchFilter> filters, string fieldName)
-		{
-			if (fieldName.HasValue())
-			{
-				foreach (var filter in filters)
-				{
-					var attributeFilter = filter as IAttributeSearchFilter;
-					if (attributeFilter != null && attributeFilter.FieldName == fieldName)
-					{
-						return attributeFilter;
-					}
-
-					var combinedFilter = filter as ICombinedSearchFilter;
-					if (combinedFilter != null)
-					{
-						var filter2 = FindFilter(combinedFilter.Filters, fieldName);
-						if (filter2 != null)
-						{
-							return filter2;
-						}
-					}
-				}
-			}
-
-			return null;
-		}
-
-		private List<int> GetIdList(List<ISearchFilter> filters, string fieldName)
-		{
-			var result = new List<int>();
-
-			foreach (IAttributeSearchFilter filter in filters)
-			{
-				if (!(filter is IRangeSearchFilter) && filter.FieldName == fieldName)
-					result.Add((int)filter.Term);
-			}
-
-			return result;
-		}
-
-		private IOrderedQueryable<Product> OrderBy<TKey>(ref bool ordered, IQueryable<Product> query, Expression<Func<Product, TKey>> keySelector, bool descending = false)
-		{
-			if (ordered)
-			{
-				if (descending)
-					return ((IOrderedQueryable<Product>)query).ThenByDescending(keySelector);
-
-				return ((IOrderedQueryable<Product>)query).ThenBy(keySelector);
-			}
-			else
-			{
-				ordered = true;
-
-				if (descending)
-					return query.OrderByDescending(keySelector);
-
-				return query.OrderBy(keySelector);
-			}
-		}
+        #region Utilities
 
 		private IQueryable<Product> QueryCategories(IQueryable<Product> query, List<int> ids, bool? featuredOnly)
 		{

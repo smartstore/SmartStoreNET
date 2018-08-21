@@ -6,11 +6,9 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Messages;
 
 namespace SmartStore.Services.Forums
 {
@@ -197,15 +195,7 @@ namespace SmartStore.Services.Forums
             return false;
         }
 
-        public virtual void DeleteForumGroup(ForumGroup forumGroup)
-        {
-            if (forumGroup == null)
-            {
-                throw new ArgumentNullException("forumGroup");
-            }
-
-            _forumGroupRepository.Delete(forumGroup);
-        }
+        #region Group
 
         public virtual ForumGroup GetForumGroupById(int forumGroupId)
         {
@@ -242,6 +232,16 @@ namespace SmartStore.Services.Forums
 			return query.ToListCached();
 		}
 
+        public virtual void DeleteForumGroup(ForumGroup forumGroup)
+        {
+            if (forumGroup == null)
+            {
+                throw new ArgumentNullException("forumGroup");
+            }
+
+            _forumGroupRepository.Delete(forumGroup);
+        }
+
         public virtual void InsertForumGroup(ForumGroup forumGroup)
         {
             if (forumGroup == null)
@@ -262,8 +262,31 @@ namespace SmartStore.Services.Forums
             _forumGroupRepository.Update(forumGroup);
         }
 
+        #endregion
+
+        #region Forum
+
+        public virtual Forum GetForumById(int forumId)
+        {
+            if (forumId == 0)
+                return null;
+
+            return _forumRepository.GetById(forumId);
+        }
+
+        public virtual IList<Forum> GetAllForumsByGroupId(int forumGroupId)
+        {
+			var query = from f in _forumRepository.Table
+						orderby f.DisplayOrder
+						where f.ForumGroupId == forumGroupId
+						select f;
+
+			var forums = query.ToListCached();
+			return forums;
+		}
+
         public virtual void DeleteForum(Forum forum)
-        {            
+        {
             if (forum == null)
             {
                 throw new ArgumentNullException("forum");
@@ -271,8 +294,8 @@ namespace SmartStore.Services.Forums
 
             //delete forum subscriptions (topics)
             var queryTopicIds = from ft in _forumTopicRepository.Table
-                           where ft.ForumId == forum.Id
-                           select ft.Id;
+                                where ft.ForumId == forum.Id
+                                select ft.Id;
             var queryFs1 = from fs in _forumSubscriptionRepository.Table
                            where queryTopicIds.Contains(fs.TopicId)
                            select fs;
@@ -294,25 +317,6 @@ namespace SmartStore.Services.Forums
             _forumRepository.Delete(forum);
         }
 
-        public virtual Forum GetForumById(int forumId)
-        {
-            if (forumId == 0)
-                return null;
-
-            return _forumRepository.GetById(forumId);
-        }
-
-        public virtual IList<Forum> GetAllForumsByGroupId(int forumGroupId)
-        {
-			var query = from f in _forumRepository.Table
-						orderby f.DisplayOrder
-						where f.ForumGroupId == forumGroupId
-						select f;
-
-			var forums = query.ToListCached();
-			return forums;
-		}
-
         public virtual void InsertForum(Forum forum)
         {
             if (forum == null)
@@ -332,6 +336,10 @@ namespace SmartStore.Services.Forums
 
 			_forumRepository.Update(forum);
         }
+
+        #endregion
+
+        #region Topic
 
         public virtual void DeleteTopic(ForumTopic forumTopic)
         {            
@@ -389,6 +397,19 @@ namespace SmartStore.Services.Forums
             }
 
             return forumTopic;
+        }
+
+        public virtual IList<ForumTopic> GetTopicsByIds(int[] topicIds)
+        {
+            if (topicIds == null || topicIds.Length == 0)
+            {
+                return new List<ForumTopic>();
+            }
+
+            var query = _forumTopicRepository.Table
+                .Where(x => topicIds.Contains(x.Id));
+
+            return query.OrderBySequence(topicIds).ToList();
         }
 
         public virtual IPagedList<ForumTopic> GetAllTopics(int forumId, int customerId, string keywords, ForumSearchType searchType, int limitDays, int pageIndex, int pageSize)
@@ -527,44 +548,28 @@ namespace SmartStore.Services.Forums
             return forumTopic;
         }
 
-        public virtual void DeletePost(ForumPost forumPost)
-        {            
-            if (forumPost == null)
+        public virtual int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId)
+        {
+            int pageIndex = 0;
+            var forumPosts = GetAllPosts(forumTopicId, 0, string.Empty, true, 0, int.MaxValue);
+
+            for (int i = 0; i < forumPosts.TotalCount; i++)
             {
-                throw new ArgumentNullException("forumPost");
+                if (forumPosts[i].Id == postId)
+                {
+                    if (pageSize > 0)
+                    {
+                        pageIndex = i / pageSize;
+                    }
+                }
             }
 
-            int forumTopicId = forumPost.TopicId;
-            int customerId = forumPost.CustomerId;
-            var forumTopic = this.GetTopicById(forumTopicId);
-            int forumId = forumTopic.ForumId;
-
-            //delete topic if it was the first post
-            bool deleteTopic = false;
-            var firstPost = forumTopic.GetFirstPost(this);
-            if (firstPost != null && firstPost.Id == forumPost.Id)
-            {
-                deleteTopic = true;
-            }
-
-            //delete forum post
-            _forumPostRepository.Delete(forumPost);
-
-            //delete topic
-            if (deleteTopic)
-            {
-                DeleteTopic(forumTopic);
-            }
-
-            //update stats
-            if (!deleteTopic)
-            {
-                UpdateForumTopicStats(forumTopicId);
-            }
-            UpdateForumStats(forumId);
-            UpdateCustomerStats(customerId);
-
+            return pageIndex;
         }
+
+        #endregion
+
+        #region Post
 
         public virtual ForumPost GetPostById(int forumPostId)
         {
@@ -663,15 +668,48 @@ namespace SmartStore.Services.Forums
             _forumPostRepository.Update(forumPost);
         }
 
-        public virtual void DeletePrivateMessage(PrivateMessage privateMessage)
+        public virtual void DeletePost(ForumPost forumPost)
         {
-            if (privateMessage == null)
+            if (forumPost == null)
             {
-                throw new ArgumentNullException("privateMessage");
+                throw new ArgumentNullException("forumPost");
             }
 
-            _forumPrivateMessageRepository.Delete(privateMessage);
+            int forumTopicId = forumPost.TopicId;
+            int customerId = forumPost.CustomerId;
+            var forumTopic = this.GetTopicById(forumTopicId);
+            int forumId = forumTopic.ForumId;
+
+            //delete topic if it was the first post
+            bool deleteTopic = false;
+            var firstPost = forumTopic.GetFirstPost(this);
+            if (firstPost != null && firstPost.Id == forumPost.Id)
+            {
+                deleteTopic = true;
+            }
+
+            //delete forum post
+            _forumPostRepository.Delete(forumPost);
+
+            //delete topic
+            if (deleteTopic)
+            {
+                DeleteTopic(forumTopic);
+            }
+
+            //update stats
+            if (!deleteTopic)
+            {
+                UpdateForumTopicStats(forumTopicId);
+            }
+            UpdateForumStats(forumId);
+            UpdateCustomerStats(customerId);
+
         }
+
+        #endregion
+
+        #region Private message
 
         public virtual PrivateMessage GetPrivateMessageById(int privateMessageId)
         {
@@ -727,6 +765,16 @@ namespace SmartStore.Services.Forums
             return privateMessages;
         }
 
+        public virtual void DeletePrivateMessage(PrivateMessage privateMessage)
+        {
+            if (privateMessage == null)
+            {
+                throw new ArgumentNullException("privateMessage");
+            }
+
+            _forumPrivateMessageRepository.Delete(privateMessage);
+        }
+
         public virtual void InsertPrivateMessage(PrivateMessage privateMessage)
         {
             if (privateMessage == null)
@@ -767,15 +815,9 @@ namespace SmartStore.Services.Forums
             }
         }
 
-        public virtual void DeleteSubscription(ForumSubscription forumSubscription)
-        {
-            if (forumSubscription == null)
-            {
-                throw new ArgumentNullException("forumSubscription");
-            }
+        #endregion
 
-            _forumSubscriptionRepository.Delete(forumSubscription);
-        }
+        #region Subscription
 
         public virtual ForumSubscription GetSubscriptionById(int forumSubscriptionId)
         {
@@ -833,6 +875,18 @@ namespace SmartStore.Services.Forums
             
             _forumSubscriptionRepository.Update(forumSubscription);
         }
+
+        public virtual void DeleteSubscription(ForumSubscription forumSubscription)
+        {
+            if (forumSubscription == null)
+            {
+                throw new ArgumentNullException("forumSubscription");
+            }
+
+            _forumSubscriptionRepository.Delete(forumSubscription);
+        }
+
+        #endregion
 
         public virtual bool IsCustomerAllowedToCreateTopic(Customer customer, Forum forum)
         {
@@ -1061,25 +1115,6 @@ namespace SmartStore.Services.Forums
             }
 
             return true;
-        }
-
-        public virtual int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId)
-        {
-            int pageIndex = 0;
-            var forumPosts = GetAllPosts(forumTopicId, 0, string.Empty, true, 0, int.MaxValue);
-
-            for (int i = 0; i < forumPosts.TotalCount; i++)
-            {
-                if (forumPosts[i].Id == postId)
-                {
-                    if (pageSize > 0)
-                    {
-                        pageIndex = i / pageSize;
-                    }
-                }
-            }
-
-            return pageIndex;
         }
     }
 }

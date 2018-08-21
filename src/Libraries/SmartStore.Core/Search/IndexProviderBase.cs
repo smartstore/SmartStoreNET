@@ -4,15 +4,12 @@ namespace SmartStore.Core.Search
 {
 	public abstract class IndexProviderBase : IIndexProvider
 	{
-		public virtual bool IsActive
-		{
-			get
-			{
-				return true;
-			}
-		}
+        public virtual bool IsActive(string scope)
+        {
+            return true;
+        }
 
-		public abstract IEnumerable<string> EnumerateIndexes();
+        public abstract IEnumerable<string> EnumerateIndexes();
 
 		public virtual IIndexDocument CreateDocument(int id, SearchDocumentType? documentType)
 		{

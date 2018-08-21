@@ -82,7 +82,7 @@ namespace SmartStore.Services.Search
 			Guard.NotNull(searchQuery, nameof(searchQuery));
 			Guard.NotNegative(searchQuery.Take, nameof(searchQuery.Take));
 
-			var provider = _indexManager.GetIndexProvider();
+			var provider = _indexManager.GetIndexProvider("Catalog");
 
 			if (!direct && provider != null)
 			{

@@ -369,6 +369,19 @@
             builder.AddOrUpdate("Admin.Catalog.Products.Fields.ProductTags.Hint",
                 "Product tags are keywords that this product can also be identified by. Enter a list of the tags to be associated with this product. The more products associated with a particular tag, the larger it will show on the tag cloud.",
                 "Eine Liste von Schlüsselwörtern, die das Produkt taxonomisch charakterisieren. Je mehr Produkte einem Schlüsselwort (Tag) zugeordnet sind, desto mehr visuelles Gewicht erhält das Tag.");
+
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.Initial", "Position", "Position");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.Relevance", "Relevance", "Beste Ergebnisse");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.SubjectAsc", "Subject: A to Z", "Thema: A bis Z");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.SubjectDesc", "Subject: Z to A", "Thema: Z bis A");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.CreatedOnAsc", "Created on: Oldest first", "Erstellt am: ältere zuerst");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.CreatedOnDesc", "Created on: Newest first", "Erstellt am: neuere zuerst");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.LastPostOnAsc", "Last post: Oldest first", "Letzter Beitrag: ältere zuerst");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.LastPostOnDesc", "Last post: Newest first", "Letzter Beitrag: neuere zuerst");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.PostsAsc", "Post number: ascending", "Anzahl Beiträge: aufsteigend");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.PostsDesc", "Post  number: descending", "Anzahl Beiträge: absteigend");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsAsc", "Hits: ascending", "Hits: aufsteigend");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsDesc", "Hits: descending", "Hits: absteigend");
         }
     }
 }

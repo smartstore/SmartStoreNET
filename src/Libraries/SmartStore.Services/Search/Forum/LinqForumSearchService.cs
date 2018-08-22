@@ -3,36 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Services.Forums;
 
 namespace SmartStore.Services.Search
 {
-    public partial class LinqForumSearchService : LinqSearchServiceBase, IForumSearchService
+    public partial class LinqForumSearchService : SearchServiceBase, IForumSearchService
     {
-        private readonly IRepository<ForumTopic> _forumTopicRepository;
         private readonly IRepository<ForumPost> _forumPostRepository;
         private readonly IForumService _forumService;
         private readonly ICommonServices _services;
 
 		public LinqForumSearchService(
-            IRepository<ForumTopic> forumTopicRepository,
             IRepository<ForumPost> forumPostRepository,
             IForumService forumService,
             ICommonServices services)
 		{
-            _forumTopicRepository = forumTopicRepository;
             _forumPostRepository = forumPostRepository;
             _forumService = forumService;
 			_services = services;
-
-			Logger = NullLogger.Instance;
 		}
-
-		public ILogger Logger { get; set; }
-
-		#region Utilities
 
 		protected virtual IQueryable<ForumTopic> GetForumTopicQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery)
 		{
@@ -135,9 +125,25 @@ namespace SmartStore.Services.Search
             // Sorting of topics.
             foreach (var sort in searchQuery.Sorting)
             {
-                if (sort.FieldName == "createdon")
+                if (sort.FieldName == "subject")
                 {
-                    query = OrderBy(ref ordered, query, x => x.CreatedOnUtc, sort.Descending);
+                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.Subject, sort.Descending);
+                }
+                else if (sort.FieldName == "createdon")
+                {
+                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.CreatedOnUtc, sort.Descending);
+                }
+                else if (sort.FieldName == "lastposton")
+                {
+                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.LastPostTime, sort.Descending);
+                }
+                else if (sort.FieldName == "posts")
+                {
+                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.NumPosts, sort.Descending);
+                }
+                else if (sort.FieldName == "views")
+                {
+                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.Views, sort.Descending);
                 }
             }
 
@@ -151,8 +157,6 @@ namespace SmartStore.Services.Search
 
             return topicsQuery;
         }
-
-		#endregion
 
 		public ForumSearchResult Search(ForumSearchQuery searchQuery, bool direct = false)
 		{
@@ -178,7 +182,7 @@ namespace SmartStore.Services.Search
 						.Skip(searchQuery.PageIndex * searchQuery.Take)
 						.Take(searchQuery.Take);
 
-					var ids = query.Select(x => x.Id).ToArray();
+					var ids = query.Select(x => x.Id).Distinct().ToArray();
                     hitsFactory = () => _forumService.GetTopicsByIds(ids);
 				}
 			}

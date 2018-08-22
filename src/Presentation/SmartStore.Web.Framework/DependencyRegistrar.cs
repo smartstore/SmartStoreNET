@@ -575,9 +575,12 @@ namespace SmartStore.Web.Framework
 		{
 			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
 			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
-			builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
+            builder.RegisterType<ForumSearchService>().As<IForumSearchService>().InstancePerRequest();
+            builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
+            builder.RegisterType<LinqForumSearchService>().Named<IForumSearchService>("linq").InstancePerRequest();
+            builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
+            builder.RegisterType<ForumSearchQueryFactory>().As<IForumSearchQueryFactory>().InstancePerRequest();
+            builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
 			builder.RegisterType<FacetUrlHelper>().InstancePerRequest();
 			builder.RegisterType<FacetTemplateProvider>().As<IFacetTemplateProvider>().InstancePerRequest();
 		}

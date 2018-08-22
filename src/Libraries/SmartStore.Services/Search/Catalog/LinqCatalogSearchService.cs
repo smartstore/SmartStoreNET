@@ -7,7 +7,6 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
@@ -16,7 +15,7 @@ using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Search
 {
-    public partial class LinqCatalogSearchService : LinqSearchServiceBase, ICatalogSearchService
+    public partial class LinqCatalogSearchService : SearchServiceBase, ICatalogSearchService
     {
 		private static int[] _priceThresholds = new int[] { 10, 25, 50, 100, 250, 500, 1000 };
 
@@ -61,12 +60,9 @@ namespace SmartStore.Services.Search
 			_categoryService = categoryService;
 
 			QuerySettings = DbQuerySettings.Default;
-			Logger = NullLogger.Instance;
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
-
-		public ILogger Logger { get; set; }
 
         #region Utilities
 
@@ -768,7 +764,7 @@ namespace SmartStore.Services.Search
 						.Skip(searchQuery.PageIndex * searchQuery.Take)
 						.Take(searchQuery.Take);
 
-					var ids = query.Select(x => x.Id).ToArray();
+					var ids = query.Select(x => x.Id).Distinct().ToArray();
 					hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
 				}
 

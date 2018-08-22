@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web.Mvc;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Search
 {
-    public abstract partial class LinqSearchServiceBase
+    public abstract partial class SearchServiceBase
     {
         protected virtual void FlattenFilters(ICollection<ISearchFilter> filters, List<ISearchFilter> result)
         {
@@ -94,5 +97,19 @@ namespace SmartStore.Services.Search
             }
         }
 
+        /// <summary>
+        /// Notifies the admin that indexing is required to use the advanced search.
+        /// </summary>
+        protected virtual void IndexingRequiredNotification(ICommonServices services, UrlHelper urlHelper)
+        {
+            if (services.WorkContext.CurrentCustomer.IsAdmin())
+            {
+                var indexingUrl = urlHelper.Action("Indexing", "MegaSearch", new { area = "SmartStore.MegaSearch" });
+                var configureUrl = urlHelper.Action("ConfigurePlugin", "Plugin", new { area = "admin", systemName = "SmartStore.MegaSearch" });
+                var notification = services.Localization.GetResource("Search.IndexingRequiredNotification").FormatInvariant(indexingUrl, configureUrl);
+
+                services.Notifier.Information(notification);
+            }
+        }
     }
 }

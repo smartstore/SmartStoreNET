@@ -550,12 +550,15 @@
     <Compile Include="Search\Catalog\ICatalogSearchService.cs" />
     <Compile Include="Search\Catalog\LinqCatalogSearchService.cs" />
     <Compile Include="Search\Catalog\CatalogSearchEvents.cs" />
+    <Compile Include="Search\Forum\ForumSearchService.cs" />
     <Compile Include="Search\Forum\ForumSearchResult.cs" />
     <Compile Include="Search\Forum\ForumSearchQuery.cs" />
     <Compile Include="Search\Forum\ForumSearchEvents.cs" />
     <Compile Include="Search\Forum\IForumSearchService.cs" />
     <Compile Include="Search\Forum\LinqForumSearchService.cs" />
-    <Compile Include="Search\LinqSearchServiceBase.cs" />
+    <Compile Include="Search\Forum\Modelling\ForumSearchQueryFactory.cs" />
+    <Compile Include="Search\Forum\Modelling\IForumSearchQueryFactory.cs" />
+    <Compile Include="Search\SearchServiceBase.cs" />
     <Compile Include="Search\Rendering\FacetTemplateProvider.cs" />
     <Compile Include="Search\Rendering\IFacetTemplateProvider.cs" />
     <Compile Include="Search\Rendering\IFacetTemplateSelector.cs" />

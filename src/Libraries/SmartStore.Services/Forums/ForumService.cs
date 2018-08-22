@@ -371,32 +371,13 @@ namespace SmartStore.Services.Forums
 
         public virtual ForumTopic GetTopicById(int forumTopicId)
         {
-            return GetTopicById(forumTopicId, false);
-        }
-
-        public virtual ForumTopic GetTopicById(int forumTopicId, bool increaseViews)
-        {
             if (forumTopicId == 0)
             {
                 return null;
             }
 
-            var query = from ft in _forumTopicRepository.Table
-                        where ft.Id == forumTopicId
-                        select ft;
-            var forumTopic = query.SingleOrDefault();
-            if (forumTopic == null)
-            {
-                return null;
-            }
-
-            if (increaseViews)
-            {
-                forumTopic.Views = ++forumTopic.Views;
-                UpdateTopic(forumTopic);
-            }
-
-            return forumTopic;
+            var entity = _forumTopicRepository.Table.FirstOrDefault(x => x.Id == forumTopicId);
+            return entity;
         }
 
         public virtual IList<ForumTopic> GetTopicsByIds(int[] topicIds)

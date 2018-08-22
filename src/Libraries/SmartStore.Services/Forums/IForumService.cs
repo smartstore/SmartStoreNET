@@ -91,14 +91,6 @@ namespace SmartStore.Services.Forums
         ForumTopic GetTopicById(int forumTopicId);
 
         /// <summary>
-        /// Gets a forum topic
-        /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
-        /// <param name="increaseViews">The value indicating whether to increase forum topic views</param>
-        /// <returns>Forum Topic</returns>
-        ForumTopic GetTopicById(int forumTopicId, bool increaseViews);
-
-        /// <summary>
         /// Gets forum topics by identifiers
         /// </summary>
         /// <param name="topicIds">Array of topic identifiers</param>

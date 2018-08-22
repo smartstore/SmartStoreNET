@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -518,12 +519,22 @@ namespace SmartStore.Web.Controllers
                 // If no posts area loaded, redirect to the first page.
                 if (posts.Count == 0 && page > 1)
                 {
-                    return RedirectToRoute("TopicSlug", new {id = forumTopic.Id, slug = forumTopic.GetSeName()});
+                    return RedirectToRoute("TopicSlug", new { id = forumTopic.Id, slug = forumTopic.GetSeName() });
                 }
 
                 // Update view count.
-                forumTopic.Views += 1;
-                _forumService.UpdateTopic(forumTopic);
+                try
+                {
+                    if (!customer.IsSearchEngineAccount())
+                    {
+                        forumTopic.Views += 1;
+                        _forumService.UpdateTopic(forumTopic);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
 
                 var model = new ForumTopicPageModel();
                 model.Id = forumTopic.Id;

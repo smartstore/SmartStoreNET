@@ -9,12 +9,11 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Search
 {
-	public partial class CatalogSearchService : ICatalogSearchService
-	{
+    public partial class CatalogSearchService : SearchServiceBase, ICatalogSearchService
+    {
 		private readonly ICommonServices _services;
 		private readonly IIndexManager _indexManager;
 		private readonly Lazy<IProductService> _productService;
@@ -43,29 +42,14 @@ namespace SmartStore.Services.Search
 		public Localizer T { get; set; }
 
 		/// <summary>
-		/// Notifies admin that indexing is required to use the advanced search.
-		/// </summary>
-		protected virtual void IndexingRequiredNotification()
-		{
-			if (_services.WorkContext.CurrentCustomer.IsAdmin())
-			{
-				var notification = T("Search.IndexingRequiredNotification",
-					_urlHelper.Action("Indexing", "MegaSearch", new { area = "SmartStore.MegaSearch" }),
-					_urlHelper.Action("ConfigurePlugin", "Plugin", new { area = "admin", systemName = "SmartStore.MegaSearch" }));
-
-				_services.Notifier.Information(notification);
-			}
-		}
-
-		/// <summary>
 		/// Bypasses the index provider and directly searches in the database
 		/// </summary>
-		/// <param name="searchQuery"></param>
-		/// <param name="loadFlags"></param>
-		/// <returns></returns>
+		/// <param name="searchQuery">Search query</param>
+		/// <param name="loadFlags">LOad flags</param>
+		/// <returns>Catalog search result</returns>
 		protected virtual CatalogSearchResult SearchDirect(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
 		{
-			// fallback to linq search
+			// Fallback to linq search.
 			var linqCatalogSearchService = _services.Container.ResolveNamed<ICatalogSearchService>("linq");
 
 			var result = linqCatalogSearchService.Search(searchQuery, loadFlags, true);
@@ -74,7 +58,86 @@ namespace SmartStore.Services.Search
 			return result;
 		}
 
-		public CatalogSearchResult Search(
+        protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
+        {
+            if (facets == null || facets.Count == 0)
+            {
+                return;
+            }
+
+            FacetGroup group;
+            var rangeMinTemplate = T("Search.Facet.RangeMin").Text;
+            var rangeMaxTemplate = T("Search.Facet.RangeMax").Text;
+            var rangeBetweenTemplate = T("Search.Facet.RangeBetween").Text;
+
+            // Apply "price" labels.
+            if (facets.TryGetValue("price", out group))
+            {
+                // TODO: formatting without decimals would be nice
+                foreach (var facet in group.Facets)
+                {
+                    var val = facet.Value;
+
+                    if (val.Value == null && val.UpperValue != null)
+                    {
+                        val.Label = rangeMaxTemplate.FormatInvariant(FormatPrice(val.UpperValue.Convert<decimal>()));
+                    }
+                    else if (val.Value != null && val.UpperValue == null)
+                    {
+                        val.Label = rangeMinTemplate.FormatInvariant(FormatPrice(val.Value.Convert<decimal>()));
+                    }
+                    else if (val.Value != null && val.UpperValue != null)
+                    {
+                        val.Label = rangeBetweenTemplate.FormatInvariant(
+                            FormatPrice(val.Value.Convert<decimal>()),
+                            FormatPrice(val.UpperValue.Convert<decimal>()));
+                    }
+                }
+            }
+
+            // Apply "rating" labels.
+            if (facets.TryGetValue("rating", out group))
+            {
+                foreach (var facet in group.Facets)
+                {
+                    facet.Value.Label = T(facet.Key == "1" ? "Search.Facet.1StarAndMore" : "Search.Facet.XStarsAndMore", facet.Value.Value).Text;
+                }
+            }
+
+            // Apply "numeric range" labels.
+            var numericRanges = facets
+                .Where(x => x.Value.TemplateHint == FacetTemplateHint.NumericRange)
+                .Select(x => x.Value);
+
+            foreach (var numericRange in numericRanges)
+            {
+                foreach (var facet in numericRange.SelectedFacets)
+                {
+                    var val = facet.Value;
+                    var labels = val.Label.SplitSafe("~");
+
+                    if (val.Value == null && val.UpperValue != null)
+                    {
+                        val.Label = rangeMaxTemplate.FormatInvariant(labels.SafeGet(0));
+                    }
+                    else if (val.Value != null && val.UpperValue == null)
+                    {
+                        val.Label = rangeMinTemplate.FormatInvariant(labels.SafeGet(0));
+                    }
+                    else if (val.Value != null && val.UpperValue != null)
+                    {
+                        val.Label = rangeBetweenTemplate.FormatInvariant(labels.SafeGet(0), labels.SafeGet(1));
+                    }
+                }
+            }
+        }
+
+        protected virtual string FormatPrice(decimal price)
+        {
+            return _priceFormatter.FormatPrice(price, true, false);
+        }
+
+        public CatalogSearchResult Search(
 			CatalogSearchQuery searchQuery, 
 			ProductLoadFlags loadFlags = ProductLoadFlags.None, 
 			bool direct = false)
@@ -121,7 +184,7 @@ namespace SmartStore.Services.Search
 						{
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
-								var productIds = searchHits.Select(x => x.EntityId).ToArray();
+								var productIds = searchHits.Select(x => x.EntityId).Distinct().ToArray();
 								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
 						}
@@ -136,9 +199,9 @@ namespace SmartStore.Services.Search
 									ApplyFacetLabels(facets);
 								}
 							}
-							catch (Exception exception)
+							catch (Exception ex)
 							{
-								_logger.Error(exception);
+								_logger.Error(ex);
 							}
 						}
 					}
@@ -152,10 +215,10 @@ namespace SmartStore.Services.Search
 								spellCheckerSuggestions = searchEngine.CheckSpelling();
 							}
 						}
-						catch (Exception exception)
+						catch (Exception ex)
 						{
-							// spell checking should not break the search
-							_logger.Error(exception);
+							// Spell checking should not break the search.
+							_logger.Error(ex);
 						}
 					}
 
@@ -173,7 +236,7 @@ namespace SmartStore.Services.Search
 				}
 				else if (searchQuery.Origin.IsCaseInsensitiveEqual("Search/Search"))
 				{
-					IndexingRequiredNotification();
+					IndexingRequiredNotification(_services, _urlHelper);
 				}
 			}
 
@@ -184,85 +247,6 @@ namespace SmartStore.Services.Search
 		{
 			var linqCatalogSearchService = _services.Container.ResolveNamed<ICatalogSearchService>("linq");
 			return linqCatalogSearchService.PrepareQuery(searchQuery, baseQuery);
-		}
-
-		protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
-		{
-			if (facets == null || facets.Count == 0)
-			{
-				return;
-			}
-
-			FacetGroup group;
-			var rangeMinTemplate = T("Search.Facet.RangeMin").Text;
-			var rangeMaxTemplate = T("Search.Facet.RangeMax").Text;
-			var rangeBetweenTemplate = T("Search.Facet.RangeBetween").Text;
-
-			// Apply "price" labels.
-			if (facets.TryGetValue("price", out group))
-			{
-				// TODO: formatting without decimals would be nice
-				foreach (var facet in group.Facets)
-				{
-					var val = facet.Value;
-
-					if (val.Value == null && val.UpperValue != null)
-					{
-						val.Label = rangeMaxTemplate.FormatInvariant(FormatPrice(val.UpperValue.Convert<decimal>()));
-					}
-					else if (val.Value != null && val.UpperValue == null)
-					{
-						val.Label = rangeMinTemplate.FormatInvariant(FormatPrice(val.Value.Convert<decimal>()));
-					}
-					else if (val.Value != null && val.UpperValue != null)
-					{
-						val.Label = rangeBetweenTemplate.FormatInvariant(
-							FormatPrice(val.Value.Convert<decimal>()),
-							FormatPrice(val.UpperValue.Convert<decimal>()));
-					}
-				}
-			}
-			
-			// Apply "rating" labels.
-			if (facets.TryGetValue("rating", out group))
-			{
-				foreach (var facet in group.Facets)
-				{
-					facet.Value.Label = T(facet.Key == "1" ? "Search.Facet.1StarAndMore" : "Search.Facet.XStarsAndMore", facet.Value.Value).Text;
-				}
-			}
-
-			// Apply "numeric range" labels.
-			var numericRanges = facets
-				.Where(x => x.Value.TemplateHint == FacetTemplateHint.NumericRange)
-				.Select(x => x.Value);
-
-			foreach (var numericRange in numericRanges)
-			{
-				foreach (var facet in numericRange.SelectedFacets)
-				{
-					var val = facet.Value;
-					var labels = val.Label.SplitSafe("~");
-
-					if (val.Value == null && val.UpperValue != null)
-					{
-						val.Label = rangeMaxTemplate.FormatInvariant(labels.SafeGet(0));
-					}
-					else if (val.Value != null && val.UpperValue == null)
-					{
-						val.Label = rangeMinTemplate.FormatInvariant(labels.SafeGet(0));
-					}
-					else if (val.Value != null && val.UpperValue != null)
-					{
-						val.Label = rangeBetweenTemplate.FormatInvariant(labels.SafeGet(0),	labels.SafeGet(1));
-					}
-				}
-			}
-		}
-
-		private string FormatPrice(decimal price)
-		{
-			return _priceFormatter.FormatPrice(price, true, false);
 		}
 	}
 }

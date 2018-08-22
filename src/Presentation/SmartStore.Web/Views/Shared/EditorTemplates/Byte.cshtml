@@ -1,14 +1,14 @@
 ﻿@using Telerik.Web.Mvc.UI
 
 @functions{
-	private int? Value
+	private byte? Value
 	{
 		get
 		{
-			int? value = null;
+			byte? value = null;
 			if (ViewData.Model != null)
 			{
-				value = Convert.ToInt32(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+				value = Convert.ToByte(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
 			}
 			return value;
 		}
@@ -24,9 +24,11 @@
 }
 
 <div class="numerictextbox-group flex-grow-1">
-	@(Html.Telerik().IntegerTextBox()
+	@(Html.Telerik().NumericTextBox<byte>()
 			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
 			.EmptyMessage(T("Common.EnterValue"))
+			.MinValue(0)
+			.MaxValue(255)
 			.Value(Value)
 	)
 

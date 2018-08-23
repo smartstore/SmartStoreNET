@@ -45,7 +45,7 @@
                     @{ 
                         // reset 
                         currentLetter = String.Empty;
-                        areaLetter = alphabeticalList.FirstOrDefault().Name.Value.Substring(0, 1).ToUpper();
+                        areaLetter = alphabeticalList.FirstOrDefault()?.Name?.Value.Substring(0, 1).ToUpper();
                     }
                 </ul>
             </div>

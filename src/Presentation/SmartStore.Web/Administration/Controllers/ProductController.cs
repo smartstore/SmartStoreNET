@@ -272,7 +272,7 @@ namespace SmartStore.Admin.Controllers
 
             p.IsDownload = m.IsDownload;
             //p.DownloadId = m.DownloadId ?? 0;
-            //p.UnlimitedDownloads = m.UnlimitedDownloads;
+            p.UnlimitedDownloads = m.UnlimitedDownloads;
             p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
             p.DownloadExpirationDays = m.DownloadExpirationDays;
             p.DownloadActivationTypeId = m.DownloadActivationTypeId;

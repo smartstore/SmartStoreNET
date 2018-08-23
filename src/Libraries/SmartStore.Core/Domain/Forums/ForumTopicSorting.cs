@@ -36,16 +36,6 @@
         CreatedOnDesc,
 
         /// <summary>
-        /// Last post date: Oldest first
-        /// </summary>
-        LastPostOnAsc,
-
-        /// <summary>
-        /// Last post date: Newest first
-        /// </summary>
-        LastPostOnDesc,
-
-        /// <summary>
         /// Number of posts: Low to High
         /// </summary>
         PostsAsc,

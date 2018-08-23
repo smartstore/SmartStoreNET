@@ -558,6 +558,7 @@
     <Compile Include="Search\Forum\LinqForumSearchService.cs" />
     <Compile Include="Search\Forum\Modelling\ForumSearchQueryFactory.cs" />
     <Compile Include="Search\Forum\Modelling\IForumSearchQueryFactory.cs" />
+    <Compile Include="Search\SearchQueryFactoryBase.cs" />
     <Compile Include="Search\SearchServiceBase.cs" />
     <Compile Include="Search\Rendering\FacetTemplateProvider.cs" />
     <Compile Include="Search\Rendering\IFacetTemplateProvider.cs" />

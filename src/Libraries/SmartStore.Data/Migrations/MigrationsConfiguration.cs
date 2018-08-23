@@ -376,12 +376,46 @@
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.SubjectDesc", "Subject: Z to A", "Thema: Z bis A");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.CreatedOnAsc", "Created on: Oldest first", "Erstellt am: ältere zuerst");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.CreatedOnDesc", "Created on: Newest first", "Erstellt am: neuere zuerst");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.LastPostOnAsc", "Last post: Oldest first", "Letzter Beitrag: ältere zuerst");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.LastPostOnDesc", "Last post: Newest first", "Letzter Beitrag: neuere zuerst");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.PostsAsc", "Post number: ascending", "Anzahl Beiträge: aufsteigend");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.PostsDesc", "Post  number: descending", "Anzahl Beiträge: absteigend");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsAsc", "Hits: ascending", "Hits: aufsteigend");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsDesc", "Hits: descending", "Hits: absteigend");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.PostsDesc", "Post number: descending", "Anzahl Beiträge: absteigend");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsAsc", "Hits number: ascending", "Trefferanzahl: aufsteigend");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsDesc", "Hits number: descending", "Trefferanzahl: absteigend");
+
+            builder.AddOrUpdate("Search.Facet.Forum", "Forum", "Forum");
+            builder.AddOrUpdate("Search.Facet.Customer", "Customer", "Kunde");
+            builder.AddOrUpdate("Search.Facet.Date", "Date", "Datum");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",
+                "The wildcard mode can slow down the search for a large number of objects.",
+                "Der Wildcard-Modus kann bei einer großen Anzahl an Objekten die Suche verlangsamen.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchMode",
+                "Search mode",
+                "Suchmodus",
+                "Specifies the search mode. Please keep in mind that the search mode can - depending on number of objects - strongly affect search performance. 'Is equal to' is the fastest, 'Contains' the slowest.",
+                "Legt den Suchmodus fest. Bitte beachten Sie, dass der Suchmodus die Geschwindigkeit der Suche (abhängig von der Objektanzahl) beeinflusst. 'Ist gleich' ist am schnellsten, 'Beinhaltet' am langsamsten.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.Forum.SearchFields",
+                "Search fields",
+                "Suchfelder",
+                "Specifies additional search fields. The post text is always searched.",
+                "Legt zusätzlich zu durchsuchende Felder fest. Der Beitragstext wird grundsätzlich immer durchsucht.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.DefaultSortOrder",
+                "Default sort order",
+                "Standardsortierreihenfolge",
+                "Specifies the default sort order in search results.",
+                "Legt die Standardsortierreihenfolge in den Suchergebnissen fest.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchNumberOfHits",
+                "Number of hits",
+                "Anzahl der Treffer",
+                "Specifies the number of hits displayed in instant search.",
+                "Legt die Anzahl der angezeigten Suchtreffer in der Instantsuche fest.");
+
+            builder.Delete(
+                "Admin.Configuration.Settings.Search.DefaultSortOrderMode",
+                "Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts");
         }
     }
 }

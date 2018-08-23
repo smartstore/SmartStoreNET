@@ -22,8 +22,9 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Gets all forum groups
         /// </summary>
+        /// <param name="storeId">Store identifier</param>
         /// <returns>Forum groups</returns>
-		IList<ForumGroup> GetAllForumGroups(bool showHidden = false);
+		IList<ForumGroup> GetAllForumGroups(int storeId = 0);
 
         /// <summary>
         /// Deletes a forum group

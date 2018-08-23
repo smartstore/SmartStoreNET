@@ -205,32 +205,30 @@ namespace SmartStore.Services.Forums
             return _forumGroupRepository.GetById(forumGroupId);
         }
 
-		public virtual IList<ForumGroup> GetAllForumGroups(bool showHidden = false)
+        public virtual IList<ForumGroup> GetAllForumGroups(int storeId = 0)
         {
-			var query = _forumGroupRepository.Table;
+            var query = _forumGroupRepository.Table.Expand(x => x.Forums);
 
-			if (!showHidden && !QuerySettings.IgnoreMultiStore)
-			{
-				var currentStoreId = _services.StoreContext.CurrentStore.Id;
+            if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+            {
+                query =
+                    from fg in query
+                    join sm in _storeMappingRepository.Table on new { c1 = fg.Id, c2 = "ForumGroup" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into fg_sm
+                    from sm in fg_sm.DefaultIfEmpty()
+                    where !fg.LimitedToStores || storeId == sm.StoreId
+                    select fg;
 
-				query =
-					from fg in query
-					join sm in _storeMappingRepository.Table on new { c1 = fg.Id, c2 = "ForumGroup" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into fg_sm
-					from sm in fg_sm.DefaultIfEmpty()
-					where !fg.LimitedToStores || currentStoreId == sm.StoreId
-					select fg;
+                query =
+                    from fg in query
+                    group fg by fg.Id into fgGroup
+                    orderby fgGroup.Key
+                    select fgGroup.FirstOrDefault();
+            }
 
-				query =
-					from fg in query
-					group fg by fg.Id into fgGroup
-					orderby fgGroup.Key
-					select fgGroup.FirstOrDefault();
-			}
+            query = query.OrderBy(x => x.DisplayOrder);
 
-			query = query.OrderBy(m => m.DisplayOrder);
-
-			return query.ToListCached();
-		}
+            return query.ToListCached();
+        }
 
         public virtual void DeleteForumGroup(ForumGroup forumGroup)
         {

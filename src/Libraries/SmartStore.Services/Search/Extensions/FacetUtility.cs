@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Services.Search.Extensions
 {
-	public static class FacetUtility
+    public static class FacetUtility
 	{
 		private const double MAX_PRICE = 1000000000;
 
@@ -120,5 +121,33 @@ namespace SmartStore.Services.Search.Extensions
 				};
 			}
 		}
-	}
+
+        public static List<FacetValue> GetForumDates(Localizer T)
+        {
+            var count = 0;
+            var utcNow = DateTime.UtcNow;
+            var result = new List<FacetValue>();
+            var days = new Dictionary<int, string>
+            {
+                { 1, "Forum.Search.LimitResultsToPrevious.1day" },
+                { 7, "Forum.Search.LimitResultsToPrevious.7days" },
+                { 14, "Forum.Search.LimitResultsToPrevious.2weeks" },
+                { 30, "Forum.Search.LimitResultsToPrevious.1month" },
+                { 92, "Forum.Search.LimitResultsToPrevious.3months" },
+                { 183, "Forum.Search.LimitResultsToPrevious.6months" },
+                { 365, "Forum.Search.LimitResultsToPrevious.1year" }
+            };
+
+            foreach (var day in days)
+            {
+                result.Add(new FacetValue(utcNow.AddDays(-day.Key), utcNow, IndexTypeCode.DateTime, true, true)
+                {
+                    DisplayOrder = ++count,
+                    Label = T(day.Value)
+                });
+            }
+
+            return result;
+        }
+    }
 }

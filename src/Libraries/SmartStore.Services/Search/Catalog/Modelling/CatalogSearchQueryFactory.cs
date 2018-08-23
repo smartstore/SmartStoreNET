@@ -33,12 +33,11 @@ namespace SmartStore.Services.Search.Modelling
 		*	-	Variants & attributes
 	*/
 
-	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
-	{
+	public class CatalogSearchQueryFactory : SearchQueryFactoryBase, ICatalogSearchQueryFactory
+    {
 		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "a", "n", "d", "v" };
         protected static readonly string[] _instantSearchFields = new string[] { "manufacturer", "sku", "gtin", "mpn", "attrname", "variantname" };
 
-        protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
 		protected readonly ICommonServices _services;
@@ -51,8 +50,8 @@ namespace SmartStore.Services.Search.Modelling
 			SearchSettings searchSettings,
 			ICommonServices services,
 			ICatalogSearchQueryAliasMapper catalogSearchQueryAliasMapper)
+            : base(httpContext)
 		{
-			_httpContext = httpContext;
 			_catalogSettings = catalogSettings;
 			_searchSettings = searchSettings;
 			_services = services;
@@ -130,8 +129,7 @@ namespace SmartStore.Services.Search.Modelling
 
 			OnConverted(query, routeData, origin);
 
-			this.Current = query;
-
+			Current = query;
 			return query;
 		}
 
@@ -620,32 +618,12 @@ namespace SmartStore.Services.Search.Modelling
 		{
 		}
 
-		protected T GetValueFor<T>(string key)
-		{
-			T value;
-			return GetValueFor(key, out value) ? value : default(T);
-		}
-
-		protected bool GetValueFor<T>(string key, out T value)
-		{
-			var strValue = _httpContext.Request?.Unvalidated.Form?[key] ?? _httpContext.Request?.Unvalidated.QueryString?[key];
-
-			if (strValue.HasValue())
-			{
-				value = strValue.Convert<T>();
-				return true;
-			}
-
-			value = default(T);
-			return false;
-		}
-
-		protected bool GetValueFor<T>(CatalogSearchQuery query, string key, FacetGroupKind kind, out T value)
+		protected virtual bool GetValueFor<T>(CatalogSearchQuery query, string key, FacetGroupKind kind, out T value)
 		{
 			return GetValueFor(_catalogSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
 		}
 
-		protected Multimap<string, string> Aliases
+		protected virtual Multimap<string, string> Aliases
 		{
 			get
 			{

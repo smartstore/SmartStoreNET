@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Forums;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Search
 {
@@ -22,9 +27,13 @@ namespace SmartStore.Services.Search
             _forumPostRepository = forumPostRepository;
             _forumService = forumService;
 			_services = services;
-		}
 
-		protected virtual IQueryable<ForumTopic> GetForumTopicQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery)
+            T = NullLocalizer.Instance;
+        }
+
+        public Localizer T { get; set; }
+
+        protected virtual IQueryable<ForumTopic> GetForumTopicQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery)
 		{
             var ordered = false;
             var term = searchQuery.Term;
@@ -90,7 +99,7 @@ namespace SmartStore.Services.Search
                 {
                     query = query.Where(x => x.ForumTopic.CustomerId == (int)filter.Term);
                 }
-                else if (filter.FieldName == "lastposton")
+                else if (filter.FieldName == "createdon")
                 {
                     if (rangeFilter != null)
                     {
@@ -100,17 +109,17 @@ namespace SmartStore.Services.Search
                         if (lower.HasValue)
                         {
                             if (rangeFilter.IncludesLower)
-                                query = query.Where(x => x.ForumTopic.LastPostTime >= lower.Value);
+                                query = query.Where(x => x.CreatedOnUtc >= lower.Value);
                             else
-                                query = query.Where(x => x.ForumTopic.LastPostTime > lower.Value);
+                                query = query.Where(x => x.CreatedOnUtc > lower.Value);
                         }
 
                         if (upper.HasValue)
                         {
                             if (rangeFilter.IncludesLower)
-                                query = query.Where(x => x.ForumTopic.LastPostTime <= upper.Value);
+                                query = query.Where(x => x.CreatedOnUtc <= upper.Value);
                             else
-                                query = query.Where(x => x.ForumTopic.LastPostTime < upper.Value);
+                                query = query.Where(x => x.CreatedOnUtc < upper.Value);
                         }
                     }
                 }
@@ -133,10 +142,6 @@ namespace SmartStore.Services.Search
                 {
                     topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.CreatedOnUtc, sort.Descending);
                 }
-                else if (sort.FieldName == "lastposton")
-                {
-                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.LastPostTime, sort.Descending);
-                }
                 else if (sort.FieldName == "posts")
                 {
                     topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.NumPosts, sort.Descending);
@@ -158,14 +163,154 @@ namespace SmartStore.Services.Search
             return topicsQuery;
         }
 
-		public ForumSearchResult Search(ForumSearchQuery searchQuery, bool direct = false)
+        protected virtual IDictionary<string, FacetGroup> GetFacets(ForumSearchQuery searchQuery, int totalHits)
+        {
+            var result = new Dictionary<string, FacetGroup>();
+            var storeId = searchQuery.StoreId ?? _services.StoreContext.CurrentStore.Id;
+            var languageId = searchQuery.LanguageId ?? _services.WorkContext.WorkingLanguage.Id;
+
+            foreach (var key in searchQuery.FacetDescriptors.Keys)
+            {
+                var descriptor = searchQuery.FacetDescriptors[key];
+                var facets = new List<Facet>();
+                var kind = FacetGroup.GetKindByKey("Forum", key);
+
+                switch (kind)
+                {
+                    case FacetGroupKind.NewArrivals:
+                        if (totalHits == 0 && !descriptor.Values.Any(x => x.IsSelected))
+                        {
+                            continue;
+                        }
+                        break;
+                }
+
+                if (kind == FacetGroupKind.Forum)
+                {
+                    var enoughFacets = false;
+                    var groups = _forumService.GetAllForumGroups(storeId);
+
+                    foreach (var group in groups)
+                    {
+                        foreach (var forum in group.Forums)
+                        {
+                            facets.Add(new Facet(new FacetValue(forum.Id, IndexTypeCode.Int32)
+                            {
+                                IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(forum.Id)),
+                                Label = forum.GetLocalized(x => x.Name, languageId),
+                                DisplayOrder = forum.DisplayOrder
+                            }));
+
+                            if (descriptor.MaxChoicesCount > 0 && facets.Count >= descriptor.MaxChoicesCount)
+                            {
+                                enoughFacets = true;
+                                break;
+                            }
+                        }
+
+                        if (enoughFacets)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if (kind == FacetGroupKind.Customer)
+                {
+                    var userNamesEnabled = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled;
+
+                    // Get customers with most posts.
+                    var groupQuery =
+                        from p in _forumPostRepository.TableUntracked.Expand(x => x.Customer)
+                        group p by p.CustomerId into grp
+                        select new
+                        {
+                            Count = grp.Count(),
+                            grp.FirstOrDefault().Customer
+                        };
+
+                    // Limit the result. Do not allow to get all customers.
+                    var customers = groupQuery
+                        .Where(x => x.Customer != null)
+                        .OrderByDescending(x => x.Count)
+                        .Select(x => x.Customer)
+                        .Take(descriptor.MaxChoicesCount > 0 ? descriptor.MaxChoicesCount : 20)
+                        .ToList();
+
+                    foreach (var customer in customers)
+                    {
+                        // TODO: anonymize?
+                        var name = userNamesEnabled ? customer.Username : customer.FirstName;
+
+                        facets.Add(new Facet(new FacetValue(customer.Id, IndexTypeCode.Int32)
+                        {
+                            IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(customer.Id)),
+                            Label = name.NullEmpty() ?? customer.Id.ToString(),
+                            DisplayOrder = 0
+                        }));
+                    }
+                }
+                else if (kind == FacetGroupKind.Date)
+                {
+                    var hasActivePredefinedFacet = false;
+                    var dates = FacetUtility.GetForumDates(T);
+
+                    foreach (var date in dates)
+                    {
+                        var newFacet = new Facet(date);
+                        newFacet.Value.IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(date.Value));
+
+                        if (newFacet.Value.IsSelected)
+                        {
+                            hasActivePredefinedFacet = true;
+                        }
+
+                        facets.Add(newFacet);
+                    }
+
+                    // Add facet for custom date range.
+                    var dateDescriptorValue = descriptor.Values.FirstOrDefault();
+                    var customDateValue = new FacetValue(
+                        dateDescriptorValue != null && !hasActivePredefinedFacet ? dateDescriptorValue.Value : null,
+                        dateDescriptorValue != null && !hasActivePredefinedFacet ? dateDescriptorValue.UpperValue : null,
+                        IndexTypeCode.DateTime,
+                        true,
+                        true);
+
+                    customDateValue.IsSelected = customDateValue.Value != null || customDateValue.UpperValue != null;
+
+                    if (!(totalHits == 0 && !customDateValue.IsSelected))
+                    {
+                        facets.Insert(0, new Facet("custom", customDateValue));
+                    }
+                }
+
+                if (facets.Any(x => x.Published))
+                {
+                    //facets.Each(x => $"{key} {x.Value.ToString()}".Dump());
+
+                    result.Add(key, new FacetGroup(
+                        "Forum",
+                        key,
+                        descriptor.Label,
+                        descriptor.IsMultiSelect,
+                        false,
+                        descriptor.DisplayOrder,
+                        facets.OrderBy(descriptor)));
+                }
+            }
+
+            return result;
+        }
+
+        public ForumSearchResult Search(ForumSearchQuery searchQuery, bool direct = false)
 		{
             _services.EventPublisher.Publish(new ForumSearchingEvent(searchQuery));
 
 			var totalHits = 0;
 			Func<IList<ForumTopic>> hitsFactory = null;
+            IDictionary<string, FacetGroup> facets = null;
 
-			if (searchQuery.Take > 0)
+            if (searchQuery.Take > 0)
 			{
 				var query = GetForumTopicQuery(searchQuery, null);
 				totalHits = query.Count();
@@ -185,14 +330,20 @@ namespace SmartStore.Services.Search
 					var ids = query.Select(x => x.Id).Distinct().ToArray();
                     hitsFactory = () => _forumService.GetTopicsByIds(ids);
 				}
-			}
+
+                if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
+                {
+                    facets = GetFacets(searchQuery, totalHits);
+                }
+            }
 
 			var result = new ForumSearchResult(
 				null,
 				searchQuery,
 				totalHits,
 				hitsFactory,
-				null);
+				null,
+                facets);
 
             _services.EventPublisher.Publish(new ForumSearchedEvent(searchQuery, result));
 

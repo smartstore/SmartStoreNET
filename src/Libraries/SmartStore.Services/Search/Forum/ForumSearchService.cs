@@ -6,6 +6,7 @@ using Autofac;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Forums;
 
 namespace SmartStore.Services.Search
@@ -42,8 +43,19 @@ namespace SmartStore.Services.Search
 			// Fallback to linq search.
 			var linqForumSearchService = _services.Container.ResolveNamed<IForumSearchService>("linq");
 			var result = linqForumSearchService.Search(searchQuery, true);
-			return result;
+            ApplyFacetLabels(result.Facets);
+
+            return result;
 		}
+
+        protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
+        {
+            if (facets == null || facets.Count == 0)
+            {
+                return;
+            }
+
+        }
 
         public ForumSearchResult Search(ForumSearchQuery searchQuery, bool direct = false)
         {
@@ -63,8 +75,9 @@ namespace SmartStore.Services.Search
 					string[] spellCheckerSuggestions = null;
 					IEnumerable<ISearchHit> searchHits;
 					Func<IList<ForumTopic>> hitsFactory = null;
+                    IDictionary<string, FacetGroup> facets = null;
 
-					_services.EventPublisher.Publish(new ForumSearchingEvent(searchQuery));
+                    _services.EventPublisher.Publish(new ForumSearchingEvent(searchQuery));
 
 					if (searchQuery.Take > 0)
 					{
@@ -91,7 +104,23 @@ namespace SmartStore.Services.Search
 								hitsFactory = () => _forumService.Value.GetTopicsByIds(ids);
                             }
 						}
-					}
+
+                        if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets))
+                        {
+                            try
+                            {
+                                using (_services.Chronometer.Step(stepPrefix + "Facets"))
+                                {
+                                    facets = searchEngine.GetFacetMap();
+                                    ApplyFacetLabels(facets);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error(ex);
+                            }
+                        }
+                    }
 
 					if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithSuggestions))
 					{
@@ -114,7 +143,8 @@ namespace SmartStore.Services.Search
 						searchQuery,
 						totalCount,
 						hitsFactory,
-						spellCheckerSuggestions);
+						spellCheckerSuggestions,
+                        facets);
 
 					_services.EventPublisher.Publish(new ForumSearchedEvent(searchQuery, result));
 

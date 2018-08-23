@@ -10,6 +10,6 @@
 		AttributeValue,
 		Variant,
 		VariantValue,
-        ForumPost = 50
+        ForumPost
 	}
 }

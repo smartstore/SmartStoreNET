@@ -154,16 +154,21 @@ namespace SmartStore.Admin.Controllers
 			return new SelectListItem { Text = value, Value = value };
 		}
 
-		private string CreateCommonFacetSettingKey(FacetGroupKind kind, int languageId)
+		private string CreateCommonFacetSettingKey(FacetGroupKind kind, int languageId, string scope = null)
 		{
+            if (scope.HasValue())
+            {
+                return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}-{scope}";
+            }
+
 			return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}";
 		}
 
-		private void UpdateLocalizedFacetSetting(CommonFacetSettingsModel model, FacetGroupKind kind, ref bool clearCache)
+		private void UpdateLocalizedFacetSetting(CommonFacetSettingsModel model, FacetGroupKind kind, ref bool clearCache, string scope = null)
 		{
 			foreach (var localized in model.Locales)
 			{
-				var key = CreateCommonFacetSettingKey(kind, localized.LanguageId);
+				var key = CreateCommonFacetSettingKey(kind, localized.LanguageId, scope);
 				var existingAlias = _services.Settings.GetSettingByKey<string>(key);
 
 				if (existingAlias.IsCaseInsensitiveEqual(localized.Alias))
@@ -1385,20 +1390,26 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Search()
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-				return AccessDeniedView();
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+            {
+                return AccessDeniedView();
+            }
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
-			var megaSearchDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearch");
+            var fsettings = Services.Settings.LoadSetting<ForumSearchSettings>(storeScope);
+            var megaSearchDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearch");
 			var megaSearchPlusDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearchPlus");
 
 			var model = new SearchSettingsModel();
 			MiniMapper.Map(settings, model);
-			model.IsMegaSearchInstalled = megaSearchDescriptor != null;
-			model.AvailableSortOrderModes = settings.DefaultSortOrder.ToSelectList();
+            MiniMapper.Map(fsettings, model.ForumSearchSettings);
 
-			if (megaSearchDescriptor == null)
+            model.IsMegaSearchInstalled = megaSearchDescriptor != null;
+			model.AvailableSortOrderModes = settings.DefaultSortOrder.ToSelectList();
+            model.ForumSearchSettings.AvailableTopicSortOrders = fsettings.TopicSortOrder.ToSelectList();
+
+            if (megaSearchDescriptor == null)
 			{
 				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
 
@@ -1409,7 +1420,8 @@ namespace SmartStore.Admin.Controllers
 				};
 
 				model.AvailableSearchModes = settings.SearchMode.ToSelectList().Where(x => x.Value.ToInt() != (int)SearchMode.ExactMatch).ToList();
-			}
+                model.ForumSearchSettings.AvailableSearchModes = fsettings.SearchMode.ToSelectList().Where(x => x.Value.ToInt() != (int)SearchMode.ExactMatch).ToList();
+            }
 			else
 			{
 				model.AvailableSearchFields = new List<SelectListItem>
@@ -1431,9 +1443,15 @@ namespace SmartStore.Admin.Controllers
                 }
 
 				model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
-			}
+                model.ForumSearchSettings.AvailableSearchModes = fsettings.SearchMode.ToSelectList().ToList();
+            }
 
-			// Common facets
+            model.ForumSearchSettings.AvailableSearchFields = new List<SelectListItem>
+            {
+                new SelectListItem { Text = T("Forum.TopicTitle"), Value = "subject" }
+            };
+
+			// Common facets.
 			model.BrandFacet.Disabled = settings.BrandDisabled;
 			model.BrandFacet.DisplayOrder = settings.BrandDisplayOrder;
 			model.PriceFacet.Disabled = settings.PriceDisabled;
@@ -1447,6 +1465,13 @@ namespace SmartStore.Admin.Controllers
 			model.AvailabilityFacet.IncludeNotAvailable = settings.IncludeNotAvailable;
 			model.NewArrivalsFacet.Disabled = settings.NewArrivalsDisabled;
 			model.NewArrivalsFacet.DisplayOrder = settings.NewArrivalsDisplayOrder;
+
+            model.ForumSearchSettings.ForumFacet.Disabled = fsettings.ForumDisabled;
+            model.ForumSearchSettings.ForumFacet.DisplayOrder = fsettings.ForumDisplayOrder;
+            model.ForumSearchSettings.CustomerFacet.Disabled = fsettings.CustomerDisabled;
+            model.ForumSearchSettings.CustomerFacet.DisplayOrder = fsettings.CustomerDisplayOrder;
+            model.ForumSearchSettings.DateFacet.Disabled = fsettings.DateDisabled;
+            model.ForumSearchSettings.DateFacet.DisplayOrder = fsettings.DateDisplayOrder;
 
 			// Localized facet settings (CommonFacetSettingsLocalizedModel).
 			foreach (var language in _languageService.GetAllLanguages(true))
@@ -1486,48 +1511,85 @@ namespace SmartStore.Admin.Controllers
 					LanguageId = language.Id,
 					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.NewArrivals, language.Id))
 				});
-			}
 
-			// Facet settings (CommonFacetSettingsModel).
+                model.ForumSearchSettings.ForumFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+                {
+                    LanguageId = language.Id,
+                    Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Forum, language.Id, "Forum"))
+                });
+                model.ForumSearchSettings.CustomerFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+                {
+                    LanguageId = language.Id,
+                    Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Customer, language.Id, "Forum"))
+                });
+                model.ForumSearchSettings.DateFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
+                {
+                    LanguageId = language.Id,
+                    Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Date, language.Id, "Forum"))
+                });
+            }
+
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
+            StoreDependingSettings.GetOverrideKeys(fsettings, model, storeScope, Services.Settings);
 
-			var keyPrefixes = new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" };
-			foreach (var prefix in keyPrefixes)
+            // Facet settings (CommonFacetSettingsModel).
+			foreach (var prefix in new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" })
 			{
 				StoreDependingSettings.GetOverrideKey(prefix + "Facet.Disabled", prefix + "Disabled", settings, storeScope, Services.Settings);
 				StoreDependingSettings.GetOverrideKey(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", settings, storeScope, Services.Settings);
 			}
 
+            foreach (var prefix in new string[] { "ForumSearchSettings.Forum", "ForumSearchSettings.Customer", "ForumSearchSettings.Date" })
+            {
+                StoreDependingSettings.GetOverrideKey(prefix + "Facet.Disabled", prefix + "Disabled", fsettings, storeScope, Services.Settings);
+                StoreDependingSettings.GetOverrideKey(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", fsettings, storeScope, Services.Settings);
+            }
+
 			// Facet settings with a non-prefixed name.
 			StoreDependingSettings.GetOverrideKey("AvailabilityFacet.IncludeNotAvailable", "IncludeNotAvailable", settings, storeScope, Services.Settings);
 
-			return View(model);
+            return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult Search(SearchSettingsModel model, FormCollection form)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-				return AccessDeniedView();
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+            {
+                return AccessDeniedView();
+            }
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
+            var fsettings = Services.Settings.LoadSetting<ForumSearchSettings>(storeScope);
 
-			var validator = new SearchSettingValidator(T, x =>
+            var validator = new SearchSettingValidator(T, x =>
 			{
 				return storeScope == 0 || StoreDependingSettings.IsOverrideChecked(settings, x, form);
 			});
-
 			validator.Validate(model, ModelState);
 
-			if (!ModelState.IsValid)
-				return Search();
+            var fvalidator = new ForumSearchSettingValidator(T, x =>
+            {
+                return storeScope == 0 || StoreDependingSettings.IsOverrideChecked(fsettings, x, form);
+            });
+            var fvResult = fvalidator.Validate(model.ForumSearchSettings);
+            if (!fvResult.IsValid)
+            {
+                fvResult.Errors.Each(x => ModelState.AddModelError(string.Concat(nameof(model.ForumSearchSettings), ".", x.PropertyName), x.ErrorMessage));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Search();
+            }
 
 			ModelState.Clear();
 			MiniMapper.Map(model, settings);
+            MiniMapper.Map(model.ForumSearchSettings, fsettings);
 
-			// Common facets.
-			settings.BrandDisabled = model.BrandFacet.Disabled;
+            // Common facets.
+            settings.BrandDisabled = model.BrandFacet.Disabled;
 			settings.BrandDisplayOrder = model.BrandFacet.DisplayOrder;
 			settings.PriceDisabled = model.PriceFacet.Disabled;
 			settings.PriceDisplayOrder = model.PriceFacet.DisplayOrder;
@@ -1541,27 +1603,41 @@ namespace SmartStore.Admin.Controllers
 			settings.NewArrivalsDisabled = model.NewArrivalsFacet.Disabled;
 			settings.NewArrivalsDisplayOrder = model.NewArrivalsFacet.DisplayOrder;
 
+            fsettings.ForumDisabled = model.ForumSearchSettings.ForumFacet.Disabled;
+            fsettings.ForumDisplayOrder = model.ForumSearchSettings.ForumFacet.DisplayOrder;
+            fsettings.CustomerDisabled = model.ForumSearchSettings.CustomerFacet.Disabled;
+            fsettings.CustomerDisplayOrder = model.ForumSearchSettings.CustomerFacet.DisplayOrder;
+            fsettings.DateDisabled = model.ForumSearchSettings.DateFacet.Disabled;
+            fsettings.DateDisplayOrder = model.ForumSearchSettings.DateFacet.DisplayOrder;
+
 			// Scope to avoid duplicate SearchSettings.SearchFields records.
 			using (Services.Settings.BeginScope())
 			{
 				StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
-			}
+                StoreDependingSettings.UpdateSettings(fsettings, form, storeScope, Services.Settings);
+            }
 
 			var clearFacetCache = false;
 			using (Services.Settings.BeginScope())
 			{
 				_services.Settings.SaveSetting(settings, x => x.SearchFields, 0, false);
+                _services.Settings.SaveSetting(fsettings, x => x.SearchFields, 0, false);
 
-				// Facet settings (CommonFacetSettingsModel).
-				var keyPrefixes = new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" };
-				foreach (var prefix in keyPrefixes)
+                // Facet settings (CommonFacetSettingsModel).
+				foreach (var prefix in new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" })
 				{
 					StoreDependingSettings.UpdateSetting(prefix + "Facet.Disabled", prefix + "Disabled", settings, form, storeScope, Services.Settings);
 					StoreDependingSettings.UpdateSetting(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", settings, form, storeScope, Services.Settings);
 				}
 
-				// Facet settings with a non-prefixed name.
-				StoreDependingSettings.UpdateSetting("AvailabilityFacet.IncludeNotAvailable", "IncludeNotAvailable", settings, form, storeScope, Services.Settings);
+                foreach (var prefix in new string[] { "ForumSearchSettings.Forum", "ForumSearchSettings.Customer", "ForumSearchSettings.Date" })
+                {
+                    StoreDependingSettings.UpdateSetting(prefix + "Facet.Disabled", prefix + "Disabled", settings, form, storeScope, Services.Settings);
+                    StoreDependingSettings.UpdateSetting(prefix + "Facet.DisplayOrder", prefix + "DisplayOrder", fsettings, form, storeScope, Services.Settings);
+                }
+
+                // Facet settings with a non-prefixed name.
+                StoreDependingSettings.UpdateSetting("AvailabilityFacet.IncludeNotAvailable", "IncludeNotAvailable", settings, form, storeScope, Services.Settings);
 
 				// Localized facet settings (CommonFacetSettingsLocalizedModel).
 				UpdateLocalizedFacetSetting(model.CategoryFacet, FacetGroupKind.Category, ref clearFacetCache);
@@ -1571,7 +1647,11 @@ namespace SmartStore.Admin.Controllers
 				UpdateLocalizedFacetSetting(model.DeliveryTimeFacet, FacetGroupKind.DeliveryTime, ref clearFacetCache);
 				UpdateLocalizedFacetSetting(model.AvailabilityFacet, FacetGroupKind.Availability, ref clearFacetCache);
 				UpdateLocalizedFacetSetting(model.NewArrivalsFacet, FacetGroupKind.NewArrivals, ref clearFacetCache);
-			}
+
+                UpdateLocalizedFacetSetting(model.ForumSearchSettings.ForumFacet, FacetGroupKind.Forum, ref clearFacetCache, "Forum");
+                UpdateLocalizedFacetSetting(model.ForumSearchSettings.CustomerFacet, FacetGroupKind.Customer, ref clearFacetCache, "Forum");
+                UpdateLocalizedFacetSetting(model.ForumSearchSettings.DateFacet, FacetGroupKind.Date, ref clearFacetCache, "Forum");
+            }
 
 			if (clearFacetCache)
 			{

@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using FluentValidation;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Search;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework.Validators;
-using FluentValidation;
-using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public partial class SearchSettingsModel : ModelBase
+    public partial class SearchSettingsModel : ModelBase
 	{
 		public SearchSettingsModel()
 		{
@@ -23,6 +23,7 @@ namespace SmartStore.Admin.Models.Settings
 			DeliveryTimeFacet = new CommonFacetSettingsModel();
 			AvailabilityFacet = new CommonFacetSettingsModel();
 			NewArrivalsFacet = new CommonFacetSettingsModel();
+            ForumSearchSettings = new ForumSearchSettingsModel();
 		}
 
 		public string SearchFieldsNote { get; set; }
@@ -42,7 +43,7 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.ShowProductImagesInInstantSearch")]
 		public bool ShowProductImagesInInstantSearch { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.InstantSearchNumberOfHits")]
 		public int InstantSearchNumberOfProducts { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.InstantSearchTermMinLength")]
@@ -54,7 +55,7 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMaxChoicesCount")]
 		public int FilterMaxChoicesCount { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Search.DefaultSortOrderMode")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Search.DefaultSortOrder")]
         public ProductSortingEnum DefaultSortOrder { get; set; }
         public SelectList AvailableSortOrderModes { get; set; }
 
@@ -65,7 +66,10 @@ namespace SmartStore.Admin.Models.Settings
 		public CommonFacetSettingsModel DeliveryTimeFacet { get; set; }
 		public CommonFacetSettingsModel AvailabilityFacet { get; set; }
 		public CommonFacetSettingsModel NewArrivalsFacet { get; set; }
-	}
+
+        // Property name must equal settings class name.
+        public ForumSearchSettingsModel ForumSearchSettings { get; set; }
+    }
 
 	public class CommonFacetSettingsModel : ModelBase, ILocalizedModel<CommonFacetSettingsLocalizedModel>
 	{
@@ -96,18 +100,19 @@ namespace SmartStore.Admin.Models.Settings
 		public string Alias { get; set; }
 	}
 
+
     public class SearchSettingValidator : SmartValidatorBase<SearchSettingsModel>
     {
-        private const int MAX_INSTANT_SEARCH_ITEMS = 16;
+        public static int MaxInstantSearchItems => 16;
 
         public SearchSettingValidator(Localizer T, Func<string, bool> addRule)
         {
             if (addRule("InstantSearchNumberOfProducts"))
             {
                 RuleFor(x => x.InstantSearchNumberOfProducts)
-                    .Must(x => x >= 1 && x <= MAX_INSTANT_SEARCH_ITEMS)
+                    .Must(x => x >= 1 && x <= MaxInstantSearchItems)
                     .When(x => x.InstantSearchEnabled)
-                    .WithMessage(T("Admin.Validation.ValueRange").Text.FormatInvariant(1, MAX_INSTANT_SEARCH_ITEMS));
+                    .WithMessage(T("Admin.Validation.ValueRange").Text.FormatInvariant(1, MaxInstantSearchItems));
             }
         }
     }

@@ -534,7 +534,7 @@ namespace SmartStore.Services.Search
 			{
 				var descriptor = searchQuery.FacetDescriptors[key];
 				var facets = new List<Facet>();
-				var kind = FacetGroup.GetKindByKey(key);
+				var kind = FacetGroup.GetKindByKey("Catalog", key);
 
 				switch (kind)
 				{
@@ -552,8 +552,6 @@ namespace SmartStore.Services.Search
 
 				if (kind == FacetGroupKind.Category)
 				{
-					#region Category
-
 					var categoryTree = _categoryService.GetCategoryTree(0, false, storeId);
 					var categories = categoryTree.Flatten(false);
 
@@ -578,13 +576,9 @@ namespace SmartStore.Services.Search
 							DisplayOrder = category.DisplayOrder
 						}));
 					}
-
-					#endregion
 				}
 				else if (kind == FacetGroupKind.Brand)
 				{
-					#region Brand
-
 					var manufacturers = _manufacturerService.GetAllManufacturers(null, storeId);
 					if (descriptor.MaxChoicesCount > 0)
 					{
@@ -607,13 +601,9 @@ namespace SmartStore.Services.Search
 							DisplayOrder = manu.DisplayOrder
 						}));
 					}
-
-					#endregion
 				}
 				else if (kind == FacetGroupKind.DeliveryTime)
 				{
-					#region Delivery time
-
 					var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
 					var nameQuery = _localizedPropertyRepository.TableUntracked
 						.Where(x => x.LocaleKeyGroup == "DeliveryTime" && x.LocaleKey == "Name" && x.LanguageId == languageId);
@@ -634,13 +624,9 @@ namespace SmartStore.Services.Search
 							DisplayOrder = deliveryTime.DisplayOrder
 						}));
 					}
-
-					#endregion
 				}
 				else if (kind == FacetGroupKind.Price)
 				{
-					#region Price
-
 					var count = 0;
 					var hasActivePredefinedFacet = false;
 					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).Min(x => (double)x.Price);
@@ -687,8 +673,6 @@ namespace SmartStore.Services.Search
 					{
 						facets.Insert(0, new Facet("custom", customPriceFacetValue));
 					}
-
-					#endregion
 				}
 				else if (kind == FacetGroupKind.Rating)
 				{
@@ -724,7 +708,8 @@ namespace SmartStore.Services.Search
 					//facets.Each(x => $"{key} {x.Value.ToString()}".Dump());
 
 					result.Add(key, new FacetGroup(
-						key,
+                        "Catalog",
+                        key,
 						descriptor.Label,
 						descriptor.IsMultiSelect,
 						false,
@@ -736,7 +721,7 @@ namespace SmartStore.Services.Search
 			return result;
 		}
 
-		#endregion
+        #endregion
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{

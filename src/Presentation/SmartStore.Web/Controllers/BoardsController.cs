@@ -153,7 +153,8 @@ namespace SmartStore.Web.Controllers
         {
             var forumsList = new List<SelectListItem>();
             var separator = "--";
-            var forumGroups = _forumService.GetAllForumGroups();
+            var store = Services.StoreContext.CurrentStore;
+            var forumGroups = _forumService.GetAllForumGroups(store.Id);
 
             foreach (var fg in forumGroups)
             {
@@ -222,7 +223,8 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
             }
 
-            var forumGroups = _forumService.GetAllForumGroups();
+            var store = Services.StoreContext.CurrentStore;
+            var forumGroups = _forumService.GetAllForumGroups(store.Id);
 
             var model = new BoardsIndexModel
             {
@@ -1474,6 +1476,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var pageSize = 10;
+            var store = Services.StoreContext.CurrentStore;
             var model = new SearchModel();
 
             // Create the values for the "Limit results to previous" select list
@@ -1533,7 +1536,7 @@ namespace SmartStore.Web.Controllers
             });
 
             var separator = "--";
-            var forumGroups = _forumService.GetAllForumGroups();
+            var forumGroups = _forumService.GetAllForumGroups(store.Id);
             foreach (var fg in forumGroups)
             {
                 // Add the forum group with value as '-' so it can't be used as a target forum id.

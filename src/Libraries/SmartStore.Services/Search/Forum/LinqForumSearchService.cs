@@ -4,7 +4,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Localization;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Forums;
@@ -16,22 +16,25 @@ namespace SmartStore.Services.Search
     public partial class LinqForumSearchService : SearchServiceBase, IForumSearchService
     {
         private readonly IRepository<ForumPost> _forumPostRepository;
+        private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IForumService _forumService;
         private readonly ICommonServices _services;
 
 		public LinqForumSearchService(
             IRepository<ForumPost> forumPostRepository,
+            IRepository<StoreMapping> storeMappingRepository,
             IForumService forumService,
             ICommonServices services)
 		{
             _forumPostRepository = forumPostRepository;
+            _storeMappingRepository = storeMappingRepository;
             _forumService = forumService;
 			_services = services;
 
-            T = NullLocalizer.Instance;
+            QuerySettings = DbQuerySettings.Default;
         }
 
-        public Localizer T { get; set; }
+        public DbQuerySettings QuerySettings { get; set; }
 
         protected virtual IQueryable<ForumTopic> GetForumTopicQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery)
 		{
@@ -168,22 +171,13 @@ namespace SmartStore.Services.Search
             var result = new Dictionary<string, FacetGroup>();
             var storeId = searchQuery.StoreId ?? _services.StoreContext.CurrentStore.Id;
             var languageId = searchQuery.LanguageId ?? _services.WorkContext.WorkingLanguage.Id;
+            var userNamesEnabled = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled;
 
             foreach (var key in searchQuery.FacetDescriptors.Keys)
             {
                 var descriptor = searchQuery.FacetDescriptors[key];
                 var facets = new List<Facet>();
                 var kind = FacetGroup.GetKindByKey("Forum", key);
-
-                switch (kind)
-                {
-                    case FacetGroupKind.NewArrivals:
-                        if (totalHits == 0 && !descriptor.Values.Any(x => x.IsSelected))
-                        {
-                            continue;
-                        }
-                        break;
-                }
 
                 if (kind == FacetGroupKind.Forum)
                 {
@@ -216,43 +210,38 @@ namespace SmartStore.Services.Search
                 }
                 else if (kind == FacetGroupKind.Customer)
                 {
-                    var userNamesEnabled = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled;
-
                     // Get customers with most posts.
-                    var groupQuery =
-                        from p in _forumPostRepository.TableUntracked.Expand(x => x.Customer)
-                        group p by p.CustomerId into grp
-                        select new
-                        {
-                            Count = grp.Count(),
-                            grp.FirstOrDefault().Customer
-                        };
+                    var customerQuery = FacetUtility.GetCustomersByNumberOfPosts(
+                        _forumPostRepository,
+                        _storeMappingRepository,
+                        QuerySettings.IgnoreMultiStore ? 0 : storeId);
 
                     // Limit the result. Do not allow to get all customers.
-                    var customers = groupQuery
-                        .Where(x => x.Customer != null)
-                        .OrderByDescending(x => x.Count)
-                        .Select(x => x.Customer)
-                        .Take(descriptor.MaxChoicesCount > 0 ? descriptor.MaxChoicesCount : 20)
-                        .ToList();
+                    var maxChoices = descriptor.MaxChoicesCount > 0 ? descriptor.MaxChoicesCount : 20;
+                    var customers = customerQuery.Take(maxChoices * 3).ToList();
 
                     foreach (var customer in customers)
                     {
-                        // TODO: anonymize?
-                        var name = userNamesEnabled ? customer.Username : customer.FirstName;
-
-                        facets.Add(new Facet(new FacetValue(customer.Id, IndexTypeCode.Int32)
+                        var name = FacetUtility.GetPublicName(customer, userNamesEnabled);
+                        if (name.HasValue())
                         {
-                            IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(customer.Id)),
-                            Label = name.NullEmpty() ?? customer.Id.ToString(),
-                            DisplayOrder = 0
-                        }));
+                            facets.Add(new Facet(new FacetValue(customer.Id, IndexTypeCode.Int32)
+                            {
+                                IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(customer.Id)),
+                                Label = name,
+                                DisplayOrder = 0
+                            }));
+                            if (facets.Count >= maxChoices)
+                            {
+                                break;
+                            }
+                        }
                     }
                 }
                 else if (kind == FacetGroupKind.Date)
                 {
                     var hasActivePredefinedFacet = false;
-                    var dates = FacetUtility.GetForumDates(T);
+                    var dates = FacetUtility.GetForumDates();
 
                     foreach (var date in dates)
                     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Autofac;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
@@ -31,14 +32,18 @@ namespace SmartStore.Services.Search
             _forumService = forumService;
 			_logger = logger;
 			_urlHelper = urlHelper;
-		}
 
-		/// <summary>
-		/// Bypasses the index provider and directly searches in the database
-		/// </summary>
-		/// <param name="searchQuery">Search query</param>
-		/// <returns>Forum search result</returns>
-		protected virtual ForumSearchResult SearchDirect(ForumSearchQuery searchQuery)
+            T = NullLocalizer.Instance;
+        }
+
+        public Localizer T { get; set; }
+
+        /// <summary>
+        /// Bypasses the index provider and directly searches in the database
+        /// </summary>
+        /// <param name="searchQuery">Search query</param>
+        /// <returns>Forum search result</returns>
+        protected virtual ForumSearchResult SearchDirect(ForumSearchQuery searchQuery)
 		{
 			// Fallback to linq search.
 			var linqForumSearchService = _services.Container.ResolveNamed<IForumSearchService>("linq");
@@ -55,6 +60,40 @@ namespace SmartStore.Services.Search
                 return;
             }
 
+            // Apply "date" labels.
+            if (facets.TryGetValue("createdon", out var group))
+            {
+                var utcNow = DateTime.UtcNow;
+                foreach (var facet in group.Facets)
+                {
+                    var dt = (DateTime)facet.Value.Value;
+                    var days = (utcNow - dt).TotalDays;
+                    switch (days)
+                    {
+                        case 1:
+                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.1day");
+                            break;
+                        case 7:
+                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.7days");
+                            break;
+                        case 14:
+                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.2weeks");
+                            break;
+                        case 30:
+                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.1month");
+                            break;
+                        case 92:
+                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.3months");
+                            break;
+                        case 183:
+                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.6months");
+                            break;
+                        case 365:
+                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.1year");
+                            break;
+                    }
+                }
+            }
         }
 
         public ForumSearchResult Search(ForumSearchQuery searchQuery, bool direct = false)

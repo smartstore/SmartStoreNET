@@ -10,6 +10,8 @@
 		AttributeValue,
 		Variant,
 		VariantValue,
+        Customer,
+        Forum,
         ForumPost
 	}
 }

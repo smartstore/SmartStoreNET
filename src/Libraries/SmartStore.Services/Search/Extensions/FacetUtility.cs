@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Localization;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Services.Search.Extensions
 {
+    /// <summary>
+    /// Contains methods that are specifically required for facet processing.
+    /// </summary>
     public static class FacetUtility
 	{
 		private const double MAX_PRICE = 1000000000;
@@ -33,6 +39,18 @@ namespace SmartStore.Services.Search.Extensions
 			{ 20000000, 2500000 },
 			{ 50000000, 5000000 }
 		};
+
+        private static string GetPublicName(string firstName, string lastName)
+        {
+            string result = firstName;
+
+            if (!string.IsNullOrWhiteSpace(result) && !string.IsNullOrWhiteSpace(lastName))
+            {
+                result = string.Concat(result, " ", lastName.First(), ".");
+            }
+
+            return result;
+        }
 
 		public static double GetNextPrice(double price)
 		{
@@ -122,32 +140,79 @@ namespace SmartStore.Services.Search.Extensions
 			}
 		}
 
-        public static List<FacetValue> GetForumDates(Localizer T)
+        public static List<FacetValue> GetForumDates()
         {
             var count = 0;
             var utcNow = DateTime.UtcNow;
             var result = new List<FacetValue>();
-            var days = new Dictionary<int, string>
-            {
-                { 1, "Forum.Search.LimitResultsToPrevious.1day" },
-                { 7, "Forum.Search.LimitResultsToPrevious.7days" },
-                { 14, "Forum.Search.LimitResultsToPrevious.2weeks" },
-                { 30, "Forum.Search.LimitResultsToPrevious.1month" },
-                { 92, "Forum.Search.LimitResultsToPrevious.3months" },
-                { 183, "Forum.Search.LimitResultsToPrevious.6months" },
-                { 365, "Forum.Search.LimitResultsToPrevious.1year" }
-            };
 
-            foreach (var day in days)
+            foreach (var day in new int[] { 1, 7, 14, 30, 92, 183, 365 })
             {
-                result.Add(new FacetValue(utcNow.AddDays(-day.Key), utcNow, IndexTypeCode.DateTime, true, true)
+                result.Add(new FacetValue(utcNow.AddDays(-day), null, IndexTypeCode.DateTime, true, false)
                 {
-                    DisplayOrder = ++count,
-                    Label = T(day.Value)
+                    DisplayOrder = ++count
                 });
             }
 
             return result;
+        }
+
+        public static string GetPublicName(Customer customer, bool userNamesEnabled)
+        {
+            if (customer == null)
+            {
+                return null;
+            }
+
+            var name = userNamesEnabled ? customer.Username : null;
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = GetPublicName(customer.FirstName, customer.LastName);
+            }
+
+            if (customer.BillingAddress != null && string.IsNullOrWhiteSpace(name))
+            {
+                name = GetPublicName(customer.BillingAddress.FirstName, customer.BillingAddress.LastName);
+            }
+
+            return name;
+        }
+
+        public static IQueryable<Customer> GetCustomersByNumberOfPosts(
+            IRepository<ForumPost> forumPostRepository,
+            IRepository<StoreMapping> storeMappingRepository,
+            int storeId)
+        {
+            var postQuery = forumPostRepository.TableUntracked
+                .Expand(x => x.Customer)
+                .Expand(x => x.Customer.BillingAddress);
+
+            if (storeId > 0)
+            {
+                postQuery =
+                    from p in postQuery
+                    join sm in storeMappingRepository.TableUntracked on new { eid = p.ForumTopic.Forum.ForumGroupId, ename = "ForumGroup" } equals new { eid = sm.EntityId, ename = sm.EntityName } into gsm
+                    from sm in gsm.DefaultIfEmpty()
+                    where !p.ForumTopic.Forum.ForumGroup.LimitedToStores || sm.StoreId == storeId
+                    select p;
+            }
+
+            var groupQuery =
+                from p in postQuery
+                group p by p.CustomerId into grp
+                select new
+                {
+                    Count = grp.Count(),
+                    grp.FirstOrDefault().Customer   // Cannot be null.
+                };
+
+            var query = groupQuery
+                .OrderByDescending(x => x.Count)
+                .Select(x => x.Customer)
+                .Where(x => x.CustomerRoles.FirstOrDefault(y => y.SystemName == SystemCustomerRoleNames.Guests) == null && !x.Deleted && x.Active && !x.IsSystemAccount);
+
+            return query;
         }
     }
 }

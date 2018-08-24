@@ -6,7 +6,7 @@
 
 @if (!Model.WrapContent)
 {
-	<div @Html.LanguageAttributes(Model.HtmlRtl, WorkContext.WorkingLanguage)>@Html.Raw(Model.Html)</div>
+	@Html.Raw(Model.Html)
 	return;
 }
 

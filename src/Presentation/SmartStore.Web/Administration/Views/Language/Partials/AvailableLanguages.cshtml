@@ -66,14 +66,25 @@
 						</td>
 						<td class="text-right">
 							@if (language.Published)
-							{
-								<a href="@Url.Action("Download", new { setId = language.Id })"
-								   @Html.Attr("disabled", "disabled", language.IsInstalled)
-								   class="btn btn-sm btn-primary download-language@(language.IsDownloadRunning ? " d-none" : "")"
-								   onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
-									<i class="fa fa-download"></i>
-									<span>@T("Common.Download")</span>
-								</a>
+                            {
+                                if (language.IsInstalled)
+                                {
+								    <a href="@Url.Action("Download", new { setId = language.Id })"
+								       class="btn btn-sm btn-warning download-language@(language.IsDownloadRunning ? " d-none" : "")"
+								       onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
+									    <i class="fa fa-refresh"></i>
+									    <span>@T("Common.Refresh")</span>
+								    </a>
+                                }
+                                else
+                                {
+								    <a href="@Url.Action("Download", new { setId = language.Id })"
+								       class="btn btn-sm btn-primary download-language@(language.IsDownloadRunning ? " d-none" : "")"
+								       onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
+									    <i class="fa fa-download"></i>
+									    <span>@T("Common.Download")</span>
+								    </a>
+                                }
 								<div class="task-progress text-muted@(language.IsDownloadRunning ? "" : " d-none")"
 									 data-task-id="@language.Id" data-running="@(language.IsDownloadRunning ? "true" : "false")"></div>
 							}

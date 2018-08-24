@@ -160,6 +160,7 @@ namespace SmartStore.Admin.Controllers
             Language language = null,
             LanguageDownloadState state = null)
         {
+            // Source Id (aka SetId), not entity Id!
             model.Id = resources.Id;
 			model.PreviousSetId = resources.PreviousSetId;
             model.IsInstalled = language != null;

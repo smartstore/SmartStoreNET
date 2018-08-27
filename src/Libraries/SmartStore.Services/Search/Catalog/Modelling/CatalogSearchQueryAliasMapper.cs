@@ -10,10 +10,11 @@ using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Search.Modelling
 {
-	public class CatalogSearchQueryAliasMapper : ICatalogSearchQueryAliasMapper
+    public class CatalogSearchQueryAliasMapper : ICatalogSearchQueryAliasMapper
 	{
 		private const string ALL_ATTRIBUTE_ID_BY_ALIAS_KEY = "search.attribute.id.alias.mappings.all";
 		private const string ALL_ATTRIBUTE_ALIAS_BY_ID_KEY = "search.attribute.alias.id.mappings.all";
@@ -64,11 +65,6 @@ namespace SmartStore.Services.Search.Modelling
 		protected string CreateOptionKey(string prefix, int languageId, int optionId)
 		{
 			return $"{prefix}.{languageId}.{optionId}";
-		}
-
-		protected string CreateSettingKey(FacetGroupKind kind, int languageId)
-		{
-			return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}";
 		}
 
 		protected void CachedLocalizedAlias(string localeKeyGroup, Action<LocalizedProperty> caching)
@@ -464,7 +460,7 @@ namespace SmartStore.Services.Search.Modelling
 				{
 					foreach (var groupKind in groupKinds)
 					{
-						var key = CreateSettingKey(groupKind, language.Id);
+						var key = FacetUtility.GetFacetAliasSettingKey(groupKind, language.Id);
 						var value = _settingService.GetSettingByKey<string>(key);
 						if (value.HasValue())
 						{
@@ -486,7 +482,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			var mappings = GetCommonFacetAliasByGroupKindMappings();
 
-			return mappings.Get(CreateSettingKey(kind, languageId));
+			return mappings.Get(FacetUtility.GetFacetAliasSettingKey(kind, languageId));
 		}
 
 		#endregion

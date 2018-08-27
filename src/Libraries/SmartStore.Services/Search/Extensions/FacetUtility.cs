@@ -170,6 +170,14 @@ namespace SmartStore.Services.Search.Extensions
             {
                 name = GetPublicName(customer.FirstName, customer.LastName);
             }
+            else
+            {
+                var atSymbol = name.IndexOf('@');
+                if (atSymbol > 1)
+                {
+                    name = name.Substring(0, atSymbol);
+                }
+            }
 
             if (customer.BillingAddress != null && string.IsNullOrWhiteSpace(name))
             {
@@ -182,7 +190,8 @@ namespace SmartStore.Services.Search.Extensions
         public static IQueryable<Customer> GetCustomersByNumberOfPosts(
             IRepository<ForumPost> forumPostRepository,
             IRepository<StoreMapping> storeMappingRepository,
-            int storeId)
+            int storeId,
+            int minHitCount = 1)
         {
             var postQuery = forumPostRepository.TableUntracked
                 .Expand(x => x.Customer)
@@ -207,12 +216,60 @@ namespace SmartStore.Services.Search.Extensions
                     grp.FirstOrDefault().Customer   // Cannot be null.
                 };
 
+            groupQuery = minHitCount > 1
+                ? groupQuery.Where(x => x.Count >= minHitCount)
+                : groupQuery;
+
             var query = groupQuery
                 .OrderByDescending(x => x.Count)
                 .Select(x => x.Customer)
                 .Where(x => x.CustomerRoles.FirstOrDefault(y => y.SystemName == SystemCustomerRoleNames.Guests) == null && !x.Deleted && x.Active && !x.IsSystemAccount);
 
             return query;
+        }
+
+        /// <summary>
+        /// Gets the string resource key for a facet group kind
+        /// </summary>
+        /// <param name="kind">Facet group kind</param>
+        /// <returns>Resource key</returns>
+        public static string GetLabelResourceKey(FacetGroupKind kind)
+        {
+            switch (kind)
+            {
+                case FacetGroupKind.Category:
+                    return "Search.Facet.Category";
+                case FacetGroupKind.Brand:
+                    return "Search.Facet.Manufacturer";
+                case FacetGroupKind.Price:
+                    return "Search.Facet.Price";
+                case FacetGroupKind.Rating:
+                    return "Search.Facet.Rating";
+                case FacetGroupKind.DeliveryTime:
+                    return "Search.Facet.DeliveryTime";
+                case FacetGroupKind.Availability:
+                    return "Search.Facet.Availability";
+                case FacetGroupKind.NewArrivals:
+                    return "Search.Facet.NewArrivals";
+                case FacetGroupKind.Forum:
+                    return "Search.Facet.Forum";
+                case FacetGroupKind.Customer:
+                    return "Search.Facet.Customer";
+                case FacetGroupKind.Date:
+                    return "Search.Facet.Date";
+                default:
+                    return null;
+            }
+        }
+
+        public static string GetFacetAliasSettingKey(FacetGroupKind kind, int languageId, string scope = null)
+        {
+            if (scope.HasValue())
+            {
+                return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}-{scope}";
+            }
+
+            return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}";
         }
     }
 }

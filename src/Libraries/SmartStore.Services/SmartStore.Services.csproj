@@ -556,7 +556,10 @@
     <Compile Include="Search\Forum\ForumSearchEvents.cs" />
     <Compile Include="Search\Forum\IForumSearchService.cs" />
     <Compile Include="Search\Forum\LinqForumSearchService.cs" />
+    <Compile Include="Search\Forum\Modelling\ForumSearchQueryModelBinder.cs" />
+    <Compile Include="Search\Forum\Modelling\ForumSearchQueryAliasMapper.cs" />
     <Compile Include="Search\Forum\Modelling\ForumSearchQueryFactory.cs" />
+    <Compile Include="Search\Forum\Modelling\IForumSearchQueryAliasMapper.cs" />
     <Compile Include="Search\Forum\Modelling\IForumSearchQueryFactory.cs" />
     <Compile Include="Search\SearchQueryFactoryBase.cs" />
     <Compile Include="Search\SearchServiceBase.cs" />

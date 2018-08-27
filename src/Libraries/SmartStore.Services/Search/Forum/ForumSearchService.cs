@@ -61,10 +61,10 @@ namespace SmartStore.Services.Search
             }
 
             // Apply "date" labels.
-            if (facets.TryGetValue("createdon", out var group))
+            if (facets.TryGetValue("createdon", out var grp))
             {
                 var utcNow = DateTime.UtcNow;
-                foreach (var facet in group.Facets)
+                foreach (var facet in grp.Facets)
                 {
                     var dt = (DateTime)facet.Value.Value;
                     var days = (utcNow - dt).TotalDays;
@@ -91,6 +91,23 @@ namespace SmartStore.Services.Search
                         case 365:
                             facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.1year");
                             break;
+                    }
+                }
+            }
+
+            // Ensure that there are no duplicate customer labels.
+            if (facets.TryGetValue("customerid", out grp))
+            {
+                var groupedByLabel =
+                    from x in grp.Facets
+                    group x by x.Value.Label into g
+                    select g;
+
+                foreach (var item in groupedByLabel.Where(x => x.Count() > 1))
+                {
+                    foreach (var facet in item)
+                    {
+                        facet.Value.Label = $"{facet.Value.Value} ({facet.Value.Value.ToString()})";
                     }
                 }
             }

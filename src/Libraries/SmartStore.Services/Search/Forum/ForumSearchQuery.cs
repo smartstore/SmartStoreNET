@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
@@ -6,7 +8,7 @@ namespace SmartStore.Services.Search
     public partial class ForumSearchQuery : SearchQuery<ForumSearchQuery>, ICloneable<ForumSearchQuery>
 	{
         /// <summary>
-        /// Initializes a new instance of the <see cref="ForumSearchQuery"/> class without a search term being set
+        /// Initializes a new instance of the <see cref="ForumSearchQuery"/> class without a search term being set.
         /// </summary>
         public ForumSearchQuery()
 			: base((string[])null, null)
@@ -32,5 +34,67 @@ namespace SmartStore.Services.Search
 		{
 			return this.MemberwiseClone();
 		}
-	}
+
+        #region Fluent builder
+
+        public ForumSearchQuery SortBy(ForumTopicSorting sort)
+        {
+            switch (sort)
+            {
+                case ForumTopicSorting.SubjectAsc:
+                case ForumTopicSorting.SubjectDesc:
+                    return SortBy(SearchSort.ByStringField("subject", sort == ForumTopicSorting.SubjectDesc));
+
+                case ForumTopicSorting.CreatedOnAsc:
+                case ForumTopicSorting.CreatedOnDesc:
+                    return SortBy(SearchSort.ByDateTimeField("createdon", sort == ForumTopicSorting.CreatedOnDesc));
+
+                case ForumTopicSorting.PostsAsc:
+                case ForumTopicSorting.PostsDesc:
+                    return SortBy(SearchSort.ByIntField("numposts", sort == ForumTopicSorting.PostsDesc));
+
+                case ForumTopicSorting.ViewsAsc:
+                case ForumTopicSorting.ViewsDesc:
+                    return SortBy(SearchSort.ByIntField("views", sort == ForumTopicSorting.ViewsDesc));
+
+                case ForumTopicSorting.Relevance:
+                    return SortBy(SearchSort.ByRelevance());
+
+                default:
+                    return this;
+            }
+        }
+
+        public ForumSearchQuery WithForumIds(params int[] ids)
+        {
+            if (ids.Length == 0)
+            {
+                return this;
+            }
+
+            return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("forumid", x).ExactMatch().NotAnalyzed()).ToArray()));
+        }
+
+        public ForumSearchQuery WithCustomerIds(params int[] ids)
+        {
+            if (ids.Length == 0)
+            {
+                return this;
+            }
+
+            return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("customerid", x).ExactMatch().NotAnalyzed()).ToArray()));
+        }
+
+        public ForumSearchQuery CreatedBetween(DateTime? fromUtc, DateTime? toUtc)
+        {
+            if (fromUtc == null && toUtc == null)
+            {
+                return this;
+            }
+
+            return WithFilter(SearchFilter.ByRange("createdon", fromUtc, toUtc, fromUtc.HasValue, toUtc.HasValue).Mandatory().ExactMatch().NotAnalyzed());
+        }
+
+        #endregion
+    }
 }

@@ -214,7 +214,8 @@ namespace SmartStore.Services.Search
                     var customerQuery = FacetUtility.GetCustomersByNumberOfPosts(
                         _forumPostRepository,
                         _storeMappingRepository,
-                        QuerySettings.IgnoreMultiStore ? 0 : storeId);
+                        QuerySettings.IgnoreMultiStore ? 0 : storeId,
+                        descriptor.MinHitCount);
 
                     // Limit the result. Do not allow to get all customers.
                     var maxChoices = descriptor.MaxChoicesCount > 0 ? descriptor.MaxChoicesCount : 20;

@@ -32,6 +32,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search.Extensions;
 using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tax;
@@ -77,6 +78,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IPluginFinder _pluginFinder;
 		private readonly Lazy<IMediaMover> _mediaMover;
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
+        private readonly Lazy<IForumSearchQueryAliasMapper> _forumSearchQueryAliasMapper;
         private readonly Lazy<ISiteMapService> _siteMapService;
 
         private StoreDependingSettingHelper _storeDependingSettings;
@@ -106,6 +108,7 @@ namespace SmartStore.Admin.Controllers
 			IPluginFinder pluginFinder,
 			Lazy<IMediaMover> mediaMover,
 			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
+            Lazy<IForumSearchQueryAliasMapper> forumSearchQueryAliasMapper,
             Lazy<ISiteMapService> siteMapService)
         {
             _countryService = countryService;
@@ -128,6 +131,7 @@ namespace SmartStore.Admin.Controllers
 			_pluginFinder = pluginFinder;
 			_mediaMover = mediaMover;
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
+            _forumSearchQueryAliasMapper = forumSearchQueryAliasMapper;
             _siteMapService = siteMapService;
         }
 
@@ -154,21 +158,11 @@ namespace SmartStore.Admin.Controllers
 			return new SelectListItem { Text = value, Value = value };
 		}
 
-		private string CreateCommonFacetSettingKey(FacetGroupKind kind, int languageId, string scope = null)
-		{
-            if (scope.HasValue())
-            {
-                return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}-{scope}";
-            }
-
-			return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}";
-		}
-
 		private void UpdateLocalizedFacetSetting(CommonFacetSettingsModel model, FacetGroupKind kind, ref bool clearCache, string scope = null)
 		{
 			foreach (var localized in model.Locales)
 			{
-				var key = CreateCommonFacetSettingKey(kind, localized.LanguageId, scope);
+				var key = FacetUtility.GetFacetAliasSettingKey(kind, localized.LanguageId, scope);
 				var existingAlias = _services.Settings.GetSettingByKey<string>(key);
 
 				if (existingAlias.IsCaseInsensitiveEqual(localized.Alias))
@@ -1479,53 +1473,53 @@ namespace SmartStore.Admin.Controllers
 				model.CategoryFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
 					LanguageId = language.Id,
-					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Category, language.Id))
+					Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Category, language.Id))
 				});
 				model.BrandFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
 					LanguageId = language.Id,
-					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Brand, language.Id))
+					Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Brand, language.Id))
 				});
 				model.PriceFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
 					LanguageId = language.Id,
-					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Price, language.Id))
+					Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Price, language.Id))
 				});
 				model.RatingFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
 					LanguageId = language.Id,
-					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Rating, language.Id))
+					Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Rating, language.Id))
 				});
 				model.DeliveryTimeFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
 					LanguageId = language.Id,
-					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.DeliveryTime, language.Id))
+					Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.DeliveryTime, language.Id))
 				});
 				model.AvailabilityFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
 					LanguageId = language.Id,
-					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Availability, language.Id))
+					Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Availability, language.Id))
 				});
 				model.NewArrivalsFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
 				{
 					LanguageId = language.Id,
-					Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.NewArrivals, language.Id))
+					Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.NewArrivals, language.Id))
 				});
 
                 model.ForumSearchSettings.ForumFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
                 {
                     LanguageId = language.Id,
-                    Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Forum, language.Id, "Forum"))
+                    Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Forum, language.Id, "Forum"))
                 });
                 model.ForumSearchSettings.CustomerFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
                 {
                     LanguageId = language.Id,
-                    Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Customer, language.Id, "Forum"))
+                    Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Customer, language.Id, "Forum"))
                 });
                 model.ForumSearchSettings.DateFacet.Locales.Add(new CommonFacetSettingsLocalizedModel
                 {
                     LanguageId = language.Id,
-                    Alias = _services.Settings.GetSettingByKey<string>(CreateCommonFacetSettingKey(FacetGroupKind.Date, language.Id, "Forum"))
+                    Alias = _services.Settings.GetSettingByKey<string>(FacetUtility.GetFacetAliasSettingKey(FacetGroupKind.Date, language.Id, "Forum"))
                 });
             }
 
@@ -1617,8 +1611,9 @@ namespace SmartStore.Admin.Controllers
                 StoreDependingSettings.UpdateSettings(fsettings, form, storeScope, Services.Settings);
             }
 
-			var clearFacetCache = false;
-			using (Services.Settings.BeginScope())
+			var clearCatalogFacetCache = false;
+            var clearForumFacetCache = false;
+            using (Services.Settings.BeginScope())
 			{
 				_services.Settings.SaveSetting(settings, x => x.SearchFields, 0, false);
                 _services.Settings.SaveSetting(fsettings, x => x.SearchFields, 0, false);
@@ -1640,23 +1635,27 @@ namespace SmartStore.Admin.Controllers
                 StoreDependingSettings.UpdateSetting("AvailabilityFacet.IncludeNotAvailable", "IncludeNotAvailable", settings, form, storeScope, Services.Settings);
 
 				// Localized facet settings (CommonFacetSettingsLocalizedModel).
-				UpdateLocalizedFacetSetting(model.CategoryFacet, FacetGroupKind.Category, ref clearFacetCache);
-				UpdateLocalizedFacetSetting(model.BrandFacet, FacetGroupKind.Brand, ref clearFacetCache);
-				UpdateLocalizedFacetSetting(model.PriceFacet, FacetGroupKind.Price, ref clearFacetCache);
-				UpdateLocalizedFacetSetting(model.RatingFacet, FacetGroupKind.Rating, ref clearFacetCache);
-				UpdateLocalizedFacetSetting(model.DeliveryTimeFacet, FacetGroupKind.DeliveryTime, ref clearFacetCache);
-				UpdateLocalizedFacetSetting(model.AvailabilityFacet, FacetGroupKind.Availability, ref clearFacetCache);
-				UpdateLocalizedFacetSetting(model.NewArrivalsFacet, FacetGroupKind.NewArrivals, ref clearFacetCache);
+				UpdateLocalizedFacetSetting(model.CategoryFacet, FacetGroupKind.Category, ref clearCatalogFacetCache);
+				UpdateLocalizedFacetSetting(model.BrandFacet, FacetGroupKind.Brand, ref clearCatalogFacetCache);
+				UpdateLocalizedFacetSetting(model.PriceFacet, FacetGroupKind.Price, ref clearCatalogFacetCache);
+				UpdateLocalizedFacetSetting(model.RatingFacet, FacetGroupKind.Rating, ref clearCatalogFacetCache);
+				UpdateLocalizedFacetSetting(model.DeliveryTimeFacet, FacetGroupKind.DeliveryTime, ref clearCatalogFacetCache);
+				UpdateLocalizedFacetSetting(model.AvailabilityFacet, FacetGroupKind.Availability, ref clearCatalogFacetCache);
+				UpdateLocalizedFacetSetting(model.NewArrivalsFacet, FacetGroupKind.NewArrivals, ref clearCatalogFacetCache);
 
-                UpdateLocalizedFacetSetting(model.ForumSearchSettings.ForumFacet, FacetGroupKind.Forum, ref clearFacetCache, "Forum");
-                UpdateLocalizedFacetSetting(model.ForumSearchSettings.CustomerFacet, FacetGroupKind.Customer, ref clearFacetCache, "Forum");
-                UpdateLocalizedFacetSetting(model.ForumSearchSettings.DateFacet, FacetGroupKind.Date, ref clearFacetCache, "Forum");
+                UpdateLocalizedFacetSetting(model.ForumSearchSettings.ForumFacet, FacetGroupKind.Forum, ref clearForumFacetCache, "Forum");
+                UpdateLocalizedFacetSetting(model.ForumSearchSettings.CustomerFacet, FacetGroupKind.Customer, ref clearForumFacetCache, "Forum");
+                UpdateLocalizedFacetSetting(model.ForumSearchSettings.DateFacet, FacetGroupKind.Date, ref clearForumFacetCache, "Forum");
             }
 
-			if (clearFacetCache)
+			if (clearCatalogFacetCache)
 			{
 				_catalogSearchQueryAliasMapper.Value.ClearCommonFacetCache();
 			}
+            if (clearForumFacetCache)
+            {
+                _forumSearchQueryAliasMapper.Value.ClearCommonFacetCache();
+            }
 
 			return NotifyAndRedirect("Search");
 		}

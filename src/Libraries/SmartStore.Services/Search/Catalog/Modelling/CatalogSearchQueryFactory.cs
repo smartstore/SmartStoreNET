@@ -11,6 +11,7 @@ using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 using SmartStore.Utilities;
 using SmartStore.Services.Security;
+using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Search.Modelling
 {
@@ -35,14 +36,12 @@ namespace SmartStore.Services.Search.Modelling
 
 	public class CatalogSearchQueryFactory : SearchQueryFactoryBase, ICatalogSearchQueryFactory
     {
-		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "a", "n", "d", "v" };
         protected static readonly string[] _instantSearchFields = new string[] { "manufacturer", "sku", "gtin", "mpn", "attrname", "variantname" };
 
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
 		protected readonly ICommonServices _services;
 		protected readonly ICatalogSearchQueryAliasMapper _catalogSearchQueryAliasMapper;
-		private Multimap<string, string> _aliases;
 
 		public CatalogSearchQueryFactory(
 			HttpContextBase httpContext,
@@ -64,7 +63,9 @@ namespace SmartStore.Services.Search.Modelling
 
 		public CatalogSearchQuery Current { get; private set; }
 
-		public CatalogSearchQuery CreateFromQuery()
+        protected override string[] Tokens => new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "a", "n", "d", "v" };
+
+        public CatalogSearchQuery CreateFromQuery()
 		{
 			var ctx = _httpContext;
 
@@ -88,7 +89,9 @@ namespace SmartStore.Services.Search.Modelling
                 foreach (var fieldName in _instantSearchFields)
                 {
                     if (_searchSettings.SearchFields.Contains(fieldName))
+                    {
                         fields.Add(fieldName);
+                    }
                 }
             }
 			else
@@ -103,19 +106,19 @@ namespace SmartStore.Services.Search.Modelling
 				.VisibleIndividuallyOnly(true)
 				.BuildFacetMap(!isInstantSearch);
 
-			// Visibility
+			// Visibility.
 			query.VisibleOnly(!QuerySettings.IgnoreAcl ? _services.WorkContext.CurrentCustomer : null);
 
-			// Store
+			// Store.
 			if (!QuerySettings.IgnoreMultiStore)
 			{
 				query.HasStoreId(_services.StoreContext.CurrentStore.Id);
 			}
 
-			// Availability
+			// Availability.
 			ConvertAvailability(query, routeData, origin);
 
-			// Instant-Search never uses these filter parameters
+			// Instant-Search never uses these filter parameters.
 			if (!isInstantSearch)
 			{
 				ConvertPagingSorting(query, routeData, origin);
@@ -143,14 +146,7 @@ namespace SmartStore.Services.Search.Modelling
 			var orderBy = GetValueFor<ProductSortingEnum?>("o");
 			if (orderBy == null || orderBy == ProductSortingEnum.Initial)
 			{
-                if(origin.Equals("Search/Search"))
-                {
-                    orderBy = _searchSettings.DefaultSortOrder;
-                }
-                else
-                {
-                    orderBy = _catalogSettings.DefaultSortOrder;
-                }
+                orderBy = origin.IsCaseInsensitiveEqual("Search/Search") ? _searchSettings.DefaultSortOrder : _catalogSettings.DefaultSortOrder;
 			}
 
 			query.CustomData["CurrentSortOrder"] = orderBy.Value;
@@ -337,7 +333,7 @@ namespace SmartStore.Services.Search.Modelling
 			}
 
 			var descriptor = new FacetDescriptor(fieldName);
-			descriptor.Label = _services.Localization.GetResource(FacetDescriptor.GetLabelResourceKey(kind) ?? kind.ToString());
+			descriptor.Label = _services.Localization.GetResource(FacetUtility.GetLabelResourceKey(kind) ?? kind.ToString());
 			descriptor.IsMultiSelect = isMultiSelect;
 			descriptor.DisplayOrder = displayOrder;
 			descriptor.OrderBy = sorting;
@@ -480,27 +476,6 @@ namespace SmartStore.Services.Search.Modelling
 			});
 		}
 
-		protected virtual bool TryParseRange(string query, out double? min, out double? max)
-		{
-			min = max = null;
-
-			if (query.IsEmpty())
-			{
-				return false;
-			}
-
-			// Format: from~to || from[~] || ~to
-			var arr = query.Split('~').Select(x => x.Trim()).Take(2).ToArray();
-
-			CommonHelper.TryConvert(arr[0], out min);
-			if (arr.Length == 2)
-			{
-				CommonHelper.TryConvert(arr[1], out max);
-			}
-
-			return min != null || max != null;
-		}
-
 		protected virtual void ConvertRating(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			double? fromRate;
@@ -621,47 +596,6 @@ namespace SmartStore.Services.Search.Modelling
 		protected virtual bool GetValueFor<T>(CatalogSearchQuery query, string key, FacetGroupKind kind, out T value)
 		{
 			return GetValueFor(_catalogSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
-		}
-
-		protected virtual Multimap<string, string> Aliases
-		{
-			get
-			{
-				if (_aliases == null)
-				{
-					_aliases = new Multimap<string, string>();
-
-					if (_httpContext.Request != null)
-					{
-						var form = _httpContext.Request.Form;
-						var query = _httpContext.Request.QueryString;
-
-						if (form != null)
-						{
-							foreach (var key in form.AllKeys)
-							{
-								if (key.HasValue() && !_tokens.Contains(key))
-								{
-									_aliases.AddRange(key, form[key].SplitSafe(","));
-								}
-							}
-						}
-
-						if (query != null)
-						{
-							foreach (var key in query.AllKeys)
-							{
-								if (key.HasValue() && !_tokens.Contains(key))
-								{
-									_aliases.AddRange(key, query[key].SplitSafe(","));
-								}
-							}
-						}
-					}
-				}
-
-				return _aliases;
-			}
 		}
 	}
 }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Autofac.Integration.Mvc;
 
 namespace SmartStore.Services.Search.Modelling
 {
-	[ModelBinderType(typeof(CatalogSearchQuery))]
+    [ModelBinderType(typeof(CatalogSearchQuery))]
 	public class CatalogSearchQueryModelBinder : IModelBinder
 	{
 		private readonly ICatalogSearchQueryFactory _factory;
@@ -18,7 +17,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			if (_factory.Current != null)
 			{
-				// Dont' bind again for current request
+				// Don't bind again for current request.
 				return _factory.Current;
 			}
 
@@ -31,16 +30,13 @@ namespace SmartStore.Services.Search.Modelling
 			}
 
 			var modelType = bindingContext.ModelType;
-
 			if (modelType != typeof(CatalogSearchQuery))
 			{
 				return new CatalogSearchQuery();
 			}
 
 			var query = _factory.CreateFromQuery();
-
 			return query;
-
 		}
 	}
 }

@@ -116,7 +116,7 @@
         .LinkHtmlAttributes(new { data_tab_name = "Stores" })
         .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Stores" })
         .Ajax();
-    x.Add().Text(T("Common.Download").Text)
+    x.Add().Text(T("Common.Downloads").Text)
         .Icon("fa fa-download fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Downloads" })
         .Content(Html.Partial("_CreateOrUpdate.Downloads", Model).ToHtmlString());

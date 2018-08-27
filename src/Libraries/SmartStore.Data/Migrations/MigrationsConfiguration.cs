@@ -343,7 +343,8 @@
             builder.AddOrUpdate("Common.Download.Versions", "Versions", "Versionen");
             builder.AddOrUpdate("Common.Download.Version", "Version", "Version");
             builder.AddOrUpdate("Common.Download.Delete", "Delete download", "Download löschen");
-
+            builder.AddOrUpdate("Common.Downloads", "Downloads", "Downloads");
+            
             builder.AddOrUpdate("Admin.Catalog.Products.Fields.NewVersionDownloadId", 
                 "New download version",
                 "Neue Version des Downloads",

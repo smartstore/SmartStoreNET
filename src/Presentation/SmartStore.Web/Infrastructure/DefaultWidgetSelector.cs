@@ -99,7 +99,7 @@ namespace SmartStore.Web.Infrastructure
 						.Select(t => 
 						{
 							var locTitle = t.GetLocalized(x => t.Title);
-							var locBody = t.GetLocalized(x => t.Body, detectEmptyHtml: true);
+							var locBody = t.GetLocalized(x => t.Body, detectEmptyHtml: false);
 
 							return new TopicWidgetStub
 							{

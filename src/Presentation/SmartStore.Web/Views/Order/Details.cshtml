@@ -449,6 +449,8 @@
 			<span class="price">@item.SubTotal</span>
 		</div>
 	</div>
+
+    Html.RenderWidget("orderdetails_page_after_item", item);
 }
 
 @helper BundleProducts(OrderDetailsModel.OrderItemModel parentItem)
@@ -500,4 +502,6 @@
 			</div>
 		}
 	}
+
+    Html.RenderWidget("orderdetails_page_after_item", parentItem);
 }

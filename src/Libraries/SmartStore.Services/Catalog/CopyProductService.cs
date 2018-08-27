@@ -91,7 +91,6 @@ namespace SmartStore.Services.Catalog
 				var languages = _languageService.GetAllLanguages(true);
 
 				// Media stuff
-				int? downloadId = null;
 				int? sampleDownloadId = null;
 				var clonedPictures = new Dictionary<int, Picture>(); // Key = former ID, Value = cloned picture
 
@@ -103,15 +102,12 @@ namespace SmartStore.Services.Catalog
 					forceNoTracking: true,
 					hooksEnabled: false))
 				{
-					if (product.IsDownload)
-					{
-						downloadId = CopyDownload(product.Id, "Product")?.Id;
-					}
-
 					if (product.HasSampleDownload)
 					{
-						sampleDownloadId = CopyDownload(product.SampleDownloadId.GetValueOrDefault())?.Id;
-					}
+                        var sampleDownload = _downloadService.GetDownloadById((int)product.SampleDownloadId);
+						var sampleDownloadClone = CopyDownload(sampleDownload);
+                        sampleDownloadId = sampleDownloadClone.Id;
+                    }
 
 					if (copyImages)
 					{
@@ -145,8 +141,7 @@ namespace SmartStore.Services.Catalog
 						RequiredProductIds = product.RequiredProductIds,
 						AutomaticallyAddRequiredProducts = product.AutomaticallyAddRequiredProducts,
 						IsDownload = product.IsDownload,
-						//DownloadId = downloadId ?? 0,
-						//UnlimitedDownloads = product.UnlimitedDownloads,
+						UnlimitedDownloads = product.UnlimitedDownloads,
 						MaxNumberOfDownloads = product.MaxNumberOfDownloads,
 						DownloadExpirationDays = product.DownloadExpirationDays,
 						DownloadActivationType = product.DownloadActivationType,
@@ -351,8 +346,11 @@ namespace SmartStore.Services.Catalog
 					// Bundle items
 					ProcessBundleItems(product, clone);
 
-					// >>>>>>> Our final commit
-					Commit();
+                    // Downloads 
+                    CopyDownloads(product.Id, clone.Id, "Product");
+                    
+                    // >>>>>>> Our final commit
+                    Commit();
 				}
 
 				return clone;
@@ -364,36 +362,53 @@ namespace SmartStore.Services.Catalog
 			_services.DbContext.SaveChanges();
 		}
 
-		private Download CopyDownload(int productId, string entityName = "")
+		private Dictionary<int, Download> CopyDownloads(int productId, int cloneId, string entityName = "")
 		{
-			var download = _downloadService.GetDownloadsFor(productId, entityName).FirstOrDefault();
+			var downloads = _downloadService.GetDownloadsFor(productId, entityName);
+            var clonedDownloads = new Dictionary<int, Download>();
 
-			if (download == null)
+            if (!downloads.Any())
 			{
 				return null;
 			}
 
-			var clone = new Download
-			{
-				DownloadGuid = Guid.NewGuid(),
-				UseDownloadUrl = download.UseDownloadUrl,
-				DownloadUrl = download.DownloadUrl,
-				ContentType = download.ContentType,
-				Filename = download.Filename,
-				Extension = download.Extension,
-				IsNew = download.IsNew,
-				UpdatedOnUtc = DateTime.UtcNow
-			};
-
-			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoCommit: true))
-			{
-				_downloadService.InsertDownload(clone, download.MediaStorage?.Data);
+            using (var scope = new DbContextScope(ctx: _productRepository.Context, autoCommit: true))
+            {
+                foreach (var download in downloads)
+                {
+                    download.EntityId = cloneId;
+                    var clone = CopyDownload(download);
+                    clonedDownloads[clone.Id] = clone;
+                }
 			}
 				
-			return clone;
+			return clonedDownloads;
 		}
 
-		private Dictionary<int, Picture> CopyPictures(Product product, string newProductName)
+        private Download CopyDownload(Download download)
+        {
+            var clone = new Download
+            {
+                DownloadGuid = Guid.NewGuid(),
+                UseDownloadUrl = download.UseDownloadUrl,
+                DownloadUrl = download.DownloadUrl,
+                ContentType = download.ContentType,
+                Filename = download.Filename,
+                Extension = download.Extension,
+                IsNew = download.IsNew,
+                UpdatedOnUtc = DateTime.UtcNow,
+                EntityId = download.EntityId,
+                EntityName = download.EntityName,
+                Changelog = download.Changelog,
+                FileVersion = download.FileVersion
+            };
+
+            _downloadService.InsertDownload(clone, download.MediaStorage?.Data);
+
+            return clone;
+        }
+
+        private Dictionary<int, Picture> CopyPictures(Product product, string newProductName)
 		{
 			var clonedPictures = new Dictionary<int, Picture>();
 			var seoFilename = _pictureService.GetPictureSeName(newProductName);

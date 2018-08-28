@@ -287,6 +287,8 @@ namespace SmartStore.Services.Forums
 
         #endregion
 
+        #region Customer
+
         /// <summary>
         /// Check whether customer is allowed to create new topics
         /// </summary>
@@ -356,5 +358,7 @@ namespace SmartStore.Services.Forums
         /// <param name="customer">Customer</param>
         /// <returns>True if allowed, otherwise false</returns>
         bool IsCustomerAllowedToSubscribe(Customer customer);
+
+        #endregion
     }
 }

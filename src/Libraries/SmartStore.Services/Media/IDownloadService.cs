@@ -38,13 +38,22 @@ namespace SmartStore.Services.Media
 		/// <returns>List of download entities</returns>
 		IList<Download> GetDownloadsFor(int entityId, string entityName);
 
-		/// <summary>
-		/// Gets downloads by entity identifiers
+        /// <summary>
+		/// Gets downloads by entity identifier & fileversion
 		/// </summary>
-		/// <param name="entityIds">Entity identifiers</param>
+		/// <param name="entityId">Entity identifier</param>
 		/// <param name="entityName">Entity name</param>
-		/// <returns>Multimap of download entities</returns>
-		Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName);
+        /// <param name="fileVersion">File version</param>
+		/// <returns>Download entity</returns>
+        Download GetDownloadByVersion(int entityId, string entityName, string fileVersion);
+
+        /// <summary>
+        /// Gets downloads by entity identifiers
+        /// </summary>
+        /// <param name="entityIds">Entity identifiers</param>
+        /// <param name="entityName">Entity name</param>
+        /// <returns>Multimap of download entities</returns>
+        Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName);
 
         /// <summary>
         /// Gets a download by GUID

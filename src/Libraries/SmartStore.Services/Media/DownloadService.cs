@@ -104,7 +104,21 @@ namespace SmartStore.Services.Media
 			return new List<Download>();
 		}
 
-		public virtual Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName)
+        public virtual Download GetDownloadByVersion(int entityId, string entityName, string fileVersion)
+        {
+            if (entityId > 0 && fileVersion.HasValue() && entityName.HasValue())
+            {
+                var download = (from x in _downloadRepository.Table
+                                 where x.EntityId == entityId && x.EntityName.Equals(entityName) && x.FileVersion.Equals(fileVersion)
+                                 select x).FirstOrDefault();
+                
+                return download;
+            }
+
+            return null;
+        }
+
+        public virtual Multimap<int, Download> GetDownloadsByEntityIds(int[] entityIds, string entityName)
         {
             Guard.NotNull(entityIds, nameof(entityIds));
             Guard.NotEmpty(entityName, nameof(entityName));

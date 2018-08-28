@@ -119,9 +119,7 @@ namespace SmartStore.Web.Controllers
 
             if (fileVersion.HasValue())
             {
-                download = _downloadService.GetDownloadsFor(product)
-                    .Where(x => x.FileVersion.Equals(fileVersion))
-                    .FirstOrDefault();
+                download = _downloadService.GetDownloadByVersion(product.Id, "Product", fileVersion);
             }
 			else
 			{

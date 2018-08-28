@@ -56,7 +56,14 @@ namespace SmartStore.Services.Orders
 			OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
             int billingCountryId = 0, int recordsToReturn = 5,
 			int orderBy = 1, bool showHidden = false);
-        
+
+        /// <summary>
+        /// Gets a the count of purchases for a product
+        /// </summary>
+        /// <param name="productId">Product identifier</param>
+        /// <returns>Purchase count</returns>
+        int GetPurchaseCount(int productId);
+
         /// <summary>
         /// Gets a list of product identifiers purchased by other customers who purchased the above
         /// </summary>

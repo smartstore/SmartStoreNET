@@ -264,7 +264,20 @@ namespace SmartStore.Services.Orders
             return result;
         }
 
-		public virtual int[] GetAlsoPurchasedProductsIds(int storeId, int productId, int recordsToReturn = 5, bool showHidden = false)
+        public virtual int GetPurchaseCount(int productId)
+        {
+            if (productId == 0)
+                throw new ArgumentException("Product ID is not specified");
+            
+            var query = from orderItem in _orderItemRepository.Table
+                        where orderItem.ProductId == productId
+                        group orderItem by orderItem.Id into g
+                        select new { ProductsPurchased = g.Sum(x => x.Quantity) };
+           
+            return query.Select(x => x.ProductsPurchased).FirstOrDefault();
+        }
+        
+        public virtual int[] GetAlsoPurchasedProductsIds(int storeId, int productId, int recordsToReturn = 5, bool showHidden = false)
         {
             if (productId == 0)
                 throw new ArgumentException("Product ID is not specified");

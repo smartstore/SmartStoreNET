@@ -1760,6 +1760,7 @@
     <Content Include="Views\Common\Partials\CookieConsentBadge.cshtml" />
     <Content Include="Views\Common\Partials\GdprConsent.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Byte.cshtml" />
+    <Content Include="Views\Search\FacetTemplates\Date.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

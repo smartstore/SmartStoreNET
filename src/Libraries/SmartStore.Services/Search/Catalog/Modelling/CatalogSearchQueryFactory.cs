@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
-using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
-using SmartStore.Utilities;
-using SmartStore.Services.Security;
 using SmartStore.Services.Search.Extensions;
+using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Search.Modelling
 {
-	/*
+    /*
 		TOKENS:
 		===============================
 		q	-	Search term
@@ -34,7 +32,7 @@ namespace SmartStore.Services.Search.Modelling
 		*	-	Variants & attributes
 	*/
 
-	public class CatalogSearchQueryFactory : SearchQueryFactoryBase, ICatalogSearchQueryFactory
+    public class CatalogSearchQueryFactory : SearchQueryFactoryBase, ICatalogSearchQueryFactory
     {
         protected static readonly string[] _instantSearchFields = new string[] { "manufacturer", "sku", "gtin", "mpn", "attrname", "variantname" };
 

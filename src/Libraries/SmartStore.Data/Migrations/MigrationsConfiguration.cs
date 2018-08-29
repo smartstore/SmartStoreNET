@@ -373,17 +373,26 @@
 
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.Initial", "Position", "Position");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.Relevance", "Relevance", "Beste Ergebnisse");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.SubjectAsc", "Subject: A to Z", "Thema: A bis Z");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.SubjectDesc", "Subject: Z to A", "Thema: Z bis A");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.SubjectAsc", "Title: A to Z", "Titel: A bis Z");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.SubjectDesc", "Title: Z to A", "Titel: Z bis A");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.UserNameAsc", "User name: A to Z", "Benutzername: A bis Z");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.UserNameDesc", "User name: Z to A", "Benutzername: Z bis A");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.CreatedOnAsc", "Created on: Oldest first", "Erstellt am: ältere zuerst");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.CreatedOnDesc", "Created on: Newest first", "Erstellt am: neuere zuerst");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.PostsAsc", "Post number: ascending", "Anzahl Beiträge: aufsteigend");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.PostsDesc", "Post number: descending", "Anzahl Beiträge: absteigend");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsAsc", "Hits number: ascending", "Trefferanzahl: aufsteigend");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumTopicSorting.ViewsDesc", "Hits number: descending", "Trefferanzahl: absteigend");
+
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastVisit", "Since last visit", "Seit dem letzten Besuch");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.Yesterday", "Yesterday", "Gestern");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastWeek", "Last week", "In der letzten Woche");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastTwoWeeks", "Last 2 weeks", "In den letzten 2 Wochen");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastMonth", "Last month", "Im letzten Monat");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastThreeMonths", "Last 3 months", "In den letzten 3 Monaten");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastSixMonths", "Last 6 months", "In den letzten 6 Monaten");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastYear", "Last year", "Im letzten Jahr");
 
             builder.AddOrUpdate("Search.Facet.Forum", "Forum", "Forum");
-            builder.AddOrUpdate("Search.Facet.Customer", "Customer", "Kunde");
+            builder.AddOrUpdate("Search.Facet.Customer", "Name", "Name");
             builder.AddOrUpdate("Search.Facet.Date", "Date", "Datum");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",

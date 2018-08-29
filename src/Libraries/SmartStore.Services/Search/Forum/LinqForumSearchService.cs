@@ -44,8 +44,6 @@ namespace SmartStore.Services.Search
             var filters = new List<ISearchFilter>();
             var query = baseQuery ?? _forumPostRepository.Table.Expand(x => x.ForumTopic);
 
-            //var searchType = ForumSearchType.All;   //TODO, obsolete?
-
             // Apply search term.
             if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
             {
@@ -53,12 +51,14 @@ namespace SmartStore.Services.Search
                 {
                     query = query.Where(x =>
                         (fields.Contains("subject") && x.ForumTopic.Subject.StartsWith(term)) ||
+                        (fields.Contains("username") && x.Customer.Username.StartsWith(term)) ||
                         (fields.Contains("text") && x.Text.StartsWith(term)));
                 }
                 else
                 {
                     query = query.Where(x =>
                         (fields.Contains("subject") && x.ForumTopic.Subject.Contains(term)) ||
+                        (fields.Contains("username") && x.Customer.Username.Contains(term)) ||
                         (fields.Contains("text") && x.Text.Contains(term)));
                 }
             }
@@ -100,7 +100,7 @@ namespace SmartStore.Services.Search
                 }
                 else if (filter.FieldName == "customerId")
                 {
-                    query = query.Where(x => x.ForumTopic.CustomerId == (int)filter.Term);
+                    query = query.Where(x => x.CustomerId == (int)filter.Term);
                 }
                 else if (filter.FieldName == "createdon")
                 {
@@ -141,6 +141,10 @@ namespace SmartStore.Services.Search
                 {
                     topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.Subject, sort.Descending);
                 }
+                else if (sort.FieldName == "username")
+                {
+                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.Customer.Username, sort.Descending);
+                }
                 else if (sort.FieldName == "createdon")
                 {
                     topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.CreatedOnUtc, sort.Descending);
@@ -148,10 +152,6 @@ namespace SmartStore.Services.Search
                 else if (sort.FieldName == "posts")
                 {
                     topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.NumPosts, sort.Descending);
-                }
-                else if (sort.FieldName == "views")
-                {
-                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.Views, sort.Descending);
                 }
             }
 

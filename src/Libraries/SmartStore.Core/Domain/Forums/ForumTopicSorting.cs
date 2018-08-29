@@ -26,6 +26,16 @@
         SubjectDesc,
 
         /// <summary>
+        /// User name: A to Z
+        /// </summary>
+        UserNameAsc,
+
+        /// <summary>
+        /// User name: Z to A
+        /// </summary>
+        UserNameDesc,
+
+        /// <summary>
         /// Creation date: Oldest first
         /// </summary>
         CreatedOnAsc,
@@ -43,16 +53,6 @@
         /// <summary>
         /// Number of posts: High to Low
         /// </summary>
-        PostsDesc,
-
-        /// <summary>
-        /// Number of views: Low to High
-        /// </summary>
-        ViewsAsc,
-
-        /// <summary>
-        /// Number of views: High to Low
-        /// </summary>
-        ViewsDesc
+        PostsDesc
     }
 }

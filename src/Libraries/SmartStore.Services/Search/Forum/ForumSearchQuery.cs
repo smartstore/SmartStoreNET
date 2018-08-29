@@ -45,6 +45,10 @@ namespace SmartStore.Services.Search
                 case ForumTopicSorting.SubjectDesc:
                     return SortBy(SearchSort.ByStringField("subject", sort == ForumTopicSorting.SubjectDesc));
 
+                case ForumTopicSorting.UserNameAsc:
+                case ForumTopicSorting.UserNameDesc:
+                    return SortBy(SearchSort.ByStringField("username", sort == ForumTopicSorting.UserNameDesc));
+
                 case ForumTopicSorting.CreatedOnAsc:
                 case ForumTopicSorting.CreatedOnDesc:
                     return SortBy(SearchSort.ByDateTimeField("createdon", sort == ForumTopicSorting.CreatedOnDesc));
@@ -52,10 +56,6 @@ namespace SmartStore.Services.Search
                 case ForumTopicSorting.PostsAsc:
                 case ForumTopicSorting.PostsDesc:
                     return SortBy(SearchSort.ByIntField("numposts", sort == ForumTopicSorting.PostsDesc));
-
-                case ForumTopicSorting.ViewsAsc:
-                case ForumTopicSorting.ViewsDesc:
-                    return SortBy(SearchSort.ByIntField("views", sort == ForumTopicSorting.ViewsDesc));
 
                 case ForumTopicSorting.Relevance:
                     return SortBy(SearchSort.ByRelevance());

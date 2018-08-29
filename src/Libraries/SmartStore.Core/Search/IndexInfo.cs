@@ -15,12 +15,15 @@ namespace SmartStore.Core.Search
 
 	public class IndexInfo
 	{
-		public IndexInfo()
+		public IndexInfo(string scope)
 		{
+            Guard.NotEmpty(scope, nameof(scope));
+
+            Scope = scope;
 			Fields = new string[0];
 		}
 
-		public string Scope { get; set; }
+		public string Scope { get; private set; }
 		public int DocumentCount { get; set; }
 		public IEnumerable<string> Fields { get; set; }
 
@@ -52,9 +55,9 @@ namespace SmartStore.Core.Search
 			)).ToString();
 		}
 
-		public static IndexInfo FromXml(string xml)
+		public static IndexInfo FromXml(string xml, string scope)
 		{
-			var info = new IndexInfo();
+            var info = new IndexInfo(scope);
 
 			try
 			{

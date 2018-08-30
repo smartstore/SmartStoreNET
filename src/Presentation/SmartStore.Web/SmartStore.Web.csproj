@@ -371,6 +371,7 @@
     <Compile Include="Models\Common\ConsentModel.cs" />
     <Compile Include="Models\Entity\EntityPickerModel.cs" />
     <Compile Include="Models\Common\CommentModel.cs" />
+    <Compile Include="Models\Boards\ForumSearchResultModel.cs" />
     <Compile Include="Models\Search\ISearchResultModel.cs" />
     <Compile Include="Models\Search\SearchResultModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
@@ -1760,7 +1761,7 @@
     <Content Include="Views\Common\Partials\CookieConsentBadge.cshtml" />
     <Content Include="Views\Common\Partials\GdprConsent.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Byte.cshtml" />
-    <Content Include="Views\Search\FacetTemplates\Date.cshtml" />
+    <Content Include="Views\Boards\Partials\Filters.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

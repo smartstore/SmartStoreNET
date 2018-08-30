@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Services.Common;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search.Extensions;
@@ -18,17 +19,20 @@ namespace SmartStore.Services.Search
         private readonly IRepository<ForumPost> _forumPostRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IForumService _forumService;
+        private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICommonServices _services;
 
 		public LinqForumSearchService(
             IRepository<ForumPost> forumPostRepository,
             IRepository<StoreMapping> storeMappingRepository,
             IForumService forumService,
+            IGenericAttributeService genericAttributeService,
             ICommonServices services)
 		{
             _forumPostRepository = forumPostRepository;
             _storeMappingRepository = storeMappingRepository;
             _forumService = forumService;
+            _genericAttributeService = genericAttributeService;
 			_services = services;
 
             QuerySettings = DbQuerySettings.Default;
@@ -94,11 +98,11 @@ namespace SmartStore.Services.Search
                         }
                     }
                 }
-                else if (filter.FieldName == "forumId")
+                else if (filter.FieldName == "forumid")
                 {
                     query = query.Where(x => x.ForumTopic.ForumId == (int)filter.Term);
                 }
-                else if (filter.FieldName == "customerId")
+                else if (filter.FieldName == "customerid")
                 {
                     query = query.Where(x => x.CustomerId == (int)filter.Term);
                 }
@@ -241,36 +245,14 @@ namespace SmartStore.Services.Search
                 }
                 else if (kind == FacetGroupKind.Date)
                 {
-                    var hasActivePredefinedFacet = false;
-                    var dates = FacetUtility.GetForumDates();
+                    var dates = FacetUtility.GetForumDates(_genericAttributeService, searchQuery.CustomerId ?? 0, storeId, true);
 
                     foreach (var date in dates)
                     {
                         var newFacet = new Facet(date);
                         newFacet.Value.IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(date.Value));
 
-                        if (newFacet.Value.IsSelected)
-                        {
-                            hasActivePredefinedFacet = true;
-                        }
-
                         facets.Add(newFacet);
-                    }
-
-                    // Add facet for custom date range.
-                    var dateDescriptorValue = descriptor.Values.FirstOrDefault();
-                    var customDateValue = new FacetValue(
-                        dateDescriptorValue != null && !hasActivePredefinedFacet ? dateDescriptorValue.Value : null,
-                        dateDescriptorValue != null && !hasActivePredefinedFacet ? dateDescriptorValue.UpperValue : null,
-                        IndexTypeCode.DateTime,
-                        true,
-                        true);
-
-                    customDateValue.IsSelected = customDateValue.Value != null || customDateValue.UpperValue != null;
-
-                    if (!(totalHits == 0 && !customDateValue.IsSelected))
-                    {
-                        facets.Insert(0, new Facet("custom", customDateValue));
                     }
                 }
 

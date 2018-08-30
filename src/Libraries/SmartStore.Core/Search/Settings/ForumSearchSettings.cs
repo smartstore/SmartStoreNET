@@ -16,6 +16,7 @@ namespace SmartStore.Core.Search
 			InstantSearchTermMinLength = 2;
             FilterMinHitCount = 1;
             FilterMaxChoicesCount = 20;
+            DefaultSortOrder = ForumTopicSorting.Relevance;
 
             ForumDisplayOrder = 1;
             CustomerDisplayOrder = 2;
@@ -61,6 +62,11 @@ namespace SmartStore.Core.Search
         /// Gets or sets the maximum number of filter values to be displayed.
         /// </summary>
         public int FilterMaxChoicesCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default sort order in search results
+        /// </summary>
+        public ForumTopicSorting DefaultSortOrder { get; set; }
 
         #region Common facet settings
 

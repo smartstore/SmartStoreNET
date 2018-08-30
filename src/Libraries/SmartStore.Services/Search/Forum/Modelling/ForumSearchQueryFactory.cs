@@ -66,14 +66,16 @@ namespace SmartStore.Services.Search.Modelling
             var origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
             var fields = new List<string> { "text" };
             var term = GetValueFor<string>("q");
-            var isInstantSearch = origin.IsCaseInsensitiveEqual("Search/InstantSearch");
+            var isInstantSearch = origin.IsCaseInsensitiveEqual("Boards/InstantSearch");
 
             fields.AddRange(_searchSettings.SearchFields);
 
             var query = new ForumSearchQuery(fields.ToArray(), term, _searchSettings.SearchMode)
                 .OriginatesFrom(origin)
                 .WithLanguage(_services.WorkContext.WorkingLanguage)
-                .WithCurrency(_services.WorkContext.WorkingCurrency);
+                .WithCurrency(_services.WorkContext.WorkingCurrency)
+                .WithCustomer(_services.WorkContext.CurrentCustomer)
+                .BuildFacetMap(!isInstantSearch);
 
             // Store.
             if (!QuerySettings.IgnoreMultiStore)
@@ -100,9 +102,15 @@ namespace SmartStore.Services.Search.Modelling
         {
             var index = Math.Max(1, GetValueFor<int?>("i") ?? 1);
             var size = _forumSettings.SearchResultsPageSize;
-            var orderBy = GetValueFor<ForumTopicSorting?>("o");
 
             query.Slice((index - 1) * size, size);
+
+            var orderBy = GetValueFor<ForumTopicSorting?>("o");
+            if (orderBy == null || orderBy == ForumTopicSorting.Initial)
+            {
+                orderBy = _searchSettings.DefaultSortOrder;
+            }
+
             query.SortBy(orderBy.Value);
             query.CustomData["CurrentSortOrder"] = orderBy.Value;
         }
@@ -149,12 +157,6 @@ namespace SmartStore.Services.Search.Modelling
 
         protected virtual void ConvertForum(ForumSearchQuery query, RouteData routeData, string origin)
         {
-            if (origin == "Forum/Forum")
-            {
-                // We don't need forum facetting in forum pages.
-                return;
-            }
-
             List<int> ids;
 
             if (GetValueFor(query, "f", FacetGroupKind.Forum, out ids) && ids != null && ids.Any())

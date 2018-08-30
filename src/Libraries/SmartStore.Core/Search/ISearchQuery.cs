@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
@@ -9,10 +10,11 @@ namespace SmartStore.Core.Search
 		int? LanguageId { get; }
 		string LanguageCulture { get; }
 		string CurrencyCode { get; }
-		int? StoreId { get; }
+        int? CustomerId { get; }
+        int? StoreId { get; }
 
-		// Search term
-		string[] Fields { get; }
+        // Search term
+        string[] Fields { get; }
 		string Term { get; }
 		SearchMode Mode { get; }
 		bool EscapeTerm { get; }

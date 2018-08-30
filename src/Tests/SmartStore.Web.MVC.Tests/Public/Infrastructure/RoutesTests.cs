@@ -54,7 +54,8 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 			"~/boards/forum/14/test-forum-slug/page/2".ShouldMapTo<BoardsController>(c => c.Forum(14, 2));
 			"~/boards/forumgroup/15/".ShouldMapTo<BoardsController>(c => c.ForumGroup(15));
 			"~/boards/forumgroup/15/test-forumgroup-slug/".ShouldMapTo<BoardsController>(c => c.ForumGroup(15));
-			"~/boards/search/".ShouldMapTo<BoardsController>(c => c.Search(null, null, null, null, null, 1));
+			//"~/boards/search/".ShouldMapTo<BoardsController>(c => c.Search(null, null, null, null, null, 1));
+            "~/boards/search/".ShouldMapTo<BoardsController>(c => c.Search(null));
         }
 
         [Test]

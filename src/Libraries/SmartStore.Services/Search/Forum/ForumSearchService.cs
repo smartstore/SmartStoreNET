@@ -55,7 +55,7 @@ namespace SmartStore.Services.Search
 
         protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
         {
-            if (facets == null || facets.Count == 0)
+            if (facets == null || !facets.Any())
             {
                 return;
             }
@@ -63,34 +63,26 @@ namespace SmartStore.Services.Search
             // Apply "date" labels.
             if (facets.TryGetValue("createdon", out var grp))
             {
+                var foundLastVisit = false;
                 var utcNow = DateTime.UtcNow;
                 foreach (var facet in grp.Facets)
                 {
-                    var dt = (DateTime)facet.Value.Value;
-                    var days = (utcNow - dt).TotalDays;
-                    switch (days)
+                    var dt = (DateTime)(facet.Value.IncludesUpper ? facet.Value.UpperValue : facet.Value.Value);
+                    var days = (int)(utcNow - dt).TotalDays;
+
+                    foreach (ForumDateFilter filter in Enum.GetValues(typeof(ForumDateFilter)))
                     {
-                        case 1:
-                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.1day");
+                        if (days == (int)filter)
+                        {
+                            facet.Value.Label = T("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter." + filter.ToString());
                             break;
-                        case 7:
-                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.7days");
-                            break;
-                        case 14:
-                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.2weeks");
-                            break;
-                        case 30:
-                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.1month");
-                            break;
-                        case 92:
-                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.3months");
-                            break;
-                        case 183:
-                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.6months");
-                            break;
-                        case 365:
-                            facet.Value.Label = T("Forum.Search.LimitResultsToPrevious.1year");
-                            break;
+                        }
+                    }
+
+                    if (!foundLastVisit && facet.Value.Label.IsEmpty())
+                    {
+                        foundLastVisit = true;
+                        facet.Value.Label = T("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastVisit");
                     }
                 }
             }
@@ -206,7 +198,7 @@ namespace SmartStore.Services.Search
 
 					return result;
 				}
-				else if (searchQuery.Origin.IsCaseInsensitiveEqual("Search/Forum"))
+				else if (searchQuery.Origin.IsCaseInsensitiveEqual("Boards/Search"))
 				{
 					IndexingRequiredNotification(_services, _urlHelper);
 				}

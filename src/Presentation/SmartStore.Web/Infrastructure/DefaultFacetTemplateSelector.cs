@@ -44,8 +44,6 @@ namespace SmartStore.Web.Infrastructure
 					return prefix + "Price";
 				case FacetGroupKind.Rating:
 					return prefix + "Rating";
-                case FacetGroupKind.Date:
-                    return prefix + "Date";
             }
 
 			return null;

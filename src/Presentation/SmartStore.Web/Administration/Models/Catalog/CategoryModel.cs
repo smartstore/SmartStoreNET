@@ -76,7 +76,7 @@ namespace SmartStore.Admin.Models.Catalog
 
         [UIHint("Picture")]
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Picture")]
-        public int PictureId { get; set; }
+        public int? PictureId { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.PageSize")]
         public int? PageSize { get; set; }

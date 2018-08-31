@@ -1765,6 +1765,7 @@
     <Content Include="Views\Boards\Partials\Filters.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

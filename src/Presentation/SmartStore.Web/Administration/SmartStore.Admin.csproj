@@ -614,7 +614,6 @@
     <Content Include="Views\Language\_CreateOrUpdate.cshtml" />
     <Content Include="Views\Log\List.cshtml" />
     <Content Include="Views\Shared\Partials\Delete.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
     <Content Include="Views\Shared\Partials\Menu.cshtml" />
     <Content Include="Views\Shared\Layouts\_AdminLayout.cshtml" />
     <Content Include="Views\Web.config">

@@ -1,11 +1,8 @@
 namespace SmartStore.Data.Migrations
 {
     using System;
-	using System.Linq;
-	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
 	using SmartStore.Data.Setup;
-	using System.Collections.Generic;
 	using SmartStore.Data.Utilities;
 
 	public partial class MoveCustomerFields : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
@@ -22,7 +19,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Customer", "BirthDate", c => c.DateTime());
             CreateIndex("dbo.Customer", "FullName", name: "IX_Customer_FullName");
             CreateIndex("dbo.Customer", "Company", name: "IX_Customer_Company");
-            CreateIndex("dbo.Customer", "CustomerNumber", name: "IX_Customer_CustomerNumber");
+            CreateIndex("dbo.Customer", "CustomerNumber", name: "IX_Customer_CustomerNumber", unique: false);
             CreateIndex("dbo.Customer", "BirthDate", name: "IX_Customer_BirthDate");
         }
         

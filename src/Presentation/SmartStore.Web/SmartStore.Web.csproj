@@ -1002,6 +1002,7 @@
     <Content Include="Content\shared\_rtl.scss" />
     <Content Include="App_Data\widgetzones.json" />
     <Content Include="Content\skinning\_rtl.scss" />
+    <Content Include="Content\skinning\_summernote.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1762,6 +1763,8 @@
     <Content Include="Views\Common\Partials\GdprConsent.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Byte.cshtml" />
     <Content Include="Views\Boards\Partials\Filters.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

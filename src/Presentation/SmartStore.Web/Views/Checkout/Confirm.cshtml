@@ -8,13 +8,14 @@
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
 	Html.AddBodyCssClass("no-offcanvas-cart");
 
-	string termsLink = "<a id='terms-of-service-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	string disclaimerLink = "<a id='disclaimer-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	string privacyLink = "<a id='privacy-trigger' href='#' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
+	var termsLinkTemplate = "<a class='terms-trigger read' href='{0}' data-toggle='modal' data-target='#terms-of-service-modal'>";
+	var termsLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("conditionsofuse", true));
+	var disclaimerLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("disclaimer", true));
+	var privacyLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("privacyinfo", true));
+	var terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
 
-	string consentZoneContent = Html.Widget("checkout_submit_data_consent", false).ToHtmlString();
-	bool consentZoneHasValue = consentZoneContent.HasValue();
+	var consentZoneContent = Html.Widget("checkout_submit_data_consent", false).ToHtmlString();
+	var consentZoneHasValue = consentZoneContent.HasValue();
 }
 
 @section orderProgress{
@@ -46,20 +47,12 @@
 
 						@if (Model.TermsOfServiceEnabled)
 						{
-							<script type="text/javascript">
-								$(document).ready(function () {
+							<script>
+								$(function () {
 									var modal = $("#terms-of-service-modal .modal-body");
-									$("#terms-of-service-trigger").on("click", function (event) {
-										event.preventDefault();
-										modal.html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("conditionsofuse", true)" frameBorder="0" class="h-100" />');
-									});
-									$("#disclaimer-trigger").on("click", function (event) {
-										event.preventDefault();
-										modal.html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("disclaimer", true)" frameBorder="0" class="h-100" />');
-									});
-									$("#privacy-trigger").on("click", function (event) {
-										event.preventDefault();
-										modal.html('<iframe id="iframe-terms-of-service" src="@Url.TopicUrl("privacyinfo", true)" frameBorder="0" class="h-100" />');
+									$(".terms-trigger").on("click", function (e) {
+										e.preventDefault();
+										modal.html('<iframe id="iframe-terms-of-service" src="' + $(this).attr('href') + '" frameBorder="0" class="h-100" />');
 									});
 								});
 							</script>

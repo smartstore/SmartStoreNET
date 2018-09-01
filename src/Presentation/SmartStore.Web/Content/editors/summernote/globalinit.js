@@ -26,7 +26,7 @@ var summernote_image_upload_url;
 
 	summernote_global_config = {
 		disableDragAndDrop: false,
-		dialogsInBody: false,
+		dialogsInBody: true,
 		dialogsFade: true,
 		height: 300,
 		prettifyHtml: true,

@@ -31,7 +31,7 @@ using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.No)]
+    [RequireHttpsByConfig(SslRequirement.No)]
     public partial class BoardsController : PublicControllerBase
     {
         private readonly IForumService _forumService;
@@ -85,6 +85,7 @@ namespace SmartStore.Web.Controllers
                 Id = topic.Id,
                 Subject = topic.Subject,
                 SeName = topic.GetSeName(),
+                FirstPostId = topic.FirstPostId,
                 LastPostId = topic.LastPostId,
                 NumPosts = topic.NumPosts,
                 Views = topic.Views,
@@ -93,11 +94,9 @@ namespace SmartStore.Web.Controllers
                 CustomerId = topic.CustomerId,
                 AllowViewingProfiles = _customerSettings.AllowViewingProfiles,
                 CustomerName = topic.Customer.FormatUserName(true),
-                IsCustomerGuest = topic.Customer.IsGuest()
+                IsCustomerGuest = topic.Customer.IsGuest(),
+                PostsPageSize = _forumSettings.PostsPageSize
             };
-
-            var forumPosts = _forumService.GetAllPosts(topic.Id, 0, string.Empty, true, 1, _forumSettings.PostsPageSize);
-            topicModel.TotalPostPages = forumPosts.TotalPages;
 
             return topicModel;
         }
@@ -238,7 +237,7 @@ namespace SmartStore.Web.Controllers
         {
             try
             {
-                if (!customer.IsSystemAccount)
+                if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
                 {
                     _genericAttributeService.SaveAttribute(
                         customer,
@@ -336,7 +335,7 @@ namespace SmartStore.Web.Controllers
                 }
 
                 var pageSize = _forumSettings.TopicsPageSize > 0 ? _forumSettings.TopicsPageSize : 10;
-                var topics = _forumService.GetAllTopics(forum.Id, 0, string.Empty, ForumSearchType.All, 0, (page - 1), pageSize);
+                var topics = _forumService.GetAllTopics(forum.Id, (page - 1), pageSize);
 
                 model.TopicPageSize = topics.PageSize;
                 model.TopicTotalRecords = topics.TotalCount;
@@ -393,7 +392,7 @@ namespace SmartStore.Web.Controllers
 			feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(store.Name, forum.GetLocalized(x => x.Name, language)));
 
 			var items = new List<SyndicationItem>();
-			var topics = _forumService.GetAllTopics(id, 0, string.Empty, ForumSearchType.All, 0, 0, _forumSettings.ForumFeedCount);
+			var topics = _forumService.GetAllTopics(id, 0, _forumSettings.ForumFeedCount);
 			var viewsText = T("Forum.Views");
 			var repliesText = T("Forum.Replies");
 
@@ -570,7 +569,7 @@ namespace SmartStore.Web.Controllers
 
             if (forumTopic != null)
             {
-                var posts = _forumService.GetAllPosts(forumTopic.Id, 0, string.Empty, true, page - 1, _forumSettings.PostsPageSize);
+                var posts = _forumService.GetAllPosts(forumTopic.Id, 0, true, page - 1, _forumSettings.PostsPageSize);
 
                 // If no posts area loaded, redirect to the first page.
                 if (posts.Count == 0 && page > 1)
@@ -581,7 +580,7 @@ namespace SmartStore.Web.Controllers
                 // Update view count.
                 try
                 {
-                    if (!customer.IsSystemAccount)
+                    if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
                     {
                         forumTopic.Views += 1;
                         _forumService.UpdateTopic(forumTopic);
@@ -1555,194 +1554,6 @@ namespace SmartStore.Web.Controllers
         #endregion
 
         #region Search
-
-        public ActionResult Search_Old(string searchterms, bool? adv, string forumId, string within, string limitDays, int page = 1)
-        {
-            if (!_forumSettings.ForumsEnabled)
-            {
-                return HttpNotFound();
-            }
-
-            var pageSize = 10;
-            var store = Services.StoreContext.CurrentStore;
-            var model = new SearchModel();
-
-            // Create the values for the "Limit results to previous" select list
-            var limitList = new List<SelectListItem>
-            {
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.AllResults"),
-                    Value = "0"
-                },
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.1day"),
-                    Value = "1"
-                },
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.7days"),
-                    Value = "7"
-                },
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.2weeks"),
-                    Value = "14"
-                },
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.1month"),
-                    Value = "30"
-                },
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.3months"),
-                    Value = "92"
-                },
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.6months"),
-                    Value = "183"
-                },
-                new SelectListItem
-                {
-                    Text = T("Forum.Search.LimitResultsToPrevious.1year"),
-                    Value = "365"
-                }
-            };
-
-            model.LimitList = limitList;
-
-            // Create the values for the "Search in forum" select list.
-            var forumsSelectList = new List<SelectListItem>();
-            forumsSelectList.Add(new SelectListItem
-            {
-                Text = T("Forum.Search.SearchInForum.All"),
-                Value = "0",
-                Selected = true,
-            });
-
-            var separator = "--";
-            var forumGroups = _forumService.GetAllForumGroups(store.Id);
-            foreach (var fg in forumGroups)
-            {
-                // Add the forum group with value as '-' so it can't be used as a target forum id.
-                forumsSelectList.Add(new SelectListItem { Text = fg.GetLocalized(x => x.Name), Value = "-" });
-
-                var forums = _forumService.GetAllForumsByGroupId(fg.Id);
-                foreach (var f in forums)
-                {
-                    forumsSelectList.Add(new SelectListItem
-                    {
-                        Text = string.Format("{0}{1}", separator, f.GetLocalized(x => x.Name)),
-                        Value = f.Id.ToString()
-                    });
-                }
-            }
-            model.ForumList = forumsSelectList;
-
-            // Create the values for "Search within" select list.
-            var withinList = new List<SelectListItem>
-            {
-                new SelectListItem
-                {
-                    Value = ((int)ForumSearchType.All).ToString(),
-                    Text = T("Forum.Search.SearchWithin.All")
-                },
-                new SelectListItem
-                {
-                    Value = ((int)ForumSearchType.TopicTitlesOnly).ToString(),
-                    Text = T("Forum.Search.SearchWithin.TopicTitlesOnly")
-                },
-                new SelectListItem
-                {
-                    Value = ((int)ForumSearchType.PostTextOnly).ToString(),
-                    Text = T("Forum.Search.SearchWithin.PostTextOnly")
-                }
-            };
-
-            model.WithinList = withinList;
-
-            int.TryParse(forumId, out var forumIdSelected);
-            model.ForumIdSelected = forumIdSelected;
-
-            int.TryParse(within, out var withinSelected);
-            model.WithinSelected = withinSelected;
-
-            int.TryParse(limitDays, out var limitDaysSelected);
-            model.LimitDaysSelected = limitDaysSelected;
-
-            model.ShowAdvancedSearch = adv.GetValueOrDefault();
-            model.SearchResultsVisible = false;
-            model.NoResultsVisisble = false;
-            model.PostsPageSize = _forumSettings.PostsPageSize;
-
-            try
-            {
-                if (String.IsNullOrWhiteSpace(searchterms) == false)
-                {
-                    searchterms = searchterms.Trim();
-                    model.SearchTerms = searchterms;
-
-                    if (searchterms.Length < _forumSettings.ForumSearchTermMinimumLength)
-                    {
-                        throw new SmartException(T("Forum.SearchTermMinimumLengthIsNCharacters", _forumSettings.ForumSearchTermMinimumLength));
-                    }
-
-                    ForumSearchType searchWithin = 0;
-                    var limitResultsToPrevious = 0;
-                    if (adv.GetValueOrDefault() == true)
-                    {
-                        searchWithin = (ForumSearchType)withinSelected;
-                        limitResultsToPrevious = limitDaysSelected;
-                    }
-
-                    if (_forumSettings.SearchResultsPageSize > 0)
-                    {
-                        pageSize = _forumSettings.SearchResultsPageSize;
-                    }
-
-                    var topics = _forumService.GetAllTopics(forumIdSelected, 0, searchterms, searchWithin, limitResultsToPrevious, page - 1, pageSize);
-
-                    model.TopicPageSize = topics.PageSize;
-                    model.TopicTotalRecords = topics.TotalCount;
-                    model.TopicPageIndex = topics.PageIndex;
-
-                    foreach (var topic in topics)
-                    {
-                        var topicModel = PrepareForumTopicRowModel(topic);
-                        model.ForumTopics.Add(topicModel);
-                    }
-
-                    model.SearchResultsVisible = (topics.Count > 0);
-                    model.NoResultsVisisble = !(model.SearchResultsVisible);
-
-                    CreateForumBreadcrumb();
-                    _breadcrumb.Track(new MenuItem { Text = T("Forum.Search") });
-
-                    return View(model);
-                }
-                else
-                {
-                    model.SearchResultsVisible = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                model.Error = ex.Message;
-            }
-
-            // Some exception raised.
-            model.TopicPageSize = pageSize;
-            model.TopicTotalRecords = 0;
-            model.TopicPageIndex = page - 1;
-
-            CreateForumBreadcrumb();
-            _breadcrumb.Track(new MenuItem { Text = T("Forum.Search") });
-
-            return View(model);
-        }
 
         [RequireHttpsByConfig(SslRequirement.No), ValidateInput(false)]
         public ActionResult Search(ForumSearchQuery query/*, bool? adv*/)

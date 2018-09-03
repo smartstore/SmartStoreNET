@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
-	public enum SearchResultFlags
+    public enum SearchResultFlags
 	{
 		WithHits = 1 << 0,
 		WithFacets = 1 << 1,
@@ -66,7 +65,6 @@ namespace SmartStore.Core.Search
 		public int? LanguageId { get; protected set; }
 		public string LanguageCulture { get; protected set; }
 		public string CurrencyCode { get; protected set; }
-        public int? CustomerId { get; protected set; }
         public int? StoreId { get; protected set; }
 
         // Search term
@@ -152,15 +150,6 @@ namespace SmartStore.Core.Search
 
 			return (this as TQuery);
 		}
-
-        public TQuery WithCustomer(Customer customer)
-        {
-            Guard.NotNull(customer, nameof(customer));
-
-            CustomerId = customer.Id;
-
-            return (this as TQuery);
-        }
 
 		public TQuery Slice(int skip, int take)
 		{

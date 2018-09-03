@@ -65,6 +65,25 @@ namespace SmartStore.Services.Search
             }
         }
 
+        public override ForumSearchQuery HasStoreId(int id)
+        {
+            base.HasStoreId(id);
+
+            if (id == 0)
+            {
+                WithFilter(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed());
+            }
+            else
+            {
+                WithFilter(SearchFilter.Combined(
+                    SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(),
+                    SearchFilter.ByField("storeid", id).ExactMatch().NotAnalyzed())
+                );
+            }
+
+            return this;
+        }
+
         public ForumSearchQuery WithForumIds(params int[] ids)
         {
             if (ids.Length == 0)

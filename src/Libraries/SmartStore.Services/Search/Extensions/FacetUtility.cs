@@ -7,7 +7,6 @@ using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
-using SmartStore.Services.Common;
 
 namespace SmartStore.Services.Search.Extensions
 {
@@ -140,49 +139,6 @@ namespace SmartStore.Services.Search.Extensions
 				};
 			}
 		}
-
-        public static List<FacetValue> GetForumDates(
-            IGenericAttributeService genericAttributeService,
-            int customerId,
-            int storeId,
-            bool newer = true)
-        {
-            var count = 0;
-            var utcNow = DateTime.UtcNow;
-            var result = new List<FacetValue>();
-
-            foreach (ForumDateFilter filter in Enum.GetValues(typeof(ForumDateFilter)))
-            {
-                var days = (int)filter;
-                if (filter == ForumDateFilter.LastVisit && customerId != 0)
-                {
-                    var lastVisit = genericAttributeService.GetAttribute<DateTime?>(nameof(Customer), customerId, SystemCustomerAttributeNames.LastForumVisit, storeId);
-                    if (!lastVisit.HasValue)
-                    {
-                        continue;
-                    }
-
-                    days = (int)(utcNow - lastVisit.Value).TotalDays;
-                }
-
-                if (newer)
-                {
-                    result.Add(new FacetValue(utcNow.AddDays(-days), null, IndexTypeCode.DateTime, true, false)
-                    {
-                        DisplayOrder = ++count
-                    });
-                }
-                else
-                {
-                    result.Add(new FacetValue(null, utcNow.AddDays(-days), IndexTypeCode.DateTime, false, true)
-                    {
-                        DisplayOrder = ++count
-                    });
-                }
-            }
-
-            return result;
-        }
 
         public static string GetPublicName(Customer customer, bool userNamesEnabled)
         {

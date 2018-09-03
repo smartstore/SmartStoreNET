@@ -257,7 +257,43 @@
 				if (idx > 0 && otherIdx > 0 && ((isMin && idx >= otherIdx) || (!isMin && idx <= otherIdx))) {
 					validateRangeControls();
 				}
-			});
+            });
+
+            // Switch range value to upper or back.
+            widget.on('change', 'select.facet-switch-range', function (e, recursive) {
+                if (recursive)
+                    return;
+
+                var select = $(this),
+                    selectedUrl = null,
+                    toUpper = select.val() === 'upper',
+                    qname = select.data('qname');
+
+                // Update all url and input values.
+                select.closest('.facet-group').find('.facet-item').each(function (index) {
+                    var item = $(this),
+                        url = item.attr('data-href'),
+                        input = item.find('input.facet-control-native'),
+                        val = input.val().replace('~', '');
+
+                    if (toUpper) {
+                        val = '~' + val;
+                    }
+                    url = modifyUrl(url, qname, val);
+
+                    input.val(val);
+                    item.attr('data-href', url);
+
+                    if (input.is(':checked')) {
+                        selectedUrl = url;
+                    }
+                });
+
+                // Update location for selected filter.
+                if (selectedUrl) {
+                    setLocation(selectedUrl);
+                }
+            });
 		})();
 
 

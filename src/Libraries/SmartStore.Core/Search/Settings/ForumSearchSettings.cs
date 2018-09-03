@@ -9,7 +9,7 @@ namespace SmartStore.Core.Search
 		public ForumSearchSettings()
 		{
 			SearchMode = SearchMode.Contains;
-			SearchFields = new List<string> { "subject", "username" };
+			SearchFields = new List<string> { "username", "text" };
             TopicSortOrder = ForumTopicSorting.Relevance;
             InstantSearchEnabled = true;
 			InstantSearchNumberOfHits = 10;

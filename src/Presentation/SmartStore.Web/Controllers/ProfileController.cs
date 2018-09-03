@@ -212,13 +212,10 @@ namespace SmartStore.Web.Controllers
                 page -= 1;
             }
 
-            var pageSize = _forumSettings.LatestCustomerPostsPageSize;
-
-            var list = _forumService.GetAllPosts(0, customer.Id, string.Empty, false, page, pageSize);
-
+            var posts = _forumService.GetAllPosts(0, customer.Id, false, page, _forumSettings.LatestCustomerPostsPageSize);
             var latestPosts = new List<PostsModel>();
 
-            foreach (var forumPost in list)
+            foreach (var forumPost in posts)
             {
                 var posted = string.Empty;
                 if (_forumSettings.RelativeDateTimeFormattingEnabled)
@@ -230,7 +227,7 @@ namespace SmartStore.Web.Controllers
                     posted = _dateTimeHelper.ConvertToUserTime(forumPost.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
                 }
 
-                latestPosts.Add(new PostsModel()
+                latestPosts.Add(new PostsModel
                 {
                     ForumTopicId = forumPost.TopicId,
                     ForumTopicTitle = forumPost.ForumTopic.Subject,
@@ -242,7 +239,7 @@ namespace SmartStore.Web.Controllers
 
             ViewData["PagerRouteValues"] = new RouteValues { page = page, id = customerProfileId };
 
-            var model = new ProfilePostsModel(list)
+            var model = new ProfilePostsModel(posts)
             {
                 Posts = latestPosts,
             };

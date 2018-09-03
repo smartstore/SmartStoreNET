@@ -275,7 +275,7 @@ namespace SmartStore.Services.Customers
 				// Private messages
 				if (pseudomyzeContent)
 				{
-					var privateMessages = _forumService.GetAllPrivateMessages(0, customer.Id, 0, null, null, null, null, 0, int.MaxValue);
+					var privateMessages = _forumService.GetAllPrivateMessages(0, customer.Id, 0, null, null, null, 0, int.MaxValue);
 					foreach (var msg in privateMessages)
 					{
 						AnonymizeData(msg, x => x.Subject, IdentifierDataType.Text, language);

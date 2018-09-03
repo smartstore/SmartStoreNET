@@ -185,8 +185,7 @@ namespace SmartStore.Web.Controllers
             var customer = _services.WorkContext.CurrentCustomer;
             if (_forumSettings.AllowPrivateMessages && !customer.IsGuest())
             {
-                var privateMessages = _forumService.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, string.Empty, 0, 1);
-
+                var privateMessages = _forumService.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, 0, 1);
                 if (privateMessages.TotalCount > 0)
                 {
                     result = privateMessages.TotalCount;

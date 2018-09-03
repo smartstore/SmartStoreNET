@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -293,35 +292,20 @@ namespace SmartStore.Services.Forums
             return query.OrderBySequence(topicIds).ToList();
         }
 
-        public virtual IPagedList<ForumTopic> GetAllTopics(int forumId, int customerId, string keywords, ForumSearchType searchType, int limitDays, int pageIndex, int pageSize)
+        public virtual IPagedList<ForumTopic> GetAllTopics(int forumId, int pageIndex, int pageSize)
         {
-            DateTime? limitDate = null;
-
-            if (limitDays > 0)
+            var query = _forumTopicRepository.TableUntracked;
+            if (forumId != 0)
             {
-                limitDate = DateTime.UtcNow.AddDays(-limitDays);
+                query = query.Where(x => x.ForumId == forumId);
             }
 
-            var query1 = 
-				from ft in _forumTopicRepository.Table
-				join fp in _forumPostRepository.Table on ft.Id equals fp.TopicId
-				where
-					(forumId == 0 || ft.ForumId == forumId) &&
-					(customerId == 0 || ft.CustomerId == customerId) &&
-					(!limitDate.HasValue || limitDate.Value <= ft.LastPostTime) &&
-					(
-						((searchType == ForumSearchType.All || searchType == ForumSearchType.TopicTitlesOnly) && ft.Subject.Contains(keywords)) ||
-						((searchType == ForumSearchType.All || searchType == ForumSearchType.PostTextOnly) && fp.Text.Contains(keywords))
-					)							
-				select ft.Id;
+            query = query
+                .OrderByDescending(x => x.TopicTypeId)
+                .ThenByDescending(x => x.LastPostTime)
+                .ThenByDescending(x => x.Id);
 
-            var query2 = 
-				from ft in _forumTopicRepository.Table
-				where query1.Contains(ft.Id)
-				orderby ft.TopicTypeId descending, ft.LastPostTime descending, ft.Id descending
-				select ft;
-
-            var topics = new PagedList<ForumTopic>(query2, pageIndex, pageSize);
+            var topics = new PagedList<ForumTopic>(query, pageIndex, pageSize);
             return topics;
         }
 
@@ -448,7 +432,7 @@ namespace SmartStore.Services.Forums
         public virtual int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId)
         {
             var pageIndex = 0;
-            var forumPosts = GetAllPosts(forumTopicId, 0, string.Empty, true, 0, int.MaxValue);
+            var forumPosts = GetAllPosts(forumTopicId, 0, true, 0, int.MaxValue);
 
             for (var i = 0; i < forumPosts.TotalCount; i++)
             {
@@ -479,7 +463,7 @@ namespace SmartStore.Services.Forums
             return forumPost;
         }
 
-        public virtual IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, string keywords, bool ascSort, int pageIndex, int pageSize)
+        public virtual IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, bool ascSort, int pageIndex, int pageSize)
         {
             var query = _forumPostRepository.Table;
             if (forumTopicId > 0)
@@ -489,10 +473,6 @@ namespace SmartStore.Services.Forums
             if (customerId > 0)
             {
                 query = query.Where(fp => customerId == fp.CustomerId);
-            }
-            if (keywords.HasValue())
-            {
-                query = query.Where(fp => fp.Text.Contains(keywords));
             }
             if (ascSort)
             {
@@ -504,7 +484,6 @@ namespace SmartStore.Services.Forums
             }
 
             var forumPosts = new PagedList<ForumPost>(query, pageIndex, pageSize);
-
             return forumPosts;
         }
 
@@ -611,7 +590,6 @@ namespace SmartStore.Services.Forums
 			bool? isRead, 
 			bool? isDeletedByAuthor, 
 			bool? isDeletedByRecipient,
-            string keywords, 
 			int pageIndex, 
 			int pageSize)
         {
@@ -641,12 +619,6 @@ namespace SmartStore.Services.Forums
             {
                 query = query.Where(pm => isDeletedByRecipient.Value == pm.IsDeletedByRecipient);
             }
-
-			if (keywords.HasValue())
-			{
-				query = query.Where(pm => pm.Subject.Contains(keywords));
-				query = query.Where(pm => pm.Text.Contains(keywords));
-			}
 
 			query = query.OrderByDescending(pm => pm.CreatedOnUtc);
 

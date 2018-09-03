@@ -641,8 +641,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.PMSubjectMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.PMTextMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.HomePageActiveDiscussionsTopicCount, mo => mo.Ignore())
-				.ForMember(dest => dest.ActiveDiscussionsPageTopicCount, mo => mo.Ignore())
-				.ForMember(dest => dest.ForumSearchTermMinimumLength, mo => mo.Ignore());
+				.ForMember(dest => dest.ActiveDiscussionsPageTopicCount, mo => mo.Ignore());
 			CreateMap<BlogSettings, BlogSettingsModel>();
 			CreateMap<BlogSettingsModel, BlogSettings>();
 			CreateMap<ShippingSettings, ShippingSettingsModel>()

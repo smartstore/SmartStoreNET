@@ -62,6 +62,15 @@
 						</a>
 					}
 				</div>
+                @if (group.Kind == FacetGroupKind.Date && group.Facets.Any())
+                {
+                    <div>
+                        <select class="facet-switch-range form-control form-control-sm noskin" data-qname="@Url.GetFacetQueryName(group.Facets.First())">
+                            <option value="">@T("Search.Facet.Date.Newer")</option>
+                            <option value="upper"@(group.Facets.First().Value.UpperValue != null ? " selected='selected'" : "")>@T("Search.Facet.Date.Older")</option>
+                        </select>
+                    </div>
+                }
 			</div>
 		}
 	</div>

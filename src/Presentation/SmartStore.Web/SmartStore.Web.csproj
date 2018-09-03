@@ -339,7 +339,6 @@
     <Compile Include="Models\Boards\EditForumTopicModel.cs" />
     <Compile Include="Models\Boards\ForumTopicPageModel.cs" />
     <Compile Include="Models\Boards\LastPostModel.cs" />
-    <Compile Include="Models\Boards\SearchModel.cs" />
     <Compile Include="Models\Boards\TopicMoveModel.cs" />
     <Compile Include="Models\Catalog\BackInStockSubscribeModel.cs" />
     <Compile Include="Models\Catalog\CategoryModel.cs" />

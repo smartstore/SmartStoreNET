@@ -102,14 +102,10 @@ namespace SmartStore.Services.Forums
         /// Gets all forum topics
         /// </summary>
         /// <param name="forumId">The forum identifier</param>
-        /// <param name="customerId">The customer identifier</param>
-        /// <param name="keywords">Keywords</param>
-        /// <param name="searchType">Search type</param>
-        /// <param name="limitDays">Limit by the last number days; 0 to load all topics</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Forum Topics</returns>
-        IPagedList<ForumTopic> GetAllTopics(int forumId, int customerId, string keywords, ForumSearchType searchType, int limitDays, int pageIndex, int pageSize);
+        IPagedList<ForumTopic> GetAllTopics(int forumId, int pageIndex, int pageSize);
 
         /// <summary>
         /// Gets active forum topics
@@ -171,13 +167,11 @@ namespace SmartStore.Services.Forums
         /// </summary>
         /// <param name="forumTopicId">The forum topic identifier</param>
         /// <param name="customerId">The customer identifier</param>
-        /// <param name="keywords">Keywords</param>
         /// <param name="ascSort">Sort order</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Forum Posts</returns>
-        IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId,
-            string keywords, bool ascSort, int pageIndex, int pageSize);
+        IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, bool ascSort, int pageIndex, int pageSize);
 
         /// <summary>
         /// Deletes a forum post
@@ -218,13 +212,18 @@ namespace SmartStore.Services.Forums
         /// <param name="isRead">A value indicating whether loaded messages are read. false - to load not read messages only, 1 to load read messages only, null to load all messages</param>
         /// <param name="isDeletedByAuthor">A value indicating whether loaded messages are deleted by author. false - messages are not deleted by author, null to load all messages</param>
         /// <param name="isDeletedByRecipient">A value indicating whether loaded messages are deleted by recipient. false - messages are not deleted by recipient, null to load all messages</param>
-        /// <param name="keywords">Keywords</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Private messages</returns>
-		IPagedList<PrivateMessage> GetAllPrivateMessages(int storeId, int fromCustomerId,
-            int toCustomerId, bool? isRead, bool? isDeletedByAuthor, bool? isDeletedByRecipient,
-            string keywords, int pageIndex, int pageSize);
+		IPagedList<PrivateMessage> GetAllPrivateMessages(
+            int storeId,
+            int fromCustomerId,
+            int toCustomerId,
+            bool? isRead,
+            bool? isDeletedByAuthor,
+            bool? isDeletedByRecipient,
+            int pageIndex,
+            int pageSize);
 
         /// <summary>
         /// Deletes a private message

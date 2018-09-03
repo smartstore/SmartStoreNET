@@ -51,6 +51,7 @@ namespace SmartStore.Core.Search.Facets
 			Label = label;
 			IsMultiSelect = isMultiSelect;
 			DisplayOrder = displayOrder;
+            IsScrollable = true;
 
 			_facets = new Dictionary<string, Facet>(StringComparer.OrdinalIgnoreCase);
 
@@ -131,7 +132,7 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
-		public bool HasChildren
+        public bool HasChildren
 		{
 			get;
 			private set;
@@ -143,7 +144,13 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
-		public IEnumerable<Facet> Facets
+        public bool IsScrollable
+        {
+            get;
+            set;
+        }
+
+        public IEnumerable<Facet> Facets
 		{
 			get
 			{

@@ -26,7 +26,6 @@ namespace SmartStore.Core.Domain.Forums
 			ActiveDiscussionsPageTopicCount = 50;
 			ActiveDiscussionsFeedCount = 25;
 			ForumFeedCount = 10;
-			ForumSearchTermMinimumLength = 3;
 		}
 		
 		/// <summary>
@@ -183,10 +182,5 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets the number of items to display for Forum RSS Feed
         /// </summary>
         public int ForumFeedCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the minimum length for search term
-        /// </summary>
-        public int ForumSearchTermMinimumLength { get; set; }
     }
 }

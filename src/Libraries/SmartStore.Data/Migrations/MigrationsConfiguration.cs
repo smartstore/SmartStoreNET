@@ -392,8 +392,12 @@
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastYear", "Last year", "Im letzten Jahr");
 
             builder.AddOrUpdate("Search.Facet.Forum", "Forum", "Forum");
-            builder.AddOrUpdate("Search.Facet.Customer", "Name", "Name");
-            builder.AddOrUpdate("Search.Facet.Date", "Date", "Datum");
+            builder.AddOrUpdate("Search.Facet.Customer", "User name", "Benutzername");
+            builder.AddOrUpdate("Search.Facet.Date", "Period", "Zeitraum");
+            builder.AddOrUpdate("Search.Facet.Date.Newer", "and newer", "und neuer");
+            builder.AddOrUpdate("Search.Facet.Date.Older", "and older", "und älter");
+
+            builder.AddOrUpdate("Forum.PostText", "Post text", "Beitragstext");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",
                 "The wildcard mode can slow down the search for a large number of objects.",
@@ -408,8 +412,8 @@
             builder.AddOrUpdate("Admin.Configuration.Settings.Search.Forum.SearchFields",
                 "Search fields",
                 "Suchfelder",
-                "Specifies additional search fields. The post text is always searched.",
-                "Legt zusätzlich zu durchsuchende Felder fest. Der Beitragstext wird grundsätzlich immer durchsucht.");
+                "Specifies additional search fields. The topic title is always searched.",
+                "Legt zusätzlich zu durchsuchende Felder fest. Der Thementitel wird grundsätzlich immer durchsucht.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Search.DefaultSortOrder",
                 "Default sort order",
@@ -425,7 +429,23 @@
 
             builder.Delete(
                 "Admin.Configuration.Settings.Search.DefaultSortOrderMode",
-                "Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts");
+                "Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts",
+                "Forum.Search.LimitResultsToPrevious.AllResults",
+                "Forum.Search.LimitResultsToPrevious.1day",
+                "Forum.Search.LimitResultsToPrevious.7days",
+                "Forum.Search.LimitResultsToPrevious.2weeks",
+                "Forum.Search.LimitResultsToPrevious.1month",
+                "Forum.Search.LimitResultsToPrevious.3months",
+                "Forum.Search.LimitResultsToPrevious.6months",
+                "Forum.Search.LimitResultsToPrevious.1year",
+                "Forum.Search.SearchInForum.All",
+                "Forum.Search.SearchWithin.All",
+                "Forum.Search.SearchWithin.TopicTitlesOnly",
+                "Forum.Search.SearchWithin.PostTextOnly",
+                "Forum.SearchTermMinimumLengthIsNCharacters",
+                "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.All",
+                "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.PostTextOnly",
+                "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.TopicTitlesOnly");
         }
     }
 }

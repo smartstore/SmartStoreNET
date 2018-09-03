@@ -60,35 +60,8 @@ namespace SmartStore.Services.Search
                 return;
             }
 
-            // Apply "date" labels.
-            if (facets.TryGetValue("createdon", out var grp))
-            {
-                var foundLastVisit = false;
-                var utcNow = DateTime.UtcNow;
-                foreach (var facet in grp.Facets)
-                {
-                    var dt = (DateTime)(facet.Value.IncludesUpper ? facet.Value.UpperValue : facet.Value.Value);
-                    var days = (int)(utcNow - dt).TotalDays;
-
-                    foreach (ForumDateFilter filter in Enum.GetValues(typeof(ForumDateFilter)))
-                    {
-                        if (days == (int)filter)
-                        {
-                            facet.Value.Label = T("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter." + filter.ToString());
-                            break;
-                        }
-                    }
-
-                    if (!foundLastVisit && facet.Value.Label.IsEmpty())
-                    {
-                        foundLastVisit = true;
-                        facet.Value.Label = T("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter.LastVisit");
-                    }
-                }
-            }
-
             // Ensure that there are no duplicate customer labels.
-            if (facets.TryGetValue("customerid", out grp))
+            if (facets.TryGetValue("customerid", out var grp))
             {
                 var groupedByLabel =
                     from x in grp.Facets
@@ -148,8 +121,31 @@ namespace SmartStore.Services.Search
 						{
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
-								var ids = searchHits.Select(x => x.GetInt("topicid")).Distinct().ToArray();
-								hitsFactory = () => _forumService.Value.GetTopicsByIds(ids);
+                                var postIds = searchHits
+                                    .Select(x => new
+                                    {
+                                        TopicId = x.GetInt("topicid"),
+                                        PostId = x.GetInt("id")
+                                    })
+                                    .ToMultimap(x => x.TopicId, x => x.PostId);
+
+                                var topicIds = postIds.Select(x => x.Key).ToArray();
+
+                                hitsFactory = () =>
+                                {
+                                    var hits = _forumService.Value.GetTopicsByIds(topicIds);
+
+                                    // Provide the id of the first hit, so that we can jump directly to the post when opening the topic.
+                                    foreach (var topic in hits)
+                                    {
+                                        if (postIds.ContainsKey(topic.Id))
+                                        {
+                                            topic.FirstPostId = postIds[topic.Id].OrderBy(x => x).FirstOrDefault();
+                                        }
+                                    }
+
+                                    return hits;
+                                };
                             }
 						}
 

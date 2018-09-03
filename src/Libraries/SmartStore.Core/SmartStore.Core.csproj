@@ -524,7 +524,6 @@
     <Compile Include="Domain\Forums\Forum.cs" />
     <Compile Include="Domain\Forums\ForumGroup.cs" />
     <Compile Include="Domain\Forums\ForumPost.cs" />
-    <Compile Include="Domain\Forums\ForumSearchType.cs" />
     <Compile Include="Domain\Forums\ForumSettings.cs" />
     <Compile Include="Domain\Forums\ForumSubscription.cs" />
     <Compile Include="Domain\Forums\ForumTopic.cs" />

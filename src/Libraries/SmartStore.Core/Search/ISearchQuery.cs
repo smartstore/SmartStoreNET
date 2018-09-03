@@ -1,16 +1,14 @@
 ﻿using System.Collections.Generic;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
-	public interface ISearchQuery
+    public interface ISearchQuery
 	{
 		// Language, Currency & Store
 		int? LanguageId { get; }
 		string LanguageCulture { get; }
 		string CurrencyCode { get; }
-        int? CustomerId { get; }
         int? StoreId { get; }
 
         // Search term

@@ -4,9 +4,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Routing;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Services.Common;
 using SmartStore.Services.Search.Extensions;
 
 namespace SmartStore.Services.Search.Modelling
@@ -27,6 +30,7 @@ namespace SmartStore.Services.Search.Modelling
     {
         protected readonly ICommonServices _services;
         protected readonly IForumSearchQueryAliasMapper _forumSearchQueryAliasMapper;
+        protected readonly IGenericAttributeService _genericAttributeService;
         protected readonly ForumSearchSettings _searchSettings;
         protected readonly ForumSettings _forumSettings;
 
@@ -34,18 +38,22 @@ namespace SmartStore.Services.Search.Modelling
             ICommonServices services,
             HttpContextBase httpContext,
             IForumSearchQueryAliasMapper forumSearchQueryAliasMapper,
+            IGenericAttributeService genericAttributeService,
             ForumSearchSettings searchSettings,
             ForumSettings forumSettings)
             : base(httpContext)
         {
             _services = services;
             _forumSearchQueryAliasMapper = forumSearchQueryAliasMapper;
+            _genericAttributeService = genericAttributeService;
             _searchSettings = searchSettings;
             _forumSettings = forumSettings;
 
+            T = NullLocalizer.Instance;
             QuerySettings = DbQuerySettings.Default;
         }
 
+        public Localizer T { get; set; }
         public DbQuerySettings QuerySettings { get; set; }
 
         public ForumSearchQuery Current { get; private set; }
@@ -64,7 +72,7 @@ namespace SmartStore.Services.Search.Modelling
             var controller = routeData.GetRequiredString("controller");
             var action = routeData.GetRequiredString("action");
             var origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
-            var fields = new List<string> { "text" };
+            var fields = new List<string> { "subject" };
             var term = GetValueFor<string>("q");
             var isInstantSearch = origin.IsCaseInsensitiveEqual("Boards/InstantSearch");
 
@@ -74,7 +82,6 @@ namespace SmartStore.Services.Search.Modelling
                 .OriginatesFrom(origin)
                 .WithLanguage(_services.WorkContext.WorkingLanguage)
                 .WithCurrency(_services.WorkContext.WorkingCurrency)
-                .WithCustomer(_services.WorkContext.CurrentCustomer)
                 .BuildFacetMap(!isInstantSearch);
 
             // Store.
@@ -226,18 +233,7 @@ namespace SmartStore.Services.Search.Modelling
 
             AddFacet(query, FacetGroupKind.Date, false, FacetSorting.DisplayOrder, descriptor =>
             {
-                if (fromUtc.HasValue || toUtc.HasValue)
-                {
-                    descriptor.AddValue(new FacetValue(
-                        fromUtc,
-                        toUtc,
-                        IndexTypeCode.DateTime,
-                        fromUtc.HasValue,
-                        toUtc.HasValue)
-                    {
-                        IsSelected = true
-                    });
-                }
+                AddDates(descriptor, fromUtc, toUtc);
             });
         }
 
@@ -248,6 +244,49 @@ namespace SmartStore.Services.Search.Modelling
         protected virtual bool GetValueFor<T>(ForumSearchQuery query, string key, FacetGroupKind kind, out T value)
         {
             return GetValueFor(_forumSearchQueryAliasMapper.GetCommonFacetAliasByGroupKind(kind, query.LanguageId ?? 0) ?? key, out value);
+        }
+
+        protected virtual void AddDates(FacetDescriptor descriptor, DateTime? selectedFrom, DateTime? selectedTo)
+        {
+            var store = _services.StoreContext.CurrentStore;
+            var customer = _services.WorkContext.CurrentCustomer;
+            var count = 0;
+            var utcNow = DateTime.UtcNow;
+            utcNow = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 0);
+
+            foreach (ForumDateFilter filter in Enum.GetValues(typeof(ForumDateFilter)))
+            {
+                var dt = utcNow.AddDays(-((int)filter));
+
+                if (filter == ForumDateFilter.LastVisit)
+                {
+                    var lastVisit = _genericAttributeService.GetAttribute<DateTime?>(nameof(Customer), customer.Id, SystemCustomerAttributeNames.LastForumVisit, store.Id);
+                    if (!lastVisit.HasValue)
+                    {
+                        continue;
+                    }
+
+                    dt = lastVisit.Value;
+                }
+
+                var value = selectedTo.HasValue
+                    ? new FacetValue(null, dt, IndexTypeCode.DateTime, false, true)
+                    : new FacetValue(dt, null, IndexTypeCode.DateTime, true, false);
+
+                value.DisplayOrder = ++count;
+                value.Label = T("Enums.SmartStore.Core.Domain.Forums.ForumDateFilter." + filter.ToString());
+
+                if (selectedFrom.HasValue)
+                {
+                    value.IsSelected = dt == selectedFrom.Value;
+                }
+                else if (selectedTo.HasValue)
+                {
+                    value.IsSelected = dt == selectedTo.Value;
+                }
+
+                descriptor.AddValue(value);
+            }
         }
     }
 }

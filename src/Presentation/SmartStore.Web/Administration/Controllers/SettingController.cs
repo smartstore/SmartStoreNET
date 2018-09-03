@@ -1442,8 +1442,8 @@ namespace SmartStore.Admin.Controllers
 
             model.ForumSearchSettings.AvailableSearchFields = new List<SelectListItem>
             {
-                new SelectListItem { Text = T("Forum.TopicTitle"), Value = "subject" },
-                new SelectListItem { Text = T("Admin.Customers.Customers.Fields.Username"), Value = "username" }
+                new SelectListItem { Text = T("Admin.Customers.Customers.Fields.Username"), Value = "username" },
+                new SelectListItem { Text = T("Forum.PostText"), Value = "text" },
             };
 
 			// Common facets.

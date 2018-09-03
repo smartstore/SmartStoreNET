@@ -7,7 +7,6 @@ using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
-using SmartStore.Services.Common;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search.Extensions;
@@ -19,20 +18,17 @@ namespace SmartStore.Services.Search
         private readonly IRepository<ForumPost> _forumPostRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IForumService _forumService;
-        private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICommonServices _services;
 
 		public LinqForumSearchService(
             IRepository<ForumPost> forumPostRepository,
             IRepository<StoreMapping> storeMappingRepository,
             IForumService forumService,
-            IGenericAttributeService genericAttributeService,
             ICommonServices services)
 		{
             _forumPostRepository = forumPostRepository;
             _storeMappingRepository = storeMappingRepository;
             _forumService = forumService;
-            _genericAttributeService = genericAttributeService;
 			_services = services;
 
             QuerySettings = DbQuerySettings.Default;
@@ -40,13 +36,14 @@ namespace SmartStore.Services.Search
 
         public DbQuerySettings QuerySettings { get; set; }
 
-        protected virtual IQueryable<ForumTopic> GetForumTopicQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery)
-		{
+        protected virtual IQueryable<LinqSearchTopic> GetTopicQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery)
+        {
+            // Post query.
             var ordered = false;
             var term = searchQuery.Term;
             var fields = searchQuery.Fields;
             var filters = new List<ISearchFilter>();
-            var query = baseQuery ?? _forumPostRepository.Table.Expand(x => x.ForumTopic);
+            var query = baseQuery ?? _forumPostRepository.TableUntracked.Expand(x => x.ForumTopic);
 
             // Apply search term.
             if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
@@ -130,44 +127,71 @@ namespace SmartStore.Services.Search
                         }
                     }
                 }
+                else if (filter.FieldName == "storeid")
+                {
+                    if (!QuerySettings.IgnoreMultiStore)
+                    {
+                        var storeId = (int)filter.Term;
+                        if (storeId != 0)
+                        {
+                            query =
+                                from p in query
+                                join sm in _storeMappingRepository.TableUntracked on new { eid = p.ForumTopic.Forum.ForumGroupId, ename = "ForumGroup" }
+                                equals new { eid = sm.EntityId, ename = sm.EntityName } into gsm
+                                from sm in gsm.DefaultIfEmpty()
+                                where !p.ForumTopic.Forum.ForumGroup.LimitedToStores || sm.StoreId == storeId
+                                select p;
+                        }
+                    }
+                }
             }
 
-            var topicsQuery =
-                from ft in query.Select(x => x.ForumTopic)
-                group ft by ft.Id into grp
-                orderby grp.Key
-                select grp.FirstOrDefault();
+            var sortCreatedOn = searchQuery.Sorting.FirstOrDefault(x => x.FieldName == "createdon");
+            if (sortCreatedOn != null)
+            {
+                query = OrderBy(ref ordered, query, x => x.CreatedOnUtc, sortCreatedOn.Descending);
+            }
 
-            // Sorting of topics.
+            // Topic query.
+            var topicQuery =
+                from fp in query
+                group fp by fp.TopicId into grp
+                select new LinqSearchTopic
+                {
+                    Topic = grp.Select(x => x.ForumTopic).FirstOrDefault(),
+                    FirstPostId = grp.OrderBy(x => x.Id).Select(x => x.Id).FirstOrDefault()
+                };
+
+            // Sorting.
             foreach (var sort in searchQuery.Sorting)
             {
                 if (sort.FieldName == "subject")
                 {
-                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.Subject, sort.Descending);
+                    topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.Subject, sort.Descending);
                 }
                 else if (sort.FieldName == "username")
                 {
-                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.Customer.Username, sort.Descending);
+                    topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.Customer.Username, sort.Descending);
                 }
                 else if (sort.FieldName == "createdon")
                 {
-                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.CreatedOnUtc, sort.Descending);
+                    // Skip, already processed. We want to sort by ForumPost.CreatedOnUtc, not ForumTopic.CreatedOnUtc.
                 }
                 else if (sort.FieldName == "posts")
                 {
-                    topicsQuery = OrderBy(ref ordered, topicsQuery, x => x.NumPosts, sort.Descending);
+                    topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.NumPosts, sort.Descending);
                 }
             }
 
-            if (!ordered)
+            if (!ordered && !searchQuery.Sorting.Any(x => x.FieldName == "createdon"))
             {
-                topicsQuery = topicsQuery
-                    .OrderByDescending(x => x.TopicTypeId)
-                    .ThenByDescending(x => x.LastPostTime)
-                    .ThenByDescending(x => x.Id);
+                topicQuery = topicQuery
+                    .OrderByDescending(x => x.Topic.TopicTypeId)
+                    .ThenByDescending(x => x.Topic.LastPostTime)
+                    .ThenByDescending(x => x.Topic.Id);
             }
 
-            return topicsQuery;
+            return topicQuery;
         }
 
         protected virtual IDictionary<string, FacetGroup> GetFacets(ForumSearchQuery searchQuery, int totalHits)
@@ -245,14 +269,9 @@ namespace SmartStore.Services.Search
                 }
                 else if (kind == FacetGroupKind.Date)
                 {
-                    var dates = FacetUtility.GetForumDates(_genericAttributeService, searchQuery.CustomerId ?? 0, storeId, true);
-
-                    foreach (var date in dates)
+                    foreach (var value in descriptor.Values)
                     {
-                        var newFacet = new Facet(date);
-                        newFacet.Value.IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(date.Value));
-
-                        facets.Add(newFacet);
+                        facets.Add(new Facet(value));
                     }
                 }
 
@@ -260,14 +279,19 @@ namespace SmartStore.Services.Search
                 {
                     //facets.Each(x => $"{key} {x.Value.ToString()}".Dump());
 
-                    result.Add(key, new FacetGroup(
+                    var group = new FacetGroup(
                         "Forum",
                         key,
                         descriptor.Label,
                         descriptor.IsMultiSelect,
                         false,
                         descriptor.DisplayOrder,
-                        facets.OrderBy(descriptor)));
+                        facets.OrderBy(descriptor))
+                    {
+                        IsScrollable = facets.Count > 14
+                    };
+
+                    result.Add(key, group);
                 }
             }
 
@@ -284,24 +308,47 @@ namespace SmartStore.Services.Search
 
             if (searchQuery.Take > 0)
 			{
-				var query = GetForumTopicQuery(searchQuery, null);
-				totalHits = query.Count();
+                var query = GetTopicQuery(searchQuery, null);
+                totalHits = query.Count();
 
-				// Fix paging boundaries
-				if (searchQuery.Skip > 0 && searchQuery.Skip >= totalHits)
-				{
-					searchQuery.Slice((totalHits / searchQuery.Take) * searchQuery.Take, searchQuery.Take);
-				}
+                // Fix paging boundaries.
+                if (searchQuery.Skip > 0 && searchQuery.Skip >= totalHits)
+                {
+                    searchQuery.Slice((totalHits / searchQuery.Take) * searchQuery.Take, searchQuery.Take);
+                }
 
-				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
-				{
-					query = query
-						.Skip(searchQuery.PageIndex * searchQuery.Take)
-						.Take(searchQuery.Take);
+                if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
+                {
+                    query = query
+                        .Skip(searchQuery.PageIndex * searchQuery.Take)
+                        .Take(searchQuery.Take);
 
-					var ids = query.Select(x => x.Id).Distinct().ToArray();
-                    hitsFactory = () => _forumService.GetTopicsByIds(ids);
-				}
+                    var idQuery = query
+                        .Select(x => new
+                        {
+                            x.Topic.Id,
+                            x.FirstPostId
+                        });
+
+                    // Topic.Id -> first post id.
+                    var ids = idQuery.ToList().ToDictionarySafe(x => x.Id, x => x.FirstPostId);
+
+                    hitsFactory = () =>
+                    {
+                        var hits = _forumService.GetTopicsByIds(ids.Select(x => x.Key).ToArray());
+
+                        // Provide the id of the first hit, so that we can jump directly to the post when opening the topic.
+                        foreach (var topic in hits)
+                        {
+                            if (ids.TryGetValue(topic.Id, out var firstPostId))
+                            {
+                                topic.FirstPostId = firstPostId;
+                            }
+                        }
+
+                        return hits;
+                    };
+                }
 
                 if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets) && searchQuery.FacetDescriptors.Any())
                 {
@@ -309,7 +356,7 @@ namespace SmartStore.Services.Search
                 }
             }
 
-			var result = new ForumSearchResult(
+            var result = new ForumSearchResult(
 				null,
 				searchQuery,
 				totalHits,
@@ -324,7 +371,15 @@ namespace SmartStore.Services.Search
 
 		public IQueryable<ForumTopic> PrepareQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery = null)
 		{
-			return GetForumTopicQuery(searchQuery, baseQuery);
+            var query = GetTopicQuery(searchQuery, baseQuery);
+            return query.Select(x => x.Topic);
 		}
 	}
+
+
+    public class LinqSearchTopic
+    {
+        public ForumTopic Topic { get; set; }
+        public int FirstPostId { get; set; }
+    }
 }

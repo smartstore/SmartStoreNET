@@ -1564,9 +1564,36 @@ namespace SmartStore.Web.Controllers
             }
 
             ForumSearchResult result = null;
+            var language = Services.WorkContext.WorkingLanguage;
             var model = new ForumSearchResultModel(query);
             model.PostsPageSize = _forumSettings.PostsPageSize;
+            model.AllowSorting = _forumSettings.AllowSorting;
             model.Term = query.Term;
+
+            // Sorting.
+            if (model.AllowSorting)
+            {
+                model.CurrentSortOrder = query?.CustomData.Get("CurrentSortOrder").Convert<int?>();
+
+                model.AvailableSortOptions = Services.Cache.Get("pres:forumsortoptions-{0}".FormatInvariant(language.Id), () =>
+                {
+                    var dict = new Dictionary<int, string>();
+                    foreach (ForumTopicSorting val in Enum.GetValues(typeof(ForumTopicSorting)))
+                    {
+                        if (val == ForumTopicSorting.Initial)
+                            continue;
+
+                        dict[(int)val] = val.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+                    }
+
+                    return dict;
+                });
+
+                if (model.CurrentSortOrderName.IsEmpty())
+                {
+                    model.CurrentSortOrderName = model.AvailableSortOptions.Get(model.CurrentSortOrder ?? 1) ?? model.AvailableSortOptions.First().Value;
+                }
+            }
 
             if (query.Term.HasValue() && query.Term.Length < _searchSettings.InstantSearchTermMinLength)
             {

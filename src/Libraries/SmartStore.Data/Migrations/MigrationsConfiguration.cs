@@ -427,6 +427,12 @@
                 "Specifies the number of hits displayed in instant search.",
                 "Legt die Anzahl der angezeigten Suchtreffer in der Instantsuche fest.");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.Forums.AllowSorting",
+                "Allow sorting",
+                "Sortierung zulassen",
+                "Specifies whether forum posts can be sorted.",
+                "Legt fest, ob Forenbeiträge sortiert werden können.");
+
             builder.Delete(
                 "Admin.Configuration.Settings.Search.DefaultSortOrderMode",
                 "Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts",

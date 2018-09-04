@@ -13,6 +13,7 @@ namespace SmartStore.Core.Domain.Forums
 			StrippedTopicMaxLength = 45;
 			TopicsPageSize = 10;
 			PostsPageSize = 10;
+            AllowSorting = true;
 			SearchResultsPageSize = 10;
 			LatestCustomerPostsPageSize = 10;
 			ShowCustomersPostCount = true;
@@ -87,6 +88,11 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets the page size for posts in topics
         /// </summary>
         public int PostsPageSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether sorting is enabled.
+        /// </summary>
+        public bool AllowSorting { get; set; }
 
         /// <summary>
         /// Gets or sets the number of links to display for pagination of posts in topics

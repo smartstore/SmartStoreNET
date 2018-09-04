@@ -1401,7 +1401,7 @@ namespace SmartStore.Admin.Controllers
 
             model.IsMegaSearchInstalled = megaSearchDescriptor != null;
 			model.AvailableSortOrderModes = settings.DefaultSortOrder.ToSelectList();
-            model.ForumSearchSettings.AvailableTopicSortOrders = fsettings.TopicSortOrder.ToSelectList();
+            model.ForumSearchSettings.AvailableDefaultSortOrders = fsettings.DefaultSortOrder.ToSelectList();
 
             if (megaSearchDescriptor == null)
 			{

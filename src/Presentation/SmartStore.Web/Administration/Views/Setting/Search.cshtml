@@ -223,11 +223,11 @@
 		</tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(x => x.ForumSearchSettings.TopicSortOrder)
+                @Html.SmartLabelFor(x => x.ForumSearchSettings.DefaultSortOrder)
             </td>
             <td class="adminData">
-				@Html.SettingEditorFor(x => x.ForumSearchSettings.TopicSortOrder, Html.DropDownListFor(x => x.ForumSearchSettings.TopicSortOrder, Model.ForumSearchSettings.AvailableTopicSortOrders))
-                @Html.ValidationMessageFor(x => x.ForumSearchSettings.TopicSortOrder)
+				@Html.SettingEditorFor(x => x.ForumSearchSettings.DefaultSortOrder, Html.DropDownListFor(x => x.ForumSearchSettings.DefaultSortOrder, Model.ForumSearchSettings.AvailableDefaultSortOrders))
+                @Html.ValidationMessageFor(x => x.ForumSearchSettings.DefaultSortOrder)
             </td>
         </tr>
 		<tr>

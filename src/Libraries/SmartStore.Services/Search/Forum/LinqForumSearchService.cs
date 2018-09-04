@@ -48,7 +48,7 @@ namespace SmartStore.Services.Search
             // Post query.
             var ordered = false;
             var t = searchQuery.Term;
-            var f = _customerSettings.CustomerNameFormat;
+            var cnf = _customerSettings.CustomerNameFormat;
             var fields = searchQuery.Fields;
             var filters = new List<ISearchFilter>();
             var query = baseQuery ?? _forumPostRepository.TableUntracked.Expand(x => x.ForumTopic);
@@ -62,9 +62,9 @@ namespace SmartStore.Services.Search
                         (fields.Contains("subject") && x.ForumTopic.Subject.StartsWith(t)) ||
                         (fields.Contains("text") && x.Text.StartsWith(t)) ||
                         (fields.Contains("username") && (
-                            f == CustomerNameFormat.ShowEmails ? x.Customer.Email.StartsWith(t) :
-                            f == CustomerNameFormat.ShowUsernames ? x.Customer.Username.StartsWith(t) :
-                            f == CustomerNameFormat.ShowFirstName ? x.Customer.FirstName.StartsWith(t) :
+                            cnf == CustomerNameFormat.ShowEmails ? x.Customer.Email.StartsWith(t) :
+                            cnf == CustomerNameFormat.ShowUsernames ? x.Customer.Username.StartsWith(t) :
+                            cnf == CustomerNameFormat.ShowFirstName ? x.Customer.FirstName.StartsWith(t) :
                             x.Customer.FullName.StartsWith(t))
                         ));
                 }
@@ -74,9 +74,9 @@ namespace SmartStore.Services.Search
                         (fields.Contains("subject") && x.ForumTopic.Subject.Contains(t)) ||
                         (fields.Contains("text") && x.Text.Contains(t)) ||
                         (fields.Contains("username") && (
-                            f == CustomerNameFormat.ShowEmails ? x.Customer.Email.Contains(t) :
-                            f == CustomerNameFormat.ShowUsernames ? x.Customer.Username.Contains(t) :
-                            f == CustomerNameFormat.ShowFirstName ? x.Customer.FirstName.Contains(t) :
+                            cnf == CustomerNameFormat.ShowEmails ? x.Customer.Email.Contains(t) :
+                            cnf == CustomerNameFormat.ShowUsernames ? x.Customer.Username.Contains(t) :
+                            cnf == CustomerNameFormat.ShowFirstName ? x.Customer.FirstName.Contains(t) :
                             x.Customer.FullName.Contains(t))
                         ));
                 }
@@ -164,12 +164,6 @@ namespace SmartStore.Services.Search
                 }
             }
 
-            var sortCreatedOn = searchQuery.Sorting.FirstOrDefault(x => x.FieldName == "createdon");
-            if (sortCreatedOn != null)
-            {
-                query = OrderBy(ref ordered, query, x => x.CreatedOnUtc, sortCreatedOn.Descending);
-            }
-
             // Topic query.
             // Unified order: we only sort by ForumPost.Id to save an additional database query in ForumSearchService.Search.
             var topicQuery =
@@ -190,19 +184,34 @@ namespace SmartStore.Services.Search
                 }
                 else if (sort.FieldName == "username")
                 {
-                    topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.Customer.Username, sort.Descending);
+                    switch (cnf)
+                    {
+                        case CustomerNameFormat.ShowEmails:
+                            topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.Customer.Email, sort.Descending);
+                            break;
+                        case CustomerNameFormat.ShowUsernames:
+                            topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.Customer.Username, sort.Descending);
+                            break;
+                        case CustomerNameFormat.ShowFirstName:
+                            topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.Customer.FirstName, sort.Descending);
+                            break;
+                        default:
+                            topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.Customer.FullName, sort.Descending);
+                            break;
+                    }
                 }
                 else if (sort.FieldName == "createdon")
                 {
-                    // Skip, already processed. We want to sort by ForumPost.CreatedOnUtc, not ForumTopic.CreatedOnUtc.
+                    // We want to sort by ForumPost.CreatedOnUtc, not ForumTopic.CreatedOnUtc.
+                    topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.LastPostTime, sort.Descending);
                 }
-                else if (sort.FieldName == "posts")
+                else if (sort.FieldName == "numposts")
                 {
                     topicQuery = OrderBy(ref ordered, topicQuery, x => x.Topic.NumPosts, sort.Descending);
                 }
             }
 
-            if (!ordered && !searchQuery.Sorting.Any(x => x.FieldName == "createdon"))
+            if (!ordered)
             {
                 topicQuery = topicQuery
                     .OrderByDescending(x => x.Topic.TopicTypeId)

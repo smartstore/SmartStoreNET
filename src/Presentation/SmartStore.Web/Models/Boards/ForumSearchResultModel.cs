@@ -28,6 +28,11 @@ namespace SmartStore.Web.Models.Boards
         public int PostsPageSize { get; set; }
         public string Error { get; set; }
 
+        public bool AllowSorting { get; set; }
+        public int? CurrentSortOrder { get; set; }
+        public string CurrentSortOrderName { get; set; }
+        public IDictionary<int, string> AvailableSortOptions { get; set; }
+
         public IList<ForumTopicRowModel> ForumTopics { get; set; }
     }
 }

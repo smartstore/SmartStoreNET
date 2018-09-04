@@ -24,7 +24,7 @@
         suggestions = Model.SearchResult.SpellCheckerSuggestions;
     }
 
-    var pager = "TODO: pager etc.";
+    //"TODO: pager
     //var pager = Html.SmartStore().Pager(Model.SearchResult.Hits.PageIndex, Model.SearchResult.Hits.PageSize, Model.TotalCount)
     //    .Name("paginator")
     //    .Alignment(PagerAlignment.Right)
@@ -50,7 +50,7 @@
     </div>
 
     <div class="page-body">
-        <div class="search-input w-75 mt-4 mb-5">
+        <div class="search-input mt-4 mb-5">
             @if (Model.SearchResult.Facets.Any())
             {
                 <div class="mb-4">
@@ -60,7 +60,7 @@
 
             @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get))
             {
-                <div class="input-group d-flex mb-3">
+                <div class="input-group d-flex w-75 mb-3">
                     <input type="text" name="q" class="forum-search-text form-control" value="@Model.Term" placeholder="@T("Forum.SearchForumsTooltip")" />
 					<div class="input-group-append">
 						<input type="submit" class="btn btn-primary" value="@T("Forum.SearchButton")" />
@@ -100,7 +100,35 @@
 		    }
         </div>
 
-        @pager
+        @if (Model.TotalCount > 0)
+        {
+            <div class="fsearch-actions fsearch-actions--top d-flex flex-wrap">
+                @if (Model.AllowSorting)
+                {
+                    <div class="fsearch-actions--sort">
+                        <div class="mf-dropdown">
+			                <button class="btn btn-secondary btn-fsearch-action d-none d-lg-block" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
+				                <i class="fa fa-sort d-xl-none"></i>
+				                <span class="d-xl-none">@Model.CurrentSortOrderName</span>
+				                <em class="d-none d-xl-inline">@T("Products.SortByX", "<span>" + Model.CurrentSortOrderName + "</span>")</em>
+				                <i class="fa fa-caret-down"></i>
+			                </button>
+			                <button class="btn btn-light btn-no-border btn-labeled icon-right btn-block d-lg-none">
+				                <span>@T("Products.ToSort")</span>
+				                <b><i class="fa fa-fw fa-sort"></i></b>
+			                </button>
+			                <select class="fsearch-action-select form-control noskin" name="fsearch-action-sort" id="fsearch-action-sort" data-qname="o" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
+				                @foreach (var sort in Model.AvailableSortOptions)
+                                {
+					                <option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sort.Value</option>
+                                }
+			                </select>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
         <div class="search-results mt-3">
             <div class="topics-group table-responsive">
                 @if (Model.TotalCount > 0)
@@ -215,6 +243,23 @@
                 }
             </div>
         </div>
-        @pager
+
     </div>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        // Sorting changed.
+	    $('.fsearch-actions').on('change', '.fsearch-action-select', function (e) {
+		    var select = $(this),
+			    qname = select.data('qname'),
+			    url = select.data('url'),
+			    val = select.val();
+
+		    var url = window.modifyUrl(url, qname, val);
+		    window.setLocation(url);
+	    });
+
+    });
+</script>

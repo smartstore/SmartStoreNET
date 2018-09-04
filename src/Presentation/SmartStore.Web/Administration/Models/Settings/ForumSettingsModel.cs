@@ -35,6 +35,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.PostsPageSize")]
         public int PostsPageSize { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.AllowSorting")]
+        public bool AllowSorting { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumEditor")]
         public EditorType ForumEditor { get; set; }
 

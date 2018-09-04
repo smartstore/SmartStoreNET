@@ -10,13 +10,12 @@ namespace SmartStore.Core.Search
 		{
 			SearchMode = SearchMode.Contains;
 			SearchFields = new List<string> { "username", "text" };
-            TopicSortOrder = ForumTopicSorting.Relevance;
+            DefaultSortOrder = ForumTopicSorting.Relevance;
             InstantSearchEnabled = true;
 			InstantSearchNumberOfHits = 10;
 			InstantSearchTermMinLength = 2;
             FilterMinHitCount = 1;
             FilterMaxChoicesCount = 20;
-            DefaultSortOrder = ForumTopicSorting.Relevance;
 
             ForumDisplayOrder = 1;
             CustomerDisplayOrder = 2;
@@ -34,9 +33,9 @@ namespace SmartStore.Core.Search
 		public List<string> SearchFields { get; set; }
 
         /// <summary>
-        /// Gets or sets the topic sort order in search results.
+        /// Gets or sets the default sort order in search results.
         /// </summary>
-        public ForumTopicSorting TopicSortOrder { get; set; }
+        public ForumTopicSorting DefaultSortOrder { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether instant-search is enabled.
@@ -62,11 +61,6 @@ namespace SmartStore.Core.Search
         /// Gets or sets the maximum number of filter values to be displayed.
         /// </summary>
         public int FilterMaxChoicesCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the default sort order in search results
-        /// </summary>
-        public ForumTopicSorting DefaultSortOrder { get; set; }
 
         #region Common facet settings
 

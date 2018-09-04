@@ -109,17 +109,19 @@ namespace SmartStore.Services.Search.Modelling
         {
             var index = Math.Max(1, GetValueFor<int?>("i") ?? 1);
             var size = _forumSettings.SearchResultsPageSize;
-
             query.Slice((index - 1) * size, size);
 
-            var orderBy = GetValueFor<ForumTopicSorting?>("o");
-            if (orderBy == null || orderBy == ForumTopicSorting.Initial)
+            if (_forumSettings.AllowSorting)
             {
-                orderBy = _searchSettings.DefaultSortOrder;
-            }
+                var orderBy = GetValueFor<ForumTopicSorting?>("o");
+                if (orderBy == null || orderBy == ForumTopicSorting.Initial)
+                {
+                    orderBy = _searchSettings.DefaultSortOrder;
+                }
 
-            query.SortBy(orderBy.Value);
-            query.CustomData["CurrentSortOrder"] = orderBy.Value;
+                query.SortBy(orderBy.Value);
+                query.CustomData["CurrentSortOrder"] = orderBy.Value;
+            }
         }
 
         private void AddFacet(

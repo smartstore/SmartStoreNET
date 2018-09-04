@@ -126,6 +126,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowSorting)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowSorting)
+                @Html.ValidationMessageFor(model => model.AllowSorting)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ForumEditor)
             </td>
             <td class="adminData">

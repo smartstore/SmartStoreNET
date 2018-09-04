@@ -29,8 +29,8 @@ namespace SmartStore.Admin.Models.Settings
         public List<SelectListItem> AvailableSearchFields { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Search.DefaultSortOrder")]
-        public ForumTopicSorting TopicSortOrder { get; set; }
-        public SelectList AvailableTopicSortOrders { get; set; }
+        public ForumTopicSorting DefaultSortOrder { get; set; }
+        public SelectList AvailableDefaultSortOrders { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Search.InstantSearchEnabled")]
         public bool InstantSearchEnabled { get; set; }

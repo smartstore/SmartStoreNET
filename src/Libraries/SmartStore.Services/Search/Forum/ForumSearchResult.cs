@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Search;
@@ -76,15 +77,17 @@ namespace SmartStore.Services.Search
 
         public ISearchEngine Engine { get; private set;	}
 
-		/// <summary>
-		/// Highlights chosen terms in a text, extracting the most relevant sections
-		/// </summary>
-		/// <param name="input">Text to highlight terms in</param>
-		/// <returns>Highlighted text fragments </returns>
-		public string Highlight(string input, string preMatch = "<strong>", string postMatch = "</strong>", bool useSearchEngine = true)
+        /// <summary>
+        /// Highlights chosen terms in a text, extracting the most relevant sections
+        /// </summary>
+        /// <param name="input">Text to highlight terms in</param>
+        /// <returns>Highlighted text fragments </returns>
+        public string Highlight(string input, string preMatch = "<strong>", string postMatch = "</strong>", bool useSearchEngine = true)
 		{
-			if (Query?.Term == null || input.IsEmpty())
-				return input;
+            if (Query?.Term == null || input.IsEmpty())
+            {
+                return input;
+            }
 
 			string hilite = null;
 
@@ -92,7 +95,7 @@ namespace SmartStore.Services.Search
 			{
 				try
 				{
-					hilite = Engine.Highlight(input, preMatch, postMatch);
+					hilite = Engine.Highlight(input, "subject", preMatch, postMatch);
 				}
 				catch { }
 			}
@@ -104,5 +107,21 @@ namespace SmartStore.Services.Search
 
 			return input.HighlightKeywords(Query.Term, preMatch, postMatch);
 		}
-	}
+
+        public bool CanHighlightPostFor(int postId)
+        {
+            if (postId != 0 && Engine != null && Query.Fields != null && Query.Fields.Contains("text"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public string Highlight(int postId, string preMatch = "<strong>", string postMatch = "</strong>")
+        {
+            var fraqment = Engine.Highlight(postId, "text", preMatch, postMatch, 3);
+            return fraqment;
+        }
+    }
 }

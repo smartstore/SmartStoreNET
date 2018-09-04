@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web.Mvc;
 using Autofac;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
@@ -32,11 +31,7 @@ namespace SmartStore.Services.Search
             _forumService = forumService;
 			_logger = logger;
 			_urlHelper = urlHelper;
-
-            T = NullLocalizer.Instance;
         }
-
-        public Localizer T { get; set; }
 
         /// <summary>
         /// Bypasses the index provider and directly searches in the database
@@ -48,35 +43,9 @@ namespace SmartStore.Services.Search
 			// Fallback to linq search.
 			var linqForumSearchService = _services.Container.ResolveNamed<IForumSearchService>("linq");
 			var result = linqForumSearchService.Search(searchQuery, true);
-            ApplyFacetLabels(result.Facets);
 
             return result;
 		}
-
-        protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
-        {
-            if (facets == null || !facets.Any())
-            {
-                return;
-            }
-
-            // Ensure that there are no duplicate customer labels.
-            if (facets.TryGetValue("customerid", out var grp))
-            {
-                var groupedByLabel =
-                    from x in grp.Facets
-                    group x by x.Value.Label into g
-                    select g;
-
-                foreach (var item in groupedByLabel.Where(x => x.Count() > 1))
-                {
-                    foreach (var facet in item)
-                    {
-                        facet.Value.Label = $"{facet.Value.Value} ({facet.Value.Value.ToString()})";
-                    }
-                }
-            }
-        }
 
         public ForumSearchResult Search(ForumSearchQuery searchQuery, bool direct = false)
         {
@@ -129,10 +98,9 @@ namespace SmartStore.Services.Search
                                     })
                                     .ToMultimap(x => x.TopicId, x => x.PostId);
 
-                                var topicIds = postIds.Select(x => x.Key).ToArray();
-
                                 hitsFactory = () =>
                                 {
+                                    var topicIds = postIds.Select(x => x.Key).ToArray();
                                     var hits = _forumService.Value.GetTopicsByIds(topicIds);
 
                                     // Provide the id of the first hit, so that we can jump directly to the post when opening the topic.
@@ -140,6 +108,7 @@ namespace SmartStore.Services.Search
                                     {
                                         if (postIds.ContainsKey(topic.Id))
                                         {
+                                            // Unified order: we only sort by ForumPost.Id to save an additional database query here.
                                             topic.FirstPostId = postIds[topic.Id].OrderBy(x => x).FirstOrDefault();
                                         }
                                     }
@@ -156,7 +125,6 @@ namespace SmartStore.Services.Search
                                 using (_services.Chronometer.Step(stepPrefix + "Facets"))
                                 {
                                     facets = searchEngine.GetFacetMap();
-                                    ApplyFacetLabels(facets);
                                 }
                             }
                             catch (Exception ex)

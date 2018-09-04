@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
@@ -163,33 +164,62 @@ namespace SmartStore.Services.Customers
 		}
 
         /// <summary>
-        /// Formats the customer name
+        /// Formats the customer name.
         /// </summary>
-        /// <param name="customer">Source</param>
-        /// <returns>Formatted text</returns>
+        /// <param name="customer">Customer entity.</param>
+        /// <returns>Formatted customer name.</returns>
         public static string FormatUserName(this Customer customer)
         {
             return FormatUserName(customer, false);
         }
 
         /// <summary>
-        /// Formats the customer name
+        /// Formats the customer name.
         /// </summary>
-        /// <param name="customer">Source</param>
-        /// <param name="stripTooLong">Strip too long customer name</param>
-        /// <returns>Formatted text</returns>
+        /// <param name="customer">Customer entity.</param>
+        /// <param name="stripTooLong">Whether to strip too long customer name.</param>
+        /// <returns>Formatted customer name.</returns>
         public static string FormatUserName(this Customer customer, bool stripTooLong)
         {
-            if (customer == null)
-                return string.Empty;
+            var engine = EngineContext.Current;
 
+            var userName = customer.FormatUserName(
+                engine.Resolve<CustomerSettings>(),
+                engine.Resolve<Localizer>(),
+                stripTooLong);
+
+            return userName;
+        }
+
+        /// <summary>
+        /// Formats the customer name.
+        /// </summary>
+        /// <param name="customer">Customer entity.</param>
+        /// <param name="customerSettings">Customer settings.</param>
+        /// <param name="T">Localizer.</param>
+        /// <param name="stripTooLong">Whether to strip too long customer name.</param>
+        /// <returns>Formatted customer name.</returns>
+        public static string FormatUserName(
+            this Customer customer,
+            CustomerSettings customerSettings,
+            Localizer T,
+            bool stripTooLong)
+        {
+            Guard.NotNull(customerSettings, nameof(customerSettings));
+            Guard.NotNull(T, nameof(T));
+
+            if (customer == null)
+            {
+                return string.Empty;
+            }
             if (customer.IsGuest())
             {
-                return EngineContext.Current.Resolve<ILocalizationService>().GetResource("Customer.Guest");
+                return T("Customer.Guest");
             }
 
-            string result = string.Empty;
-            switch (EngineContext.Current.Resolve<CustomerSettings>().CustomerNameFormat)
+            var result = string.Empty;
+
+            switch (customerSettings.CustomerNameFormat)
             {
                 case CustomerNameFormat.ShowEmails:
                     result = customer.Email;
@@ -200,59 +230,56 @@ namespace SmartStore.Services.Customers
                 case CustomerNameFormat.ShowUsernames:
                     result = customer.Username;
                     break;
-				case CustomerNameFormat.ShowFirstName:
-					result = customer.FirstName;
-					break;
-				case CustomerNameFormat.ShowNameAndCity:
-					{
-						var firstName = customer.FirstName;
-						var lastName = customer.LastName;
-						var city = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
+                case CustomerNameFormat.ShowFirstName:
+                    result = customer.FirstName;
+                    break;
+                case CustomerNameFormat.ShowNameAndCity:
+                    {
+                        var firstName = customer.FirstName;
+                        var lastName = customer.LastName;
+                        var city = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
 
-						if (firstName.IsEmpty())
-						{
-							var address = customer.Addresses.FirstOrDefault();
-							if (address != null)
-							{
-								firstName = address.FirstName;
-								lastName = address.LastName;
-								city = address.City;
-							}
-						}
+                        if (firstName.IsEmpty())
+                        {
+                            var address = customer.Addresses.FirstOrDefault();
+                            if (address != null)
+                            {
+                                firstName = address.FirstName;
+                                lastName = address.LastName;
+                                city = address.City;
+                            }
+                        }
 
-						result = firstName;
-						if (lastName.HasValue())
-						{
-							result = "{0} {1}.".FormatWith(result, lastName.First());
-						}
+                        result = firstName;
+                        if (lastName.HasValue())
+                        {
+                            result = "{0} {1}.".FormatInvariant(result, lastName.First());
+                        }
 
-						if (city.HasValue())
-						{
-							var from = EngineContext.Current.Resolve<ILocalizationService>().GetResource("Common.ComingFrom");
-							result = "{0} {1} {2}".FormatWith(result, from, city);
-						}
-					}
-					break;
+                        if (city.HasValue())
+                        {
+                            var from = T("Common.ComingFrom");
+                            result = "{0} {1} {2}".FormatInvariant(result, from, city);
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
 
-            if (stripTooLong && result.HasValue())
+            var maxLength = customerSettings.CustomerNameFormatMaxLength;
+            if (stripTooLong && maxLength > 0 && result != null && result.Length > maxLength)
             {
-                int maxLength = EngineContext.Current.Resolve<CustomerSettings>().CustomerNameFormatMaxLength;
-                if (maxLength > 0 && result.Length > maxLength)
-                {
-					result = result.Truncate(maxLength, "...");
-                }
+                result = result.Truncate(maxLength, "...");
             }
 
             return result;
         }
 
-		/// <summary>
-		/// Find any email address of customer
-		/// </summary>
-		public static string FindEmail(this Customer customer)
+        /// <summary>
+        /// Find any email address of customer
+        /// </summary>
+        public static string FindEmail(this Customer customer)
 		{
 			if (customer != null)
 			{

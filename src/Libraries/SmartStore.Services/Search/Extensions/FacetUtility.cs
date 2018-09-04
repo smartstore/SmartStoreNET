@@ -140,36 +140,6 @@ namespace SmartStore.Services.Search.Extensions
 			}
 		}
 
-        public static string GetPublicName(Customer customer, bool userNamesEnabled)
-        {
-            if (customer == null)
-            {
-                return null;
-            }
-
-            var name = userNamesEnabled ? customer.Username : null;
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                name = GetPublicName(customer.FirstName, customer.LastName);
-            }
-            else
-            {
-                var atSymbol = name.IndexOf('@');
-                if (atSymbol > 1)
-                {
-                    name = name.Substring(0, atSymbol);
-                }
-            }
-
-            if (customer.BillingAddress != null && string.IsNullOrWhiteSpace(name))
-            {
-                name = GetPublicName(customer.BillingAddress.FirstName, customer.BillingAddress.LastName);
-            }
-
-            return name;
-        }
-
         public static IQueryable<Customer> GetCustomersByNumberOfPosts(
             IRepository<ForumPost> forumPostRepository,
             IRepository<StoreMapping> storeMappingRepository,
@@ -178,7 +148,9 @@ namespace SmartStore.Services.Search.Extensions
         {
             var postQuery = forumPostRepository.TableUntracked
                 .Expand(x => x.Customer)
-                .Expand(x => x.Customer.BillingAddress);
+                .Expand(x => x.Customer.BillingAddress)
+                .Expand(x => x.Customer.ShippingAddress)
+                .Expand(x => x.Customer.Addresses);
 
             if (storeId > 0)
             {

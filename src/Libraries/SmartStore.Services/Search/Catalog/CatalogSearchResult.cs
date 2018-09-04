@@ -103,8 +103,10 @@ namespace SmartStore.Services.Search
 		/// <returns>Highlighted text fragments </returns>
 		public string Highlight(string input, string preMatch = "<strong>", string postMatch = "</strong>", bool useSearchEngine = true)
 		{
-			if (Query?.Term == null || input.IsEmpty())
-				return input;
+            if (Query?.Term == null || input.IsEmpty())
+            {
+                return input;
+            }
 
 			string hilite = null;
 
@@ -112,7 +114,7 @@ namespace SmartStore.Services.Search
 			{
 				try
 				{
-					hilite = Engine.Highlight(input, preMatch, postMatch);
+					hilite = Engine.Highlight(input, "name", preMatch, postMatch);
 				}
 				catch { }
 			}

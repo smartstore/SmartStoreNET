@@ -191,6 +191,12 @@
 													<span>@topic.CustomerName</span>
 												}
 											</div>
+                                            if (Model.SearchResult.CanHighlightPostFor(topic.FirstPostId))
+                                            {
+                                                <div class="mt-2">
+                                                    @Html.Raw(Model.SearchResult.Highlight(topic.FirstPostId, "<mark>", "</mark>"))
+                                                </div>
+                                            }
 										}
                                     </div>
                                 </td>

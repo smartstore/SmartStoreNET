@@ -5,8 +5,10 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search.Extensions;
@@ -19,48 +21,64 @@ namespace SmartStore.Services.Search
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IForumService _forumService;
         private readonly ICommonServices _services;
+        private readonly CustomerSettings _customerSettings;
 
-		public LinqForumSearchService(
+        public LinqForumSearchService(
             IRepository<ForumPost> forumPostRepository,
             IRepository<StoreMapping> storeMappingRepository,
             IForumService forumService,
-            ICommonServices services)
+            ICommonServices services,
+            CustomerSettings customerSettings)
 		{
             _forumPostRepository = forumPostRepository;
             _storeMappingRepository = storeMappingRepository;
             _forumService = forumService;
 			_services = services;
+            _customerSettings = customerSettings;
 
+            T = NullLocalizer.Instance;
             QuerySettings = DbQuerySettings.Default;
         }
 
+        public Localizer T { get; set; }
         public DbQuerySettings QuerySettings { get; set; }
 
         protected virtual IQueryable<LinqSearchTopic> GetTopicQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery)
         {
             // Post query.
             var ordered = false;
-            var term = searchQuery.Term;
+            var t = searchQuery.Term;
+            var f = _customerSettings.CustomerNameFormat;
             var fields = searchQuery.Fields;
             var filters = new List<ISearchFilter>();
             var query = baseQuery ?? _forumPostRepository.TableUntracked.Expand(x => x.ForumTopic);
 
             // Apply search term.
-            if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
+            if (t.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
             {
                 if (searchQuery.Mode == SearchMode.StartsWith)
                 {
                     query = query.Where(x =>
-                        (fields.Contains("subject") && x.ForumTopic.Subject.StartsWith(term)) ||
-                        (fields.Contains("username") && x.Customer.Username.StartsWith(term)) ||
-                        (fields.Contains("text") && x.Text.StartsWith(term)));
+                        (fields.Contains("subject") && x.ForumTopic.Subject.StartsWith(t)) ||
+                        (fields.Contains("text") && x.Text.StartsWith(t)) ||
+                        (fields.Contains("username") && (
+                            f == CustomerNameFormat.ShowEmails ? x.Customer.Email.StartsWith(t) :
+                            f == CustomerNameFormat.ShowUsernames ? x.Customer.Username.StartsWith(t) :
+                            f == CustomerNameFormat.ShowFirstName ? x.Customer.FirstName.StartsWith(t) :
+                            x.Customer.FullName.StartsWith(t))
+                        ));
                 }
                 else
                 {
                     query = query.Where(x =>
-                        (fields.Contains("subject") && x.ForumTopic.Subject.Contains(term)) ||
-                        (fields.Contains("username") && x.Customer.Username.Contains(term)) ||
-                        (fields.Contains("text") && x.Text.Contains(term)));
+                        (fields.Contains("subject") && x.ForumTopic.Subject.Contains(t)) ||
+                        (fields.Contains("text") && x.Text.Contains(t)) ||
+                        (fields.Contains("username") && (
+                            f == CustomerNameFormat.ShowEmails ? x.Customer.Email.Contains(t) :
+                            f == CustomerNameFormat.ShowUsernames ? x.Customer.Username.Contains(t) :
+                            f == CustomerNameFormat.ShowFirstName ? x.Customer.FirstName.Contains(t) :
+                            x.Customer.FullName.Contains(t))
+                        ));
                 }
             }
 
@@ -153,6 +171,7 @@ namespace SmartStore.Services.Search
             }
 
             // Topic query.
+            // Unified order: we only sort by ForumPost.Id to save an additional database query in ForumSearchService.Search.
             var topicQuery =
                 from fp in query
                 group fp by fp.TopicId into grp
@@ -199,7 +218,6 @@ namespace SmartStore.Services.Search
             var result = new Dictionary<string, FacetGroup>();
             var storeId = searchQuery.StoreId ?? _services.StoreContext.CurrentStore.Id;
             var languageId = searchQuery.LanguageId ?? _services.WorkContext.WorkingLanguage.Id;
-            var userNamesEnabled = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled;
 
             foreach (var key in searchQuery.FacetDescriptors.Keys)
             {
@@ -251,7 +269,7 @@ namespace SmartStore.Services.Search
 
                     foreach (var customer in customers)
                     {
-                        var name = FacetUtility.GetPublicName(customer, userNamesEnabled);
+                        var name = customer.FormatUserName(_customerSettings, T, true);
                         if (name.HasValue())
                         {
                             facets.Add(new Facet(new FacetValue(customer.Id, IndexTypeCode.Int32)

@@ -25,7 +25,7 @@
     }
 
     string pagerHtml = null;
-    pagerHtml = Html.Partial("Product.List.Pager", Model.PagedList).ToHtmlString();
+    pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
 }
 
 <div class="page forum-search">
@@ -103,24 +103,7 @@
                 @if (Model.AllowSorting)
                 {
                     <div class="fsearch-actions--sort">
-                        <div class="mf-dropdown">
-			                <button class="btn btn-secondary btn-fsearch-action d-none d-lg-block" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
-				                <i class="fa fa-sort d-xl-none"></i>
-				                <span class="d-xl-none">@Model.CurrentSortOrderName</span>
-				                <em class="d-none d-xl-inline">@T("Products.SortByX", "<span>" + Model.CurrentSortOrderName + "</span>")</em>
-				                <i class="fa fa-caret-down"></i>
-			                </button>
-			                <button class="btn btn-light btn-no-border btn-labeled icon-right btn-block d-lg-none">
-				                <span>@T("Products.ToSort")</span>
-				                <b><i class="fa fa-fw fa-sort"></i></b>
-			                </button>
-			                <select class="fsearch-action-select form-control noskin" name="fsearch-action-sort" id="fsearch-action-sort" data-qname="o" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
-				                @foreach (var sort in Model.AvailableSortOptions)
-                                {
-					                <option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sort.Value</option>
-                                }
-			                </select>
-                        </div>
+                        @{ Html.RenderPartial("Product.List.FilterSort", Model); }
                     </div>
                 }
 
@@ -154,7 +137,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        @foreach (ForumTopicRowModel topic in Model.PagedList.PagedList)
+                        @foreach (ForumTopicRowModel topic in Model.PagedList)
                         {
                             <tr class="topic">
                                 <td class="image">

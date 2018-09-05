@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Catalog;
-using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Models.Boards
@@ -14,6 +14,7 @@ namespace SmartStore.Web.Models.Boards
         public ForumSearchResultModel(ForumSearchQuery query)
         {
             Query = query;
+            AvailablePageSizes = new int[0];
         }
 
         public ForumSearchQuery Query { get; private set; }
@@ -41,9 +42,11 @@ namespace SmartStore.Web.Models.Boards
         public bool AllowSorting { get; set; }
         public int? CurrentSortOrder { get; set; }
         public string CurrentSortOrderName { get; set; }
+        public string RelevanceSortOrderName { get; set; }
         public IDictionary<int, string> AvailableSortOptions { get; set; }
 
-        public PagedListModel PagedList { get; set; }
+        public IPageable PagedList { get; set; }
+        public IEnumerable<int> AvailablePageSizes { get; set; }
 
         #endregion
     }

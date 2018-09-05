@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Catalog
 {
@@ -15,8 +15,10 @@ namespace SmartStore.Web.Models.Catalog
 		bool AllowSorting { get; }
 		int? CurrentSortOrder { get; }
 		string CurrentSortOrderName { get; }
-		IDictionary<int, string> AvailableSortOptions { get; }
+        string RelevanceSortOrderName { get; }
+        IDictionary<int, string> AvailableSortOptions { get; }
 
-        PagedListModel PagedList { get; }
-	}
+        IPageable PagedList { get; }
+        IEnumerable<int> AvailablePageSizes { get; }
+    }
 }

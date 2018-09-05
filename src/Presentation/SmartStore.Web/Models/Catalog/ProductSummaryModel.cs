@@ -20,8 +20,9 @@ namespace SmartStore.Web.Models.Catalog
 
 			Items = new List<SummaryItem>();
 			AvailableSortOptions = new Dictionary<int, string>();
-            PagedList = new PagedListModel(products);
-		}
+            AvailablePageSizes = new int[0];
+            PagedList = products;
+        }
 
 		public int? ThumbSize { get; set; }
 		public bool ShowSku { get; set; }
@@ -60,9 +61,10 @@ namespace SmartStore.Web.Models.Catalog
 		public string RelevanceSortOrderName { get; set; }
 		public IDictionary<int, string> AvailableSortOptions { get; set; }
 
-        public PagedListModel PagedList { get; set; }
+        public IPageable PagedList { get; private set; }
+        public IEnumerable<int> AvailablePageSizes { get; set; }
 
-		public void Dispose()
+        public void Dispose()
 		{
 			if (Items != null)
 			{

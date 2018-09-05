@@ -1,7 +1,6 @@
-﻿@model ProductSummaryModel
-
-@using SmartStore.Web.Models.Catalog;
+﻿@using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Catalog;
+@model IListActions
 
 <!-- Filter -->
 @if (Model.AllowFiltering)
@@ -15,7 +14,6 @@
 		</div>
 	</div>
 }
-
 
 <!-- Sort -->
 @if (Model.AllowSorting)
@@ -35,8 +33,8 @@
 			<select class="artlist-action-select form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
 				@foreach (var sort in Model.AvailableSortOptions)
 				{
-					var sortName = ((int)ProductSortingEnum.Relevance == sort.Key ? (Model.RelevanceSortOrderName ?? sort.Value) : sort.Value);
-					<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sortName</option>
+					var sortName = (Model is ProductSummaryModel && sort.Key == (int)ProductSortingEnum.Relevance) ? Model.RelevanceSortOrderName : null;
+					<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@(sortName ?? sort.Value)</option>
 				}
 			</select>
 		</div>

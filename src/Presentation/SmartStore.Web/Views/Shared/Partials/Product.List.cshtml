@@ -17,10 +17,10 @@
     }
 
     string pagerHtml = null;
-    pagerHtml = Html.Partial("Product.List.Pager", Model.PagedList).ToHtmlString();
+    pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
 
     // TODO: (mc) AllowFiltering (?)
-    var hasActions = Model.PagedList.PagedList.TotalPages > 1
+    var hasActions = Model.PagedList.TotalPages > 1
         || Model.AllowSorting
         || Model.AllowViewModeChanging
         || Model.AllowFiltering;
@@ -70,7 +70,7 @@
 	}
 }
 
-@if (Model.PagedList.PagedList.TotalCount > 0 && hasActions)
+@if (Model.PagedList.TotalCount > 0 && hasActions)
 {
 	<div class="artlist-actions artlist-actions--top d-flex flex-wrap">
 		@if (Model.AllowSorting || Model.AllowFiltering)
@@ -104,7 +104,7 @@
 	Html.RenderAction("ActiveFilters", "Search", new { area = "" });
 }
 
-@if (Model.PagedList.PagedList.TotalCount > 0)
+@if (Model.PagedList.TotalCount > 0)
 {
 	<div id="@id" class='@String.Join(" ", listCssClasses)'>
 		@foreach (var product in Model.Items)
@@ -114,7 +114,7 @@
 	</div>
 }
 
-@if (Model.PagedList.PagedList.TotalPages > 1 && pagerHtml.HasValue())
+@if (Model.PagedList.TotalPages > 1 && pagerHtml.HasValue())
 {
 	<div class="artlist-actions artlist-actions--bottom">
 		<div class="artlist-action-group artlist-action-group--page">

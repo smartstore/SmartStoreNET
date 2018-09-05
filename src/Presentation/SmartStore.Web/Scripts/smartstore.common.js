@@ -41,7 +41,7 @@
 					'<a href="javascript:void(0)" class="modal-closer d-none d-md-block" data-dismiss="modal" title="' + window.Res['Common.Close'] + '">&times;</a>',
 					'<div class="modal-dialog{0} modal-dialog-app" role="document">'.format(!!(sizeClass) ? " " + sizeClass : ""),
 						'<div class="modal-content">',
-							'<div class="modal-body" style="padding: 0">',
+							'<div class="modal-body">',
 								'<iframe class="modal-flex-fill-area" frameborder="0" src="' + opts.url + '" />',
 							'</div>',
 							'<div class="modal-footer d-md-none">',
@@ -57,7 +57,7 @@
 			});
 
 			// Create spinner
-			var spinner = $('<div class="spinner-container w-100 h-100 active" style="position:absolute; top:0; background:#fff"></div>').append(createCircularSpinner(64, true, 2));
+			var spinner = $('<div class="spinner-container w-100 h-100 active" style="position:absolute; top:0; background:#fff; border-radius:4px"></div>').append(createCircularSpinner(64, true, 2));
 			modal.find('.modal-body').append(spinner);
 
 			modal.find('.modal-body > iframe').on('load', function (e) {

@@ -59,7 +59,7 @@ namespace SmartStore.Web.Infrastructure
         {
             get
             {
-                return int.MinValue;
+                return int.MinValue + 1;
             }
         }
     }

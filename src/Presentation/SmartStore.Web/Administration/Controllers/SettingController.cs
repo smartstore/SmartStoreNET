@@ -1525,7 +1525,7 @@ namespace SmartStore.Admin.Controllers
             }
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
-            StoreDependingSettings.GetOverrideKeys(fsettings, model, storeScope, Services.Settings);
+            StoreDependingSettings.GetOverrideKeys(fsettings, model.ForumSearchSettings, storeScope, Services.Settings);
 
             // Facet settings (CommonFacetSettingsModel).
 			foreach (var prefix in new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" })

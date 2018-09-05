@@ -43,7 +43,7 @@ namespace SmartStore.Services.Search.Modelling
 				{
 					foreach (var groupKind in groupKinds)
 					{
-						var key = FacetUtility.GetFacetAliasSettingKey(groupKind, language.Id);
+						var key = FacetUtility.GetFacetAliasSettingKey(groupKind, language.Id, "Forum");
 						var value = _settingService.GetSettingByKey<string>(key);
 						if (value.HasValue())
 						{
@@ -65,7 +65,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			var mappings = GetCommonFacetAliasByGroupKindMappings();
 
-			return mappings.Get(FacetUtility.GetFacetAliasSettingKey(kind, languageId));
+			return mappings.Get(FacetUtility.GetFacetAliasSettingKey(kind, languageId, "Forum"));
 		}
 	}
 }

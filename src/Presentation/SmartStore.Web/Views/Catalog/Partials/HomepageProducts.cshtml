@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
-	if (Model.PagedList.TotalCount == 0)
+	if (Model.PagedList.PagedList.TotalCount == 0)
 	{
 		return;
 	}

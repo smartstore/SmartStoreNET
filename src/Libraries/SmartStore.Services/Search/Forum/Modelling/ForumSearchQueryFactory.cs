@@ -108,7 +108,7 @@ namespace SmartStore.Services.Search.Modelling
         protected virtual void ConvertPagingSorting(ForumSearchQuery query, RouteData routeData, string origin)
         {
             var index = Math.Max(1, GetValueFor<int?>("i") ?? 1);
-            var size = _forumSettings.SearchResultsPageSize;
+            var size = GetPageSize(query, routeData, origin);
             query.Slice((index - 1) * size, size);
 
             if (_forumSettings.AllowSorting)
@@ -122,6 +122,36 @@ namespace SmartStore.Services.Search.Modelling
                 query.SortBy(orderBy.Value);
                 query.CustomData["CurrentSortOrder"] = orderBy.Value;
             }
+        }
+
+        protected virtual int GetPageSize(ForumSearchQuery query, RouteData routeData, string origin)
+        {
+            var sessionKey = "PageSize:" + origin;
+
+            if (_forumSettings.AllowCustomersToSelectPageSize)
+            {
+                var selectedSize = GetValueFor<int?>("s");
+                if (selectedSize.HasValue)
+                {
+                    if (_httpContext.Session != null)
+                    {
+                        _httpContext.Session[sessionKey] = selectedSize.Value;
+                    }
+
+                    return selectedSize.Value;
+                }
+            }
+
+            if (_httpContext.Session != null)
+            {
+                var sessionSize = _httpContext.Session[sessionKey].Convert<int?>();
+                if (sessionSize.HasValue)
+                {
+                    return sessionSize.Value;
+                }
+            }
+
+            return _forumSettings.SearchResultsPageSize;
         }
 
         private void AddFacet(

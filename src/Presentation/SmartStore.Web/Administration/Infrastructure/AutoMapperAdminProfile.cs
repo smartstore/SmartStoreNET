@@ -634,7 +634,6 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.TopicSubjectMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.StrippedTopicMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.PostMaxLength, mo => mo.Ignore())
-				.ForMember(dest => dest.TopicPostsPageLinkDisplayCount, mo => mo.Ignore())
 				.ForMember(dest => dest.LatestCustomerPostsPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.PrivateMessagesPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.ForumSubscriptionsPageSize, mo => mo.Ignore())

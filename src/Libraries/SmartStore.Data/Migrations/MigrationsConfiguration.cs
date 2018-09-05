@@ -433,6 +433,19 @@
                 "Specifies whether forum posts can be sorted.",
                 "Legt fest, ob Forenbeiträge sortiert werden können.");
 
+            builder.AddOrUpdate("Admin.Common.DefaultPageSizeOptions",
+                "Page size options",
+                "Auswahlmöglichkeiten für Seitengröße",
+                "Comma-separated page size options that a customer can select in lists.",
+                "Kommagetrennte Liste mit Optionen für Seitengröße, die ein Kunde in Listen wählen kann.");
+
+            builder.AddOrUpdate("Admin.Common.AllowCustomersToSelectPageSize",
+                "Allow customers to select page size",
+                "Kunde kann Listengröße ändern",
+                "Whether customers are allowed to select the page size from a predefined list of options.",
+                "Kunden können die Listengröße mit Hilfe einer vorgegebenen Optionsliste ändern.");
+
+
             builder.Delete(
                 "Admin.Configuration.Settings.Search.DefaultSortOrderMode",
                 "Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts",

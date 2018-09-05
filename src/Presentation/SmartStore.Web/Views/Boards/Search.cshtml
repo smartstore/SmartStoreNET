@@ -24,11 +24,8 @@
         suggestions = Model.SearchResult.SpellCheckerSuggestions;
     }
 
-    //"TODO: pager
-    //var pager = Html.SmartStore().Pager(Model.SearchResult.Hits.PageIndex, Model.SearchResult.Hits.PageSize, Model.TotalCount)
-    //    .Name("paginator")
-    //    .Alignment(PagerAlignment.Right)
-    //    .Route("BoardSearch");
+    string pagerHtml = null;
+    pagerHtml = Html.Partial("Product.List.Pager", Model.PagedList).ToHtmlString();
 }
 
 <div class="page forum-search">
@@ -51,7 +48,7 @@
 
     <div class="page-body">
         <div class="search-input mt-4 mb-5">
-            @if (Model.SearchResult.Facets.Any())
+            @if (Model.AllowFiltering && Model.SearchResult.Facets.Any())
             {
                 <div class="mb-4">
                     @{ Html.RenderAction("Filters", new { model = Model }); }
@@ -126,6 +123,13 @@
                         </div>
                     </div>
                 }
+
+                @if (pagerHtml.HasValue())
+                {
+                    <div class="fsearch-actions--page d-flex ml-auto">
+                        @Html.Raw(pagerHtml)
+                    </div>
+                }
             </div>
         }
 
@@ -150,7 +154,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        @foreach (var topic in Model.ForumTopics)
+                        @foreach (ForumTopicRowModel topic in Model.PagedList.PagedList)
                         {
                             <tr class="topic">
                                 <td class="image">
@@ -204,7 +208,6 @@
                                             .Size(PagerSize.Mini)
                                             .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                                     }
-
                                     <div class="topic-starter">
 										@if (topic.CustomerId > 0)
 										{
@@ -244,14 +247,22 @@
             </div>
         </div>
 
+        @if (Model.TotalCount > 0 && pagerHtml.HasValue())
+        {
+	        <div class="fsearch-actions fsearch-actions--bottom d-flex flex-wrap">
+		        <div class="fsearch-actions--page d-flex ml-auto">
+			        @Html.Raw(pagerHtml)
+		        </div>
+	        </div>
+        }
     </div>
 </div>
 
 <script type="text/javascript">
     $(document).ready(function () {
 
-        // Sorting changed.
-	    $('.fsearch-actions').on('change', '.fsearch-action-select', function (e) {
+        // Sorting, page size or page index changed.
+        $('.fsearch-actions').on('change', '.fsearch-action-select, .artlist-action-select', function (e) {
 		    var select = $(this),
 			    qname = select.data('qname'),
 			    url = select.data('url'),

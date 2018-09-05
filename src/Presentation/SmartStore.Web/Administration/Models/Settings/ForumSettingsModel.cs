@@ -38,6 +38,15 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.AllowSorting")]
         public bool AllowSorting { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.SearchResultsPageSize")]
+        public int SearchResultsPageSize { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.DefaultPageSizeOptions")]
+        public string DefaultPageSizeOptions { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.AllowCustomersToSelectPageSize")]
+        public bool AllowCustomersToSelectPageSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumEditor")]
         public EditorType ForumEditor { get; set; }
 
@@ -64,8 +73,5 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumFeedCount")]
         public int ForumFeedCount { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.SearchResultsPageSize")]
-        public int SearchResultsPageSize { get; set; }
     }
 }

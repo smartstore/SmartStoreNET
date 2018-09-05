@@ -1,7 +1,5 @@
-﻿@model ProductSummaryModel
-
-@using SmartStore.Web.Models.Catalog;
-
+﻿@using SmartStore.Web.Models.Common;
+@model PagedListModel
 @{ 
 	var pageable = Model.PagedList;
 }
@@ -84,7 +82,7 @@
 				<em class="d-none d-md-inline">@T("Pager.PageXOfY", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
 				<i class="fa fa-caret-down"></i>
 			</button>
-			<select class="artlist-action-select form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Pager.PageXOfY", pageable.PageNumber, pageable.TotalPages)">
+			<select class="artlist-action-select form-control noskin" name="artlist-action-page" id="artlist-action-page" data-qname="i" title="@T("Pager.PageXOfY", pageable.PageNumber, pageable.TotalPages)">
 				@{
 					int pageCount = pageable.TotalPages;
 					int start = GetFirstPageIndex(pageable) + 1;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Media;
@@ -27,6 +28,7 @@ using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Boards;
+using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Controllers
@@ -1638,11 +1640,25 @@ namespace SmartStore.Web.Controllers
 
             model.SearchResult = result ?? new ForumSearchResult(query);
             model.TotalCount = model.SearchResult.TotalHitsCount;
+            
+            var pagedList = new PagedList<ForumTopicRowModel>(
+                model.SearchResult.Hits.Select(x => PrepareForumTopicRowModel(x)),
+                model.SearchResult.Hits.PageIndex,
+                model.SearchResult.Hits.PageSize,
+                model.SearchResult.TotalHitsCount);
 
-            foreach (var topic in model.SearchResult.Hits)
+            model.PagedList = new PagedListModel(pagedList);
+
+            if (_forumSettings.AllowCustomersToSelectPageSize)
             {
-                var topicModel = PrepareForumTopicRowModel(topic);
-                model.ForumTopics.Add(topicModel);
+                try
+                {
+                    model.PagedList.AvailablePageSizes = _forumSettings.DefaultPageSizeOptions.Convert<List<int>>();
+                }
+                catch 
+                {
+                    model.PagedList.AvailablePageSizes = new int[] { 12, 24, 36, 48, 72, 120 };
+                }
             }
 
             CreateForumBreadcrumb();

@@ -79,11 +79,11 @@ namespace SmartStore.Web.Controllers
 			{
 				try
 				{
-					model.AvailablePageSizes = (entity?.PageSizeOptions.NullEmpty() ?? defaultPageSizeOptions).Convert<List<int>>();
+					model.PagedList.AvailablePageSizes = (entity?.PageSizeOptions.NullEmpty() ?? defaultPageSizeOptions).Convert<List<int>>();
 				}
 				catch
 				{
-					model.AvailablePageSizes = new int[] { 12, 24, 36, 48, 72, 120 };
+					model.PagedList.AvailablePageSizes = new int[] { 12, 24, 36, 48, 72, 120 };
 				}
 			}
 

@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Catalog
@@ -19,8 +20,7 @@ namespace SmartStore.Web.Models.Catalog
 
 			Items = new List<SummaryItem>();
 			AvailableSortOptions = new Dictionary<int, string>();
-			AvailablePageSizes = new int[0];
-			PagedList = products;
+            PagedList = new PagedListModel(products);
 		}
 
 		public int? ThumbSize { get; set; }
@@ -60,8 +60,7 @@ namespace SmartStore.Web.Models.Catalog
 		public string RelevanceSortOrderName { get; set; }
 		public IDictionary<int, string> AvailableSortOptions { get; set; }
 
-		public IEnumerable<int> AvailablePageSizes { get; set; }
-		public IPageable PagedList { get; set; }
+        public PagedListModel PagedList { get; set; }
 
 		public void Dispose()
 		{

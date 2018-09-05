@@ -14,8 +14,10 @@ namespace SmartStore.Core.Domain.Forums
 			TopicsPageSize = 10;
 			PostsPageSize = 10;
             AllowSorting = true;
-			SearchResultsPageSize = 10;
-			LatestCustomerPostsPageSize = 10;
+			SearchResultsPageSize = 12;
+            DefaultPageSizeOptions = "12,24,36,48,72,120";
+            AllowCustomersToSelectPageSize = true;
+            LatestCustomerPostsPageSize = 10;
 			ShowCustomersPostCount = true;
 			ForumEditor = EditorType.BBCodeEditor;
 			SignaturesEnabled = true;
@@ -95,14 +97,19 @@ namespace SmartStore.Core.Domain.Forums
         public bool AllowSorting { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of links to display for pagination of posts in topics
-        /// </summary>
-        public int TopicPostsPageLinkDisplayCount { get; set; }
-
-        /// <summary>
         /// Gets or sets the page size for search result
         /// </summary>
         public int SearchResultsPageSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the available customer selectable default page size options
+        /// </summary>
+        public string DefaultPageSizeOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether customers can select page size in product listings
+        /// </summary>
+        public bool AllowCustomersToSelectPageSize { get; set; }
 
         /// <summary>
         /// Gets or sets the page size for latest customer posts

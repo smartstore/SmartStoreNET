@@ -1390,7 +1390,7 @@ namespace SmartStore.Admin.Controllers
             }
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
+            var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
             var fsettings = Services.Settings.LoadSetting<ForumSearchSettings>(storeScope);
             var megaSearchDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearch");
 			var megaSearchPlusDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearchPlus");
@@ -1525,7 +1525,7 @@ namespace SmartStore.Admin.Controllers
             }
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
-            StoreDependingSettings.GetOverrideKeys(fsettings, model.ForumSearchSettings, storeScope, Services.Settings);
+            StoreDependingSettings.GetOverrideKeys(fsettings, model.ForumSearchSettings, storeScope, Services.Settings, false);
 
             // Facet settings (CommonFacetSettingsModel).
 			foreach (var prefix in new string[] { "Brand", "Price", "Rating", "DeliveryTime", "Availability", "NewArrivals" })

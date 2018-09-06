@@ -7,7 +7,7 @@ using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Services.Search
 {
-	public partial class CatalogSearchResult
+    public partial class CatalogSearchResult
 	{
 		private readonly int _totalHitsCount;
 		private readonly Func<IList<Product>> _hitsFactory;
@@ -94,37 +94,6 @@ namespace SmartStore.Services.Search
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Highlights chosen terms in a text, extracting the most relevant sections
-		/// </summary>
-		/// <param name="input">Text to highlight terms in</param>
-		/// <returns>Highlighted text fragments </returns>
-		public string Highlight(string input, string preMatch = "<strong>", string postMatch = "</strong>", bool useSearchEngine = true)
-		{
-            if (Query?.Term == null || input.IsEmpty())
-            {
-                return input;
-            }
-
-			string hilite = null;
-
-			if (useSearchEngine && Engine != null)
-			{
-				try
-				{
-					hilite = Engine.Highlight(input, "name", preMatch, postMatch);
-				}
-				catch { }
-			}
-
-			if (hilite.HasValue())
-			{
-				return hilite;
-			}
-
-			return input.HighlightKeywords(Query.Term, preMatch, postMatch);
 		}
 	}
 }

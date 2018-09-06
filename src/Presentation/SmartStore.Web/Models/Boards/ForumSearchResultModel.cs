@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Search;
-using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Models.Boards
 {
-    public class ForumSearchResultModel : ModelBase, IForumSearchResultModel, IListActions
+    public class ForumSearchResultModel : SearchResultModelBase, IForumSearchResultModel, IListActions
     {
         public ForumSearchResultModel(ForumSearchQuery query)
         {
@@ -30,6 +29,8 @@ namespace SmartStore.Web.Models.Boards
         public int TotalCount { get; set; }
         public int PostsPageSize { get; set; }
         public string Error { get; set; }
+
+        public override IList<HitGroup> HitGroups { get; protected set; }
 
         #region IListActions
 

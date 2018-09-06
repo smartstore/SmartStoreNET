@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
@@ -18,7 +17,7 @@ using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class SearchController : PublicControllerBase
+    public partial class SearchController : PublicControllerBase
 	{
 		private readonly CatalogSettings _catalogSettings;
 		private readonly MediaSettings _mediaSettings;
@@ -99,14 +98,13 @@ namespace SmartStore.Web.Controllers
 			// Add product hits
 			model.TopProducts = summaryModel;
 
-			// Add spell checker suggestions (if any)
-			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
+            // Add spell checker suggestions (if any)
+            model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
 
-			return PartialView(model);
+            return PartialView(model);
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		[ValidateInput(false)]
+		[RequireHttpsByConfig(SslRequirement.No), ValidateInput(false)]
 		public ActionResult Search(CatalogSearchQuery query)
 		{
 			var model = new SearchResultModel(query);
@@ -171,9 +169,9 @@ namespace SmartStore.Web.Controllers
 			model.TopProducts = summaryModel;
 
 			// Add spell checker suggestions (if any)
-			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
+            model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
 
-			return View(model);
+            return View(model);
 		}
 
 		[ChildActionOnly]
@@ -220,28 +218,6 @@ namespace SmartStore.Web.Controllers
 		{
 			// Just a "proxy" for our "DefaultFacetTemplateSelector"
 			return PartialView(templateName, facetGroup);
-		}
-
-		private void AddSpellCheckerSuggestionsToModel(string[] suggestions, SearchResultModel model)
-		{
-			if (suggestions.Length == 0)
-				return;
-
-			var hitGroup = new SearchResultModel.HitGroup(model)
-			{
-				Name = "SpellChecker",
-				DisplayName = T("Search.DidYouMean"),
-				Ordinal = -100
-			};
-
-			hitGroup.Hits.AddRange(suggestions.Select(x => new SearchResultModel.HitItem
-			{
-				Label = x,
-				Url = Url.RouteUrl("Search", new { q = x }),
-				NoHighlight = true
-			}));
-
-			model.HitGroups.Add(hitGroup);
 		}
 	}
 }

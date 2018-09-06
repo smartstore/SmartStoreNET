@@ -177,7 +177,7 @@
                                         <span class="topictype" dir="auto">@Html.Raw(topicText)</span>
                                     }
                                     <a href="@(Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.SeName }))@(Html.Raw(topic.AnchorTag))" class="topic-title">
-                                        @Html.Raw(Model.SearchResult.Highlight(topic.Subject, "<mark>", "</mark>", false))
+                                        @Html.Raw(Model.Highlight(topic.Subject, "subject", Model.Query, null, "<mark>", "</mark>"))
                                     </a>
                                     @if (topic.NumPosts > Model.PostsPageSize)
                                     {
@@ -205,10 +205,10 @@
 													<span>@topic.CustomerName</span>
 												}
 											</div>
-                                            if (Model.SearchResult.CanHighlightPostFor(topic.FirstPostId))
+                                            if (topic.FirstPostId != 0 && Model.SearchResult.Engine != null && Model.Query.Fields != null && Model.Query.Fields.Contains("text"))
                                             {
                                                 <div class="mt-2">
-                                                    @Html.Raw(Model.SearchResult.Highlight(topic.FirstPostId, "<mark>", "</mark>"))
+                                                    @Html.Raw(Model.SearchResult.Engine.Highlight(topic.FirstPostId, "text", "<mark>", "</mark>", 3))
                                                 </div>
                                             }
 										}

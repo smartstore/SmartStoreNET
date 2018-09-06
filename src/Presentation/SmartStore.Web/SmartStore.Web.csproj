@@ -372,6 +372,7 @@
     <Compile Include="Models\Boards\ForumSearchResultModel.cs" />
     <Compile Include="Models\Search\ISearchResultModel.cs" />
     <Compile Include="Models\Search\SearchResultModel.cs" />
+    <Compile Include="Models\Search\SearchResultModelBase.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\ShoppingCart\OffCanvasCartModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
@@ -1764,6 +1765,7 @@
     <Content Include="Views\Shared\EditorTemplates\Html.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
+    <Content Include="Views\Boards\Partials\InstantSearch.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

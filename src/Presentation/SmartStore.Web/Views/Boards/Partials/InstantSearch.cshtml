@@ -1,0 +1,35 @@
+﻿@using SmartStore.Web.Models.Boards;
+@model ForumSearchResultModel
+@{
+	var hitGroups = Model.HitGroups.Where(x => x.Hits.Any()).OrderBy(x => x.Ordinal).ToArray();
+}
+@foreach (var group in hitGroups)
+{
+    var parentModel = group.Parent as ForumSearchResultModel;
+
+    if (group.DisplayName.HasValue())
+    {
+        <h6 class="instasearch-group-header">@group.DisplayName</h6>
+    }
+    <ul class="instasearch-hits">
+        @foreach (var hit in group.Hits)
+        {
+            <li>
+			    <a class="instasearch-hit" href="@hit.Url">
+				    @if (hit.NoHighlight)
+				    {
+					    @hit.Label
+				    }
+				    else
+				    {
+					    @Html.Raw(group.Parent.Highlight(hit.Label, "subject", parentModel.Query, null, "<span class='instasearch-match pl-1'>", "</span>"))
+				    }
+				    @if (hit.Tag.HasValue())
+				    {
+					    <span class="instasearch-hit-tag">@Html.Raw(hit.Tag)</span>
+				    }
+			    </a>
+            </li>
+        }
+    </ul>
+}

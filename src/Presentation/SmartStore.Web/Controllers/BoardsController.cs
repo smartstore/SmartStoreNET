@@ -1557,6 +1557,33 @@ namespace SmartStore.Web.Controllers
 
         #region Search
 
+        [HttpPost, ValidateInput(false)]
+        public ActionResult InstantSearch(ForumSearchQuery query)
+        {
+            if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
+            {
+                return new EmptyResult();
+            }
+
+            query
+                .BuildFacetMap(false)
+                .Slice(0, Math.Min(16, _searchSettings.InstantSearchNumberOfHits))
+                .SortBy(ForumTopicSorting.Relevance);
+
+            var result = _forumSearchService.Search(query);
+
+            var model = new ForumSearchResultModel(query)
+            {
+                SearchResult = result,
+                Term = query.Term,
+                TotalCount = result.TotalHitsCount
+            };
+
+            model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
+
+            return PartialView(model);
+        }
+
         [RequireHttpsByConfig(SslRequirement.No), ValidateInput(false)]
         public ActionResult Search(ForumSearchQuery query/*, bool? adv*/)
         {
@@ -1565,12 +1592,14 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
             }
 
+            CreateForumBreadcrumb();
+            _breadcrumb.Track(new MenuItem { Text = T("Forum.Search") });
+
             ForumSearchResult result = null;
             var language = Services.WorkContext.WorkingLanguage;
             var model = new ForumSearchResultModel(query);
             model.PostsPageSize = _forumSettings.PostsPageSize;
             model.AllowSorting = _forumSettings.AllowSorting;
-            model.Term = query.Term;
 
             // Sorting.
             if (model.AllowSorting)
@@ -1639,6 +1668,7 @@ namespace SmartStore.Web.Controllers
             }
 
             model.SearchResult = result ?? new ForumSearchResult(query);
+            model.Term = query.Term;
             model.TotalCount = model.SearchResult.TotalHitsCount;
 
             model.PagedList = new PagedList<ForumTopicRowModel>(
@@ -1659,8 +1689,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            CreateForumBreadcrumb();
-            _breadcrumb.Track(new MenuItem { Text = T("Forum.Search") });
+            model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
 
             return View(model);
         }

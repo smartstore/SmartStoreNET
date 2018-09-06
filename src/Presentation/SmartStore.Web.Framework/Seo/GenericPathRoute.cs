@@ -1,5 +1,9 @@
-﻿using System.Web;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using System.Web.Routing;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
@@ -13,7 +17,11 @@ namespace SmartStore.Web.Framework.Seo
     /// </summary>
     public class GenericPathRoute : LocalizedRoute
     {
-        /// <summary>
+		// Key = Prefix, Value = EntityType
+		private readonly Multimap<string, string> _urlPrefixes = 
+			new Multimap<string, string>(StringComparer.OrdinalIgnoreCase, x => new HashSet<string>(x, StringComparer.OrdinalIgnoreCase));
+		
+		/// <summary>
         /// Initializes a new instance of the System.Web.Routing.Route class, using the specified URL pattern and handler class.
         /// </summary>
         /// <param name="url">The URL pattern for the route.</param>
@@ -60,6 +68,13 @@ namespace SmartStore.Web.Framework.Seo
         {
         }
 
+		public void RegisterUrlPrefix(string prefix, params string[] entityNames)
+		{
+			Guard.NotEmpty(prefix, nameof(prefix));
+
+			_urlPrefixes.AddRange(prefix, entityNames);
+		}
+
         /// <summary>
         /// Returns information about the requested route.
         /// </summary>
@@ -70,86 +85,104 @@ namespace SmartStore.Web.Framework.Seo
         public override RouteData GetRouteData(HttpContextBase httpContext)
         {
             RouteData data = base.GetRouteData(httpContext);
+
             if (data != null && DataSettings.DatabaseIsInstalled())
             {
-                var urlRecordService = EngineContext.Current.Resolve<IUrlRecordService>();
                 var slug = data.Values["generic_se_name"] as string;
-                var urlRecord = urlRecordService.GetBySlug(slug);
+
+				if (TryResolveUrlPrefix(slug, out var urlPrefix, out var actualSlug, out var entityNames))
+				{
+					slug = actualSlug;
+				}
+				
+				var urlRecordService = EngineContext.Current.Resolve<IUrlRecordService>();
+				var urlRecord = urlRecordService.GetBySlug(slug);
                 if (urlRecord == null)
                 {
                     // no URL record found
-					data.Values["controller"] = "Error";
-					data.Values["action"] = "NotFound";
-                    return data;				
+                    return NotFound(data);				
                 }
+
                 if (!urlRecord.IsActive)
                 {
                     // URL record is not active. let's find the latest one
                     var activeSlug = urlRecordService.GetActiveSlug(urlRecord.EntityId, urlRecord.EntityName, urlRecord.LanguageId);
-                    if (!string.IsNullOrWhiteSpace(activeSlug))
+                    if (activeSlug.HasValue())
                     {
-                        // the active one is found
+                        // The active one is found
                         var webHelper = EngineContext.Current.Resolve<IWebHelper>();
                         var response = httpContext.Response;
                         response.Status = "301 Moved Permanently";
+						if (urlPrefix.HasValue())
+						{
+							activeSlug = urlPrefix + "/" + activeSlug;
+						}
                         response.RedirectLocation = string.Format("{0}{1}", webHelper.GetStoreLocation(false), activeSlug);
                         response.End();
                         return null;
                     }
                     else
                     {
-                        // no active slug found
-						data.Values["controller"] = "Error";
-						data.Values["action"] = "NotFound";
-                        return data;
-                    }
+						// no active slug found
+						return NotFound(data);
+					}
                 }
+
+				// Verify prefix matches any assigned entity name
+				if (entityNames != null && !entityNames.Contains(urlRecord.EntityName))
+				{
+					// does NOT match
+					return NotFound(data);
+				}
 
 				// process URL
 				data.DataTokens["UrlRecord"] = urlRecord;
-				data.Values["SeName"] = urlRecord.Slug;
+				data.Values["SeName"] = slug;
+
+				string controller, action, paramName;
+
                 switch (urlRecord.EntityName.ToLowerInvariant())
                 {
                     case "product":
                         {
-                            data.Values["controller"] = "Product";
-                            data.Values["action"] = "ProductDetails";
-                            data.Values["productid"] = urlRecord.EntityId;
+							controller = "Product";
+							action = "ProductDetails";
+							paramName = "productid";
                         }
                         break;
                     case "category":
                         {
-                            data.Values["controller"] = "Catalog";
-                            data.Values["action"] = "Category";
-                            data.Values["categoryid"] = urlRecord.EntityId;
+							controller = "Catalog";
+							action = "Category";
+							paramName = "categoryid";
                         }
                         break;
                     case "manufacturer":
                         {
-                            data.Values["controller"] = "Catalog";
-                            data.Values["action"] = "Manufacturer";
-                            data.Values["manufacturerid"] = urlRecord.EntityId;
+							controller = "Catalog";
+							action = "Manufacturer";
+							paramName = "manufacturerid";
                         }
                         break;
 					case "topic":
 						{
-							data.Values["controller"] = "Topic";
-							data.Values["action"] = "TopicDetails";
-							data.Values["topicId"] = urlRecord.EntityId;
+							controller = "Topic";
+							action = "TopicDetails";
+							paramName = "topicId";
 						}
 						break;
 					case "newsitem":
                         {
-                            data.Values["controller"] = "News";
-                            data.Values["action"] = "NewsItem";
-                            data.Values["newsItemId"] = urlRecord.EntityId;
+							controller = "News";
+							action = "NewsItem";
+							paramName = "newsItemId";
                         }
                         break;
                     case "blogpost":
                         {
-                            data.Values["controller"] = "Blog";
-                            data.Values["action"] = "BlogPost";
-                            data.Values["blogPostId"] = urlRecord.EntityId;
+							controller = "Blog";
+							action = "BlogPost";
+							paramName = "blogPostId";
                         }
                         break;
                     default:
@@ -157,8 +190,46 @@ namespace SmartStore.Web.Framework.Seo
                             throw new SmartException(string.Format("Unsupported EntityName for UrlRecord: {0}", urlRecord.EntityName));
                         }
                 }
-            }
+
+				data.Values["controller"] = controller;
+				data.Values["action"] = action;
+				data.Values[paramName] = urlRecord.EntityId;
+			}
+
             return data;
         }
+
+		private RouteData NotFound(RouteData data)
+		{
+			data.Values["controller"] = "Error";
+			data.Values["action"] = "NotFound";
+
+			return data;
+		}
+
+		private bool TryResolveUrlPrefix(string slug, out string urlPrefix, out string actualSlug, out ICollection<string> entityNames)
+		{
+			urlPrefix = null;
+			actualSlug = null;
+			entityNames = null;
+
+			if (_urlPrefixes.Count > 0)
+			{
+				var firstSepIndex = slug.IndexOf('/');
+				if (firstSepIndex > 0)
+				{
+					var prefix = slug.Substring(0, firstSepIndex);
+					if (_urlPrefixes.ContainsKey(prefix))
+					{
+						urlPrefix = prefix;
+						entityNames = _urlPrefixes[prefix];
+						actualSlug = slug.Substring(prefix.Length + 1);
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
     }
 }

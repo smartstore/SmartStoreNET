@@ -1592,7 +1592,7 @@ namespace SmartStore.Web.Controllers
                 .Slice(0, Math.Min(16, _searchSettings.InstantSearchNumberOfHits))
                 .SortBy(ForumTopicSorting.Relevance);
 
-            var result = _forumSearchService.Search(query);
+            var result = _forumSearchService.Search(query) ?? new ForumSearchResult(query);
 
             var model = new ForumSearchResultModel(query)
             {
@@ -1729,7 +1729,7 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
+            model.AddSpellCheckerSuggestions(model.SearchResult.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
 
             return View(model);
         }

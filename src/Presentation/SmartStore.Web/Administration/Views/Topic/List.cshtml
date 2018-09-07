@@ -20,38 +20,42 @@
     </div>
 </div>
 
-@if (Model.AvailableStores.Count > 1)
-{
-	<div class="row mt-3 grid-filter">
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+<div class="row mt-3 grid-filter">
+	@if (Model.AvailableStores.Count > 1)
+	{
+		<div class="col-sm-6 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchStoreId)
 			@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
 		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.SystemName)
-			@Html.TextBoxFor(model => Model.SystemName, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.Title)
-			@Html.TextBoxFor(model => Model.Title, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.WidgetZone)
-			@Html.TextBoxFor(model => Model.WidgetZone, new { @class = "form-control" })
-		</div>
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(model => model.RenderAsWidget)
-			@Html.EditorFor(model => Model.RenderAsWidget, new { @class = "form-control" })
-		</div>
-
-		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			<label>&nbsp;</label>
-			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
-				<span>@T("Admin.Common.ApplyFilter")</span>
-			</button>
-		</div>
+	}
+	<div class="col-sm-6 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SystemName)
+		@Html.TextBoxFor(model => Model.SystemName, new { @class = "form-control" })
 	</div>
-}
+	<div class="col-sm-6 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.Title)
+		@Html.TextBoxFor(model => Model.Title, new { @class = "form-control" })
+	</div>
+	<div class="col-sm-6 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.WidgetZone)
+		@Html.TextBoxFor(model => Model.WidgetZone, new { @class = "form-control" })
+	</div>
+	<div class="col-sm-6 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.RenderAsWidget)
+		@Html.EditorFor(model => Model.RenderAsWidget, new { @class = "form-control" })
+	</div>
+
+	<div class="col-sm-6 col-xl-3 ml-auto form-group">
+		@if (Model.AvailableStores.Count > 1)
+		{
+			<label>&nbsp;</label>
+		}
+		
+		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-warning btn-block">
+			<span>@T("Admin.Common.ApplyFilter")</span>
+		</button>
+	</div>
+</div>
 
 <div>
 	@(Html.Telerik().Grid<TopicModel>()

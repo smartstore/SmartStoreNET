@@ -63,7 +63,7 @@ $facet-selection-color:             darken($success, 15%);
     top: 0.12rem;
 }
 
-#instasearch-drop {
+.instasearch-drop {
     position: absolute;
     display: none;
     left: 0;
@@ -128,7 +128,7 @@ $facet-selection-color:             darken($success, 15%);
     }
 }
 @include media-breakpoint-up(lg) {
-    #instasearch-drop {
+    .instasearch-drop {
         max-width: none;
     }
     .instasearch-row {

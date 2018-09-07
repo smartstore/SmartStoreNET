@@ -55,15 +55,9 @@
                 </div>
             }
 
-            @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get))
-            {
-                <div class="input-group d-flex w-75 mb-3">
-                    <input type="text" name="q" class="forum-search-text form-control" value="@Model.Term" placeholder="@T("Forum.SearchForumsTooltip")" />
-					<div class="input-group-append">
-						<input type="submit" class="btn btn-primary" value="@T("Forum.SearchButton")" />
-					</div>
-                </div>
-            }
+            <div class="w-75">
+                @{ Html.RenderAction("SearchBox", "Boards"); }
+            </div>
 
 		    @if (Model.AttemptedTerm.HasValue())
 		    {

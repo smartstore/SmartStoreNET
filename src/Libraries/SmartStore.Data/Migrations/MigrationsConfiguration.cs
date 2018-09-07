@@ -464,7 +464,9 @@
                 "Forum.SearchTermMinimumLengthIsNCharacters",
                 "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.All",
                 "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.PostTextOnly",
-                "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.TopicTitlesOnly");
+                "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.TopicTitlesOnly",
+                "Forum.AdvancedSearch",
+                "Forum.SearchButton");
         }
     }
 }

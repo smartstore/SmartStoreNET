@@ -1,7 +1,7 @@
-﻿@model ForumTopicPageModel
-@using SmartStore.Web.Models.Boards;
+﻿@using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
+@model ForumTopicPageModel
 @{
     Layout = "_Layout";
     Html.AddTitleParts(Model.Subject);
@@ -15,8 +15,9 @@
 </script>
 
 <div class="page forum-topic">
-    @{ Html.RenderPartial("_SearchBox"); }
-    
+    <div class="mt-2 mb-4 w-75">
+        @{ Html.RenderAction("SearchBox", "Boards"); }
+    </div>    
     <div class="title">
         <h2>@Model.Subject</h2>
     </div>

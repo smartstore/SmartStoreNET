@@ -1,14 +1,15 @@
-﻿@model ActiveDiscussionsModel
-@using SmartStore.Web.Models.Boards;
+﻿@using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Framework.UI;
-
+@model ActiveDiscussionsModel
 @{ 
     var isPartial = Model.ViewAllLinkEnabled;
 }
 
 @if (!isPartial)
 {
-    Html.RenderPartial("_SearchBox");
+    <div class="mt-2 w-75">
+        @{ Html.RenderAction("SearchBox", "Boards"); }
+    </div>
 }
 
 <div class="active-discussions mt-5">

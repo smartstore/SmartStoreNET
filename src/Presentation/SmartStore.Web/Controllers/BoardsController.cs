@@ -18,6 +18,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
+using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Search.Rendering;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
@@ -28,7 +29,6 @@ using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Boards;
-using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Controllers
@@ -48,6 +48,7 @@ namespace SmartStore.Web.Controllers
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly IBreadcrumb _breadcrumb;
         private readonly Lazy<IFacetTemplateProvider> _templateProvider;
+        private readonly IForumSearchQueryFactory _queryFactory;
 
         public BoardsController(
             IForumService forumService,
@@ -61,7 +62,8 @@ namespace SmartStore.Web.Controllers
             MediaSettings mediaSettings,
             IDateTimeHelper dateTimeHelper,
 			IBreadcrumb breadcrumb,
-            Lazy<IFacetTemplateProvider> templateProvider)
+            Lazy<IFacetTemplateProvider> templateProvider,
+            IForumSearchQueryFactory queryFactory)
         {
             _forumService = forumService;
             _pictureService = pictureService;
@@ -75,6 +77,7 @@ namespace SmartStore.Web.Controllers
             _dateTimeHelper = dateTimeHelper;
             _breadcrumb = breadcrumb;
             _templateProvider = templateProvider;
+            _queryFactory = queryFactory;
         }
 
         #region Utilities
@@ -1557,12 +1560,31 @@ namespace SmartStore.Web.Controllers
 
         #region Search
 
+        [ChildActionOnly]
+        public ActionResult SearchBox()
+        {
+            var currentTerm = _queryFactory.Current?.Term;
+
+            var model = new SearchBoxModel
+            {
+                Origin = "Boards/Search",
+                SearchUrl = Url.RouteUrl("BoardSearch"),
+                InstantSearchUrl = Url.Action("InstantSearch", "Boards"),
+                InputPlaceholder = T("Forum.SearchForumsTooltip"),
+                InstantSearchEnabled = _searchSettings.InstantSearchEnabled,
+                SearchTermMinimumLength = _searchSettings.InstantSearchTermMinLength,
+                CurrentQuery = currentTerm
+            };
+
+            return PartialView("~/Views/Search/Partials/SearchBox.cshtml", model);
+        }
+
         [HttpPost, ValidateInput(false)]
         public ActionResult InstantSearch(ForumSearchQuery query)
         {
             if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
             {
-                return new EmptyResult();
+                return Content(string.Empty);
             }
 
             query
@@ -1580,6 +1602,24 @@ namespace SmartStore.Web.Controllers
             };
 
             model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
+
+            if (result.Hits.Any())
+            {
+                var hitGroup = new SearchResultModelBase.HitGroup(model)
+                {
+                    Name = "InstantSearchHits",
+                    DisplayName = T("Search.Hits"),
+                    Ordinal = 1
+                };
+
+                hitGroup.Hits.AddRange(result.Hits.Select(x => new SearchResultModelBase.HitItem
+                {
+                    Label = x.Subject,
+                    Url = Url.RouteUrl("TopicSlug", new { id = x.Id, slug = x.GetSeName() }) + (x.FirstPostId == 0 ? "" : string.Concat("#", x.FirstPostId))
+                }));
+
+                model.HitGroups.Add(hitGroup);
+            }
 
             return PartialView(model);
         }

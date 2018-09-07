@@ -55,8 +55,12 @@ namespace SmartStore.Web.Controllers
 
 			var model = new SearchBoxModel
 			{
-				InstantSearchEnabled = _searchSettings.InstantSearchEnabled,
-				ShowProductImagesInInstantSearch = _searchSettings.ShowProductImagesInInstantSearch,
+                Origin = "Search/Search",
+                SearchUrl = Url.RouteUrl("Search"),
+                InstantSearchUrl = Url.RouteUrl("InstantSearch"),
+                InputPlaceholder = T("Search.SearchBox.Tooltip"),
+                InstantSearchEnabled = _searchSettings.InstantSearchEnabled,
+				ShowThumbsInInstantSearch = _searchSettings.ShowProductImagesInInstantSearch,
 				SearchTermMinimumLength = _searchSettings.InstantSearchTermMinLength,
 				CurrentQuery = currentTerm
 			};

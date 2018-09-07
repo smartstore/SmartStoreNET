@@ -1,8 +1,8 @@
-﻿@model ForumPageModel
-@using SmartStore.Core.Domain.Forums;
+﻿@using SmartStore.Core.Domain.Forums;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
+@model ForumPageModel
 @{
     Layout = "_Layout";
 
@@ -33,8 +33,9 @@
 </script>
 
 <div class="page forum">
-    @{ Html.RenderPartial("_SearchBox"); }
-
+    <div class="mt-2 w-75">
+        @{ Html.RenderAction("SearchBox", "Boards"); }
+    </div>
     <div class="row mt-5">
         <div class="col">
             <div class="heading mb-4">

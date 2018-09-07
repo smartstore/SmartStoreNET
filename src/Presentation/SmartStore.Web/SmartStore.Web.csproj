@@ -347,7 +347,7 @@
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
-    <Compile Include="Models\Catalog\SearchBoxModel.cs" />
+    <Compile Include="Models\Search\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />
     <Compile Include="Models\Catalog\ProductTagModel.cs" />
@@ -1535,7 +1535,6 @@
     <Content Include="Views\Boards\Partials\_CreateUpdateTopic.cshtml" />
     <Content Include="Views\Boards\Partials\_ForumGroupPartial.cshtml" />
     <Content Include="Views\Boards\Partials\_ForumPost.cshtml" />
-    <Content Include="Views\Boards\Partials\_SearchBox.cshtml" />
     <Content Include="Views\Catalog\Partials\CategoryMenu.cshtml" />
     <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
     <Content Include="Views\Catalog\CompareProducts.cshtml" />

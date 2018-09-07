@@ -184,7 +184,7 @@ namespace SmartStore.Services.Search
 						{
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
-								var productIds = searchHits.Select(x => x.EntityId).Distinct().ToArray();
+								var productIds = searchHits.Select(x => x.EntityId).ToArray();
 								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
 						}

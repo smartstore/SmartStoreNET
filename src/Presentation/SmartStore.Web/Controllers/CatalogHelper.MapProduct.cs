@@ -622,7 +622,6 @@ namespace SmartStore.Web.Controllers
 			{
 				return finalPrice;
 			}
-
 			// Return if group has no associated products.
 			if (product.ProductType == ProductType.GroupedProduct && !associatedProducts.Any())
 			{

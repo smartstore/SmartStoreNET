@@ -18,16 +18,13 @@ namespace SmartStore.Web.Framework.Localization
 		public Lazy<ILanguageService> LanguageService { get; set; }
 		public Lazy<LocalizationSettings> LocalizationSettings { get; set; }
 
-        public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (filterContext == null || filterContext.HttpContext == null)
-                return;
-
-            HttpRequestBase request = filterContext.HttpContext.Request;
+            var request = filterContext?.HttpContext?.Request;
             if (request == null)
                 return;
 
-            //don't apply filter to child methods
+            // Don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
 

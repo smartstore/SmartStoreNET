@@ -161,8 +161,9 @@ namespace SmartStore.Web.Framework.Localization
 					}
 					catch { }
 				}
-                    
-                return _seoFriendlyUrlsForLanguagesEnabled ?? false;
+                
+				// Assume is enabled on very first request to prevent IIS 404 with localized URLs
+                return _seoFriendlyUrlsForLanguagesEnabled ?? true;
             }
         }
 

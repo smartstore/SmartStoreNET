@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -14,6 +14,7 @@
 * Wallet: Allow customer to choose whether refund should be submitted to his wallet.
 * Added option to display preview pictures in product lists
 * Added option to add multiple file versions to product download section
+* Added options for alternating price display (in badges)
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).

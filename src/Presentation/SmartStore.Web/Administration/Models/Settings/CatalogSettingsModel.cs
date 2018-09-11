@@ -36,6 +36,12 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDiscountSign")]
         public bool ShowDiscountSign { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PriceDisplayStyle")]
+        public PriceDisplayStyle PriceDisplayStyle { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DisplayTextForZeroPrices")]
+        public bool DisplayTextForZeroPrices { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IgnoreDiscounts")]
         public bool IgnoreDiscounts { get; set; }
 
@@ -157,8 +163,8 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PriceDisplayType")]
 		public PriceDisplayType PriceDisplayType { get; set; }
 		public SelectList AvailablePriceDisplayTypes { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.GridStyleListColumnSpan")]
+        
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.GridStyleListColumnSpan")]
 		public GridColumnSpan GridStyleListColumnSpan { get; set; }
 
 		#endregion

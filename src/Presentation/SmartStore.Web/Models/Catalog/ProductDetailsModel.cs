@@ -112,8 +112,10 @@ namespace SmartStore.Web.Models.Catalog
 		public bool BundlePerItemShipping { get; set; }
 		public bool BundlePerItemPricing { get; set; }
 		public bool BundlePerItemShoppingCart { get; set; }
-
-		public ProductVariantAttributeCombination SelectedCombination { get; set; }
+        public bool DisplayTextForZeroPrices { get; set; }
+        public PriceDisplayStyle PriceDisplayStyle { get; set; }
+        
+        public ProductVariantAttributeCombination SelectedCombination { get; set; }
 
         public IList<ManufacturerOverviewModel> Manufacturers { get; set; }
         public int ReviewCount { get; set; }

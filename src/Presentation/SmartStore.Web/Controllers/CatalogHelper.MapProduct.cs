@@ -524,7 +524,10 @@ namespace SmartStore.Web.Controllers
 				{
 					item.TransportSurcharge = ctx.Resources["Common.AdditionalShippingSurcharge"].Text.FormatCurrent(_priceFormatter.FormatPrice(addShippingPrice, true, false));
 				}
-			}
+
+                item.PriceDisplayStyle = _catalogSettings.PriceDisplayStyle;
+                item.DisplayTextForZeroPrices = _catalogSettings.DisplayTextForZeroPrices;
+            }
 
 			if (model.ShowWeight && contextProduct.Weight > 0)
 			{
@@ -540,18 +543,8 @@ namespace SmartStore.Web.Controllers
 					Style = BadgeStyle.Success
 				});
 			}
-
-            // free product badge
-            if (item.Price.PriceValue == 0)
-            {
-                item.Badges.Add(new ProductSummaryModel.Badge
-                {
-                    Label = T("Products.Free"),
-                    Style = BadgeStyle.Success
-                });
-            }
-
-			model.Items.Add(item);
+            
+            model.Items.Add(item);
 		}
 
 		/// <param name="contextProduct">The product or the first associated product of a group.</param>

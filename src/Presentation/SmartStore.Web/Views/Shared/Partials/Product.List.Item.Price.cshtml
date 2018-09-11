@@ -2,9 +2,38 @@
 
 @using SmartStore.Services.Localization;
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
 
 @{ 
-	var list = Model.Parent;
+    var list = Model.Parent;
+    var artPriceClasses = "art-price";
+
+    if (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll || (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeFreeProductsOnly && Model.Price.PriceValue == 0))
+    {
+        if (Model.Price.SavingAmount.HasValue())
+        {
+            artPriceClasses += " badge badge-danger";
+        }
+        else
+        {
+            artPriceClasses += " badge badge-success";
+        }
+    }
+
+    if (Model.DisplayTextForZeroPrices && Model.Price.PriceValue == 0)
+    {
+        Model.Price.Price = T("Products.Free").Text;
+    }
+
+    if (Model.Price.RegularPrice.HasValue())
+    {
+        artPriceClasses += " art-price--offer";
+    }
+
+    if (Model.Price.CallForPrice)
+    {
+        artPriceClasses += " art-price--call";
+    }
 }
 
 @if (list.ShowDeliveryTimes)
@@ -23,9 +52,10 @@
 
 @if (list.ShowPrice)
 {
+
 	<div class="art-price-block">
-		<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")@(Model.Price.CallForPrice ? " art-price--call" : "")">
-			@Model.Price.Price
+		<span class="@artPriceClasses">
+            @(Model.Price.SavingAmount.HasValue() ? "% " : "")@Model.Price.Price
 		</span>
 		@if (Model.Price.RegularPrice.HasValue())
 		{

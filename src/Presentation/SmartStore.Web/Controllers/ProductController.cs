@@ -589,7 +589,10 @@ namespace SmartStore.Web.Controllers
 					galleryStartIndex = pictureModel.GalleryStartIndex;
 					galleryHtml = this.RenderPartialViewToString("Product.Picture", pictureModel);
 				}
-			}
+
+                m.PriceDisplayStyle = _catalogSettings.PriceDisplayStyle;
+                m.DisplayTextForZeroPrices = _catalogSettings.DisplayTextForZeroPrices;
+            }
 
 			object partials = null;
 			

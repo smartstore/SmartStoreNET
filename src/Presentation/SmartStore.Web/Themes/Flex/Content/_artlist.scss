@@ -305,6 +305,9 @@ $art-border-color:              #ddd;
     &.art-price--offer {
         color: $art-price-offer-color;
     }
+    &.badge {
+        color: $white;
+    }
 }
 
 .art-oldprice {

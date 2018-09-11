@@ -122,8 +122,10 @@ namespace SmartStore.Web.Models.Catalog
 			public bool DisplayDeliveryTimeAccordingToStock { get; set; }
 			public string StockAvailablity { get; set; }
 			public string BasePriceInfo { get; set; }
+            public PriceDisplayStyle PriceDisplayStyle { get; set; }
+            public bool DisplayTextForZeroPrices { get; set; }
 
-			public int MinPriceProductId { get; set; } // Internal
+            public int MinPriceProductId { get; set; } // Internal
 
 			public ManufacturerOverviewModel Manufacturer { get; set; }
 			public PriceModel Price { get; set; }

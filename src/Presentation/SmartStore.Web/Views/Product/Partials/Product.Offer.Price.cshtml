@@ -3,36 +3,65 @@
 @using System.Globalization;
 @using SmartStore.Services.Localization;
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
 
 @{
-	if (Model.AddToCart.DisableBuyButton && Model.AddToCart.DisableWishlistButton)
-	{
-		return;
-	}
+    if (Model.AddToCart.DisableBuyButton && Model.AddToCart.DisableWishlistButton)
+    {
+        return;
+    }
 
-	var isBundleItem = Model.IsBundlePart;
-	var priceModel = Model.ProductPrice;
+    var isBundleItem = Model.IsBundlePart;
+    var priceModel = Model.ProductPrice;
 
-	var currentPrice = priceModel.PriceWithDiscount.NullEmpty() ?? priceModel.Price;
-	var currentPriceValue = priceModel.PriceWithDiscountValue > 0 ? priceModel.PriceWithDiscountValue : priceModel.PriceValue;
-	var currentPriceLabel = priceModel.NoteWithDiscount;
+    var currentPrice = priceModel.PriceWithDiscount.NullEmpty() ?? priceModel.Price;
+    var currentPriceValue = priceModel.PriceWithDiscountValue > 0 ? priceModel.PriceWithDiscountValue : priceModel.PriceValue;
+    var currentPriceLabel = priceModel.NoteWithDiscount;
 
-	var oldPrice1 = priceModel.OldPrice;
-	var oldPrice1Label = T("Products.Price.OldPrice").Text;
+    var oldPrice1 = priceModel.OldPrice;
+    var oldPrice1Label = T("Products.Price.OldPrice").Text;
 
-	var oldPrice2 = priceModel.PriceWithDiscountValue < priceModel.PriceValue ? priceModel.Price : "";
-	var oldPrice2Label = priceModel.NoteWithoutDiscount;
+    var oldPrice2 = priceModel.PriceWithDiscountValue < priceModel.PriceValue ? priceModel.Price : "";
+    var oldPrice2Label = priceModel.NoteWithoutDiscount;
 
-	var basePriceEnabled = isBundleItem ? priceModel.BundleItemShowBasePrice : Model.IsBasePriceEnabled;
+    var basePriceEnabled = isBundleItem ? priceModel.BundleItemShowBasePrice : Model.IsBasePriceEnabled;
 
-	if (oldPrice2.HasValue() && !oldPrice1.HasValue())
-	{
-		oldPrice1 = oldPrice2;
-		oldPrice2 = null;
-		oldPrice2Label = null;
-	}
+    if (oldPrice2.HasValue() && !oldPrice1.HasValue())
+    {
+        oldPrice1 = oldPrice2;
+        oldPrice2 = null;
+        oldPrice2Label = null;
+    }
 
-	var blocksHaveLabel = currentPriceLabel.HasValue() && oldPrice2Label.HasValue();
+    if (priceModel.PriceValue == 0 && Model.DisplayTextForZeroPrices)
+    {
+        currentPrice = T("Products.Free").Text;
+        oldPrice1 = null;
+        oldPrice2 = null;
+        oldPrice2Label = null;
+    }
+
+    var blocksHaveLabel = currentPriceLabel.HasValue() && oldPrice2Label.HasValue();
+
+    var artPriceClasses = "pd-price";
+    if (isBundleItem)
+    {
+        artPriceClasses += " pd-price-sm";
+    }
+    if (priceModel.OldPrice.HasValue())
+    {
+        artPriceClasses += " pd-price--offer";
+    }
+    if (priceModel.CallForPrice)
+    {
+        artPriceClasses += " pd-price--call";
+    }
+
+    var badgeClasses = "";
+    if (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll || (Model.PriceDisplayStyle == PriceDisplayStyle.BadgeFreeProductsOnly && priceModel.PriceValue == 0))
+    {
+        badgeClasses = Model.PriceDisplayStyle == PriceDisplayStyle.BadgeAll && priceModel.SavingAmount.HasValue() ?  "text-danger" : "text-success";
+    }
 }
 
 <div class="pd-offer-price">
@@ -54,12 +83,15 @@
 					{
 						<div class="pd-price-label">@currentPriceLabel</div>
 					}
-					<div class="pd-price@(priceModel.OldPrice.HasValue() ? " pd-price--offer" : "")@(priceModel.CallForPrice ? " pd-price--call" : "")@(isBundleItem ? " pd-price-sm" : "")">
+					<div class="@artPriceClasses">
 						@if (!priceModel.CallForPrice && !isBundleItem)
 						{
 							<meta itemprop="price" content="@currentPriceValue.ToString("F", CultureInfo.InvariantCulture)" />
 						}
-						@Html.Raw(currentPrice)
+
+                        <span class="@badgeClasses">
+                            @Html.Raw(currentPrice)
+                        </span>
 					</div>
 				</div>
 				@if (oldPrice2.HasValue())
@@ -120,7 +152,7 @@
 						@Html.Raw(LocalizedValue.FixBrackets(Model.BasePriceInfo, WorkContext.WorkingLanguage))
 					</div>
 				}
-				@if (Model.ShowLegalInfo && Model.LegalInfo.HasValue())
+				@if (Model.ShowLegalInfo && Model.LegalInfo.HasValue() && currentPriceValue != 0)
 				{
 					<div class="pd-legalinfo">
 						@Html.Raw(Model.LegalInfo)

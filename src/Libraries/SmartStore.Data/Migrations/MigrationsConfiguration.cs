@@ -467,6 +467,22 @@
                 "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.TopicTitlesOnly",
                 "Forum.AdvancedSearch",
                 "Forum.SearchButton");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.PriceDisplayStyle",
+                "Price display style",
+                "Preisdarstellung",
+                "Specifies the form in which prices are displayed in product lists and on the product detail page.",
+                "Bestimmt die Darstellungform von Preisen in Produktlisten und auf der Produktdetailseite.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DisplayTextForZeroPrices",
+                "Display text when prices are 0,00",
+                "Zeige Text wenn Preise 0,00 sind",
+                "Specifies whether to display a textual resource (free) instead of the value 0.00.",
+                "Bestimmt, ob statt dem Wert 0,00 eine textuelle Resource (kostenlos) angezeigt werden soll.");
+
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.Default", "Default", "Standard");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.BadgeAll", "In bagdes", "Markiert");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.BadgeFreeProductsOnly", "Badge free products only", "Nur kostenlose Produkte markieren");
         }
     }
 }

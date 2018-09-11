@@ -209,8 +209,10 @@ namespace SmartStore.Web.Controllers
 					IsAssociatedProduct = isAssociatedProduct,
 					CompareEnabled = !isAssociatedProduct && _catalogSettings.CompareProductsEnabled,
 					TellAFriendEnabled = !isAssociatedProduct && _catalogSettings.EmailAFriendEnabled,
-					AskQuestionEnabled = !isAssociatedProduct && _catalogSettings.AskQuestionEnabled
-				};
+					AskQuestionEnabled = !isAssociatedProduct && _catalogSettings.AskQuestionEnabled,
+                    PriceDisplayStyle = _catalogSettings.PriceDisplayStyle,
+                    DisplayTextForZeroPrices = _catalogSettings.DisplayTextForZeroPrices
+                };
 
 				// Social share code
 				if (_catalogSettings.ShowShareButton && _catalogSettings.PageShareCode.HasValue())

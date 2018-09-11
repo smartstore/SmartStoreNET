@@ -180,6 +180,24 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayTextForZeroPrices)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DisplayTextForZeroPrices)
+                @Html.ValidationMessageFor(model => model.DisplayTextForZeroPrices)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PriceDisplayStyle)
+            </td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.PriceDisplayStyle)
+                @Html.ValidationMessageFor(model => model.PriceDisplayStyle)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IgnoreDiscounts)
             </td>
             <td class="adminData">

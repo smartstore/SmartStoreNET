@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -46,6 +46,7 @@
 * Wrong base price on product and cart page when a special price is active.
 * In a multi-store, message templates may have loaded the wrong disclaimer and conditions-of-use text.
 * NullReferenceException in manufacturer list when there is no manufacturer.
+* Wrong order of featured products on category page.
 
 
 ## SmartStore.NET 3.1.5

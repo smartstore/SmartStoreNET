@@ -398,6 +398,7 @@
             builder.AddOrUpdate("Search.Facet.Date.Older", "and older", "und älter");
 
             builder.AddOrUpdate("Forum.PostText", "Post text", "Beitragstext");
+            builder.AddOrUpdate("Search.HitsFor", "{0} hits for {1}", "{0} Treffer für {1}");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",
                 "The wildcard mode can slow down the search for a large number of objects.",
@@ -466,7 +467,8 @@
                 "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.PostTextOnly",
                 "Enums.SmartStore.Core.Domain.Forums.ForumSearchType.TopicTitlesOnly",
                 "Forum.AdvancedSearch",
-                "Forum.SearchButton");
+                "Forum.SearchButton",
+                "Forum.PageTitle.Search");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.PriceDisplayStyle",
                 "Price display style",

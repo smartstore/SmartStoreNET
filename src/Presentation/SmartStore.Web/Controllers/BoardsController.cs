@@ -1717,18 +1717,6 @@ namespace SmartStore.Web.Controllers
                 model.SearchResult.Hits.PageSize,
                 model.SearchResult.TotalHitsCount);
 
-            if (_forumSettings.AllowCustomersToSelectPageSize)
-            {
-                try
-                {
-                    model.AvailablePageSizes = _forumSettings.DefaultPageSizeOptions.Convert<List<int>>();
-                }
-                catch 
-                {
-                    model.AvailablePageSizes = new int[] { 12, 24, 36, 48, 72, 120 };
-                }
-            }
-
             model.AddSpellCheckerSuggestions(model.SearchResult.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
 
             return View(model);

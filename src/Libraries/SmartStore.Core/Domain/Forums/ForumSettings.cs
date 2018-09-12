@@ -13,10 +13,8 @@ namespace SmartStore.Core.Domain.Forums
 			StrippedTopicMaxLength = 45;
 			TopicsPageSize = 10;
 			PostsPageSize = 10;
+            SearchResultsPageSize = 12;
             AllowSorting = true;
-			SearchResultsPageSize = 12;
-            DefaultPageSizeOptions = "12,24,36,48,72,120";
-            AllowCustomersToSelectPageSize = true;
             LatestCustomerPostsPageSize = 10;
 			ShowCustomersPostCount = true;
 			ForumEditor = EditorType.BBCodeEditor;
@@ -92,24 +90,14 @@ namespace SmartStore.Core.Domain.Forums
         public int PostsPageSize { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether sorting is enabled.
-        /// </summary>
-        public bool AllowSorting { get; set; }
-
-        /// <summary>
         /// Gets or sets the page size for search result
         /// </summary>
         public int SearchResultsPageSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the available customer selectable default page size options
+        /// Gets or sets a value indicating whether sorting is enabled.
         /// </summary>
-        public string DefaultPageSizeOptions { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether customers can select page size in product listings
-        /// </summary>
-        public bool AllowCustomersToSelectPageSize { get; set; }
+        public bool AllowSorting { get; set; }
 
         /// <summary>
         /// Gets or sets the page size for latest customer posts

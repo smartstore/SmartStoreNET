@@ -41,12 +41,6 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.SearchResultsPageSize")]
         public int SearchResultsPageSize { get; set; }
 
-        [SmartResourceDisplayName("Admin.Common.DefaultPageSizeOptions")]
-        public string DefaultPageSizeOptions { get; set; }
-
-        [SmartResourceDisplayName("Admin.Common.AllowCustomersToSelectPageSize")]
-        public bool AllowCustomersToSelectPageSize { get; set; }
-
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumEditor")]
         public EditorType ForumEditor { get; set; }
 

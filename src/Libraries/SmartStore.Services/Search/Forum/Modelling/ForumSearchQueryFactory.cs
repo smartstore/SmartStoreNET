@@ -19,7 +19,6 @@ namespace SmartStore.Services.Search.Modelling
 		===============================
 		q	-	Search term
 		i	-	Page index
-		s	-	Page size
 		o	-	Order by
         f   -   Forum
         c   -   Customer
@@ -58,7 +57,7 @@ namespace SmartStore.Services.Search.Modelling
 
         public ForumSearchQuery Current { get; private set; }
 
-        protected override string[] Tokens => new string[] { "q", "i", "s", "o", "f", "c", "d" };
+        protected override string[] Tokens => new string[] { "q", "i", "o", "f", "c", "d" };
 
         public ForumSearchQuery CreateFromQuery()
         {
@@ -126,31 +125,6 @@ namespace SmartStore.Services.Search.Modelling
 
         protected virtual int GetPageSize(ForumSearchQuery query, RouteData routeData, string origin)
         {
-            var sessionKey = "PageSize:" + origin;
-
-            if (_forumSettings.AllowCustomersToSelectPageSize)
-            {
-                var selectedSize = GetValueFor<int?>("s");
-                if (selectedSize.HasValue)
-                {
-                    if (_httpContext.Session != null)
-                    {
-                        _httpContext.Session[sessionKey] = selectedSize.Value;
-                    }
-
-                    return selectedSize.Value;
-                }
-            }
-
-            if (_httpContext.Session != null)
-            {
-                var sessionSize = _httpContext.Session[sessionKey].Convert<int?>();
-                if (sessionSize.HasValue)
-                {
-                    return sessionSize.Value;
-                }
-            }
-
             return _forumSettings.SearchResultsPageSize;
         }
 

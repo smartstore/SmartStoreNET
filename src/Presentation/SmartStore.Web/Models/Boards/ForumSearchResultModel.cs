@@ -13,7 +13,6 @@ namespace SmartStore.Web.Models.Boards
         public ForumSearchResultModel(ForumSearchQuery query)
         {
             Query = query;
-            AvailablePageSizes = new int[0];
         }
 
         public ForumSearchQuery Query { get; private set; }
@@ -47,7 +46,7 @@ namespace SmartStore.Web.Models.Boards
         public IDictionary<int, string> AvailableSortOptions { get; set; }
 
         public IPageable PagedList { get; set; }
-        public IEnumerable<int> AvailablePageSizes { get; set; }
+        public IEnumerable<int> AvailablePageSizes => throw new NotImplementedException();
 
         #endregion
     }

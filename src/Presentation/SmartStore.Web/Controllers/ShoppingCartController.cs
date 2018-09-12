@@ -1272,7 +1272,9 @@ namespace SmartStore.Web.Controllers
                         Filename = postedFile.FileTitle,
                         Extension = postedFile.FileExtension,
                         IsNew = true,
-                        UpdatedOnUtc = DateTime.UtcNow
+                        UpdatedOnUtc = DateTime.UtcNow,
+                        EntityId = 0,
+                        EntityName = "CheckoutAttribute"
                     };
 
                     _downloadService.InsertDownload(download, postedFile.Buffer);
@@ -1383,7 +1385,7 @@ namespace SmartStore.Web.Controllers
 
             // now product is in the cart
             // activity log
-			_customerActivityService.InsertActivity("PublicStore.AddToShoppingCart", _localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), product.Name);
+            _customerActivityService.InsertActivity("PublicStore.AddToShoppingCart", _localizationService.GetResource("ActivityLog.PublicStore.AddToShoppingCart"), product.Name);
 
             if (_shoppingCartSettings.DisplayCartAfterAddingProduct || forceredirection)
             {
@@ -1582,8 +1584,10 @@ namespace SmartStore.Web.Controllers
                 Extension = postedFile.FileExtension,
                 IsNew = true,
 				IsTransient = true,
-				UpdatedOnUtc = DateTime.UtcNow
-			};
+				UpdatedOnUtc = DateTime.UtcNow,
+                EntityId = productId,
+                EntityName = "ProductAttribute"
+            };
 
             _downloadService.InsertDownload(download, postedFile.Buffer);
 

@@ -23,6 +23,7 @@ using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Html;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
@@ -36,6 +37,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Themes;
 using SmartStore.Templating;
 using SmartStore.Utilities;
 
@@ -61,6 +63,7 @@ namespace SmartStore.Services.Messages
 		private readonly ITemplateEngine _templateEngine;
 		private readonly IMessageTemplateService _messageTemplateService;
 		private readonly IEmailAccountService _emailAccountService;
+        private readonly IThemeVariablesService _themeVariableService;
 		private readonly UrlHelper _urlHelper;
 
 		public MessageModelProvider(
@@ -68,12 +71,14 @@ namespace SmartStore.Services.Messages
 			ITemplateEngine templateEngine,
 			IMessageTemplateService messageTemplateService,
 			IEmailAccountService emailAccountService,
+            IThemeVariablesService themeVariableService,
 			UrlHelper urlHelper)
 		{
 			_services = services;
 			_templateEngine = templateEngine;
 			_messageTemplateService = messageTemplateService;
 			_emailAccountService = emailAccountService;
+            _themeVariableService = themeVariableService;
 			_urlHelper = urlHelper;
 
 			T = NullLocalizer.InstanceEx;
@@ -371,21 +376,44 @@ namespace SmartStore.Services.Messages
 
 		protected virtual object CreateThemeModelPart(MessageContext messageContext)
 		{
+            var themeSettings = _services.Settings.LoadSetting<ThemeSettings>(messageContext.StoreId ?? 0);
+            var themeVars = _themeVariableService.GetThemeVariables(themeSettings.DefaultTheme, messageContext.StoreId ?? 0) as IDictionary<string, object>;
+
 			var m = new Dictionary<string, object>
 			{
-				{ "FontFamily", "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" },
-				{ "BodyBg", "#f2f4f6" },
-				{ "BodyColor", "#555" },
-				{ "TitleColor", "#2f3133" },
-				{ "ContentBg", "#fff" },
+                { "FontFamily", themeVars["font-family-sans-serif"] },
+                { "BodyBg", themeVars["site-bg"] },
+                { "BodyColor", themeVars["body-color"] },
+                { "TitleColor", themeVars["headings-color"] },
+                { "ContentBg", themeVars["body-bg"] },
 				{ "ShadeColor", "#e2e2e2" },
-				{ "LinkColor", "#0066c0" },
-				{ "BrandPrimary", "#3f51b5" },
-				{ "BrandSuccess", "#4caf50" },
-				{ "BrandWarning", "#ff9800" },
-				{ "BrandDanger", "#f44336" },
-				{ "MutedColor", "#a5a5a5" },
+                { "LinkColor", themeVars["link-color"] },
+                { "BrandPrimary", themeVars["primary"] },
+                { "BrandSuccess", themeVars["success"] },
+                { "BrandWarning", themeVars["warning"] },
+                { "BrandDanger", themeVars["danger"] },
+                { "MutedColor", themeVars["text-muted"] },
 			};
+
+
+            // replace Sass variables
+            bool found;
+            do
+            {
+                found = false;
+                foreach (var entry in m)
+                {
+                    if (themeVars.ContainsKey(entry.Value?.ToString().TrimStart('$')))
+                    {
+                        m[entry.Key] = themeVars[entry.Value?.ToString().TrimStart('$')];
+                        found = true;
+                        break;
+                    }
+                }
+            } while (found);
+
+
+
 
 			return m;
 		}

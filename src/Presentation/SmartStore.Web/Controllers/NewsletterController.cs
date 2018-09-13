@@ -18,18 +18,21 @@ namespace SmartStore.Web.Controllers
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
 		private readonly IStoreContext _storeContext;
         private readonly CustomerSettings _customerSettings;
+        private readonly Lazy<PrivacySettings> _privacySettings;
 
-		public NewsletterController(
+        public NewsletterController(
             IWorkContext workContext,
 			INewsLetterSubscriptionService newsLetterSubscriptionService,
 			CustomerSettings customerSettings,
-			IStoreContext storeContext)
+			IStoreContext storeContext,
+            Lazy<PrivacySettings> privacySettings)
         {
-            this._workContext = workContext;
-            this._newsLetterSubscriptionService = newsLetterSubscriptionService;
-            this._customerSettings = customerSettings;
-			this._storeContext = storeContext;
-		}
+            _workContext = workContext;
+            _newsLetterSubscriptionService = newsLetterSubscriptionService;
+            _customerSettings = customerSettings;
+			_storeContext = storeContext;
+            _privacySettings = privacySettings;
+        }
 
         [HttpPost]
         [ValidateInput(false)]
@@ -42,7 +45,7 @@ namespace SmartStore.Web.Controllers
 			var hasConsentedToGdpr = customer.GetAttribute<bool>(SystemCustomerAttributeNames.HasConsentedToGdpr);
 			var hasConsented = ViewData["GdprConsent"] != null ? (bool)ViewData["GdprConsent"] : hasConsentedToGdpr;
 
-			if (!hasConsented)
+			if (!hasConsented && _privacySettings.Value.DisplayGdprConsentOnForms)
 			{
 				return Json(new
 				{

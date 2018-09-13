@@ -892,7 +892,9 @@ namespace SmartStore
 			return string.Format(" {0}=\"{1}\"", name, htmlEncode ? HttpUtility.HtmlEncode(value) : value);
 		}
 		
-		/// <summary>Appends grow and uses delimiter if the string is not empty.</summary>
+		/// <summary>
+		/// Appends grow and uses delimiter if the string is not empty.
+		/// </summary>
         [DebuggerStepThrough]
 		public static string Grow(this string value, string grow, string delimiter) 
         {
@@ -902,7 +904,7 @@ namespace SmartStore
 			if (string.IsNullOrEmpty(grow))
 				return (string.IsNullOrEmpty(value) ? "" : value);
 
-			return string.Format("{0}{1}{2}", value, delimiter, grow);
+			return string.Concat(value, delimiter, grow);
 		}
 		
 		/// <summary>Returns n/a if string is empty else self.</summary>

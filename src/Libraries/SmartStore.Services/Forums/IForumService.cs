@@ -163,6 +163,13 @@ namespace SmartStore.Services.Forums
         ForumPost GetPostById(int forumPostId);
 
         /// <summary>
+        /// Gets forum posts by identifiers.
+        /// </summary>
+        /// <param name="postIds">Forum post identfiers.</param>
+        /// <returns>Forum posts.</returns>
+        IList<ForumPost> GetPostsByIds(int[] postIds);
+
+        /// <summary>
         /// Gets all forum posts
         /// </summary>
         /// <param name="forumTopicId">The forum topic identifier</param>

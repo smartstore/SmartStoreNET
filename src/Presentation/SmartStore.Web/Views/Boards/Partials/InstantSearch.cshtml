@@ -7,7 +7,7 @@
 {
     var parentModel = group.Parent as ForumSearchResultModel;
 
-    if (group.DisplayName.HasValue())
+    if (group.DisplayName.HasValue() && !(hitGroups.Length == 1 && group.Name.IsCaseInsensitiveEqual("InstantSearchHits")))
     {
         <h6 class="instasearch-group-header">@group.DisplayName</h6>
     }

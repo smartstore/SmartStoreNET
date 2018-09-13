@@ -1,10 +1,10 @@
 ﻿using System;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Boards
 {
-    public partial class ForumPostModel
+    public partial class ForumPostModel : EntityModelBase
     {
-        public int Id { get; set; }
         public int ForumTopicId { get; set; }
         public string ForumTopicSeName { get; set; }
 

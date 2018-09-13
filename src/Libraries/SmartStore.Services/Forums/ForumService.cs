@@ -463,6 +463,19 @@ namespace SmartStore.Services.Forums
             return forumPost;
         }
 
+        public virtual IList<ForumPost> GetPostsByIds(int[] postIds)
+        {
+            if (postIds == null || postIds.Length == 0)
+            {
+                return new List<ForumPost>();
+            }
+
+            var query = _forumPostRepository.TableUntracked.Expand(x => x.Customer)
+                .Where(x => postIds.Contains(x.Id));
+
+            return query.OrderBySequence(postIds).ToList();
+        }
+
         public virtual IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, bool ascSort, int pageIndex, int pageSize)
         {
             var query = _forumPostRepository.Table;

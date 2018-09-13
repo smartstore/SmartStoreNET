@@ -119,6 +119,7 @@
                                 </th>
                             </tr>
                         </thead>
+                        <tbody>
                         @foreach (ForumTopicRowModel topic in Model.PagedList)
                         {
                             <tr class="topic">
@@ -197,16 +198,17 @@
                                     </div>
                                 </td>
                                 <td class="replies">
-                                    @topic.NumReplies
+                                    @topic.NumReplies.ToString("N0")
                                 </td>
                                 <td class="views">
-                                    @topic.Views
+                                    @topic.Views.ToString("N0")
                                 </td>
                                 <td class="last-post">
-                                    @{ Html.RenderAction("LastPost", new { forumPostId = @topic.LastPostId, showTopic = false }); }
+                                    @{ Html.RenderPartial("LastPost", topic.LastPost); }
                                 </td>
                             </tr>
                         }
+                        </tbody>
                     </table>
                 }
             </div>

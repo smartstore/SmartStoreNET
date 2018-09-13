@@ -43,13 +43,13 @@
                     </div>
                 </td>
                 <td class="topics d-none d-md-table-cell">
-                    @forum.NumTopics
+                    @forum.NumTopics.ToString("N0")
                 </td>
                 <td class="posts d-none d-md-table-cell">
-                    @forum.NumPosts
+                    @forum.NumPosts.ToString("N0")
                 </td>
                 <td class="last-post d-none d-md-table-cell">
-                    @{ Html.RenderAction("LastPost", new { forumPostId = forum.LastPostId, showTopic = true }); }
+                    @{ Html.RenderPartial("LastPost", forum.LastPost); }
                 </td>
             </tr>            
         }

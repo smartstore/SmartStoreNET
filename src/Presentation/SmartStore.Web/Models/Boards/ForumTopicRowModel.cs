@@ -1,10 +1,15 @@
 ﻿using SmartStore.Core.Domain.Forums;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Boards
 {
-    public partial class ForumTopicRowModel
+    public partial class ForumTopicRowModel : EntityModelBase
     {
-        public int Id { get; set; }
+        public ForumTopicRowModel()
+        {
+            LastPost = new LastPostModel();
+        }
+
         public string Subject { get; set; }
         public string SeName { get; set; }
         public int FirstPostId { get; set; }
@@ -30,6 +35,8 @@ namespace SmartStore.Web.Models.Boards
         public bool AllowViewingProfiles { get; set; }
         public string CustomerName { get; set; }
         public bool IsCustomerGuest { get; set; }
+
+        public LastPostModel LastPost { get; set; }
 
         public string AnchorTag
         {

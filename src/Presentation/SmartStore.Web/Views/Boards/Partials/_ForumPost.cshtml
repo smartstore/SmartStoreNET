@@ -1,10 +1,10 @@
-﻿@model ForumPostModel
-@using SmartStore.Web.Models.Boards;
-@Html.Raw(String.Format("<a name=\"{0}\"></a>", @Model.Id))
+﻿@using SmartStore.Web.Models.Boards;
+@model ForumPostModel
+@Html.Raw("<a name=\"{0}\"></a>".FormatInvariant(Model.Id))
 
 <div class="block block-bordered forum-post card" id="@Html.Encode(String.Format("post{0}", Model.Id))">
     <div class="block-title card-header">
-        @if (@Model.CustomerId > 0)
+        @if (Model.CustomerId > 0)
         {
             if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
             {
@@ -36,7 +36,7 @@
             }
             else
             {
-                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, @Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { @class = "post-link pr-0", title = T("Forum.PostLinkTitle") })
+                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { @class = "post-link pr-0", title = T("Forum.PostLinkTitle") })
             }
         </div>
     </div>
@@ -64,7 +64,7 @@
                     {
                         <div class="totalposts">
 							<span class="pr-1">@T("Forum.TotalPosts"):</span>
-							<span class="stat-value">@Model.ForumPostCount</span>
+							<span class="stat-value">@Model.ForumPostCount.ToString("N0")</span>
                         </div>
                     }
 
@@ -103,7 +103,7 @@
                 <div class="posttext" dir="auto">
                     @Html.Raw(Model.FormattedText)
                 </div>
-                @Html.Hidden("Id", @Model.Id)
+                @Html.Hidden("Id", Model.Id)
             </div>
 
             @if (Model.SignaturesEnabled & !String.IsNullOrEmpty(Model.FormattedSignature))

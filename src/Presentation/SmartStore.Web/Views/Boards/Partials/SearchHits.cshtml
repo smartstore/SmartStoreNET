@@ -1,0 +1,123 @@
+﻿@using SmartStore.Core.Domain.Forums;
+@using SmartStore.Web.Models.Boards;
+@model ForumSearchResultModel
+@{
+	Layout = "";
+}
+<tbody class="border-0"
+    data-page="@(Model.SearchResult.Hits.PageIndex + 1)"
+    data-hasnextpage="@Model.SearchResult.Hits.HasNextPage.ToString().ToLower()"
+    data-cumulativehits="@Model.CumulativeHitCount.ToString("N0")">
+    @foreach (ForumTopicRowModel topic in Model.PagedList)
+    {
+        <tr class="topic" data-id="@topic.Id">
+            <td class="image">
+                @{
+                    var topicType = "post";
+                    var topicText = string.Empty;
+                    var topicIcon = "fa fa-comment-o";
+                    switch (topic.ForumTopicType)
+                    {
+                        case ForumTopicType.Normal:
+                            topicType = "post";
+                            topicIcon = "fa fa-comment-o";
+                            break;
+                        case ForumTopicType.Sticky:
+                            topicType = "poststicky";
+                            topicIcon = "fa fa-thumb-tack";
+                            topicText = string.Format("<label class='label label-important'>{0}</label>", T("Forum.Sticky").ToString());
+                            break;
+                        case ForumTopicType.Announcement:
+                            topicType = "post-annoucement";
+                            topicIcon = "fa fa-bullhorn";
+                            topicText = string.Format("<label class='label label-success'>{0}</label>", T("Forum.Announcement").ToString());
+                            break;
+                        default:
+                            topicType = "post";
+                            topicIcon = "fa fa-comment-o";
+                            break;
+                    }
+                    <div class="@topicType">
+                        <i class="icon @topicIcon"></i>
+                    </div>
+                }
+            </td>
+            <td class="topic-name">
+                @if (!string.IsNullOrEmpty(topicText))
+                {
+                    <span class="topictype" dir="auto">@Html.Raw(topicText)</span>
+                }
+                <a href="@(Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.SeName }))@(Html.Raw(topic.AnchorTag))" class="topic-title">
+                    @Html.Raw(Model.Highlight(topic.Subject, "subject", Model.Query, null, "<mark>", "</mark>"))
+                </a>
+                @if (topic.NumPosts > Model.PostsPageSize)
+                {
+                    @(Html.SmartStore().Pager(topic.TotalPostPages)
+                        .HtmlAttributes(new { @class = "topics-pager" })
+                        .WithRenderer<ForumTopicPagerRenderer>()
+                        .ShowPrevious(false)
+                        .ShowNext(false)
+                        .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                        .Alignment(PagerAlignment.Left)
+                        .Size(PagerSize.Mini)
+                        .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                }
+                <div class="topic-starter">
+				    @if (topic.CustomerId > 0)
+				    {
+					    <div class="d-flex">
+						    <span class="pr-1">@T("Forum.Author"):</span>
+						    @if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+						    {
+							    <span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
+						    }
+						    else
+						    {
+							    <span>@topic.CustomerName</span>
+						    }
+					    </div>
+                        if (topic.FirstPostId != 0 && Model.SearchResult.Engine != null && Model.Query.Fields != null && Model.Query.Fields.Contains("text"))
+                        {
+                            <div class="mt-2">
+                                @Html.Raw(Model.SearchResult.Engine.Highlight(topic.FirstPostId, "text", "<mark>", "</mark>", 3))
+                            </div>
+                        }
+				    }
+                </div>
+            </td>
+            <td class="replies">
+                @topic.NumReplies.ToString("N0")
+            </td>
+            <td class="views">
+                @topic.Views.ToString("N0")
+            </td>
+            <td class="last-post">
+                @{ Html.RenderPartial("LastPost", topic.LastPost); }
+            </td>
+        </tr>
+    }
+</tbody>
+@if (Model.PagedList.TotalCount == 0 || !Model.PagedList.HasNextPage)
+{
+    <tfoot class="border-0">
+        <tr>
+            <td colspan="5">
+                <span class="text-muted">@T("Search.NoMoreHitsFound")</span>
+            </td>
+        </tr>
+    </tfoot>
+}
+else if (Model.Error.HasValue())
+{
+    <tfoot class="border-0">
+        <tr>
+            <td colspan="5">
+                <div class="alert alert-danger">@Model.Error</div>
+            </td>
+        </tr>
+    </tfoot>
+}
+else
+{
+    <tbody class="border-0 load-more" data-page="@(Model.SearchResult.Hits.PageIndex + 2)"></tbody>
+}

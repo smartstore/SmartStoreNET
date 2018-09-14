@@ -749,7 +749,7 @@ namespace SmartStore.Services.Search
 						.Skip(searchQuery.PageIndex * searchQuery.Take)
 						.Take(searchQuery.Take);
 
-					var ids = query.Select(x => x.Id).Distinct().ToArray();
+					var ids = query.Select(x => x.Id).ToArray();
 					hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
 				}
 

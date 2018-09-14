@@ -470,7 +470,7 @@ namespace SmartStore.Services.Forums
                 return new List<ForumPost>();
             }
 
-            var query = _forumPostRepository.TableUntracked.Expand(x => x.Customer)
+            var query = _forumPostRepository.TableUntracked.Expand(x => x.ForumTopic).Expand(x => x.Customer)
                 .Where(x => postIds.Contains(x.Id));
 
             return query.OrderBySequence(postIds).ToList();

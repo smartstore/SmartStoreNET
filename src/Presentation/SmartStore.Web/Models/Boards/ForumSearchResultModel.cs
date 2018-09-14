@@ -25,6 +25,7 @@ namespace SmartStore.Web.Models.Boards
         public string AttemptedTerm { get; set; }
         public string Term { get; set; }
 
+        public int CumulativeHitCount { get; set; }
         public int TotalCount { get; set; }
         public int PostsPageSize { get; set; }
         public string Error { get; set; }

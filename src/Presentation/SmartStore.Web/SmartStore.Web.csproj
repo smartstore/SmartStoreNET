@@ -1765,6 +1765,7 @@
     <Content Include="Views\Shared\EditorTemplates\Liquid.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
     <Content Include="Views\Boards\Partials\InstantSearch.cshtml" />
+    <Content Include="Views\Boards\Partials\SearchHits.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

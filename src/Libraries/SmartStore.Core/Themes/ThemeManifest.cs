@@ -213,7 +213,7 @@ namespace SmartStore.Core.Themes
 					}
 				}
 
-				var merged = new Dictionary<string, ThemeVariableInfo>(baseVars, StringComparer.OrdinalIgnoreCase);
+				var merged = new Dictionary<string, ThemeVariableInfo>(StringComparer.OrdinalIgnoreCase);
 
 				foreach (var newVar in newVars)
 				{
@@ -227,7 +227,7 @@ namespace SmartStore.Core.Themes
 					merged.Add(kvp.Key, kvp.Value);
 				}
 
-				return mergedVars;
+				return merged;
 			}
 			internal set
 			{

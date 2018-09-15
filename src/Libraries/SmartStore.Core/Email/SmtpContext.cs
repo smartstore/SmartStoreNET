@@ -81,7 +81,7 @@ namespace SmartStore.Core.Email
 			}
 			else
 			{
-                if(!String.IsNullOrEmpty(this.Username))
+                		if (!String.IsNullOrEmpty(this.Username))
 				    smtpClient.Credentials = new NetworkCredential(this.Username, this.Password);
 			}
 

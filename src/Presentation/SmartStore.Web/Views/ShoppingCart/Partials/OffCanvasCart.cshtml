@@ -7,13 +7,9 @@
 }
 
 <div class="offcanvas-cart-header offcanvas-tabs">
+    <a class="nav-closer" href="#" data-toggle="offcanvas" data-target="#offcanvas-cart">&times;</a>
     <ul class="nav nav-tabs nav-tabs-line row no-gutters" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="offcanvas" data-target="#offcanvas-cart" href="#">
-                <span class="title">X</span>
-            </a>
-        </li>
-        @if (Model.ShoppingCartEnabled) 
+        @if (Model.ShoppingCartEnabled)
         {
             <li class="nav-item col">
                 <a id="cart-tab" class="nav-link" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
@@ -33,7 +29,7 @@
             </li>
         }
 
-        @if (Model.CompareProductsEnabled) 
+        @if (Model.CompareProductsEnabled)
         {
             <li class="nav-item col">
                 <a id="compare-tab" class="nav-link" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">

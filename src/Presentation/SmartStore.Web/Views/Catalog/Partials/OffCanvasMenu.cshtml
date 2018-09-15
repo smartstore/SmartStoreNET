@@ -5,15 +5,16 @@
 <div class="ocm-home-layer layer show" data-id="0">
 
     <div class="offcanvas-menu-header offcanvas-tabs">
+        <a class="nav-closer" href="#" data-toggle="offcanvas" data-target="#offcanvas-menu">&times;</a>
         <ul class="nav nav-tabs nav-tabs-line row no-gutters" role="tablist">
-			@if (ViewBag.ShowCategories == true)
-			{
-				<li class="nav-item col">
-					<a id="category-tab" class="nav-link" data-toggle="tab" href="#ocm-categories" role="tab" data-initialized="false">
-						<span class="title">@T("Offcanvas.Menu.Categories")</span>
-					</a>
-				</li>
-			}
+            @if (ViewBag.ShowCategories == true)
+            {
+                <li class="nav-item col">
+                    <a id="category-tab" class="nav-link" data-toggle="tab" href="#ocm-categories" role="tab" data-initialized="false">
+                        <span class="title">@T("Offcanvas.Menu.Categories")</span>
+                    </a>
+                </li>
+            }
             @if (ViewBag.ShowManufacturers == true)
             {
                 <li class="nav-item col">
@@ -25,11 +26,6 @@
             <li class="nav-item col">
                 <a id="service-tab" class="nav-link" data-toggle="tab" href="#ocm-service" role="tab" data-initialized="false">
                     <span class="title">@T("Offcanvas.Menu.Service")</span>
-                </a>
-            </li>
-            <li>
-                <a class="nav-link" href="#" data-toggle="offcanvas" data-target="#offcanvas-menu">
-                    <span class="title">X</span>
                 </a>
             </li>
         </ul>

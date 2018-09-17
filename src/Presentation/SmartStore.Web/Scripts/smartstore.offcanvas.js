@@ -41,7 +41,7 @@
         });
 
         if (this.options.autohide) {
-            $('body, .canvas-blocker').on('tap', $.proxy(this.autohide, this));
+            $('body, .canvas-blocker').on('click', $.proxy(this.autohide, this));
         }  
 
         if (this.options.toggle) {

@@ -15,7 +15,6 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Messages;
 using SmartStore.Services.News;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -48,6 +47,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILanguageService _languageService;
+        private readonly IGenericAttributeService _genericAttributeService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly NewsSettings _newsSettings;
@@ -59,36 +59,45 @@ namespace SmartStore.Web.Controllers
 
         #region Constructors
 
-        public NewsController(INewsService newsService,
-			IWorkContext workContext, IStoreContext storeContext, 
-			IPictureService pictureService, ILocalizationService localizationService,
-            ICustomerContentService customerContentService, IDateTimeHelper dateTimeHelper,
+        public NewsController(
+            INewsService newsService,
+			IWorkContext workContext,
+            IStoreContext storeContext, 
+			IPictureService pictureService, 
+            ILocalizationService localizationService,
+            ICustomerContentService customerContentService, 
+            IDateTimeHelper dateTimeHelper,
             IWebHelper webHelper,
-            ICacheManager cacheManager, ICustomerActivityService customerActivityService,
+            ICacheManager cacheManager,
+            ICustomerActivityService customerActivityService,
 			IStoreMappingService storeMappingService,
 			ILanguageService languageService,
-            MediaSettings mediaSettings, NewsSettings newsSettings,
-            LocalizationSettings localizationSettings, CustomerSettings customerSettings,
+            IGenericAttributeService genericAttributeService,
+            MediaSettings mediaSettings, 
+            NewsSettings newsSettings,
+            LocalizationSettings localizationSettings,
+            CustomerSettings customerSettings,
             CaptchaSettings captchaSettings)
         {
-            this._newsService = newsService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._pictureService = pictureService;
-            this._localizationService = localizationService;
-            this._customerContentService = customerContentService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._webHelper = webHelper;
-            this._cacheManager = cacheManager;
-            this._customerActivityService = customerActivityService;
-			this._storeMappingService = storeMappingService;
-			this._languageService = languageService;
+            _newsService = newsService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _pictureService = pictureService;
+            _localizationService = localizationService;
+            _customerContentService = customerContentService;
+            _dateTimeHelper = dateTimeHelper;
+            _webHelper = webHelper;
+            _cacheManager = cacheManager;
+            _customerActivityService = customerActivityService;
+			_storeMappingService = storeMappingService;
+			_languageService = languageService;
+            _genericAttributeService = genericAttributeService;
 
-            this._mediaSettings = mediaSettings;
-            this._newsSettings = newsSettings;
-            this._localizationSettings = localizationSettings;
-            this._customerSettings = customerSettings;
-            this._captchaSettings = captchaSettings;
+            _mediaSettings = mediaSettings;
+            _newsSettings = newsSettings;
+            _localizationSettings = localizationSettings;
+            _customerSettings = customerSettings;
+            _captchaSettings = captchaSettings;
         }
 
         #endregion
@@ -115,7 +124,6 @@ namespace SmartStore.Web.Controllers
 			model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnNewsCommentPage;
 
 			model.Comments.AllowComments = newsItem.AllowComments;
-            model.Comments.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
             model.Comments.NumberOfComments = newsItem.ApprovedCommentCount;
 			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
 
@@ -124,26 +132,21 @@ namespace SmartStore.Web.Controllers
                 var newsComments = newsItem.NewsComments.Where(n => n.IsApproved).OrderBy(pr => pr.CreatedOnUtc);
                 foreach (var nc in newsComments)
                 {
-					var commentModel = new CommentModel(model.Comments)
+                    var isGuest = nc.Customer.IsGuest();
+
+                    var commentModel = new CommentModel(model.Comments)
 					{
 						Id = nc.Id,
 						CustomerId = nc.CustomerId,
-						CustomerName = nc.Customer.FormatUserName(),
+						CustomerName = nc.Customer.FormatUserName(_customerSettings, T, false),
 						CommentTitle = nc.CommentTitle,
 						CommentText = nc.CommentText,
 						CreatedOn = _dateTimeHelper.ConvertToUserTime(nc.CreatedOnUtc, DateTimeKind.Utc),
 						CreatedOnPretty = nc.CreatedOnUtc.RelativeFormat(true, "f"),
-                        AllowViewingProfiles = _customerSettings.AllowViewingProfiles && nc.Customer != null && !nc.Customer.IsGuest(),
+                        AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest,
                     };
 
-                    if (_customerSettings.AllowCustomersToUploadAvatars)
-                    {
-                        var customer = nc.Customer;
-                        string avatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
-                        if (String.IsNullOrEmpty(avatarUrl) && _customerSettings.DefaultAvatarEnabled)
-                            avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
-                        commentModel.CustomerAvatarUrl = avatarUrl;
-                    }
+                    commentModel.Avatar = nc.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
 
                     model.Comments.Comments.Add(commentModel);
                 }

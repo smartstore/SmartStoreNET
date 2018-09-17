@@ -15,6 +15,8 @@
 * Added option to display preview pictures in product lists
 * Added option to add multiple file versions to product download section
 * Added options for alternating price display (in badges)
+* MegaSearch: Supports searching for forum posts.
+* Customer avatar: Letter with colored background if no avatar image was uploaded.
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
@@ -47,6 +49,7 @@
 * In a multi-store, message templates may have loaded the wrong disclaimer and conditions-of-use text.
 * NullReferenceException in manufacturer list when there is no manufacturer.
 * Wrong order of featured products on category page.
+* #1504 Cart item price calculation wrong if attribute combinations with text types are involved.
 
 
 ## SmartStore.NET 3.1.5

@@ -22,6 +22,7 @@ namespace SmartStore.Core.Domain.Customers
 		public static string GiftCardCouponCodes { get { return "GiftCardCouponCodes"; } }
 		public static string CheckoutAttributes { get { return "CheckoutAttributes"; } }
         public static string AvatarPictureId { get { return "AvatarPictureId"; } }
+        public static string AvatarColor { get { return "AvatarColor"; } }
         public static string ForumPostCount { get { return "ForumPostCount"; } }
         public static string LastForumVisit { get { return "LastForumVisit"; } }
         public static string Signature { get { return "Signature"; } }

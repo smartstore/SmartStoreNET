@@ -34,5 +34,10 @@ namespace SmartStore.Core.Domain.Messages
 		/// </summary>
 		[Index("IX_NewsletterSubscription_Email_StoreId", 2)]
 		public int StoreId { get; set; }
+
+        /// <summary>
+		/// Gets or sets the language identifier
+		/// </summary>
+        public int WorkingLanguageId { get; set; }
     }
 }

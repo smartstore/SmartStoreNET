@@ -13,195 +13,134 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Profile;
-using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-    [RequireHttpsByConfigAttribute(SslRequirement.No)]
+    [RequireHttpsByConfig(SslRequirement.No)]
     public partial class ProfileController : PublicControllerBase
     {
         private readonly IForumService _forumService;
-        private readonly ILocalizationService _localizationService;
         private readonly IPictureService _pictureService;
         private readonly ICountryService _countryService;
         private readonly ICustomerService _customerService;
+        private readonly IGenericAttributeService _genericAttributeService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ForumSettings _forumSettings;
         private readonly CustomerSettings _customerSettings;
         private readonly MediaSettings _mediaSettings;
 
         public ProfileController(IForumService forumService,
-            ILocalizationService localizationService,
             IPictureService pictureService,
             ICountryService countryService,
             ICustomerService customerService,
+            IGenericAttributeService genericAttributeService,
             IDateTimeHelper dateTimeHelper,
             ForumSettings forumSettings,
             CustomerSettings customerSettings,
             MediaSettings mediaSettings)
         {
-            this._forumService = forumService;
-            this._localizationService = localizationService;
-            this._pictureService = pictureService;
-            this._countryService = countryService;
-            this._customerService = customerService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._forumSettings = forumSettings;
-            this._customerSettings = customerSettings;
-            this._mediaSettings = mediaSettings;
+            _forumService = forumService;
+            _pictureService = pictureService;
+            _countryService = countryService;
+            _customerService = customerService;
+            _genericAttributeService = genericAttributeService;
+            _dateTimeHelper = dateTimeHelper;
+            _forumSettings = forumSettings;
+            _customerSettings = customerSettings;
+            _mediaSettings = mediaSettings;
         }
 
         public ActionResult Index(int? id, int? page)
         {
-            var customerId = 0;
-            if (id.HasValue)
-            {
-                customerId = id.Value;
-            }
-
-            var customer = _customerService.GetCustomerById(customerId);
+            var customer = _customerService.GetCustomerById(id ?? 0);
             if (!_customerSettings.AllowViewingProfiles || (customer == null || customer.IsGuest()))
             {
 				return HttpNotFound();
             }
 
-            bool pagingPosts = false;
-            int postsPage = 0;
+            var name = customer.FormatUserName(_customerSettings, T, true);
 
-            if (page.HasValue)
+            var model = new ProfileIndexModel
             {
-                postsPage = page.Value;
-                pagingPosts = true;
-            }
-
-            var name = customer.FormatUserName();
-            var title = string.Format(_localizationService.GetResource("Profile.ProfileOf"), name);
-
-            var model = new ProfileIndexModel()
-            {
-                ProfileTitle = title,
-                PostsPage = postsPage,
-                PagingPosts = pagingPosts,
-                CustomerProfileId = customer.Id,
+                Id = customer.Id,
+                ProfileTitle = T("Profile.ProfileOf", name),
+                PostsPage = page ?? 0,
+                PagingPosts = page.HasValue,
                 ForumsEnabled = _forumSettings.ForumsEnabled
             };
 
             return View(model);
         }
 
-        //profile info tab
+        // Profile info tab.
         [ChildActionOnly]
-        public ActionResult Info(int customerProfileId)
+        public ActionResult Info(int id)
         {
-            var customer = _customerService.GetCustomerById(customerProfileId);
+            var customer = _customerService.GetCustomerById(id);
             if (customer == null)
             {
 				return HttpNotFound();
             }
 
-            //avatar
-            bool avatarEnabled = false;
-            string avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
-            if (_customerSettings.AllowCustomersToUploadAvatars)
+            var model = new ProfileInfoModel
             {
-                avatarEnabled = true;
+                Id = customer.Id
+            };
 
-                var customerAvatarId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, null, true);
 
-                if (customerAvatarId != 0)
-                {
-                    avatarUrl = _pictureService.GetUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
-                }
-                else
-                {
-                    if (!_customerSettings.DefaultAvatarEnabled)
-                    {
-                        avatarEnabled = false;
-                    }
-                }
-            }
-
-            //location
-            bool locationEnabled = false;
-            string location = string.Empty;
+            // Location.
             if (_customerSettings.ShowCustomersLocation)
             {
-                locationEnabled = true;
+                model.LocationEnabled = true;
 
-                var countryId = customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
-                var country = _countryService.GetCountryById(countryId);
+                var country = _countryService.GetCountryById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId, _genericAttributeService));
                 if (country != null)
                 {
-                    location = country.GetLocalized(x => x.Name);
+                    model.Location = country.GetLocalized(x => x.Name);
                 }
                 else
                 {
-                    locationEnabled = false;
+                    model.LocationEnabled = false;
                 }
             }
 
-            //private message
-            bool pmEnabled = _forumSettings.AllowPrivateMessages && !customer.IsGuest();
+            // Private message.
+            model.PMEnabled = _forumSettings.AllowPrivateMessages && !customer.IsGuest();
 
-            //total forum posts
-            bool totalPostsEnabled = false;
-            int totalPosts = 0;
+            // Total forum posts.
             if (_forumSettings.ForumsEnabled && _forumSettings.ShowCustomersPostCount)
             {
-                totalPostsEnabled = true;
-                totalPosts = customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount);
+                model.TotalPostsEnabled = true;
+                model.TotalPosts = customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount, _genericAttributeService);
             }
 
-            //registration date
-            bool joinDateEnabled = false;
-            string joinDate = string.Empty;
-
+            // Registration date.
             if (_customerSettings.ShowCustomersJoinDate)
             {
-                joinDateEnabled = true;
-                joinDate = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
+                model.JoinDateEnabled = true;
+                model.JoinDate = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
             }
 
-            //birth date
-            bool dateOfBirthEnabled = false;
-            string dateOfBirth = string.Empty;
-            if (_customerSettings.DateOfBirthEnabled)
+            // Birth date.
+            if (_customerSettings.DateOfBirthEnabled && customer.BirthDate.HasValue)
             {
-                var dob = customer.BirthDate;
-                if (dob.HasValue)
-                {
-                    dateOfBirthEnabled = true;
-                    dateOfBirth = dob.Value.ToString("D");
-                }
+                model.DateOfBirthEnabled = true;
+                model.DateOfBirth = customer.BirthDate.Value.ToString("D");
             }
-
-            var model = new ProfileInfoModel()
-            {
-                CustomerProfileId = customer.Id,
-                AvatarEnabled = avatarEnabled,
-                AvatarUrl = avatarUrl,
-                LocationEnabled = locationEnabled,
-                Location = location,
-                PMEnabled = pmEnabled,
-                TotalPostsEnabled = totalPostsEnabled,
-                TotalPosts = totalPosts.ToString(),
-                JoinDateEnabled = joinDateEnabled,
-                JoinDate = joinDate,
-                DateOfBirthEnabled = dateOfBirthEnabled,
-                DateOfBirth = dateOfBirth,
-            };
 
             return PartialView(model);
         }
 
-        //latest posts tab
+        // Latest posts tab.
         [ChildActionOnly]
-        public ActionResult Posts(int customerProfileId, int page)
+        public ActionResult Posts(int id, int page)
         {
-            var customer = _customerService.GetCustomerById(customerProfileId);
+            var customer = _customerService.GetCustomerById(id);
             if (customer == null)
             {
 				return HttpNotFound();
@@ -237,7 +176,7 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            ViewData["PagerRouteValues"] = new RouteValues { page = page, id = customerProfileId };
+            ViewData["PagerRouteValues"] = new RouteValues { page = page, id = id };
 
             var model = new ProfilePostsModel(posts)
             {

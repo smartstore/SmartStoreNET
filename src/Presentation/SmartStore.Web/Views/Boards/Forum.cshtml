@@ -77,7 +77,7 @@
         @pager
     </div>
 
-    <div class="topics-group table-responsive clearfix">
+    <div class="topics-group table-responsive">
         <table class="table">
             @if (Model.ForumTopics.Count > 0)
             {
@@ -99,47 +99,22 @@
                     </tr>
                 </thead>
             }
-            @foreach (var topic in @Model.ForumTopics)
+            @foreach (var topic in Model.ForumTopics)
             {
                 <tr class="topic">
                     <td class="image">
-                        @{
-                            var topicType = "post";
-                            var topicText = String.Empty;
-                            var topicIcon = "fa fa-comment-o";
-                            switch (topic.ForumTopicType)
-                            {
-                                case ForumTopicType.Normal:
-                                    topicType = "post";
-                                    topicIcon = "fa fa-comment-o";
-                                    break;
-                                case ForumTopicType.Sticky:
-                                    topicType = "poststicky";
-                                    topicIcon = "fa fa-thumb-tack";
-                                    topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
-                                    break;
-                                case ForumTopicType.Announcement:
-                                    topicType = "post-annoucement";
-                                    topicIcon = "fa fa-bullhorn";
-                                    topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
-                                    break;
-                                default:
-                                    topicType = "post";
-                                    topicIcon = "fa fa-comment-o";
-                                    break;
-                            }
-                            <div class="@topicType">
-                                <i class="icon @topicIcon"></i>
-                            </div>
-                        }
+                        @{ Html.RenderPartial("Customer.Avatar", topic.Avatar); }
                     </td>
                     <td class="topic-name">
-                        @if (!String.IsNullOrEmpty(topicText))
+                        @if (topic.ForumTopicType == ForumTopicType.Sticky)
                         {
-                            <span class="topictype">@Html.Raw(topicText)</span>
+                            <span class="topictype"><label class="badge badge-success">@T("Forum.Sticky")</label></span>
                         }
-                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
-                        
+                        else if (topic.ForumTopicType == ForumTopicType.Announcement)
+                        {
+                            <span class="topictype"><label class="badge badge-info">@T("Forum.Announcement")</label></span>
+                        }
+                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })                        
                         <div>
                             <div class="topic-starter text-muted d-inline-flex">
                                 @if (topic.CustomerId > 0)

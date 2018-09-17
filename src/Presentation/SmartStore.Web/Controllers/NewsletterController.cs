@@ -91,8 +91,9 @@ namespace SmartStore.Web.Controllers
 						Email = email,
 						Active = false,
 						CreatedOnUtc = DateTime.UtcNow,
-						StoreId = _storeContext.CurrentStore.Id
-					};
+						StoreId = _storeContext.CurrentStore.Id,
+                        WorkingLanguageId = _workContext.WorkingLanguage.Id
+                    };
 
 					_newsLetterSubscriptionService.InsertNewsLetterSubscription(subscription);
 					Services.MessageFactory.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);

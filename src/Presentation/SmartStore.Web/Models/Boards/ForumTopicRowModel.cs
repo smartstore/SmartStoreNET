@@ -1,5 +1,6 @@
 ﻿using SmartStore.Core.Domain.Forums;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.Models.Boards
 {
@@ -37,6 +38,7 @@ namespace SmartStore.Web.Models.Boards
         public bool IsCustomerGuest { get; set; }
 
         public LastPostModel LastPost { get; set; }
+        public CustomerAvatarModel Avatar { get; set; }
 
         public string AnchorTag
         {

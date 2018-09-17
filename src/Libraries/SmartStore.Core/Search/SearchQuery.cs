@@ -164,7 +164,7 @@ namespace SmartStore.Core.Search
 
 		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4, int maxHitCount = 3)
 		{
-			Guard.IsPositive(maxSuggestions, nameof(maxSuggestions));
+            Guard.NotNegative(maxSuggestions, nameof(maxSuggestions));
 			Guard.IsPositive(minQueryLength, nameof(minQueryLength));
 			Guard.IsPositive(maxHitCount, nameof(maxHitCount));
 

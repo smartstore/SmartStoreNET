@@ -12,11 +12,14 @@ using SmartStore.Core.Localization;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers
 {
 	public static class CustomerExtentions
     {
+        private static readonly string[] _systemColors = new string[] { "primary", "secondary", "success", "info", "warning", "danger", "light", "dark" };
+
         /// <summary>
         /// Gets a value indicating whether customer is in a certain customer role
         /// </summary>
@@ -305,6 +308,33 @@ namespace SmartStore.Services.Customers
 
 			return language;
 		}
+
+        /// <summary>
+        /// Returns a random system color suitable as avatar background color.
+        /// </summary>
+        /// <param name="customer">Customer entity.</param>
+        /// <param name="genericAttributeService">Generic attribute service.</param>
+        /// <returns>Random system color.</returns>
+        public static string GetAvatarColor(this Customer customer, IGenericAttributeService genericAttributeService)
+        {
+            Guard.NotNull(genericAttributeService, nameof(genericAttributeService));
+
+            string color = null;
+
+            if (customer != null)
+            {
+                color = customer.GetAttribute<string>(SystemCustomerAttributeNames.AvatarColor, genericAttributeService);
+                if (color.IsEmpty())
+                {
+                    var rnd = CommonHelper.GenerateRandomInteger(0, _systemColors.Length - 1);
+                    color = _systemColors[rnd];
+
+                    genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarColor, color);
+                }
+            }
+
+            return color;
+        }
 
 		#region Shopping cart
 

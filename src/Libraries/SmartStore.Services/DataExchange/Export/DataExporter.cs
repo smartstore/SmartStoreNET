@@ -1017,7 +1017,22 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Filter.IsActiveSubscriber.HasValue)
 				query = query.Where(x => x.Active == ctx.Filter.IsActiveSubscriber.Value);
 
-			if (ctx.Filter.CreatedFrom.HasValue)
+            if (ctx.Filter.WorkingLanguageId != null && ctx.Filter.WorkingLanguageId != 0)
+            {
+                var defaultLanguage = _languageService.Value.GetAllLanguages().FirstOrDefault();
+                var isDefaultLanguage = ctx.Filter.WorkingLanguageId == defaultLanguage.Id;
+
+                if (isDefaultLanguage)
+                {
+                    query = query.Where(x => x.WorkingLanguageId == 0 || x.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
+                }
+                else
+                {
+                    query = query.Where(x => x.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
+                }
+            }
+
+            if (ctx.Filter.CreatedFrom.HasValue)
 			{
 				var createdFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => createdFrom <= x.CreatedOnUtc);

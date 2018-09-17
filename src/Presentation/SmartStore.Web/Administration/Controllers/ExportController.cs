@@ -481,6 +481,7 @@ namespace SmartStore.Admin.Controllers
 				ShippingStatusIds = filter.ShippingStatusIds,
 				CustomerRoleIds = filter.CustomerRoleIds,
 				IsActiveSubscriber = filter.IsActiveSubscriber,
+                WorkingLanguageId = filter.WorkingLanguageId,
 				ShoppingCartTypeId = filter.ShoppingCartTypeId
 			};
 
@@ -488,8 +489,16 @@ namespace SmartStore.Admin.Controllers
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
 
-			// deployment
-			model.Deployments = profile.Deployments
+            model.Filter.AvailableLanguages = new List<SelectListItem>();
+            model.Filter.AvailableLanguages.Add(new SelectListItem { Text = T("Common.Unspecified"), Value = "" });
+
+            foreach (var lang in _languageService.GetAllLanguages())
+            {
+                model.Filter.AvailableLanguages.Add(new SelectListItem { Text = lang.Name, Value = lang.Id.ToString() });
+            }
+
+            // deployment
+            model.Deployments = profile.Deployments
 				.Select(x =>
 				{
 					var deploymentModel = CreateDeploymentModel(profile, x, null, false);
@@ -896,6 +905,7 @@ namespace SmartStore.Admin.Controllers
 					ShippingStatusIds = model.Filter.ShippingStatusIds,
 					CustomerRoleIds = model.Filter.CustomerRoleIds,
 					IsActiveSubscriber = model.Filter.IsActiveSubscriber,
+                    WorkingLanguageId = model.Filter.WorkingLanguageId,
 					ShoppingCartTypeId = model.Filter.ShoppingCartTypeId
 				};
 

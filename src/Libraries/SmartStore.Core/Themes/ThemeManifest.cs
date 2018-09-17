@@ -188,14 +188,16 @@ namespace SmartStore.Core.Themes
 				}
 
 				var baseVars = this.BaseTheme.Variables;
-				var merged = new Dictionary<string, ThemeVariableInfo>(baseVars, StringComparer.OrdinalIgnoreCase);
+				var mergedVars = new Dictionary<string, ThemeVariableInfo>(baseVars, StringComparer.OrdinalIgnoreCase);
+				var newVars = new List<ThemeVariableInfo>();
+
 				foreach (var localVar in _variables)
 				{
-					if (merged.ContainsKey(localVar.Key))
+					if (mergedVars.ContainsKey(localVar.Key))
 					{
 						// Overridden var in child: update existing.
-						var baseVar = merged[localVar.Key];
-						merged[localVar.Key] = new ThemeVariableInfo 
+						var baseVar = mergedVars[localVar.Key];
+						mergedVars[localVar.Key] = new ThemeVariableInfo 
 						{
 							Name = baseVar.Name,
 							Type = baseVar.Type,
@@ -206,9 +208,23 @@ namespace SmartStore.Core.Themes
 					}
 					else
 					{
-						// New var in child: add to list.
-						merged.Add(localVar.Key, localVar.Value);
+						// New var in child: add to temp list.
+						newVars.Add(localVar.Value);
 					}
+				}
+
+				var merged = new Dictionary<string, ThemeVariableInfo>(StringComparer.OrdinalIgnoreCase);
+
+				foreach (var newVar in newVars)
+				{
+					// New child theme vars must come first in final list
+					// to avoid wrong references in existing vars
+					merged.Add(newVar.Name, newVar);
+				}
+
+				foreach (var kvp in mergedVars)
+				{
+					merged.Add(kvp.Key, kvp.Value);
 				}
 
 				return merged;

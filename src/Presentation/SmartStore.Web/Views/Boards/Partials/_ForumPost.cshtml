@@ -42,15 +42,11 @@
     </div>
 
     <div class="block-body card-body row">
-        <div class="post-info col-3 d-none d-sm-block">
+        <div class="post-info col-2 d-none d-sm-block">
             <div class="user-info mt-3 text-center">
-                @if (!String.IsNullOrEmpty(Model.CustomerAvatarUrl))
-                {
-                    <div class="avatar">
-                        <img src="@Model.CustomerAvatarUrl" class="avatar-img img-thumbnail" alt="Avatar" />
-                    </div>
-                }
-
+                <div class="avatar">
+                    @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
+                </div>
                 <div class="user-stats mt-2">
                     @if (Model.IsCustomerForumModerator)
                     {
@@ -59,7 +55,6 @@
 							<span class="stat-value">@T("Forum.Moderator")</span>
                         </div>
                     }
-
                     @if (Model.ShowCustomersPostCount)
                     {
                         <div class="totalposts">
@@ -67,7 +62,6 @@
 							<span class="stat-value">@Model.ForumPostCount.ToString("N0")</span>
                         </div>
                     }
-
                     @if (Model.ShowCustomersJoinDate && !Model.IsCustomerGuest)
                     {
                         <div class="joined">
@@ -75,7 +69,6 @@
 							<span class="stat-value">@Model.CustomerJoinDate.ToNativeString("d")</span>
                         </div>
                     }
-
                     @if (Model.ShowCustomersLocation && !Model.IsCustomerGuest & !String.IsNullOrEmpty(Model.CustomerLocation))
                     {
                         <div class="location">
@@ -83,7 +76,6 @@
 							<span class="stat-value">@Model.CustomerLocation</span>
                         </div>
                     }
-
                     @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
 				    {
                         <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
@@ -94,7 +86,7 @@
                 </div>
             </div>
         </div>
-        <div class="post-content col col-sm-9">
+        <div class="post-content col col-sm-10">
             <div class="posttime text-muted">
                 <span class="pr-1">@T("Forum.Posted"):</span>
 				<span class="stat-value">@Model.PostCreatedOnStr</span>

@@ -1,5 +1,4 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 
 namespace SmartStore.Web.Framework.Security
 {
@@ -14,6 +13,7 @@ namespace SmartStore.Web.Framework.Security
         public bool ShowOnAskQuestionPage { get; set; }
         public bool ShowOnBlogCommentPage { get; set; }
         public bool ShowOnNewsCommentPage { get; set; }
+        public bool ShowOnForumPage { get; set; }
         public bool ShowOnProductReviewPage { get; set; }
         public string ReCaptchaPublicKey { get; set; }
         public string ReCaptchaPrivateKey { get; set; }

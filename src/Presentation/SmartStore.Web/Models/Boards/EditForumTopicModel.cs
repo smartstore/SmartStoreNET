@@ -17,6 +17,7 @@ namespace SmartStore.Web.Models.Boards
         }
 
         public bool IsEdit { get; set; }
+        public bool DisplayCaptcha { get; set; }
 
         public int ForumId { get; set; }
         public LocalizedValue<string> ForumName { get; set; }

@@ -145,7 +145,10 @@ namespace SmartStore.Admin.Models.Settings
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnNewsCommentPage")]
 			public bool ShowOnNewsCommentPage { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnForumPage")]
+            public bool ShowOnForumPage { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage")]
 			public bool ShowOnProductReviewPage { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPublicKey")]

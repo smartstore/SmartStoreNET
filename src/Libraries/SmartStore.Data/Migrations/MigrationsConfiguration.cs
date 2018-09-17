@@ -495,6 +495,12 @@
                 "Filter by language",
                 "Nach Sprache filtern");
             
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnForumPage",
+                "Show on forum pages",
+                "Auf Forenseiten anzeigen",
+                "Specifies whether to display a CAPTCHA on forum pages when creating or replying to a topic.",
+                "Legt fest, ob ein CAPTCHA auf Forenseiten angezeigt werden soll, wenn ein Thema erstellt oder darauf geantwortet wird.");
         }
     }
 }

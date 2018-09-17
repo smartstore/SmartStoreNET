@@ -15,6 +15,7 @@
 * Added option to display preview pictures in product lists
 * Added option to add multiple file versions to product download section
 * Added options for alternating price display (in badges)
+* Added option to display a captcha on forum pages when creating or replying to a topic.
 * MegaSearch: Supports searching for forum posts.
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
 

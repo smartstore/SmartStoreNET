@@ -45,6 +45,7 @@ namespace SmartStore.Web.Controllers
         private readonly ForumSearchSettings _searchSettings;
         private readonly CustomerSettings _customerSettings;
         private readonly MediaSettings _mediaSettings;
+        private readonly CaptchaSettings _captchaSettings;
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly IBreadcrumb _breadcrumb;
         private readonly Lazy<IFacetTemplateProvider> _templateProvider;
@@ -60,6 +61,7 @@ namespace SmartStore.Web.Controllers
             ForumSearchSettings searchSettings,
             CustomerSettings customerSettings,
             MediaSettings mediaSettings,
+            CaptchaSettings captchaSettings,
             IDateTimeHelper dateTimeHelper,
 			IBreadcrumb breadcrumb,
             Lazy<IFacetTemplateProvider> templateProvider,
@@ -74,6 +76,7 @@ namespace SmartStore.Web.Controllers
             _searchSettings = searchSettings;
             _customerSettings = customerSettings;
             _mediaSettings = mediaSettings;
+            _captchaSettings = captchaSettings;
             _dateTimeHelper = dateTimeHelper;
             _breadcrumb = breadcrumb;
             _templateProvider = templateProvider;
@@ -850,6 +853,7 @@ namespace SmartStore.Web.Controllers
             var model = new EditForumTopicModel();
             model.Id = 0;
             model.IsEdit = false;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumId = forum.Id;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -866,19 +870,25 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-		[GdprConsent]
-		public ActionResult TopicCreate(EditForumTopicModel model)
+        [ValidateCaptcha]
+        [GdprConsent]
+		public ActionResult TopicCreate(EditForumTopicModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forum = _forumService.GetForumById(model.ForumId);
             if (forum == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
@@ -966,6 +976,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = false;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumId = forum.Id;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -1006,6 +1017,7 @@ namespace SmartStore.Web.Controllers
             var model = new EditForumTopicModel();
 
             model.IsEdit = true;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.TopicPriorities = ForumTopicTypesList();
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -1033,18 +1045,24 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult TopicEdit(EditForumTopicModel model)
+        [ValidateCaptcha]
+        public ActionResult TopicEdit(EditForumTopicModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forumTopic = _forumService.GetTopicById(model.Id);
             if (forumTopic == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
             var forum = forumTopic.Forum;
             if (forum == null)
@@ -1149,6 +1167,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = true;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
             model.ForumId = forum.Id;
@@ -1223,6 +1242,7 @@ namespace SmartStore.Web.Controllers
                 Id = 0,
                 ForumTopicId = forumTopic.Id,
                 IsEdit = false,
+                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = forumTopic.Subject,
@@ -1267,19 +1287,25 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-		[GdprConsent]
-		public ActionResult PostCreate(EditForumPostModel model)
+        [ValidateCaptcha]
+        [GdprConsent]
+		public ActionResult PostCreate(EditForumPostModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forumTopic = _forumService.GetTopicById(model.ForumTopicId);
             if (forumTopic == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
@@ -1368,6 +1394,7 @@ namespace SmartStore.Web.Controllers
             }
 
             model.IsEdit = false;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumTopicId = forumTopic.Id;
             model.ForumTopicSubject = forumTopic.Subject;
@@ -1415,6 +1442,7 @@ namespace SmartStore.Web.Controllers
                 Id = forumPost.Id,
                 ForumTopicId = forumTopic.Id,
                 IsEdit = true,
+                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = forumTopic.Subject,
@@ -1438,18 +1466,24 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult PostEdit(EditForumPostModel model)
+        [ValidateCaptcha]
+        public ActionResult PostEdit(EditForumPostModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forumPost = _forumService.GetPostById(model.Id);
             if (forumPost == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
 
             if (!_forumService.IsCustomerAllowedToEditPost(customer, forumPost))
@@ -1536,6 +1570,7 @@ namespace SmartStore.Web.Controllers
 
             // Redisplay form.
             model.IsEdit = true;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumTopicId = forumTopic.Id;
             model.ForumTopicSubject = forumTopic.Subject;

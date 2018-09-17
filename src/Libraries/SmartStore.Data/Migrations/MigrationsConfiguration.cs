@@ -398,6 +398,8 @@
             builder.AddOrUpdate("Search.Facet.Date.Older", "and older", "und älter");
 
             builder.AddOrUpdate("Forum.PostText", "Post text", "Beitragstext");
+            builder.AddOrUpdate("Forum.Sticky", "Sticky topic", "Festes Thema");
+
             builder.AddOrUpdate("Search.HitsFor", "{0} hits for {1}", "{0} Treffer für {1}");
             builder.AddOrUpdate("Search.NoMoreHitsFound", "There were no more hits found.", "Es wurden keine weiteren Treffer gefunden.");
 

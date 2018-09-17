@@ -65,7 +65,7 @@
             {
                 <tr class="topic">
                     <td class="image">
-                        <i class="fa fa-comments-o"></i>
+                        @{ Html.RenderPartial("Customer.Avatar", topic.Avatar); }
                     </td>
                     <td class="topic-name">
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })

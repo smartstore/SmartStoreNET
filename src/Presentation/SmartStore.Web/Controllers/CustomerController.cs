@@ -1699,24 +1699,24 @@ namespace SmartStore.Web.Controllers
 
         #region Avatar
 
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+        [RequireHttpsByConfig(SslRequirement.Yes)]
         public ActionResult Avatar()
         {
             if (!IsCurrentUserRegistered())
+            {
                 return new HttpUnauthorizedResult();
+            }
 
             if (!_customerSettings.AllowCustomersToUploadAvatars)
-				return RedirectToAction("Info");
+            {
+                return RedirectToAction("Info");
+            }
 
-            var customer = _workContext.CurrentCustomer;
-			var avatarId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
+			var model = new CustomerAvatarEditModel();
+            model.Avatar = _workContext.CurrentCustomer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, null, true);
+            model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
 
-			var model = new CustomerAvatarModel();
-			model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
-            model.AvatarUrl = _pictureService.GetUrl(avatarId, _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
-			model.PictureFallbackUrl = _pictureService.GetFallbackUrl(0, FallbackPictureType.Avatar);
-
-			return View(model);
+            return View(model);
         }
 
 		[HttpPost]
@@ -1759,12 +1759,10 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult RemoveAvatar()
 		{
-			var success = false;
+            var customer = _workContext.CurrentCustomer;
 
-			if (IsCurrentUserRegistered() && _customerSettings.AllowCustomersToUploadAvatars)
+            if (IsCurrentUserRegistered() && _customerSettings.AllowCustomersToUploadAvatars)
 			{
-				var customer = _workContext.CurrentCustomer;
-
 				var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
 				if (customerAvatar != null)
 				{
@@ -1772,10 +1770,10 @@ namespace SmartStore.Web.Controllers
 				}
 
 				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, 0);
-				success = true;
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarColor, (string)null);
 			}
 
-			return Json(new { success });
+            return RedirectToAction("Avatar");
 		}
 
         #endregion

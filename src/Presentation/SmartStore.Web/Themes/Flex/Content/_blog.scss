@@ -56,10 +56,17 @@
 }
 
 .comment-item {
-    padding: 2rem 0;
+    padding: 1rem 0;
     border-bottom: 1px solid rgba(0,0,0, 0.12);
 
-    &:last-child { border-bottom: none; }
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .comment-avatar-col {
+        width: 60px;
+        max-width: 60px;
+    }
 }
 
 .block-popular-blogtags {

@@ -1,18 +1,10 @@
-﻿@model CommentModel
-@using SmartStore.Web.Models.Common;
+﻿@using SmartStore.Web.Models.Common;
+@model CommentModel
 
 <div class="row sm-gutters comment-item">
-	@if (Model.Parent.HasAnyAvatar())
-	{
-		<div class="col comment-avatar-col">
-			@if (Model.CustomerAvatarUrl.HasValue())
-			{
-				<div class="comment-avatar text-center">
-					<img class="img-fluid img-thumbnail" src="@(Model.CustomerAvatarUrl)" title="avatar" alt="avatar" />
-				</div>
-			}
-		</div>
-	}
+	<div class="col comment-avatar-col">
+        @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
+	</div>
 	<div class="col comment-content-col">
 		<div class="comment-content">
 			<div class="comment-meta">
@@ -35,7 +27,7 @@
 					@Html.Raw(Model.CommentTitle)
 				</h5>
 			}
-			<p class="comment-body text-body mt-4 mb-0" dir="auto">
+			<p class="comment-body text-body mt-2 mb-0" dir="auto">
 				@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(Model.CommentText, false, true, false, false, false, false))
 			</p>
 		</div>

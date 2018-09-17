@@ -87,7 +87,9 @@ namespace SmartStore.Web.Controllers
             Dictionary<int, ForumPost> lastPosts,
             ForumPost firstPost = null)
         {
-            var topicModel = new ForumTopicRowModel
+            var customer = topic.Customer;
+
+            var model = new ForumTopicRowModel
             {
                 Id = topic.Id,
                 Subject = topic.Subject,
@@ -100,17 +102,19 @@ namespace SmartStore.Web.Controllers
                 ForumTopicType = topic.ForumTopicType,
                 CustomerId = topic.CustomerId,
                 AllowViewingProfiles = _customerSettings.AllowViewingProfiles,
-                CustomerName = topic.Customer.FormatUserName(true),
-                IsCustomerGuest = topic.Customer.IsGuest(),
+                CustomerName = customer.FormatUserName(_customerSettings, T, true),
+                IsCustomerGuest = customer.IsGuest(),
                 PostsPageSize = _forumSettings.PostsPageSize
             };
 
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, model.CustomerName);
+
             if (topic.LastPostId != 0 && lastPosts.TryGetValue(topic.LastPostId, out var lastPost))
             {
-                PrepareLastPostModel(topicModel.LastPost, lastPost);
+                PrepareLastPostModel(model.LastPost, lastPost);
             }
 
-            return topicModel;
+            return model;
         }
 
         private ForumRowModel PrepareForumRowModel(Forum forum, Dictionary<int, ForumPost> lastPosts)
@@ -689,7 +693,7 @@ namespace SmartStore.Web.Controllers
                         IsCurrentCustomerAllowedToDeletePost = _forumService.IsCustomerAllowedToDeletePost(customer, post),
                         CustomerId = post.CustomerId,
                         AllowViewingProfiles = _customerSettings.AllowViewingProfiles,
-                        CustomerName = post.Customer.FormatUserName(true),
+                        CustomerName = post.Customer.FormatUserName(_customerSettings, T, false),
                         IsCustomerForumModerator = post.Customer.IsForumModerator(),
                         IsCustomerGuest= post.Customer.IsGuest(),
                         ShowCustomersPostCount = _forumSettings.ShowCustomersPostCount,
@@ -704,16 +708,8 @@ namespace SmartStore.Web.Controllers
                     forumPostModel.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
                         ? post.CreatedOnUtc.RelativeFormat(true, "f")
                         : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
-                    
-                    if (_customerSettings.AllowCustomersToUploadAvatars)
-                    {
-                        var avatarId = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-                        forumPostModel.CustomerAvatarUrl = _pictureService.GetUrl(avatarId, _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
-                        if (forumPostModel.CustomerAvatarUrl.IsEmpty() && _customerSettings.DefaultAvatarEnabled)
-                        {
-                            forumPostModel.CustomerAvatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
-                        }
-                    }
+
+                    forumPostModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, forumPostModel.CustomerName, true);
 
                     // Location.
                     forumPostModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;

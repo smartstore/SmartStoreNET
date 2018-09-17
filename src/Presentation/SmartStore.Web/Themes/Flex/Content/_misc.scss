@@ -72,6 +72,57 @@
     display: block !important; 
 }
 
+//
+// Customer
+// -------------------------------------------------
+.customer-avatar,
+.customer-avatar-lg {
+    display: inline-block;
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    img, .letter {
+        display: inline-block;
+        border-radius: 50%;
+        border: 0;
+    }
+
+    .letter {
+        font-weight: bold;
+        text-align: center;
+    }
+}
+
+.customer-avatar {
+    width: 45px;
+    height: 45px;
+
+    img, .letter {
+        width: 45px;
+        height: 45px;
+    }
+
+    .letter {
+        font-size: 30px;
+    }
+}
+
+.customer-avatar-lg {
+    width: 120px;
+    height: 120px;
+
+    img, .letter {
+        width: 120px;
+        height: 120px;
+    }
+
+    .letter {
+        font-size: 80px;
+    }
+}
 
 //
 // Other stuff

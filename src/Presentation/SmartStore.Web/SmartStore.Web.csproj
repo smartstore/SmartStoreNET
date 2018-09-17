@@ -851,6 +851,7 @@
     <Content Include="Content\editors\summernote\summernote-bs4.min.js" />
     <Content Include="Content\fontastic\fontastic.css" />
     <Content Include="Content\fontastic\fonts\fontastic.svg" />
+    <Content Include="Content\Images\default-avatar.jpg" />
     <Content Include="Content\placeholder.txt" />
     <Content Include="Content\print-rtl.css" />
     <Content Include="Content\vendors\drift\Drift.js" />
@@ -1203,7 +1204,6 @@
     <Content Include="Content\Images\star-on.png" />
     <Content Include="Content\editors\BBEditor\ed.js" />
     <Content Include="Content\Images\ajax_loader_small.gif" />
-    <Content Include="Content\Images\default-avatar.jpg" />
     <Content Include="Content\Images\flags\ad.png" />
     <Content Include="Content\Images\flags\ae.png" />
     <Content Include="Content\Images\flags\af.png" />
@@ -1766,6 +1766,7 @@
     <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
     <Content Include="Views\Boards\Partials\InstantSearch.cshtml" />
     <Content Include="Views\Boards\Partials\SearchHits.cshtml" />
+    <Content Include="Views\Shared\Partials\Customer.Avatar.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

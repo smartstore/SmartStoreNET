@@ -705,7 +705,8 @@ namespace SmartStore.Web.Controllers
                                     Email = model.Email,
                                     Active = true,
                                     CreatedOnUtc = DateTime.UtcNow,
-									StoreId = _storeContext.CurrentStore.Id
+									StoreId = _storeContext.CurrentStore.Id,
+                                    WorkingLanguageId = _services.WorkContext.WorkingLanguage.Id
                                 });
                             }
                         }

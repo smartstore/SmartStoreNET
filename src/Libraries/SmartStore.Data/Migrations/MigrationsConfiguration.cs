@@ -488,6 +488,13 @@
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.Default", "Default", "Standard");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.BadgeAll", "In bagdes", "Markiert");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.BadgeFreeProductsOnly", "Badge free products only", "Nur kostenlose Produkte markieren");
+
+            builder.AddOrUpdate("Admin.DataExchange.Export.Filter.WorkingLanguageId",
+                "Language",
+                "Sprache",
+                "Filter by language",
+                "Nach Sprache filtern");
+            
         }
     }
 }

@@ -1,30 +1,32 @@
 ﻿@model TopicModel
-@using SmartStore.Web.Models.Topics;
-@{
-    var isPopup = ViewBag.IsPopup;
-    if (isPopup == null || isPopup == false)
-    {
-        Layout = "_Layout";
-    }
-    else
-    {
-        Layout = "_Layout.Popup.cshtml";
-    }
 
-    if (!Model.IsPasswordProtected)
-    {
-        Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
-        Html.AddMetaDescriptionParts(Model.MetaDescription);
-        Html.AddMetaKeywordParts(Model.MetaKeywords);
-    }
+@using SmartStore.Web.Models.Topics;
+
+@{
+	var isPopup = ViewBag.IsPopup;
+	if (isPopup == null || isPopup == false)
+	{
+		Layout = "_Layout";
+	}
+	else
+	{
+		Layout = "_Layout.Popup.cshtml";
+	}
+
+	if (!Model.IsPasswordProtected)
+	{
+		Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
+		Html.AddMetaDescriptionParts(Model.MetaDescription);
+		Html.AddMetaKeywordParts(Model.MetaKeywords);
+	}
 }
 @if (Model.IsPasswordProtected)
 {
-    // For popup topics, use a minimal layout that includes the Ajax and jQuery scripts
-    if (isPopup != null && isPopup == true)
-    {
-        Layout = "_RootPopup";
-    }    
+	// For popup topics, use a minimal layout that includes the Ajax and jQuery scripts
+	if (isPopup != null && isPopup == true)
+	{
+		Layout = "_RootPopup";
+	}
     <script type="text/javascript">
         $(document).ready(function () {
             $('#ph-topic').hide();
@@ -48,12 +50,12 @@
     </script>
     <div id="ph-password">
         @using (Ajax.BeginForm("Authenticate", new AjaxOptions
-        {
-            HttpMethod = "Post",
-            OnSuccess = "OnAuthenticateSuccess",
-            LoadingElementId = "authenticate-progress"
-        }))
-        {
+		{
+			HttpMethod = "Post",
+			OnSuccess = "OnAuthenticateSuccess",
+			LoadingElementId = "authenticate-progress"
+		}))
+		{
             @Html.HiddenFor(model => model.Id)
             <div class="enter-password-title">
                 @T("Topic.EnterPassword")
@@ -68,20 +70,37 @@
             <div class="password-error">
                 <span id="password-error"></span>
             </div>
-        }
+		}
     </div>
 }
+
 <div class="page topic-page" id="ph-topic">
+	@if (Model.Title.HasValue())
+	{
+		<div id="ph-title">
+			<div class="page-title">
+				@Html.Raw("<" + Model.TitleTag + Html.LanguageAttributes(Model.Title) + " class=\"block-title\">")
+				@Html.Raw(Model.Title)
+				@Html.Raw("</" + Model.TitleTag + ">")
+			</div>
+		</div>
+	}
 
-    <div id="ph-title">
-        <div class="page-title">
-            @Html.Raw("<" + Model.TitleTag + " class=\"block-title\">")
-            @Html.Raw(Model.Title)
-            @Html.Raw("</" + Model.TitleTag + ">")
-        </div>
-    </div>
+	@if (Model.Intro.HasValue())
+	{
+		<p class="ph-intro lead" @Html.LanguageAttributes(Model.Intro)>
+			@Html.Raw(Model.Intro)
+		</p>
+	}
 
-    <div class="page-body html-editor-content">
-        @Html.Raw(Model.Body)
-    </div>
+	@{ Html.RenderWidget("topic_body_before"); }
+
+	@if (Model.Body.HasValue())
+	{
+		<div class="page-body html-editor-content" @Html.LanguageAttributes(Model.Body)>
+			@Html.Raw(Model.Body)
+		</div>
+	}
+
+	@{ Html.RenderWidget("topic_body_after"); }
 </div>

@@ -10,12 +10,12 @@
 
     Html.AddTitleParts(
         parsedMonth != null ?
-        T("PageTitle.Blog.Month").Text.FormatWith(parsedMonth.Value.ToString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
+        T("PageTitle.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
         T("PageTitle.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
     );
     Html.AddMetaDescriptionParts(
         parsedMonth != null ?
-        T("Metadesc.Blog.Month").Text.FormatWith(parsedMonth.Value.ToString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
+        T("Metadesc.Blog.Month").Text.FormatWith(parsedMonth.Value.ToNativeString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
         T("Metadesc.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
     );
 }
@@ -40,7 +40,7 @@
 					{
 						if (Model.PagingFilteringContext.GetParsedMonth().HasValue)
 						{
-							@T("Blog.FilteredByMonth", Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToString("MMMM"))
+							@T("Blog.FilteredByMonth", Model.PagingFilteringContext.GetParsedMonth().Value.Year, Model.PagingFilteringContext.GetParsedMonth().Value.ToNativeString("MMMM"))
 						}
 						else
 						{
@@ -60,8 +60,8 @@
                 <span>@T("Blog.RSS")</span>
             </a>
         </div>
-
     </div>
+
     <div class="page-body">
         
         @{ Html.RenderWidget("bloglist_page_before_posts"); }
@@ -98,7 +98,7 @@
                         }
 
                         <div class="blogpost-date mb-2 text-muted">
-                            @item.CreatedOn.ToString("dd MMMM, yyyy")
+                            @item.CreatedOn.ToNativeString("dd MMMM, yyyy")
                         </div>
 
                         @if (item.Tags.Count > 0)
@@ -120,12 +120,12 @@
         </div>
 
         @(Html.SmartStore().Pager(Model.PagingFilteringContext)
-                          .Name("pagination-bottom")
-                          .QueryParam("pagenumber")
-                          .ShowFirst(false)
-                          .ShowLast(false)
-                          .Style(PagerStyle.Pagination)
-                          .MaxPagesToDisplay(6))
+				.Name("pagination-bottom")
+				.QueryParam("pagenumber")
+				.ShowFirst(false)
+				.ShowLast(false)
+				.Style(PagerStyle.Pagination)
+				.MaxPagesToDisplay(6))
 
         @{ Html.RenderWidget("bloglist_page_after_posts"); }
     </div>

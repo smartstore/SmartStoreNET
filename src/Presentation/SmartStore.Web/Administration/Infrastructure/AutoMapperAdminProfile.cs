@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using System.Linq;
 using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
@@ -24,7 +22,6 @@ using SmartStore.Admin.Models.Themes;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
@@ -42,7 +39,6 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Seo;
 
@@ -50,38 +46,37 @@ namespace SmartStore.Admin.Infrastructure
 {
 	public class AutoMapperAdminProfile : Profile
 	{
-		class OptionalFkConverter : ITypeConverter<int, int?>
+		class OptionalFkConverter : ITypeConverter<int?, int?>, ITypeConverter<int, int?>
 		{
-			public int? Convert(int source, int? destination, ResolutionContext context)
+            public int? Convert(int? source, int? destination, ResolutionContext context)
+            {
+                return source;
+            }
+
+            public int? Convert(int source, int? destination, ResolutionContext context)
 			{
-				//var srcName = context.PropertyMap.SourceMember.Name;
-
-				//if (context.PropertyMap.SourceMember.MemberType == MemberTypes.Property && srcName.EndsWith("Id") && !context.SourceType.IsNullable())
-				//{
-				//	var src = (int)context.SourceValue;
-				//	return src == 0 ? (int?)null : src;
-				//}
-
-				//return (int?)context.SourceValue;
-				
-				return source == 0 ? (int?)null : source;
+                return source == 0 ? (int?)null : source;
 			}
 		}
 
-		public AutoMapperAdminProfile()
+        public AutoMapperAdminProfile()
 		{
-			// TODO remove 'CreatedOnUtc' ignore mappings because now presentation layer models have 'CreatedOn' property and core entities have 'CreatedOnUtc' property (distinct names)
+            // TODO remove 'CreatedOnUtc' ignore mappings because now presentation layer models have 'CreatedOn' property and core entities have 'CreatedOnUtc' property (distinct names)
 
-			// special mapper, that avoids DbUpdate exceptions in cases where
-			// optional (nullable) int FK properties are 0 instead of null 
-			// after mapping model > entity.
-			CreateMap<int, int?>().ConvertUsing(new OptionalFkConverter());
+            // special mapper, that avoids DbUpdate exceptions in cases where
+            // optional (nullable) int FK properties are 0 instead of null 
+            // after mapping model > entity.
+            // if type is nullable source value shouldn't be touched
+            var fkConverter = new OptionalFkConverter();
+            CreateMap<int?, int?>().ConvertUsing(fkConverter);
+            CreateMap<int, int?>().ConvertUsing(fkConverter);
 
-			//address
-			CreateMap<Address, AddressModel>()
+            //address
+            CreateMap<Address, AddressModel>()
 				.ForMember(dest => dest.AddressHtml, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStates, mo => mo.Ignore())
+				.ForMember(dest => dest.TitleEnabled, mo => mo.Ignore())
 				.ForMember(dest => dest.FirstNameEnabled, mo => mo.Ignore())
 				.ForMember(dest => dest.FirstNameRequired, mo => mo.Ignore())
 				.ForMember(dest => dest.LastNameEnabled, mo => mo.Ignore())
@@ -106,14 +101,14 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.FaxEnabled, mo => mo.Ignore())
 				.ForMember(dest => dest.FaxRequired, mo => mo.Ignore())
 				.ForMember(dest => dest.EmailMatch, mo => mo.Ignore())
+				.ForMember(dest => dest.FormattedAddress, mo => mo.Ignore())
 				.ForMember(dest => dest.CountryName, mo => mo.MapFrom(src => src.Country != null ? src.Country.Name : null))
 				.ForMember(dest => dest.StateProvinceName, mo => mo.MapFrom(src => src.StateProvince != null ? src.StateProvince.Name : null));
 			CreateMap<AddressModel, Address>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Country, mo => mo.Ignore())
 				.ForMember(dest => dest.StateProvince, mo => mo.Ignore())
-				.ForMember(dest => dest.Salutation, mo => mo.Ignore())
-				.ForMember(dest => dest.Title, mo => mo.Ignore());
+				.ForMember(dest => dest.Salutation, mo => mo.Ignore());
 
 			//countries
 			CreateMap<CountryModel, Country>()
@@ -137,7 +132,11 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableTwoLetterLanguageCodes, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.FlagFileNames, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableLanguageSetId, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDownloadLanguages, mo => mo.Ignore())
+				.ForMember(dest => dest.FlagFileNames, mo => mo.Ignore())
+				.ForMember(dest => dest.LastResourcesImportOn, mo => mo.Ignore())
+				.ForMember(dest => dest.LastResourcesImportOnString, mo => mo.Ignore());
 			CreateMap<LanguageModel, Language>()
 				.ForMember(dest => dest.LocaleStringResources, mo => mo.Ignore());
 			//email account
@@ -154,7 +153,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableEmailAccounts, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
-			CreateMap<MessageTemplateModel, MessageTemplate>();
+			CreateMap<MessageTemplateModel, MessageTemplate>()
+				.ForMember(dest => dest.ModelTypes, dt => dt.Ignore());
 			//queued email
 			CreateMap<QueuedEmail, QueuedEmailModel>()
 				.ForMember(dest => dest.EmailAccountName, mo => mo.MapFrom(src => src.EmailAccount != null ? src.EmailAccount.FriendlyName : string.Empty))
@@ -178,13 +178,16 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
 			CreateMap<CampaignModel, Campaign>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
-			//topcis
-			CreateMap<Topic, TopicModel>()
-				.ForMember(dest => dest.WidgetWrapContent, mo => mo.MapFrom(x => x.WidgetWrapContent.HasValue ? x.WidgetWrapContent.Value : true))
-				.ForMember(dest => dest.Url, mo => mo.Ignore())
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+            //topcis
+            CreateMap<Topic, TopicModel>()
+                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+                .ForMember(dest => dest.WidgetWrapContent, mo => mo.MapFrom(x => x.WidgetWrapContent.HasValue ? x.WidgetWrapContent.Value : true))
+                .ForMember(dest => dest.Url, mo => mo.Ignore())
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableTitleTags, mo => mo.Ignore());
 
             CreateMap<TopicModel, Topic>()
@@ -240,47 +243,52 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.PriceRanges, mo => mo.Ignore())
 #pragma warning restore 612, 618
 				.ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore());
-			//products
-			CreateMap<Product, ProductModel>()
-				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
-				.ForMember(dest => dest.AssociatedToProductId, mo => mo.Ignore())
-				.ForMember(dest => dest.AssociatedToProductName, mo => mo.Ignore())
-				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
-				.ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
-				.ForMember(dest => dest.NoThumb, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableProductTemplates, mo => mo.Ignore())
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.NumberOfAvailableCategories, mo => mo.Ignore())
-				.ForMember(dest => dest.NumberOfAvailableManufacturers, mo => mo.Ignore())
-				.ForMember(dest => dest.AddPictureModel, mo => mo.Ignore())
-				.ForMember(dest => dest.ProductPictureModels, mo => mo.Ignore())
-				.ForMember(dest => dest.AddSpecificationAttributeModel, mo => mo.Ignore())
-				.ForMember(dest => dest.CopyProductModel, mo => mo.Ignore())
-				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
-				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableProductTags, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableManageInventoryMethods, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
-				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
-				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.BaseDimensionIn, mo => mo.Ignore())
-				.ForMember(dest => dest.BaseWeightIn, mo => mo.Ignore())
-				.ForMember(dest => dest.NumberOfAvailableProductAttributes, mo => mo.Ignore())
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableMeasureWeights, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableQuantityUnits, mo => mo.Ignore())
-				.ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore())
-				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore());
-			CreateMap<ProductModel, Product>()
+            //products
+            CreateMap<Product, ProductModel>()
+                .ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
+                .ForMember(dest => dest.AssociatedToProductId, mo => mo.Ignore())
+                .ForMember(dest => dest.AssociatedToProductName, mo => mo.Ignore())
+                .ForMember(dest => dest.ProductTags, mo => mo.Ignore())
+                .ForMember(dest => dest.PictureThumbnailUrl, mo => mo.Ignore())
+                .ForMember(dest => dest.NoThumb, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableProductTemplates, mo => mo.Ignore())
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.NumberOfAvailableCategories, mo => mo.Ignore())
+                .ForMember(dest => dest.NumberOfAvailableManufacturers, mo => mo.Ignore())
+                .ForMember(dest => dest.AddPictureModel, mo => mo.Ignore())
+                .ForMember(dest => dest.ProductPictureModels, mo => mo.Ignore())
+                .ForMember(dest => dest.AddSpecificationAttributeModel, mo => mo.Ignore())
+                .ForMember(dest => dest.CopyProductModel, mo => mo.Ignore())
+                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+                .ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableProductTags, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableManageInventoryMethods, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
+                .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
+                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+                .ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
+                .ForMember(dest => dest.BaseDimensionIn, mo => mo.Ignore())
+                .ForMember(dest => dest.BaseWeightIn, mo => mo.Ignore())
+                .ForMember(dest => dest.NumberOfAvailableProductAttributes, mo => mo.Ignore())
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableMeasureWeights, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableQuantityUnits, mo => mo.Ignore())
+                .ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore())
+                .ForMember(dest => dest.ProductUrl, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableCountries, mo => mo.Ignore())
+                .ForMember(dest => dest.NewVersionDownloadId, mo => mo.Ignore())
+                .ForMember(dest => dest.NewVersion, mo => mo.Ignore())
+                .ForMember(dest => dest.DownloadVersions, mo => mo.Ignore())
+                .ForMember(dest => dest.DownloadFileVersion, mo => mo.Ignore())
+                .ForMember(dest => dest.AddChangelog, mo => mo.Ignore());
+            CreateMap<ProductModel, Product>()
 				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
@@ -314,6 +322,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
+				.ForMember(dest => dest.IsSystemProduct, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
 				.ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
@@ -352,7 +361,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
                 .ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableDomainEndings, mo => mo.Ignore())
-                .ForMember(dest => dest.RoundOrderTotalPaymentMethods, mo => mo.Ignore());
+                .ForMember(dest => dest.RoundOrderTotalPaymentMethods, mo => mo.Ignore())
+                .ForMember(dest => dest.DomainEndingsArray, mo => mo.Ignore());
             CreateMap<CurrencyModel, Currency>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore());
@@ -377,6 +387,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductUrlTitle, mo => mo.Ignore())
 				.ForMember(dest => dest.Warnings, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
+				.ForMember(dest => dest.BaseDimensionIn, mo => mo.Ignore())
 				.AfterMap((src, dest) => dest.AssignedPictureIds = src.GetAssignedPictureIds());
 			CreateMap<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>()
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
@@ -400,7 +412,9 @@ namespace SmartStore.Admin.Infrastructure
 			//shipping methods
 			CreateMap<ShippingMethod, ShippingMethodModel>()
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.FilterConfigurationUrls, mo => mo.Ignore());
+				.ForMember(dest => dest.FilterConfigurationUrls, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
 			CreateMap<ShippingMethodModel, ShippingMethod>();
 			//plugins
 			CreateMap<PluginDescriptor, PluginModel>()
@@ -502,8 +516,7 @@ namespace SmartStore.Admin.Infrastructure
 
 			//product attributes
 			CreateMap<ProductAttribute, ProductAttributeModel>()
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.OptionCount, mo => mo.Ignore());
+				.ForMember(dest => dest.Locales, mo => mo.Ignore());
 			CreateMap<ProductAttributeModel, ProductAttribute>()
 				.ForMember(dest => dest.ProductAttributeOptionsSets, mo => mo.Ignore());
 
@@ -609,9 +622,6 @@ namespace SmartStore.Admin.Infrastructure
 			//Settings
 			CreateMap<TaxSettings, TaxSettingsModel>()
 				.ForMember(dest => dest.DefaultTaxAddress, mo => mo.Ignore())
-				.ForMember(dest => dest.TaxDisplayTypeValues, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableAuxiliaryServicesTaxTypes, mo => mo.Ignore())
-				.ForMember(dest => dest.TaxBasedOnValues, mo => mo.Ignore())
 				.ForMember(dest => dest.PaymentMethodAdditionalFeeTaxCategories, mo => mo.Ignore())
 				.ForMember(dest => dest.ShippingTaxCategories, mo => mo.Ignore())
 				.ForMember(dest => dest.EuVatShopCountries, mo => mo.Ignore());
@@ -619,25 +629,23 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.ActiveTaxProviderSystemName, mo => mo.Ignore());
 			CreateMap<NewsSettings, NewsSettingsModel>();
 			CreateMap<NewsSettingsModel, NewsSettings>();
-			CreateMap<ForumSettings, ForumSettingsModel>()
-				.ForMember(dest => dest.ForumEditorValues, mo => mo.Ignore());
+			CreateMap<ForumSettings, ForumSettingsModel>();
 			CreateMap<ForumSettingsModel, ForumSettings>()
 				.ForMember(dest => dest.TopicSubjectMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.StrippedTopicMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.PostMaxLength, mo => mo.Ignore())
-				.ForMember(dest => dest.TopicPostsPageLinkDisplayCount, mo => mo.Ignore())
 				.ForMember(dest => dest.LatestCustomerPostsPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.PrivateMessagesPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.ForumSubscriptionsPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.PMSubjectMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.PMTextMaxLength, mo => mo.Ignore())
 				.ForMember(dest => dest.HomePageActiveDiscussionsTopicCount, mo => mo.Ignore())
-				.ForMember(dest => dest.ActiveDiscussionsPageTopicCount, mo => mo.Ignore())
-				.ForMember(dest => dest.ForumSearchTermMinimumLength, mo => mo.Ignore());
+				.ForMember(dest => dest.ActiveDiscussionsPageTopicCount, mo => mo.Ignore());
 			CreateMap<BlogSettings, BlogSettingsModel>();
 			CreateMap<BlogSettingsModel, BlogSettings>();
 			CreateMap<ShippingSettings, ShippingSettingsModel>()
-				.ForMember(dest => dest.ShippingOriginAddress, mo => mo.Ignore());
+				.ForMember(dest => dest.ShippingOriginAddress, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore());
 			CreateMap<ShippingSettingsModel, ShippingSettings>()
 				.ForMember(dest => dest.ActiveShippingRateComputationMethodSystemNames, mo => mo.Ignore())
 				.ForMember(dest => dest.ReturnValidOptionsIfThereAreAny, mo => mo.Ignore());
@@ -659,8 +667,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AllowCustomersToSelectPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.MostRecentlyUsedManufacturersMaxSize, mo => mo.Ignore());
 			CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
-				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
-				.ForMember(dest => dest.PointsForPurchases_OverrideForStore, mo => mo.Ignore());
+				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore());
 			CreateMap<RewardPointsSettingsModel, RewardPointsSettings>();
 			CreateMap<OrderSettings, OrderSettingsModel>()
 				.ForMember(dest => dest.GiftCards_Activated_OrderStatuses, mo => mo.Ignore())
@@ -690,8 +697,6 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.DefaultThumbnailAspectRatio, mo => mo.Ignore())
 				.ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
 			CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
-				.ForMember(dest => dest.AvailableCustomerNumberMethods, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableCustomerNumberVisibilities, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableRegisterCustomerRoles, mo => mo.Ignore());
 			CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
 				.ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
@@ -704,13 +709,17 @@ namespace SmartStore.Admin.Infrastructure
 			CreateMap<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>();
 			CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
+			CreateMap<PrivacySettings, CustomerUserSettingsModel.PrivacySettingsModel>();
+			CreateMap<CustomerUserSettingsModel.PrivacySettingsModel, PrivacySettings>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore());
 
 			CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableAssetCachingValues, mo => mo.Ignore())
 				.ForMember(dest => dest.Themes, mo => mo.Ignore())
 				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+				.ForMember(dest => dest.Id, mo => mo.Ignore());
 			CreateMap<ThemeListModel, ThemeSettings>();
 		}
 	}

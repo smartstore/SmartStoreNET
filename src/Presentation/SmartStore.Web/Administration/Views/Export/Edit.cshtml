@@ -281,12 +281,19 @@
 		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription ||
 		Model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
 	{
-		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))</div>
+		<div class="alert alert-info alert-dismissible">
+			@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			
+		</div>
 		@Html.Partial("_Tab.Filter", Model)
 	}
 	else
 	{
-		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoFiltering")</div>
+		<div class="alert alert-info alert-dismissible">
+			@T("Admin.DataExchange.Export.NoFiltering")
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
 	}
 }
 
@@ -296,12 +303,18 @@
 		Model.Provider.EntityType == ExportEntityType.Order ||
 		Model.Provider.EntityType == ExportEntityType.ShoppingCartItem)
 	{
-		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))</div>
+		<div class="alert alert-info alert-dismissible">
+			@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
 		@Html.Partial("_Tab.Projection", Model)
 	}
 	else
 	{
-		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoProjection")</div>
+		<div class="alert alert-info alert-dismissible">
+			@T("Admin.DataExchange.Export.NoProjection")
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
 	}
 }
 
@@ -335,8 +348,9 @@
 			}
 			else
 			{
-				<div class="alert alert-info">
+				<div class="alert alert-info alert-dismissible">
 					@Html.Raw(T("Admin.DataExchange.Export.Configuration.NotRequired", Model.Provider.FriendlyName ?? Model.ProviderSystemName))
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
 				</div>
 			}
 		</fieldset>

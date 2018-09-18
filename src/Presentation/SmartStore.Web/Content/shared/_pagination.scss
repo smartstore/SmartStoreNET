@@ -1,0 +1,40 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+.pagination {
+    .page-nav {
+        background-color: #fff;
+        &:hover { background-color: $pagination-hover-bg; }
+        &:first-of-type { margin-right: 0.25rem; }
+        &:last-of-type { margin-left: 0.25rem; }
+    }
+
+    .page-link {
+        border-radius: 2px !important;
+        margin-left: 0;
+        text-decoration: none !important;
+    }
+
+    .shrinked .page-link {
+        padding-left: 2px;
+        padding-right: 2px;
+        background-color: transparent !important;
+    }
+
+    .page-link:not(.page-nav) {
+        border-color: transparent !important;
+    }
+
+    .active .page-link {
+        font-weight: bold;
+    }
+
+    &.pagination-xs {
+        .page-link {
+            line-height: 1.4;
+            font-size: $font-size-xs;
+            padding: 0 6px;
+        }
+    }
+}

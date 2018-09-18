@@ -45,6 +45,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -183,7 +184,6 @@
     <Compile Include="Core\FacebookProviderAuthorizer.cs" />
     <Compile Include="Core\IOAuthProviderFacebookAuthorizer.cs" />
     <Compile Include="Core\OAuthAuthenticationParameters.cs" />
-    <Compile Include="Core\Provider.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Models\LoginModel.cs" />

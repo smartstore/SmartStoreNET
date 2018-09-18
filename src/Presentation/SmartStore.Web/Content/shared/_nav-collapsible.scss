@@ -1,0 +1,44 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+//
+// Responsive collapse
+// ------------------------------------------------------
+
+@include media-breakpoint-down(sm) {
+    .nav-collapsible {
+        position: relative;
+
+        .nav-toggler { 
+            position: relative;
+            line-height: 1.5;
+            cursor: pointer; 
+            margin: 0;
+            padding: 0.75rem 1rem;
+
+            &:after {
+                @include fontawesome("\f106");
+                position: absolute;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            &.collapsed:after {
+                content: "\f107";
+            }
+        }
+
+        .nav-collapse {
+            padding: 0 1rem;
+        }
+    }
+}
+
+@include media-breakpoint-up(md) { 
+    .nav-collapsible .nav-collapse {
+        display: block !important;
+        height: auto !important;
+    }
+}

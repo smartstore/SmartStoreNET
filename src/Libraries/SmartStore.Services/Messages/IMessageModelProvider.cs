@@ -61,6 +61,28 @@ namespace SmartStore.Services.Messages
 		void AddModelPart(object part, MessageContext messageContext, string name = null);
 
 		/// <summary>
+		/// Creates a serializable model object for the passed entity/object.
+		/// <para>
+		///		Supported types are: <see cref="Order"/>, <see cref="Product"/>, <see cref="Address"/>, <see cref="Shipment"/>, <see cref="OrderNote"/>, 
+		///		<see cref="RecurringPayment"/>, <see cref="ReturnRequest"/>, <see cref="GiftCard"/>, <see cref="NewsLetterSubscription"/>, <see cref="Campaign"/>, 
+		///		<see cref="ProductReview"/>, <see cref="BlogComment"/>, <see cref="NewsComment"/>, <see cref="ForumTopic"/>, <see cref="ForumPost"/>, 
+		///		<see cref="Forum"/>, <see cref="PrivateMessage"/>
+		/// </para>
+		/// <para>
+		///		Furthermore, any object implementing <see cref="IModelPart"/> or <see cref="INamedModelPart"/> can also be passed as model part.
+		///		The first merges all entries within the passed object with the special <c>Bag</c> entry, the latter creates a whole
+		///		new entry using the name provided by its <see cref="INamedModelPart.ModelPartName"/> property.
+		/// </para>
+		/// <para>
+		///		If an unsupported object is passed, <c>null</c> is returned
+		/// </para>
+		/// </summary>
+		/// <param name="part">The model part instance to convert.</param>
+		/// <param name="ignoreNullMembers">Whether members/properties with null values should be excluded from the result model.</param>
+		/// <param name="ignoreMemberNames">Optional list of member/property names to exclude from the result model.</param>
+		object CreateModelPart(object part, bool ignoreNullMembers, params string[] ignoreMemberNames);
+
+		/// <summary>
 		/// Tries to infer the model part name by type:
 		/// <list type="bullet">
 		///		<item>When <paramref name="model"/> is a plain object: type name</item>

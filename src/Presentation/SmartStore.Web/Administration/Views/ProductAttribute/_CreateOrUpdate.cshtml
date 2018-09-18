@@ -57,12 +57,12 @@
 					@Html.SmartLabelFor(model => model.Locales[item].Description)
 				</td>
 				<td class="adminData wide">
-					@Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
+					@Html.EditorFor(model => model.Locales[item].Description, "Html")
 					@Html.ValidationMessageFor(model => model.Locales[item].Description)
 				</td>
 			</tr>
 		</table>
-			,
+		,
 		@<table class="adminContent">
 			<tr>
 				<td class="adminTitle">
@@ -87,7 +87,7 @@
 					@Html.SmartLabelFor(model => model.Description)
 				</td>
 				<td class="adminData wide">
-					@Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
+					@Html.EditorFor(x => x.Description, "Html")
 					@Html.ValidationMessageFor(model => model.Description)
 				</td>
 			</tr>
@@ -132,6 +132,23 @@
                 @Html.ValidationMessageFor(model => model.IndexOptionNames)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ExportMappings)
+            </td>
+            <td class="adminData">
+				@Html.TextAreaFor(model => model.ExportMappings, new { style = "min-height: 120px;" })
+                @Html.ValidationMessageFor(model => model.ExportMappings)
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle"></td>
+			<td class="adminData">
+				<div class="alert alert-info">
+					@Html.Raw(T("Admin.Catalog.Attributes.ProductAttributes.Fields.ExportMappings.Note"))
+				</div>
+			</td>
+		</tr>
 	</table>
 }
 
@@ -156,6 +173,7 @@
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
 					})
+					.HtmlAttributes(new { align = "right" })
 					.Width(120);
 				})
 				.DataBinding(dataBinding => dataBinding.Ajax()
@@ -173,11 +191,7 @@
 							keys.Add(x => x.Id);
 							keys.Add(x => x.ProductAttributeOptionsSetId).RouteKey("optionsSetId");
 						})
-						.ToolBar(commands => commands.Custom()
-							.Name("insert-option")
-							.HtmlAttributes(new { href = "#", @class = "btn btn-link insert-option" })
-							.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.Options.Add"))
-						)
+						.ToolBar(commands => commands.Template(OptionGridCommands))
 						.Columns(columns =>
 						{
 							columns.Bound(x => x.Name)
@@ -199,13 +213,13 @@
 								.Centered()
 								.Title("")
 								.ClientTemplate(
-									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='t-button edit-option'>" + @T("Admin.Common.Edit") + "</a>" +
-									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='t-button delete-option'>" + @T("Admin.Common.Delete") + "</a>");
+									"<a href='" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnOptionRefresh' class='btn btn-secondary edit-option'>" + @T("Admin.Common.Edit") + "</a>" +
+									"<a href='" + @Url.Action("OptionDelete", "ProductAttribute") + "/<#= Id #>?btnId=btnOptionRefresh' class='btn btn-danger ml-1 delete-option'>" + @T("Admin.Common.Delete") + "</a>")
+								.HtmlAttributes(new { align = "right" });
 						})
 						.DataBinding(dataBinding => dataBinding.Ajax()
 							.Select("OptionsSetListDetails", "ProductAttribute", new { id = "<#= Id #>" })
 						)
-						.ClientEvents(events => events.OnDataBound("onDataBoundOptionsGrid"))
 						.ToHtmlString()
 				)))
 		</div>
@@ -215,20 +229,23 @@
 
 		<script type="text/javascript">
 			$(document).ready(function () {
+
+				var mainGrid = $('#productattributeoptionsset-grid');
+
 				// refresh options set grid
                 $('#btnRefresh').click(function () {
-                	$('#productattributeoptionsset-grid').data('tGrid').ajaxRequest();
+					mainGrid.data('tGrid').ajaxRequest();
                     return false;
                 });
-
+				
 				// refresh options set child grid
-                $(document).on('click', 'input[id=btnOptionRefresh]', function () {
+				$(document).on('click', 'input[id=btnOptionRefresh]', function () {
                 	$('#productattributeoptions-grid' + $(this).val()).data('tGrid').ajaxRequest();
                 	return false;
                 });
 
 				// add option
-                $(document).on('click', 'a.insert-option', function (e) {
+				$(mainGrid).on('click', '.t-grid-insert-option', function (e) {
                 	e.preventDefault();
                 	var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
@@ -237,7 +254,7 @@
                 });
 
 				// edit option
-				$(document).on('click', 'a.edit-option', function (e) {
+				$(mainGrid).on('click', 'a.edit-option', function (e) {
 					e.preventDefault();
 					var id = $(this).closest('.t-grid').attr('id').replace('productattributeoptions-grid', '');
 					$('#btnOptionRefresh').val(id);
@@ -246,7 +263,7 @@
 				});
 
 				// delete option
-				$(document).on('click', 'a.delete-option', function (e) {
+				$(mainGrid).on('click', 'a.delete-option', function (e) {
 					e.preventDefault();
 					var grid = $(this).closest('.t-grid').data('tGrid');
 					$(this).doAjax({
@@ -259,10 +276,6 @@
 					return false;
 				});
 			});
-
-			function onDataBoundOptionsGrid() {
-				$('div[id^=productattributeoptions-grid]').find('.btn-link').removeClass('t-button');
-			}
 		</script>
 	}
 	else
@@ -271,4 +284,12 @@
 			@T("Admin.SaveBeforeEdit")
 		</div>
 	}
+}
+
+@helper OptionGridCommands(Grid<ProductAttributeOptionModel> grid)
+{
+	<button type="button" class="btn btn-below btn-warning t-grid-insert-option">
+		<i class="fa fa-plus"></i>
+		<span>@T("Common.Options.Add")</span>
+	</button>
 }

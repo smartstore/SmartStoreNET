@@ -5,7 +5,6 @@ using System.Text;
 
 namespace SmartStore.Data.Setup
 {
-
 	internal class LocaleResourceEntry
 	{
 		public string Key { get; set; }

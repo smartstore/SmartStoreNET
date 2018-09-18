@@ -18,9 +18,9 @@
 
     <div class="cart-action-body collapse@(isExpanded ? " show" : "")" id="cart-action-rewardpoints-body" aria-expanded="@isExpanded">
         <div class="reward-points alert alert-info">
-            <div class="checkbox">
-                <label class="form-check-label mb-0">
-                    @Html.EditorFor(model => model.UseRewardPoints)
+            <div class="form-check">
+				@Html.CheckBoxFor(model => model.UseRewardPoints, new { @class = "form-check-input" })
+                <label class="form-check-label" for="@Html.IdFor(model => model.UseRewardPoints)"> 
                     @Html.Raw(string.Format(T("Checkout.UseRewardPoints").Text, "<strong>" + Model.RewardPointsBalance + "</strong>", "<strong>" + Model.RewardPointsAmount + "</strong>"))
                 </label>
             </div>

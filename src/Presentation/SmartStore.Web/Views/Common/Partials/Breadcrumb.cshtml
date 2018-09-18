@@ -19,12 +19,12 @@
 				@if (item.HasRoute() && !isLast)
 				{
 					<a href="@item.GenerateUrl(this.Url)" title="@item.Text" itemprop="url">
-						<span itemprop="title">@item.Text</span>
+						<span itemprop="title" dir="auto">@item.Text</span>
 					</a>
 				}
 				else
 				{
-					<span itemprop="title">@item.Text</span>
+					<span itemprop="title" dir="auto">@item.Text</span>
 				}
 			</li>
 		}

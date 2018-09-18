@@ -1,5 +1,6 @@
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 //
 // Article/Product list & item styles
@@ -16,8 +17,8 @@ $art-border-color:              #ddd;
 @mixin make-art-row() {
     display: flex;
     flex-wrap: wrap;
-    margin-right: ($grid-gutter-width-base / -2);
-    margin-left:  ($grid-gutter-width-base / -2);
+    margin-right: ($grid-gutter-width / -2);
+    margin-left:  ($grid-gutter-width / -2);
 }
 
 @mixin make-art-col($cols) {
@@ -74,8 +75,15 @@ $art-border-color:              #ddd;
     margin: 0 -0.25rem;
 }
 
+.artlist-action--filter,
+.artlist-action--sort {
+	flex-grow: 1;
+	flex-basis: 0;
+	max-width: 100%;
+}
+
 .artlist-action--pager {
-    > * { position: relative; display: block; float: left; }
+    > * { position: relative; }
     > *:not(:first-child) { margin-left: -1px; }
     .btn-pager-prev { border-top-left-radius: 3px; border-bottom-left-radius: 3px }   
     .btn-pager-next { border-top-right-radius: 3px; border-bottom-right-radius: 3px }    
@@ -92,7 +100,7 @@ $art-border-color:              #ddd;
     .btn-artlist-action,
     .btn-artlist-action span { font-weight: 400 !important; }
 
-    .artlist-action-group--filtersort {
+    .artlist-action-group {
         .btn { 
             font-size: 1rem; text-align: left; border-radius: $btn-border-radius;
             > b { background: transparent; } 
@@ -104,17 +112,56 @@ $art-border-color:              #ddd;
     .btn-artlist-action { font-weight: $font-weight-medium; }
 }
 
-.artlist-actions--top { 
-    border-bottom: 1px solid $art-border-color; 
-    display: flex;
-    flex-wrap: wrap;
-    .artlist-action-group { width: 100%; }
+.artlist-actions--top {
+	display: flex;
+	flex-wrap: wrap;
 
-    @include media-breakpoint-up(lg) {
-        flex-wrap: nowrap;
-        .artlist-action-group { width: auto; }
-        .artlist-action-group--page { margin-left: auto; }
-    }
+	.artlist-action-group {
+		width: 100%;
+	}
+
+	.artlist-action-group--filtersort {
+		flex: 1 1 0; // grow shrink basis
+		max-width: 100%;
+	}
+
+	.artlist-action-group--page {
+		flex: 0 0 auto; // grow shrink basis
+		width: auto;
+		max-width: none;
+		padding-left: 0.5rem;
+	}
+
+	.artlist-action--pagesize,
+	.artlist-action--pager {
+		display: none !important;
+	}
+
+	@include media-breakpoint-up(lg) {
+		flex-wrap: nowrap;
+		border-bottom: 1px solid $art-border-color;
+
+		.artlist-action-group--filtersort {
+			flex-grow: 0;
+		}
+
+		.artlist-action--pagesize,
+		.artlist-action--pager {
+			display: flex !important;
+		}
+
+		.artlist-action-group--page {
+			padding-left: 0;
+		}
+
+		.artlist-action-group {
+			width: auto;
+		}
+
+		.artlist-action-group--page {
+			margin-left: auto;
+		}
+	}
 }
 
 
@@ -139,7 +186,7 @@ $art-border-color:              #ddd;
     width: 100%;
     @include make-col(12, $grid-columns);
     
-    padding: $grid-gutter-width-base / 2; 
+    padding: $grid-gutter-width / 2; 
     
     border: 1px solid transparent;
     background: transparent;   
@@ -169,11 +216,20 @@ $art-border-color:              #ddd;
         position: absolute;
         z-index: 1;
         left: 0;
-        top: 0;
+        top: 0rem;
         width: 100%;
         text-align: center;
-        color: $gray-light;
+        color: $gray-500;
     }
+}
+
+.art-picture.no-default-picture {
+    &:before {
+        top: 2rem;
+    }
+    img {
+		display: none;
+	}
 }
 
 .art-badges {
@@ -249,6 +305,9 @@ $art-border-color:              #ddd;
     &.art-price--offer {
         color: $art-price-offer-color;
     }
+    &.badge {
+        color: $white;
+    }
 }
 
 .art-oldprice {
@@ -266,7 +325,7 @@ $art-border-color:              #ddd;
 
 .art-shipsurcharge {
     font-size: $art-font-size-sm;
-    color: $brand-danger;
+    color: $danger;
     padding-top: 0.4rem;
     @include text-truncate();
 }
@@ -343,8 +402,6 @@ $art-border-color:              #ddd;
 .art-more-opts {
     font-size: $art-font-size-sm;
     color: $text-muted;
-    
-    > a { font-weight: bold; }  
 }
 
 .art-variant-info > * + * {
@@ -358,9 +415,8 @@ $art-border-color:              #ddd;
 
     td { padding: 1px 0; }
     td:first-child { 
-        padding-right: 0.5rem; 
+        padding-right: 0.75rem; 
         font-weight: $font-weight-medium; 
-        //color: $text-muted;
     }
 }
 
@@ -380,7 +436,7 @@ $art-border-color:              #ddd;
 
     .art-data-block {
         @include make-art-row();
-        padding-left: $grid-gutter-width-base / 1.5;
+        padding-left: $grid-gutter-width / 1.5;
         padding-right: 0;
         margin-left: 0;
         margin-right: 0;
@@ -396,7 +452,7 @@ $art-border-color:              #ddd;
 
     .art-actions-block {
         width: 220px;
-        padding-left: $grid-gutter-width-base / 1.5;
+        padding-left: $grid-gutter-width / 1.5;
     }
 
     .art-description {
@@ -452,10 +508,6 @@ $art-border-color:              #ddd;
         font-size: 1rem;
         color: $text-muted;
         font-weight: 400;
-    }
-
-    .art-oldprice {
-        //display: block;
     }
 
     .art-variant-info {
@@ -564,8 +616,8 @@ $art-border-color:              #ddd;
     }
 
     .art-variant-info {
-        padding-left: $grid-gutter-width-base / 2;
-        padding-right: $grid-gutter-width-base / 2;
+        padding-left: $grid-gutter-width / 2;
+        padding-right: $grid-gutter-width / 2;
     }
 
     @include media-breakpoint-up(sm) {

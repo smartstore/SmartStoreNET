@@ -34,7 +34,9 @@
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				@Html.Raw(T("ShoppingCart.Mini.AddedItemToWishlist", "<strong>" + currentItem.ProductName.Truncate(50, "...") + "</strong>").Text)
+				<span @Html.LanguageAttributes(currentItem.ProductName)>
+					@Html.Raw(T("ShoppingCart.Mini.AddedItemToWishlist", "<strong>" + currentItem.ProductName.Value.Truncate(50, "...") + "</strong>").Text)
+				</span>
 			</div>
         }
 
@@ -56,9 +58,9 @@
                         }
 
                         <div class="col col-data">
-                            <a class="name font-weight-medium" href="@item.ProductUrl" title="@item.ProductName">@item.ProductName</a>
-                            <div class="short-desc text-muted">
-                                @Html.Raw(item.ShortDesc.Truncate(descMaxLength, "..."))
+							<a class="name font-weight-medium" href="@item.ProductUrl" title="@item.ProductName" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
+                            <div class="short-desc text-muted" @Html.LanguageAttributes(item.ShortDesc)>
+                                @Html.Raw(item.ShortDesc.Value.Truncate(descMaxLength, "..."))
                             </div>
 
                             @if (item.AttributeInfo.HasValue())
@@ -77,9 +79,9 @@
 
                                         if (bundleItem.Picture.ImageUrl.HasValue())
                                         {
-                                            <a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
-                                                <img alt="@bundleItem.ProductName" src="@bundleItem.Picture.ImageUrl" title="@bundleItem.ProductName" />
-                                            </a>
+											<a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
+												<img alt="@bundleItem.ProductName" src="@bundleItem.Picture.ImageUrl" title="@bundleItem.ProductName" />
+											</a>
                                         }
 
                                         if (bundlelength != (j + 1))

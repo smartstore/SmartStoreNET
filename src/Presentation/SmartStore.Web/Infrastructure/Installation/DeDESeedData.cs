@@ -1869,13 +1869,15 @@ namespace SmartStore.Web.Infrastructure.Installation
                 })
                 .Alter("PrivacyInfo", x =>
                 {
-                    x.Title = "Datenschutzerklärung";
-                    x.Body = "<p>Legen Sie Ihrer Datenschutzerkl&#228;rung hier fest. Sie können dies in der Admin-Seite zu bearbeiten.</p>";
+					x.ShortTitle = "Datenschutz";
+					x.Title = "Datenschutzerklärung";
+                    x.Body = "<p>Legen Sie Ihre Datenschutzerkl&#228;rung hier fest. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("ShippingInfo", x =>
                 {
-                    x.Title = "Versand und Rücksendungen";
-                    x.Body = "<p>Informationen zu Versand und Rücksendungen. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+					x.ShortTitle = "Versandinfos";
+					x.Title = "Versand und Rücksendungen";
+                    x.Body = "<p>Informationen zu Versand und Rücksendungen. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("Imprint", x =>
                 {
@@ -1921,17 +1923,52 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Disclaimer", x =>
                 {
                     x.Title = "Widerrufsrecht";
-                    x.Body = "<p>Fügen Sie Ihr Widerrufsrecht hier ein. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Fügen Sie Ihr Widerrufsrecht hier ein. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 })
                 .Alter("PaymentInfo", x =>
                 {
                     x. Title = "Zahlungsarten";
-                    x.Body = "<p><p>Fügen Sie Informationen zu Zahlungsarten hier ein. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
+                    x.Body = "<p>Fügen Sie Informationen zu Zahlungsarten hier ein. Diesen Text können Sie auch im Administrations-Bereich editieren.</p>";
                 });
-
         }
 
-        protected override void Alter(IList<ISettings> settings)
+		protected override void Alter(UrlRecord entity)
+		{
+			base.Alter(entity);
+
+			if (entity.EntityName == "Topic")
+			{
+				switch (entity.Slug)
+				{
+					case "aboutus":
+						entity.Slug = "ueber-uns";
+						break;
+					case "conditionsofuse":
+						entity.Slug = "agb";
+						break;
+					case "contactus":
+						entity.Slug = "kontakt";
+						break;
+					case "privacyinfo":
+						entity.Slug = "datenschutz";
+						break;
+					case "shippinginfo":
+						entity.Slug = "versand-und-rueckgabe";
+						break;
+					case "imprint":
+						entity.Slug = "impressum";
+						break;
+					case "disclaimer":
+						entity.Slug = "widerrufsrecht";
+						break;
+					case "paymentinfo":
+						entity.Slug = "zahlungsarten";
+						break;
+				}
+			}
+		}
+
+		protected override void Alter(IList<ISettings> settings)
         {
             base.Alter(settings);
 
@@ -4101,5 +4138,5 @@ namespace SmartStore.Web.Infrastructure.Installation
                 x.Name = "Einmal im Monat";
             });
         }
-    }
+	}
 }

@@ -1,56 +1,184 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Autofac;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
+	public delegate IEnumerable<string> DisplayControlHandler(BaseEntity entity, IComponentContext ctx);
+
 	public partial class DisplayControl : IDisplayControl
 	{
-		public static readonly HashSet<Type> CandidateTypes = new HashSet<Type>(new Type[] 
+		private static readonly ConcurrentDictionary<Type, DisplayControlHandler> _handlers = new ConcurrentDictionary<Type, DisplayControlHandler>
 		{
-			typeof(BlogComment),
-			typeof(BlogPost),
-			typeof(Category),
-			typeof(Manufacturer),
-			typeof(Product),
-			typeof(ProductBundleItem),
-			typeof(ProductPicture),
-			typeof(SpecificationAttribute),
-			typeof(ProductSpecificationAttribute),
-			typeof(SpecificationAttributeOption),
-			typeof(ProductVariantAttribute),
-			typeof(ProductVariantAttributeValue),
-			typeof(ProductVariantAttributeCombination),
-			typeof(TierPrice),
-			typeof(Discount),
-			typeof(CrossSellProduct),
-			typeof(RelatedProduct),
-			typeof(ProductCategory),
-			typeof(ProductManufacturer),
-			typeof(NewsItem),
-			typeof(NewsComment),
-			typeof(Topic)
-		});
+			[typeof(BlogComment)]						= (x, c) => new[] { "b" + ((BlogComment)x).BlogPostId },
+			[typeof(BlogPost)]							= (x, c) => new[] { "b" + x.Id },
+			[typeof(Category)]							= (x, c) => new[] { "c" + x.Id },
+			[typeof(Manufacturer)]						= (x, c) => new[] { "m" + x.Id },
+			[typeof(ProductBundleItem)]					= (x, c) => new[] { "p" + ((ProductBundleItem)x).ProductId },
+			[typeof(ProductPicture)]					= (x, c) => new[] { "p" + ((ProductPicture)x).ProductId },
+			[typeof(ProductSpecificationAttribute)]		= (x, c) => new[] { "p" + ((ProductSpecificationAttribute)x).ProductId },
+			[typeof(ProductVariantAttributeCombination)]= (x, c) => new[] { "p" + ((ProductVariantAttributeCombination)x).ProductId },
+			[typeof(TierPrice)]							= (x, c) => new[] { "p" + ((TierPrice)x).ProductId },
+			[typeof(CrossSellProduct)]					= (x, c) => new[] { "p" + ((CrossSellProduct)x).ProductId1, "p" + ((CrossSellProduct)x).ProductId2 },
+			[typeof(RelatedProduct)]					= (x, c) => new[] { "p" + ((RelatedProduct)x).ProductId1, "p" + ((RelatedProduct)x).ProductId2 },
+			[typeof(ProductCategory)]					= (x, c) => new[] { "p" + ((ProductCategory)x).CategoryId, "p" + ((ProductCategory)x).ProductId },
+			[typeof(ProductManufacturer)]				= (x, c) => new[] { "p" + ((ProductManufacturer)x).ManufacturerId, "p" + ((ProductManufacturer)x).ProductId },
+			[typeof(NewsItem)]							= (x, c) => new[] { "n" + x.Id },
+			[typeof(NewsComment)]						= (x, c) => new[] { "n" + ((NewsComment)x).NewsItemId },
+			[typeof(Topic)]								= (x, c) => new[] { "t" + x.Id },
+			[typeof(SpecificationAttributeOption)]		= (x, c) => ((SpecificationAttributeOption)x).ProductSpecificationAttributes.Select(y => "p" + y.ProductId),
+			[typeof(ProductTag)]						= (x, c) => ((ProductTag)x).Products.Select(y => "p" + y.Id),
+			[typeof(Product)]							= HandleProduct,
+			[typeof(SpecificationAttribute)]			= HandleSpecificationAttribute,
+			[typeof(ProductVariantAttributeValue)]		= HandleProductVariantAttributeValue,
+			[typeof(Discount)]							= HandleDiscount,
+			[typeof(LocalizedProperty)]					= HandleLocalizedProperty
+		};
 
 		private readonly HashSet<BaseEntity> _entities = new HashSet<BaseEntity>();
-		private readonly Lazy<IRepository<ProductSpecificationAttribute>> _rsProductSpecAttr;
+		private readonly IComponentContext _componentContext;
 
 		private bool _isIdle;
 		private bool? _isUncacheableRequest;
 
-		public DisplayControl(Lazy<IRepository<ProductSpecificationAttribute>> rsProductSpecAttr)
+		public DisplayControl(IComponentContext componentContext)
 		{
-			_rsProductSpecAttr = rsProductSpecAttr;
+			_componentContext = componentContext;
 		}
+
+		#region Static
+
+		public static bool ContainsHandlerFor(Type type)
+		{
+			Guard.NotNull(type, nameof(type));
+
+			return _handlers.ContainsKey(type);
+		}
+
+		public static void RegisterHandlerFor(Type type, DisplayControlHandler handler)
+		{
+			Guard.NotNull(type, nameof(type));
+			Guard.NotNull(handler, nameof(handler));
+
+			_handlers.TryAdd(type, handler);
+		}
+
+		#endregion
+
+		#region Handlers
+
+		private static IEnumerable<string> HandleProduct(BaseEntity entity, IComponentContext ctx)
+		{
+			var product = ((Product)entity);
+			yield return "p" + entity.Id;
+			if (product.ProductType == ProductType.GroupedProduct && product.ParentGroupedProductId > 0)
+			{
+				yield return "p" + product.ParentGroupedProductId;
+			}
+		}
+
+		private static IEnumerable<string> HandleSpecificationAttribute(BaseEntity entity, IComponentContext ctx)
+		{
+			// Determine all affected products (which are assigned to this attribute).
+			var specAttrId = ((SpecificationAttribute)entity).Id;
+			var affectedProductIds = ctx.Resolve<IDbContext>().Set<ProductSpecificationAttribute>().AsNoTracking()
+				.Where(x => x.SpecificationAttributeOption.SpecificationAttribute.Id == specAttrId)
+				.Select(x => x.ProductId)
+				.Distinct()
+				.ToList();
+
+			foreach (var id in affectedProductIds)
+			{
+				yield return "p" + id;
+			}
+		}
+
+		private static IEnumerable<string> HandleProductVariantAttributeValue(BaseEntity entity, IComponentContext ctx)
+		{
+			var pva = ((ProductVariantAttributeValue)entity).ProductVariantAttribute;
+			if (pva != null)
+			{
+				yield return "p" + pva.ProductId;
+			}
+		}
+
+		private static IEnumerable<string> HandleDiscount(BaseEntity entity, IComponentContext ctx)
+		{
+			var discount = (Discount)entity;
+			if (discount.DiscountType == DiscountType.AssignedToCategories)
+			{
+				foreach (var category in discount.AppliedToCategories)
+				{
+					yield return "c" + category.Id;
+				}
+			}
+			else if (discount.DiscountType == DiscountType.AssignedToSkus)
+			{
+				foreach (var product in discount.AppliedToProducts)
+				{
+					yield return "p" + product.Id;
+				}
+			}
+		}
+
+		private static IEnumerable<string> HandleLocalizedProperty(BaseEntity entity, IComponentContext ctx)
+		{
+			var lp = (LocalizedProperty)entity;
+			string prefix = null;
+			BaseEntity targetEntity = null;
+
+			var dbContext = ctx.Resolve<IDbContext>();
+
+			switch (lp.LocaleKeyGroup)
+			{
+				case nameof(Product):
+					prefix = "p";
+					break;
+				case nameof(Category):
+					prefix = "c";
+					break;
+				case nameof(Manufacturer):
+					prefix = "m";
+					break;
+				case nameof(Topic):
+					prefix = "t";
+					break;
+				case nameof(SpecificationAttribute):
+					targetEntity = dbContext.Set<SpecificationAttribute>().Find(lp.EntityId);
+					break;
+				case nameof(SpecificationAttributeOption):
+					targetEntity = dbContext.Set<SpecificationAttributeOption>().Find(lp.EntityId);
+					break;
+				case nameof(ProductVariantAttributeValue):
+					targetEntity = dbContext.Set<ProductVariantAttributeValue>().Find(lp.EntityId);
+					break;
+			}
+
+			if (prefix.HasValue())
+			{
+				yield return prefix + lp.EntityId;
+			}
+			else if (targetEntity != null)
+			{
+				var tags = ctx.Resolve<IDisplayControl>().GetCacheControlTagsFor(targetEntity);
+				foreach (var tag in tags)
+				{
+					yield return tag;
+				}
+			}
+		}
+
+		#endregion
 
 		public IDisposable BeginIdleScope()
 		{
@@ -91,157 +219,21 @@ namespace SmartStore.Core.Caching
 
 		public virtual IEnumerable<string> GetCacheControlTagsFor(BaseEntity entity)
 		{
-			Guard.NotNull(entity, nameof(entity));
+			var empty = Enumerable.Empty<string>();
 
-			if (entity.IsTransientRecord())
+			if (entity == null || entity.IsTransientRecord())
 			{
-				yield break;
+				return empty;
 			}
 
 			var type = entity.GetUnproxiedType();
 
-			if (!CandidateTypes.Contains(type))
+			if (!_handlers.TryGetValue(type, out var handler))
 			{
-				yield break;
+				return empty;
 			}
 
-			if (type == typeof(BlogComment))
-			{
-				yield return "b" + ((BlogComment)entity).BlogPostId;
-			}
-			else if (type == typeof(BlogPost))
-			{
-				yield return "b" + entity.Id;
-			}
-			else if (type == typeof(Category))
-			{
-				yield return "c" + entity.Id;
-			}
-			else if (type == typeof(Manufacturer))
-			{
-				yield return "m" + entity.Id;
-			}
-			else if (type == typeof(Product))
-			{
-				var product = ((Product)entity);
-				yield return "p" + entity.Id;
-				if (product.ProductType == ProductType.GroupedProduct && product.ParentGroupedProductId > 0)
-				{
-					yield return "p" + product.ParentGroupedProductId;
-				}
-			}
-			else if (type == typeof(ProductTag))
-			{
-				var ids = ((ProductTag)entity).Products.Select(x => x.Id);
-				foreach (var id in ids)
-				{
-					yield return "p" + id;
-				}
-			}
-			else if (type == typeof(ProductBundleItem))
-			{
-				yield return "p" + ((ProductBundleItem)entity).ProductId;
-			}
-			else if (type == typeof(ProductPicture))
-			{
-				yield return "p" + ((ProductPicture)entity).ProductId;
-			}
-			else if (type == typeof(SpecificationAttribute))
-			{
-				// Determine all affected products (which are assigned to this attribute).
-				var specAttrId = ((SpecificationAttribute)entity).Id;
-				var affectedProductIds = _rsProductSpecAttr.Value.TableUntracked
-					.Where(x => x.SpecificationAttributeOption.SpecificationAttribute.Id == specAttrId)
-					.Select(x => x.ProductId)
-					.Distinct()
-					.ToList();
-
-				foreach (var id in affectedProductIds)
-				{
-					yield return "p" + id;
-				}
-			}
-			else if (type == typeof(ProductSpecificationAttribute))
-			{
-				yield return "p" + ((ProductSpecificationAttribute)entity).ProductId;
-			}
-			else if (type == typeof(SpecificationAttributeOption))
-			{
-				foreach (var attr in ((SpecificationAttributeOption)entity).ProductSpecificationAttributes)
-				{
-					yield return "p" + attr.ProductId;
-				}
-			}
-			else if (type == typeof(ProductVariantAttribute))
-			{
-				yield return "p" + ((ProductVariantAttribute)entity).ProductId;
-			}
-			else if (type == typeof(ProductVariantAttributeValue))
-			{
-				var pva = ((ProductVariantAttributeValue)entity).ProductVariantAttribute;
-				if (pva != null)
-				{
-					yield return "p" + pva.ProductId;
-				}
-			}
-			else if (type == typeof(ProductVariantAttributeCombination))
-			{
-				yield return "p" + ((ProductVariantAttributeCombination)entity).ProductId;
-			}
-			else if (type == typeof(TierPrice))
-			{
-				yield return "p" + ((TierPrice)entity).ProductId;
-			}
-			else if (type == typeof(Discount))
-			{
-				var discount = (Discount)entity;
-				if (discount.DiscountType == DiscountType.AssignedToCategories)
-				{
-					foreach (var category in discount.AppliedToCategories)
-					{
-						yield return "c" + category.Id;
-					}
-				}
-				else if (discount.DiscountType == DiscountType.AssignedToSkus)
-				{
-					foreach (var product in discount.AppliedToProducts)
-					{
-						yield return "p" + product.Id;
-					}
-				}
-			}
-			else if (type == typeof(CrossSellProduct))
-			{
-				yield return "p" + ((CrossSellProduct)entity).ProductId1;
-				yield return "p" + ((CrossSellProduct)entity).ProductId2;
-			}
-			else if (type == typeof(RelatedProduct))
-			{
-				yield return "p" + ((RelatedProduct)entity).ProductId1;
-				yield return "p" + ((RelatedProduct)entity).ProductId2;
-			}
-			else if (type == typeof(ProductCategory))
-			{
-				yield return "c" + ((ProductCategory)entity).CategoryId;
-				yield return "p" + ((ProductCategory)entity).ProductId;
-			}
-			else if (type == typeof(ProductManufacturer))
-			{
-				yield return "m" + ((ProductManufacturer)entity).ManufacturerId;
-				yield return "p" + ((ProductManufacturer)entity).ProductId;
-			}
-			else if (type == typeof(NewsItem))
-			{
-				yield return "n" + entity.Id;
-			}
-			else if (type == typeof(NewsComment))
-			{
-				yield return "n" + ((NewsComment)entity).NewsItemId;
-			}
-			else if (type == typeof(Topic))
-			{
-				yield return "t" + entity.Id;
-			}
+			return handler.Invoke(entity, _componentContext);
 		}
 
 		public IEnumerable<string> GetAllCacheControlTags()

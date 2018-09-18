@@ -8,9 +8,24 @@
 @{
 	Layout = "";
 
-	Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-	Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+	Html.AddCssFileParts(true, "~/Content/vendors/x-editable/bootstrap-editable.css");
+	Html.AppendScriptParts(true, "~/Content/vendors/x-editable/bootstrap-editable.js");
 }
+
+<style type="text/css">
+	.gmc-adult,
+	.gmc-pattern,
+	.gmc-multipack,
+	.gmc-bundle,
+	.gmc-eec,
+	.gmc-label0,
+	.gmc-label1,
+	.gmc-label2,
+	.gmc-label3,
+	.gmc-label4 {
+		display: none;
+	}
+</style>
 
 <div class="plugin-configuration">
 	<div>
@@ -26,121 +41,172 @@
 	</div>
 </div>
 
-<div>
-	@{ Html.RenderAction("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" }); }
 
-	<table class="adminContent">
-		<tr>
-			<td>
+@Html.SmartStore().TabStrip().Name("gmc-config").Style(TabsStyle.Material).Items(x =>
+{
+	x.Add().Text(T("Plugins.Feed.Froogle.TabTitleGrid").Text).Content(TabGrid()).Selected(true);
+	x.Add().Text(T("Plugins.Feed.Froogle.TabTitleProfiles").Text).Content(TabProfiles());
+})
 
-				<table class="adminContent gmc-product-search">
-					<tr>
-						<td class="adminTitle">
-							@Html.SmartLabelFor(m => m.SearchProductName)
-						</td>
-						<td class="adminData">
-							@Html.EditorFor(m => m.SearchProductName)
-						</td>
-					</tr>
-					<tr>
-						<td class="adminTitle">
-							@Html.SmartLabelFor(m => m.SearchIsTouched)
-						</td>
-						<td class="adminData">
-							@Html.DropDownListFor(m => m.SearchIsTouched, new List<SelectListItem>
-							{
-								new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
-								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
-								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
-							})
-						</td>
-					</tr>
-					<tr>
-						<td class="adminTitle">&nbsp;</td>
-						<td class="adminData">
-							<button type="submit" id="search-products" value="search-product" class="btn">
-								<i class="fa fa-search"></i>
-								<span>@T("Admin.Common.Search")</span>
-							</button>
-						</td>
-					</tr>
-				</table>
 
-			</td>
-		</tr>
-		<tr>
-			<td>
-				@(Html.Telerik().Grid<GoogleProductModel>()
-					.Name("gmc-products-grid")
-					.DataKeys(keys =>
-					{
-						keys.Add(x => x.ProductId).RouteKey("ProductId");
-					})
-					.Columns(c =>
-					{
-						c.Bound(x => x.ProductId)
-							.ReadOnly()
-							.Visible(false);
-						c.Bound(x => x.Name)
-							.ReadOnly().Visible(true)
-							.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
-						c.Bound(x => x.SKU)
-							.ReadOnly()
-							.Visible(true);
-						c.Bound(x => x.Export2)
-							.ClientTemplate(XEditableLink("Export2", "select2").ToHtmlString());
-						c.Bound(x => x.Taxonomy)
-							.ClientTemplate(XEditableLink("Taxonomy", "select2").ToHtmlString());
-						c.Bound(x => x.Gender)
-							.ClientTemplate(XEditableLink("Gender", "select2").ToHtmlString());
-						c.Bound(x => x.AgeGroup)
-							.ClientTemplate(XEditableLink("AgeGroup", "select2").ToHtmlString());
-						c.Bound(x => x.IsAdult)
-							.ClientTemplate(XEditableLink("IsAdult", "select2").ToHtmlString());
-						c.Bound(x => x.Color)
-							.ClientTemplate(XEditableLink("Color", "text").ToHtmlString());
-						c.Bound(x => x.Size)
-							.ClientTemplate(XEditableLink("Size", "text").ToHtmlString());
-						c.Bound(x => x.Material)
-							.ClientTemplate(XEditableLink("Material", "text").ToHtmlString());
-						c.Bound(x => x.Pattern)
-							.ClientTemplate(XEditableLink("Pattern", "text").ToHtmlString());
-						c.Bound(x => x.Multipack2)
-							.ClientTemplate(XEditableLink("Multipack2", "text").ToHtmlString());
-						c.Bound(x => x.IsBundle)
-							.ClientTemplate(XEditableLink("IsBundle", "select2").ToHtmlString());
-						c.Bound(x => x.EnergyEfficiencyClass)
-							.ClientTemplate(XEditableLink("EnergyEfficiencyClass", "select2").ToHtmlString());
-						c.Bound(x => x.CustomLabel0)
-							.ClientTemplate(XEditableLink("CustomLabel0", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel1)
-							.ClientTemplate(XEditableLink("CustomLabel1", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel2)
-							.ClientTemplate(XEditableLink("CustomLabel2", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel3)
-							.ClientTemplate(XEditableLink("CustomLabel3", "text").ToHtmlString());
-						c.Bound(x => x.CustomLabel4)
-							.ClientTemplate(XEditableLink("CustomLabel4", "text").ToHtmlString());
-					})
-					.ClientEvents(e =>
-					{
-						e.OnDataBound("OnGridDataBound");
-						e.OnDataBinding("OnGridDataBinding");
-						e.OnError("OnGridError");
-					})
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
-					})
-					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-					.PreserveGridState()
-					.EnableCustomBinding(true)
-				)
-			</td>
-		</tr>
-	</table>
-</div>
+@helper TabGrid()
+{
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchProductName)
+			@Html.EditorFor(model => Model.SearchProductName, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-xl-3 form-group">
+			@Html.SmartLabelFor(m => m.SearchIsTouched)
+			@Html.DropDownListFor(m => m.SearchIsTouched, new List<SelectListItem>
+				{
+					new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
+					new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
+					new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
+				})
+		</div>
+		<div class="col-sm-6 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="search-products" value="search-product" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+		<div class="col-sm-6 col-xl-3 form-group text-right">
+			<label>&nbsp;</label>
+			<div class="dropdown dropdown-columns">
+				<button class="btn btn-secondary btn-flat dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fa fa-columns"></i>
+					<span>@T("Common.Columns")</span>
+				</button>
+				<div class="dropdown-menu dropdown-menu-right">
+					<div class="grid-columns-selector px-4 py-2">
+						<!-- Created by script on page load -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div>
+		@(Html.Telerik().Grid<GoogleProductModel>()
+			.Name("gmc-products-grid")
+			.DataKeys(keys =>
+			{
+				keys.Add(x => x.ProductId).RouteKey("ProductId");
+			})
+			.Columns(c =>
+			{
+				c.Bound(x => x.ProductId)
+					.ReadOnly()
+					.Visible(false);
+				c.Bound(x => x.Name)
+					.ReadOnly().Visible(true)
+					//.Width("30%")
+					.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
+				c.Bound(x => x.SKU)
+					//.Width(100)
+					.ReadOnly()
+					.Visible(true);
+				c.Bound(x => x.Export2)
+					.Width(100)
+					.ClientTemplate(XEditableLink("Export2", "select2").ToHtmlString());
+				c.Bound(x => x.Taxonomy)
+					.HtmlAttributes(new { @class = "gmc-taxonomy" })
+					.HeaderHtmlAttributes(new { @class = "gmc-taxonomy", data_field = "taxonomy" })
+					.ClientTemplate(XEditableLink("Taxonomy", "select2").ToHtmlString());
+				c.Bound(x => x.Gender)
+					.HtmlAttributes(new { @class = "gmc-gender" })
+					.HeaderHtmlAttributes(new { @class = "gmc-gender", data_field = "gender" })
+					.ClientTemplate(XEditableLink("Gender", "select2").ToHtmlString());
+				c.Bound(x => x.AgeGroup)
+					.HtmlAttributes(new { @class = "gmc-agegroup" })
+					.HeaderHtmlAttributes(new { @class = "gmc-agegroup", data_field = "agegroup" })
+					.ClientTemplate(XEditableLink("AgeGroup", "select2").ToHtmlString());
+				c.Bound(x => x.IsAdult)
+					.HtmlAttributes(new { @class = "gmc-adult" })
+					.HeaderHtmlAttributes(new { @class = "gmc-adult", data_field = "adult" })
+					.ClientTemplate(XEditableLink("IsAdult", "select2").ToHtmlString());
+				c.Bound(x => x.Color)
+					.HtmlAttributes(new { @class = "gmc-color" })
+					.HeaderHtmlAttributes(new { @class = "gmc-color", data_field = "color" })
+					.ClientTemplate(XEditableLink("Color", "text").ToHtmlString());
+				c.Bound(x => x.Size)
+					.HtmlAttributes(new { @class = "gmc-size" })
+					.HeaderHtmlAttributes(new { @class = "gmc-size", data_field = "size" })
+					.ClientTemplate(XEditableLink("Size", "text").ToHtmlString());
+				c.Bound(x => x.Material)
+					.HtmlAttributes(new { @class = "gmc-material" })
+					.HeaderHtmlAttributes(new { @class = "gmc-material", data_field = "material" })
+					.ClientTemplate(XEditableLink("Material", "text").ToHtmlString());
+				c.Bound(x => x.Pattern)
+					.HtmlAttributes(new { @class = "gmc-pattern" })
+					.HeaderHtmlAttributes(new { @class = "gmc-pattern", data_field = "pattern" })
+					.ClientTemplate(XEditableLink("Pattern", "text").ToHtmlString());
+				c.Bound(x => x.Multipack2)
+					.HtmlAttributes(new { @class = "gmc-multipack" })
+					.HeaderHtmlAttributes(new { @class = "gmc-multipack", data_field = "multipack" })
+					.ClientTemplate(XEditableLink("Multipack2", "text").ToHtmlString());
+				c.Bound(x => x.IsBundle)
+					.HtmlAttributes(new { @class = "gmc-bundle" })
+					.HeaderHtmlAttributes(new { @class = "gmc-bundle", data_field = "bundle" })
+					.ClientTemplate(XEditableLink("IsBundle", "select2").ToHtmlString());
+				c.Bound(x => x.EnergyEfficiencyClass)
+					.HtmlAttributes(new { @class = "gmc-eec" })
+					.HeaderHtmlAttributes(new { @class = "gmc-eec", data_field = "eec" })
+					.ClientTemplate(XEditableLink("EnergyEfficiencyClass", "select2").ToHtmlString());
+				c.Bound(x => x.CustomLabel0)
+					.HtmlAttributes(new { @class = "gmc-label0" })
+					.HeaderHtmlAttributes(new { @class = "gmc-label0", data_field = "label0" })
+					.ClientTemplate(XEditableLink("CustomLabel0", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel1)
+					.HtmlAttributes(new { @class = "gmc-label1" })
+					.HeaderHtmlAttributes(new { @class = "gmc-label1", data_field = "label1" })
+					.ClientTemplate(XEditableLink("CustomLabel1", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel2)
+					.HtmlAttributes(new { @class = "gmc-label2" })
+					.HeaderHtmlAttributes(new { @class = "gmc-label2", data_field = "label2" })
+					.ClientTemplate(XEditableLink("CustomLabel2", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel3)
+					.HtmlAttributes(new { @class = "gmc-label3" })
+					.HeaderHtmlAttributes(new { @class = "gmc-label3", data_field = "label3" })
+					.ClientTemplate(XEditableLink("CustomLabel3", "text").ToHtmlString());
+				c.Bound(x => x.CustomLabel4)
+					.HtmlAttributes(new { @class = "gmc-label4" })
+					.HeaderHtmlAttributes(new { @class = "gmc-label4", data_field = "label4" })
+					.ClientTemplate(XEditableLink("CustomLabel4", "text").ToHtmlString());
+			})
+			.ClientEvents(e =>
+			{
+				e.OnDataBinding("OnGridDataBinding");
+				e.OnDataBound("OnGridDataBound");
+				e.OnRowDataBound("OnGridRowDataBound");
+				e.OnError("OnGridError");
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.PreserveGridState()
+			.EnableCustomBinding(true)
+		)
+
+	</div>
+}
+
+@helper TabProfiles()
+{	
+	<style>
+		.info-profile:not(:first-child) {
+			border-top: 1px solid #e1e4e8;
+			margin-top: 1.25rem;
+			padding-top: 1.25rem;
+		}
+	</style>
+
+	@Html.Action("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" })
+}
 
 @helper XEditableLink(string fieldName, string type)
 {
@@ -157,14 +223,80 @@
 	   data-type="@type">@displayText</a>
 }
 
-	<script type="text/javascript">
+<script>
+	var _userFlags = localStorage.getItem("gmc.grid.columnFlags");
+	var columnFlags = _userFlags ?
+		JSON.parse(_userFlags) :
+		{
+			taxonomy: true,
+			gender: true,
+			agegroup: true,
+			color: true,
+			size: true,
+			material: true
+		};
 
-	$('#search-products').click(function () {
-		var grid = $('#gmc-products-grid').data('tGrid');
-		grid.currentPage = 1;
-		grid.ajaxRequest();
-		return false;
+	$(function () {
+		// Column toggle handling
+
+		var menu = $('.grid-columns-selector');
+
+		// Dont't close menu when edge is clicked
+		menu.on('click', function (e) { e.stopPropagation(); });
+
+		// Apply toggling
+		menu.on('click', '.column-toggle', function (e) {
+			var fieldName = $(this).data('field');
+			var checked = $(this).prop('checked');
+			toggleColumn(fieldName, checked);
+			columnFlags[fieldName] = checked;
+
+			// Save
+			localStorage.setItem("gmc.grid.columnFlags", JSON.stringify(columnFlags));
+		});
+
+		// Append selector (checkbox) to dropdown menu
+		var ths = $('#gmc-products-grid .t-header[data-field]').each(function () {
+			var fieldName = $(this).data("field");
+			if (fieldName) {
+				var visible = columnFlags[fieldName] === true;
+				var checked = (visible ? ' checked' : '');
+				var html = [
+					'<div class="custom-control custom-checkbox my-1">',
+					'	<input type="checkbox" class="custom-control-input column-toggle" id="grid-col-{0}" data-field="{0}"{1}>'.format(fieldName, checked),
+					'	<label class="custom-control-label" for="grid-col-{0}">{1}</label>'.format(fieldName, $(this).children().text()),
+					'</div>'
+				].join('');
+				menu.append(html);
+			}
+		});
+
+		$('#search-products').on('click', function () {
+			var grid = $('#gmc-products-grid').data('tGrid');
+			grid.currentPage = 1;
+			grid.ajaxRequest();
+			return false;
+		});
 	});
+
+	function toggleColumn(col /* TH or fieldName */, display) {
+		var th, fieldName = col;
+
+		if (typeof col === 'string') {
+			th = $('#gmc-products-grid .t-header[data-field="' + col + '"]');
+		}
+		else {
+			th = $(col);
+			fieldName = th.data('field');
+		}
+
+		// Toggle TR display
+		th.toggle(display);
+
+		// Toggle all corresponding TDs display
+		var tds = $('#gmc-products-grid td.gmc-' + fieldName);
+		tds.toggle(display);
+	}
 
 	function OnGridError(e) {
 		e.preventDefault();
@@ -179,7 +311,21 @@
 	}
 
 	function OnGridDataBound(e) {
-		var grid = $('#gmc-products-grid'),
+		var grid = $(e.currentTarget);
+
+		var ths = grid.find('.t-header[data-field]').each(function () {
+			var fieldName = $(this).data("field");
+			if (fieldName) {
+				var visible = columnFlags[fieldName] === true;
+				// Apply toggling to all TH and all its TDs
+				toggleColumn(this, visible);
+			}
+		});
+	}
+
+	function OnGridRowDataBound(e) {
+		var grid = $(e.currentTarget),
+			row = $(e.row),
 			emptyCell = @T("Plugins.Feed.Froogle.EmptyGridCell").JsText;
 
 		var options = {
@@ -202,14 +348,14 @@
 			{ id: 'false', text: @T("Admin.Common.No").JsText }
 		];
 
-		grid.find('a.edit-link-export2').editable($.extend({}, options, {
+		row.find('a.edit-link-export2').editable($.extend({}, options, {
 			select2: {
 				minimumResultsForSearch: 20
 			},
 			source: boolSource
 		}));
 
-		grid.find('a.edit-link-gender').editable($.extend({}, options, {
+		row.find('a.edit-link-gender').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
 				{ id: 'male', text: @T("Plugins.Feed.Froogle.GenderMale").JsText },
@@ -218,7 +364,7 @@
 			]
 		}));
 
-		grid.find('a.edit-link-agegroup').editable($.extend({}, options, {
+		row.find('a.edit-link-agegroup').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
 				{ id: 'adult', text: @T("Plugins.Feed.Froogle.AgeGroupAdult").JsText },
@@ -226,16 +372,16 @@
 			]
 		}));
 
-		grid.find('a.edit-link-isadult').editable($.extend({}, options, {
+		row.find('a.edit-link-isadult').editable($.extend({}, options, {
 			select2: select2Options,
 			source: boolSource
 		}));
 
-		grid.find('a.edit-link-color').editable(options);
-		grid.find('a.edit-link-size').editable(options);
-		grid.find('a.edit-link-material').editable(options);
-		grid.find('a.edit-link-pattern').editable(options);
-		grid.find('a.edit-link-multipack2').editable($.extend({}, options, {
+		row.find('a.edit-link-color').editable(options);
+		row.find('a.edit-link-size').editable(options);
+		row.find('a.edit-link-material').editable(options);
+		row.find('a.edit-link-pattern').editable(options);
+		row.find('a.edit-link-multipack2').editable($.extend({}, options, {
 			validate: function(value) {
 				if (value.length !== 0) {
 					var regex = /^[0-9]+$/;
@@ -247,12 +393,12 @@
 			}
 		}));
 
-		grid.find('a.edit-link-isbundle').editable($.extend({}, options, {
+		row.find('a.edit-link-isbundle').editable($.extend({}, options, {
 			select2: select2Options,
 			source: boolSource
 		}));
 
-		grid.find('a.edit-link-energyefficiencyclass').editable($.extend({}, options, {
+		row.find('a.edit-link-energyefficiencyclass').editable($.extend({}, options, {
 			select2: select2Options,
 			source: [
 				@if (Model.EnergyEfficiencyClasses != null && Model.EnergyEfficiencyClasses.Any())
@@ -265,31 +411,14 @@
 			]
 		}));
 
-		// Test date inline editing. Set 'datetime' type for XEditableLink.
-		//grid.find('a.edit-link-customlabel0').editable($.extend({}, rightOptions, {
-		//	viewformat: 'L LT',
-		//	display: function (value, sourceData) {
-		//		if (value) {
-		//			// 'value' is an object of type date.
-		//			// $.fn.editabletypes.datetime.prototype.value2str(value);
-		//			var m = moment(value);
-		//			var text = m.format('L LT');
-		//			$(this).text(text);
-		//		}
-		//		else {
-		//			$(this).text(null);
-		//		}
-		//	}
-		//}));
+		row.find('a.edit-link-customlabel0').editable(rightOptions);
+		row.find('a.edit-link-customlabel1').editable(rightOptions);
+		row.find('a.edit-link-customlabel2').editable(rightOptions);
+		row.find('a.edit-link-customlabel3').editable(rightOptions);
+		row.find('a.edit-link-customlabel4').editable(rightOptions);
 
-		grid.find('a.edit-link-customlabel0').editable(rightOptions);
-		grid.find('a.edit-link-customlabel1').editable(rightOptions);
-		grid.find('a.edit-link-customlabel2').editable(rightOptions);
-		grid.find('a.edit-link-customlabel3').editable(rightOptions);
-		grid.find('a.edit-link-customlabel4').editable(rightOptions);
-
-		grid.find('a.edit-link-taxonomy').editable($.extend({}, options, {
-			tpl: '<select></select>',
+		var link = row.find('a.edit-link-taxonomy');
+		link.editable($.extend({}, options, {
 			type: 'select2',
 			unsavedclass: null,
 			display: function (value, sourceData) {
@@ -300,6 +429,11 @@
 				dropdownAutoWidth: true,
 				allowClear: true,
 				language: '@Model.LanguageSeoCode',
+				width: '500px',
+				init: {
+					id: link.data('value'),
+					text: link.data('value')
+				},
 				ajax: {
 					delay: 300,
 					cache: true,
@@ -326,6 +460,5 @@
 				}
 			}
 		}));
-
 	}
-	</script>
+</script>

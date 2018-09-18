@@ -1,5 +1,7 @@
+/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="../../../Content/shared/_mixins.scss" />
 /// <reference path="_variables.scss" />
-/// <reference path="bs4/scss/bootstrap.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
 
 
 // Responsive Typo
@@ -54,27 +56,29 @@ body.popup {
     box-shadow: 0 0 24px rgba(#000, 0.2);
 }
 
-.boxed {
-    .page-main {
-        margin-left: auto;
-        margin-right: auto;
-        @include make-container-max-widths();
-    }
-
-    .page-main .container {
-        padding-left: $grid-gutter-width-base / 2;
-        padding-right: $grid-gutter-width-base / 2;
-    }
-
-    @include media-breakpoint-up(sm) {
+@media screen {
+    .boxed {
         .page-main {
-            border: 1px solid rgba(#000, 0.2);
-            border-top-width: 0;
-            border-bottom-width: 0;
+            margin-left: auto;
+            margin-right: auto;
+            @include make-container-max-widths();
+        }
+    
+        .page-main .container {
+            padding-left: $grid-gutter-width / 2;
+            padding-right: $grid-gutter-width / 2;
+        }
 
-            .container {
-                padding-left: $grid-gutter-width-base;
-                padding-right: $grid-gutter-width-base;
+        @include media-breakpoint-up(sm) {
+            .page-main {
+                border: 1px solid rgba(#000, 0.2);
+                border-top-width: 0;
+                border-bottom-width: 0;
+
+                .container {
+                    padding-left: $grid-gutter-width;
+                    padding-right: $grid-gutter-width;
+                }
             }
         }
     }
@@ -100,6 +104,6 @@ body.popup {
     transform: translate3d(100%, 0, 0);
     transition: transform .2s ease-in-out;
     &.in {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) !important;
     }
 }

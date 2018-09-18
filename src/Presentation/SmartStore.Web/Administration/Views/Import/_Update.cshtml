@@ -331,7 +331,7 @@
 			table.attr('data-maxindex', index);
 			row.removeClass('column-mapping-new');
 
-			row.find('.item-inner').removeClass('hide');
+			row.find('.item-inner').removeClass('d-none');
 			updatePropertyLabel(row.find('.mapping-property'), property);
 			row.find('.mapping-column .left-label').text(column);
 
@@ -375,8 +375,8 @@
 			context.find('.right-label').text(val);
 
 			var leftLabel = context.find('.left-label');
-			isLocalized = (val.indexOf(']', val.length - 1) !== -1),
-			text = context.find('select').find('option:selected').text();
+				isLocalized = (val.indexOf(']', val.length - 1) !== -1),
+				text = context.find('select').find('option:selected').text();
 
 			if (text.length > maxMappingLableLength) {
 				leftLabel.text(text.substring(0, maxMappingLableLength) + '…');
@@ -392,22 +392,41 @@
 
 		function initSelectBox(element, isProperty) {
 			return element.select2({
-				allowClear: true,
+				allowClear: !isProperty,
 				minimumResultsForSearch: 16,
-				matcher: function (term, text, opt) {
-					var searchFor = term.toUpperCase();
-
-					if (text.toUpperCase().indexOf(searchFor) >= 0)
-						return true;
-
-					var val = $(opt).val();
-					if (val && val.toUpperCase().indexOf(searchFor) >= 0)
-						return true;
-
-					return false;
+				containerCssClass: 'form-control',
+				theme: 'bootstrap',
+				placeholder: function () {
+					$(this).data('placeholder');
 				},
-				formatResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
-				formatSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
+				matcher: function (params, data) {
+					// If there are no search terms, return all of the data
+					if ($.trim(params.term) === '') {
+						return data;
+					}
+
+					// Do not display the item if there is no 'text' property
+					if (typeof data.text === 'undefined') {
+						return null;
+					}
+					var searchFor = params.term.toUpperCase();
+
+					if (data.text.toUpperCase().indexOf(searchFor) > -1) {
+						return data;
+					}
+
+					var val = $(data.element).val();
+					if (val && val.toUpperCase().indexOf(searchFor) > -1) {
+						return data;
+					}
+
+					return null;
+				},
+				escapeMarkup: function (m) {
+					return m;
+				},
+				templateResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
+				templateSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
 			});
 		}
 
@@ -426,7 +445,7 @@
 			initSelectBox(row.find('.select-column'), false);
 		}
 
-		function selectPropertyFormatting(item, container, query) {
+		function selectPropertyFormatting(item, container) {
 			try {
 				if (item.text.length > 0) {
 					var option = $(item.element),
@@ -435,12 +454,12 @@
 
 					if (option.length === 0) {
 						html += '<div class="mapping-list-item">';
-						html += '<span style="display: inline-block; margin-right: 0;">';
-						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
+						html += '<span class="pr-2 d-inline-block">';
+						html += '	<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
 						html += '</span>';
 					}
 					else {
-						// update mapped properties when first popup list item is about to be rendered.
+						// Update mapped properties when first popup list item is about to be rendered.
 						if (option.index() === 1) {
 							mappedProperties = [];
 
@@ -457,16 +476,14 @@
 						html += '<div class="clear"></div>';
 						html += '<div class="mapping-list-item' + (mappingIndex === -1 ? '' : ' muted') + '">';
 
-						html += '<span style="display: inline-block; margin-right: 0;">';
+						html += '<span class="pr-2 d-inline-block">';
 						html += '<i class="fa fa-fw ';
 						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-chain-broken' : 'fa-link'));
 						html += (mappingIndex === -1 ? ' text-success" />' : ' text-warning" />');
 						html += '</span>';
 					}
 
-					html += '<span class="muted right-label">' + item.id + '</span>';
-
-					html += '<span class="ml4" style="display: inline-block;"';
+					html += '<span class="ml-1 d-inline-block"';
 					if (item.text.length > maxMappingLableLength) {
 						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 					}
@@ -474,8 +491,11 @@
 						html += '>' + item.text;
 					}
 					html += '</span>';
+
+					html += '<span class="muted right-label ml-auto">' + item.id + '</span>';
+
 					html += '</div>';
-					return html;
+					return $(html);
 				}
 			}
 			catch (e) { }
@@ -483,15 +503,17 @@
 			return item.text;
 		}
 
-		function selectColumnFormatting(item, container, query) {
+		function selectColumnFormatting(item, container) {
 			try {
 				if (item.id.length > 0) {
 					var html = '';
 
 					html += '<div class="mapping-list-item">';
 
-					if (query && item.text !== item.id) {
-						html += '<span class="muted right-label"'
+					html += '<span>' + item.id + '</span>';
+
+					if (item.text !== item.id) {
+						html += '<span class="muted right-label ml-auto"'
 						if (item.text.length > maxMappingLableLength) {
 							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 						}
@@ -501,10 +523,8 @@
 						html += '</span>';
 					}
 
-					html += '<span>' + item.id + '</span>';
-
 					html += '</div>';
-					return html;
+					return $(html);
 				}
 			}
 			catch (e) { }

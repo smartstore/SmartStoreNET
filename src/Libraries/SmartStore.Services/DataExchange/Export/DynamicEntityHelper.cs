@@ -30,6 +30,7 @@ using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -38,11 +39,9 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly string[] _orderCustomerAttributes = new string[]
 		{
 			SystemCustomerAttributeNames.Gender,
-			SystemCustomerAttributeNames.DateOfBirth,
 			SystemCustomerAttributeNames.VatNumber,
 			SystemCustomerAttributeNames.VatNumberStatusId,
 			SystemCustomerAttributeNames.TimeZoneId,
-			SystemCustomerAttributeNames.CustomerNumber,
 			SystemCustomerAttributeNames.ImpersonatedCustomerId
 		};
 
@@ -570,6 +569,7 @@ namespace SmartStore.Services.DataExchange.Export
 			dynamic result = new DynamicEntity(product);
 
 			result.AppliedDiscounts = null;
+            result.Downloads = null;
 			result.TierPrices = null;
 			result.ProductAttributes = null;
 			result.ProductAttributeCombinations = null;
@@ -602,7 +602,7 @@ namespace SmartStore.Services.DataExchange.Export
 				ToDeliveryTime(ctx, result, product.DeliveryTimeId);
 				ToQuantityUnit(ctx, result, product.QuantityUnitId);
 
-				result._Localized = GetLocalized(ctx, product,
+                result._Localized = GetLocalized(ctx, product,
 					x => x.Name,
 					x => x.ShortDescription,
 					x => x.FullDescription,
@@ -644,7 +644,10 @@ namespace SmartStore.Services.DataExchange.Export
             if (productContext.Combination != null)
             {
                 var pictureIds = productContext.Combination.GetAssignedPictureIds();
-                productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
+				if (pictureIds.Any())
+				{
+					productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
+				}
 
                 attributesXml = productContext.Combination.AttributesXml;
                 variantAttributes = _productAttributeParser.Value.DeserializeProductVariantAttributes(attributesXml);
@@ -701,7 +704,7 @@ namespace SmartStore.Services.DataExchange.Export
 					var node = _categoryService.Value.GetCategoryTree(pc.CategoryId, true, ctx.Store.Id);
 					if (node != null)
 					{
-						categoryPath = _categoryService.Value.GetCategoryPath(node, ctx.Projection.LanguageId, false, " > ");
+						categoryPath = _categoryService.Value.GetCategoryPath(node, ctx.Projection.LanguageId, null, " > ");
 					}
 				}
 
@@ -819,7 +822,16 @@ namespace SmartStore.Services.DataExchange.Export
 					.ToList();
 			}
 
-			dynObject.ProductTags = productTags
+            if (product.IsDownload)
+            {
+                var downloads = ctx.ProductExportContext.Downloads.GetOrLoad(product.Id);
+
+                dynObject.Downloads = downloads
+                    .Select(x => ToDynamic(ctx, x))
+                    .ToList();
+            }
+
+            dynObject.ProductTags = productTags
 				.Select(x =>
 				{
 					dynamic dyn = new DynamicEntity(x);
@@ -1049,7 +1061,16 @@ namespace SmartStore.Services.DataExchange.Export
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExporterContext ctx, ProductSpecificationAttribute psa)
+        private dynamic ToDynamic(DataExporterContext ctx, Download download)
+        {
+            if (download == null)
+                return null;
+
+            dynamic result = new DynamicEntity(download);
+            return result;
+        }
+
+        private dynamic ToDynamic(DataExporterContext ctx, ProductSpecificationAttribute psa)
 		{
 			if (psa == null)
 				return null;
@@ -1353,24 +1374,7 @@ namespace SmartStore.Services.DataExchange.Export
 				.ToList();
 
 			dynObject._HasNewsletterSubscription = ctx.NewsletterSubscriptions.Contains(customer.Email, StringComparer.CurrentCultureIgnoreCase);
-
-			var attrFirstName = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.FirstName);
-			var attrLastName = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.LastName);
-
-			string firstName = (attrFirstName == null ? "" : attrFirstName.Value);
-			string lastName = (attrLastName == null ? "" : attrLastName.Value);
-
-			if (firstName.IsEmpty() && lastName.IsEmpty())
-			{
-				var address = customer.Addresses.FirstOrDefault();
-				if (address != null)
-				{
-					firstName = address.FirstName;
-					lastName = address.LastName;
-				}
-			}
-
-			dynObject._FullName = firstName.Grow(lastName, " ");
+			dynObject._FullName = customer.GetFullName();
 
 			if (_customerSettings.Value.AllowCustomersToUploadAvatars)
 			{

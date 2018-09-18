@@ -215,7 +215,7 @@ namespace SmartStore.Web.Controllers
 
 					// Adjust rate.
 					Discount appliedDiscount = null;
-					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
+					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(shippingOption.Rate, cart, shippingOption, shippingMethods, out appliedDiscount);
 					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, customer);
 					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
 					soModel.FeeRaw = rate;
@@ -302,7 +302,7 @@ namespace SmartStore.Web.Controllers
 
 				if (paymentMethod != null)
 				{
-					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage.Id);
+					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage);
 				}
 				
 				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
@@ -346,6 +346,7 @@ namespace SmartStore.Web.Controllers
 		protected CheckoutConfirmModel PrepareConfirmOrderModel(IList<OrganizedShoppingCartItem> cart)
         {
             var model = new CheckoutConfirmModel();
+
             //min order amount validation
             bool minOrderTotalAmountOk = _orderProcessingService.ValidateMinOrderTotalAmount(cart);
             if (!minOrderTotalAmountOk)
@@ -357,7 +358,18 @@ namespace SmartStore.Web.Controllers
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
 			model.ShowEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
 			model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
-            return model;
+			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
+			model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
+
+			if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+			{
+				model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage, true, false);
+
+				if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
+					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
+			}
+
+			return model;
         }
 
         [NonAction]
@@ -407,36 +419,47 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult Index()
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			var store = _storeContext.CurrentStore;
+			var customer = _workContext.CurrentCustomer;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+			if (!cart.Any())
+			{
+				return RedirectToRoute("ShoppingCart");
+			}
 
-			if (cart.Count == 0)
-                return RedirectToRoute("ShoppingCart");
+			if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+			{
+				return new HttpUnauthorizedResult();
+			}
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
+            _customerService.ResetCheckoutData(customer, store.Id);
 
-            //reset checkout data
-            _customerService.ResetCheckoutData(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id);
-
-            //validation (cart)
-			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
+            // Validate checkout attributes.
+			var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			var scWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, true);
-            if (scWarnings.Count > 0)
-                return RedirectToRoute("ShoppingCart");
+			if (scWarnings.Any())
+			{
+				NotifyError(string.Join(Environment.NewLine, scWarnings));
+				return RedirectToRoute("ShoppingCart");
+			}
 
-            //validation (each shopping cart item)
+            // Valiadate each shopping cart item.
             foreach (var sci in cart)
             {
-                var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer,
+                var sciWarnings = _shoppingCartService.GetShoppingCartItemWarnings(customer,
                     sci.Item.ShoppingCartType,
                     sci.Item.Product,
 					sci.Item.StoreId,
                     sci.Item.AttributesXml,
                     sci.Item.CustomerEnteredPrice,
                     sci.Item.Quantity,
-                    false, childItems: sci.ChildItems);
-                if (sciWarnings.Count > 0)
-                    return RedirectToRoute("ShoppingCart");
+                    false,
+					childItems: sci.ChildItems);
+
+				if (sciWarnings.Any())
+				{
+					return RedirectToRoute("ShoppingCart");
+				}
             }
 
             return RedirectToAction("BillingAddress");
@@ -860,8 +883,8 @@ namespace SmartStore.Web.Controllers
 
                 var placeOrderExtraData = new Dictionary<string, string>();
                 placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
-				placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetterHidden"];
-				placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOverHidden"];
+				placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetter"];
+				placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOver"];
 
 				placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 

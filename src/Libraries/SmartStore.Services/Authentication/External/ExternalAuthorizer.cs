@@ -123,21 +123,19 @@ namespace SmartStore.Services.Authentication.External
                     var details = new RegistrationDetails(parameters);
                     var randomPassword = CommonHelper.GenerateRandomDigitCode(20);
 
-
                     bool isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                     var registrationRequest = new CustomerRegistrationRequest(currentCustomer, details.EmailAddress,
                         _customerSettings.UsernamesEnabled ? details.UserName : details.EmailAddress, randomPassword, PasswordFormat.Clear, isApproved);
                     var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                     if (registrationResult.Success)
                     {
-                        //store other parameters (form fields)
-                        if (!String.IsNullOrEmpty(details.FirstName))
-                            _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.FirstName, details.FirstName);
+						// store other parameters (form fields)
+						if (!String.IsNullOrEmpty(details.FirstName))
+							currentCustomer.FirstName = details.FirstName;
                         if (!String.IsNullOrEmpty(details.LastName))
-                            _genericAttributeService.SaveAttribute(currentCustomer, SystemCustomerAttributeNames.LastName, details.LastName);
+							currentCustomer.LastName = details.LastName;
 
-
-                        userFound = currentCustomer;
+						userFound = currentCustomer;
                         _openAuthenticationService.AssociateExternalAccountWithUser(currentCustomer, parameters);
                         ExternalAuthorizerHelper.RemoveParameters();
 
@@ -209,11 +207,11 @@ namespace SmartStore.Services.Authentication.External
                 _openAuthenticationService.AssociateExternalAccountWithUser(userLoggedIn, parameters);
             }
 
-            //migrate shopping cart
+            // migrate shopping cart
             _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, userFound ?? userLoggedIn);
-            //authenticate
+            // authenticate
             _authenticationService.SignIn(userFound ?? userLoggedIn, false);
-            //activity log
+            // activity log
             _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"),
                 userFound ?? userLoggedIn);
 

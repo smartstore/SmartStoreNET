@@ -33,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,6 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -51,6 +53,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PluginDev|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -60,6 +63,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
@@ -105,6 +109,9 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
     <Reference Include="NCrontab, Version=3.2.20120.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ncrontab.3.3.0\lib\net35\NCrontab.dll</HintPath>
       <Private>True</Private>
@@ -116,6 +123,9 @@
     <Reference Include="NReco.PdfGenerator, Version=1.1.15.0, Culture=neutral, PublicKeyToken=231663d50a41b451, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NReco.PdfGenerator.1.1.15\lib\net20\NReco.PdfGenerator.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NuGet.Core.2.14.0\lib\net40-Client\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="PreMailer.Net, Version=1.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\PreMailer.Net.1.5.5\lib\net45\PreMailer.Net.dll</HintPath>
@@ -198,7 +208,12 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerMessageFactoryExtensions.cs" />
-    <Compile Include="Customers\CustomerRegisteredEvent.cs" />
+    <Compile Include="Customers\CustomerSearchQuery.cs" />
+    <Compile Include="Customers\Events\CustomerAnonymizedEvent.cs" />
+    <Compile Include="Customers\Events\CustomerExportedEvent.cs" />
+    <Compile Include="Customers\Events\CustomerRegisteredEvent.cs" />
+    <Compile Include="Customers\GdprTool.cs" />
+    <Compile Include="Customers\IGdprTool.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
     <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
     <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />
@@ -270,9 +285,11 @@
     <Compile Include="Hooks\SlugSupportedHook.cs" />
     <Compile Include="Hooks\AuditableHook.cs" />
     <Compile Include="Hooks\FixProductMainPictureHook.cs" />
+    <Compile Include="Hooks\UpdateCustomerFullNameHook.cs" />
     <Compile Include="Hooks\StoreSaveHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
+    <Compile Include="Localization\LocalizedValue.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
@@ -309,6 +326,7 @@
     <Compile Include="Orders\AddToCartContext.cs" />
     <Compile Include="Orders\OrderMessageFactoryExtensions.cs" />
     <Compile Include="Orders\ShoppingCartTotal.cs" />
+    <Compile Include="Payments\CapturePaymentHook.cs" />
     <Compile Include="Payments\IPaymentMethodFilter.cs" />
     <Compile Include="Pdf\Content\PdfHtmlContent.cs" />
     <Compile Include="Pdf\Content\IPdfContent.cs" />
@@ -403,7 +421,6 @@
     <Compile Include="Media\IImageProcessor.cs" />
     <Compile Include="Media\ImageCache.cs" />
     <Compile Include="Media\ImageCacheExtensions.cs" />
-    <Compile Include="Media\ImageHeader.cs" />
     <Compile Include="Media\DefaultImageProcessor.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\NewsLetterSubscriptionService.cs" />
@@ -519,20 +536,33 @@
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityHook.cs" />
     <Compile Include="ScopedServiceBase.cs" />
-    <Compile Include="Search\CatalogSearchQuery.cs" />
+    <Compile Include="Search\Catalog\CatalogSearchQuery.cs" />
     <Compile Include="Search\Extensions\FacetUtility.cs" />
     <Compile Include="Search\Extensions\UrlHelperExtensions.cs" />
-    <Compile Include="Search\Modelling\CatalogSearchQueryAliasMapper.cs" />
-    <Compile Include="Search\Modelling\CatalogSearchQueryFactory.cs" />
-    <Compile Include="Search\CatalogSearchResult.cs" />
-    <Compile Include="Search\CatalogSearchService.cs" />
-    <Compile Include="Search\Modelling\CatalogSearchQueryModelBinder.cs" />
+    <Compile Include="Search\Catalog\Modelling\CatalogSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Catalog\Modelling\CatalogSearchQueryFactory.cs" />
+    <Compile Include="Search\Catalog\CatalogSearchResult.cs" />
+    <Compile Include="Search\Catalog\CatalogSearchService.cs" />
+    <Compile Include="Search\Catalog\Modelling\CatalogSearchQueryModelBinder.cs" />
     <Compile Include="Search\Extensions\FacetUrlHelper.cs" />
-    <Compile Include="Search\Modelling\ICatalogSearchQueryAliasMapper.cs" />
-    <Compile Include="Search\Modelling\ICatalogSearchQueryFactory.cs" />
-    <Compile Include="Search\ICatalogSearchService.cs" />
-    <Compile Include="Search\LinqCatalogSearchService.cs" />
-    <Compile Include="Search\CatalogSearchEvents.cs" />
+    <Compile Include="Search\Catalog\Modelling\ICatalogSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Catalog\Modelling\ICatalogSearchQueryFactory.cs" />
+    <Compile Include="Search\Catalog\ICatalogSearchService.cs" />
+    <Compile Include="Search\Catalog\LinqCatalogSearchService.cs" />
+    <Compile Include="Search\Catalog\CatalogSearchEvents.cs" />
+    <Compile Include="Search\Forum\ForumSearchService.cs" />
+    <Compile Include="Search\Forum\ForumSearchResult.cs" />
+    <Compile Include="Search\Forum\ForumSearchQuery.cs" />
+    <Compile Include="Search\Forum\ForumSearchEvents.cs" />
+    <Compile Include="Search\Forum\IForumSearchService.cs" />
+    <Compile Include="Search\Forum\LinqForumSearchService.cs" />
+    <Compile Include="Search\Forum\Modelling\ForumSearchQueryModelBinder.cs" />
+    <Compile Include="Search\Forum\Modelling\ForumSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Forum\Modelling\ForumSearchQueryFactory.cs" />
+    <Compile Include="Search\Forum\Modelling\IForumSearchQueryAliasMapper.cs" />
+    <Compile Include="Search\Forum\Modelling\IForumSearchQueryFactory.cs" />
+    <Compile Include="Search\SearchQueryFactoryBase.cs" />
+    <Compile Include="Search\SearchServiceBase.cs" />
     <Compile Include="Search\Rendering\FacetTemplateProvider.cs" />
     <Compile Include="Search\Rendering\IFacetTemplateProvider.cs" />
     <Compile Include="Search\Rendering\IFacetTemplateSelector.cs" />
@@ -581,6 +611,7 @@
     <Compile Include="Tasks\ITask.cs" />
     <Compile Include="Tasks\TaskExecutionContext.cs" />
     <Compile Include="Tasks\TaskExecutor.cs" />
+    <Compile Include="Tasks\TaskExtensions.cs" />
     <Compile Include="Tasks\TaskScheduler.cs" />
     <Compile Include="Tax\CalculateTaxRequest.cs" />
     <Compile Include="Tax\CalculateTaxResult.cs" />

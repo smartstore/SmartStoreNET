@@ -174,7 +174,7 @@ namespace SmartStore.Services.Seo
 		/// <returns>A collection of XML sitemap documents.</returns>
 		protected IList<string> Generate()
 		{
-			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
+			var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
 
 			var nodes = new List<XmlSitemapNode>();
 
@@ -215,7 +215,7 @@ namespace SmartStore.Services.Seo
 
 		protected virtual List<string> GetSiteMapDocuments(IReadOnlyCollection<XmlSitemapNode> nodes)
 		{
-			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
+			var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
 
 			int siteMapCount = (int)Math.Ceiling(nodes.Count / (double)MaximumSiteMapNodeCount);
 			CheckSitemapCount(siteMapCount);
@@ -400,7 +400,10 @@ namespace SmartStore.Services.Seo
 
 		protected virtual IEnumerable<XmlSitemapNode> GetTopicNodes(string protocol)
 		{
-			var topics = _topicService.GetAllTopics(_services.StoreContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap && !t.RenderAsWidget);
+			var topics = _topicService.GetAllTopics(_services.StoreContext.CurrentStore.Id).AlterQuery(q =>
+			{
+				return q.Where(t => t.IncludeInSitemap && !t.RenderAsWidget);
+			});
 
 			_services.DbContext.DetachAll();
 
@@ -408,7 +411,7 @@ namespace SmartStore.Services.Seo
 			{
 				var node = new XmlSitemapNode
 				{
-					Loc = _urlHelper.RouteUrl("Topic", new { SystemName = x.SystemName }, protocol),
+					Loc = _urlHelper.RouteUrl("Topic", new { SeName = x.GetSeName() }, protocol),
 					LastMod = DateTime.UtcNow,
 					//ChangeFreq = ChangeFrequency.Weekly,
 					//Priority = 0.8f

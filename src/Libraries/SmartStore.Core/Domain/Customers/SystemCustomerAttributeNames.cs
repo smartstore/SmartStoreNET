@@ -3,13 +3,8 @@ namespace SmartStore.Core.Domain.Customers
 {
     public static partial class SystemCustomerAttributeNames
     {
-        //Form fields
-        public static string Title { get { return "Title"; } }
-        public static string FirstName { get { return "FirstName"; } }
-        public static string LastName { get { return "LastName"; } }
-        public static string Gender { get { return "Gender"; } }
-        public static string DateOfBirth { get { return "DateOfBirth"; } }
-        public static string Company { get { return "Company"; } }
+        // Form fields
+		public static string Gender { get { return "Gender"; } }
         public static string StreetAddress { get { return "StreetAddress"; } }
         public static string StreetAddress2 { get { return "StreetAddress2"; } }
         public static string ZipPostalCode { get { return "ZipPostalCode"; } }
@@ -20,15 +15,16 @@ namespace SmartStore.Core.Domain.Customers
         public static string Fax { get { return "Fax"; } }
 		public static string VatNumber { get { return "VatNumber"; } }
 		public static string VatNumberStatusId { get { return "VatNumberStatusId"; } }
-		public static string TimeZoneId { get { return "TimeZoneId"; } }
-        public static string CustomerNumber { get { return "CustomerNumber"; } }
+		public static string TimeZoneId { get { return "TimeZoneId"; } }    
 
-        //Other attributes
+        // Other attributes
 		public static string DiscountCouponCode { get { return "DiscountCouponCode"; } }
 		public static string GiftCardCouponCodes { get { return "GiftCardCouponCodes"; } }
 		public static string CheckoutAttributes { get { return "CheckoutAttributes"; } }
         public static string AvatarPictureId { get { return "AvatarPictureId"; } }
+        public static string AvatarColor { get { return "AvatarColor"; } }
         public static string ForumPostCount { get { return "ForumPostCount"; } }
+        public static string LastForumVisit { get { return "LastForumVisit"; } }
         public static string Signature { get { return "Signature"; } }
         public static string PasswordRecoveryToken { get { return "PasswordRecoveryToken"; } }
         public static string AccountActivationToken { get { return "AccountActivationToken"; } }
@@ -38,8 +34,10 @@ namespace SmartStore.Core.Domain.Customers
 		public static string AdminAreaStoreScopeConfiguration { get { return "AdminAreaStoreScopeConfiguration"; } }
 		public static string MostRecentlyUsedCategories { get { return "MostRecentlyUsedCategories"; } }
 		public static string MostRecentlyUsedManufacturers { get { return "MostRecentlyUsedManufacturers"; } }
+		public static string WalletEnabled { get { return "WalletEnabled"; } }
+		public static string HasConsentedToGdpr { get { return "HasConsentedToGdpr"; } }
 
-		//depends on store
+		// Depends on store
 		public static string CurrencyId { get { return "CurrencyId"; } }
 		public static string LanguageId { get { return "LanguageId"; } }
 		public static string SelectedPaymentMethod { get { return "SelectedPaymentMethod"; } }
@@ -50,5 +48,6 @@ namespace SmartStore.Core.Domain.Customers
 		public static string WorkingThemeName { get { return "WorkingThemeName"; } }
 		public static string TaxDisplayTypeId { get { return "TaxDisplayTypeId"; } }
 		public static string UseRewardPointsDuringCheckout { get { return "UseRewardPointsDuringCheckout"; } }
-    }
+		public static string UseCreditBalanceDuringCheckout { get { return "UseCreditBalanceDuringCheckout"; } }
+	}
 }

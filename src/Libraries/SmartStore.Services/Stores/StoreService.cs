@@ -116,7 +116,7 @@ namespace SmartStore.Services.Stores
 		{
 			Guard.NotNull(store, nameof(store));
 			
-			return store.GetHost(secure ?? _securitySettings.ForceSslForAllPages);
+			return store.GetHost(secure ?? store.ForceSslForAllPages);
 		}
 	}
 }

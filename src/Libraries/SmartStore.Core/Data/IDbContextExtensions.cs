@@ -107,6 +107,12 @@ namespace SmartStore
 			var entry = dbContext.Entry(entity);
 			var collection = entry.Collection(navigationProperty);
 
+			// Avoid System.InvalidOperationException: Member 'IsLoaded' cannot be called for property...
+			if (entry.State == System.Data.Entity.EntityState.Detached)
+			{
+				ctx.Attach(entity);
+			}
+
 			if (force)
 			{
 				collection.IsLoaded = false;
@@ -155,6 +161,12 @@ namespace SmartStore
 
 			var entry = dbContext.Entry(entity);
 			var reference = entry.Reference(navigationProperty);
+
+			// Avoid System.InvalidOperationException: Member 'IsLoaded' cannot be called for property...
+			if (entry.State == System.Data.Entity.EntityState.Detached)
+			{
+				ctx.Attach(entity);
+			}
 
 			if (force)
 			{

@@ -99,19 +99,19 @@ namespace SmartStore.Admin.Controllers
 				// applied to categories
 				model.AppliedToCategoryModels = discount.AppliedToCategories
 					.Where(x => x != null && !x.Deleted)
-					.Select(x => new DiscountModel.AppliedToCategoryModel { CategoryId = x.Id, Name = x.GetLocalized(y => y.Name, language.Id) })
+					.Select(x => new DiscountModel.AppliedToCategoryModel { CategoryId = x.Id, Name = x.GetLocalized(y => y.Name, language) })
 					.ToList();
 
 				// applied to manufacturers
 				model.AppliedToManufacturerModels = discount.AppliedToManufacturers
 					.Where(x => x != null && !x.Deleted)
-					.Select(x => new DiscountModel.AppliedToManufacturerModel { ManufacturerId = x.Id, ManufacturerName = x.GetLocalized(y => y.Name, language.Id) })
+					.Select(x => new DiscountModel.AppliedToManufacturerModel { ManufacturerId = x.Id, ManufacturerName = x.GetLocalized(y => y.Name, language) })
 					.ToList();
 
 				// applied to products
 				model.AppliedToProductModels = discount.AppliedToProducts
-					.Where(x => x != null && !x.Deleted)
-					.Select(x => new DiscountModel.AppliedToProductModel { ProductId = x.Id, ProductName = x.GetLocalized(y => y.Name, language.Id) })
+					.Where(x => x != null && !x.Deleted && !x.IsSystemProduct)
+					.Select(x => new DiscountModel.AppliedToProductModel { ProductId = x.Id, ProductName = x.GetLocalized(y => y.Name, language) })
 					.ToList();
 
                 // requirements

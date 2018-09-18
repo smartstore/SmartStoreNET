@@ -1,0 +1,742 @@
+/// <reference path="theme.scss" />
+
+/* SmartStore theme for Telerik MVC Extensions */
+
+
+/* Variables
+-------------------------------------------------------------- */
+
+$grid-pager-bg: #f9fafa;
+
+
+/* Mixins
+-------------------------------------------------------------- */
+
+@mixin custom-t-icon() {
+	position: relative;
+	background-clip: content-box;
+	box-sizing: content-box;
+	vertical-align: middle;
+	text-align: center;
+	font-size: $font-size-base;
+	line-height: $line-height-base;
+	background-image: none;
+	text-indent: 0;
+	color: transparent;
+	margin: 0;
+	padding: 0;
+
+	&:hover:before {
+		color: $body-color;
+	}
+
+	&:before {
+		position: absolute;
+		display: inline-block;
+		text-indent: 0;
+		@include fontawesome("\f013"); // cog
+		text-align: center;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		color: $gray-700;
+	}
+}
+
+
+/* Common
+-------------------------------------------------------------- */
+
+.t-button {
+	@extend .btn;
+}
+
+.t-no-data {
+	color: $text-muted;
+}
+
+.t-widget, .t-input {
+    border-color: $input-border-color; /*#a4abb2*/
+    background-color: #fff;
+}
+.t-header,
+.t-grid-header,
+.t-toolbar,
+.t-grouping-header,
+.t-tooltip,
+.t-grid-pager {
+	color: $gray-800;
+	background-color: $table-head-bg;
+	border-color: $table-border-color;
+}
+.t-menu-vertical,
+ .t-editor, 
+.t-tooltip, 
+.t-tabstrip {
+    background-position: 0 -48px;
+}
+.t-icon {
+    background-image: url('telerik/img/sprite.png');
+}
+.t-editor .t-tool-icon {
+	background-image: url('telerik/img/editor.png');
+}
+.t-picker-wrap {
+    padding-right: 23px;
+}
+.t-loading,
+.t-widget .t-loading {
+	background: transparent url('telerik/img/loading.gif') no-repeat 0 0;
+}
+.t-widget, 
+.t-link:link, 
+.t-link:active, 
+.t-link:visited, 
+.t-popup, 
+.t-grid .t-header {
+    color: #3b3b3b;
+}
+.t-group {
+    background-color: #f1f2f3;
+    border-color: $dropdown-border-color;
+	&.t-popup {
+		background-color: #fff;
+	}
+}
+.t-popup, .t-menu .t-group {
+	box-shadow: $dropdown-box-shadow;
+}
+.t-content, 
+.t-editable-area {
+    border-color: #a4abb2;
+    background-color: #fff;
+}
+.t-separator {
+    border-color: #a4abb2;
+    background-color: #fff;
+}
+.t-alt {
+    //background-color: $table-accent-bg /* #f1f2f3 */;
+	background-color: none;
+}
+.t-state-default {
+    border-color: #a4abb2;
+}
+.t-active-filter {
+    background-color: #fff;
+}
+.t-state-hover, 
+.t-state-hover:hover {
+    background-color: #fae185;
+    border-color: #f3d64a;
+    color: #000;
+}
+.t-state-active, 
+.t-header .t-state-active {
+    background-color: #fff;
+    border-color: #a4abb2;
+}
+.t-state-selected {
+	background-color: rgba(#000, 0.05);
+}
+.t-state-focused {
+    background-color: #d3d6da;
+}
+.t-state-hover, .t-state-selected {
+    color: $gray-900;
+}
+.t-state-error, 
+.t-widget.input-validation-error, 
+.t-widget .input-validation-error {
+    border-color: #ff7c7c;
+    background-color: #ffe4e4;
+    color: #f20000;
+}
+.t-autocomplete {
+    background-color: #fff;
+}
+.t-toolbar, 
+.t-grouping-header, 
+.t-grid-pager, 
+.t-group-footer td, 
+.t-grid-footer, 
+.t-footer-template td, 
+.t-widget .t-status {
+    border-color: $input-border-color /*#a4abb2*/;
+    background-color: #f5f5f5; //#f1f2f3;
+}
+.t-widget .t-status {
+    background-color: transparent;
+}
+.t-grouping-row td {
+	background: url('telerik/img/sprite.png') repeat-x 0 -48px;
+}
+.t-grouping-header .t-group-indicator {
+    border-color: #a4abb2;
+}
+.t-grouping-dropclue {
+	background: url('telerik/img/sprite.png') no-repeat -48px -288px;
+}
+.t-grouping-row .t-group-cell, 
+.t-grouping-row p {
+    background: #fff;
+    font-weight: bold;
+    color: $gray-700;
+}
+.t-treeview .t-drop-clue {
+	background-image: url('telerik/img/sprite.png');
+	background-position: 0 -358px;
+}
+.t-treeview .t-state-selected {
+    border-color: #f4b914;
+}
+.t-panelbar .t-link, 
+.t-panelbar .t-group, 
+.t-panelbar .t-content {
+    border-color: #a4abb2;
+}
+.t-other-month .t-link {
+    color: #a4abb2;
+}
+
+.t-link:hover {
+    text-decoration: none !important;
+}
+
+
+body .t-content.t-state-active {
+    padding: 10px !important;
+}
+
+.form-actions {
+    overflow: hidden;
+    padding-top: 1em;
+}
+.form-actions .t-button, 
+.form-actions .t-button button {
+    float: right;
+    margin-left: 10px;
+    padding: 2px 15px;
+}
+
+.dialog-content-container {
+	margin: 6px 0 2px 0;
+	padding: 5px;
+}
+
+
+td.adminData .t-combobox {
+    width: 306px;
+}
+
+
+/* Buttons
+-------------------------------------------------------------- */
+
+button.t-button.t-state-disabled:hover, 
+a.t-button.t-state-disabled:hover, 
+.t-state-disabled .t-button:hover {
+    background: #d2d5d9;
+}
+
+.t-state-disabled, 
+.t-state-disabled:hover, 
+.t-state-disabled .t-link, 
+.t-state-disabled .t-button {
+    border-color: #a4abb2;
+    color: #a4abb2;
+}
+
+
+
+/* Numeric textbox 
+-------------------------------------------------------------- */
+
+.t-numerictextbox {
+	display: block;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+
+	&:after {
+		// mimic input group addon
+		position: absolute;
+		z-index: 2;
+		content: ' ';
+		display: block;
+		background: $input-group-addon-bg;
+		border: 0 solid $input-group-addon-border-color;
+		border-left-width: 1px;
+		top: 1px;
+		right: 1px;
+		bottom: 1px;
+		left: auto;
+		width: $input-height;
+
+		.t-grid-edit-row & {
+			width: 1.5rem;
+		}
+	}
+
+	.t-input {
+		position: relative;
+		z-index: 1;
+		padding-right: $input-height-inner + 1rem !important;
+
+		.t-grid-edit-row & {
+			padding-left: 0.5rem !important;
+			padding-right: 1.75rem !important;
+		}
+	}
+
+	.t-formatted-value {
+		position: absolute;
+		overflow: hidden;
+		z-index: 2;
+		padding: $input-btn-padding-y $input-btn-padding-x;
+		font-size: $font-size-base; // Match inputs
+		font-weight: $font-weight-normal;
+		line-height: $input-btn-line-height;
+		color: $input-color;
+
+		.t-grid-edit-row & {
+			padding-left: 0.5rem !important;
+		}
+
+		&.t-state-empty {
+			color: $gray-600 !important;
+		}
+	}
+
+	.t-input {
+		~ .t-icon {
+			@include custom-t-icon();
+			position: absolute;
+			display: block;
+			z-index: 3;
+			top: 0;
+			right: 0;
+			height: 50%;
+			width: calc(#{$input-height});
+
+			.t-grid-edit-row & {
+				width: 1.5rem;
+			}
+
+			&:before {
+				content: "\f077";
+				font-size: 10px;
+			}
+
+			&.t-arrow-down:before {
+				content: "\f078"; // chevron-down
+				top: 40%; // better alignment
+			}
+
+			&.t-arrow-down {
+				top: auto;
+				bottom: 0;
+			}
+		}
+
+		&:disabled ~ .t-icon {
+			opacity: 0.5;
+		}
+
+		&:not(:disabled) ~ .t-icon {
+			&:hover {
+				background-color: rgba(#000, 0.05);
+			}
+
+			&:active {
+				background-color: rgba(#000, 0.08);
+			}
+		}
+	}
+}
+
+.numerictextbox-group {
+	display: block;
+	position: relative;
+
+	.numerictextbox-postfix {
+		display: block;
+		position: absolute;
+		z-index: 2;
+		top: 0;
+		color: $gray-600;
+		right: $input-height;
+		padding: $input-btn-padding-y $input-btn-padding-x;
+		font-size: $font-size-base; // Match inputs
+		line-height: $input-btn-line-height;
+		cursor: default;
+		user-select: none;
+	}
+}
+
+
+
+/* Grid
+-------------------------------------------------------------- */
+
+.t-grid {
+	box-shadow: 1px 1px 3px rgba(#000, 0.1);
+	overflow-x: auto;
+
+	.t-status-text {
+		color: $gray-600;
+		font-size: $font-size-sm;
+	}
+
+	.t-button .fa {
+		margin-top: 0;
+	}
+
+	.t-grid-header-wrap, .t-grid-footer-wrap {
+		border-color: #a4abb2;
+	}
+
+	tbody .t-button {
+		@extend .btn-sm;
+		min-width: 92px;
+
+		&.t-grid-update, &.t-grid-insert {
+			text-transform: capitalize;
+			@extend .btn-warning;
+		}
+
+		&.t-grid-delete {
+			@extend .btn-danger;
+		}
+
+		&:not(.t-grid-update):not(.t-grid-delete):not(.t-grid-insert) {
+			@extend .btn-secondary;
+		}
+	}
+
+	form.t-grid-actions {
+		margin: 0;
+	}
+
+	.text-box.single-line {
+		/* ... */
+	}
+
+	.t-filter-options {
+		border-radius: $border-radius;
+		padding: 0.5rem;
+		box-sizing: border-box;
+		//width: 200px;
+		min-width: 200px;
+
+		.t-filter-help-text {
+			font-size: 12px;
+			padding: 0.25rem 0;
+		}
+
+		.t-button {
+			@extend .btn-sm;
+			@extend .btn-secondary;
+		}
+
+		.t-filter-button {
+			margin-top: 1rem;
+		}
+
+		input[type=text], .t-filter-operator {
+			width: 100%;
+			padding: $input-padding-y-sm $input-padding-x-sm !important;
+			font-size: $font-size-sm !important;
+			line-height: $input-line-height-sm !important;
+			height: $input-height-sm !important;
+			@include border-radius($input-border-radius-sm);
+		}
+	}
+}
+
+.t-grid > table,
+.t-grid > form > table {
+	@extend .table;
+	margin-bottom: 0;
+
+	td[align=center] {
+		text-align: center;
+	}
+
+	.btn {
+		padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+		font-size: $font-size-sm;
+
+		.fa {
+			font-size: $font-size-sm;
+		}
+	}
+
+	td, th {
+		vertical-align: middle;
+		padding-left: 0.4rem;
+		padding-right: 0.4rem;
+		border-left-width: 0 !important;
+		border-right-width: 0 !important;
+		border-color: $table-border-color;
+		line-height: $line-height-base;
+
+		&:first-child {
+			padding-left: 0.75rem;
+		}
+
+		&:last-child {
+			padding-left: 0.75rem;
+		}
+	}
+
+	.t-grid-edit-row td {
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+
+		.form-check-input {
+			position: relative;
+			margin: 0;
+			padding: 0;
+		}
+	}
+}
+
+
+.t-grid-edit-row {
+    .text-box,
+    .t-numerictextbox {
+		// overwrite telerik defaults
+	    width: 100%;
+	    min-width: 100%;
+	    max-width: 100%;
+	    margin: 0;
+    }
+}
+
+
+.t-grid-edit-cell {
+	padding: 6px;
+}
+
+.t-grouping-header {
+	text-shadow: none;
+	padding: 0.6em;
+}
+
+
+.t-grid-toolbar {
+	padding: 0;
+	background: $grid-pager-bg;
+	position: relative;
+	display: flex;
+
+	&:empty {
+		border-width: 0 !important;
+	}
+
+	.btn,
+	.t-button {
+		display: block;
+		border-radius: 0 !important;
+		margin: 0;
+		border: 0;
+		border-left: 1px solid rgba(#000, 0.1);
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+		background-color: transparent;
+		color: #515151;
+		font-size: $font-size-sm;
+		transition: $btn-transition;
+		box-shadow: none;
+
+		&:first-child {
+			border-left-width: 0;
+		}
+
+		&:hover {
+			background-color: $gray-200;
+		}
+
+		&:active {
+			background-color: $gray-300;
+			box-shadow: $btn-active-box-shadow !important;
+		}
+
+		&.t-grid-add,
+		&.t-button-primary {
+			&:hover {
+				background-color: darken($primary, 7.5%);
+				color: #fff;
+			}
+
+			&:active {
+				background-color: darken($primary, 10%);
+				color: #fff;
+			}
+		}
+
+		&.t-grid-save-changes {
+			&:hover {
+				background-color: darken($warning, 7.5%);
+				color: #fff;
+			}
+
+			&:active {
+				background-color: darken($warning, 10%);
+				color: #fff;
+			}
+		}
+
+		&.t-grid-cancel-changes {
+			&:hover {
+				background-color: $danger;
+				color: #fff;
+			}
+
+			&:active {
+				background-color: darken($danger, 10%);
+				color: #fff;
+			}
+		}
+	}
+	/*.t-button,
+	.btn:not(.btn-primary):not(.btn-warning):not(.btn-danger):not(.btn-secondary) {
+		@include button-variant($warning, $warning);
+	}*/
+}
+
+.t-grid-filter {
+	position: absolute;
+	display: flex;
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 28px;
+	margin: 0;
+	padding: $gray-100 0;
+
+	.t-icon {
+		@include custom-t-icon();
+
+		&:before {
+			content: "\f0b0";
+		}
+	}
+}
+
+.t-grid-header .t-header {
+	font-weight: 600 !important;
+	padding: 0 !important;
+	position: relative;
+
+	.t-link {
+		margin: 0;
+		padding: 0.75em 0.4rem;
+		height: auto;
+		line-height: 1.75rem;
+	}
+
+	&:first-child .t-link {
+		padding-left: 0.75em;
+	}
+
+	&:last-child .t-link {
+		padding-right: 0.75em;
+	}
+
+	a.t-link:hover {
+		background-color: #fff2cf;
+	}
+
+	.t-arrow-up,
+	.t-arrow-down {
+		margin-left: 0.25rem;
+	}
+}
+
+
+/* Grid pager
+-------------------------------------------------------------- */
+
+.t-grid-pager {
+	background: $grid-pager-bg;
+	padding-top: 0;
+	padding-bottom: 0;
+	line-height: $line-height-base;
+
+	.t-numeric,
+	.t-status .t-icon {
+		margin: 0;
+	}
+
+	.t-status {
+		margin: 0;
+		padding: 0;
+		padding-right: 0.6em;
+		padding-bottom: 7px;
+		padding-top: 9px;
+		height: auto;
+	}
+
+	.t-refresh {
+		height: 16px;
+	}
+
+	.t-pager .t-link span {
+		vertical-align: sub;
+	}
+
+	.t-refresh,
+	.t-link,
+	.t-status-text,
+	.t-state-active {
+		padding-top: 0.6rem;
+		padding-bottom: 0.6rem;
+		font-size: $font-size-sm;
+		line-height: $line-height-base;
+		background-color: transparent;
+		text-shadow: none !important;
+		vertical-align: middle !important;
+		margin: 0;
+	}
+
+	.t-refresh,
+	.t-link,
+	.t-state-active {
+		padding-left: 0.4rem;
+		padding-right: 0.4rem;
+		transition: background-color 0.06s ease-in-out;
+		border-radius: 0;
+		color: inherit;
+	}
+
+	.t-link,
+	.t-state-active {
+		min-width: 1.2rem;
+		text-align: center;
+		border: 1px solid transparent;
+		border-top-width: 0;
+		border-bottom-width: 0;
+	}
+
+	.t-link.t-state-hover,
+	.t-link.t-state-hover:hover,
+	.t-link:hover {
+		background-color: rgba(#000, 0.08);
+		//border-width: 0;
+		color: inherit;
+	}
+
+	.t-state-active {
+		/*background-color: rgba(#000, 0.5);
+		color: #fff;*/
+		background-color: #fff;
+		border-color: rgba(#000, 0.15);
+		//box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.06);
+	}
+
+	.t-status-text {
+		padding-right: 0.75rem;
+	}
+}

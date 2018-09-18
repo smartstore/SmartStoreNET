@@ -30,7 +30,6 @@
 			columns.Bound(x => x.SystemKeyword)
 				.Width(150);
 			columns.Bound(x => x.Ratio)
-				.RightAlign()
 				.Format("{0:0.00000000}")
 				.Width(180);
 			columns.Bound(x => x.DisplayOrder)
@@ -49,7 +48,8 @@
 			{
 				commands.Edit().Localize(T);
 				commands.Delete().Localize(T);
-			}).Width(180);
+			}).Width(180)
+			.HtmlAttributes(new { align = "right", @class = "omega" });
 		})
 		.ToolBar(x => x.Insert())
 		.Editable(x =>

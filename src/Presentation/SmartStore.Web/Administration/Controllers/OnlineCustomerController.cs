@@ -63,10 +63,10 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = customers.Select(x =>
                 {
-                    return new OnlineCustomerModel()
+                    return new OnlineCustomerModel
                     {
                         Id = x.Id,
-                        CustomerInfo = x.IsRegistered() ? x.Email : _localizationService.GetResource("Admin.Customers.Guest"),
+                        CustomerInfo = x.IsRegistered() ? x.Email : T("Admin.Customers.Guest").Text,
                         LastIpAddress = x.LastIpAddress,
                         Location = _geoCountryLookup.LookupCountryName(x.LastIpAddress),
                         LastActivityDate = _dateTimeHelper.ConvertToUserTime(x.LastActivityDateUtc, DateTimeKind.Utc),

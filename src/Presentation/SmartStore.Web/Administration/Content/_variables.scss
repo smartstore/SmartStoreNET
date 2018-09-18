@@ -1,0 +1,193 @@
+/// <reference path="../../Content/bs4/scss/_variables.scss" />
+
+//
+// SmartStore CI colors
+// --------------------------------------------------
+
+$sm-orange1:	#ee9B00;
+$sm-orange2:	#e77c00;
+$sm-green1:		#44b284;
+$sm-bluegreen:	#2c8d8a;
+$sm-red1:		#ee1111;
+$sm-red2:		#dc3000;
+$sm-red3:		#db004f;
+$sm-blue:		#37a0e6;
+$sm-blue2:		#18509f;
+$sm-violet:		#55237d;
+$sm-gray1:		#dadada;
+$sm-gray2:		#bcbcbc;
+$sm-gray3:		#878787;
+$sm-gray4:		#4a4a49;
+
+
+//
+// Backend specific variables
+// --------------------------------------------------
+
+$content-padding-x:			30px;
+$content-padding-y:			15px;
+
+
+//
+// Shared variables
+// --------------------------------------------------
+
+$alert-info-is-primary:		true;
+$enable-lightbtn-tweak:		true;
+$enable-social-buttons:		false;
+
+
+//
+// BS4 variables
+// --------------------------------------------------
+
+$enable-shadows:	true;
+$enable-gradients:	false;
+
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #b0bac3;
+$gray-600: #8d9ba9;
+$gray-700: #596167;
+$gray-800: #393f46;
+$gray-900: #22262a;
+
+$text-muted: $gray-600;
+
+$blue:		$sm-blue;
+$indigo:	$sm-blue2;
+$purple:	$sm-violet;
+$pink:		#e91e63; // Pink 500
+$red:		$sm-red2;
+$orange:	$sm-orange1;
+$yellow:	#fdd835; // Yellow 600
+$green:		$sm-green1;
+$teal:		#009688; // Teal 500
+$cyan:		#00BCD4; // Cyan 500
+$bluegrey:	#78909c; // Bluegrey 500
+
+$primary:	$blue;
+$secondary: lighten($gray-200, 2%);
+$success:	$green;
+$info:		$sm-bluegreen;
+$warning:	$orange;
+$danger:	$red;
+$light:		$gray-100;
+$dark:		$sm-red3;
+
+$theme-colors: ( 
+	"gray": $gray-700,
+	"primary-dark": $sm-blue2,
+	"warning-dark": $sm-orange2,
+	"danger-dark": $sm-red2
+);
+
+$body-color:	$gray-800;
+$body-bg:		#fff;
+$link-color:	desaturate(darken($primary, 12%), 0%); //#0277bb;
+
+// Set a specific jump point for requesting color jumps
+$theme-color-interval:		8%;
+
+// The yiq lightness value that determines when the lightness of color changes from "dark" to "light". Acceptable values are between 0 and 255.
+$yiq-contrasted-threshold:	164;
+
+// Customize the light and dark text colors for use in our YIQ color contrast function.
+$yiq-text-dark:				$gray-800;
+$yiq-text-light:			#fff;
+
+$font-size-base: 0.875rem;
+$font-size-lg:   1rem;
+$font-size-sm:   0.8125rem;
+
+$h1-font-size: 2.5rem;
+$h2-font-size: 2rem;
+$h3-font-size: 1.75rem;
+$h4-font-size: 1.5rem;
+$h5-font-size: 1.25rem;
+$h6-font-size: 1rem;
+
+$small-font-size:               90%;
+
+$headings-font-weight:			400;
+
+$table-cell-padding:			.75rem;
+$table-cell-padding-sm:			.3rem;
+$table-border-color:			$gray-300;
+$table-head-bg:					#f6f8fa;
+$table-head-color:				$gray-700;
+$table-accent-bg:				rgba(#000, .015);
+
+$input-btn-focus-width:			.25rem;
+$input-btn-focus-color:			rgba($sm-blue2, .25);
+$input-btn-focus-box-shadow:	0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$input-btn-padding-x:           1rem;
+$input-btn-padding-y:           0.5625rem;
+$input-btn-padding-x-sm:        0.75rem;
+$input-btn-padding-y-sm:        0.375rem;
+$input-btn-padding-x-lg:        1.5rem;
+$input-btn-padding-y-lg:        0.75rem;
+$input-btn-line-height:         1.5;
+$input-box-shadow:              none;
+$input-focus-border-color:		lighten($sm-blue2, 30%);
+$input-focus-box-shadow:        none;
+$input-border-radius:           0;
+$input-border-radius-lg:        0;
+$input-border-radius-sm:        0;
+$input-transition:              none;
+$input-group-addon-bg:			$gray-100;
+
+$btn-font-weight:				600;
+$btn-focus-width:				0; //$input-btn-focus-width;
+$btn-box-shadow:				inset 0 0 0 rgba(#fff, 0.15), 0 0 0 rgba(#000, 0.075);
+$btn-focus-box-shadow:			$input-btn-focus-box-shadow;
+//$btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
+$btn-transition:				background-color .05s ease-in-out, border-color .05s ease-in-out, box-shadow .05s ease-in-out;
+$btn-border-radius:				0; //.125rem;
+$btn-border-radius-lg:          0; //.1875rem;
+$btn-border-radius-sm:          0; //.125rem;
+$btn-disabled-opacity:			0.5;
+
+$dropdown-box-shadow:			0 3px 12px rgba(27,31,35, 0.15); //0 2px 6px rgba(#000, .15);
+$dropdown-border-color:			rgba(#000, 0.08); 
+$dropdown-link-color:			$body-color; //$gray-800;
+$dropdown-link-hover-color:		darken($dropdown-link-color, 5%);
+$dropdown-link-hover-bg:        lighten($gray-200, 3%);
+$dropdown-link-active-color:    $dropdown-link-hover-color;
+$dropdown-link-active-bg:       lighten($dropdown-link-hover-bg, 5%);
+$dropdown-item-padding-y:       0.625rem; // 0.5rem;
+$dropdown-item-padding-x:       1.5rem;
+$dropdown-header-color:			$text-muted;
+$dropdown-link-disabled-color:	$gray-500;
+
+$popover-box-shadow:			$dropdown-box-shadow;
+$popover-border-color:			$dropdown-border-color;
+
+$alert-padding-y:				1rem;
+$alert-border-radius: 0;
+
+$nav-tabs-border-color:			#e1e4e8;
+$nav-tabs-link-active-color:	$gray-900;
+
+$component-active-bg:			lighten($primary, 36%);
+$component-active-color:		inherit;
+
+
+/*$custom-control-indicator-bg:				$gray-200;
+$custom-control-indicator-disabled-bg:		$gray-100;
+$custom-control-indicator-checked-color:	#fff;
+$custom-control-indicator-checked-bg:		$primary;
+$custom-control-indicator-active-color:		#fff;
+$custom-control-indicator-active-bg:		$component-active-bg;
+$custom-checkbox-indicator-indeterminate-bg:$primary;*/
+
+$custom-control-indicator-bg:					$gray-200;
+$custom-control-indicator-disabled-bg:			$gray-100;
+$custom-control-indicator-checked-color:		#fff;
+$custom-control-indicator-checked-bg:			$warning;
+$custom-control-indicator-active-color:			#fff;
+$custom-control-indicator-active-bg:			lighten($warning, 35%);
+$custom-checkbox-indicator-indeterminate-bg:	$warning;
+$custom-control-indicator-focus-box-shadow:		0 0 0 1px $body-bg, 0 0 0 $input-btn-focus-width rgba($warning, .25);

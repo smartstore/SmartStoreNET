@@ -1,4 +1,4 @@
-namespace SmartStore.Data.Migrations
+ï»¿namespace SmartStore.Data.Migrations
 {
 	using System;
 	using System.Data.Entity;
@@ -173,25 +173,25 @@ namespace SmartStore.Data.Migrations
 				"Badge text",
 				"Badge-Text",
 				"Gets or sets the text of the badge which will be displayed next to the category link within menus.",
-				"Legt den Text der Badge fest, die innerhalb von Menus neben den Menueinträgen dargestellt wird.");
+				"Legt den Text der Badge fest, die innerhalb von Menus neben den MenueintrÃ¤gen dargestellt wird.");
 
 			builder.AddOrUpdate("Admin.Catalog.Categories.Fields.BadgeStyle",
 				"Badge style",
 				"Badge-Style",
 				"Gets or sets the type of the badge which will be displayed next to the category link within menus.",
-				"Legt den Stil der Badge fest, die innerhalb von Menus neben den Menueinträgen dargestellt wird.");
+				"Legt den Stil der Badge fest, die innerhalb von Menus neben den MenueintrÃ¤gen dargestellt wird.");
 
 			builder.AddOrUpdate("Admin.Header.ClearDbCache",
 				"Clear database cache",
-				"Datenbank Cache löschen");
+				"Datenbank Cache lÃ¶schen");
 
 			builder.AddOrUpdate("Admin.System.Warnings.TaskScheduler.OK",
 				"The task scheduler can poll and execute tasks.",
-				"Der Task-Scheduler kann Hintergrund-Aufgaben planen und ausführen.");
+				"Der Task-Scheduler kann Hintergrund-Aufgaben planen und ausfÃ¼hren.");
 
 			builder.AddOrUpdate("Admin.System.Warnings.TaskScheduler.Fail",
 				"The task scheduler cannot poll and execute tasks. Base URL: {0}, Status: {1}. Please specify a working base url in web.config, setting 'sm:TaskSchedulerBaseUrl'.",
-				"Der Task-Scheduler kann keine Hintergrund-Aufgaben planen und ausführen. Basis-URL: {0}, Status: {1}. Bitte legen Sie eine vom Webserver erreichbare Basis-URL in der web.config Datei fest, Einstellung: 'sm:TaskSchedulerBaseUrl'.");
+				"Der Task-Scheduler kann keine Hintergrund-Aufgaben planen und ausfÃ¼hren. Basis-URL: {0}, Status: {1}. Bitte legen Sie eine vom Webserver erreichbare Basis-URL in der web.config Datei fest, Einstellung: 'sm:TaskSchedulerBaseUrl'.");
 
 			builder.AddOrUpdate("Products.NotFound",
 				"The product with ID {0} was not found.",
@@ -199,7 +199,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Products.Deleted",
 				"The product with ID {0} has been deleted.",
-				"Das Produkt mit der ID {0} wurde gelöscht.");
+				"Das Produkt mit der ID {0} wurde gelÃ¶scht.");
 
 			builder.AddOrUpdate("Common.ShowLess", "Show less", "Weniger anzeigen");
 			builder.AddOrUpdate("Menu.ServiceMenu", "Help & Services", "Hilfe & Service");
@@ -210,7 +210,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Search", "Search", "Suchen");
 			builder.AddOrUpdate("Search.Title", "Search", "Suche");
-			builder.AddOrUpdate("Search.PageTitle", "Search result for {0}", "Suchergebnis für {0}");
+			builder.AddOrUpdate("Search.PageTitle", "Search result for {0}", "Suchergebnis fÃ¼r {0}");
 			builder.AddOrUpdate("Search.PagingInfo", "{0} of {1}", "{0} von {1}");
 			builder.AddOrUpdate("Search.DidYouMean", "Did you mean?", "Meinten Sie?");
 			builder.AddOrUpdate("Search.Hits", "Hits", "Treffer");
@@ -225,10 +225,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.SearchBox.Tooltip", "What are you looking for?", "Wonach suchen Sie?");
 			builder.AddOrUpdate("Search.SearchTermMinimumLengthIsNCharacters",
 				"The minimum length for the search term is {0} characters.",
-				"Die Mindestlänge für den Suchbegriff beträgt {0} Zeichen.");
+				"Die MindestlÃ¤nge fÃ¼r den Suchbegriff betrÃ¤gt {0} Zeichen.");
 			builder.AddOrUpdate("Search.TermCorrectedHint",
 				"Displaying results for {0}. Your search for {1} did not match any results.",
-				"Ergebnisse für {0} werden angezeigt. Ihre Suche nach {1} ergab leider keine Treffer.");
+				"Ergebnisse fÃ¼r {0} werden angezeigt. Ihre Suche nach {1} ergab leider keine Treffer.");
 
 			builder.Delete("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Position");
 
@@ -258,7 +258,7 @@ namespace SmartStore.Data.Migrations
 				"Enable Instant Search",
 				"Instant-Suche aktivieren",
 				"Activates Instant Search (Search-As-You-Type). Search hits and suggestions are already displayed before user finishes typing the search term.",
-				"Aktiviert die Instant-Suche (Search-As-You-Type). Suchtreffer und -Vorschläge werden schon während der Eingabe des Suchbegriffs angezeigt.");
+				"Aktiviert die Instant-Suche (Search-As-You-Type). Suchtreffer und -VorschlÃ¤ge werden schon wÃ¤hrend der Eingabe des Suchbegriffs angezeigt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.ShowProductImagesInInstantSearch",
 				"Show product images",
@@ -274,15 +274,15 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchTermMinLength",
 				"Minimum search term length",
-				"Minimale Suchbegrifflänge",
+				"Minimale SuchbegrifflÃ¤nge",
 				"Specifies the minimum length of a search term from which to show the result of instant search.",
-				"Legt die minimale Länge eines Suchbegriffs fest, ab dem das Ergebnis der Instantsuche angezeigt wird.");
+				"Legt die minimale LÃ¤nge eines Suchbegriffs fest, ab dem das Ergebnis der Instantsuche angezeigt wird.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFields",
 				"Search fields",
 				"Suchfelder",
 				"Specifies additional search fields. The product name is always searched.",
-				"Legt zusätzlich zu durchsuchende Felder fest. Der Produktname wird grundsätzlich immer durchsucht.");
+				"Legt zusÃ¤tzlich zu durchsuchende Felder fest. Der Produktname wird grundsÃ¤tzlich immer durchsucht.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultProductListPageSize",
 				"Number of products displayed per page",
@@ -296,14 +296,14 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Validation.ValueGreaterThan",
 				"The value must be greater than {0}.",
-				"Der Wert muss größer als {0} sein.");
+				"Der Wert muss grÃ¶ÃŸer als {0} sein.");
 
 			builder.AddOrUpdate("Admin.Validation.InvalidPath",
 				"The path \"{0}\" is invalid. Please enter a valid path.",
-				"Der Pfad \"{0}\" ist ungültig. Bitte geben Sie einen gültigen Pfad ein.");
+				"Der Pfad \"{0}\" ist ungÃ¼ltig. Bitte geben Sie einen gÃ¼ltigen Pfad ein.");
 
 			builder.AddOrUpdate("Common.AdditionalShippingSurcharge",
-				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr",
+				"zzgl. <b>{0}</b> zusÃ¤tzlicher VersandgebÃ¼hr",
 				"Plus <b>{0}</b> shipping surcharge");
 
 			builder.DeleteFor("Admin.Configuration.ContentSlider");
@@ -327,7 +327,7 @@ namespace SmartStore.Data.Migrations
 				"Show brand logo instead of name",
 				"Zeige Marken-Logo statt -Name",
 				"Specifies whether the brand logo should be displayed in line style product lists. Falls back to textual name if no logo has been uploaded.",
-				"Legt fest, ob das Marken-Logo in Produktlisten dargestellt werden soll (nicht anwendbar in Rasteransicht). Wenn kein Logo hochgeladen wurde, wird grundsätzlich der Name angezeigt.");
+				"Legt fest, ob das Marken-Logo in Produktlisten dargestellt werden soll (nicht anwendbar in Rasteransicht). Wenn kein Logo hochgeladen wurde, wird grundsÃ¤tzlich der Name angezeigt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductOptionsInLists",
 				"Show variant names in product lists",
@@ -345,9 +345,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions",
 				"Page size options",
-				"Auswahlmöglichkeiten für Seitengröße",
+				"AuswahlmÃ¶glichkeiten fÃ¼r SeitengrÃ¶ÃŸe",
 				"Comma-separated page size options that a customer can select in product lists.",
-				"Kommagetrennte Liste mit Optionen für Seitengröße, die ein Kunde in Produktlisten wählen kann.");
+				"Kommagetrennte Liste mit Optionen fÃ¼r SeitengrÃ¶ÃŸe, die ein Kunde in Produktlisten wÃ¤hlen kann.");
 
 			builder.AddOrUpdate("Common.ListIsEmpty", "The list is empty.", "Die Liste ist leer.");
 
@@ -368,9 +368,9 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Pager.PageXOfY", "Page {0} of {1}", "Seite {0} von {1}");
 			builder.AddOrUpdate("Pager.PageXOfYShort", "{0} of {1}", "{0} von {1}");
 
-			builder.AddOrUpdate("Products.Price.OldPrice", "Regular", "Regulär");
+			builder.AddOrUpdate("Products.Price.OldPrice", "Regular", "RegulÃ¤r");
 			builder.AddOrUpdate("Products.Sku", "SKU", "Art.-Nr.");
-			builder.AddOrUpdate("Products.ChooseColorX", "Choose {0}", "{0} auswählen");
+			builder.AddOrUpdate("Products.ChooseColorX", "Choose {0}", "{0} auswÃ¤hlen");
 
 
 			builder.AddOrUpdate("Tax.LegalInfoShort", "Prices {0}, plus <a href='{1}'>shipping</a>", "Preise {0}, zzgl. <a href='{1}'>Versandkosten</a>");
@@ -382,21 +382,21 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",
 				"The wildcard mode can slow down the search for a large number of products.",
-				"Der Wildcard-Modus kann bei einer großen Anzahl an Produkten die Suche verlangsamen.");
+				"Der Wildcard-Modus kann bei einer groÃŸen Anzahl an Produkten die Suche verlangsamen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFieldsNote",
 				"The standard search supports the search fields Name, SKU and Short Description. For more fields, a search plugin like <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> is required.",
-				"In der Standardsuche können die Felder Name, SKU und Kurzbeschreibung durchsucht werden. Für weitere Felder ist ein Such-Plugin wie bspw. dem <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> notwendig.");
+				"In der Standardsuche kÃ¶nnen die Felder Name, SKU und Kurzbeschreibung durchsucht werden. FÃ¼r weitere Felder ist ein Such-Plugin wie bspw. dem <a href='http://community.smartstore.com/marketplace/file/' target='_blank'>MegaSearch Plugin</a> notwendig.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchMode",
 				"Search mode",
 				"Suchmodus",
 				"Specifies the search mode. Please keep in mind that the search mode can - depending on catalog size - strongly affect search performance. 'Is equal to' is the fastest, 'Contains' the slowest.",
-				"Legt den Suchmodus fest. Bitte beachten Sie, dass der Suchmodus die Geschwindigkeit der Suche (abhängig von der Produktanzahl) beeinflusst. 'Ist gleich' ist am schnellsten, 'Beinhaltet' am langsamsten.");
+				"Legt den Suchmodus fest. Bitte beachten Sie, dass der Suchmodus die Geschwindigkeit der Suche (abhÃ¤ngig von der Produktanzahl) beeinflusst. 'Ist gleich' ist am schnellsten, 'Beinhaltet' am langsamsten.");
 
 			builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.CannotDeleteAssignedProducts",
 				"The delivery time cannot be deleted. It has associated products or product variants.",
-				"Die Lieferzeit kann nicht gelöscht werden. Ihr sind Produkte oder Produktvarianten zugeordnet.");
+				"Die Lieferzeit kann nicht gelÃ¶scht werden. Ihr sind Produkte oder Produktvarianten zugeordnet.");
 
 			builder.AddOrUpdate("Media.Manufacturer.ImageLinkTitleFormat", "All products from {0}", "Alle Produkte von {0}");
 			builder.AddOrUpdate("Manufacturers.List", "All Brands", "Alle Marken");
@@ -419,7 +419,7 @@ namespace SmartStore.Data.Migrations
 				"Sort manufacturers alphabetically",
 				"Hersteller alphabetisch sortieren",
 				"Specifies whether manufacturers on the manufacturer overview page will be displayed sorted alphabetically.",
-				"Legt fest ob Hersteller auf der Herstellerübersichtsseite alphabetisch sortiert dargestellt werden.");
+				"Legt fest ob Hersteller auf der HerstellerÃ¼bersichtsseite alphabetisch sortiert dargestellt werden.");
 
 			builder.AddOrUpdate("Common.NoImageAvail", "No image available", "Bild wird nachgereicht");
 
@@ -431,7 +431,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Details", "Description", "Beschreibung");
 			builder.AddOrUpdate("Products.Specs", "Features", "Merkmale");
 			builder.AddOrUpdate("Products.Availability.InStockWithQuantity", "{0} in stock", "{0} am Lager");
-			builder.AddOrUpdate("Products.Availability.InStock", "In stock", "Vorrätig");
+			builder.AddOrUpdate("Products.Availability.InStock", "In stock", "VorrÃ¤tig");
 			builder.AddOrUpdate("Products.Availability.OutOfStock", "Out of stock", "Vergriffen");
 			builder.AddOrUpdate("Products.NewProducts", "What's New", "Neu eingetroffen");
 
@@ -446,7 +446,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.FilterMinHitCount",
 				"Minimum hit count for filters",
-				"Minimale Trefferanzahl für Filter",
+				"Minimale Trefferanzahl fÃ¼r Filter",
 				"Specifies the minimum number of search hits from which to show a filter.",
 				"Legt die minimale Anzahl an Suchtreffern fest, ab dem ein Filter angezeigt wird.");
 
@@ -458,7 +458,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetSorting.HitsDesc",
 				"Hit count: highest first",
-				"Trefferanzahl: Höchste zuerst");
+				"Trefferanzahl: HÃ¶chste zuerst");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetSorting.ValueAsc",
 				"Name: A to Z",
@@ -466,14 +466,14 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetSorting.DisplayOrder",
 				"According to display order",
-				"Gemäß Reihenfolge");
+				"GemÃ¤ÃŸ Reihenfolge");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink",
 				"Edit Options (Total: {0})",
 				"Optionen bearbeiten (Anzahl: {0})");
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.EditAttributeDetails",
 				"Options for attribute '{0}'. Product: {1}",
-				"Optionen für Attribut '{0}'. Produkt: {1}");
+				"Optionen fÃ¼r Attribut '{0}'. Produkt: {1}");
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values", "Options", "Optionen");
 			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Values", "Options", "Optionen");
 
@@ -496,19 +496,19 @@ namespace SmartStore.Data.Migrations
 				"Show default delivery time",
 				"Zeige Standard-Lieferzeit",
 				"Specifies whether to show the default delivery time if there is none assigned to a product.",
-				"Bestimmt ob die Standard-Lieferzeit für ein Produkt angezeigt wird, wenn dem Produkt keine Lieferzeit zugewiesen wurde.");
+				"Bestimmt ob die Standard-Lieferzeit fÃ¼r ein Produkt angezeigt wird, wenn dem Produkt keine Lieferzeit zugewiesen wurde.");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.Fields.QuantityStep",
 				"Quantity step",
 				"Schrittweite",
 				"Specifies the incremental respectively decremental step on usage of +/-. Orderable quantities are limited to a multiple of this value.",
-				"Bestimmt den Wert, um den die Bestellmenge erhöht bzw. vermindert wird, wenn ein Kunde die +/- Steuerelemente benutzt. Die Bestellmenge ist auf ein Vielfaches dieses Wertes beschränkt.");
+				"Bestimmt den Wert, um den die Bestellmenge erhÃ¶ht bzw. vermindert wird, wenn ein Kunde die +/- Steuerelemente benutzt. Die Bestellmenge ist auf ein Vielfaches dieses Wertes beschrÃ¤nkt.");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.Fields.QuantiyControlType",
 				"Control type",
 				"Steuerelement",
 				"Specifies the control type to enter the quantity.",
-				"Bestimmt das Steuerelement für die Angabe der Bestellmenge.");
+				"Bestimmt das Steuerelement fÃ¼r die Angabe der Bestellmenge.");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.Fields.HideQuantityControl",
 				"Hide quantity control on product pages",
@@ -540,7 +540,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("ShoppingCart.AddToWishlist", "Add to wishlist", "Auf die Wunschliste");
 			builder.AddOrUpdate("ShoppingCart.Mini.AddedItemToCart", "The product {0} has been successfully added to your cart", "Das Produkt {0} wurde erfolgreich in den Warenkorb gelegt");
 			builder.AddOrUpdate("ShoppingCart.Mini.AddedItemToWishlist", "The product {0} has been added to your wishlist", "Das Produkt {0} wurde erfolgreich auf ihrer Wunschliste vermerkt");
-			builder.AddOrUpdate("ShoppingCart.Mini.AddedItemToCompare", "The product {0} has been successfully added to your compare list", "Das Produkt {0} wurde der Vergleichsliste erfolgreich hinzugefügt");
+			builder.AddOrUpdate("ShoppingCart.Mini.AddedItemToCompare", "The product {0} has been successfully added to your compare list", "Das Produkt {0} wurde der Vergleichsliste erfolgreich hinzugefÃ¼gt");
 			builder.AddOrUpdate("ShoppingCart.Mini.EmptyCart.Title", "Shopping cart empty", "Warenkorb ist leer");
 			builder.AddOrUpdate("ShoppingCart.Mini.EmptyWishlist.Title", "Wishlist empty", "Wunschliste ist leer");
 			builder.AddOrUpdate("ShoppingCart.Mini.EmptyCompare.Title", "Compare list empty", "Vergleichsliste ist leer");
@@ -558,18 +558,18 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("ShoppingCart.DiscountCouponCode", "I have a discount code", "Ich habe einen Rabattcode");
 			builder.AddOrUpdate("ShoppingCart.GiftCardCouponCode", "I have a gift card", "Ich habe einen Gutschein");
-			builder.AddOrUpdate("ShoppingCart.EstimateShipping", "Estimate shipping", "Versandkosten schätzen");
+			builder.AddOrUpdate("ShoppingCart.EstimateShipping", "Estimate shipping", "Versandkosten schÃ¤tzen");
 
-			builder.AddOrUpdate("PageTitle.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");
-			builder.AddOrUpdate("PageTitle.Blog.Tag", "Blog entries for the tag {0}", "Blog-Einträge für das Stichwort {0}");
-			builder.AddOrUpdate("Metadesc.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");
-			builder.AddOrUpdate("Metadesc.Blog.Tag", "Blog entries for the tag {0}", "Blog-Einträge für das Stichwort {0}");
+			builder.AddOrUpdate("PageTitle.Blog.Month", "Blog entries in {0}", "Blog EintrÃ¤ge des Monats {0}");
+			builder.AddOrUpdate("PageTitle.Blog.Tag", "Blog entries for the tag {0}", "Blog-EintrÃ¤ge fÃ¼r das Stichwort {0}");
+			builder.AddOrUpdate("Metadesc.Blog.Month", "Blog entries in {0}", "Blog EintrÃ¤ge des Monats {0}");
+			builder.AddOrUpdate("Metadesc.Blog.Tag", "Blog entries for the tag {0}", "Blog-EintrÃ¤ge fÃ¼r das Stichwort {0}");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture",
 				"Picture",
 				"Bild",
 				"Choose a picture which will be displayed as the selector for the attribute.",
-				"Wählen Sie ein Bild, welches als Auswahlelement für das Attribut angezeigt werden soll.");
+				"WÃ¤hlen Sie ein Bild, welches als Auswahlelement fÃ¼r das Attribut angezeigt werden soll.");
 
 			builder.Delete(
 				"Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber",
@@ -585,9 +585,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Common.Error.ChooseDifferentValue",
 				"Please choose a different value.",
-				"Bitte wählen Sie einen anderen Wert.");
+				"Bitte wÃ¤hlen Sie einen anderen Wert.");
 
-			builder.AddOrUpdate("Common.Menu", "Menu", "Menü");
+			builder.AddOrUpdate("Common.Menu", "Menu", "MenÃ¼");
 
 			builder.Delete(
 				"Admin.Configuration.Settings.GeneralCommon.FullTextSettings",
@@ -607,7 +607,7 @@ namespace SmartStore.Data.Migrations
 			);
 
 			builder.AddOrUpdate("Common.Options.Count", "Number options", "Anzahl Optionen");
-			builder.AddOrUpdate("Common.Options.Add", "Add option", "Option hinzufügen");
+			builder.AddOrUpdate("Common.Options.Add", "Add option", "Option hinzufÃ¼gen");
 			builder.AddOrUpdate("Common.Options.Edit", "Edit option", "Option bearbeiten");
 
 			builder.AddOrUpdate("Admin.Validation.RequiredField", "Please enter \"{0}\".", "Bitte \"{0}\" angeben.");
@@ -618,11 +618,11 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptions",
 				"Copy set options",
-				"Set Optionen übernehmen");
+				"Set Optionen Ã¼bernehmen");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptionsHint",
 				"Would you like to copy all options from set \"{0}\"?",
-				"Möchten Sie alle Optionen von Set \"{0}\" übernehmen?");
+				"MÃ¶chten Sie alle Optionen von Set \"{0}\" Ã¼bernehmen?");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AskExistingValues",
 				"What should be done with already existing options?",
@@ -630,11 +630,11 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.MergeExistingValues",
 				"Merge all options",
-				"Alle Optionen zusammenführen");
+				"Alle Optionen zusammenfÃ¼hren");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.DeleteExistingValues",
 				"Delete existing options",
-				"Vorhandene Optionen löschen");
+				"Vorhandene Optionen lÃ¶schen");
 
 			builder.AddOrUpdate("Offcanvas.Menu.Categories", "Categories", "Sortiment");
 			builder.AddOrUpdate("Offcanvas.Menu.Brands", "Brands", "Marken");
@@ -642,7 +642,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Offcanvas.Menu.ShowCurrentCat", "Show {0}", "{0} anzeigen");
 
 			var aliasHintEn = "Seo-compliant URL alias for search filters (optional).";
-			var aliasHintDe = "SEO-konformer URL-Alias für Suchfilter (optional).";
+			var aliasHintDe = "SEO-konformer URL-Alias fÃ¼r Suchfilter (optional).";
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias", "Alias", "Alias", aliasHintEn, aliasHintDe);
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias", "Alias", "Alias", aliasHintEn, aliasHintDe);
@@ -679,7 +679,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.Price", "Price", "Preis");
 			builder.AddOrUpdate("Search.Facet.Rating", "Rating", "Bewertung");
 			builder.AddOrUpdate("Search.Facet.DeliveryTime", "Delivery Time", "Lieferzeit");
-			builder.AddOrUpdate("Search.Facet.Availability", "Availability", "Verfügbarkeit");
+			builder.AddOrUpdate("Search.Facet.Availability", "Availability", "VerfÃ¼gbarkeit");
 			builder.AddOrUpdate("Search.Facet.NewArrivals", "New Arrivals", "Neuheiten");
 
 			builder.AddOrUpdate("Search.Facet.RangeMin", "from {0}", "ab {0}");
@@ -687,7 +687,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.RangeBetween", "{0} - {1}", "{0} - {1}");
 
 			builder.AddOrUpdate("Search.Facet.FindPlaceholder", "Find {0}...", "{0} suchen...");
-			builder.AddOrUpdate("Search.Facet.SelectedCount", "{0} selected", "{0} ausgewählt");
+			builder.AddOrUpdate("Search.Facet.SelectedCount", "{0} selected", "{0} ausgewÃ¤hlt");
 			builder.AddOrUpdate("Search.Facet.RemoveAllFilters", "Remove all filters", "Alle Filter aufheben");
 			builder.AddOrUpdate("Search.Facet.RemoveFilter", "Remove filter: {0} &gt; {1}", "Filter aufheben: {0} &gt; {1}");
 			builder.AddOrUpdate("Search.Facet.RemoveGroupFilters", "Remove filters", "Filter aufheben");
@@ -695,7 +695,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.XStarsAndMore", "{0} stars & more", "{0} Sterne & mehr");
 			builder.AddOrUpdate("Search.Facet.StarsAndMore", "& more", "& mehr");
 			builder.AddOrUpdate("Search.Facet.LastDays", "Last {0} days", "Letzten {0} Tage");
-			builder.AddOrUpdate("Search.Facet.IncludeOutOfStock", "Include Out of Stock", "Nicht verfügbare Artikel einschließen");
+			builder.AddOrUpdate("Search.Facet.IncludeOutOfStock", "Include Out of Stock", "Nicht verfÃ¼gbare Artikel einschlieÃŸen");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ForceSslForAllPages",
 				"Always use SSL",
@@ -705,16 +705,16 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.Checkboxes",
 				"Checkboxes",
-				"Kontrollkästchen");
+				"KontrollkÃ¤stchen");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.Custom",
 				"Boxes (color & image)",
-				"Kästchen (Farbe & Bild)");
+				"KÃ¤stchen (Farbe & Bild)");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetTemplateHint.NumericRange",
 				"Numeric range",
 				"Numerischer Bereich");
 
 			var megaSearchPlusHintEn = "This setting is only effective by using the 'MegaSearchPlus' plugin. Changes will take effect after next update of the search index.";
-			var megaSearchPlusHintDe = "Diese Einstellung ist nur unter Verwendung des 'MegaSearchPlus' Plugins wirksam. Änderungen werden nach der nächsten Aktualisierung des Suchindex wirksam.";
+			var megaSearchPlusHintDe = "Diese Einstellung ist nur unter Verwendung des 'MegaSearchPlus' Plugins wirksam. Ã„nderungen werden nach der nÃ¤chsten Aktualisierung des Suchindex wirksam.";
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting",
 				"Sorting of search filters",
@@ -730,21 +730,21 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.AllowFiltering",
 				"Allow filtering",
-				"Filtern ermöglichen",
+				"Filtern ermÃ¶glichen",
 				"Specifies whether search results can be filtered by this attribute. " + megaSearchPlusHintEn,
-				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können. " + megaSearchPlusHintDe);
+				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden kÃ¶nnen. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Products.SpecificationAttributes.Fields.AllowFiltering",
 				"Allow filtering",
 				"Filtern zulassen",
 				"Specifies whether search results can be filtered by this attribute. " + megaSearchPlusHintEn,
-				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können. " + megaSearchPlusHintDe);
+				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden kÃ¶nnen. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering",
 				"Allow filtering",
 				"Filtern zulassen",
 				"Specifies whether search results can be filtered by this attribute. " + megaSearchPlusHintEn,
-				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können. " + megaSearchPlusHintDe);
+				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden kÃ¶nnen. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.FacetTemplateHint",
 				"Search filter UI type",
@@ -756,7 +756,7 @@ namespace SmartStore.Data.Migrations
 				"Numeric value",
 				"Numerischer Wert",
 				"Specifies a numeric value to enbale range filtering (e.g. light red to dark red). \"Numeric range\" must be specified as search filter presentation for the attribute. " + megaSearchPlusHintEn,
-				"Legt einen numerischen Wert fest, um eine Bereichsfilterung zu ermöglichen (z.B. hellrot bis dunkelrot). Für das Attribut muss \"Numerischer Bereich\" als Suchfilterdarstellung festgelegt sein. " + megaSearchPlusHintDe);
+				"Legt einen numerischen Wert fest, um eine Bereichsfilterung zu ermÃ¶glichen (z.B. hellrot bis dunkelrot). FÃ¼r das Attribut muss \"Numerischer Bereich\" als Suchfilterdarstellung festgelegt sein. " + megaSearchPlusHintDe);
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.ShowOnProductPage",
 				"Show on product page",
@@ -767,7 +767,7 @@ namespace SmartStore.Data.Migrations
 
 
 			builder.AddOrUpdate("Account.Administration", "Admin", "Admin");
-			builder.AddOrUpdate("Account.PasswordRecovery", "Reset password", "Passwort zurücksetzen");
+			builder.AddOrUpdate("Account.PasswordRecovery", "Reset password", "Passwort zurÃ¼cksetzen");
 
 
 			builder.AddOrUpdate("Common.Shopbar.BasketPartOne", "Shopping", "Waren");
@@ -788,9 +788,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.ContentManagement.Polls.Fields.SystemKeyword",
 				"System keyword",
-				"System-Schlüsselwort",
+				"System-SchlÃ¼sselwort",
 				"The system keyword specifies the place in your shop where the poll will be displayed. Available system keywords are: MyAccountMenu, Blog",
-				"Das System-Schlüsselwort bestimmt den Platz im Shop, an welchem die Umfrage dargestellt wird. Verfügbare System-Schlüsselwörter sind: MyAccountMenu, Blog");
+				"Das System-SchlÃ¼sselwort bestimmt den Platz im Shop, an welchem die Umfrage dargestellt wird. VerfÃ¼gbare System-SchlÃ¼sselwÃ¶rter sind: MyAccountMenu, Blog");
 
 			builder.Delete("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay");
 
@@ -798,8 +798,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Homepage.Brands.ShowAll", "Show all", "Alle anzeigen");
 
 			builder.AddOrUpdate("Account.Fields.ZipPostalCode", "Zip code", "PLZ");
-			builder.AddOrUpdate("Account.CustomerReturnRequests.Reason", "Return reason", "Rücksendegrund");
-			builder.AddOrUpdate("Account.CustomerReturnRequests.Action", "Return action", "Rücksendeaktion");
+			builder.AddOrUpdate("Account.CustomerReturnRequests.Reason", "Return reason", "RÃ¼cksendegrund");
+			builder.AddOrUpdate("Account.CustomerReturnRequests.Action", "Return action", "RÃ¼cksendeaktion");
 			builder.AddOrUpdate("Account.CustomerReturnRequests.Date", "Date Requested", "Anfragedatum");
 			builder.AddOrUpdate("Account.CustomerReturnRequests.Item", "Item", "Artikel");
 
@@ -845,8 +845,8 @@ namespace SmartStore.Data.Migrations
 				"Share-Button Widget-Code",
 				@"Specifies the code to render the share button widget. By going to addthis.com you can create your own widget code and paste it here. 
                     This way you can configure the display type of the widget as well as get statistic insight.",
-				@"Legt den Code des Share-Button Widgets fest. Gehen Sie zu addthis.com um Ihren eigenen Widget-Code zu erhalten und fügen Sie diesen hier ein. 
-                    Auf diese Weise können Sie die Darstellung des Widgets selbst bestimmen, sowie Statistiken einsehen.");
+				@"Legt den Code des Share-Button Widgets fest. Gehen Sie zu addthis.com um Ihren eigenen Widget-Code zu erhalten und fÃ¼gen Sie diesen hier ein. 
+                    Auf diese Weise kÃ¶nnen Sie die Darstellung des Widgets selbst bestimmen, sowie Statistiken einsehen.");
 
 			builder.AddOrUpdate("Order.CannotCancel")
 				.Value("de", "Die Bestellung kann nicht storniert werden.");
@@ -857,13 +857,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Order.CannotMarkPaid")
 				.Value("de", "Die Bestellung kann nicht als bezahlt markiert werden.");
 			builder.AddOrUpdate("Order.CannotPartialRefund")
-				.Value("de", "Eine Teilrückerstattung ist für diese Bestellung nicht möglich.");
+				.Value("de", "Eine TeilrÃ¼ckerstattung ist fÃ¼r diese Bestellung nicht mÃ¶glich.");
 			builder.AddOrUpdate("Order.CannotRefund")
-				.Value("de", "Eine Rückerstattung ist für diese Bestellung nicht möglich.");
+				.Value("de", "Eine RÃ¼ckerstattung ist fÃ¼r diese Bestellung nicht mÃ¶glich.");
 			builder.AddOrUpdate("Order.CannotVoid")
-				.Value("de", "Eine Stornierung dieser Bestellung ist nicht möglich.");
+				.Value("de", "Eine Stornierung dieser Bestellung ist nicht mÃ¶glich.");
 			builder.AddOrUpdate("Order.CompletePayment.Hint")
-				.Value("de", "Die Bestellung wurde noch nicht bezahlt. Um die Zahlung nun vorzunehmen, klicken Sie die Schaltfläche 'Zahlung veranlassen'");
+				.Value("de", "Die Bestellung wurde noch nicht bezahlt. Um die Zahlung nun vorzunehmen, klicken Sie die SchaltflÃ¤che 'Zahlung veranlassen'");
 			builder.AddOrUpdate("Order.getpdfinvoice")
 				.Value("de", "Bestellung als PDF");
 			builder.AddOrUpdate("Order.NotFound")
@@ -889,7 +889,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Account.CustomerOrders.NotYourOrder")
 				.Value("de", "Diese Bestellung konnte Ihnen nicht zugeordnet werden.");
 			builder.AddOrUpdate("Account.CustomerOrders.RecurringOrders.InitialOrder")
-				.Value("de", "Ursprüngliche Bestellung");
+				.Value("de", "UrsprÃ¼ngliche Bestellung");
 			builder.AddOrUpdate("Account.CustomerOrders.RecurringOrders.ViewInitialOrder")
 				.Value("de", "Bestellungsansicht (ID - {0})");
 
@@ -905,14 +905,14 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Search.IndexingRequiredNotification",
 				"This is the default search. For advanced search, indexing is required. <a href='{0}'>Now start</a> indexing or <a href='{1}'>open configuration</a>.",
-				"Hierbei handelt es sich um die Standardsuche. Für die erweiterte Suche ist eine Indexierung erforderlich. Indexierung <a href='{0}'>jetzt starten</a> oder <a href='{1}'>Konfiguration aufrufen</a>.");
+				"Hierbei handelt es sich um die Standardsuche. FÃ¼r die erweiterte Suche ist eine Indexierung erforderlich. Indexierung <a href='{0}'>jetzt starten</a> oder <a href='{1}'>Konfiguration aufrufen</a>.");
 
 			builder.Delete("ShoppingCart.UpdateCartItem", "ShoppingCart.UpdateCart");
 			builder.AddOrUpdate("ShoppingCart.SKU", "SKU", "Art.-Nr.");
 
 			builder.AddOrUpdate("Products.ProductsHaveBeenAddedToTheCart",
 				"The selected products have successfully been added to the cart.",
-				"Die von Ihnen gewählten Produkte wurden in den Warenkorb gelegt.");
+				"Die von Ihnen gewÃ¤hlten Produkte wurden in den Warenkorb gelegt.");
 
 			builder.AddOrUpdate("Forum.TopicSubject",
 				"Topic subject",
@@ -922,7 +922,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Themes.Notifications.ConfigureError",
 				"SASS CSS Parser Error: Your changes were not saved because your configuration would lead to an error in the shop. For details see report.",
-				"SASS CSS Parser Fehler: Ihre Änderungen wurden nicht gespeichert, da Ihre Konfiguration zu einem Fehler im Shop führen würde. Details siehe Fehlerbericht.");
+				"SASS CSS Parser Fehler: Ihre Ã„nderungen wurden nicht gespeichert, da Ihre Konfiguration zu einem Fehler im Shop fÃ¼hren wÃ¼rde. Details siehe Fehlerbericht.");
 			builder.AddOrUpdate("Admin.Configuration.Themes.Validation.ErrorReportTitle",
 				"SASS parser error report",
 				"SASS Parser Fehlerbericht");
@@ -930,7 +930,7 @@ namespace SmartStore.Data.Migrations
 			builder.Delete("Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.ColorSquares");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.AttributeControlType.Boxes",
 				"Boxes (color & image)",
-				"Kästchen (Farbe & Bild)");
+				"KÃ¤stchen (Farbe & Bild)");
 
 			builder.Delete(
 				"Admin.Themes.Grid",
@@ -946,7 +946,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Order.CompletePayment.AdminNote",
 				"The payment is pending. The buyer can make the payment by clicking on the <b>Complete payment</b> button on the <a href='{0}'>order details page</a>.",
-				"Die Zahlung ist ausstehend. Der Käufer kann die Zahlung durchführen, indem er auf der <a href='{0}'>Bestelldetailseite</a> den Button <b>Zahlung veranlassen</b> klickt.");
+				"Die Zahlung ist ausstehend. Der KÃ¤ufer kann die Zahlung durchfÃ¼hren, indem er auf der <a href='{0}'>Bestelldetailseite</a> den Button <b>Zahlung veranlassen</b> klickt.");
 
 			builder.AddOrUpdate("Admin.ThemeVar.CostepPogressColor",
 				"Specifies the color of the checkout progress bar.",
@@ -973,18 +973,18 @@ namespace SmartStore.Data.Migrations
 				@"<p>Um <b>Google Fonts</b> einzubinden, beachten Sie bitte die nachfolgende Anweisung.</p>
                     <ul>
                         <li>
-                            Gehen Sie zu <a href=""https://fonts.google.com/"" target=""_blank"">https://fonts.google.com/</a> und wählen Sie die Schriftarten, die Sie in Ihrem Shop verwenden möchten. 
+                            Gehen Sie zu <a href=""https://fonts.google.com/"" target=""_blank"">https://fonts.google.com/</a> und wÃ¤hlen Sie die Schriftarten, die Sie in Ihrem Shop verwenden mÃ¶chten. 
                         </li>
                         <li>
-                            Als Html-Code für Ihre Webseite, wird Ihnen ein Link in folgender Form angeboten:
+                            Als Html-Code fÃ¼r Ihre Webseite, wird Ihnen ein Link in folgender Form angeboten:
                             <pre>&lt;link href=""https://fonts.googleapis.com/css?family=<b>Roboto:100,300,400,500,700|Ubuntu</b>"" rel=""stylesheet""></pre>
                         </li>
                         <li>
-                            Fügen Sie den fett markierten Teil des Links in eins der drei Felder des Theme-Konfigurators ein, die für Google Fonts vorgesehen sind.
+                            FÃ¼gen Sie den fett markierten Teil des Links in eins der drei Felder des Theme-Konfigurators ein, die fÃ¼r Google Fonts vorgesehen sind.
                         </li>
                         <li>
-                            Nun können Sie die Schriftart verwenden, indem Sie den Namen der Schriftart (z.B. <i>Roboto</i>) in den Eingabefeldern angeben,
-                            die für Schriftarten vorgesehen sind (z.B. <i>$font-family-sans-serif)</i>.
+                            Nun kÃ¶nnen Sie die Schriftart verwenden, indem Sie den Namen der Schriftart (z.B. <i>Roboto</i>) in den Eingabefeldern angeben,
+                            die fÃ¼r Schriftarten vorgesehen sind (z.B. <i>$font-family-sans-serif)</i>.
                         </li>
                     </ul>");
 
@@ -1007,13 +1007,13 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.ThemeVar.Boxed",
                 "Specifies whether the site will strech over the complete avaliable space.",
-                "Legt fest, ob sich die Seite über den kompletten verfügabren Platz streckt.");
+                "Legt fest, ob sich die Seite Ã¼ber den kompletten verfÃ¼gabren Platz streckt.");
             builder.AddOrUpdate("Admin.ThemeVar.ArtActiveBgColor",
                 "Specifies the background color for product boxes when hovering over them.",
-                "Legt die Hintergrundfarbe von Produktboxen für den Hover-Effekt fest.");
+                "Legt die Hintergrundfarbe von Produktboxen fÃ¼r den Hover-Effekt fest.");
             builder.AddOrUpdate("Admin.ThemeVar.ArtActiveBorderColor",
                 "Specifies the border color for product boxes when hovering over them.",
-                "Legt die Rahmenfarbe von Produktboxen für den Hover-Effekt fest.");
+                "Legt die Rahmenfarbe von Produktboxen fÃ¼r den Hover-Effekt fest.");
             builder.AddOrUpdate("Content.CopyrightNotice",
                 "Copyright &copy; {0} {1}. All rights reserved.",
                 "Copyright &copy; {0} {1}. Alle Rechte vorbehalten.");

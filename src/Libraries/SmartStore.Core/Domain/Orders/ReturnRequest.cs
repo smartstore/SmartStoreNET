@@ -1,12 +1,12 @@
 using System;
-using SmartStore.Core.Domain.Customers;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Core.Domain.Orders
 {
-    /// <summary>
-    /// Represents a return request
-    /// </summary>
+	/// <summary>
+	/// Represents a return request
+	/// </summary>
 	[DataContract]
 	public partial class ReturnRequest : BaseEntity, IAuditable
 	{
@@ -75,10 +75,16 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
 		[DataMember]
 		public int ReturnRequestStatusId { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the date and time of entity creation
-        /// </summary>
+
+		/// <summary>
+		/// Gets or sets whether to refund to wallet.
+		/// </summary>
+		[DataMember]
+		public bool? RefundToWallet { get; set; }
+
+		/// <summary>
+		/// Gets or sets the date and time of entity creation
+		/// </summary>
 		[DataMember]
 		public DateTime CreatedOnUtc { get; set; }
 

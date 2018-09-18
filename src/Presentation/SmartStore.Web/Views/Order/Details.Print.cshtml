@@ -1,16 +1,11 @@
 ﻿@model IEnumerable<OrderDetailsModel>
 
-@using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.Order;
-@using SmartStore.Services.Localization;
-@using SmartStore.Core.Html;
 
 @{
-
     Layout = "_Print";
 
-    // title
     Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
 
 	var pdfMode = ViewBag.PdfMode == true;
@@ -51,7 +46,7 @@
 
 			<!-- Address & Info -->
 			<div class="clearfix" style="margin-bottom: 100px">
-				<div class="order-address mt-5 pull-left">
+				<div class="order-address mt-5 pull-left float-left">
 					<div>
 						<span class="header text-smallest">
 							@{
@@ -68,19 +63,24 @@
 
 				@Html.Widget("invoice_orderinfo_top", order)
 
-				<div class="order-info text-small pull-right">
+				<div class="order-info text-small pull-right float-right">
 					<table>
 						<tr>
 							<td class="label">@T("PDFInvoice.Order#"):</td>
 							<td class="value">@order.OrderNumber</td>
 						</tr>
-						<tr>
-							<td class="label">Purchase Order Number:</td>
-							<td class="value">@order.PurchaseOrderNumber</td>
-						</tr>
+
+						@if (order.PurchaseOrderNumber.HasValue())
+						{ 
+							<tr>
+								<td class="label">@T("Order.PurchaseOrderNumber"):</td>
+								<td class="value">@order.PurchaseOrderNumber</td>
+							</tr>
+						}
+
 						<tr>
 							<td class="label">@T("Common.Date"):</td>
-							<td class="value">@order.CreatedOn.ToShortDateString()</td>
+							<td class="value">@order.CreatedOn.ToShortDateString().ReplaceNativeDigits()</td>
 						</tr>
 						<tr>
 							<td class="label">@T("Order.PaymentMethod"):</td>
@@ -104,31 +104,33 @@
 
 			<h3>@T("PDFInvoice.Product(s)")</h3>
 
-			<table class="table order-summary">
-				<thead>
-					<tr>
-						<th style="width: @(colWidths[0])%">@T("PDFInvoice.ProductName")</th>
-						@if (order.ShowSku)
-                        {
-							<th style="width: @(colWidths[1])%">@T("PDFInvoice.SKU")</th>
-                        }
-						<th class="text-center" style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
-						<th class="text-right" style="width: @(colWidths[3])%">@T("PDFInvoice.ProductPrice")</th>
-						<th class="text-right" style="width: @(colWidths[4])%">@T("PDFInvoice.ProductTotal")</th>
-					</tr>
-				</thead>
-				@for (int i = 0; i < order.Items.Count; i++)
-                {
-                    var item = order.Items[i];
-					<tbody>
-						@OrderLine(item, order.ShowSku)
-						@if (item.ProductType == ProductType.BundledProduct)
-                        {
-							@BundleItems(item, order.ShowSku)
-                        }
-					</tbody>
-                }
-			</table>
+			<div class="table-responsive">
+				<table class="table order-summary">
+					<thead>
+						<tr>
+							<th style="width: @(colWidths[0])%">@T("PDFInvoice.ProductName")</th>
+							@if (order.ShowSku)
+							{
+								<th style="width: @(colWidths[1])%">@T("PDFInvoice.SKU")</th>
+							}
+							<th class="text-center" style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
+							<th class="text-right" style="width: @(colWidths[3])%">@T("PDFInvoice.ProductPrice")</th>
+							<th class="text-right" style="width: @(colWidths[4])%">@T("PDFInvoice.ProductTotal")</th>
+						</tr>
+					</thead>
+					@for (int i = 0; i < order.Items.Count; i++)
+					{
+						var item = order.Items[i];
+						<tbody>
+							@OrderLine(item, order.ShowSku)
+							@if (item.ProductType == ProductType.BundledProduct)
+							{
+								@BundleItems(item, order.ShowSku)
+							}
+						</tbody>
+					}
+				</table>
+			</div>
 
 			<!-- Checkout attributes -->
             @{ Html.RenderWidget("invoice_checkoutattributes_before", order); }
@@ -144,7 +146,7 @@
 			@{ Html.RenderWidget("invoice_ordertotals_before", order); }
 
 			<div class="order-totals clearfix">
-				<div class="pull-right" style="width: 40%; page-break-inside: avoid">
+				<div class="pull-right float-right table-responsive" style="width: 40%; page-break-inside: avoid">
 					<table class="table order-totals">
 						<tr>
 							<td class="label">@T("Order.SubTotal"):</td>
@@ -212,11 +214,27 @@
 								<td class="value">@order.RedeemedRewardPointsAmount</td>
 							</tr>
                         }
+						@if (order.CreditBalance.HasValue())
+						{
+							<tr>
+								<td class="label">@T("ShoppingCart.Totals.CreditBalance"):</td>
+								<td class="value">@order.CreditBalance</td>
+							</tr>
+						}
+                        @if (order.OrderTotalRounding.HasValue())
+                        {
+                            <tr>
+                                <td class="label">@T("ShoppingCart.Totals.Rounding"):</td>
+                                <td class="value">@order.OrderTotalRounding</td>
+                            </tr>
+                        }
 						<tr>
 							<td class="label">@T("Order.OrderTotal"):</td>
 							<td class="value"><strong>@order.OrderTotal</strong></td>
 						</tr>
 					</table>
+
+					@{ Html.RenderWidget("invoice_aftertotal", order); }
 				</div>
 			</div>
 
@@ -227,7 +245,7 @@
             {
 				<h3>@T("PDFInvoice.OrderNotes")</h3>
 
-				<div class="order-notes mt-2">
+				<div class="order-notes mt-2 table-responsive">
 					<table class="table">
 						<thead>
 							<tr>
@@ -244,9 +262,9 @@
                             {
 								<tr>
 									<td>
-										@note.CreatedOn.ToString()
+										@note.CreatedOn.ToNativeString()
 									</td>
-									<td>
+									<td dir="auto">
 										@Html.Raw(note.Note)
 									</td>
 								</tr>
@@ -266,7 +284,9 @@
 {
 	<tr>
 		<td>
-			@item.ProductName
+			<div @Html.LanguageAttributes(item.ProductName)>
+				@item.ProductName
+			</div>
 			@if (item.AttributeInfo.HasValue())
 			{
 				<div class="attributes text-small">
@@ -305,7 +325,9 @@
 		<tr class="child-row">
 			<td>
 				<div class="associated-product">
-					@item.ProductName
+					<div dir="auto">
+						@item.ProductName
+					</div>
 					@if (item.AttributeInfo.HasValue())
 					{
 						<div class="attributes text-small">

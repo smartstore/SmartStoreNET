@@ -266,7 +266,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        //[ChildActionOnly]
         public ActionResult CatalogMenu(int currentCategoryId, int currentProductId = 0)
         {
 			var model = _helper.PrepareCategoryNavigationModel(currentCategoryId, currentProductId);
@@ -647,7 +646,7 @@ namespace SmartStore.Web.Controllers
 
 			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
 			{
-				x.MapManufacturers = true;
+				x.MapManufacturers = _catalogSettings.ShowManufacturerInGridStyleLists;
 			});
 
 			var model = _helper.MapProductSummaryModel(products, settings);
@@ -757,7 +756,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult AddProductToCompareList(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published)
 				return HttpNotFound();
 
 			if (!_catalogSettings.CompareProductsEnabled)
@@ -777,7 +776,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult AddProductToCompareListAjax(int id)
 		{
 			var product = _productService.GetProductById(id);
-			if (product == null || product.Deleted || !product.Published || !_catalogSettings.CompareProductsEnabled)
+			if (product == null || product.Deleted || product.IsSystemProduct || !product.Published || !_catalogSettings.CompareProductsEnabled)
 			{
 				return Json(new
 				{
@@ -930,13 +929,23 @@ namespace SmartStore.Web.Controllers
         public ActionResult OffCanvasMenu()
         {
             ViewBag.ShowManufacturers = false;
+			ViewBag.ShowCategories = false;
 
-            if(_catalogSettings.ShowManufacturersInOffCanvas == true && _catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0)
+			if (
+				_catalogSettings.ShowManufacturersInOffCanvas == true && 
+				_catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0 &&
+				_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation)
+			)
             {
                 ViewBag.ShowManufacturers = true;
             }
-            
-            return PartialView();
+
+			if(_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation))
+			{
+				ViewBag.ShowCategories = true;
+			}
+			
+			return PartialView();
         }
         
         #endregion

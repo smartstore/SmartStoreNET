@@ -1,14 +1,14 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Xml.Serialization;
-using FluentValidation.Attributes;
-using SmartStore.GoogleMerchantCenter.Validators;
-using SmartStore.Web.Framework;
 
 namespace SmartStore.GoogleMerchantCenter.Models
 {
-	[Serializable]
+    [Serializable]
 	[Validator(typeof(ProfileConfigurationValidator))]
 	public class ProfileConfigurationModel
 	{
@@ -67,4 +67,12 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExportBasePrice")]
 		public bool ExportBasePrice { get; set; }
 	}
+
+    public class ProfileConfigurationValidator : AbstractValidator<ProfileConfigurationModel>
+    {
+        public ProfileConfigurationValidator()
+        {
+            RuleFor(x => x.ExpirationDays).InclusiveBetween(0, 29);
+        }
+    }
 }

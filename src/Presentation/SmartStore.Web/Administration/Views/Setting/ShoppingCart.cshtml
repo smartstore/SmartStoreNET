@@ -134,7 +134,7 @@
                 @Html.SmartLabelFor(model => model.MiniShoppingCartEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.MiniShoppingCartEnabled, new { data_toggler_for = "#pnlShowProductImagesInMiniShoppingCart" })
+				@Html.SettingEditorFor(model => model.MiniShoppingCartEnabled, Html.CheckBoxFor(model => model.MiniShoppingCartEnabled, new { data_toggler_for = "#pnlShowProductImagesInMiniShoppingCart" }))
                 @Html.ValidationMessageFor(model => model.MiniShoppingCartEnabled)
             </td>
         </tr>
@@ -237,7 +237,7 @@
                 @Html.SmartLabelFor(model => model.EmailWishlistEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.EmailWishlistEnabled, new { data_toggler_for = "#pnlAllowAnonymousUsersToEmailWishlist" })
+				@Html.SettingEditorFor(model => model.EmailWishlistEnabled, Html.CheckBoxFor(model => model.EmailWishlistEnabled, new { data_toggler_for = "#pnlAllowAnonymousUsersToEmailWishlist" }))
                 @Html.ValidationMessageFor(model => model.EmailWishlistEnabled)
             </td>
         </tr>
@@ -255,7 +255,7 @@
 
 @helper TabCheckoutSettings()
 {
-    <table class="adminContent">
+    <table class="adminContent mb-3">
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -277,8 +277,7 @@
 				@Html.SmartLabelFor(model => model.NewsLetterSubscription)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.NewsLetterSubscription)
-				@Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions)
+				@Html.SettingEditorFor(model => model.NewsLetterSubscription, Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions))
 				@Html.ValidationMessageFor(model => model.NewsLetterSubscription)
 			</td>
 		</tr>
@@ -305,16 +304,13 @@
 				@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOver)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ThirdPartyEmailHandOver)
-				@Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver)
+				@Html.SettingEditorFor(model => model.ThirdPartyEmailHandOver, Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver))
 				@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOver)
 			</td>
 		</tr>
     </table>
 
 	<div id="ThirdPartyEmailHandOverTextLocalized">
-		<p></p>
-
 		@(Html.LocalizedEditor<ShoppingCartSettingsModel, ShoppingCartSettingsLocalizedModel>("setting-shopping-cart-localized",
 		@<table class="adminContent">
 			<tr>

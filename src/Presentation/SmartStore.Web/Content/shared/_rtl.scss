@@ -1,0 +1,473 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// RTL overrides for shared styles
+// TODO: .btn-labeled, .sortable-grip, .switch
+// ==============================================================
+
+
+[dir=rtl] {
+
+	// Common
+	// ------------------------------
+
+	.lrm:after {
+		content: '\200E';
+	}
+
+	.bidi-embed {
+		unicode-bidi: embed; 
+	}
+
+	.bidi-isolate {
+		unicode-bidi: isolate; 
+	}
+	
+	// Tables
+	// ------------------------------
+
+	td[align="right"],
+	th[align="right"] {
+		text-align: left;
+	}
+
+	td[align="left"],
+	th[align="left"] {
+		text-align: right;
+	}
+
+	// Alert
+	// ------------------------------
+
+	.alert-info,
+	.alert-danger,
+	.alert-success,
+	.alert-warning,
+	.validation-summary-valid,
+	.validation-summary-errors {
+		padding-right: 4rem;
+		padding-left: $alert-padding-x;
+
+		&:before {
+			right: 0;
+			left: auto;
+		}
+
+		&:after {
+			right: 0;
+			left: auto;
+		}
+	}
+
+	.alert > ul {
+		padding-right: 1.2rem;
+		padding-left: initial;
+	}
+
+
+	// Buttons
+	// ------------------------------
+
+	.mf-dropdown {
+		.btn.has-caret {
+			text-align: right;
+			padding-left: $input-btn-padding-x * 2;
+			padding-right: $btn-padding-x;
+
+			&.btn-sm {
+				padding-left: $input-btn-padding-x-sm * 2;
+				padding-right: $btn-padding-x-sm;
+			}
+
+			&.btn-lg {
+				padding-left: $input-btn-padding-x-lg * 2;
+				padding-right: $btn-padding-x-lg;
+			}
+		}
+
+		.btn.has-caret:after {
+			left: $input-btn-padding-x * 0.75;
+			right: auto;
+		}
+
+		.btn-sm.has-caret:after {
+			left: $input-btn-padding-x-sm * 0.75;
+			right: auto;
+		}
+
+		.btn-lg.has-caret:after {
+			left: $input-btn-padding-x-lg * 0.75;
+			right: auto;
+		}
+	}
+
+
+
+	// Choice
+	// ------
+
+	.choice-item-img,
+	.choice-item-color {
+		margin-left: 0.25rem;
+		margin-right: initial;
+	}
+
+	.choice-box-group {
+		.choice-box {
+			float: right;
+		}
+
+		.choice-box-content:after {
+			left: -6px;
+			right: auto;
+		}
+	}
+
+
+	// Dropdown
+	// --------
+
+	.dropdown-group {
+		> .dropdown-item {
+			padding-left: 2rem;
+			padding-right: $dropdown-item-padding-x;
+
+			&:before {
+				left: $dropdown-item-padding-x / 2;
+				right: auto;
+				content: "\f104";
+			}
+		}
+
+		.dropdown-menu {
+			right: 100% !important;
+			left: auto !important;
+		}
+	}
+
+	.dropdown-item {
+		> i,
+		> img {
+			margin-right: -0.5rem;
+			margin-left: 0.5rem;
+		}
+	}
+
+
+	// Forms
+	// ------------------------------
+
+	fieldset.content-group > legend > span {
+		padding-right: initial;
+		padding-left: 1rem;
+	}
+
+	.has-icon {
+		.input-group-icon {
+			right: 0;
+			left: auto;
+		}
+
+		&.has-icon-right .input-group-icon {
+			right: auto;
+			left: 0;
+		}
+
+		&:not(.has-icon-right) {
+			.form-control {
+				padding-right: $input-height;
+				padding-left: $input-padding-x;
+			}
+
+			&.input-group-lg .form-control {
+				padding-right: $input-height-lg;
+				padding-left: $input-padding-x-lg;
+			}
+
+			&.input-group-sm .form-control {
+				padding-right: $input-height-sm;
+				padding-left: $input-padding-x-sm;
+			}
+		}
+
+		&.has-icon-right {
+			.form-control {
+				padding-left: $input-height;
+				padding-right: $input-padding-x;
+			}
+
+			&.input-group-lg .form-control {
+				padding-left: $input-height-lg;
+				padding-right: $input-padding-x-lg;
+			}
+
+			&.input-group-sm .form-control {
+				padding-left: $input-height-sm;
+				padding-right: $input-padding-x-sm;
+			}
+		}
+	}
+
+	// Nav collapsible
+	// ---
+	@include media-breakpoint-down(sm) {
+		.nav-collapsible {
+			.nav-toggler { 
+				&:after {
+					left: 1rem;
+					right: initial;
+				}
+			}
+		}
+	}
+
+	// Nav
+	// ---
+
+	.tabs-left .nav-tabs .nav-link {
+		border-radius: 0 $nav-tabs-border-radius $nav-tabs-border-radius 0;
+	}
+
+	@include media-breakpoint-up(lg) {
+		.tabs-left > .nav-aside > .nav-tabs-line {
+			border-left: 1px solid $nav-tabs-border-color;
+			border-right-width: 0;
+
+			.nav-item {
+				margin-left: -1px;
+				margin-right: 0;
+			}
+
+			.nav-link {
+				text-align: right;
+				border-left-width: 1px;
+				border-right-width: 2px;
+				padding-left: 1.25rem;
+
+				> img, > i {
+					margin-left: 0.75rem;
+					margin-right: -0.5rem;
+				}
+			}
+
+			.nav-link.active,
+			.nav-link.active:focus,
+			.nav-item.open .nav-link,
+			.nav-item.open .nav-link:focus {
+				border-right-color: theme-color("warning");
+				border-left-color: transparent;
+			}
+		}
+	}
+
+	.nav-responsive.collapsed {
+		.nav-link {
+			text-align: right;
+			padding-left: 2.2rem;
+			padding-right: 1.25rem;
+
+			&:not(.disabled):after {
+				content: "\f104"; // angle-left
+				left: 1rem;
+				right: auto;
+			}
+		}
+	}
+
+	.nav {
+		.nav-link > img,
+		.nav-link > i {
+			margin-left: 0.5rem;
+			margin-right: initial;
+		}
+
+		.nav-link > .chevron {
+			margin-right: 3px;
+			margin-left: initial;
+		}
+	}
+
+
+	// Pagination
+	// -----------
+
+	.pagination .page-nav {
+		&:first-of-type { margin-left: 0.25rem; margin-right: initial; }
+        &:last-of-type { margin-right: 0.25rem; margin-left: initial; }
+	}
+
+
+	// Star rating
+	// ----
+
+	.star-rating:not(:checked) > label {
+		float: left;
+	}
+
+
+	// Typo
+	// ----
+
+	.heading {
+		&:before {
+			background: radial-gradient(ellipse at right, $body-bg 25%, rgba(#000, 0.25) 100%);
+		}
+
+		.heading-title {
+			padding-right: 0;
+			padding-left: 1rem;
+		}
+	}
+
+	.heading-center {
+		.heading-title {
+			padding-right: 0;
+			padding-left: 1rem;
+		}
+	}
+
+
+	// Utils
+	// ------------------------------
+
+	.has-count[data-count]:after {
+		padding-left: 0;
+		padding-right: 0.2rem;
+	}
+
+	.btn,
+	.nav-link,
+	.menubar-link,
+	.t-button {
+		> i + span:not(:empty),
+		> i + em:not(:empty) {
+			padding-right: 0.5em;
+			padding-left: initial;
+		}
+
+		> span:not(:empty) + i,
+		> em:not(:empty) + i {
+			margin-right: 0.5em;
+			margin-left: initial;
+		}
+	}
+
+	.list-group {
+		.list-group-item.active {
+			&:before {
+				right: -1px;
+				left: auto;
+			}
+		}
+
+		&.has-icons {
+			.list-group-item-icon {
+				margin-left: 0.75rem;
+				margin-right: initial;
+			}
+		}
+	}
+
+
+	// Flip all .fa directional icons
+	// ------------------------------
+
+	.fa-angle-double-left:before {
+		content: "\f101";
+	}
+
+	.fa-angle-double-right:before {
+		content: "\f100";
+	}
+
+	.fa-angle-left:before {
+		content: "\f105";
+	}
+
+	.fa-angle-right:before {
+		content: "\f104";
+	}
+
+	.fa-arrow-circle-left:before {
+		content: "\f0a9";
+	}
+
+	.fa-arrow-circle-right:before {
+		content: "\f0a8";
+	}
+
+	.fa-arrow-circle-o-left:before {
+		content: "\f18e";
+	}
+
+	.fa-arrow-circle-o-right:before {
+		content: "\f190";
+	}
+
+	.fa-arrow-left:before {
+		content: "\f061";
+	}
+
+	.fa-arrow-right:before {
+		content: "\f060";
+	}
+
+	.fa-caret-left:before {
+		content: "\f0da";
+	}
+
+	.fa-caret-right:before {
+		content: "\f0d9";
+	}
+
+	.fa-caret-square-o-left:before {
+		content: "\f152";
+	}
+
+	.fa-caret-square-o-right:before {
+		content: "\f191";
+	}
+
+	.fa-chevron-circle-left:before {
+		content: "\f138";
+	}
+
+	.fa-chevron-circle-right:before {
+		content: "\f137";
+	}
+
+	.fa-chevron-left:before {
+		content: "\f054";
+	}
+
+	.fa-chevron-right:before {
+		content: "\f053";
+	}
+
+	.fa-hand-o-left:before {
+		content: "\f0a4";
+	}
+
+	.fa-hand-o-right:before {
+		content: "\f0a5";
+	}
+
+	.fa-long-arrow-left:before {
+		content: "\f178";
+	}
+
+	.fa-long-arrow-right:before {
+		content: "\f177";
+	}
+
+	.fa-toggle-left:before {
+		content: "\f152";
+	}
+
+	.fa-toggle-right:before {
+		content: "\f191";
+	}
+
+}

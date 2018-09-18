@@ -1,0 +1,104 @@
+﻿
+/* -------------------------------------------------------------- 
+ 	Utils
+-------------------------------------------------------------- */
+
+.ml-0	{ margin-right: 0 !important; }
+.ml-1	{ margin-right: 4px !important; }
+.ml-2	{ margin-right: 8px !important; }
+.ml-3	{ margin-right: 16px !important; }
+.ml-4	{ margin-right: 24px !important; }
+.ml-5	{ margin-right: 36px !important; }
+.ml-6	{ margin-right: 48px !important; }
+
+.mr-0	{ margin-left: 0 !important; }
+.mr-1	{ margin-left: 4px !important; }
+.mr-2	{ margin-left: 8px !important; }
+.mr-3	{ margin-left: 16px !important; }
+.mr-4	{ margin-left: 24px !important; }
+.mr-5	{ margin-left: 36px !important; }
+.mr-6	{ margin-left: 48px !important; }
+
+.pl-0	{ padding-right: 0 !important; }
+.pl-1	{ padding-right: 4px !important; }
+.pl-2	{ padding-right: 8px !important; }
+.pl-3	{ padding-right: 16px !important; }
+.pl-4	{ padding-right: 24px !important; }
+.pl-5	{ padding-right: 36px !important; }
+.pl-6	{ padding-right: 48px !important; }
+
+.pr-0	{ padding-left: 0 !important; }
+.pr-1	{ padding-left: 4px !important; }
+.pr-2	{ padding-left: 8px !important; }
+.pr-3	{ padding-left: 16px !important; }
+.pr-4	{ padding-left: 24px !important; }
+.pr-5	{ padding-left: 36px !important; }
+.pr-6	{ padding-left: 48px !important; }
+
+.text-left		{ text-align: right }
+.text-right		{ text-align: left }
+
+.pull-left,
+.float-left		{ float: right }
+.pull-right,
+.float-right	{ float: left }
+
+/* -------------------------------------------------------------- 
+ 	Tables
+-------------------------------------------------------------- */
+caption {
+	text-align: right;
+}
+
+th, td { 
+	text-align: right;
+}
+
+/* -------------------------------------------------------------- 
+ 	Order Summary (receipts like invoice, packaging slip etc.)
+-------------------------------------------------------------- */
+
+.order-summary td .attributes {
+	margin-left: auto;
+	margin-right: 30px;
+}
+
+.order-summary tr.child-row > td > .associated-product {
+	margin-left: auto;
+	margin-right: 30px;
+}
+
+
+/* -------------------------------------------------------------- 
+ 	Order totals
+-------------------------------------------------------------- */
+
+.order-totals td.label {
+	padding-right: 0;
+}
+
+.order-totals td.value {
+	text-align: left;
+}
+
+/* -------------------------------------------------------------- 
+ 	catalog
+-------------------------------------------------------------- */
+
+.additional-products {
+    float: right;
+    margin-left: 20px;
+	margin-right: auto;
+}
+.additional-products .picture {
+    float: right;
+    margin-left: 20px;
+	margin-right: auto;
+}
+
+/* -------------------------------------------------------------- 
+ 	rtl display breaks text in brackets in chrome 
+-------------------------------------------------------------- */
+h3:after {
+	content: '\200E';
+}

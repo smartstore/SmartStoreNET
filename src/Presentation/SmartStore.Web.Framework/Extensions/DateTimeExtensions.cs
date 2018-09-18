@@ -105,7 +105,8 @@ namespace SmartStore.Web.Framework
                     result = tmp1.ToString();
                 }
             }
-            return result;
+
+            return result.ReplaceNativeDigits();
         }
 
 		public static string Prettify(this TimeSpan ts)
@@ -136,14 +137,18 @@ namespace SmartStore.Web.Framework
 					remainderLabel = T("Time.MinutesAbbr");
 				}
 
+				string result = null;
+
 				if (remainder == 0)
 				{
-					return string.Format("{0:#,##0.#} {1}", secsTemp, label);
+					result = string.Format("{0:#,##0.#} {1}", secsTemp, label);
 				}
 				else
 				{
-					return string.Format("{0:#,##0} {1} {2} {3}", secsTemp, label, remainder, remainderLabel);
+					result = string.Format("{0:#,##0} {1} {2} {3}", secsTemp, label, remainder, remainderLabel);
 				}
+
+				return result.ReplaceNativeDigits();
 			}
 			catch
 			{

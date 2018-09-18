@@ -217,7 +217,7 @@ namespace SmartStore.Admin.Controllers
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
 				
 				// Stores
-				_storeMappingService.SaveStoreMappings<MessageTemplate>(messageTemplate, model.SelectedStoreIds);
+				SaveStoreMappings(messageTemplate, model);
                 
 				// locales
                 UpdateLocales(messageTemplate, model);
@@ -286,7 +286,7 @@ namespace SmartStore.Admin.Controllers
 					var template = _messageTemplateService.GetMessageTemplateById(id);
 					if (template == null)
 					{
-						model.Error = "The request message template does not exist.";
+						model.Error = "The requested message template does not exist.";
 						return View(model);
 					}
 

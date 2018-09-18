@@ -1,0 +1,64 @@
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using Autofac;
+using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Utilities;
+
+namespace SmartStore.Services.Hooks
+{
+	[Important]
+	public class UpdateCustomerFullNameHook : DbSaveHook<Customer>
+	{
+		private static readonly HashSet<string> _candidateProps = new HashSet<string>(new string[] 
+		{
+			TypeHelper.NameOf<Customer>(x => x.Title),
+			TypeHelper.NameOf<Customer>(x => x.Salutation),
+			TypeHelper.NameOf<Customer>(x => x.FirstName),
+			TypeHelper.NameOf<Customer>(x => x.LastName)
+		});
+
+		private readonly IComponentContext _ctx;
+
+		public UpdateCustomerFullNameHook(IComponentContext ctx)
+		{
+			_ctx = ctx;
+		}
+
+		protected override void OnUpdating(Customer entity, IHookedEntity entry)
+		{
+			UpdateFullName(entity, entry);
+		}
+
+		protected override void OnInserting(Customer entity, IHookedEntity entry)
+		{
+			UpdateFullName(entity, entry);
+		}
+
+		private void UpdateFullName(Customer entity, IHookedEntity entry)
+		{
+			var shouldUpdate = entity.IsTransientRecord();
+
+			if (!entity.IsTransientRecord())
+			{
+				var modProps = _ctx.Resolve<IDbContext>().GetModifiedProperties(entity);
+				shouldUpdate = _candidateProps.Any(x => modProps.ContainsKey(x));
+			}
+
+			if (shouldUpdate)
+			{
+				var parts = new[]
+				{
+					entity.Salutation,
+					entity.Title,
+					entity.FirstName,
+					entity.LastName
+				};
+
+				entity.FullName = string.Join(" ", parts.Where(x => x.HasValue())).NullEmpty();
+			}
+		}
+	}
+}

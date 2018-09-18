@@ -12,7 +12,6 @@ using Newtonsoft.Json.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -153,7 +152,7 @@ namespace SmartStore.PayPal.Services
 				{
 					var line = new Dictionary<string, object>();
 					line.Add("quantity", item.Item.Quantity);
-					line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language.Id, true, false).Truncate(127));
+					line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language, true, false).Value.Truncate(127));
 					line.Add("price", productPrice.FormatInvariant());
 					line.Add("currency", currencyCode);
 					line.Add("sku", item.Item.Product.Sku.Truncate(50));
@@ -279,37 +278,6 @@ namespace SmartStore.PayPal.Services
 			return sandbox ? "https://api.sandbox.paypal.com" : "https://api.paypal.com";
 		}
 
-		public static Dictionary<SecurityProtocolType, string> GetSecurityProtocols()
-		{
-			var dic = new Dictionary<SecurityProtocolType, string>();
-
-			foreach (SecurityProtocolType protocol in Enum.GetValues(typeof(SecurityProtocolType)))
-			{
-				string friendlyName = null;
-				switch (protocol)
-				{
-					case SecurityProtocolType.Ssl3:
-						friendlyName = "SSL 3.0";
-						break;
-					case SecurityProtocolType.Tls:
-						friendlyName = "TLS 1.0";
-						break;
-					case SecurityProtocolType.Tls11:
-						friendlyName = "TLS 1.1";
-						break;
-					case SecurityProtocolType.Tls12:
-						friendlyName = "TLS 1.2";
-						break;
-					default:
-						friendlyName = protocol.ToString().ToUpper();
-						break;
-				}
-
-				dic.Add(protocol, friendlyName);
-			}
-			return dic;
-		}
-
 		public void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false)
 		{
 			try
@@ -318,19 +286,15 @@ namespace SmartStore.PayPal.Services
 					return;
 
 				string[] orderNoteStrings = T("Plugins.SmartStore.PayPal.OrderNoteStrings").Text.SplitSafe(";");
-				var faviconUrl = "{0}Plugins/{1}/Content/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(false), Plugin.SystemName);
-
-				var sb = new StringBuilder();
-				sb.AppendFormat("<img src=\"{0}\" style=\"float: left; width: 16px; height: 16px;\" />", faviconUrl);
-
-				var note = orderNoteStrings.SafeGet(0).FormatInvariant(anyString);
-
-				sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", note);
+				var faviconUrl = "{0}Plugins/{1}/Content/favicon.png".FormatInvariant(_services.WebHelper.GetStoreLocation(), Plugin.SystemName);
+				var note = $"<img src='{faviconUrl}' class='mr-1 align-text-top' />" + orderNoteStrings.SafeGet(0).FormatInvariant(anyString);
 
 				if (isIpn)
+				{
 					order.HasNewPaymentNotification = true;
+				}
 
-				_orderService.AddOrderNote(order, sb.ToString());
+				_orderService.AddOrderNote(order, note);
 			}
 			catch { }
 		}
@@ -516,9 +480,6 @@ namespace SmartStore.PayPal.Services
 
 			if (method.IsCaseInsensitiveEqual("GET") && data.HasValue())
 				url = url.EnsureEndsWith("?") + data;
-
-			if (settings.SecurityProtocol.HasValue)
-				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
 
 			var request = (HttpWebRequest)WebRequest.Create(url);
 			request.Method = method;
@@ -719,7 +680,7 @@ namespace SmartStore.PayPal.Services
 				{
 					session.AccessToken = (string)result.Json.access_token;
 
-					var expireSeconds = ((string)result.Json.expires_in).ToInt(5 * 60);
+					var expireSeconds = ((string)result.Json.expires_in).ToInt(30 * 60);
 					session.TokenExpiration = DateTime.UtcNow.AddSeconds(expireSeconds);
 				}
 				else
@@ -1204,7 +1165,21 @@ namespace SmartStore.PayPal.Services
 		public string ApprovalUrl { get; set; }
 		public Guid OrderGuid { get; private set; }
 		public PayPalPaymentInstruction PaymentInstruction { get; set; }
-	}
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("SessionExpired: " + SessionExpired.ToString());
+            sb.AppendLine("AccessToken: " + AccessToken.EmptyNull());
+            sb.AppendLine("TokenExpiration: " + TokenExpiration.ToString());
+            sb.AppendLine("PaymentId: " + PaymentId.EmptyNull());
+            sb.AppendLine("PayerId: " + PayerId.EmptyNull());
+            sb.AppendLine("ApprovalUrl: " + ApprovalUrl.EmptyNull());
+            sb.AppendLine("OrderGuid: " + OrderGuid.ToString());
+            sb.AppendLine("PaymentInstruction: " + (PaymentInstruction != null).ToString());
+            return sb.ToString();
+        }
+    }
 
 	[Serializable]
 	public class PayPalPaymentInstruction

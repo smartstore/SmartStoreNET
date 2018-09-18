@@ -1,0 +1,181 @@
+/// <reference path="../shared/_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+/// <reference path="../vendors/slick/slick.scss" />
+
+
+// General
+// ------------------------------------------------------
+
+.slick-loading .slick-list {
+    background: #fff url('images/loading.gif') center center no-repeat;
+}
+
+img.slick-loading {
+    opacity: 0;
+}
+
+
+// Buttons
+// ------------------------------------------------------
+
+.gal-box {
+    .slick-arrow,
+    .gal-arrow {
+        font-size: 2rem;
+    }
+    
+    .slick-arrow.slick-disabled,
+    .gal-arrow.gal-disabled {
+        opacity: 0.2;
+        background: transparent !important;
+    }
+
+    .gal-nav .gal-arrow {
+        line-height: 1;
+        padding: 0;
+    }
+}
+
+.gal .slick-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+
+    &.slick-prev { left: 0; right: auto; }
+    &.slick-next { left: auto; right: 0; }
+}
+
+.artlist-carousel {
+    .no-touchevents .slick-slider.slick-dotted {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .slick-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%);
+        z-index: 100;
+        transition: opacity 0.2s linear;
+        height: 6rem;
+        line-height: 6rem;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+    }
+
+    .slick-slider:hover .slick-arrow {
+        opacity: 1;
+    }
+    .slick-slider:hover .slick-arrow.slick-disabled {
+        opacity: 0.4;
+		background: #fff;
+		border-color: $gray-400;
+    }
+
+    .slick-prev { 
+        left: 0; 
+        right: auto; 
+        border-radius: 0 $btn-border-radius-lg $btn-border-radius-lg 0;
+        border-left-width: 0;
+		border-right-width: $btn-border-width;
+        box-shadow: 1px 1px 3px rgba(0,0,0, 0.12);
+    }
+
+    .slick-next { 
+        right: 0; 
+        left: auto; 
+        border-radius: $btn-border-radius-lg 0 0 $btn-border-radius-lg;
+        border-right-width: 0;
+		border-left-width: $btn-border-width;
+        box-shadow: -1px 1px 3px rgba(0,0,0, 0.12);
+    }
+
+	[dir=rtl] & {
+		.slick-prev { 
+			left: auto; 
+			right: 0; 
+			border-radius: $btn-border-radius-lg 0 0 $btn-border-radius-lg;
+			border-right-width: 0;
+			border-left-width: $btn-border-width;
+			box-shadow: -1px 1px 3px rgba(0,0,0, 0.12);
+		}
+
+		.slick-next { 
+			left: 0;
+			right: auto; 
+			border-radius: 0 $btn-border-radius-lg $btn-border-radius-lg 0;
+			border-left-width: 0;
+			border-right-width: $btn-border-width;
+			box-shadow: 1px 1px 3px rgba(0,0,0, 0.12);
+		}
+	}
+
+    .slick-arrow.slick-disabled {
+        color: $gray-300 !important;
+        cursor: default;
+        box-shadow: none !important;
+        border-color: $secondary !important;
+    }
+}
+
+.touchevents .slick-arrow {
+    display: none !important;
+}
+
+// Dots
+// ------------------------------------------------------
+
+.slick-dotted.slick-slider {
+    margin-bottom: 30px !important;
+}
+
+.slick-dots {
+    position: absolute;
+    bottom: -30px;
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    margin: 0;
+    list-style: none;
+    text-align: center;
+    line-height: 0;
+}
+
+.slick-dots li {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    padding: 0 6px;
+    height: 10px;
+}
+
+.slick-dots li button {
+    font-size: 0;
+    line-height: 0;
+    cursor: pointer;
+    color: transparent;
+    outline: 0 none;
+    padding: 0;
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $gray-300;
+    border: 1px solid $gray-500;
+}
+
+.slick-dots li.slick-active button {
+    background: $gray-500;
+}
+
+.slick-dots li button:hover,
+.slick-dots li button:focus {
+    outline: none;
+}
+.slick-dots li button:hover:before,
+.slick-dots li button:focus:before {
+    opacity: 1;
+}
+

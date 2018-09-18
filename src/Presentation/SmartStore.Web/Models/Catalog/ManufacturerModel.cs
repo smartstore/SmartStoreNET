@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Media;
@@ -13,11 +14,11 @@ namespace SmartStore.Web.Models.Catalog
             PictureModel = new PictureModel();
         }
 
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string MetaKeywords { get; set; }
-        public string MetaDescription { get; set; }
-        public string MetaTitle { get; set; }
+        public LocalizedValue<string> Name { get; set; }
+        public LocalizedValue<string> Description { get; set; }
+        public LocalizedValue<string> MetaKeywords { get; set; }
+        public LocalizedValue<string> MetaDescription { get; set; }
+        public LocalizedValue<string> MetaTitle { get; set; }
         public string SeName { get; set; }
 
         public PictureModel PictureModel { get; set; }

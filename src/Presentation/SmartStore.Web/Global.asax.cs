@@ -25,6 +25,9 @@ using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.Validators;
+using System.Net;
+using FluentValidation;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Web
 {
@@ -93,6 +96,10 @@ namespace SmartStore.Web
 
 		protected void Application_Start()
 		{
+			// SSL & TLS
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+			ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+			
 			// we use our own mobile devices support (".Mobile" is reserved). that's why we disable it.
 			var mobileDisplayMode = DisplayModeProvider.Instance.Modes.FirstOrDefault(x => x.DisplayModeId == DisplayModeProvider.MobileDisplayModeId);
 			if (mobileDisplayMode != null)
@@ -119,10 +126,7 @@ namespace SmartStore.Web
 			AreaRegistration.RegisterAllAreas();
 
 			// Fluent validation
-			FluentValidationModelValidatorProvider.Configure(x =>
-			{
-				x.ValidatorFactory = new SmartValidatorFactory();
-			});
+			InitializeFluentValidator();
 			
 			// Routes
 			RegisterRoutes(RouteTable.Routes, engine, installed);
@@ -135,6 +139,9 @@ namespace SmartStore.Web
 			// Register JsEngine
 			RegisterJsEngines();
 
+			// VPPs
+			RegisterVirtualPathProviders();
+
 			if (installed)
 			{
 				// register our themeable razor view engine we use
@@ -145,9 +152,6 @@ namespace SmartStore.Web
 
 				// Bundles
 				RegisterBundles(BundleTable.Bundles, engine);
-
-				// VPPs
-				RegisterVirtualPathProviders();
 
 				// "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
 				GlobalFilters.Filters.Add(new InitializeSchedulerFilter(), int.MinValue);
@@ -160,20 +164,53 @@ namespace SmartStore.Web
 				// app not installed
 
 				// Install filter
-				GlobalFilters.Filters.Add(new HandleInstallFilter());
+				GlobalFilters.Filters.Add(new HandleInstallFilter(), -1000);
 			}
+		}
+
+		private static void InitializeFluentValidator()
+		{
+			FluentValidationModelValidatorProvider.Configure(x =>
+			{
+				x.ValidatorFactory = new SmartValidatorFactory();
+			});
+
+			// Setup custom resources
+			ValidatorOptions.LanguageManager = new ValidatorLanguageManager();
+
+			// Setup our custom DisplayName handling
+			var originalDisplayNameResolver = ValidatorOptions.DisplayNameResolver;
+			ValidatorOptions.DisplayNameResolver = (type, member, expression) =>
+			{
+				string name = null;
+
+				if (HostingEnvironment.IsHosted && member != null)
+				{
+					var attr = member.GetAttribute<SmartResourceDisplayName>(true);
+					if (attr != null)
+					{
+						name = attr.DisplayName;
+					}
+				}
+
+				return name ?? originalDisplayNameResolver.Invoke(type, member, expression);
+			};
 		}
 
 		private void RegisterVirtualPathProviders()
 		{
 			var vppSystem = HostingEnvironment.VirtualPathProvider;
-			var vppTheme = new ThemingVirtualPathProvider(vppSystem);
 
-			// register virtual path provider for theming (file inheritance handling etc.)
-			HostingEnvironment.RegisterVirtualPathProvider(vppTheme);
-
-			// register virtual path provider for bundling (Sass, Less & variables handling)
+			// register virtual path provider for bundling (Sass & variables handling)
 			BundleTable.VirtualPathProvider = new BundlingVirtualPathProvider(vppSystem);
+
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				var vppTheme = new ThemingVirtualPathProvider(vppSystem);
+
+				// register virtual path provider for theming (file inheritance handling etc.)
+				HostingEnvironment.RegisterVirtualPathProvider(vppTheme);
+			}
 		}
 
 		public override string GetVaryByCustomString(HttpContext context, string custom)

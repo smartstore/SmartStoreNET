@@ -39,7 +39,7 @@
 		<div class="row mb-3">
 			<div class="col-6 col-sm-auto pb-3">
 				<h5 class="text-muted">@T("Order.OrderDate")</h5>
-				<div>@Model.CreatedOn.ToShortDateString()</div>
+				<div>@Model.CreatedOn.ToShortDateString().ReplaceNativeDigits()</div>
 			</div>
 			<div class="col-6 col-sm-auto pb-3">
 				<h5 class="text-muted">@T("Order.Order#")</h5>
@@ -66,7 +66,7 @@
 
         @{ Html.RenderWidget("orderdetails_page_overview"); }
        
-		<div class="card card-block order-details-box">
+		<div class="card card-body order-details-box">
 			<div class="row">
 				<div class="col-md-8">
 					<div class="row">
@@ -241,6 +241,13 @@
 										<td class="cart-summary-value">@Model.RedeemedRewardPointsAmount</td>
 									</tr>
 								}
+								@if (Model.CreditBalance.HasValue())
+								{
+									<tr class="cart-summary-credit-balance cart-summary-pos">
+										<td class="cart-summary-label">@T("ShoppingCart.Totals.CreditBalance"):</td>
+										<td class="cart-summary-value">@Model.CreditBalance</td>
+									</tr>
+								}
                                 @if (Model.OrderTotalRounding.HasValue())
                                 {
                                     <tr class="cart-summary-totalrounding cart-summary-pos">
@@ -253,6 +260,8 @@
 									<td class="cart-summary-value">@Model.OrderTotal</td>
 								</tr>
 							</table>
+
+							@{ Html.RenderWidget("orderdetails_page_aftertotal"); }
 						</div>
 					</div>
 				</div>
@@ -286,8 +295,6 @@
 			</div>
 		}
 
-        @{ Html.RenderWidget("orderdetails_page_aftertotal"); }
-
         @if (Model.Shipments.Count > 0)
         {
 			<div class="card mt-4">
@@ -295,8 +302,8 @@
 					@T("Order.Shipments")
 				</h4>
 
-				<div class="shipments-box">
-					<table class="table table-responsive mb-0">
+				<div class="shipments-box table-responsive">
+					<table class="table mb-0">
 						<thead>
 							<tr>
 								<th>@T("Order.Shipments.ID")</th>
@@ -318,7 +325,7 @@
 									<td>
 										@if (item.ShippedDate.HasValue)
 										{
-											@item.ShippedDate.Value.ToString("D")
+											@item.ShippedDate.Value.ToNativeString("D")
 										}
 										else
 										{
@@ -328,7 +335,7 @@
 									<td>
 										@if (item.DeliveryDate.HasValue)
 										{
-											@item.DeliveryDate.Value.ToString("D")
+											@item.DeliveryDate.Value.ToNativeString("D")
 										}
 										else
 										{
@@ -350,8 +357,8 @@
 					@T("Order.Notes")
 				</h4>
 
-				<div class="ordernotes-box">
-					<table class="table table-responsive mb-0">
+				<div class="ordernotes-box table-responsive">
+					<table class="table mb-0">
 						<thead>
 							<tr>
 								<th>@T("Order.Notes.CreatedOn")</th>
@@ -363,7 +370,7 @@
 							{
 								<tr>
 									<td class="text-nowrap">@item.FriendlyCreatedOn</td>
-									<td>@Html.Raw(item.Note)</td>
+									<td dir="auto">@Html.Raw(item.Note)</td>
 								</tr>
 							}
 						</tbody>
@@ -414,7 +421,7 @@
 					</div>
 				}
 				<div class="col">
-					<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+					<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" @Html.LanguageAttributes(item.ProductName)>@item.ProductName</a>
 					@if (Model.ShowSku && item.Sku.HasValue())
 					{
 						<div class="cart-item-sku small">
@@ -442,6 +449,8 @@
 			<span class="price">@item.SubTotal</span>
 		</div>
 	</div>
+
+    Html.RenderWidget("orderdetails_page_after_item", item);
 }
 
 @helper BundleProducts(OrderDetailsModel.OrderItemModel parentItem)
@@ -463,11 +472,11 @@
 							}
 							@if (item.VisibleIndividually)
 							{
-								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
+								<a class="cart-item-link" href="@item.ProductUrl" title="@T("Products.Details")" dir="auto">@item.ProductName</a>
 							}
 							else
 							{
-								<span class="cart-item-link">@item.ProductName</span>
+								<span class="cart-item-link" dir="auto">@item.ProductName</span>
 							}
 							@if (item.AttributeInfo.HasValue())
 							{
@@ -493,4 +502,6 @@
 			</div>
 		}
 	}
+
+    Html.RenderWidget("orderdetails_page_after_item", parentItem);
 }

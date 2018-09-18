@@ -1,6 +1,6 @@
 ﻿@model SmartStore.OfflinePayment.Models.ConfigurationModelBase
 @using SmartStore.Web.Framework;
-
+@using SmartStore.Web.Framework.UI;
 @{
 	Layout = "";
 }
@@ -22,9 +22,17 @@
 				@Html.SmartLabelFor(model => model.DescriptionText)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.DescriptionText)
-				@Html.TextAreaFor(model => model.DescriptionText, new { style = "height: 100px;" })
+				@Html.SettingEditorFor(model => model.DescriptionText, Html.TextAreaFor(model => model.DescriptionText, new { style = "height: 100px;" }))
 				@Html.ValidationMessageFor(model => model.DescriptionText)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PaymentMethodLogo)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PaymentMethodLogo, Html.EditorFor(m => m.PaymentMethodLogo, "Picture", new { transientUpload = true, validate = true }))
+				@Html.ValidationMessageFor(model => model.PaymentMethodLogo)
 			</td>
 		</tr>
 		<tr>
@@ -32,7 +40,7 @@
 				@Html.SmartLabelFor(model => model.AdditionalFee)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.AdditionalFee)
+				@Html.SettingEditorFor(model => model.AdditionalFee, null, new { postfix = Model.PrimaryStoreCurrencyCode })
 				@Html.ValidationMessageFor(model => model.AdditionalFee)
 			</td>
 		</tr>
@@ -45,6 +53,5 @@
 				@Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
 			</td>
 		</tr>
-		<tr>
 	</table>
 }

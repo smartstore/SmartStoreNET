@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Orders;
+﻿using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    [Validator(typeof(RecurringPaymentValidator))]
     public class RecurringPaymentModel : EntityModelBase
     {
         public RecurringPaymentModel()
@@ -74,7 +72,7 @@ namespace SmartStore.Admin.Models.Orders
             [SmartResourceDisplayName("Admin.RecurringPayments.History.ShippingStatus")]
             public string ShippingStatus { get; set; }
 
-            [SmartResourceDisplayName("Admin.RecurringPayments.History.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

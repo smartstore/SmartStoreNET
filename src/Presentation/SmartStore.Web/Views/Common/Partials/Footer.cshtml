@@ -2,6 +2,16 @@
 @using SmartStore.Web.Models.Common;
 
 @{ 
+	var footerLinks = new List<Tuple<string, string>>
+	{
+		// Item1 = TopicUrl, Item2 = LinkText
+		new Tuple<string, string>(Url.TopicUrl("aboutus"), Url.TopicLinkText("aboutus")),
+		new Tuple<string, string>(Url.TopicUrl("imprint"), Url.TopicLinkText("imprint")),
+		new Tuple<string, string>(Url.TopicUrl("disclaimer"), Url.TopicLinkText("disclaimer")),
+		new Tuple<string, string>(Url.TopicUrl("privacyinfo"), Url.TopicLinkText("privacyinfo")),
+		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), Url.TopicLinkText("conditionsofuse"))
+	};
+
 	var socialLinks = new List<Tuple<string, string>>();
 	if (Model.FacebookLink.HasValue())
 	{
@@ -101,11 +111,17 @@
 					<div class="collapse nav-collapse" id="footer-service">
 						<ul class="list-unstyled">
 
-                            @{ Html.RenderWidget("footer_col_2_before"); }
+                            @{ 
+								Html.RenderWidget("footer_col_2_before");
 
-							@if (Model.TopicPageUrls.ContainsKey("contactus"))
+								var contactUsUrl = Url.RouteUrl("contactus");
+								var shippingInfoUrl = Url.TopicUrl("shippinginfo");
+								var paymentInfoUrl = Url.TopicUrl("paymentinfo");
+							}
+
+							@if (contactUsUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+								<li><a class="footer-link" href="@contactUsUrl">@T("ContactUs")</a></li>
 							}
 							@if (Model.BlogEnabled)
 							{
@@ -115,13 +131,13 @@
 							{
 								<li><a class="footer-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
 							}
-							@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+							@if (shippingInfoUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
+								<li><a class="footer-link" href="@shippingInfoUrl">@Url.TopicLinkText("shippinginfo")</a></li>
 							}
-							@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
+							@if (paymentInfoUrl.HasValue())
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
+								<li><a class="footer-link" href="@paymentInfoUrl">@Url.TopicLinkText("paymentinfo")</a></li>
 							}
 
                             @{ Html.RenderWidget("footer_col_2_after"); }
@@ -142,25 +158,12 @@
 
                             @{ Html.RenderWidget("footer_col_3_before"); }
 
-							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+							@foreach (var link in footerLinks)
 							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("imprint"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
-							{
-								<li><a class="footer-link" href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
+								if (link.Item1.HasValue())
+								{
+									<li><a class="footer-link" href="@link.Item1">@link.Item2</a></li>
+								}
 							}
 
                             @if (Model.DisplayLoginLink)
@@ -176,6 +179,8 @@
 			</div>
 
 			<div class="col-md-3">
+				@{ Html.RenderWidget("footer_col_4_before"); }
+				
 				@if (!Model.HideNewsletterBlock)
 				{
 					<div class="footer-newsletter nav-collapsible" data-subscription-url="@(Url.RouteUrl("SubscribeNewsletter"))">
@@ -187,28 +192,32 @@
 									<span class="input-group-icon text-muted">
 										<i class="fa fa-envelope"></i>
 									</span>
-									<span class="input-group-btn">
+									<div class="input-group-append">
 										<button id="newsletter-subscribe-button" class="btn btn-primary btn-icon" title="@T("Newsletter.Button")">
 											<i class="fa fa-angle-right"></i>
 										</button>
-									</span>
+									</div>
 								</div>
 
 								<div class="d-none d-lg-block">
-									<div class="form-check form-check-inline">
-										<label class="form-check-label">
+									<div class="form-inline">
+										<div class="form-check form-check-inline">
 											<input class="form-check-input" type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
-											<span>@T("Newsletter.Subscribe")</span>
-										</label>
-									</div>
+											<label class="form-check-label" for="newsletter-subscribe">
+												<span>@T("Newsletter.Subscribe")</span>
+											</label>
+										</div>
 
-									<div class="form-check form-check-inline">
-										<label class="form-check-label">
+										<div class="form-check form-check-inline">
 											<input class="form-check-input" type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
-											<span>@T("Newsletter.Unsubscribe")</span>
-										</label>
+											<label class="form-check-label" for="newsletter-unsubscribe">
+												<span>@T("Newsletter.Unsubscribe")</span>
+											</label>
+										</div>
 									</div>
 								</div>
+
+								@{ Html.RenderWidget("gdpr_consent_small"); }
 
 								@Html.ValidationMessageFor(x => x.NewsletterEmail)
 
@@ -229,6 +238,8 @@
 						</div>
 					</div>
 				}
+
+				@{ Html.RenderWidget("footer_col_4_after"); }
 			</div>
 		</div>
 	</div>
@@ -239,12 +250,13 @@
 <div class="footer-bottom-wrapper">
 	<div class="container footer-bottom">
 		<div class="row sm-gutters">
-			<div class="col pb-1 pb-sm-0">
+			
 			@if (Model.ShowLegalInfo)
 			{
-				@Html.Raw(Model.LegalInfo)
+				<div class="col pb-1 pb-sm-0">
+					@Html.Raw(Model.LegalInfo)
+				</div>
 			}
-			</div>
 
 			@if (Model.SmartStoreHint.HasValue())
 			{
@@ -254,7 +266,7 @@
 			}
 
 			<div class="col text-sm-right">
-				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
+				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), Model.StoreName)
 			</div>
 		</div>
 	</div>

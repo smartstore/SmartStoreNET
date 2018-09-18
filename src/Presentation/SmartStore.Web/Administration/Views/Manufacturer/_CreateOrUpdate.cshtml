@@ -51,7 +51,7 @@
                     @Html.SmartLabelFor(model => model.Locales[item].Description)
                 </td>
                 <td class="adminData wide">
-                    @Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
+                    @Html.EditorFor(model => model.Locales[item].Description, "Html")
                     @Html.ValidationMessageFor(model => model.Locales[item].Description)
                 </td>
             </tr>
@@ -72,7 +72,7 @@
                     @Html.SmartLabelFor(model => model.Description)
                 </td>
                 <td class="adminData wide">
-                    @Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
+                    @Html.EditorFor(x => x.Description, "Html")
                     @Html.ValidationMessageFor(model => model.Description)
                 </td>
             </tr>
@@ -150,7 +150,9 @@
 					@Html.SmartLabelFor(model => model.CreatedOn)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.CreatedOn)
+					</div>
 				</td>
 			</tr>
 		}
@@ -161,7 +163,9 @@
 					@Html.SmartLabelFor(model => model.UpdatedOn)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.UpdatedOn)
+					</div>
 				</td>
 			</tr>
 		}
@@ -206,7 +210,7 @@
                     @Html.SmartLabelFor(model => model.Locales[item].SeName)
                 </td>
                 <td class="adminData">
-                    @Html.TextAreaFor(model => model.Locales[item].SeName)
+                    @Html.EditorFor(model => model.Locales[item].SeName)
                     @Html.ValidationMessageFor(model => model.Locales[item].SeName)
                 </td>
             </tr>
@@ -245,10 +249,10 @@
                     @Html.SmartLabelFor(model => model.SeName)
                 </td>
                 <td class="adminData">
-                    @Html.TextAreaFor(x => x.SeName)
+                    @Html.EditorFor(x => x.SeName)
 					@if (Model.Id != 0)
                     {
-                        @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Manufacturer", entityId = @Model.Id })
+                        @Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Manufacturer", entityId = Model.Id })
                     }
                     @Html.ValidationMessageFor(model => model.SeName)
                 </td>
@@ -279,25 +283,30 @@
 				{
 					columns.Bound(x => x.ProductName)
 						.ReadOnly()
-						.Width(520)
+						.Width("40%")
 						.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 					columns.Bound(x => x.Sku)
-						.ReadOnly();
+						.ReadOnly()
+						.Width("15%");
 					columns.Bound(x => x.Published)
 						.ReadOnly()
+						.Width("10%")
 						.ClientTemplate(@Html.SymbolForBool("Published"))
 						.Centered();
 					columns.Bound(x => x.IsFeaturedProduct)
+						.Width("10%")
 						.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
 						.Centered();
 					columns.Bound(x => x.DisplayOrder1)
+						.Width("10%")
 						.Centered();
 					columns.Command(commands =>
 					{
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
 					})
-					.Width(220);
+					.HtmlAttributes(new { align = "right" })
+					.Width("15%");
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 				.PreserveGridState()
@@ -328,7 +337,7 @@
 		foreach (var discount in Model.AvailableDiscounts)
 		{
 			<div class="form-check">
-				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id" value="@discount.Id"
+				<input type="checkbox" class="form-check-input" name="SelectedDiscountIds" id="discount-@discount.Id" value="@discount.Id"
 					   @Html.Attr("checked", "checked", Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) />
 				<label class="form-check-label" for="discount-@discount.Id">@discount.Name</label>
 			</div>

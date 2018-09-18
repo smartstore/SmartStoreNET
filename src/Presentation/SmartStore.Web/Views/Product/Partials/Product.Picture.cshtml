@@ -3,22 +3,22 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-	Html.AddScriptParts("~/bundles/smart-gallery");
-	var defaultPicture = Model.DefaultPictureModel;
+    Html.AddScriptParts("~/bundles/smart-gallery");
+    var defaultPicture = Model.DefaultPictureModel;
 
-	// FB OpenGraph og:image & Twitter meta
-	var oImg = Model.PictureModels?.FirstOrDefault();
-	if (oImg != null && oImg.FullSizeImageUrl.HasValue())
-	{
-		var url = WebHelper.GetAbsoluteUrl(oImg.FullSizeImageUrl, this.Request);
-		Html.AddCustomHeadParts("<meta property='twitter:image' content='{0}' />".FormatInvariant(url));
-		Html.AddCustomHeadParts("<meta property='og:image' content='{0}' />".FormatInvariant(url));
-		if (oImg.FullSizeImageWidth > 0 && oImg.FullSizeImageHeight > 0)
-		{
-			Html.AddCustomHeadParts("<meta property='og:image:width' content='{0}' />".FormatInvariant(oImg.FullSizeImageWidth.Value));
-			Html.AddCustomHeadParts("<meta property='og:image:height' content='{0}' />".FormatInvariant(oImg.FullSizeImageHeight.Value));
-		}
-	}
+    // FB OpenGraph og:image & Twitter meta
+    var oImg = Model.PictureModels?.FirstOrDefault();
+    if (oImg != null && oImg.FullSizeImageUrl.HasValue())
+    {
+        var url = WebHelper.GetAbsoluteUrl(oImg.FullSizeImageUrl, this.Request, true);
+        Html.AddCustomHeadParts("<meta property='twitter:image' content='{0}' />".FormatInvariant(url));
+        Html.AddCustomHeadParts("<meta property='og:image' content='{0}' />".FormatInvariant(url));
+        if (oImg.FullSizeImageWidth > 0 && oImg.FullSizeImageHeight > 0)
+        {
+            Html.AddCustomHeadParts("<meta property='og:image:width' content='{0}' />".FormatInvariant(oImg.FullSizeImageWidth.Value));
+            Html.AddCustomHeadParts("<meta property='og:image:height' content='{0}' />".FormatInvariant(oImg.FullSizeImageHeight.Value));
+        }
+    }
 }
 
 <div id="pd-gallery-container-inner">
@@ -86,7 +86,7 @@
 	</div>
 </div>
 
-@using (Html.BeginZoneContent("end", key: "pswp"))
+@using (Html.BeginZoneContent("aftercontent", key: "pswp"))
 {
 	<!-- Root element of PhotoSwipe -->
 	<div id="pswp" class="pswp" tabindex="-1" role="dialog" aria-hidden="true">

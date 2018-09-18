@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.Customer;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Customer
 {
@@ -45,15 +48,16 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.Fields.Gender")]
         public string Gender { get; set; }
 
-        [SmartResourceDisplayName("Account.Fields.FirstName")]
+		public bool FirstNameRequired { get; set; }
+		public bool LastNameRequired { get; set; }
+		[SmartResourceDisplayName("Account.Fields.FirstName")]
         [AllowHtml]
         public string FirstName { get; set; }
         [SmartResourceDisplayName("Account.Fields.LastName")]
         [AllowHtml]
         public string LastName { get; set; }
 
-
-        public bool DateOfBirthEnabled { get; set; }
+		public bool DateOfBirthEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.DateOfBirth")]
         public int? DateOfBirthDay { get; set; }
         [SmartResourceDisplayName("Account.Fields.DateOfBirth")]
@@ -133,5 +137,61 @@ namespace SmartStore.Web.Models.Customer
         public bool VatRequired { get; set; }
 
         public bool DisplayCaptcha { get; set; }
+    }
+
+    public class RegisterValidator : AbstractValidator<RegisterModel>
+    {
+        public RegisterValidator(Localizer T, CustomerSettings customerSettings, TaxSettings taxSettings)
+        {
+            RuleFor(x => x.Email).NotEmpty();
+            RuleFor(x => x.Email).EmailAddress();
+
+            RuleFor(x => x.Password).NotEmpty();
+            RuleFor(x => x.Password).Length(customerSettings.PasswordMinLength, 999);
+            RuleFor(x => x.ConfirmPassword).NotEmpty();
+            RuleFor(x => x.ConfirmPassword).Equal(x => x.Password).WithMessage(T("Account.Fields.Password.EnteredPasswordsDoNotMatch"));
+
+            //form fields
+            if (customerSettings.FirstNameRequired)
+            {
+                RuleFor(x => x.FirstName).NotEmpty();
+            }
+            if (customerSettings.LastNameRequired)
+            {
+                RuleFor(x => x.LastName).NotEmpty();
+            }
+            if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
+            {
+                RuleFor(x => x.Company).NotEmpty();
+            }
+            if (customerSettings.StreetAddressRequired && customerSettings.StreetAddressEnabled)
+            {
+                RuleFor(x => x.StreetAddress).NotEmpty();
+            }
+            if (customerSettings.StreetAddress2Required && customerSettings.StreetAddress2Enabled)
+            {
+                RuleFor(x => x.StreetAddress2).NotEmpty();
+            }
+            if (customerSettings.ZipPostalCodeRequired && customerSettings.ZipPostalCodeEnabled)
+            {
+                RuleFor(x => x.ZipPostalCode).NotEmpty();
+            }
+            if (customerSettings.CityRequired && customerSettings.CityEnabled)
+            {
+                RuleFor(x => x.City).NotEmpty();
+            }
+            if (customerSettings.PhoneRequired && customerSettings.PhoneEnabled)
+            {
+                RuleFor(x => x.Phone).NotEmpty();
+            }
+            if (customerSettings.FaxRequired && customerSettings.FaxEnabled)
+            {
+                RuleFor(x => x.Fax).NotEmpty();
+            }
+            if (taxSettings.EuVatEnabled && taxSettings.VatRequired)
+            {
+                RuleFor(x => x.VatNumber).NotEmpty();
+            }
+        }
     }
 }

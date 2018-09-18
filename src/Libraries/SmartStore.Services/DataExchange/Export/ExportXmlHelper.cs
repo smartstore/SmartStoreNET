@@ -294,6 +294,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("DisplayLocale", entity.DisplayLocale);
 			_writer.Write("ColorHexValue", entity.ColorHexValue);
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
+			_writer.Write("IsDefault", entity.IsDefault.ToString());
 
 			WriteLocalized(deliveryTime);
 
@@ -501,7 +502,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("RequiredProductIds", entity.RequiredProductIds);
 			_writer.Write("AutomaticallyAddRequiredProducts", entity.AutomaticallyAddRequiredProducts.ToString());
 			_writer.Write("IsDownload", entity.IsDownload.ToString());
-			_writer.Write("DownloadId", entity.DownloadId.ToString());
 			_writer.Write("UnlimitedDownloads", entity.UnlimitedDownloads.ToString());
 			_writer.Write("MaxNumberOfDownloads", entity.MaxNumberOfDownloads.ToString());
 			_writer.Write("DownloadExpirationDays", entity.DownloadExpirationDays.HasValue ? entity.DownloadExpirationDays.Value.ToString() : "");
@@ -530,7 +530,9 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("AllowBackInStockSubscriptions", entity.AllowBackInStockSubscriptions.ToString());
 			_writer.Write("OrderMinimumQuantity", entity.OrderMinimumQuantity.ToString());
 			_writer.Write("OrderMaximumQuantity", entity.OrderMaximumQuantity.ToString());
-            _writer.Write("HideQuantityControl", entity.HideQuantityControl.ToString());
+			_writer.Write("QuantityStep", entity.QuantityStep.ToString());
+			_writer.Write("QuantiyControlType", ((int)entity.QuantiyControlType).ToString());
+			_writer.Write("HideQuantityControl", entity.HideQuantityControl.ToString());
             _writer.Write("AllowedQuantities", entity.AllowedQuantities);
 			_writer.Write("DisableBuyButton", entity.DisableBuyButton.ToString());
 			_writer.Write("DisableWishlistButton", entity.DisableWishlistButton.ToString());
@@ -562,6 +564,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("BasePriceInfo", (string)product._BasePriceInfo);
 			_writer.Write("VisibleIndividually", entity.VisibleIndividually.ToString());
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
+			_writer.Write("IsSystemProduct", entity.IsSystemProduct.ToString());
 			_writer.Write("BundleTitleText", entity.BundleTitleText);
 			_writer.Write("BundlePerItemPricing", entity.BundlePerItemPricing.ToString());
 			_writer.Write("BundlePerItemShipping", entity.BundlePerItemShipping.ToString());
@@ -602,6 +605,35 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				_writer.WriteEndElement();	// AppliedDiscounts
 			}
+
+            if (product.Downloads != null)
+            {
+                _writer.WriteStartElement("Downloads");
+                foreach (dynamic download in product.Downloads)
+                {
+                    Download downloadEntity = download.Entity;
+
+                    _writer.WriteStartElement("Download");
+                    _writer.Write("Id", downloadEntity.Id.ToString());
+                    _writer.Write("DownloadGuid", downloadEntity.DownloadGuid.ToString());
+                    _writer.Write("UseDownloadUrl", downloadEntity.UseDownloadUrl.ToString());
+                    _writer.Write("DownloadUrl", downloadEntity.DownloadUrl);
+                    _writer.Write("ContentType", downloadEntity.ContentType);
+                    _writer.Write("Filename", downloadEntity.Filename);
+                    _writer.Write("Extension", downloadEntity.Extension);
+                    _writer.Write("IsNew", downloadEntity.IsNew.ToString());
+                    _writer.Write("IsTransient", downloadEntity.IsTransient.ToString());
+                    _writer.Write("UpdatedOnUtc", downloadEntity.UpdatedOnUtc.ToString(_culture));
+                    _writer.Write("MediaStorageId", downloadEntity.MediaStorageId.HasValue ? downloadEntity.MediaStorageId.Value.ToString() : "");
+                    _writer.Write("EntityId", downloadEntity.EntityId.ToString());
+                    _writer.Write("EntityName", downloadEntity.EntityName);
+                    _writer.Write("FileVersion", downloadEntity.FileVersion);
+                    _writer.Write("Changelog", downloadEntity.Changelog);
+
+                    _writer.WriteEndElement();	// Download
+                }
+                _writer.WriteEndElement();	// Downloads
+            }
 
 			if (product.TierPrices != null)
 			{

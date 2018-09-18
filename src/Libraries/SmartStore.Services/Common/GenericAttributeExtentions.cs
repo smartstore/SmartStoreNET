@@ -66,28 +66,28 @@ namespace SmartStore.Services.Common
             Guard.NotNull(genericAttributeService, nameof(genericAttributeService));
             Guard.NotEmpty(entityName, nameof(entityName));
 
-            var props = genericAttributeService.GetAttributesForEntity(entityId, entityName);
+            var attrs = genericAttributeService.GetAttributesForEntity(entityId, entityName);
 
             // little hack here (only for unit testing). we should write expect-return rules in unit tests for such cases
-            if (props == null)
+            if (attrs == null)
             {
-                return default(TPropType);
+                return default;
             }
 
-            if (!props.Any(x => x.StoreId == storeId))
+            if (!attrs.Any(x => x.StoreId == storeId))
             {
-                return default(TPropType);
+                return default;
             }
 
-            var prop = props.FirstOrDefault(ga =>
-                ga.StoreId == storeId && ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
+            var attr = attrs.FirstOrDefault(x =>
+                x.StoreId == storeId && x.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); // should be culture invariant
 
-            if (prop == null || prop.Value.IsEmpty())
+            if (attr == null || attr.Value.IsEmpty())
             {
-                return default(TPropType);
+                return default;
             }
 
-			return prop.Value.Convert<TPropType>();
+			return attr.Value.Convert<TPropType>();
         }
     }
 }

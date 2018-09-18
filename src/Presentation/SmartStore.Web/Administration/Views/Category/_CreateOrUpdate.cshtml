@@ -1,34 +1,18 @@
 ﻿@model CategoryModel
 
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
 @Html.SmartStore().TabStrip().Name("category-edit").OnAjaxSuccess("categoryEditTab_onAjaxSuccess").Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x => {
-	x.Add().Text(T("Admin.Catalog.Categories.Info").Text)
-		.Icon("fa fa-pencil fa-lg fa-fw")
-		.Content(TabInfo())
-		.Selected(true);
 
-	x.Add().Text(T("Admin.Common.SEO").Text)
-		.Icon("fa fa-search fa-lg fa-fw")
-		.Content(TabSeo());
-
-	x.Add().Text(T("Admin.Catalog.Categories.Products").Text)
-		.Icon("fa fa-cube fa-lg fa-fw")
-		.Content(TabProducts());
-
-	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text)
-		.Icon("fa fa-percent fa-lg fa-fw")
-		.Content(TabDiscounts());
-
-	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text)
-		.Icon("fa fa-users fa-lg fa-fw")
-		.Content(TabAcl());
-
-	x.Add().Text(T("Admin.Common.Stores").Text)
-		.Icon("fa fa-globe fa-lg fa-fw")
-		.Content(TabStores());
+	x.Add().Text(T("Admin.Catalog.Categories.Info").Text).Icon("fa fa-pencil fa-lg fa-fw").Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.SEO").Text).Icon("fa fa-search fa-lg fa-fw").Content(TabSeo());
+	x.Add().Text(T("Admin.Catalog.Categories.Products").Text).Icon("fa fa-cube fa-lg fa-fw").Content(TabProducts());
+	x.Add().Text(T("Admin.Catalog.Categories.Discounts").Text).Icon("fa fa-percent fa-lg fa-fw").Content(TabDiscounts());
+	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Icon("fa fa-users fa-lg fa-fw").Content(TabAcl());
+	x.Add().Text(T("Admin.Common.Stores").Text).Icon("fa fa-globe fa-lg fa-fw").Content(TabStores());
 
 	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
@@ -79,7 +63,7 @@
                     @Html.SmartLabelFor(model => model.Locales[item].Description)
                 </td>
                 <td class="adminData wide">
-                    @Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
+                    @Html.EditorFor(model => model.Locales[item].Description, "Html")
                     @Html.ValidationMessageFor(model => model.Locales[item].Description)
                 </td>
             </tr>
@@ -88,7 +72,7 @@
                     @Html.SmartLabelFor(model => model.Locales[item].BottomDescription)
                 </td>
                 <td class="adminData wide">
-                    @Html.EditorFor(model => model.Locales[item].BottomDescription, Html.RichEditorFlavor())
+                    @Html.EditorFor(model => model.Locales[item].BottomDescription, "Html")
                     @Html.ValidationMessageFor(model => model.Locales[item].BottomDescription)
                 </td>
             </tr>
@@ -137,7 +121,7 @@
                     @Html.SmartLabelFor(model => model.Description)
                 </td>
                 <td class="adminData wide">
-                    @Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
+                    @Html.EditorFor(x => x.Description, "Html")
                     @Html.ValidationMessageFor(model => model.Description)
                 </td>
             </tr>
@@ -146,7 +130,7 @@
                     @Html.SmartLabelFor(model => model.BottomDescription)
                 </td>
                 <td class="adminData wide">
-                    @Html.EditorFor(x => x.BottomDescription, Html.RichEditorFlavor())
+                    @Html.EditorFor(x => x.BottomDescription, "Html")
                     @Html.ValidationMessageFor(model => model.BottomDescription)
                 </td>
             </tr>
@@ -195,14 +179,18 @@
                 @Html.SmartLabelFor(model => model.ParentCategoryId)
             </td>
             <td class="adminData">
-				@Html.DropDownListFor(model => model.ParentCategoryId, Enumerable.Empty<SelectListItem>(), new
-			   {
-				   placeholder = "[" + T("Common.Unspecified") + "]",
-				   data_select = true,
-				   data_select_lazy = true,
-				   data_select_init_text = Model.ParentCategoryBreadcrumb,
-				   data_select_url = Url.Action("Allcategories", "Category")
-			   })
+				@Html.DropDownListFor(model => model.ParentCategoryId,
+				Model.ParentCategoryId == null ? Enumerable.Empty<SelectListItem>() : new List<SelectListItem> {
+					new SelectListItem { Text = Model.ParentCategoryBreadcrumb, Value = Model.ParentCategoryId.ToString() }
+				},
+				new
+				{
+					placeholder = "[" + T("Common.Unspecified") + "]",
+					data_select = true,
+					data_select_lazy = true,
+					data_select_init_text = Model.ParentCategoryBreadcrumb,
+					data_select_url = Url.Action("Allcategories", "Category", new { selectedId =  Model.ParentCategoryId })
+				})
                 @Html.ValidationMessageFor(model => model.ParentCategoryId)
             </td>
         </tr>
@@ -294,7 +282,9 @@
 					@Html.SmartLabelFor(model => model.CreatedOn)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.CreatedOn)
+					</div>
 				</td>
 			</tr>
 		}
@@ -305,7 +295,9 @@
 					@Html.SmartLabelFor(model => model.UpdatedOn)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.UpdatedOn)
+					</div>
 				</td>
 			</tr>
 		}
@@ -351,7 +343,7 @@
                     @Html.SmartLabelFor(model => model.Locales[item].SeName)
                 </td>
                 <td class="adminData">
-                    @Html.TextAreaFor(model => model.Locales[item].SeName)
+                    @Html.EditorFor(model => model.Locales[item].SeName)
                     @Html.ValidationMessageFor(model => model.Locales[item].SeName)
                 </td>
             </tr>
@@ -390,10 +382,10 @@
                     @Html.SmartLabelFor(model => model.SeName)
                 </td>
                 <td class="adminData">
-					@Html.TextAreaFor(x => x.SeName)
+					@Html.EditorFor(x => x.SeName)
 					@if (Model.Id != 0)
 					{
-						@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = @Model.Id })
+						@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = Model.Id })
 					}
 					@Html.ValidationMessageFor(model => model.SeName)
                 </td>
@@ -409,10 +401,7 @@
 		<div>
 			@(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
 					.Name("products-grid")
-					.DataKeys(keys =>
-					{
-						keys.Add(x => x.Id);
-					})
+					.DataKeys(keys => { keys.Add(x => x.Id); })
 					.DataBinding(dataBinding =>
 					{
 						dataBinding.Ajax()
@@ -424,36 +413,35 @@
 					{
 						columns.Bound(x => x.ProductName)
 							.ReadOnly()
-							.Width(520)
+							.Width("50%")
 							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 						columns.Bound(x => x.Sku)
+							.Width("20%")
 							.ReadOnly();
 						columns.Bound(x => x.Published)
 							.ReadOnly()
+							.Width("5%")
 							.ClientTemplate(@Html.SymbolForBool("Published"))
 							.Centered();
 						columns.Bound(x => x.IsFeaturedProduct)
 							.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+							.Width("5%")
 							.Centered();
 						columns.Bound(x => x.DisplayOrder1)
+							.Width("5%")
 							.Centered();
 						columns.Command(commands =>
 						{
 							commands.Edit().Localize(T);
 							commands.Delete().Localize(T);
 						})
-						.Width(220);
+						.HtmlAttributes(new { align = "right" })
+						.Width("15%");
 					})
+					.ToolBar(commands => commands.Template(CategoryProductsGridCommands))
 					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 					.PreserveGridState()
 					.EnableCustomBinding(true))
-		</div>
-		<div class="mt-3">
-			@(Html.SmartStore().EntityPicker()
-				.IconCssClass("fa fa-plus")
-				.HtmlAttribute("class", "btn btn-warning")
-				.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
-				.OnSelectionCompleted("PickProducts_Completed"))
 		</div>
 	}
 	else
@@ -462,6 +450,15 @@
 			@T("Admin.SaveBeforeEdit")
 		</p>
 	}
+}
+
+@helper CategoryProductsGridCommands(Grid<CategoryModel.CategoryProductModel> grid)
+{
+	@(Html.SmartStore().EntityPicker()
+		.IconCssClass("fa fa-plus")
+		.HtmlAttribute("class", "t-button t-grid-add")
+		.Caption(T("Admin.Catalog.Categories.Products.AddNew").Text.EncodeJsString('\'', false))
+		.OnSelectionCompleted("PickProducts_Completed"))
 }
 
 @helper TabDiscounts()
@@ -473,7 +470,7 @@
 			<div class="form-check">
 				<input type="checkbox" name="SelectedDiscountIds" id="discount-@discount.Id"
 					   class="form-check-input" value="@discount.Id" checked="@(Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))">
-				<label class="form-check-label" for="discount-@discount.Id"> @discount.Name</label>	
+				<label class="form-check-label" for="discount-@discount.Id">@discount.Name</label>	
 			</div>
 		}
 	}

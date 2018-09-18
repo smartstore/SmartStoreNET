@@ -7,7 +7,6 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Email;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -17,14 +16,13 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
+using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
     public partial class HomeController : PublicControllerBase
 	{
-		private readonly ICommonServices _services;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
@@ -36,9 +34,9 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<CommonSettings> _commonSettings;
 		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
+		private readonly Lazy<PrivacySettings> _privacySettings;
 
 		public HomeController(
-			ICommonServices services,
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
 			Lazy<IManufacturerService> manufacturerService,
@@ -49,24 +47,24 @@ namespace SmartStore.Web.Controllers
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
 			Lazy<SeoSettings> seoSettings,
-			Lazy<CustomerSettings> customerSettings)
+			Lazy<CustomerSettings> customerSettings,
+			Lazy<PrivacySettings> privacySettings)
         {
-			this._services = services;
-			this._categoryService = categoryService;
-			this._productService = productService;
-			this._manufacturerService = manufacturerService;
-			this._catalogSearchService = catalogSearchService;
-			this._catalogHelper = catalogHelper;
-			this._topicService = topicService;
-			this._sitemapGenerator = sitemapGenerator;
-			this._captchaSettings = captchaSettings;
-			this._commonSettings = commonSettings;
-			this._seoSettings = seoSettings;
-            this._customerSettings = customerSettings;
-        }
-
-
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
+			_categoryService = categoryService;
+			_productService = productService;
+			_manufacturerService = manufacturerService;
+			_catalogSearchService = catalogSearchService;
+			_catalogHelper = catalogHelper;
+			_topicService = topicService;
+			_sitemapGenerator = sitemapGenerator;
+			_captchaSettings = captchaSettings;
+			_commonSettings = commonSettings;
+			_seoSettings = seoSettings;
+            _customerSettings = customerSettings;
+			_privacySettings = privacySettings;
+		}
+		
+        [RequireHttpsByConfig(SslRequirement.No)]
         public ActionResult Index()
         {
 			return View();
@@ -77,27 +75,29 @@ namespace SmartStore.Web.Controllers
 			return View();
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[RequireHttpsByConfig(SslRequirement.No)]
+		[GdprConsent]
 		public ActionResult ContactUs()
 		{
-            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", _services.StoreContext.CurrentStore.Id);
+            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
 
-            var model = new ContactUsModel()
+            var model = new ContactUsModel
 			{
-				Email = _services.WorkContext.CurrentCustomer.Email,
-				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
+				Email = Services.WorkContext.CurrentCustomer.Email,
+				FullName = Services.WorkContext.CurrentCustomer.GetFullName(),
+				FullNameRequired = _privacySettings.Value.FullNameOnContactUsRequired,
 				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
-                DisplayPrivacyAgreement = _customerSettings.Value.DisplayPrivacyAgreementOnContactUs,
-                MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
-                MetaDescription = topic.GetLocalized(x => x.MetaDescription),
-                MetaTitle = topic.GetLocalized(x => x.MetaTitle),
+                MetaKeywords = topic?.GetLocalized(x => x.MetaKeywords),
+                MetaDescription = topic?.GetLocalized(x => x.MetaDescription),
+                MetaTitle = topic?.GetLocalized(x => x.MetaTitle),
             };
 
 			return View(model);
 		}
 
 		[HttpPost, ActionName("ContactUs")]
-		[CaptchaValidator]
+		[ValidateCaptcha, ValidateHoneypot]
+		[GdprConsent]
 		public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
 		{
 			// Validate CAPTCHA
@@ -108,10 +108,10 @@ namespace SmartStore.Web.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var customer = _services.WorkContext.CurrentCustomer;
+				var customer = Services.WorkContext.CurrentCustomer;
 				var email = model.Email.Trim();
 				var fullName = model.FullName;
-				var subject = T("ContactUs.EmailSubject", _services.StoreContext.CurrentStore.Name);
+				var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
 				var body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
 
 				// Required for some SMTP servers
@@ -128,14 +128,13 @@ namespace SmartStore.Web.Controllers
 				{
 					model.SuccessfullySent = true;
 					model.Result = T("ContactUs.YourEnquiryHasBeenSent");
-					_services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
+					Services.CustomerActivity.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
 				}
 				else
 				{
 					ModelState.AddModelError("", T("Common.Error.SendMail"));
 					model.Result = T("Common.Error.SendMail");
 				}
-
 
 				return View(model);
 			}
@@ -163,7 +162,7 @@ namespace SmartStore.Web.Controllers
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult Sitemap()
 		{
-            return RedirectPermanent(_services.StoreContext.CurrentStore.Url);
+            return RedirectPermanent(Services.StoreContext.CurrentStore.Url);
 		}
     }
 }

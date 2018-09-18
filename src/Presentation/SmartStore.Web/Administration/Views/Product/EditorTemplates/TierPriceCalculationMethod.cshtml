@@ -1,8 +1,9 @@
-﻿<select name="CalculationMethod"
-	id="CalculationMethod"
-	class="form-control"
-	data-placeholder='@T("Admin.Product.Price.Tierprices.Fixed")'
-	data-select-url='@Url.Action("AllCalculationMethods", "Product")'>
+﻿@using SmartStore.Core.Domain.Catalog
+
+<select name="CalculationMethod" id="CalculationMethod" class="form-control">
+	<option value="@((int)TierPriceCalculationMethod.Fixed)">@T("Admin.Product.Price.Tierprices.Fixed")</option>
+	<option value="@((int)TierPriceCalculationMethod.Adjustment)">@T("Admin.Product.Price.Tierprices.Adjustment")</option>
+	<option value="@((int)TierPriceCalculationMethod.Percental)">@T("Admin.Product.Price.Tierprices.Percental")</option>
 </select>
 
 <script>

@@ -13,8 +13,9 @@ namespace SmartStore.Core.Domain.Forums
 			StrippedTopicMaxLength = 45;
 			TopicsPageSize = 10;
 			PostsPageSize = 10;
-			SearchResultsPageSize = 10;
-			LatestCustomerPostsPageSize = 10;
+            SearchResultsPageSize = 12;
+            AllowSorting = true;
+            LatestCustomerPostsPageSize = 10;
 			ShowCustomersPostCount = true;
 			ForumEditor = EditorType.BBCodeEditor;
 			SignaturesEnabled = true;
@@ -26,7 +27,6 @@ namespace SmartStore.Core.Domain.Forums
 			ActiveDiscussionsPageTopicCount = 50;
 			ActiveDiscussionsFeedCount = 25;
 			ForumFeedCount = 10;
-			ForumSearchTermMinimumLength = 3;
 		}
 		
 		/// <summary>
@@ -90,14 +90,14 @@ namespace SmartStore.Core.Domain.Forums
         public int PostsPageSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of links to display for pagination of posts in topics
-        /// </summary>
-        public int TopicPostsPageLinkDisplayCount { get; set; }
-
-        /// <summary>
         /// Gets or sets the page size for search result
         /// </summary>
         public int SearchResultsPageSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether sorting is enabled.
+        /// </summary>
+        public bool AllowSorting { get; set; }
 
         /// <summary>
         /// Gets or sets the page size for latest customer posts
@@ -183,10 +183,5 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets the number of items to display for Forum RSS Feed
         /// </summary>
         public int ForumFeedCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the minimum length for search term
-        /// </summary>
-        public int ForumSearchTermMinimumLength { get; set; }
     }
 }

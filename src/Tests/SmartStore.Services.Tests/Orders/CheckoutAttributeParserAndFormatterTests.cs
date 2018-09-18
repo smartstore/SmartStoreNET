@@ -2,20 +2,13 @@
 using System.Linq;
 using NUnit.Framework;
 using Rhino.Mocks;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
-using SmartStore.Services.Catalog;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Tax;
 using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
@@ -30,13 +23,13 @@ namespace SmartStore.Services.Tests.Orders
         ICheckoutAttributeService _checkoutAttributeService;
         ICheckoutAttributeParser _checkoutAttributeParser;
 
-        IWorkContext _workContext;
-        ICurrencyService _currencyService;
-        ITaxService _taxService;
-        IPriceFormatter _priceFormatter;
-        IDownloadService _downloadService;
-        IWebHelper _webHelper;
-        ICheckoutAttributeFormatter _checkoutAttributeFormatter;
+        //IWorkContext _workContext;
+        //ICurrencyService _currencyService;
+        //ITaxService _taxService;
+        //IPriceFormatter _priceFormatter;
+        //IDownloadService _downloadService;
+        //IWebHelper _webHelper;
+        //ICheckoutAttributeFormatter _checkoutAttributeFormatter;
 
         CheckoutAttribute ca1, ca2, ca3;
         CheckoutAttributeValue cav1_1, cav1_2, cav2_1, cav2_2;
@@ -148,23 +141,23 @@ namespace SmartStore.Services.Tests.Orders
 
 
 
-            var workingLanguage = new Language();
-            _workContext = MockRepository.GenerateMock<IWorkContext>();
-            _workContext.Expect(x => x.WorkingLanguage).Return(workingLanguage);
-            _currencyService = MockRepository.GenerateMock<ICurrencyService>();
-            _taxService = MockRepository.GenerateMock<ITaxService>();
-            _priceFormatter = MockRepository.GenerateMock<IPriceFormatter>();
-            _downloadService = MockRepository.GenerateMock<IDownloadService>();
-            _webHelper = MockRepository.GenerateMock<IWebHelper>();
+            //var workingLanguage = new Language();
+            //_workContext = MockRepository.GenerateMock<IWorkContext>();
+            //_workContext.Expect(x => x.WorkingLanguage).Return(workingLanguage);
+            //_currencyService = MockRepository.GenerateMock<ICurrencyService>();
+            //_taxService = MockRepository.GenerateMock<ITaxService>();
+            //_priceFormatter = MockRepository.GenerateMock<IPriceFormatter>();
+            //_downloadService = MockRepository.GenerateMock<IDownloadService>();
+            //_webHelper = MockRepository.GenerateMock<IWebHelper>();
 
-            _checkoutAttributeFormatter = new CheckoutAttributeFormatter(_workContext,
-                _checkoutAttributeService,
-                _checkoutAttributeParser,
-                _currencyService,
-                _taxService,
-                _priceFormatter,
-                _downloadService,
-                _webHelper);
+            //_checkoutAttributeFormatter = new CheckoutAttributeFormatter(_workContext,
+            //    _checkoutAttributeService,
+            //    _checkoutAttributeParser,
+            //    _currencyService,
+            //    _taxService,
+            //    _priceFormatter,
+            //    _downloadService,
+            //    _webHelper);
         }
         
         [Test]
@@ -192,22 +185,22 @@ namespace SmartStore.Services.Tests.Orders
             parsedValues.Contains("Some other custom text").ShouldEqual(false);
         }
 
-        [Test]
-        public void Can_add_render_attributes_withoutPrices()
-        {
-            string attributes = "";
-            //color: green
-            attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca1, cav1_1.Id.ToString());
-            //custom option: option 1, option 2
-            attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca2, cav2_1.Id.ToString());
-            attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca2, cav2_2.Id.ToString());
-            //custom text
-            attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca3, "Some custom text goes here");
+        //[Test]
+        //public void Can_add_render_attributes_withoutPrices()
+        //{
+        //    string attributes = "";
+        //    //color: green
+        //    attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca1, cav1_1.Id.ToString());
+        //    //custom option: option 1, option 2
+        //    attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca2, cav2_1.Id.ToString());
+        //    attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca2, cav2_2.Id.ToString());
+        //    //custom text
+        //    attributes = _checkoutAttributeParser.AddCheckoutAttribute(attributes, ca3, "Some custom text goes here");
 
 
-            var customer = new Customer();
-            string formattedAttributes = _checkoutAttributeFormatter.FormatAttributes(attributes, customer, "<br />", false, false);
-            formattedAttributes.ShouldEqual("Color: Green<br />Custom option: Option 1<br />Custom option: Option 2<br />Custom text: Some custom text goes here");
-        }
+        //    var customer = new Customer();
+        //    string formattedAttributes = _checkoutAttributeFormatter.FormatAttributes(attributes, customer, "<br />", false, false);
+        //    formattedAttributes.ShouldEqual("Color: Green<br />Custom option: Option 1<br />Custom option: Option 2<br />Custom text: Some custom text goes here");
+        //}
     }
 }

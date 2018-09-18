@@ -1,0 +1,143 @@
+/// <reference path="../shared/_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+//
+// HTML editors
+// --------------------------------------------------------------
+
+.cke_chrome.cke_focus {
+    border-color: $input-focus-border-color;
+    box-shadow: none;
+}
+
+.note-editor-preview {
+	border: 1px solid $input-border-color;
+	min-height: 100px;
+	max-height: 350px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: $input-padding-y $input-padding-x;
+	cursor: default;
+
+	&.empty {
+		min-height: initial;
+		//color: $text-muted;
+	}
+}
+
+.note-editor {
+	border-color: $input-border-color !important;
+	border-radius: $input-border-radius !important;
+
+    &:focus-within,
+    &:focus,
+    &.focus {
+        z-index: 1001;
+        border-color: $input-focus-border-color !important;
+    }
+
+	&.focus {
+		// Redundant, but "Edge" will skip :focus-within selector
+        border-color: $input-focus-border-color !important;
+	}
+
+    .note-toolbar-wrapper {
+        position: relative;
+    }
+
+	.note-toolbar {
+		display: flex;
+		flex-wrap: wrap;
+
+        .note-btn-group {
+            //z-index: $zindex-dropdown - 1;
+        }
+
+		> .note-btn-group {
+			border: 0 solid rgba(#000, 0.12);
+			border-right-width: 1px;
+			padding-right: 5px;
+		}
+
+		> .note-btn-group:last-of-type {
+			border-right-width: 0;
+			padding-right: 0;
+			//margin-left: auto !important;
+		}
+
+        .btn.note-btn {
+            // overwrite any theme-specific button skinning
+            
+        }
+
+		.dropdown-toggle:after {
+			margin-left: 0.5em;
+			opacity: 0.6;
+		}
+
+		.dropdown-toggle:empty:after {
+			margin-left: 0;
+		}
+
+		.note-para > .btn-group:last-child .dropdown-menu.show {
+			// Fix: the para popover button groups should not wrap
+			display: flex !important;
+		}
+
+		.dropdown-style > .dropdown-item > * {
+			// Fix: Summernote does not remove the BS4 bottom margin of para style dropdown items
+			margin-bottom: 0;
+		}
+
+		.note-color + .btn-group > .btn {
+			// Fix: the fontsize button width should not change (toolbar flickers)
+			padding-left: 0.5rem;
+			padding-right: 0.5rem;
+			min-width: 50px;
+		}
+
+		.scrollable-menu {
+			height: auto;
+			max-height: 340px;
+			width: 360px;
+			overflow-x: hidden;
+			padding: 0 !important
+		}
+
+		.btn-group-cssclass .dropdown-menu {
+			&.show {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.dropdown-item {
+				position: relative;
+
+				&.checked {
+					order: -1;
+
+					&:before {
+						position: absolute;
+						content: '';
+						left: 0;
+						top: 0;
+						bottom: 0;
+						width: 3px;
+						background-color: $warning;
+					}
+				}
+			}
+		}
+	}
+
+	.note-editable {
+		table:not(.table-bordered):not([border]),
+		table:not(.table-bordered)[border='0'] {
+			border-collapse: collapse;
+
+			td, th {
+				border: 1px dashed #bbb;
+			}
+		}
+	}
+}

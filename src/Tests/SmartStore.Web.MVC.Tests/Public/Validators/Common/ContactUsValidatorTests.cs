@@ -1,7 +1,7 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Models.Common;
-using SmartStore.Web.Validators.Common;
 using NUnit.Framework;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
 {
@@ -9,11 +9,13 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
     public class ContactUsValidatorTests : BaseValidatorTests
     {
         private ContactUsValidator _validator;
-        
-        [SetUp]
+		private PrivacySettings _privacySettings;
+
+		[SetUp]
         public new void Setup()
         {
-            _validator = new ContactUsValidator(_localizationService);
+			_privacySettings = new PrivacySettings();
+			_validator = new ContactUsValidator(_privacySettings);
         }
         
         [Test]
@@ -40,16 +42,6 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
             var model = new ContactUsModel();
             model.Email = "admin@example.com";
             _validator.ShouldNotHaveValidationErrorFor(x => x.Email, model);
-        }
-
-        [Test]
-        public void Should_have_error_when_fullName_is_null_or_empty()
-        {
-            var model = new ContactUsModel();
-            model.FullName = null;
-            _validator.ShouldHaveValidationErrorFor(x => x.FullName, model);
-            model.FullName = "";
-            _validator.ShouldHaveValidationErrorFor(x => x.FullName, model);
         }
 
         [Test]

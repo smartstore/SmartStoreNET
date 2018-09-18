@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
-using SmartStore.Core.Domain.Common;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers
 {
 	public static class CustomerExtentions
     {
+        private static readonly string[] _systemColors = new string[] { "primary", "secondary", "success", "info", "warning", "danger", "light", "dark" };
+
         /// <summary>
         /// Gets a value indicating whether customer is in a certain customer role
         /// </summary>
@@ -143,20 +148,9 @@ namespace SmartStore.Services.Customers
 			if (customer == null)
 				return string.Empty;
 
-			var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName).NullEmpty();
-			var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName).NullEmpty();
-
-			if (firstName != null && lastName != null)
+			if (customer.FullName.HasValue())
 			{
-				return firstName + " " + lastName;
-			}
-			else if (firstName != null)
-			{
-				return firstName;
-			}
-			else if (lastName != null)
-			{
-				return lastName;
+				return customer.FullName;
 			}
 
 			string name = customer.BillingAddress?.GetFullName();
@@ -173,33 +167,62 @@ namespace SmartStore.Services.Customers
 		}
 
         /// <summary>
-        /// Formats the customer name
+        /// Formats the customer name.
         /// </summary>
-        /// <param name="customer">Source</param>
-        /// <returns>Formatted text</returns>
+        /// <param name="customer">Customer entity.</param>
+        /// <returns>Formatted customer name.</returns>
         public static string FormatUserName(this Customer customer)
         {
             return FormatUserName(customer, false);
         }
 
         /// <summary>
-        /// Formats the customer name
+        /// Formats the customer name.
         /// </summary>
-        /// <param name="customer">Source</param>
-        /// <param name="stripTooLong">Strip too long customer name</param>
-        /// <returns>Formatted text</returns>
+        /// <param name="customer">Customer entity.</param>
+        /// <param name="stripTooLong">Whether to strip too long customer name.</param>
+        /// <returns>Formatted customer name.</returns>
         public static string FormatUserName(this Customer customer, bool stripTooLong)
         {
-            if (customer == null)
-                return string.Empty;
+            var engine = EngineContext.Current;
 
+            var userName = customer.FormatUserName(
+                engine.Resolve<CustomerSettings>(),
+                engine.Resolve<Localizer>(),
+                stripTooLong);
+
+            return userName;
+        }
+
+        /// <summary>
+        /// Formats the customer name.
+        /// </summary>
+        /// <param name="customer">Customer entity.</param>
+        /// <param name="customerSettings">Customer settings.</param>
+        /// <param name="T">Localizer.</param>
+        /// <param name="stripTooLong">Whether to strip too long customer name.</param>
+        /// <returns>Formatted customer name.</returns>
+        public static string FormatUserName(
+            this Customer customer,
+            CustomerSettings customerSettings,
+            Localizer T,
+            bool stripTooLong)
+        {
+            Guard.NotNull(customerSettings, nameof(customerSettings));
+            Guard.NotNull(T, nameof(T));
+
+            if (customer == null)
+            {
+                return string.Empty;
+            }
             if (customer.IsGuest())
             {
-                return EngineContext.Current.Resolve<ILocalizationService>().GetResource("Customer.Guest");
+                return T("Customer.Guest");
             }
 
-            string result = string.Empty;
-            switch (EngineContext.Current.Resolve<CustomerSettings>().CustomerNameFormat)
+            var result = string.Empty;
+
+            switch (customerSettings.CustomerNameFormat)
             {
                 case CustomerNameFormat.ShowEmails:
                     result = customer.Email;
@@ -210,59 +233,56 @@ namespace SmartStore.Services.Customers
                 case CustomerNameFormat.ShowUsernames:
                     result = customer.Username;
                     break;
-				case CustomerNameFormat.ShowFirstName:
-					result = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
-					break;
-				case CustomerNameFormat.ShowNameAndCity:
-					{
-						var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
-						var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
-						var city = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
+                case CustomerNameFormat.ShowFirstName:
+                    result = customer.FirstName;
+                    break;
+                case CustomerNameFormat.ShowNameAndCity:
+                    {
+                        var firstName = customer.FirstName;
+                        var lastName = customer.LastName;
+                        var city = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
 
-						if (firstName.IsEmpty())
-						{
-							var address = customer.Addresses.FirstOrDefault();
-							if (address != null)
-							{
-								firstName = address.FirstName;
-								lastName = address.LastName;
-								city = address.City;
-							}
-						}
+                        if (firstName.IsEmpty())
+                        {
+                            var address = customer.Addresses.FirstOrDefault();
+                            if (address != null)
+                            {
+                                firstName = address.FirstName;
+                                lastName = address.LastName;
+                                city = address.City;
+                            }
+                        }
 
-						result = firstName;
-						if (lastName.HasValue())
-						{
-							result = "{0} {1}.".FormatWith(result, lastName.First());
-						}
+                        result = firstName;
+                        if (lastName.HasValue())
+                        {
+                            result = "{0} {1}.".FormatInvariant(result, lastName.First());
+                        }
 
-						if (city.HasValue())
-						{
-							var from = EngineContext.Current.Resolve<ILocalizationService>().GetResource("Common.ComingFrom");
-							result = "{0} {1} {2}".FormatWith(result, from, city);
-						}
-					}
-					break;
+                        if (city.HasValue())
+                        {
+                            var from = T("Common.ComingFrom");
+                            result = "{0} {1} {2}".FormatInvariant(result, from, city);
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
 
-            if (stripTooLong && result.HasValue())
+            var maxLength = customerSettings.CustomerNameFormatMaxLength;
+            if (stripTooLong && maxLength > 0 && result != null && result.Length > maxLength)
             {
-                int maxLength = EngineContext.Current.Resolve<CustomerSettings>().CustomerNameFormatMaxLength;
-                if (maxLength > 0 && result.Length > maxLength)
-                {
-					result = result.Truncate(maxLength, "...");
-                }
+                result = result.Truncate(maxLength, "...");
             }
 
             return result;
         }
 
-		/// <summary>
-		/// Find any email address of customer
-		/// </summary>
-		public static string FindEmail(this Customer customer)
+        /// <summary>
+        /// Find any email address of customer
+        /// </summary>
+        public static string FindEmail(this Customer customer)
 		{
 			if (customer != null)
 			{
@@ -274,6 +294,47 @@ namespace SmartStore.Services.Customers
 			return null;
 		}
 
+		public static Language GetLanguage(this Customer customer)
+		{
+			if (customer == null)
+				return null;
+
+			var language = EngineContext.Current.Resolve<ILanguageService>().GetLanguageById(customer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId));
+
+			if (language == null || !language.Published)
+			{
+				language = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage;
+			}
+
+			return language;
+		}
+
+        /// <summary>
+        /// Returns a random system color suitable as avatar background color.
+        /// </summary>
+        /// <param name="customer">Customer entity.</param>
+        /// <param name="genericAttributeService">Generic attribute service.</param>
+        /// <returns>Random system color.</returns>
+        public static string GetAvatarColor(this Customer customer, IGenericAttributeService genericAttributeService)
+        {
+            Guard.NotNull(genericAttributeService, nameof(genericAttributeService));
+
+            string color = null;
+
+            if (customer != null)
+            {
+                color = customer.GetAttribute<string>(SystemCustomerAttributeNames.AvatarColor, genericAttributeService);
+                if (color.IsEmpty())
+                {
+                    var rnd = CommonHelper.GenerateRandomInteger(0, _systemColors.Length - 1);
+                    color = _systemColors[rnd];
+
+                    genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarColor, color);
+                }
+            }
+
+            return color;
+        }
 
 		#region Shopping cart
 
@@ -430,5 +491,5 @@ namespace SmartStore.Services.Customers
 		}
 
 		#endregion
-    }
+	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -151,8 +152,7 @@ namespace SmartStore.Services.Catalog
                         }
                         else
                         {
-                            AclRecord aclRecordToDelete;
-                            if (existingAclRecords.TryGetValue(customerRole.Id, out aclRecordToDelete))
+                            if (existingAclRecords.TryGetValue(customerRole.Id, out var aclRecordToDelete))
                             {
                                 _aclRepository.Delete(aclRecordToDelete);
                             }
@@ -314,27 +314,7 @@ namespace SmartStore.Services.Catalog
 			if (alias.HasValue())
 				query = query.Where(c => c.Alias.Contains(alias));
 
-			if (showHidden)
-			{
-				if (!QuerySettings.IgnoreMultiStore && storeId > 0)
-				{
-					query = from c in query
-							join sm in _storeMappingRepository.Table
-							on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-							from sm in c_sm.DefaultIfEmpty()
-							where !c.LimitedToStores || storeId == sm.StoreId
-							select c;
-
-					query = from c in query
-							group c by c.Id into cGroup
-							orderby cGroup.Key
-							select cGroup.FirstOrDefault();
-				}
-			}
-			else
-			{
-				query = ApplyHiddenCategoriesFilter(query, storeId);
-			}
+			query = ApplyHiddenCategoriesFilter(query, storeId, showHidden);
 
 			query = query.Where(c => !c.Deleted);
 
@@ -377,52 +357,57 @@ namespace SmartStore.Services.Catalog
                 if (!showHidden)
                     query = query.Where(c => c.Published);
 
-                query = query.Where(c => c.ParentCategoryId == parentCategoryId);
-                query = query.Where(c => !c.Deleted);
-                query = query.OrderBy(c => c.DisplayOrder);
+                query = query.Where(c => c.ParentCategoryId == parentCategoryId && !c.Deleted);
 
-                if (!showHidden)
-                {
-					query = ApplyHiddenCategoriesFilter(query, storeId);
-					query = query.OrderBy(c => c.DisplayOrder);
-                }
+				query = ApplyHiddenCategoriesFilter(query, storeId, showHidden);
 
-                var categories = query.ToList();
+                var categories = query.OrderBy(x => x.DisplayOrder).ToList();
                 return categories;
             });
         }
 
-		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, int storeId = 0)
+		protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, int storeId = 0, bool showHidden = false)
         {
-            // ACL (access control list)
-			if (!QuerySettings.IgnoreAcl)
+			var entityName = nameof(Category);
+			var applied = false;
+			
+			// Store mapping
+			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+			{
+				query = from c in query
+						join m in _storeMappingRepository.Table
+						on new { c1 = c.Id, c2 = entityName } equals new { c1 = m.EntityId, c2 = m.EntityName } into cm
+						from m in cm.DefaultIfEmpty()
+						where !c.LimitedToStores || storeId == m.StoreId
+						select c;
+
+				applied = true;
+			}
+
+			// ACL (access control list)
+			if (!showHidden && !QuerySettings.IgnoreAcl)
 			{
 				var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
 				query = from c in query
-						join acl in _aclRepository.Table
-						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
-						from acl in c_acl.DefaultIfEmpty()
-						where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+						join a in _aclRepository.Table
+						on new { c1 = c.Id, c2 = entityName } equals new { c1 = a.EntityId, c2 = a.EntityName } into ca
+						from a in ca.DefaultIfEmpty()
+						where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
 						select c;
-			}
 
-			// Store mapping
-			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+				applied = true;
+			}
+  
+			if (applied)
 			{
+				// Only distinct categories (group by ID)
 				query = from c in query
-						join sm in _storeMappingRepository.Table
-						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-						from sm in c_sm.DefaultIfEmpty()
-						where !c.LimitedToStores || storeId == sm.StoreId
-						select c;
+						group c by c.Id into cGroup
+						orderby cGroup.Key
+						select cGroup.FirstOrDefault();
 			}
 
-            // Only distinct categories (group by ID)
-            query = from c in query
-                    group c by c.Id into cGroup
-                    orderby cGroup.Key
-                    select cGroup.FirstOrDefault();
 
 			return query;
         }
@@ -511,7 +496,7 @@ namespace SmartStore.Services.Catalog
             {
                 var query = from pc in _productCategoryRepository.Table
                             join p in _productRepository.Table on pc.ProductId equals p.Id
-                            where pc.CategoryId == categoryId && !p.Deleted && (showHidden || p.Published)
+                            where pc.CategoryId == categoryId && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
                             select pc;
 
                 if (!showHidden)
@@ -537,13 +522,15 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _requestCache.Get(key, () =>
             {
-				var query = from pc in _productCategoryRepository.Table.Expand(x => x.Category)
+				var query = from pc in _productCategoryRepository.Table
                             join c in _categoryRepository.Table on pc.CategoryId equals c.Id
                             where pc.ProductId == productId &&
                                   !c.Deleted &&
                                   (showHidden || c.Published)
                             orderby pc.DisplayOrder
                             select pc;
+
+				query = query.Include(x => x.Category);
 
 				var allProductCategories = query.ToList();
 				var result = new List<ProductCategory>();
@@ -571,11 +558,13 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
-				from pc in _productCategoryRepository.TableUntracked.Expand(x => x.Category).Expand(x => x.Category.Picture)
+				from pc in _productCategoryRepository.TableUntracked
 				join c in _categoryRepository.Table on pc.CategoryId equals c.Id
 				where productIds.Contains(pc.ProductId) && !c.Deleted && (showHidden || c.Published)
 				orderby pc.DisplayOrder
 				select pc;
+
+			query = query.Include(x => x.Category.Picture);
 
 			if (hasDiscountsApplied.HasValue)
 			{
@@ -703,12 +692,12 @@ namespace SmartStore.Services.Catalog
 		public virtual string GetCategoryPath(
 			TreeNode<ICategoryNode> treeNode, 
 			int? languageId = null,
-			bool withAlias = false, 
+			string aliasPattern = null, 
 			string separator = " » ")
 		{
 			Guard.NotNull(treeNode, nameof(treeNode));
 
-			var lookupKey = "Path.{0}.{1}.{2}".FormatInvariant(separator, languageId ?? 0, withAlias);
+			var lookupKey = "Path.{0}.{1}.{2}".FormatInvariant(separator, languageId ?? 0, aliasPattern.HasValue());
 			var cachedPath = treeNode.GetMetadata<string>(lookupKey, false);
 
 			if (cachedPath != null)
@@ -721,14 +710,6 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var node in trail)
 			{
-				//if (!node.Value.Published)
-				//{
-				//	// If any parent is unpublished,
-				//	// this category is not visible: so, no path.
-				//	sb.Clear();
-				//	break;
-				//}
-
 				if (!node.IsRoot)
 				{
 					var cat = node.Value;
@@ -739,11 +720,10 @@ namespace SmartStore.Services.Catalog
 
 					sb.Append(name);
 
-					if (withAlias && cat.Alias.HasValue())
+					if (aliasPattern.HasValue() && cat.Alias.HasValue())
 					{
-						sb.Append(" (");
-						sb.Append(cat.Alias);
-						sb.Append(")");
+						sb.Append(" ");
+						sb.Append(string.Format(aliasPattern, cat.Alias));
 				}
 
 					if (node != treeNode)

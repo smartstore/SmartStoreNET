@@ -122,10 +122,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var pageSize = _forumSettings.PrivateMessagesPageSize;
-
-			var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id,
-				 0, _workContext.CurrentCustomer.Id, null, null, false, string.Empty, page, pageSize);
-
+			var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id, 0, _workContext.CurrentCustomer.Id, null, null, false, page, pageSize);
             var inbox = new List<PrivateMessageModel>();
 
             foreach (var pm in list)
@@ -166,10 +163,7 @@ namespace SmartStore.Web.Controllers
             }
 
             var pageSize = _forumSettings.PrivateMessagesPageSize;
-
-			var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id,
-				_workContext.CurrentCustomer.Id, 0, null, false, null, string.Empty, page, pageSize);
-
+			var list = _forumService.GetAllPrivateMessages(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id, 0, null, false, null, page, pageSize);
             var sentItems = new List<PrivateMessageModel>();
 
             foreach (var pm in list)

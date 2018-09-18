@@ -82,9 +82,16 @@ namespace SmartStore.Core
 	public interface IPagedList<T> : IPageable, IList<T>
 	{
 		/// <summary>
-		/// Return the original query without any paging applied
+		/// Gets underlying query without any paging applied
 		/// </summary>
 		IQueryable<T> SourceQuery { get; }
+
+		/// <summary>
+		/// Allows modification of the underlying query before it is executed.
+		/// </summary>
+		/// <param name="alterer">The alteration function. The underlying query is passed, the modified query should be returned.</param>
+		/// <returns>The current instance for chaining</returns>
+		IPagedList<T> AlterQuery(Func<IQueryable<T>, IQueryable<T>> alterer);
 
 		/// <summary>
 		/// Applies the initial paging arguments to the passed query

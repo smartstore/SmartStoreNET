@@ -65,7 +65,12 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-        protected bool HasMessages
+		public bool EnableHoneypotProtection
+		{
+			get { return _helper.EnableHoneypotProtection; }
+		}
+
+		protected bool HasMessages
 		{
 			get
 			{
@@ -162,29 +167,6 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-        /// <summary>
-        /// Return a value indicating whether the working language and theme support RTL (right-to-left)
-        /// </summary>
-        /// <returns></returns>
-        public bool ShouldUseRtlTheme()
-        {
-			var lang = _helper.Services?.WorkContext?.WorkingLanguage;
-			if (lang == null)
-			{
-				return false;
-			}
-
-			var supportRtl = lang.Rtl;
-			if (supportRtl)
-			{
-				// Ensure that the active theme also supports it
-				var manifest = this.ThemeManifest;
-				supportRtl = manifest == null ? supportRtl : manifest.SupportRtl;
-			}
-
-			return supportRtl;
-		}
-
 		/// <summary>
 		/// Gets the manifest of the current active theme
 		/// </summary>
@@ -275,6 +257,17 @@ namespace SmartStore.Web.Framework.Theming
 			return url2;
 		}
 
+		public string GenerateHelpUrl(HelpTopic topic)
+		{
+			var seoCode = WorkContext?.WorkingLanguage?.UniqueSeoCode;
+			if (seoCode.IsEmpty())
+			{
+				return topic?.EnPath;
+			}
+
+			return SmartStoreVersion.GenerateHelpUrl(seoCode, topic);
+		}
+
 		public string GenerateHelpUrl(string path)
 		{
 			var seoCode = WorkContext?.WorkingLanguage?.UniqueSeoCode;
@@ -285,7 +278,33 @@ namespace SmartStore.Web.Framework.Theming
 
 			return SmartStoreVersion.GenerateHelpUrl(seoCode, path);
 		}
-    }
+
+		/// <summary>
+		/// Tries to find a matching localization file for a given culture in the following order 
+		/// (assuming <paramref name="culture"/> is 'de-DE', <paramref name="pattern"/> is 'lang-*.js' and <paramref name="fallbackCulture"/> is 'en-US'):
+		/// <list type="number">
+		///		<item>Exact match > lang-de-DE.js</item>
+		///		<item>Neutral culture > lang-de.js</item>
+		///		<item>Any region for language > lang-de-CH.js</item>
+		///		<item>Exact match for fallback culture > lang-en-US.js</item>
+		///		<item>Neutral fallback culture > lang-en.js</item>
+		///		<item>Any region for fallback language > lang-en-GB.js</item>
+		/// </list>
+		/// </summary>
+		/// <param name="culture">The ISO culture code to get a localization file for, e.g. 'de-DE'</param>
+		/// <param name="virtualPath">The virtual path to search in</param>
+		/// <param name="pattern">The pattern to match, e.g. 'lang-*.js'. The wildcard char MUST exist.</param>
+		/// <param name="fallbackCulture">Optional.</param>
+		/// <returns>Result</returns>
+		public LocalizationFileResolveResult ResolveLocalizationFile(
+			string culture,
+			string virtualPath,
+			string pattern,
+			string fallbackCulture = "en")
+		{
+			return _helper.LocalizationFileResolver.Resolve(culture, virtualPath, pattern, true, fallbackCulture);
+		}
+	}
 
     public abstract class WebViewPage : WebViewPage<dynamic>
     {

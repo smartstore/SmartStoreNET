@@ -1,8 +1,9 @@
-﻿@using Telerik.Web.Mvc.UI
-@model CheckoutAttributeListModel
+﻿@model CheckoutAttributeListModel
+@using Telerik.Web.Mvc.UI
 @{
     ViewBag.Title = T("Admin.Catalog.Attributes.CheckoutAttributes").Text;
 }
+
 <div class="section-header">
     <div class="title">
         @T("Admin.Catalog.Attributes.CheckoutAttributes")
@@ -14,13 +15,7 @@
 		</a>
     </div>
 </div>
-<script>
-	function checkoutAttributesGrid_onRowDataBound(e) {
-		if (!e.dataItem.IsActive) {
-			$(e.row).find('td').wrapInner('<span class="muted" />');
-		}
-	}
-</script>
+
 <div>
 	@(Html.Telerik().Grid<CheckoutAttributeModel>()
 		.Name("checkoutattributes-grid")
@@ -49,3 +44,11 @@
 		.ClientEvents(events => events.OnRowDataBound("checkoutAttributesGrid_onRowDataBound"))
 		.EnableCustomBinding(true))
 </div>
+
+<script>
+	function checkoutAttributesGrid_onRowDataBound(e) {
+		if (!e.dataItem.IsActive) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+	}
+</script>

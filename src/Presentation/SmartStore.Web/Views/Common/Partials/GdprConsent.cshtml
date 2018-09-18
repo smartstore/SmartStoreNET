@@ -1,0 +1,16 @@
+﻿@model SmartStore.Web.Models.Common.GdprConsentModel
+@{
+	Layout = "";
+}
+
+<div class="form-group row">
+	<div class="col form-control-plaintext">
+		<div class="form-check">
+			@Html.CheckBoxFor(model => model.GdprConsent, new { @class = "form-check-input" })
+			<label class="form-check-label" for="@Html.IdFor(model => model.GdprConsent)">
+				@Html.Raw(T("Gdpr.Consent.DetailText" + (Model.SmallDisplay ? ".Small" : "")).Text.FormatWith(Url.TopicUrl("privacyinfo")))
+			</label>
+		</div>
+		@Html.ValidationMessageFor(model => model.GdprConsent)
+	</div>
+</div>	

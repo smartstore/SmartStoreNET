@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.Serialization;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 
@@ -36,7 +37,9 @@ namespace SmartStore.Templating.Liquid
 			var prop = FastProperty.GetProperty(_type, name);
 			if (prop != null)
 			{
-				return prop.GetValue(_data);
+				return prop.Property.HasAttribute<IgnoreDataMemberAttribute>(true) 
+					? null
+					: prop.GetValue(_data);
 			}
 
 			var method = _type.GetMethod(name, BindingFlags.Instance | BindingFlags.Public);

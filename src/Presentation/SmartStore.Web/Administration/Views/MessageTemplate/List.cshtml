@@ -18,27 +18,19 @@
 
 @if (Model.AvailableStores.Count > 1)
 {
-	<table class="adminContent mb-4">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchStoreId)
-			</td>
-			<td class="adminData">
-				<div class="form-row">
-					<div class="col">
-						@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
-					</div>
-					<div class="col-auto">
-						<button type="button" id="search-templates" class="btn btn-secondary">
-							<i class="fa fa-search"></i>
-							<span>@T("Admin.Common.Search")</span>
-						</button>
-					</div>
-				</div>
-				
-			</td>
-		</tr>
-	</table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.SearchStoreId)
+			@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
 }
 
 <div>
@@ -67,7 +59,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         //search button
-        $('#search-templates').click(function () {
+		$('#btnSearch').click(function () {
             //search
             var grid = $('#templates-grid').data('tGrid');
             //no paging support in this grid

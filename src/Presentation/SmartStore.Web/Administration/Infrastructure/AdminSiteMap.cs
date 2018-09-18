@@ -111,7 +111,7 @@ namespace SmartStore.Admin.Infrastructure
 			if (node.Attributes.ContainsKey("isGroupHeader"))
 				item.IsGroupHeader = Boolean.Parse(node.Attributes["isGroupHeader"] as string);
 
-			// iterate children recursively
+			// Iterate children recursively
 			foreach (var childNode in node.ChildNodes)
 			{
 				var childTreeNode = ConvertSitemapNodeToMenuItemNode(childNode);

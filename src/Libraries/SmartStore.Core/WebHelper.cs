@@ -25,7 +25,7 @@ namespace SmartStore.Core
 		private static object s_lock = new object();
 		private static bool? s_optimizedCompilationsEnabled;
 		private static AspNetHostingPermissionLevel? s_trustLevel;
-		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|webp|scss|less|liquid|bmp|html|htm|xml|pdf|doc|xls|rar|zip|7z|ico|eot|svg|ttf|woff|otf|axd|ashx)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|webp|liquid|bmp|html|htm|xml|pdf|doc|xls|rar|zip|7z|ico|eot|svg|ttf|woff|woff2|otf)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static ConcurrentDictionary<int, string> s_safeLocalHostNames = new ConcurrentDictionary<int, string>();
@@ -42,19 +42,12 @@ namespace SmartStore.Core
 
         public WebHelper(HttpContextBase httpContext)
         {
-            this._httpContext = httpContext;
+            _httpContext = httpContext;
         }
 
         public virtual string GetUrlReferrer()
         {
-            string referrerUrl = null;
-
-            if (_httpContext != null &&
-                _httpContext.Request != null &&
-                _httpContext.Request.UrlReferrer != null)
-                referrerUrl = _httpContext.Request.UrlReferrer.ToString();
-
-            return referrerUrl.EmptyNull();
+            return _httpContext?.Request?.UrlReferrer?.ToString() ?? string.Empty;
         }
 
 		public virtual string GetClientIdent()
@@ -133,7 +126,7 @@ namespace SmartStore.Core
         public virtual string GetThisPageUrl(bool includeQueryString, bool useSsl)
         {
             string url = string.Empty;
-            if (_httpContext == null || _httpContext.Request == null)
+            if (_httpContext?.Request == null)
                 return url;
 
             if (includeQueryString)
@@ -619,7 +612,7 @@ namespace SmartStore.Core
 			Guard.NotEmpty(protocol, nameof(protocol));
 			Guard.NotEmpty(host, nameof(host));
 
-			string baseUrl = string.Format("{0}://{1}", protocol, host.TrimEnd('/'));
+			string baseUrl = protocol.EnsureEndsWith("://") + host.TrimEnd('/');
 
 			MatchEvaluator evaluator = (match) =>
 			{
@@ -637,7 +630,7 @@ namespace SmartStore.Core
 		/// Prepends protocol and host to the given (relative) url
 		/// </summary>
 		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
-		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
+		public static string GetAbsoluteUrl(string url, HttpRequestBase request, bool enforceScheme = false)
 		{
 			Guard.NotEmpty(url, nameof(url));
 			Guard.NotNull(request, nameof(request));
@@ -647,9 +640,16 @@ namespace SmartStore.Core
 				return url;
 			}
 
-			if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			if (url.Contains("://"))
 			{
 				return url;
+			}
+
+			if (url.StartsWith("//"))
+			{
+				return enforceScheme 
+					? String.Concat(request.Url.Scheme, ":", url)
+					: url;
 			}
 
 			if (url.StartsWith("~"))

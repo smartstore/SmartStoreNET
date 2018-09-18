@@ -187,7 +187,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult Print(int id, bool pdf = false)
 		{
 			var order = _orderService.GetOrderById(id);
-
+			
 			if (IsNonExistentOrder(order))
 				return HttpNotFound();
 
@@ -251,12 +251,16 @@ namespace SmartStore.Web.Controllers
 		{
 			ViewBag.PdfMode = pdf;
 			var viewName = "Details.Print";
-
+			
 			if (pdf)
 			{
 				// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
 				var storeId = model[0].StoreId;
-				var routeValues = new RouteValueDictionary { { "storeId", storeId } };
+				var routeValues = new RouteValueDictionary
+				{
+					["storeId"] = storeId,
+					["lid"] = Services.WorkContext.WorkingLanguage.Id
+				};
 				var pdfSettings = Services.Settings.LoadSetting<PdfSettings>(storeId);
 
 				var settings = new PdfConvertSettings

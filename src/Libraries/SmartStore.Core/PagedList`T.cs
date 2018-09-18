@@ -75,6 +75,14 @@ namespace SmartStore.Core
 			get { return _query; }
 		}
 
+		public IPagedList<T> AlterQuery(Func<IQueryable<T>, IQueryable<T>> alterer)
+		{
+			var result = alterer?.Invoke(_query);
+			_query = result ?? throw new InvalidOperationException("The '{0}' delegate must not return NULL.".FormatInvariant(nameof(alterer)));
+
+			return this;
+		}
+
 		public IQueryable<T> ApplyPaging(IQueryable<T> query)
 		{
 			if (_pageIndex == 0 && _pageSize == int.MaxValue)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -10,6 +11,7 @@ using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
+using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -17,7 +19,19 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public abstract class PayPalControllerBase<TSetting> : PaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
+	public abstract class PayPalPaymentControllerBase : PaymentControllerBase
+	{
+		protected void PrepareConfigurationModel(ApiConfigurationModel model, int storeScope)
+		{
+			var store = storeScope == 0
+				? Services.StoreContext.CurrentStore
+				: Services.StoreService.GetStoreById(storeScope);
+
+			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
+		}
+	}
+
+	public abstract class PayPalControllerBase<TSetting> : PayPalPaymentControllerBase where TSetting : PayPalSettingsBase, ISettings, new()
 	{
 		public PayPalControllerBase(
 			string systemName,
@@ -87,10 +101,9 @@ namespace SmartStore.PayPal.Controllers
 
 		protected bool VerifyIPN(PayPalSettingsBase settings, string formString, out Dictionary<string, string> values)
 		{
-			// settings: multistore context not possible here. we need the custom value to determine what store it is.
-
-			var request = settings.GetPayPalWebRequest();
-			request.Method = "POST";
+            // Settings: multistore context not possible here. we need the custom value to determine what store it is.
+            var request = (HttpWebRequest)WebRequest.Create(settings.GetPayPalUrl());
+            request.Method = "POST";
 			request.ContentType = "application/x-www-form-urlencoded";
 			request.UserAgent = Request.UserAgent;
 

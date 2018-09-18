@@ -4,8 +4,6 @@
 @using System.Web.Hosting;
 
 @{
-	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
-
 	// page title
 	string adminPageTitle = "";
 	if (!string.IsNullOrWhiteSpace(ViewBag.Title))
@@ -14,89 +12,84 @@
 	}
 	adminPageTitle += T("Admin.PageTitle").Text;
 
-	var volatileJsRoot = "~/Administration/Scripts/";
-	var vendorsRoot = "~/Administration/Content/vendors/";
-	var flexJsRoot = "~/Themes/Flex/Scripts/";
-	var flexCssRoot = "~/Themes/Flex/Content/css/";
+	var adminJsRoot = "~/Administration/Scripts/";
+	var vendorsRoot = "~/Content/vendors/";
 	var contentRoot = "~/Content/";
-	var scriptsRoot = "~/Scripts/";
+	var jsRoot = "~/Scripts/";
 
 	// add css assets
-	var telerikCssRoot = "~/Content/2012.2.607/";
+	var telerikCssRoot = "~/Administration/Content/telerik/css/2012.2.607/";
+
 	Html.AppendCssFileParts(
-		flexCssRoot + "fontastic.css",
-		contentRoot + "font-awesome.css",
+		contentRoot + "fontastic/fontastic.css",
+		vendorsRoot + "font-awesome/font-awesome.css",
 		telerikCssRoot + "telerik.common.css",
 		vendorsRoot + "pnotify/css/pnotify.css",
 		vendorsRoot + "pnotify/css/pnotify.mobile.css",
-		vendorsRoot + "pnotify/css/pnotify.buttons.css",
-		"~/Administration/Content/theme.scss");
+		vendorsRoot + "pnotify/css/pnotify.buttons.css");
+
+	// Theme
+	Html.AddCssFileParts(true, "~/Administration/Content/theme.scss");
+
+	if (WorkContext.WorkingLanguage.Rtl)
+	{
+		Html.AddCssFileParts(true,
+			telerikCssRoot + "telerik.rtl.css",
+			"~/Administration/Content/theme-rtl.scss");
+	}
 
 	// add js assets (Head)
 	Html.AppendScriptParts(ResourceLocation.Head,
-		scriptsRoot + "modernizr.js",
-		// Telerik doesn't like jQuery 1.9+, a shame!
-		//"~/Administration/Scripts/jquery-1.8.3.js",
-		volatileJsRoot + "jquery-3.2.1.js",
-		volatileJsRoot + "jquery-migrate-3.2.1.js",
-		volatileJsRoot + "jquery-shims.js");
-
-	// add js assets (Foot)
-	var bootstrap4JsRoot = "~/Administration/Content/bs4/js/";
+		vendorsRoot + "modernizr/modernizr.js",
+		vendorsRoot + "jquery/jquery-3.2.1.js",
+		//vendorsRoot + "jquery/jquery-migrate-3.0.0.js",
+		adminJsRoot + "jquery-shims.js");
 
 	Html.AppendScriptParts(ResourceLocation.Foot,
-		// jQuery UI Core
-		scriptsRoot + "jquery-ui/effect.js",
-		scriptsRoot + "jquery-ui/effect-transfer.js",
-		scriptsRoot + "jquery-ui/effect-shake.js",
-		scriptsRoot + "jquery-ui/position.js",
-		// jQuery Validation
-		volatileJsRoot + "jquery.unobtrusive-ajax.js",
-		volatileJsRoot + "jquery.validate.js",
-		volatileJsRoot + "jquery.validate.unobtrusive.js",
-		volatileJsRoot + "jquery.validate.unobtrusive.custom.js",
-		// SmartStore system
-		scriptsRoot + "underscore.js",
-		scriptsRoot + "underscore.string.js",
-		scriptsRoot + "underscore.mixins.js",
-		scriptsRoot + "smartstore.system.js",
-		scriptsRoot + "smartstore.jquery.utils.js",
-		vendorsRoot + "moment/moment.js",
-		scriptsRoot + "smartstore.globalization.js",
-		// Common
-		volatileJsRoot + "smartstore.viewport.js",
-		scriptsRoot + "jquery.ba-outside-events.js",
-		scriptsRoot + "jquery.preload.js",
-		scriptsRoot + "jquery.menu-aim.js",
-		scriptsRoot + "smartstore.doAjax.js",
-		scriptsRoot + "smartstore.entitypicker.js",
-		scriptsRoot + "jquery.addeasing.js",
-		scriptsRoot + "smartstore.eventbroker.js",
-		scriptsRoot + "smartstore.hacks.js",
-		volatileJsRoot + "smartstore.common.js",
-		// Bootstrap
-		contentRoot + "bs4/js/bootstrap.bundle.js",
 		// Vendors
+		vendorsRoot + "underscore/underscore.js",
+		vendorsRoot + "underscore/underscore.string.js",
+		vendorsRoot + "jquery/jquery.addeasing.js",
+		vendorsRoot + "jquery-ui/effect.js",
+		vendorsRoot + "jquery-ui/effect-transfer.js",
+		vendorsRoot + "jquery-ui/position.js",
+		vendorsRoot + "jquery/jquery.unobtrusive-ajax.js",
+		vendorsRoot + "jquery/jquery.validate.js",
+		vendorsRoot + "jquery/jquery.validate.unobtrusive.js",
+		vendorsRoot + "jquery/jquery.scrollTo.js",
+		vendorsRoot + "jquery/jquery.sortable.js",
+		vendorsRoot + "moment/moment.js",
 		vendorsRoot + "datetimepicker/js/tempusdominus-bootstrap-4.js",
+		vendorsRoot + "colorpicker/js/bootstrap-colorpicker.js",
+		vendorsRoot + "colorpicker/js/bootstrap-colorpicker-globalinit.js",
 		vendorsRoot + "select2/js/select2.js",
-		// Shared UI
-		volatileJsRoot + "smartstore.selectwrapper.js",
-		scriptsRoot + "smartstore.throbber.js",
-		scriptsRoot + "smartstore.thumbzoomer.js",
-		scriptsRoot + "smartstore.shrinkmenu.js",
-		scriptsRoot + "smartstore.scrollbutton.js",
 		vendorsRoot + "pnotify/js/pnotify.js",
 		vendorsRoot + "pnotify/js/pnotify.mobile.js",
 		vendorsRoot + "pnotify/js/pnotify.buttons.js",
 		vendorsRoot + "pnotify/js/pnotify.animate.js",
-		scriptsRoot + "jquery.scrollTo.js",
-		scriptsRoot + "jquery.sortable.js",
+		contentRoot + "bs4/js/bootstrap.bundle.js",
+		// Common
+		jsRoot + "underscore.mixins.js",
+		jsRoot + "smartstore.system.js",
+		jsRoot + "smartstore.touchevents.js",
+		jsRoot + "smartstore.jquery.utils.js",
+		jsRoot + "smartstore.globalization.js",
+		jsRoot + "jquery.validate.unobtrusive.custom.js",
+		jsRoot + "smartstore.viewport.js",
+		jsRoot + "smartstore.doajax.js",
+		jsRoot + "smartstore.eventbroker.js",
+		jsRoot + "smartstore.hacks.js",
+		jsRoot + "smartstore.common.js",
+		jsRoot + "smartstore.selectwrapper.js",
+		jsRoot + "smartstore.throbber.js",
+		jsRoot + "smartstore.thumbzoomer.js",
+		jsRoot + "smartstore.entitypicker.js",
 		// Admin
-		"~/Administration/Scripts/admin.common.js",
-		"~/Administration/Scripts/admin.globalinit.js");
+		adminJsRoot + "admin.common.js",
+		adminJsRoot + "admin.globalinit.js");
 }
 <!DOCTYPE html>
-<html class="no-js not-ready loading" data-pnotify-firstpos1="140">
+<html @Html.LanguageAttributes() class="no-js not-ready loading" data-pnotify-firstpos1="140">
 <head>
     <title>@adminPageTitle</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
@@ -110,7 +103,7 @@
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
 
-    <link rel="shortcut icon" href="~/Administration/favicon.ico" />
+    <link rel="shortcut icon" href="~/Administration/favicon.ico?v=@SmartStoreVersion.CurrentVersion" />
 
 	@Html.CustomHead()
 
@@ -121,10 +114,13 @@
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>   
 	@{ Html.RenderZone("start"); }
 	@RenderBody()
+	@{ Html.RenderZone("aftercontent"); }
 
 	@RenderSection("foot", required: false)
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)
+	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, vendorsRoot + "select2/js/i18n", "*.js", null)
+	@Html.LocalizationScript(WorkContext.WorkingLanguage.UniqueSeoCode, vendorsRoot + "moment/locale", "*.js", null)
 
 	<!--These need to be at the end of the page to ensure that all the controls requiring scripts have been rendered-->
 	@(Html.Telerik().ScriptRegistrar()

@@ -40,10 +40,12 @@
 
 <div class="page manufacturer-page">
     <div class="page-title">
-        <h1 class="h3">@Model.Name</h1>
+        <h1 @Html.LanguageAttributes(Model.Name) class="h3">@Model.Name</h1>
 		@if (Model.SearchResult.TotalHitsCount > 0)
 		{
-			<h5 class="search-hitcount">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.SearchResult.TotalHitsCount.ToString("N0"))</h5>
+			var pageIndex = "<span class='lrm'>{0}-{1}</span>".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0"));
+			var pageSize = "<span class='lrm'>" + Model.SearchResult.TotalHitsCount.ToString("N0") + "</span>";
+			<h5 class="search-hitcount">@Html.Raw(T("Search.PagingInfo", pageIndex, pageSize))</h5>
 		}
     </div>
 
@@ -53,7 +55,7 @@
 		@* Description *@
         @if (!String.IsNullOrWhiteSpace(Model.Description))
         {
-            <div class="manufacturer-description lead html-editor-content">
+            <div @Html.LanguageAttributes(Model.Description) class="manufacturer-description lead html-editor-content">
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
         }

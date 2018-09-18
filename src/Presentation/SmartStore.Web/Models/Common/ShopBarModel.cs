@@ -7,10 +7,10 @@ namespace SmartStore.Web.Models.Common
         public bool IsAuthenticated { get; set; }
         public string CustomerEmailUsername { get; set; }
         public bool IsCustomerImpersonated { get; set; }
+		public bool DisplayAdminLink { get; set; }
+		public bool PublicStoreNavigationAllowed { get; set; }
 
-        public bool DisplayAdminLink { get; set; }
-
-        public bool ShoppingCartEnabled { get; set; }
+		public bool ShoppingCartEnabled { get; set; }
         public int CartItemsCount { get; set; }
 
         public bool WishlistEnabled { get; set; }

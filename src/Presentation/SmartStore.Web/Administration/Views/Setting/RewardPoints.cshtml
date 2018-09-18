@@ -1,5 +1,4 @@
 ﻿@model RewardPointsSettingsModel
-@using SmartStore.Core.Domain.Orders;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.RewardPoints").Text;
 }
@@ -34,7 +33,7 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlRewardPointSettings" })
+				@Html.SettingEditorFor(model => model.Enabled, Html.CheckBoxFor(model => model.Enabled, new { data_toggler_for = "#pnlRewardPointSettings" }))
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
@@ -44,13 +43,12 @@
 					@Html.SmartLabelFor(model => model.ExchangeRate)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.ExchangeRate)
-					<div class="input-group">
+					@Html.SettingEditorFor(model => Model.ExchangeRate, @<div class="input-group">
 						<div class="input-group-prepend">
 							<span class="input-group-text" id="basic-addon1">@T("Admin.Configuration.Settings.RewardPoints.ExchangeRate.Hint2")</span>
 						</div>
-						@Html.EditorFor(model => model.ExchangeRate, new { postfix = Model.PrimaryStoreCurrencyCode })
-					</div>
+						@Html.SettingEditorFor(model => model.ExchangeRate, null, new { postfix = Model.PrimaryStoreCurrencyCode })   
+					</div>)
 					@Html.ValidationMessageFor(model => model.ExchangeRate)
 				</td>
 			</tr>
@@ -75,8 +73,7 @@
 					@Html.SmartLabelFor(model => model.PointsForRegistration)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForRegistration)
-					@Html.EditorFor(model => model.PointsForRegistration)
+					@Html.SettingEditorFor(model => model.PointsForRegistration)
 					@Html.ValidationMessageFor(model => model.PointsForRegistration)
 				</td>
 			</tr>
@@ -85,8 +82,7 @@
 					@Html.SmartLabelFor(model => model.PointsForProductReview)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForProductReview)
-					@Html.EditorFor(model => model.PointsForProductReview)
+					@Html.SettingEditorFor(model => model.PointsForProductReview)
 					@Html.ValidationMessageFor(model => model.PointsForProductReview)
 				</td>
 			</tr>
@@ -94,22 +90,24 @@
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.PointsForPurchases_Amount)
 				</td>
-				<td class="adminData wide" id="pnlPointsForPurchases">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_OverrideForStore, "#pnlPointsForPurchases")
-
-
-					<div class="input-group">
-						<div class="input-group-prepend">
-							<span class="input-group-text" id="basic-addon1">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")</span>
+				<td class="adminData wide">
+					@Html.SettingEditorFor(model => Model.PointsForPurchases_Amount, @<div class="form-row flex-nowrap">
+						<div class="col-auto">
+							<div class="form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")</div>
 						</div>
-
-						@Html.EditorFor(model => model.PointsForPurchases_Amount, new { postfix = Model.PrimaryStoreCurrencyCode })
-
-						<div class="input-group-prepend">
-							<span class="input-group-text" id="basic-addon1">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint2")</span>
+						<div class="col-auto">
+							@Html.EditorFor(model => model.PointsForPurchases_Amount, new { postfix = Model.PrimaryStoreCurrencyCode })
 						</div>
-						@Html.EditorFor(model => model.PointsForPurchases_Points, new { postfix = T("Admin.Configuration.Settings.RewardPoints.Earning.Hint3").Text })
-					</div>
+						<div class="col-auto">
+							<div class=" form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint2")</div>
+						</div>
+						<div class="col-auto">
+							@Html.EditorFor(model => model.PointsForPurchases_Points)
+						</div>
+						<div class="col-auto">
+							<div class=" form-control-plaintext fs-sm text-muted">@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint3")</div>
+						</div>
+					</div>)
 
 					@Html.ValidationMessageFor(model => model.PointsForPurchases_Amount)
 					@Html.ValidationMessageFor(model => model.PointsForPurchases_Points)
@@ -120,8 +118,7 @@
 					@Html.SmartLabelFor(model => model.PointsForPurchases_Awarded)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Awarded)
-					@Html.DropDownListFor(model => model.PointsForPurchases_Awarded, ((OrderStatus)Model.PointsForPurchases_Awarded).ToSelectList())
+					@Html.EnumSettingEditorFor(model => model.PointsForPurchases_Awarded)
 					@Html.ValidationMessageFor(model => model.PointsForPurchases_Awarded)
 				</td>
 			</tr>
@@ -130,8 +127,7 @@
 					@Html.SmartLabelFor(model => model.PointsForPurchases_Canceled)
 				</td>
 				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Canceled)
-					@Html.DropDownListFor(model => model.PointsForPurchases_Canceled, ((OrderStatus)Model.PointsForPurchases_Canceled).ToSelectList())
+					@Html.EnumSettingEditorFor(model => model.PointsForPurchases_Canceled)
 					@Html.ValidationMessageFor(model => model.PointsForPurchases_Canceled)
 				</td>
 			</tr>

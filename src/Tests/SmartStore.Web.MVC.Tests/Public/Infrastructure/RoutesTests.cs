@@ -54,7 +54,8 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 			"~/boards/forum/14/test-forum-slug/page/2".ShouldMapTo<BoardsController>(c => c.Forum(14, 2));
 			"~/boards/forumgroup/15/".ShouldMapTo<BoardsController>(c => c.ForumGroup(15));
 			"~/boards/forumgroup/15/test-forumgroup-slug/".ShouldMapTo<BoardsController>(c => c.ForumGroup(15));
-			"~/boards/search/".ShouldMapTo<BoardsController>(c => c.Search(null, null, null, null, null, 1));
+			//"~/boards/search/".ShouldMapTo<BoardsController>(c => c.Search(null, null, null, null, null, 1));
+            "~/boards/search/".ShouldMapTo<BoardsController>(c => c.Search(null));
         }
 
         [Test]
@@ -191,13 +192,6 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             "~/news/rss/1".ShouldMapTo<NewsController>(c => c.ListRss(1));
 			//"~/news/2/".ShouldMapTo<NewsController>(c => c.NewsItem(2));
             //"~/news/2/se-name".ShouldMapTo<NewsController>(c => c.NewsItem(2));
-        }
-
-        [Test]
-        public void Topic_routes()
-        {
-            "~/t/somename".ShouldMapTo<TopicController>(c => c.TopicDetails("somename"));
-            "~/t-popup/somename".ShouldMapTo<TopicController>(c => c.TopicDetailsPopup("somename"));
         }
     }
 }

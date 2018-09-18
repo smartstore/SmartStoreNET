@@ -4,21 +4,26 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
-	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
-	var list = Model.Parent;
-	var picture = Model.Picture;
+    var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+    var list = Model.Parent;
+    var picture = Model.Picture;
 
-	var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
-	var showVariants = (Model.ColorAttributes != null && Model.ColorAttributes.Any()) || (Model.Attributes != null && Model.Attributes.Any());
-	var showDrop = showButtons || showVariants;
-	var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
+    var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
+    var showVariants = (Model.ColorAttributes != null && Model.ColorAttributes.Any()) || (Model.Attributes != null && Model.Attributes.Any());
+    var showDrop = showButtons || showVariants;
+    var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
+    var addPictureClass = picture.PictureId == 0 ? " no-picture" : "";
+    if (!picture.ImageUrl.HasValue())
+    {
+        addPictureClass += " no-default-picture";
+    }
 }
 
 <article class="art" data-id="@Model.Id">
 	<div class="art-picture-block">
 		@if (picture.Title.HasValue())
 		{
-			<a class='art-picture img-center-container@(picture.PictureId == 0 ? " no-picture" : "")' href="@artDetailUrl" title="@picture.Title" @Html.Attr("data-content", T("Common.NoImageAvail"), picture.PictureId == 0)>
+			<a class='art-picture img-center-container@(addPictureClass)' href="@artDetailUrl" title="@picture.Title" @Html.Attr("data-content", T("Common.NoImageAvail"), picture.PictureId == 0)>
 				<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 			</a>
 		}
@@ -54,15 +59,15 @@
 				}
 			}
 
-			<h3 class="art-name">
-				<a href="@artDetailUrl" title="@Model.Name">
+			<h3 @Html.LanguageAttributes(Model.Name) class="art-name">
+				<a href="@artDetailUrl" title="@Model.Name.ToString()">
 					<span>@Model.Name</span>
 				</a>
 			</h3>
 
 			@if (list.ShowDescription)
 			{
-				<div class="art-description" title="@Model.ShortDescription">
+				<div class="art-description" @Html.LanguageAttributes(Model.ShortDescription) title="@Model.ShortDescription.ToString()">
 					@Html.Raw(Model.ShortDescription.Truncate(160, "..."))
 				</div>
 			}
@@ -73,21 +78,21 @@
 					@if (list.ShowSku && Model.Sku.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Sku"):</td>
+							<td>@T("Products.Sku")</td>
 							<td>@Model.Sku</td>
 						</tr>
 					}
 					@if (list.ShowWeight && Model.Weight.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Weight"):</td>
+							<td>@T("Products.Weight")</td>
 							<td>@Model.Weight</td>
 						</tr>
 					}
 					@if (list.ShowDimensions && Model.Dimensions.HasValue())
 					{
 						<tr>
-							<td>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</td>
+							<td>@T("Products.Dimensions") <span class="lrm">(@Model.DimensionMeasureUnit)</span></td>
 							<td>@Model.Dimensions</td>
 						</tr>
 					}
@@ -107,7 +112,7 @@
 			@if (list.ShowLegalInfo)
 			{
 				<div class="art-legalinfo">
-					* @Html.Raw(Model.LegalInfo)
+					<span>*</span> <span>@Html.Raw(Model.LegalInfo)</span>
 				</div>
 			}
 		</div>

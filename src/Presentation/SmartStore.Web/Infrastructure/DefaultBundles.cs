@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Optimization;
 using BundleTransformer.Core.Bundles;
+using BundleTransformer.Core.Orderers;
 using SmartStore.Web.Framework.Bundling;
 
 namespace SmartStore.Web.Infrastructure
@@ -13,22 +11,30 @@ namespace SmartStore.Web.Infrastructure
 		public void RegisterBundles(BundleCollection bundles)
 		{
 			/* Image Gallery
-			 * TODO: (mc) change pathes once work is finished
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/smart-gallery").Include(
-				"~/Themes/Flex/Content/vendors/drift/Drift.js",
-				"~/Themes/Flex/Content/vendors/photoswipe/photoswipe.js",
-				"~/Themes/Flex/Content/vendors/photoswipe/photoswipe-ui-default.js",
-				"~/Themes/Flex/Scripts/smartstore.gallery.js"));
+				"~/Content/vendors/drift/Drift.js",
+				"~/Content/vendors/photoswipe/photoswipe.js",
+				"~/Content/vendors/photoswipe/photoswipe-ui-default.js",
+				"~/Scripts/smartstore.gallery.js"));
 
 			/* File Upload
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/fileupload").Include(
-				"~/Scripts/jquery-ui/widget.js",
-				"~/Content/fileupload/jquery.iframe-transport.js",
-				"~/Content/fileupload/jquery.fileupload.js",
-				"~/Content/fileupload/jquery.fileupload-single-ui.js"));
+				"~/Content/vendors/jquery-ui/widget.js",
+				"~/Content/vendors/fileuploader/jquery.iframe-transport.js",
+				"~/Content/vendors/fileuploader/jquery.fileupload.js",
+				"~/Content/vendors/fileuploader/jquery.fileupload-single-ui.js"));
 
+			/* Summernote
+			-----------------------------------------------------*/
+			bundles.Add(new CustomScriptBundle("~/bundles/summernote").Include(
+				"~/Content/editors/summernote/summernote-bs4.min.js",
+				"~/Content/editors/summernote/plugins/smartstore.image.js",
+				"~/Content/editors/summernote/plugins/smartstore.link.js",
+				"~/Content/editors/summernote/plugins/smartstore.tablestyles.js",
+				"~/Content/editors/summernote/plugins/smartstore.cssclass.js",
+				"~/Content/editors/summernote/globalinit.js"));
 
 			/* CodeMirror (V 5.3.3)
 			-----------------------------------------------------*/
@@ -62,6 +68,22 @@ namespace SmartStore.Web.Infrastructure
 				cm + "addon/display/fullscreen.css",
 				cm + "theme/eclipse.min.css",
 				cm + "mode/liquid/liquid.css"));
+
+			/* Roxy File Manager
+			-----------------------------------------------------*/
+			var roxy = "~/Administration/Content/filemanager/";
+			var scriptBundle = new CustomScriptBundle("~/bundles/roxyfm").Include(
+				roxy + "js/jquery-2.1.1.min.js",
+				roxy + "js/jquery-ui-1.10.4.custom.min.js",
+				roxy + "js/filetypes.js",
+				roxy + "js/custom.js",
+				roxy + "js/main.js",
+				roxy + "js/utils.js",
+				roxy + "js/file.js",
+				roxy + "js/directory.js",
+				roxy + "js/jquery-dateFormat.min.js");
+			scriptBundle.Orderer = new NullOrderer();
+			bundles.Add(scriptBundle);
 		}
 
 		public int Priority

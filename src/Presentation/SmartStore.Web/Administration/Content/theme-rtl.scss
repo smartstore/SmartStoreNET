@@ -1,0 +1,25 @@
+
+/* Theme: Admin (RTL overrides)
+======================================== */
+
+@import '_variables.scss';
+@import '../../Content/shared/_variables-shared.scss';
+@import "../../Content/bs4/scss/_functions.scss";
+@import "../../Content/bs4/scss/_variables.scss";
+@import "../../Content/bs4/scss/_mixins.scss";
+
+
+//
+// Shared styles RTL overrides
+// --------------------------------------------------
+
+@import "../../Content/shared/_rtl-bs4.scss";
+@import "../../Content/shared/_rtl.scss";
+@import "../../Content/skinning/_rtl.scss";
+
+
+//
+// Theme specific RTL overrides
+// --------------------------------------------------
+
+@import '_rtl.scss';

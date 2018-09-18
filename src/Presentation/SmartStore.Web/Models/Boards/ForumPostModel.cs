@@ -1,10 +1,11 @@
 ﻿using System;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.Models.Boards
 {
-    public partial class ForumPostModel
+    public partial class ForumPostModel : EntityModelBase
     {
-        public int Id { get; set; }
         public int ForumTopicId { get; set; }
         public string ForumTopicSeName { get; set; }
 
@@ -15,7 +16,6 @@ namespace SmartStore.Web.Models.Boards
         
         public int CustomerId { get; set; }
         public bool AllowViewingProfiles { get; set; }
-        public string CustomerAvatarUrl { get; set; }
         public string CustomerName { get; set; }
         public bool IsCustomerForumModerator { get; set; }
         public bool IsCustomerGuest { get; set; }
@@ -38,5 +38,6 @@ namespace SmartStore.Web.Models.Boards
 
         public int CurrentTopicPage { get; set; }
 
+        public CustomerAvatarModel Avatar { get; set; }
     }
 }

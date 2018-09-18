@@ -78,7 +78,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				task = new ScheduleTask
 				{
-					CronExpression = "0 */6 * * *",     // every six hours
+					CronExpression = "0 */6 * * *",     // Every six hours.
 					Type = typeof(DataExportTask).AssemblyQualifiedNameWithoutVersion(),
 					Enabled = false,
 					StopOnError = false,
@@ -88,7 +88,6 @@ namespace SmartStore.Services.DataExchange.Export
 			else
 			{
 				task = cloneProfile.ScheduleTask.Clone();
-				task.LastEndUtc = task.LastStartUtc = task.LastSuccessUtc = null;
 			}
 
 			task.Name = string.Concat(name, " Task");
@@ -227,10 +226,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 			profile.FolderName = FileSystemHelper.ValidateRootPath(profile.FolderName);
 
-			if (profile.FolderName == "~/")
-			{
-				throw new SmartException("Invalid export folder name.");
-			}
+            if (!FileSystemHelper.IsSafeRootPath(profile.FolderName))
+            {
+                throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.FolderName.Validate"));
+            }
 
 			_exportProfileRepository.Update(profile);
 		}
@@ -246,7 +245,14 @@ namespace SmartStore.Services.DataExchange.Export
 			int scheduleTaskId = profile.SchedulingTaskId;
 			var folder = profile.GetExportFolder();
 
-			_exportProfileRepository.Delete(profile);
+            var deployments = profile.Deployments.Where(x => !x.IsTransientRecord()).ToList();
+            if (deployments.Any())
+            {
+                _exportDeploymentRepository.DeleteRange(deployments);
+                _exportDeploymentRepository.Context.SaveChanges();
+            }
+
+            _exportProfileRepository.Delete(profile);
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(scheduleTaskId);
 			_scheduleTaskService.DeleteTask(scheduleTask);

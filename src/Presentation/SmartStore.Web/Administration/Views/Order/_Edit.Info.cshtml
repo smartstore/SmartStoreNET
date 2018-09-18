@@ -10,6 +10,15 @@
 		$('#btnRefreshPage').click(function () {
 			location.reload();
 		});
+
+		$('input.ask-to-proceed, button.ask-to-proceed').click(function (e) {
+			if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
+				return true;
+			}
+
+			e.preventDefault();
+			return false;
+		});
     });
 
     function toggleOrderTotals(editmode) {
@@ -71,24 +80,27 @@
 		</td>
 		<td class="adminData">
 			<div class="form-control-plaintext">
-				<b class="pr-3 align-top">@Model.OrderStatus</b>
-
-				@if (Model.CanCancelOrder)
-				{
-					<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
-						<i class="fa fa-times"></i>
-						<span>@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
-					</button>
-				}
-
-				@if (Model.CanCompleteOrder)
-				{
-					<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
-						<i class="fa fa-check"></i>
-						<span>@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
-					</button>
-				}
+				@Model.OrderStatus
 			</div>
+			@if (Model.CanCancelOrder || Model.CanCompleteOrder)
+			{
+				<div>
+					@if (Model.CanCancelOrder)
+					{
+						<button type="submit" name="cancelorder" id="cancelorder" class="btn btn-sm btn-danger ask-to-proceed" value="@T("Admin.Orders.Fields.OrderStatus.Cancel")">
+							<span>@T("Admin.Orders.Fields.OrderStatus.Cancel")</span>
+						</button>
+					}
+
+					@if (Model.CanCompleteOrder)
+					{
+						<button type="submit" name="completeorder" id="completeorder" class="btn btn-sm btn-warning ask-to-proceed" value="@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")">
+							<i class="fa fa-check"></i>
+							<span>@T("Enums.SmartStore.Core.Domain.Orders.OrderStatus.Complete")</span>
+						</button>
+					}
+				</div>
+			}
 		</td>
 	</tr>
 	<tr>
@@ -130,7 +142,7 @@
 			<td class="adminData">
 				<div class="form-control-plaintext">
 					<a href="@Url.Action("Edit", "Affiliate", new { id = Model.AffiliateId })">@Model.AffiliateFullName</a>
-				</div>>
+				</div>
 			</td>
 		</tr>
 	}
@@ -359,6 +371,19 @@
 			</td>
 		</tr>
 	}
+	@if (Model.CreditBalance.HasValue())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CreditBalance)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					@Model.CreditBalance
+				</div>
+			</td>
+		</tr>
+	}
 	@if (Model.OrderTotalRounding.HasValue())
 	{
 		<tr>
@@ -382,14 +407,14 @@
 			</div>
 		</td>
 	</tr>
-	@if (!String.IsNullOrEmpty(Model.RefundedAmount))
+	@if (Model.RefundedAmount.HasValue())
 	{
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.RefundedAmount)
 			</td>
 			<td class="adminData">
-				<div class="form-control-plaintext">
+				<div class="form-control-plaintext text-danger">
 					@Model.RefundedAmount
 				</div>
 			</td>
@@ -470,6 +495,14 @@
 					</tr>
 					<tr>
 						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CreditBalanceValue)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.CreditBalanceValue)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
 							@Html.SmartLabelFor(model => model.OrderTotalRoundingValue)
 						</td>
 						<td class="adminData">
@@ -490,18 +523,19 @@
 	</tr>
 	<tr>
 		<td>
-			<button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn btn-secondary mt-1">
+			<button type="submit" name="btnEditOrderTotals" onclick="toggleOrderTotals(true);return false;" id="btnEditOrderTotals" class="btn btn-secondary">
 				<i class="fa fa-pencil-square-o"></i>
 				<span>@T("Admin.Orders.Fields.EditOrderTotals")</span>
 			</button>
-			<button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-warning" value="@T("Admin.Orders.Fields.SaveOrderTotals")" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+			<button type="submit" name="btnSaveOrderTotals" id="btnSaveOrderTotals" class="btn btn-warning ask-to-proceed" value="@T("Admin.Orders.Fields.SaveOrderTotals")">
 				<i class="fa fa-check"></i>
 				<span>@T("Admin.Orders.Fields.SaveOrderTotals")</span>
 			</button>
 			<button type="submit" name="btnCancelOrderTotals" onclick="toggleOrderTotals(false);return false;" id="btnCancelOrderTotals" class="btn btn-secondary">
-				<i class="fa fa-times"></i>
 				<span>@T("Admin.Common.Cancel")</span>
 			</button>
+
+			@{ Html.RenderWidget("admin_order_total_edit_buttons_after"); }
 		</td>
 	</tr>
 
@@ -563,49 +597,48 @@
 				@Html.EditorFor(model => model.CardCvv2)
 			</td>
 		</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CardExpirationMonth)
-				</td>
-				<td class="adminData">
-					<div class="form-control-plaintext">
-						<span id="lblCardExpirationMonth" class="cc-control">@Model.CardExpirationMonth</span>
-					</div>
-					@Html.EditorFor(model => model.CardExpirationMonth)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CardExpirationYear)
-				</td>
-				<td class="adminData">
-					<div class="form-control-plaintext">
-						<span id="lblCardExpirationYear" class="cc-control">@Model.CardExpirationYear</span>
-					</div>
-					@Html.EditorFor(model => model.CardExpirationYear)
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<button type="submit" name="btnEditCC" value="@T("Admin.Orders.Fields.EditCC")" onclick="toggleCC(true);return false;" id="btnEditCC" class="btn btn-secondary">
-						<i class="fa fa-pencil-square-o"></i>
-						<span>@T("Admin.Orders.Fields.EditCC")</span>
-					</button>
-					<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
-						<i class="fa fa-check"></i>
-						<span>@T("Admin.Orders.Fields.SaveCC")</span>
-					</button>
-					<button type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn btn-secondary">
-						<i class="fa fa-times"></i>
-						<span>@T("Admin.Orders.Fields.CancelCC")</span>
-					</button>
-				</td>
-			</tr>
-			<tr class="adminSeparator">
-				<td colspan="2">
-					<hr />
-				</td>
-			</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardExpirationMonth)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblCardExpirationMonth" class="cc-control">@Model.CardExpirationMonth</span>
+				</div>
+				@Html.EditorFor(model => model.CardExpirationMonth)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CardExpirationYear)
+			</td>
+			<td class="adminData">
+				<div class="form-control-plaintext">
+					<span id="lblCardExpirationYear" class="cc-control">@Model.CardExpirationYear</span>
+				</div>
+				@Html.EditorFor(model => model.CardExpirationYear)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<button type="submit" name="btnEditCC" value="@T("Admin.Orders.Fields.EditCC")" onclick="toggleCC(true);return false;" id="btnEditCC" class="btn btn-secondary">
+					<i class="fa fa-pencil-square-o"></i>
+					<span>@T("Admin.Orders.Fields.EditCC")</span>
+				</button>
+				<button type="submit" name="btnSaveCC" value="@T("Admin.Orders.Fields.SaveCC")" id="btnSaveCC" class="btn btn-secondary ask-to-proceed">
+					<i class="fa fa-check"></i>
+					<span>@T("Admin.Orders.Fields.SaveCC")</span>
+				</button>
+				<button type="submit" name="btnCancelCC" value="@T("Admin.Orders.Fields.CancelCC")" onclick="toggleCC(false);return false;" id="btnCancelCC" class="btn btn-secondary">
+					<span>@T("Admin.Orders.Fields.CancelCC")</span>
+				</button>
+			</td>
+		</tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<hr />
+			</td>
+		</tr>
 	}
 
 	@if (Model.AllowStoringDirectDebit)
@@ -693,12 +726,11 @@
 					<i class="fa fa-pencil-square-o"></i>
 					<span>@T("Admin.Orders.Fields.EditDD")</span>
 				</button>
-				<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+				<button type="submit" name="btnSaveDD" value="@T("Admin.Orders.Fields.SaveDD")" id="btnSaveDD" class="btn btn-secondary ask-to-proceed">
 					<i class="fa fa-check"></i>
 					<span>@T("Admin.Orders.Fields.SaveDD")</span>
 				</button>
 				<button type="submit" name="btnCancelDD" value="@T("Admin.Orders.Fields.CancelDD")" onclick="toggleDD(false);return false;" id="btnCancelDD" class="btn btn-secondary">
-					<i class="fa fa-times"></i>
 					<span>@T("Admin.Orders.Fields.CancelDD")</span>
 				</button>
 			</td>
@@ -817,27 +849,23 @@
 			@Html.SmartLabelFor(model => model.PaymentStatus)
 		</td>
 		<td class="adminData wide">
-			<b class="pr-1">@Model.PaymentStatus</b>
+			<span class="pr-1 font-weight-medium form-control-plaintext d-inline-block" style="width: auto;">@Model.PaymentStatus</span>
 
 			@if (Model.CanMarkOrderAsPaid)
 			{
-				<input type="submit" name="markorderaspaid" value="@T("Admin.Orders.Fields.MarkAsPaid")" id="markorderaspaid" class="btn btn-secondary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")" />
+				<input type="submit" name="markorderaspaid" value="@T("Admin.Orders.Fields.MarkAsPaid")" id="markorderaspaid" class="btn btn-secondary ask-to-proceed" title="@T("Admin.Orders.Fields.MarkAsPaid.Hint")" />
 			}
 			@if (Model.CanCapture)
 			{
-				<input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.Capture.Hint")" />
+				<input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary ask-to-proceed" title="@T("Admin.Orders.Fields.Capture.Hint")" />
 			}
 			@if (Model.CanRefund)
 			{
-				<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.Refund.Hint")" />
+				<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary ask-to-proceed" title="@T("Admin.Orders.Fields.Refund.Hint")" />
 			}
 			@if (Model.CanRefundOffline)
 			{
-				<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn btn-secondary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
+				<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn btn-secondary ask-to-proceed" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
 			}
 			@if (Model.CanPartiallyRefund)
 			{
@@ -853,14 +881,14 @@
 			}
 			@if (Model.CanVoid)
 			{
-				<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.Void.Hint")" />
+				<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary ask-to-proceed" title="@T("Admin.Orders.Fields.Void.Hint")" />
 			}
 			@if (Model.CanVoidOffline)
 			{
-				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary"
-					   onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
+				<input type="submit" name="voidorderoffline" value="@T("Admin.Orders.Fields.VoidOffline")" id="voidorderoffline" class="btn btn-secondary ask-to-proceed" title="@T("Admin.Orders.Fields.VoidOffline.Hint")" />
 			}
+
+			@{ Html.RenderWidget("admin_order_edit_payment_buttons_after"); }
 		</td>
 	</tr>
 	<tr>
@@ -868,7 +896,9 @@
 			@Html.SmartLabelFor(model => model.CreatedOn)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			<div class="form-control-plaintext">
+				@Html.DisplayFor(model => model.CreatedOn)
+			</div>
 		</td>
 	</tr>
 	<tr>
@@ -876,7 +906,9 @@
 			@Html.SmartLabelFor(model => model.UpdatedOn)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+			<div class="form-control-plaintext">
+				@Html.DisplayFor(model => model.UpdatedOn)
+			</div>
 		</td>
 	</tr>
 	<tr class="adminSeparator">

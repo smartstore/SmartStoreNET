@@ -26,44 +26,31 @@
             }
         </div>
     </div>
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.StartDate)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.StartDate)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.EndDate)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.EndDate)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.TrackingNumber)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.TrackingNumber)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-			</td>
-			<td class="adminData">
-				<button type="submit" id="btnSearch" class="btn btn-secondary">
-					<i class="fa fa-search"></i>
-					<span>@T("Admin.Common.Search")</span>
-				</button>
-			</td>
-		</tr>
-	</table>
-	
-    
+
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.StartDate)
+			@Html.EditorFor(model => model.StartDate)
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.EndDate)
+			@Html.EditorFor(model => model.EndDate)
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.TrackingNumber)
+			@Html.EditorFor(model => model.TrackingNumber)
+		</div>
+
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.Search")</span>
+			</button>
+		</div>
+	</div>
+
+
 <div>
 	@(Html.Telerik().Grid<ShipmentModel>()
 		.Name("shipments-grid")
@@ -89,11 +76,11 @@
 			columns.Bound(x => x.ShippedDate);
 			columns.Bound(x => x.DeliveryDate);
 			columns.Bound(x => x.Id)
-				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { }))
-				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
+				.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { @class = "t-button" }))
+				.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\" class=\"t-button\">" + T("Admin.Common.View").Text + "</a>")
 				.Width(50)
 				.Centered()
-				.HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.View").Text));
+				.Title(String.Empty);
 		})
 		.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("ShipmentListSelect", "Order"))

@@ -1,5 +1,4 @@
-﻿using System.Web.Mvc;
-using SmartStore.Core.Domain.Forums;
+﻿using SmartStore.Core.Domain.Forums;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -36,6 +35,12 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.PostsPageSize")]
         public int PostsPageSize { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.AllowSorting")]
+        public bool AllowSorting { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.SearchResultsPageSize")]
+        public int SearchResultsPageSize { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumEditor")]
         public EditorType ForumEditor { get; set; }
 
@@ -62,10 +67,5 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.ForumFeedCount")]
         public int ForumFeedCount { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Forums.SearchResultsPageSize")]
-        public int SearchResultsPageSize { get; set; }
-
-        public SelectList ForumEditorValues { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace SmartStore.Web.Framework.Controllers
 	[StoreIpAddress(Order = 100)]
 	[StoreLastVisitedPage(Order = 100)]
 	[CheckAffiliate(Order = 100)]
-    public abstract partial class PublicControllerBase : SmartController
+	public abstract partial class PublicControllerBase : SmartController
     {
     }
 }

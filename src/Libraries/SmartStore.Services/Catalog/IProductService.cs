@@ -42,11 +42,18 @@ namespace SmartStore.Services.Catalog
         /// <returns>Products</returns>
         IList<Product> GetProductsByIds(int[] productIds, ProductLoadFlags flags = ProductLoadFlags.None);
 
-        /// <summary>
-        /// Inserts a product
-        /// </summary>
-        /// <param name="product">Product</param>
-        void InsertProduct(Product product);
+		/// <summary>
+		/// Get product by system name.
+		/// </summary>
+		/// <param name="systemName">System name</param>
+		/// <returns>Product entity.</returns>
+		Product GetProductBySystemName(string systemName);
+
+		/// <summary>
+		/// Inserts a product
+		/// </summary>
+		/// <param name="product">Product</param>
+		void InsertProduct(Product product);
 
         /// <summary>
         /// Updates the product

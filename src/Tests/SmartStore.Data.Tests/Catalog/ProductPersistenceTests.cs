@@ -41,7 +41,7 @@ namespace SmartStore.Data.Tests.Catalog
 				IsGiftCard = true,
 				GiftCardTypeId = 1,
 				IsDownload = true,
-				DownloadId = 2,
+				//DownloadId = 2,
 				UnlimitedDownloads = true,
 				MaxNumberOfDownloads = 3,
 				DownloadExpirationDays = 4,
@@ -130,7 +130,7 @@ namespace SmartStore.Data.Tests.Catalog
 			fromDb.IsGiftCard.ShouldEqual(true);
 			fromDb.GiftCardTypeId.ShouldEqual(1);
 			fromDb.IsDownload.ShouldEqual(true);
-			fromDb.DownloadId.ShouldEqual(2);
+			//fromDb.DownloadId.ShouldEqual(2);
 			fromDb.UnlimitedDownloads.ShouldEqual(true);
 			fromDb.MaxNumberOfDownloads.ShouldEqual(3);
 			fromDb.DownloadExpirationDays.ShouldEqual(4);

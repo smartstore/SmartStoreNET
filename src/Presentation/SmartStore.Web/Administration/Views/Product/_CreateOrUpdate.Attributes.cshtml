@@ -11,14 +11,21 @@
 		{
 			<script>
 				function onProductVariantAttributeEdit(e) {
-					var id = parseInt(e.dataItem['Id']);
-
 					if (e.mode == "edit") {
-						_.delay(function () {
-							$('#AttributeControlType').val(e.dataItem['AttributeControlTypeId']).trigger('change');
-							$('#ProductAttribute').val(e.dataItem['ProductAttributeId']).trigger('change');
-						}, 0);
+						$('#AttributeControlType')
+							.data('select-selected-id', e.dataItem['AttributeControlTypeId'])
+							.data('select-init-text', e.dataItem['AttributeControlType'])
+							.val(e.dataItem['AttributeControlTypeId'])
+							.trigger('change');
+
+						$('#ProductAttribute')
+							.data('select-selected-id', e.dataItem['ProductAttributeId'])
+							.data('select-init-text', e.dataItem['ProductAttribute'])
+							.val(e.dataItem['ProductAttributeId'])
+							.trigger('change');
 					}
+
+					var id = parseInt(e.dataItem['Id']);
 
 					if (id === 0) {
 						$(e.form).find('#IsRequired').prop('checked', true);
@@ -59,20 +66,20 @@
 				.Columns(columns =>
 				{
 					columns.Bound(x => x.ProductAttribute)
-						.Width("20%");
+						.Width("16%");
 					columns.Bound(x => x.AttributeControlType)
-						.Width(300);
+						.Width("16%");
 					columns.Bound(x => x.TextPrompt)
-						.Width("20%");
+						.Width("16%");
 					columns.Bound(x => x.IsRequired)
-						.Width(100)
+						.Width("10%")
 						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
 						.Centered();
 					columns.Bound(x => x.DisplayOrder1)
-						.Width(100)
+						.Width("10%")
 						.Centered();
 					columns.Bound(x => x.ViewEditUrl)
-						.Width(200)
+						.Width("16%")
 						.ClientTemplate(
 							"<a id='EditOptionsLink<#= Id #>' href='<#= ViewEditUrl #>' class='text-truncate'><#= ViewEditText #></a>" +
 							"<div id='OptionsSetsContainer<#= Id #>' style='display:none'><select class='form-control' id='OptionsSetsChoice<#= Id #>' data-valcount='<#= ValueCount #>'><#= OptionsSets #></select></div>"
@@ -83,7 +90,9 @@
 					{
 						commands.Edit().Localize(T);
 						commands.Delete().Localize(T);
-					}).HtmlAttributes(new { align = "right" });
+					})
+					.Width("20%")
+					.HtmlAttributes(new { align = "right" });
 				})
 				.ToolBar(commands => commands.Insert() )
 				.ClientEvents(events =>
@@ -108,7 +117,7 @@
     }
 </div>
 
-<div style="margin-top:30px;">
+<div class="mt-5">
     <h4 class="mb-4">@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations")</h4>
 
     @if (Model.Id > 0)
@@ -119,10 +128,7 @@
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
-            <div class="clearfix" style="margin-bottom: 15px">
-				<div class="pull-right">
-
-				</div>
+            <div class="mb-3">
 
                 <input type="submit" id="btnRefreshCombinations" name="btnRefreshCombinations" class="d-none" />
                 <script>
@@ -204,6 +210,7 @@
 						{
 							commands.Delete().Localize(T);
 						})
+						.HtmlAttributes(new { align = "right" })
 						.Width(90);
 					})
 					.Pageable(settings => settings.PageSize(100).Position(GridPagerPosition.Both))

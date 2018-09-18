@@ -6,8 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 namespace SmartStore.Core
-{
-    
+{  
     /// <summary>
     /// Base class for entities
     /// </summary>

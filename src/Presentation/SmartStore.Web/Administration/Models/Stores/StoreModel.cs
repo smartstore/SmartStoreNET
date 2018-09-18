@@ -1,15 +1,16 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Stores;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Stores
 {
-	[Validator(typeof(StoreValidator))]
+    [Validator(typeof(StoreValidator))]
 	public partial class StoreModel : EntityModelBase
 	{
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.Name")]
@@ -27,6 +28,9 @@ namespace SmartStore.Admin.Models.Stores
 		[AllowHtml]
 		public virtual string SecureUrl { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.ForceSslForAllPages")]
+		public bool ForceSslForAllPages { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.Hosts")]
 		[AllowHtml]
 		public string Hosts { get; set; }
@@ -35,7 +39,7 @@ namespace SmartStore.Admin.Models.Stores
 		[UIHint("Picture")]
 		public int LogoPictureId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.HtmlBodyId")]
@@ -83,4 +87,19 @@ namespace SmartStore.Admin.Models.Stores
 
 		public List<SelectListItem> AvailableCurrencies { get; set; }
 	}
+
+    public partial class StoreValidator : AbstractValidator<StoreModel>
+    {
+        public StoreValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty();
+
+            RuleFor(x => x.Url)
+                .Must(x => x.HasValue() && x.IsWebUrl())
+                .WithMessage(T("Admin.Validation.Url"));
+
+            RuleFor(x => x.HtmlBodyId).Matches(@"^([A-Za-z])(\w|\-)*$")
+                .WithMessage(T("Admin.Configuration.Stores.Fields.HtmlBodyId.Validation"));
+        }
+    }
 }

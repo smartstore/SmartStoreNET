@@ -1,9 +1,5 @@
 ﻿@model IList<OrderAverageReportLineSummaryModel>
 
-@{ 
-	var textColors = new string[] { "text-danger", "text-warning", "text-success", "text-light" };
-}
-
 <div class="stats-today row mb-4">
 	<div class="col">
 		<h1 class="stats-today-title display-4 m-0">@T("Admin.SalesReport.Average.SumTodayOrders")</h1>
@@ -14,13 +10,13 @@
 		var x = Model[i];
 		<div class='col-auto stats-today-item@(i == 0 ? " ml-auto" : "")'>
 			<div class="stats-today-item-label">@x.OrderStatus</div>
-			<div class="stats-today-item-value @textColors[i]">@x.SumTodayOrders</div>
+			<div class="stats-today-item-value@(x.SumTodayOrdersRaw > 0 ? " active" : "")">@x.SumTodayOrders</div>
 		</div>
 	}
 </div>
 
 <div class="card card-shadow mb-4"> 
-    <h6 class="card-header font-weight-medium">
+    <h6 class="card-header font-weight-medium border-bottom-0">
 		<i class="fa fa-signal pr-2"></i>
 		@T("Admin.SalesReport.Average")
     </h6>

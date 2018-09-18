@@ -1,0 +1,231 @@
+﻿/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+$offcanvas-width:                   320px;
+$offcanvas-width-lg:                480px;
+$offcanvas-easing:                  ease-out;
+$offcanvas-duration:                0.3s;
+$offcanvas-offset:                  0.3;
+$offcanvas-offset-p:                $offcanvas-offset * 100%;
+$offcanvas-offset-p-neg:            ($offcanvas-offset * 100) * -1%;
+$offcanvas-z-index:                 99999;
+
+
+/* PARENT CANVAS
+--------------------------------------------*/
+
+.canvas-slidable {
+    z-index: 0;
+    transform: translate3d(0, 0, 0);
+    transition: opacity $offcanvas-duration $offcanvas-easing,
+                transform $offcanvas-duration $offcanvas-easing;
+
+    .canvas-sliding-left &                          { transform: translate3d($offcanvas-width * -1, 0, 0); }
+    .canvas-sliding-left.canvas-lg &                { transform: translate3d($offcanvas-width-lg * -1, 0, 0); }
+    .canvas-sliding-left.canvas-fullscreen &        { transform: translate3d(-100%, 0, 0); }
+
+    .canvas-sliding-right &                         { transform: translate3d($offcanvas-width, 0, 0); }
+    .canvas-sliding-right.canvas-lg &               { transform: translate3d($offcanvas-width-lg, 0, 0); }
+    .canvas-sliding-right.canvas-fullscreen &       { transform: translate3d(100%, 0, 0); }
+
+    .canvas-sliding-left.canvas-overlay &           { transform: translate3d(-15%, 0, 0); }
+    .canvas-sliding-right.canvas-overlay &          { transform: translate3d(15%, 0, 0); }
+
+    .canvas-fullscreen &                            { box-shadow: none !important; }
+}
+
+body.canvas-noscroll {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* TOGGLER
+--------------------------------------------*/
+
+.navbar-toggler { 
+    position: relative;
+    background-color: transparent;
+    outline: none;
+    &:focus { outline: none }
+}
+
+
+/* PARENT CANVAS BLOCKER
+--------------------------------------------*/
+
+.canvas-blocker {
+    position: fixed;
+    z-index: 0 !important;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0;
+    transition: opacity $offcanvas-duration $offcanvas-easing,
+                transform $offcanvas-duration $offcanvas-easing,
+                z-index 0s linear $offcanvas-duration;
+
+    overflow: hidden;
+}
+
+body.canvas-blocking .canvas-blocker {
+    z-index: $zindex-fixed+1 !important;
+    opacity: 0.3;
+    transition: opacity $offcanvas-duration $offcanvas-easing,
+                transform $offcanvas-duration $offcanvas-easing,
+                z-index 0s 0s !important;
+
+}
+
+
+/* OFFCANVAS ELEMENT
+--------------------------------------------*/
+
+.offcanvas {
+    display: block;
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    z-index: 0;
+    margin: 0; 
+    background-color: #fff;
+    overflow-x: auto;
+    transition: transform $offcanvas-duration $offcanvas-easing, 
+                visibility 0s ease $offcanvas-duration;
+
+    width: $offcanvas-width;
+    left: 0;
+    right: auto;
+    transform: translate3d($offcanvas-offset-p-neg, 0, 0);
+
+    &.offcanvas-right {
+        left: auto !important;
+        right: 0;
+        transform: translate3d($offcanvas-offset-p, 0, 0);
+    }
+
+    &.offcanvas-lg {
+        width: $offcanvas-width-lg;
+    }
+
+    &.offcanvas-fullscreen {
+        width: 100%;
+    }
+
+    &.offcanvas-push,
+    &.offcanvas-overlay {
+        transform: translate3d(-100%, 0, 0);
+
+        &.offcanvas-right {
+            transform: translate3d(100%, 0, 0);
+        }
+    }
+
+    &.offcanvas-overlay {
+        z-index: $offcanvas-z-index;
+    }
+
+    &.offcanvas-shadow {
+        box-shadow: 0 0 24px rgba(#000, 0.3);
+    }
+
+    @media (max-width: $offcanvas-width) {
+        &.offcanvas { width: 100% !important; }
+    }
+
+    @media (max-width: $offcanvas-width-lg) {
+        &.offcanvas-lg { width: 100%; }
+    }
+
+    &.offcanvas-push.on,
+    &.offcanvas-overlay.on,
+    &.offcanvas-right.on,
+    &.on {
+        // specificity: we want to prevent "!important" here
+        visibility: visible;
+        transition: transform $offcanvas-duration $offcanvas-easing;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.offcanvas-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    //overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.offcanvas-scrollable {
+    touch-action: pan-y;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* OFFCANVAS TABS
+--------------------------------------------*/
+
+.offcanvas-tabs {
+    position: relative;
+    flex-grow: 0;
+    padding: 0;
+
+    .offcanvas-closer {
+        border-radius: 0;
+    }
+
+    .nav-tabs {
+        display: flex;
+        flex-direction: row;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+
+        .touchevents & { overflow-x: auto; }
+    }
+
+    .nav-item {
+        display: block;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+    .nav-link {
+		border-radius: 0;
+        max-width: 100%;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+		color: $gray-600;
+
+        &.active {
+			font-weight: $font-weight-medium;
+        }
+
+        .badge {
+            position: relative;
+            right: 0;
+            top: 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-link {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
+}
+
+
+/* LAYOUT OVERRIDES
+--------------------------------------------*/
+
+.canvas-overlay {
+    .page-main      { box-shadow: none; }
+    .canvas-blocker { width: 200%; left: -50% }
+}

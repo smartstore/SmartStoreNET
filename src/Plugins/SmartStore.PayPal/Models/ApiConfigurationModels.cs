@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Web.Mvc;
 using SmartStore.ComponentModel;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Validators;
+using SmartStore.Core.Localization;
+using System;
+using FluentValidation;
 
 namespace SmartStore.PayPal.Models
 {
-	public abstract class ApiConfigurationModel: ModelBase
+	public abstract class ApiConfigurationModel : ModelBase
 	{
         public string[] ConfigGroups { get; set; }
+		public string PrimaryStoreCurrencyCode { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
@@ -22,12 +23,7 @@ namespace SmartStore.PayPal.Models
 		public bool IpnChangesPaymentStatus { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.TransactMode")]
-		public int TransactMode { get; set; }
-		public SelectList TransactModeValues { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Payments.PayPal.SecurityProtocol")]
-		public SecurityProtocolType? SecurityProtocol { get; set; }
-		public List<SelectListItem> AvailableSecurityProtocols { get; set; }
+		public TransactMode TransactMode { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.ApiAccountName")]
 		public string ApiAccountName { get; set; }
@@ -51,10 +47,10 @@ namespace SmartStore.PayPal.Models
 		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.WebhookId")]
 		public string WebhookId { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFee")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFeePercentage")]
+		[SmartResourceDisplayName("Admin.Configuration.Payment.Methods.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
 	}
 
@@ -63,9 +59,20 @@ namespace SmartStore.PayPal.Models
         public void Copy(PayPalDirectPaymentSettings settings, bool fromSettings)
         {
             if (fromSettings)
+			{
 				MiniMapper.Map(settings, this);
-            else
+			}
+			else
+			{
 				MiniMapper.Map(this, settings);
+				settings.ApiAccountName = ApiAccountName.TrimSafe();
+				settings.ApiAccountPassword = ApiAccountPassword.TrimSafe();
+				settings.ClientId = ClientId.TrimSafe();
+				settings.ExperienceProfileId = ExperienceProfileId.TrimSafe();
+				settings.Secret = Secret.TrimSafe();
+				settings.Signature = Signature.TrimSafe();
+				settings.WebhookId = WebhookId.TrimSafe();
+			}
         }
     }
 
@@ -89,18 +96,29 @@ namespace SmartStore.PayPal.Models
         public void Copy(PayPalExpressPaymentSettings settings, bool fromSettings)
         {
             if (fromSettings)
+			{
 				MiniMapper.Map(settings, this);
+			}
             else
+			{
 				MiniMapper.Map(this, settings);
+				settings.ApiAccountName = ApiAccountName.TrimSafe();
+				settings.ApiAccountPassword = ApiAccountPassword.TrimSafe();
+				settings.Signature = Signature.TrimSafe();
+			}
         }
     }
-
-
+    
 	public class PayPalPlusConfigurationModel : ApiConfigurationModel
 	{
+		public PayPalPlusConfigurationModel()
+		{
+			TransactMode = TransactMode.AuthorizeAndCapture;
+		}
+
 		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.ThirdPartyPaymentMethods")]
 		public List<string> ThirdPartyPaymentMethods { get; set; }
-		public List<SelectListItem> AvailableThirdPartyPaymentMethods { get; set; }
+		public IList<ExtendedSelectListItem> AvailableThirdPartyPaymentMethods { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.DisplayPaymentMethodLogo")]
 		public bool DisplayPaymentMethodLogo { get; set; }
@@ -114,13 +132,41 @@ namespace SmartStore.PayPal.Models
 			if (fromSettings)
 			{
 				MiniMapper.Map(settings, this);
-				TransactMode = (int)Settings.TransactMode.AuthorizeAndCapture;
 			}
 			else
 			{
 				MiniMapper.Map(this, settings);
-				settings.TransactMode = Settings.TransactMode.AuthorizeAndCapture;
+				settings.ApiAccountName = ApiAccountName.TrimSafe();
+				settings.ApiAccountPassword = ApiAccountPassword.TrimSafe();
+				settings.ClientId = ClientId.TrimSafe();
+				settings.ExperienceProfileId = ExperienceProfileId.TrimSafe();
+				settings.Secret = Secret.TrimSafe();
+				settings.Signature = Signature.TrimSafe();
+				settings.WebhookId = WebhookId.TrimSafe();
 			}
 		}
 	}
+
+    public class PayPalPlusConfigValidator : SmartValidatorBase<PayPalPlusConfigurationModel>
+    {
+        public PayPalPlusConfigValidator(Localizer T, Func<string, bool> addRule)
+        {
+            if (addRule("ClientId"))
+            {
+                RuleFor(x => x.ClientId).NotEmpty();
+            }
+
+            if (addRule("Secret"))
+            {
+                RuleFor(x => x.Secret).NotEmpty();
+            }
+
+            if (addRule("ThirdPartyPaymentMethods"))
+            {
+                RuleFor(x => x.ThirdPartyPaymentMethods)
+                    .Must(x => x == null || x.Count <= 5)
+                    .WithMessage(T("Plugins.Payments.PayPalPlus.ValidateThirdPartyPaymentMethods"));
+            }
+        }
+    }
 }

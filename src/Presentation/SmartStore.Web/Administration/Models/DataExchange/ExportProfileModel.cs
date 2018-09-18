@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Web;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
-using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Localization;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.Web;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
-	[Validator(typeof(ExportProfileValidator))]
+    [Validator(typeof(ExportProfileValidator))]
 	public partial class ExportProfileModel : EntityModelBase
 	{	
 		public int StoreCount { get; set; }
@@ -148,8 +149,7 @@ namespace SmartStore.Admin.Models.DataExchange
 			public string Description { get; set; }
 		}
 	}
-
-
+    
 	public partial class ExportFileDetailsModel : EntityModelBase
 	{
 		public int FileCount
@@ -201,4 +201,25 @@ namespace SmartStore.Admin.Models.DataExchange
 			}
 		}
 	}
+
+    public partial class ExportProfileValidator : AbstractValidator<ExportProfileModel>
+    {
+        public ExportProfileValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.FileNamePattern).NotEmpty();
+            RuleFor(x => x.Offset).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.Limit).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.BatchSize).GreaterThanOrEqualTo(0);
+
+            RuleFor(x => x.FolderName)
+                .Must(x =>
+                {
+                    // See ExportProfileService.UpdateExportProfile.
+                    x = FileSystemHelper.ValidateRootPath(x);
+                    return FileSystemHelper.IsSafeRootPath(x);
+                })
+                .WithMessage(T("Admin.DataExchange.Export.FolderName.Validate"));
+        }
+    }
 }

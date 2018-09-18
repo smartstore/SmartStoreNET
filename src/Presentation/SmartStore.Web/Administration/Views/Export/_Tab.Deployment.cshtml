@@ -3,6 +3,14 @@
 @using SmartStore.Admin.Models.DataExchange
 @model ExportProfileModel
 
+@if (!Model.Provider.IsFileBasedExport)
+{
+	<div class="alert alert-info alert-dismissible">
+		@Html.Raw(T("Admin.DataExchange.Export.NonFileBasedExport.Note"))
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+	</div>
+}
+
 <table class="adminContent">
 	<tr>
 		<td class="adminTitle">
@@ -93,7 +101,7 @@
 @if (Model.Provider.IsFileBasedExport)
 {
 	<div class="admin-config-group">
-		<div class="head">@T("Admin.DataExchange.Export.Deployment.ProfilesTitle")</div>
+		<div class="title">@T("Admin.DataExchange.Export.Deployment.ProfilesTitle")</div>
 	</div>
 
 	<div class="alert alert-info alert-dismissible">
@@ -109,9 +117,9 @@
 		</div>
 	}
 
-	if (Model.Deployments.Count > 0)
+	if (Model.Deployments.Any())
 	{
-		<div>
+		<div class="table-responsive">
 			<table id="export-deployment-list" class="table admin-table profile-list">
 				<thead>
 					<tr>
@@ -176,7 +184,7 @@
 									<div class="text-danger"><strong>@T("Common.Error"): </strong> <span>@result.Error</span></div>
 								}
 							</td>
-							<td>
+							<td align="right" class="omega">
 								<button type="button" data-url="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-sm btn-danger delete-depoyment">
 									<span>@T("Common.Delete")</span>
 								</button>
@@ -193,74 +201,61 @@
 		<span>@T("Admin.DataExchange.AddNewProfile")</span>
 	</a>
 }
-else
-{
-	<div class="alert alert-info">
-		@Html.Raw(T("Admin.DataExchange.Export.NonFileBasedExport.Note"))
-	</div>
-}
 
-<div id="deployment-file-dialog" class="modal fade" tabindex="-1">
-	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">@T("Admin.DataExchange.Export.ExportFiles")</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body"></div>
-			<div class="modal-footer">
-				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-			</div>
-		</div>
-	</div>
-</div>
+@{Html.SmartStore().Window()
+	.Name("deployment-file-dialog")
+	.Title(T("Admin.DataExchange.Export.ExportFiles"))
+	.Size(WindowSize.Large)
+	.FooterContent(@<text><button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button></text>)
+	.Render();
+}
 
 @helper FileNamePatternDescription()
 {
-	<table class="table admin-table">
-		<thead>
-			<tr>
-				<th>@T("Admin.Common.Placeholder")</th>
-				<th>@T("Common.Description")</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>%Profile.Id%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(0)</td>
-			</tr>
-			<tr>
-				<td>%Profile.FolderName%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(1)</td>
-			</tr>
-			<tr>
-				<td>%Profile.SeoName%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(2)</td>
-			</tr>
-			<tr>
-				<td>%Store.Id%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(3)</td>
-			</tr>
-			<tr>
-				<td>%Store.SeoName%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(4)</td>
-			</tr>
-			<tr>
-				<td>%File.Index%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(5)</td>
-			</tr>
-			<tr>
-				<td>%Random.Number%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(6)</td>
-			</tr>
-			<tr>
-				<td>%Timestamp%</td>
-				<td>@Model.FileNamePatternDescriptions.SafeGet(7)</td>
-			</tr>
-		</tbody>
-	</table>
+	<div class="table-responsive">
+		<table class="table admin-table">
+			<thead>
+				<tr>
+					<th>@T("Admin.Common.Placeholder")</th>
+					<th>@T("Common.Description")</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>%Profile.Id%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(0)</td>
+				</tr>
+				<tr>
+					<td>%Profile.FolderName%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(1)</td>
+				</tr>
+				<tr>
+					<td>%Profile.SeoName%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(2)</td>
+				</tr>
+				<tr>
+					<td>%Store.Id%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(3)</td>
+				</tr>
+				<tr>
+					<td>%Store.SeoName%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(4)</td>
+				</tr>
+				<tr>
+					<td>%File.Index%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(5)</td>
+				</tr>
+				<tr>
+					<td>%Random.Number%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(6)</td>
+				</tr>
+				<tr>
+					<td>%Timestamp%</td>
+					<td>@Model.FileNamePatternDescriptions.SafeGet(7)</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 }
 
 <script type="text/javascript">
@@ -276,7 +271,7 @@ else
 		// delete deployment
 		$('#export-deployment-list').find('.delete-depoyment').click(function () {
 			$(this).doPostData({
-				ask: '@T("Admin.Common.AskToProceed").JsText'
+				ask: @T("Admin.Common.AskToProceed").JsText
 			});
 		});
 

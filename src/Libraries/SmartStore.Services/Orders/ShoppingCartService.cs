@@ -143,7 +143,7 @@ namespace SmartStore.Services.Orders
 			return result;
 		}
 
-		protected List<OrganizedShoppingCartItem> OrganizeCartItems(IEnumerable<ShoppingCartItem> cart)
+		protected virtual List<OrganizedShoppingCartItem> OrganizeCartItems(IEnumerable<ShoppingCartItem> cart)
 		{
 			var result = new List<OrganizedShoppingCartItem>();
 			
@@ -205,7 +205,7 @@ namespace SmartStore.Services.Orders
 			int cartItemId = shoppingCartItem.Id;
 
             // reset checkout data
-            if (resetCheckoutData)
+            if (resetCheckoutData && customer != null)
             {
 				_customerService.ResetCheckoutData(shoppingCartItem.Customer, shoppingCartItem.StoreId);
             }
@@ -217,7 +217,7 @@ namespace SmartStore.Services.Orders
 			_requestCache.RemoveByPattern(CARTITEMS_PATTERN_KEY);
 
 			// validate checkout attributes
-			if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
+			if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart && customer != null)
             {
 				var cart = GetCartItems(customer, ShoppingCartType.ShoppingCart, storeId);
 
@@ -227,7 +227,7 @@ namespace SmartStore.Services.Orders
             }
 
 			// delete child items
-			if (deleteChildCartItems)
+			if (deleteChildCartItems && customer != null)
 			{
 				var childCartItems = _sciRepository.Table
 					.Where(x => x.CustomerId == customer.Id && x.ParentItemId != null && x.ParentItemId.Value == cartItemId && x.Id != cartItemId)
@@ -253,22 +253,28 @@ namespace SmartStore.Services.Orders
 			}
 		}
 
-        public virtual int DeleteExpiredShoppingCartItems(DateTime olderThanUtc)
+        public virtual int DeleteExpiredShoppingCartItems(DateTime olderThanUtc, int? customerId = null)
         {
             var query =
 				from sci in _sciRepository.Table
 				where sci.UpdatedOnUtc < olderThanUtc && sci.ParentItemId == null
 				select sci;
 
+			if (customerId.GetValueOrDefault() > 0)
+			{
+				query = query.Where(x => x.CustomerId == customerId.Value);
+			}
+
             var cartItems = query.ToList();
 
 			foreach (var parentItem in cartItems)
 			{
-				var childItems = _sciRepository.Table
-					.Where(x => x.ParentItemId != null && x.ParentItemId.Value == parentItem.Id && x.Id != parentItem.Id).ToList();
+				var childItems = _sciRepository.Table.Where(x => x.ParentItemId == parentItem.Id && x.Id != parentItem.Id).ToList();
 
 				foreach (var childItem in childItems)
+				{
 					_sciRepository.Delete(childItem);
+				}		
 
 				_sciRepository.Delete(parentItem);
 			}
@@ -1008,9 +1014,10 @@ namespace SmartStore.Services.Orders
 						}
                     }
 
-                    // price is the same (for products which require customers to enter a price)
-                    var customerEnteredPricesEqual = true;
-					if (sci.Item.Product.CustomerEntersPrice)
+					// Products with CustomerEntersPrice are equal if the price is the same.
+					// But a system product may only be placed once in the shopping cart.
+					var customerEnteredPricesEqual = true;
+					if (sci.Item.Product.CustomerEntersPrice && !sci.Item.Product.IsSystemProduct)
 					{
 						customerEnteredPricesEqual = Math.Round(sci.Item.CustomerEnteredPrice, 2) == Math.Round(customerEnteredPrice, 2);
 					}
@@ -1165,8 +1172,7 @@ namespace SmartStore.Services.Orders
 		public virtual void AddToCart(AddToCartContext ctx)
 		{
 			var customer = ctx.Customer ?? _workContext.CurrentCustomer;
-			int storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
-			var cart = GetCartItems(customer, ctx.CartType, storeId);
+			var storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
 
 			_customerService.ResetCheckoutData(customer, storeId);
 
@@ -1196,7 +1202,7 @@ namespace SmartStore.Services.Orders
 			}
 
 			ctx.Warnings.AddRange(
-				AddToCart(_workContext.CurrentCustomer, ctx.Product, ctx.CartType, storeId,	ctx.AttributesXml, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
+				AddToCart(customer, ctx.Product, ctx.CartType, storeId,	ctx.AttributesXml, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
 			);
 
 			if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Warnings.Count <= 0 && ctx.BundleItem == null)

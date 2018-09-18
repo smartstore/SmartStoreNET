@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -20,7 +19,7 @@ namespace SmartStore.Web.Models.Entity
 
 		public List<SearchResultModel> SearchResult { get; set; }
 
-		#region Products
+		#region SearchProperties
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
 		public string ProductName { get; set; }
@@ -31,15 +30,18 @@ namespace SmartStore.Web.Models.Entity
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
 		public int ManufacturerId { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
+		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int StoreId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
 		public int ProductTypeId { get; set; }
 
-		#endregion
+        [SmartResourceDisplayName("Admin.Catalog.Customers.CustomerSearchType")]
+        public string CustomerSearchType { get; set; }
 
-		public class SearchResultModel : EntityModelBase
+        #endregion
+
+        public class SearchResultModel : EntityModelBase
 		{
 			public string ReturnValue { get; set; }
 			public string Title { get; set; }

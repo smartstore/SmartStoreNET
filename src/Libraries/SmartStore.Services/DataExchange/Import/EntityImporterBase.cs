@@ -100,40 +100,35 @@ namespace SmartStore.Services.DataExchange.Import
 				item.MimeType = MediaTypeNames.Image.Jpeg;
 			}
 
-			var extension = MimeTypes.MapMimeTypeToExtension(item.MimeType);
-
-			if (extension.HasValue())
+			if (urlOrPath.IsWebUrl())
 			{
-				if (urlOrPath.IsWebUrl())
-				{
-					item.Url = urlOrPath;
-					item.FileName = "{0}-{1}".FormatInvariant(seoName, item.Id).ToValidFileName();
+				item.Url = urlOrPath;
+				item.FileName = "{0}-{1}".FormatInvariant(seoName, item.Id).ToValidFileName();
 
-					if (DownloadedItems.ContainsKey(urlOrPath))
-					{
-						item.Path = Path.Combine(ImageDownloadFolder, DownloadedItems[urlOrPath]);
-						item.Success = true;
-					}
-					else
-					{
-						item.Path = Path.Combine(ImageDownloadFolder, item.FileName + extension.EnsureStartsWith("."));
-					}
-				}
-				else if (Path.IsPathRooted(urlOrPath))
+				if (DownloadedItems.ContainsKey(urlOrPath))
 				{
-					item.Path = urlOrPath;
+					item.Path = Path.Combine(ImageDownloadFolder, DownloadedItems[urlOrPath]);
 					item.Success = true;
 				}
 				else
 				{
-					item.Path = Path.Combine(ImageFolder, urlOrPath);
-					item.Success = true;
-				}
+					var extension = MimeTypes.MapMimeTypeToExtension(item.MimeType).NullEmpty() ?? ".jpg";
 
-				return item;
+					item.Path = Path.Combine(ImageDownloadFolder, item.FileName + extension.EnsureStartsWith("."));
+				}
+			}
+			else if (Path.IsPathRooted(urlOrPath))
+			{
+				item.Path = urlOrPath;
+				item.Success = true;
+			}
+			else
+			{
+				item.Path = Path.Combine(ImageFolder, urlOrPath);
+				item.Success = true;
 			}
 
-			return null;
+			return item;
 		}
 
 		public void Succeeded(FileDownloadManagerItem item)

@@ -2,13 +2,17 @@
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using FluentValidation;
+using SmartStore.Core.Localization;
+using SmartStore.Web.Framework.Validators;
 
 namespace SmartStore.OfflinePayment.Models
 {
 	public abstract class PaymentInfoModelBase : ModelBase
     {
 		public string DescriptionText { get; set; }
-    }
+		public string ThumbnailUrl { get; set; }
+	}
 
 	public class CashOnDeliveryPaymentInfoModel : PaymentInfoModelBase
 	{
@@ -103,4 +107,30 @@ namespace SmartStore.OfflinePayment.Models
         [AllowHtml]
         public string PurchaseOrderNumber { get; set; }
 	}
+
+    #region validators 
+
+    public class DirectDebitPaymentInfoValidator : AbstractValidator<DirectDebitPaymentInfoModel>
+    {
+        public DirectDebitPaymentInfoValidator()
+        {
+            RuleFor(x => x.DirectDebitAccountHolder).NotEmpty();
+            RuleFor(x => x.DirectDebitAccountNumber).NotEmpty().When(x => x.EnterIBAN == "no-iban");
+            RuleFor(x => x.DirectDebitBankCode).NotEmpty().When(x => x.EnterIBAN == "no-iban");
+            RuleFor(x => x.DirectDebitIban).Matches(RegularExpressions.IsIban).When(x => x.EnterIBAN == "iban");
+            RuleFor(x => x.DirectDebitBic).Matches(RegularExpressions.IsBic).When(x => x.EnterIBAN == "iban");
+        }
+    }
+
+    public class ManualPaymentInfoValidator : AbstractValidator<ManualPaymentInfoModel>
+    {
+        public ManualPaymentInfoValidator(Localizer T)
+        {
+            RuleFor(x => x.CardholderName).NotEmpty();
+            RuleFor(x => x.CardNumber).CreditCard().WithMessage(T("Payment.CardNumber.Wrong"));
+            RuleFor(x => x.CardCode).CreditCardCvvNumber();
+        }
+    }
+
+    #endregion
 }

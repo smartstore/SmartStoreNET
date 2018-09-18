@@ -1,7 +1,7 @@
-﻿@model ByRegionTaxRateListModel
-@using SmartStore.Web.Framework;
+﻿@using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Tax.Models;
+@model ByRegionTaxRateListModel
 @{
 	Layout = "";
 }
@@ -36,9 +36,9 @@
 		.DataBinding(dataBinding =>
 		{
 			dataBinding.Ajax()
-				.Select("RatesList", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
-				.Update("RateUpdate", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
-				.Delete("RateDelete", "TaxByRegion", new RouteValueDictionary() { { "area", "SmartStore.Tax" } });
+				.Select("RatesList", "TaxByRegion", new RouteValueDictionary { { "area", "SmartStore.Tax" } })
+				.Update("RateUpdate", "TaxByRegion", new RouteValueDictionary { { "area", "SmartStore.Tax" } })
+				.Delete("RateDelete", "TaxByRegion", new RouteValueDictionary { { "area", "SmartStore.Tax" } });
 		})
 		.Editable(x => { x.Mode(GridEditMode.InLine); })
 		.ToolBar(commands => commands.Template(TaxByRegionGridCommands))
@@ -55,25 +55,6 @@
 
 <script type="text/javascript">
      $(function() {
-            $("#@Html.FieldIdFor(model => model.AddCountryId)").change(function() {
-                var selectedItem = $(this).val();
-                var ddlStates = $("#@Html.FieldIdFor(model => model.AddStateProvinceId)")
-                $.ajax({
-                    cache:false,
-                    type: "GET",
-                    url: "@(Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary() { { "area", "Admin" } }))",
-                    data: { "countryId": selectedItem, "addAsterisk": "true" },
-                    success: function (data) {
-                        ddlStates.html('');
-                        $.each(data, function(id, option) {
-                            ddlStates.append($('<option></option>').val(option.id).html(option.name));
-                        });
-                    },
-                    error:function (xhr, ajaxOptions, thrownError){
-                        alert('Failed to retrieve states.')
-                    }
-                });
-            });
 
 			$('#addtaxbyregionrecord').on("click", function (e) {
 				e.preventDefault();
@@ -116,7 +97,15 @@
 						@Html.SmartLabelFor(model => model.AddCountryId)
 					</td>
 					<td class="adminData">
-						@Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries)
+						@Html.DropDownList("AddCountryId", Model.AvailableCountries,
+						new
+						{
+							@class = "form-control country-input country-selector",
+							data_region_control_selector = "#AddStateProvinceId",
+							data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country", new RouteValueDictionary { { "area", "Admin" } }),
+							data_addAsterisk = "true",
+							data_addEmptyStateIfRequired = "false"
+						})
 						@Html.ValidationMessageFor(model => model.AddCountryId)
 					</td>
 				</tr>
@@ -164,7 +153,7 @@
 			<span>@T("Admin.Common.Cancel")</span>
 		</button>
 		<button id="addtaxbyregionrecord" name="addtaxrate" value="addtaxrate"  type="submit" class="btn btn-primary">
-			<i class="fa fa-ok"></i>
+			<i class="fa fa-check"></i>
 			<span>@T("Common.AddNew")</span>
 		</button>
 	</text>)

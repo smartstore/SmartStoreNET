@@ -4,7 +4,8 @@
 	<ReplyTo>{{ Customer.FullName }} &lt;{{ Customer.Email }}&gt;</ReplyTo>
 	<Subject>Neue Bestellung eingegangen von '{{ Customer.FullName }}'</Subject>
 	<ModelTypes>Order, Order.Customer</ModelTypes>
-	<Body><![CDATA[{% extends 'master' %}
+	<Body>
+				  <![CDATA[{% extends 'master' %}
 
 {% block 'body' %}
 <h1>
@@ -59,6 +60,16 @@
                 {% endif %}
               </td>
             </tr>
+			{% if Order.CustomerComment %}
+				<tr>
+					<td colspan="2">
+					  <h3 class="mt-2">Kundenkommentar</h3>
+                	  <div class="text-sm">
+						{{ Order.CustomerComment }}
+					  </div>  
+					</td>
+            	</tr>
+            {% endif %}
           </tbody>
         </table>
         

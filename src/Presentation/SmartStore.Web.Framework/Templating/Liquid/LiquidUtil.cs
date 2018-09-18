@@ -16,7 +16,7 @@ namespace SmartStore.Templating.Liquid
 				return null;
 			}
 
-			if (value is TestDrop)
+			if (value is TestDrop || value is IFormattable)
 			{
 				return value;
 			}

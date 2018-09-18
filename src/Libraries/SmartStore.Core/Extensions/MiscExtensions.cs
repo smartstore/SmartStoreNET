@@ -1,11 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Data;
-using System.Data.OleDb;
 using System.Diagnostics;
 using System.Text;
-using System.Web.Routing;
-using SmartStore.Core;
 
 namespace SmartStore
 {   
@@ -51,7 +46,9 @@ namespace SmartStore
             return default(T).Equals(value.GetValueOrDefault());
         }
 
-		/// <summary>Converts bytes into a hex string.</summary>
+		/// <summary>
+		/// Converts bytes into a hex string.
+		/// </summary>
 		public static string ToHexString(this byte[] bytes, int length = 0)
 		{
 			if (bytes == null || bytes.Length <= 0)

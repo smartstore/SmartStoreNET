@@ -1,5 +1,4 @@
 ﻿@model CatalogSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
 	ViewBag.Title = T("Admin.Configuration.Settings.Catalog").Text;
 }
@@ -46,7 +45,7 @@
                 @Html.SmartLabelFor(model => model.ShowBestsellersOnHomepage)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ShowBestsellersOnHomepage, new { data_toggler_for = "#pnlNumberOfBestsellersOnHomepage" })
+				@Html.SettingEditorFor(model => model.ShowBestsellersOnHomepage, Html.CheckBoxFor(model => model.ShowBestsellersOnHomepage, new { data_toggler_for = "#pnlNumberOfBestsellersOnHomepage" }))
                 @Html.ValidationMessageFor(model => model.ShowBestsellersOnHomepage)
             </td>
         </tr>
@@ -156,8 +155,7 @@
 				@Html.SmartLabelFor(model => model.DeliveryTimeIdForEmptyStock)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.DeliveryTimeIdForEmptyStock)
-				@Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
+				@Html.SettingEditorFor(model => model.DeliveryTimeIdForEmptyStock, @Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified")))
 				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
 			</td>
 		</tr>
@@ -178,6 +176,24 @@
                 <div class="admin-config-group">
                     <div class="title">@T("Admin.CatalogSettings.Prices")</div>
                 </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayTextForZeroPrices)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DisplayTextForZeroPrices)
+                @Html.ValidationMessageFor(model => model.DisplayTextForZeroPrices)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PriceDisplayStyle)
+            </td>
+            <td class="adminData">
+                @Html.EnumSettingEditorFor(model => model.PriceDisplayStyle)
+                @Html.ValidationMessageFor(model => model.PriceDisplayStyle)
             </td>
         </tr>
         <tr>
@@ -213,7 +229,7 @@
                 @Html.SmartLabelFor(model => model.CompareProductsEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.CompareProductsEnabled, new { data_toggler_for = "#pnlCompareProducts" })
+				@Html.SettingEditorFor(model => model.CompareProductsEnabled, Html.CheckBoxFor(model => model.CompareProductsEnabled, new { data_toggler_for = "#pnlCompareProducts" }))
                 @Html.ValidationMessageFor(model => model.CompareProductsEnabled)
             </td>
         </tr>
@@ -252,7 +268,7 @@
                 @Html.SmartLabelFor(model => model.EnableHtmlTextCollapser)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.EnableHtmlTextCollapser, new { data_toggler_for = "#pnlHtmlTextCollapsedHeight" })
+				@Html.SettingEditorFor(model => model.EnableHtmlTextCollapser, Html.CheckBoxFor(model => model.EnableHtmlTextCollapser, new { data_toggler_for = "#pnlHtmlTextCollapsedHeight" }))
                 @Html.ValidationMessageFor(model => model.EnableHtmlTextCollapser)
             </td>
         </tr>
@@ -261,7 +277,7 @@
                 @Html.SmartLabelFor(model => model.HtmlTextCollapsedHeight)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.HtmlTextCollapsedHeight)
+                @Html.SettingEditorFor(model => model.HtmlTextCollapsedHeight, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.HtmlTextCollapsedHeight)
             </td>
         </tr>
@@ -328,7 +344,7 @@
                 @Html.SmartLabelFor(model => model.ShowCategoryProductNumber)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ShowCategoryProductNumber, new { data_toggler_for = "#pnlShowCategoryProductNumberIncludingSubcategories" })
+				@Html.SettingEditorFor(model => model.ShowCategoryProductNumber, Html.CheckBoxFor(model => model.ShowCategoryProductNumber, new { data_toggler_for = "#pnlShowCategoryProductNumberIncludingSubcategories" }))
                 @Html.ValidationMessageFor(model => model.ShowCategoryProductNumber)
             </td>
         </tr>
@@ -355,8 +371,7 @@
                 @Html.SmartLabelFor(model => model.SubCategoryDisplayType)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.SubCategoryDisplayType)
-                @Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes)
+				@Html.SettingEditorFor(model => model.SubCategoryDisplayType, @Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes))
                 @Html.ValidationMessageFor(model => model.SubCategoryDisplayType)
             </td>
         </tr>
@@ -384,8 +399,7 @@
                 @Html.SmartLabelFor(model => model.DefaultViewMode)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.DefaultViewMode)
-                @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
+				@Html.SettingEditorFor(model => model.DefaultViewMode, @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes))
                 @Html.ValidationMessageFor(model => model.DefaultViewMode)
             </td>
         </tr>
@@ -403,8 +417,7 @@
                 @Html.SmartLabelFor(model => model.DefaultSortOrder)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.DefaultSortOrder)
-                @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes)
+				@Html.SettingEditorFor(model => model.DefaultSortOrder, @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes))
                 @Html.ValidationMessageFor(model => model.DefaultSortOrder)
             </td>
         </tr>
@@ -440,8 +453,7 @@
                 @Html.SmartLabelFor(model => model.PriceDisplayType)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.PriceDisplayType)
-                @Html.DropDownListFor(model => model.PriceDisplayType, Model.AvailablePriceDisplayTypes)
+				@Html.SettingEditorFor(model => model.PriceDisplayType, @Html.DropDownListFor(model => model.PriceDisplayType, Model.AvailablePriceDisplayTypes))
                 @Html.ValidationMessageFor(model => model.PriceDisplayType)
             </td>
         </tr>
@@ -532,7 +544,7 @@
                 @Html.SmartLabelFor(model => model.LabelAsNewForMaxDays)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.LabelAsNewForMaxDays)
+                @Html.SettingEditorFor(model => model.LabelAsNewForMaxDays, null, new { postfix = T("Time.Days").Text })
                 @Html.ValidationMessageFor(model => model.LabelAsNewForMaxDays)
             </td>
         </tr>
@@ -620,7 +632,7 @@
                 @Html.SmartLabelFor(model => model.EmailAFriendEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.EmailAFriendEnabled, new { data_toggler_for = "#pnlAllowAnonymousUsersToEmailAFriend" })
+				@Html.SettingEditorFor(model => model.EmailAFriendEnabled, Html.CheckBoxFor(model => model.EmailAFriendEnabled, new { data_toggler_for = "#pnlAllowAnonymousUsersToEmailAFriend" }))
                 @Html.ValidationMessageFor(model => model.EmailAFriendEnabled)
             </td>
         </tr>
@@ -655,7 +667,7 @@
                 @Html.SmartLabelFor(model => model.RecentlyViewedProductsEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.RecentlyViewedProductsEnabled, new { data_toggler_for = "#pnlRecentlyViewedProductsNumber" })
+				@Html.SettingEditorFor(model => model.RecentlyViewedProductsEnabled, Html.CheckBoxFor(model => model.RecentlyViewedProductsEnabled, new { data_toggler_for = "#pnlRecentlyViewedProductsNumber" }))
                 @Html.ValidationMessageFor(model => model.RecentlyViewedProductsEnabled)
             </td>
         </tr>
@@ -673,7 +685,7 @@
                 @Html.SmartLabelFor(model => model.RecentlyAddedProductsEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.RecentlyAddedProductsEnabled, new { data_toggler_for = "#pnlRecentlyAddedProductsNumber" })
+				@Html.SettingEditorFor(model => model.RecentlyAddedProductsEnabled, Html.CheckBoxFor(model => model.RecentlyAddedProductsEnabled, new { data_toggler_for = "#pnlRecentlyAddedProductsNumber" }))
                 @Html.ValidationMessageFor(model => model.RecentlyAddedProductsEnabled)
             </td>
         </tr>
@@ -691,7 +703,7 @@
                 @Html.SmartLabelFor(model => model.ProductsAlsoPurchasedEnabled)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ProductsAlsoPurchasedEnabled, new { data_toggler_for = "#pnlProductsAlsoPurchasedNumber" })
+				@Html.SettingEditorFor(model => model.ProductsAlsoPurchasedEnabled, Html.CheckBoxFor(model => model.ProductsAlsoPurchasedEnabled, new { data_toggler_for = "#pnlProductsAlsoPurchasedNumber" }))
                 @Html.ValidationMessageFor(model => model.ProductsAlsoPurchasedEnabled)
             </td>
         </tr>
@@ -718,7 +730,7 @@
                 @Html.SmartLabelFor(model => model.ShowManufacturerInProductDetail)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ShowManufacturerInProductDetail, new { data_toggler_for = "#pnlManufacturerPictures" })
+				@Html.SettingEditorFor(model => model.ShowManufacturerInProductDetail, Html.CheckBoxFor(model => model.ShowManufacturerInProductDetail, new { data_toggler_for = "#pnlManufacturerPictures" }))
                 @Html.ValidationMessageFor(model => model.ShowManufacturerInProductDetail)
             </td>
         </tr>
@@ -790,7 +802,7 @@
                 @Html.SmartLabelFor(model => model.ShowShareButton)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ShowShareButton, new { data_toggler_for = "#pnlPageShareCode" })
+				@Html.SettingEditorFor(model => model.ShowShareButton, Html.CheckBoxFor(model => model.ShowShareButton, new { data_toggler_for = "#pnlPageShareCode" }))
                 @Html.ValidationMessageFor(model => model.ShowShareButton)
             </td>
         </tr>
@@ -814,7 +826,7 @@
                 @Html.SmartLabelFor(model => model.ShowManufacturersOnHomepage)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ShowManufacturersOnHomepage, new { data_toggler_for = "#pnlManufacturerItemsToDisplayOnHomepage" })
+				@Html.SettingEditorFor(model => model.ShowManufacturersOnHomepage, Html.CheckBoxFor(model => model.ShowManufacturersOnHomepage, new { data_toggler_for = "#pnlManufacturerItemsToDisplayOnHomepage" }))
                 @Html.ValidationMessageFor(model => model.ShowManufacturersOnHomepage)
             </td>
         </tr>
@@ -832,7 +844,7 @@
                 @Html.SmartLabelFor(model => model.ShowManufacturersInOffCanvas)
             </td>
             <td class="adminData">
-                @Html.CheckBoxFor(model => model.ShowManufacturersInOffCanvas, new { data_toggler_for = "#pnlManufacturerItemsToDisplayInOffCanvas" })
+				@Html.SettingEditorFor(model => model.ShowManufacturersInOffCanvas, Html.CheckBoxFor(model => model.ShowManufacturersInOffCanvas, new { data_toggler_for = "#pnlManufacturerItemsToDisplayInOffCanvas" }))
                 @Html.ValidationMessageFor(model => model.ShowManufacturersInOffCanvas)
             </td>
         </tr>

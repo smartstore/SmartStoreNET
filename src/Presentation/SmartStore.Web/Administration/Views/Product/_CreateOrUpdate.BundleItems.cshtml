@@ -4,14 +4,6 @@
 
 @if (Model.Id > 0)
 {
-    <script>
-		function onRowDataBound_bundleItems(e) {
-			if (!e.dataItem.Published) {
-				$(e.row).find('td').wrapInner('<span class="text-muted" />');
-			}
-		}
-	</script>
-
 	<div class="alert alert-info alert-dismissible">
 		<div>
 			@T("Admin.Catalog.Products.BundleItems.NotesOnProductBundles"):
@@ -91,64 +83,48 @@
         </table>
     </div>    
     
-	<p></p>
 
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<ProductModel.BundleItemModel>()
-					.Name("bundleitems-grid")
-					.DataKeys(keys =>
-					{
-						keys.Add(x => x.Id);
-					})
-					.DataBinding(dataBinding =>
-					{
-						dataBinding.Ajax()
-							.Select("BundleItemList", "Product", new { productId = Model.Id })
-							.Delete("BundleItemDelete", "Product");
-					})
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.ProductName)
-							.ReadOnly()
-							.Width(520)
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-						columns.Bound(x => x.Sku)
-							.ReadOnly();
-						columns.Bound(x => x.Quantity)
-							.Centered();
-						columns.Bound(x => x.Discount)
-							.Centered();
-						columns.Bound(x => x.Visible)
-							.ClientTemplate(@Html.SymbolForBool("Visible"))
-							.Centered();
-						columns.Bound(x => x.Published)
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-						columns.Bound(x => x.DisplayOrder)
-							.Centered();
-						columns.Bound(x => x.Id)
-							.Centered()
-							.ClientTemplate("<button onclick=\"" + "openPopup('" + @Url.Content("~/Admin/Product/BundleItemEditPopup/") + "<#= Id #>?btnId=btnRefreshBundleItems&formId=product-form'); return false;\" class='btn btn-secondary'>" + @T("Admin.Common.Edit").Text + "</button>")
-							.Title("");
-						columns.Command(commands =>
-						{
-							commands.Delete().Localize(T);
-						}).HtmlAttributes(new { align = "right" });
-					})
-					.ClientEvents(events => events.OnRowDataBound("onRowDataBound_bundleItems"))
-					.ToolBar(commands => commands.Template(GridCommands))
-					.EnableCustomBinding(true))
-            </td>
-        </tr>
-        <tr>
-            <td>
+	<div>
+		@(Html.Telerik().Grid<ProductModel.BundleItemModel>()
+			.Name("bundleitems-grid")
+			.DataKeys(keys => { keys.Add(x => x.Id); })
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax()
+					.Select("BundleItemList", "Product", new { productId = Model.Id })
+					.Delete("BundleItemDelete", "Product");
+			})
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.ProductName)
+					.ReadOnly()
+					.Width(520)
+					.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+				columns.Bound(x => x.Sku)
+					.ReadOnly();
+				columns.Bound(x => x.Quantity)
+					.Centered();
+				columns.Bound(x => x.Discount)
+					.Centered();
+				columns.Bound(x => x.Visible)
+					.ClientTemplate(@Html.SymbolForBool("Visible"))
+					.Centered();
+				columns.Bound(x => x.Published)
+					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Centered();
+				columns.Bound(x => x.DisplayOrder)
+					.Centered();
+				columns.Command(commands =>
+				{
+					commands.Custom("edit-bundle-part").Text(T("Common.Edit"));
+					commands.Delete().Localize(T);
+				}).HtmlAttributes(new { align = "right" });
+			})
+			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_bundleItems"))
+			.ToolBar(commands => commands.Template(GridCommands))
+			.EnableCustomBinding(true))
+	</div>
 
-            </td>
-        </tr>
-    </table>
-    
     <script>
 		function EntPicker_Completed(ids) {
 			$({}).doAjax({
@@ -162,8 +138,14 @@
 			return true;
 		};
 
-		$(function() {
-			$('#btnRefreshBundleItems').click(function () {
+		function onRowDataBound_bundleItems(e) {
+			if (!e.dataItem.Published) {
+				$(e.row).find('td').wrapInner('<span class="text-muted" />');
+			}
+		}
+
+		$(function () {
+			$('#btnRefreshBundleItems').on('click', function () {
 				$("#bundleitems-grid").data('tGrid').ajaxRequest();
 				return false;
 			});
@@ -173,7 +155,19 @@
 				var info = $('#ProductBundleInfoContainer');
 				$(this).text($(this).attr(info.is(':visible') ? 'data-in' : 'data-out'));
 				info.slideToggle(200);
-			});	
+			});
+
+			$('#bundleitems-grid').on('click', '.t-grid-edit-bundle-part', function (e) {
+				e.preventDefault();
+				var grid = $('#bundleitems-grid').data('tGrid');
+				var tr = $(this).closest('tr');
+				var id = grid.dataItem(tr).Id;
+				var href = '@Url.Content("~/Admin/Product/BundleItemEditPopup/")' + id + '?btnId=btnRefreshBundleItems&formId=product-form';
+
+				openPopup(href);
+
+				return false;
+			});
 		});
     </script>
 }

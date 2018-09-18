@@ -7,7 +7,7 @@ using SmartStore.Core.Data;
 
 namespace SmartStore.Utilities
 {
-	public static class FileSystemHelper
+    public static class FileSystemHelper
 	{
 		/// <summary>
 		/// Returns physical path to application temp directory
@@ -71,10 +71,32 @@ namespace SmartStore.Utilities
 			return path;
 		}
 
-		/// <summary>
-		/// Safe way to cleanup the temp directory. Should be called via scheduled task.
-		/// </summary>
-		public static void TempCleanup()
+        /// <summary>
+        /// Checks whether a path is a safe root path.
+        /// </summary>
+        /// <param name="path">Relative path</param>
+        public static bool IsSafeRootPath(string path)
+        {
+            if (path.EmptyNull().Length > 2 &&
+                !path.IsCaseInsensitiveEqual("con") &&
+                path.IndexOfAny(Path.GetInvalidPathChars()) == -1)
+            {
+                try
+                {
+                    var mappedPath = CommonHelper.MapPath(path);
+                    var appPath = CommonHelper.MapPath("~/");
+                    return !mappedPath.IsCaseInsensitiveEqual(appPath);
+                }
+                catch { }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Safe way to cleanup the temp directory. Should be called via scheduled task.
+        /// </summary>
+        public static void TempCleanup()
 		{
 			try
 			{

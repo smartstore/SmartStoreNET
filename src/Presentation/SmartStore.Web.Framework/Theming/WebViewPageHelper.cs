@@ -11,6 +11,7 @@ using SmartStore.Services.Common;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Core.Domain;
 using SmartStore.Services.Customers;
+using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -19,7 +20,7 @@ namespace SmartStore.Web.Framework.Theming
 		private bool _initialized;
 		private ControllerContext _controllerContext;
 		private ExpandoObject _themeVars;
-		private IList<NotifyEntry> _internalNotifications;
+		private ICollection<NotifyEntry> _internalNotifications;
 
 		private int? _currentCategoryId;
 		private int? _currentManufacturerId;
@@ -28,20 +29,21 @@ namespace SmartStore.Web.Framework.Theming
 		private bool? _isHomePage;
 		private bool? _isMobileDevice;
         private bool? _isStoreClosed;
+		private bool? _enableHoneypot;
 
-        public WebViewPageHelper()
+		public WebViewPageHelper()
 		{
 			T = NullLocalizer.Instance;
 		}
 
 		public Localizer T { get; set; }
+		public ILocalizationFileResolver LocalizationFileResolver { get; set; }
 		public ICommonServices Services { get; set; }
 		public IThemeRegistry ThemeRegistry { get; set; }
 		public IThemeContext ThemeContext { get; set; }
 		public IMobileDeviceHelper MobileDeviceHelper { get; set; }
-        public StoreInformationSettings StoreInfoSettings { get; set; }
 
-        public void Initialize(ViewContext viewContext)
+		public void Initialize(ViewContext viewContext)
 		{
 			if (!_initialized)
 			{
@@ -149,26 +151,41 @@ namespace SmartStore.Web.Framework.Theming
             {
                 if (!_isStoreClosed.HasValue)
                 {
-                    _isStoreClosed = Services.WorkContext.CurrentCustomer.IsAdmin() && StoreInfoSettings.StoreClosedAllowForAdmins ?  false : StoreInfoSettings.StoreClosed;
+					var settings = Services.Settings.LoadSetting<StoreInformationSettings>(Services.StoreContext.CurrentStore.Id);
+					_isStoreClosed = Services.WorkContext.CurrentCustomer.IsAdmin() && settings.StoreClosedAllowForAdmins ?  false : settings.StoreClosed;
                 }
 
                 return _isStoreClosed.Value;
             }
         }
 
-        public IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
+		public bool EnableHoneypotProtection
+		{
+			get
+			{
+				if (!_enableHoneypot.HasValue)
+				{
+					var settings = Services.Settings.LoadSetting<SecuritySettings>(Services.StoreContext.CurrentStore.Id);
+					_enableHoneypot = settings.EnableHoneypotProtection;
+				}
+
+				return _enableHoneypot.Value;
+			}
+		}
+
+		public IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
 		{
 			IEnumerable<NotifyEntry> result = Enumerable.Empty<NotifyEntry>();
 
 			if (_internalNotifications == null)
 			{
 				string key = NotifyAttribute.NotificationsKey;
-				IList<NotifyEntry> entries;
+				ICollection<NotifyEntry> entries;
 
 				var tempData = _controllerContext.Controller.TempData;
 				if (tempData.ContainsKey(key))
 				{
-					entries = tempData[key] as IList<NotifyEntry>;
+					entries = tempData[key] as ICollection<NotifyEntry>;
 					if (entries != null)
 					{
 						result = result.Concat(entries);
@@ -178,14 +195,14 @@ namespace SmartStore.Web.Framework.Theming
 				var viewData = _controllerContext.Controller.ViewData;
 				if (viewData.ContainsKey(key))
 				{
-					entries = viewData[key] as IList<NotifyEntry>;
+					entries = viewData[key] as ICollection<NotifyEntry>;
 					if (entries != null)
 					{
 						result = result.Concat(entries);
 					}
 				}
 
-				_internalNotifications = new List<NotifyEntry>(result);
+				_internalNotifications = new HashSet<NotifyEntry>(result);
 			}
 
 			if (type == null)

@@ -1,5 +1,4 @@
 ﻿@model MediaSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Media").Text;
 }
@@ -37,7 +36,7 @@
                 @Html.SmartLabelFor(model => model.AvatarPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AvatarPictureSize)
+                @Html.SettingEditorFor(model => model.AvatarPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.AvatarPictureSize)
             </td>
         </tr>
@@ -46,7 +45,7 @@
                 @Html.SmartLabelFor(model => model.ProductThumbPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductThumbPictureSize)
+                @Html.SettingEditorFor(model => model.ProductThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.ProductThumbPictureSize)
             </td>
         </tr>
@@ -55,7 +54,7 @@
                 @Html.SmartLabelFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
+                @Html.SettingEditorFor(model => model.ProductThumbPictureSizeOnProductDetailsPage, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
             </td>
         </tr>
@@ -64,7 +63,7 @@
 				@Html.SmartLabelFor(model => model.MessageProductThumbPictureSize)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.MessageProductThumbPictureSize)
+				@Html.SettingEditorFor(model => model.MessageProductThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
 				@Html.ValidationMessageFor(model => model.MessageProductThumbPictureSize)
 			</td>
 		</tr>
@@ -73,7 +72,7 @@
                 @Html.SmartLabelFor(model => model.ProductDetailsPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductDetailsPictureSize)
+                @Html.SettingEditorFor(model => model.ProductDetailsPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.ProductDetailsPictureSize)
             </td>
         </tr>
@@ -91,7 +90,7 @@
                 @Html.SmartLabelFor(model => model.AssociatedProductPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.AssociatedProductPictureSize)
+                @Html.SettingEditorFor(model => model.AssociatedProductPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.AssociatedProductPictureSize)
             </td>
         </tr>
@@ -100,7 +99,7 @@
                 @Html.SmartLabelFor(model => model.BundledProductPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.BundledProductPictureSize)
+                @Html.SettingEditorFor(model => model.BundledProductPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.BundledProductPictureSize)
             </td>
         </tr>
@@ -109,7 +108,7 @@
                 @Html.SmartLabelFor(model => model.CategoryThumbPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CategoryThumbPictureSize)
+                @Html.SettingEditorFor(model => model.CategoryThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.CategoryThumbPictureSize)
             </td>
         </tr>
@@ -118,7 +117,7 @@
                 @Html.SmartLabelFor(model => model.ManufacturerThumbPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ManufacturerThumbPictureSize)
+                @Html.SettingEditorFor(model => model.ManufacturerThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.ManufacturerThumbPictureSize)
             </td>
         </tr>
@@ -127,7 +126,7 @@
                 @Html.SmartLabelFor(model => model.CartThumbPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CartThumbPictureSize)
+                @Html.SettingEditorFor(model => model.CartThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.CartThumbPictureSize)
             </td>
         </tr>
@@ -136,7 +135,7 @@
                 @Html.SmartLabelFor(model => model.CartThumbBundleItemPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CartThumbBundleItemPictureSize)
+                @Html.SettingEditorFor(model => model.CartThumbBundleItemPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.CartThumbBundleItemPictureSize)
             </td>
         </tr>
@@ -145,7 +144,7 @@
                 @Html.SmartLabelFor(model => model.MiniCartThumbPictureSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.MiniCartThumbPictureSize)
+                @Html.SettingEditorFor(model => model.MiniCartThumbPictureSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.MiniCartThumbPictureSize)
             </td>
         </tr>
@@ -154,7 +153,7 @@
                 @Html.SmartLabelFor(model => model.MaximumImageSize)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.MaximumImageSize)
+                @Html.SettingEditorFor(model => model.MaximumImageSize, null, new { postfix = T("Common.Pixel").Text })
                 @Html.ValidationMessageFor(model => model.MaximumImageSize)
             </td>
         </tr>
@@ -185,7 +184,7 @@
 
 				<button type="button" id="MoveMediaButton" class="btn btn-danger mt-3" data-url="@Url.Action("ChangeMediaStorage")">
 					<i class="fa fa-fw fa-gears"></i>
-					@(T("Admin.Common.MoveNow"))!
+					<span>@(T("Admin.Common.MoveNow"))!</span>
 				</button>
 
 				@Html.ValidationMessageFor(model => model.StorageProvider)			
@@ -197,7 +196,7 @@
 <script type="text/javascript">
     jQuery(document).ready(function () {
 
-    	// move media
+    	// Move media.
     	$('#MoveMediaButton').click(function () {
     		if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
 

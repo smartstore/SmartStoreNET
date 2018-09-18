@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Licensing;
 using SmartStore.Services;
@@ -73,13 +74,29 @@ namespace SmartStore.Admin.Controllers
 			this._services = services;
 		}
 
-		#endregion
+        #endregion
 
-		#region Utilities
+        #region Utilities
 
-		private LicensingData PrepareLicenseLabelModel(LicenseLabelModel model, PluginDescriptor pluginDescriptor, string url = null)
+        private bool IsLicensable(PluginDescriptor pluginDescriptor)
+        {
+            var result = false;
+
+            try
+            {
+                result = LicenseChecker.IsLicensablePlugin(pluginDescriptor);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return result;
+        }
+
+        private LicensingData PrepareLicenseLabelModel(LicenseLabelModel model, PluginDescriptor pluginDescriptor, string url = null)
 		{
-			if (LicenseChecker.IsLicensablePlugin(pluginDescriptor))
+            if (IsLicensable(pluginDescriptor))
 			{
 				// We always show license button to serve ability to delete a key.
 				model.IsLicensable = true;
@@ -421,16 +438,22 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult LicensePlugin(string systemName, LicensePluginModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
-				return AccessDeniedView();
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+            {
+                return AccessDeniedView();
+            }
 
 			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(systemName);
-			if (descriptor == null || !descriptor.Installed)
-				return HttpNotFound();
+            if (descriptor == null || !descriptor.Installed)
+            {
+                return HttpNotFound();
+            }
 
-			var isLicensable = LicenseChecker.IsLicensablePlugin(descriptor);
-			if (!isLicensable)
-				return HttpNotFound();
+			var isLicensable = IsLicensable(descriptor);
+            if (!isLicensable)
+            {
+                return HttpNotFound();
+            }
 
 			if (model.StoreLicenses != null)
 			{
@@ -525,12 +548,20 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 
 			var model = _pluginMediator.ToProviderModel(provider, true);
+			var pageTitle = model.FriendlyName;
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
 				locale.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata, languageId, false);
 				locale.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata, languageId, false);
+
+				if (pageTitle.IsEmpty() && languageId == _services.WorkContext.WorkingLanguage.Id)
+				{
+					pageTitle = locale.FriendlyName;
+				}
 			});
+
+			ViewBag.Title = pageTitle;
 
 			return View(model);
 		}

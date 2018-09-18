@@ -22,7 +22,7 @@
 			</button>
 			@if (Model.SendManually)
 			{
-				<button type="submit" name="sendnow" value="sendnow" class="btn btn-primary" onclick="return confirm(@T("Admin.Common.AreYouSure").JsText);">
+				<button type="submit" name="sendnow" value="sendnow" class="btn btn-primary" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
 					<i class="fa fa-envelope"></i>
 					<span>@T("Admin.Common.SendNow")</span>
 				</button>

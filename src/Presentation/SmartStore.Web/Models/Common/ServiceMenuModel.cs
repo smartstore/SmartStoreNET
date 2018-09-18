@@ -12,7 +12,5 @@ namespace SmartStore.Web.Models.Common
         public bool ForumEnabled { get; set; }
         public bool ManufacturerEnabled { get; set; }
         public bool AllowPrivateMessages { get; set; }
-
-		public Dictionary<string, string> TopicPageUrls { get; set; }
 	}
 }

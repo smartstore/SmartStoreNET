@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.IO

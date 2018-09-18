@@ -31,7 +31,7 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
 			{
-				var file = HostingEnvironment.VirtualPathProvider.GetFile(virtualPath) as DebugPluginVirtualFile;
+				var file = HostingEnvironment.VirtualPathProvider.GetFile(virtualPath) as DebugVirtualFile;
 				if (file != null)
 				{
 					PhysicalPath = file.PhysicalPath;

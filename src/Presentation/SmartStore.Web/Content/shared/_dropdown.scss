@@ -1,0 +1,88 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// Add nested dropdown support to BS4
+// ==============================================================
+
+.dropdown-group {
+	position: relative;
+
+	> .dropdown-item {
+		position: relative;
+		padding-right: 2rem;
+
+		&:before {
+			// make caret
+			position: absolute;
+			right: $dropdown-item-padding-x / 2;
+			top: 50%;
+			transform: translateY(-50%);
+			@include fontawesome("\f105", 16px); // angle-right
+		}
+	}
+
+	&.show > .dropdown-item {
+		color: $dropdown-link-hover-color;
+		background-color: $dropdown-link-hover-bg;
+	}
+
+	.dropdown-menu {
+		position: absolute;
+		margin-top: 0 !important;
+		top: $dropdown-padding-y * -1;
+		left: 100% !important;
+		bottom: auto;
+		transform: translateX(-2px);
+	}
+}
+
+
+// Dropdown toggle
+// ==============================================================
+
+.dropdown-toggle:after {
+	// better centering
+	vertical-align: 0.175em;
+}
+
+.dropdown-toggle.no-chevron:after {
+	display: none !important;
+}
+
+
+// Dropdown icon color and spacing
+// ==============================================================
+
+.dropdown-menu-light-icons .dropdown-item:not(.disabled) > i {
+	color: $text-muted;
+}
+
+.dropdown-item {
+	&.disabled {
+		cursor: default;
+	}
+
+	> i,
+	> img {
+		margin-left: -0.5rem;
+		margin-right: 0.5rem;
+	}
+
+	&:not(.disabled) {
+		> i {
+			color: lighten($dropdown-link-color, 20%);
+		}
+
+		.dropdown-group.show > & > i,
+		&:hover > i {
+			color: $dropdown-link-hover-color;
+		}
+
+		&:active > i,
+		&:focus > i {
+			color: $dropdown-link-active-color;
+		}
+	}
+}

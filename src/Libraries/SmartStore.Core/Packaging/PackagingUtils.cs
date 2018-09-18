@@ -9,10 +9,8 @@ using SmartStore.Core.Themes;
 
 namespace SmartStore.Core.Packaging
 {
-
 	public static class PackagingUtils
-	{
-		
+	{	
 		public static string GetExtensionPrefix(string extensionType)
 		{
 			return string.Format("SmartStore.{0}.", extensionType);
@@ -22,8 +20,6 @@ namespace SmartStore.Core.Packaging
 		{
 			return GetExtensionPrefix(extensionType) + extensionName;
 		}
-
-
 
 		internal static bool IsTheme(this IPackage package)
 		{

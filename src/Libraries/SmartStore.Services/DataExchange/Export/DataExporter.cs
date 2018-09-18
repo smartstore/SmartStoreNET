@@ -82,7 +82,8 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
 		private readonly Lazy<IQuantityUnitService> _quantityUnitService;
 		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
-		private readonly Lazy<ProductUrlHelper> _productUrlHelper;
+        private readonly Lazy<IDownloadService> _downloadService;
+        private readonly Lazy<ProductUrlHelper> _productUrlHelper;
 
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
@@ -129,7 +130,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<IDeliveryTimeService> deliveryTimeService,
 			Lazy<IQuantityUnitService> quantityUnitService,
 			Lazy<ICatalogSearchService> catalogSearchService,
-			Lazy<ProductUrlHelper> productUrlHelper,
+            Lazy<IDownloadService> downloadService,
+            Lazy<ProductUrlHelper> productUrlHelper,
 			Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
@@ -173,6 +175,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_deliveryTimeService = deliveryTimeService;
 			_quantityUnitService = quantityUnitService;
 			_catalogSearchService = catalogSearchService;
+            _downloadService = downloadService;
 			_productUrlHelper = productUrlHelper;
 
 			_customerRepository = customerRepository;
@@ -687,7 +690,8 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _productService.Value.GetBundleItemsByProductIds(x, showHidden),
 				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
-				x => _productService.Value.GetProductTagsByProductIds(x)
+				x => _productService.Value.GetProductTagsByProductIds(x),
+                x => _downloadService.Value.GetDownloadsByEntityIds(x, nameof(Product))
 			);
 
 			return context;
@@ -1013,7 +1017,22 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Filter.IsActiveSubscriber.HasValue)
 				query = query.Where(x => x.Active == ctx.Filter.IsActiveSubscriber.Value);
 
-			if (ctx.Filter.CreatedFrom.HasValue)
+            if (ctx.Filter.WorkingLanguageId != null && ctx.Filter.WorkingLanguageId != 0)
+            {
+                var defaultLanguage = _languageService.Value.GetAllLanguages().FirstOrDefault();
+                var isDefaultLanguage = ctx.Filter.WorkingLanguageId == defaultLanguage.Id;
+
+                if (isDefaultLanguage)
+                {
+                    query = query.Where(x => x.WorkingLanguageId == 0 || x.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
+                }
+                else
+                {
+                    query = query.Where(x => x.WorkingLanguageId == ctx.Filter.WorkingLanguageId);
+                }
+            }
+
+            if (ctx.Filter.CreatedFrom.HasValue)
 			{
 				var createdFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => createdFrom <= x.CreatedOnUtc);
@@ -1151,20 +1170,9 @@ namespace SmartStore.Services.DataExchange.Export
 			// Init base things that are even required for preview. Init all other things (regular export) in ExportCoreOuter.
 			List<Store> result = null;
 
-			if (ctx.Projection.CurrencyId.HasValue)
-				ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId.Value);
-			else
-				ctx.ContextCurrency = _services.WorkContext.WorkingCurrency;
-
-			if (ctx.Projection.CustomerId.HasValue)
-				ctx.ContextCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
-			else
-				ctx.ContextCustomer = _services.WorkContext.CurrentCustomer;
-
-			if (ctx.Projection.LanguageId.HasValue)
-				ctx.ContextLanguage = _languageService.Value.GetLanguageById(ctx.Projection.LanguageId.Value);
-			else
-				ctx.ContextLanguage = _services.WorkContext.WorkingLanguage;
+			ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId ?? 0) ?? _services.WorkContext.WorkingCurrency;
+			ctx.ContextCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId ?? 0) ?? _services.WorkContext.CurrentCustomer;
+			ctx.ContextLanguage = _languageService.Value.GetLanguageById(ctx.Projection.LanguageId ?? 0) ?? _services.WorkContext.WorkingLanguage;
 
 			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
 			ctx.Languages = _languageService.Value.GetAllLanguages(true).ToDictionary(x => x.Id, x => x);

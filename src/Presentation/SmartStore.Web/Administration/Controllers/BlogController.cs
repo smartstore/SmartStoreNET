@@ -119,7 +119,6 @@ namespace SmartStore.Admin.Controllers
 			else
 			{
 				model.Data = Enumerable.Empty<BlogPostModel>();
-
 				NotifyAccessDenied();
 			}
 
@@ -167,8 +166,8 @@ namespace SmartStore.Admin.Controllers
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<BlogPost>(blogPost, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(blogPost, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
@@ -218,12 +217,12 @@ namespace SmartStore.Admin.Controllers
                 blogPost.EndDateUtc = model.EndDate;
                 _blogService.UpdateBlogPost(blogPost);
 
-                //search engine name
+                // search engine name
                 var seName = blogPost.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
-				//Stores
-				_storeMappingService.SaveStoreMappings<BlogPost>(blogPost, model.SelectedStoreIds);
+				// Stores
+				SaveStoreMappings(blogPost, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");

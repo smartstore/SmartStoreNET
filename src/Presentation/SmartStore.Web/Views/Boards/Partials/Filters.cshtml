@@ -1,0 +1,79 @@
+﻿@using SmartStore.Core.Search.Facets
+@using SmartStore.Web.Models.Search
+@using SmartStore.Services.Search.Rendering;
+@using SmartStore.Services.Search.Extensions;
+@model IForumSearchResultModel
+@{
+	Layout = "";
+
+	var templateProvider = ViewBag.TemplateProvider as IFacetTemplateProvider;
+	var facetGroups = Model.SearchResult.Facets.Select(x => x.Value).OrderBy(x => x.DisplayOrder);
+	var i = 0;
+}
+
+@*@{ Html.RenderWidget("search_filters_before"); }*@
+
+<div class="faceted-search-container">
+	<div class="faceted-search" id="faceted-search">
+		@foreach (var group in facetGroups)
+		{
+			var templateRoute = templateProvider.GetTemplateRoute(group);
+			if (templateRoute == null)
+			{
+				continue;
+			}
+
+			string templateHtml = null;
+			try
+			{
+				templateHtml = Html.Action(templateRoute.Action, templateRoute.Controller, templateRoute.RouteValues).ToHtmlString();
+			}
+			catch
+			{
+			}
+			if (!templateHtml.HasValue())
+			{
+				continue;
+			}
+
+			i++;
+			var selectedFilters = group.SelectedFacets.ToArray();
+			var selectedCount = selectedFilters.Length;
+			var expanded = i <= 3 || selectedCount > 0;
+
+			<div class="facet-group d-inline-block align-top mr-5" data-key="@group.Key" style="border-bottom: none;">
+				<a class="facet-group-header facet-toggle@(!expanded ? " collapsed" : "")@(selectedCount > 0 ? " has-selection" : "")" 
+				   data-toggle="collapse" 
+				   href="#facet-body-@(group.Key)" 
+				   aria-expanded="@expanded" 
+				   aria-controls="facet-body-@(group.Key)" @Html.Attr("data-selections", selectedCount.ToString(), selectedCount > 0)>
+					@if (selectedCount > 0)
+					{
+						<span class="facet-selection">@T("Search.Facet.SelectedCount", selectedCount)</span>
+					}
+					@(group.Label ?? group.Key)
+				</a>
+				<div id="facet-body-@(group.Key)" class="facet-body collapse@(expanded ? " show" : "")" aria-expanded="@expanded">
+					@Html.Raw(templateHtml)
+					@if (selectedCount > 0)
+					{
+						<a href="@Url.FacetRemove(selectedFilters)" class="btn-remove-group-filters">
+							@T("Search.Facet.RemoveGroupFilters")
+						</a>
+					}
+				</div>
+                @if (group.Kind == FacetGroupKind.Date && group.Facets.Any())
+                {
+                    <div>
+                        <select class="facet-switch-range form-control form-control-sm noskin" data-qname="@Url.GetFacetQueryName(group.Facets.First())">
+                            <option value="">@T("Search.Facet.Date.Newer")</option>
+                            <option value="upper"@(group.Facets.First().Value.UpperValue != null ? " selected='selected'" : "")>@T("Search.Facet.Date.Older")</option>
+                        </select>
+                    </div>
+                }
+			</div>
+		}
+	</div>
+</div>
+
+@*@{ Html.RenderWidget("search_filters_after"); }*@

@@ -121,9 +121,37 @@ namespace SmartStore.Services.Media
 				Extension = extension,
 				IsRemote = _fileSystem.IsCloudStorage
 			};
-			
-            return result;
+
+			if (file.Exists && file.Size <= 0)
+			{
+				result.Exists = false;
+			}
+
+			return result;
         }
+
+		public virtual CachedImageResult Get(IFile file, ProcessImageQuery query)
+		{
+			Guard.NotNull(file, nameof(file));
+			Guard.NotNull(query, nameof(query));
+
+			var imagePath = GetCachedImagePath(file, query);
+			var thumbFile = _fileSystem.GetFile(BuildPath(imagePath));
+
+			var result = new CachedImageResult(thumbFile)
+			{
+				Path = imagePath,
+				Extension = file.Extension.TrimStart('.'),
+				IsRemote = _fileSystem.IsCloudStorage
+			};
+
+			if (file.Exists && file.Size <= 0)
+			{
+				result.Exists = false;
+			}
+
+			return result;
+		}
 
 		public virtual Stream Open(CachedImageResult cachedImage)
 		{
@@ -137,7 +165,7 @@ namespace SmartStore.Services.Media
 			if (imagePath.IsEmpty())
                 return null;
 
-			return _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
+			return _fileSystem.GetPublicUrl(BuildPath(imagePath), true).EmptyNull();
 		}
 
 		public virtual void RefreshInfo(CachedImageResult cachedImage)
@@ -146,7 +174,7 @@ namespace SmartStore.Services.Media
 			
 			var file = _fileSystem.GetFile(cachedImage.File.Path);
 			cachedImage.File = file;
-			cachedImage.Exists = file.Exists;
+			cachedImage.Exists = file.Exists && file.Size > 0;
 		}
 
 		public virtual void Delete(Picture picture)
@@ -160,7 +188,19 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-        public virtual void Clear()
+		public virtual void Delete(IFile file)
+		{
+			// TODO: (mc) this could lead to more thumbs getting deleted as desired. But who cares? :-)
+			var filter = string.Format("{0}*.*", file.Title);
+
+			var files = _fileSystem.SearchFiles(BuildPath(file.Directory), filter);
+			foreach (var f in files)
+			{
+				_fileSystem.DeleteFile(f);
+			}
+		}
+
+		public virtual void Clear()
         {
             for (int i = 0; i < 10; i++)
             {
@@ -247,6 +287,28 @@ namespace SmartStore.Services.Media
 
             return String.Concat(imageFileName, ".", extension);
         }
+
+		/// <summary>
+		/// Returns the images thumb path as is plus query (required for uploaded images)
+		/// </summary>
+		/// <param name="file">Image file to get thumbnail for</param>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		private string GetCachedImagePath(IFile file, ProcessImageQuery query)
+		{
+			if (!_imageProcessor.IsSupportedImage(file.Name))
+			{
+				throw new InvalidOperationException("Thumbnails for '{0}' files are not supported".FormatInvariant(file.Extension));
+			}
+			
+			// TODO: (mc) prevent creating thumbs for thumbs AND check equality of source and target
+
+			var imageFileName = String.Concat(file.Title, query.CreateHash());
+			var extension = (query.GetResultExtension() ?? file.Extension).EnsureStartsWith(".").ToLower();
+			var path = _fileSystem.Combine(file.Directory, imageFileName + extension);
+
+			return path.TrimStart('/', '\\');
+		}
 
 		private string BuildPath(string imagePath)
 		{

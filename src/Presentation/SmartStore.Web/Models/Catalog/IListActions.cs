@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Models.Catalog
 {
-	public interface IListActions
+    public interface IListActions
 	{
 		ProductSummaryViewMode ViewMode { get; }
 		GridColumnSpan GridColumnSpan { get; }
@@ -16,9 +15,10 @@ namespace SmartStore.Web.Models.Catalog
 		bool AllowSorting { get; }
 		int? CurrentSortOrder { get; }
 		string CurrentSortOrderName { get; }
-		IDictionary<int, string> AvailableSortOptions { get; }
+        string RelevanceSortOrderName { get; }
+        IDictionary<int, string> AvailableSortOptions { get; }
 
-		IPageable PagedList { get; }
-		IEnumerable<int> AvailablePageSizes { get; }
-	}
+        IPageable PagedList { get; }
+        IEnumerable<int> AvailablePageSizes { get; }
+    }
 }

@@ -39,7 +39,7 @@ namespace SmartStore.Services.Tests.Messages
 			_services = MockRepository.GenerateMock<ICommonServices>();
 			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
 
-			_settingService = new ConfigFileSettingService(null, null, null);
+			_settingService = new ConfigFileSettingService(null, null);
 			_services.Expect(x => x.Settings).Return(_settingService);
 
 			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _settingService, ProviderManager);
@@ -121,7 +121,9 @@ namespace SmartStore.Services.Tests.Messages
 			Assert.IsNotNull(msg.From);
 
 			Assert.AreEqual(msg.ReplyTo.Count, 1);
-			Assert.AreEqual(qe.ReplyTo, msg.ReplyTo.First().ToString());
+
+			var replyToAddress = new EmailAddress("replyto@mail.com", "ReplyToName");
+			Assert.AreEqual(replyToAddress.ToString(), msg.ReplyTo.First().ToString());
 
 			Assert.AreEqual(msg.Cc.Count, 2);
 			Assert.AreEqual(msg.Cc.First().Address, "cc1@mail.com");

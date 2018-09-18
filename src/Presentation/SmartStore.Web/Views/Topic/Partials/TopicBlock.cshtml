@@ -1,7 +1,7 @@
 ﻿@model TopicModel
 @using SmartStore.Web.Models.Topics;
 
-@if (!Model.Body.HasValue())
+@if (!Model.Body.Value.HasValue())
 {
     return;
 }
@@ -61,27 +61,35 @@
 
 @if (ViewBag.BodyOnly)
 {
-    <div class="topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "") my-3 html-editor-content" id="ph-topic-body-@Model.Id">
+    <div class="topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "") my-3 html-editor-content" id="ph-topic-body-@Model.Id" @Html.LanguageAttributes(Model.Body)>
         @Html.Raw(Html.CollapsedText(Model.Body))
     </div>
 }
 else
 {
-    <div class="block topic-html-content my-3" id="ph-topic-@Model.Id">
-        @if (!string.IsNullOrEmpty(Model.Title))
+    <div id="ph-topic-@Model.Id" class="block topic-html-content my-3">
+        @if (Model.Title.HasValue())
         {
             <div class="block-title" id="ph-title-@Model.Id">
 				@if (ViewBag.IsLead == true)
 				{
-					<h1 class="h2">@Model.Title</h1>
+					<h1 class="h2" @Html.LanguageAttributes(Model.Title)>@Model.Title</h1>
 				}
 				else
 				{
-					<h4>@Model.Title</h4>
+					<h4 @Html.LanguageAttributes(Model.Title)>@Model.Title</h4>
 				}
             </div>
         }
-        <div class="block-body html-editor-content topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "")">
+
+        <div class="block-body html-editor-content topic-html-content-body@(ViewBag.IsLead == true ? " lead" : "")" @Html.LanguageAttributes(Model.Body)>
+			@if (Model.Intro.HasValue() && (ViewBag.IsLead == null || ViewBag.IsLead == false))
+			{
+				<p class="topic-intro lead">
+					@Html.Raw(Model.Intro)
+				</p>
+			}
+
             @Html.Raw(Html.CollapsedText(Model.Body))
         </div>
     </div>

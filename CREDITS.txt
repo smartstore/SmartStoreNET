@@ -52,11 +52,11 @@ Copyright:    Copyright Andrey Taritsyn 2014
 License:      Apache License 2.0 (Apache)
 
 
-CKEditor
+summernote
 ---------------------------------------------
-WebSite:      http://ckeditor.com/
-Copyright:    &copy 2014 CKSource - Frederico Knabben
-License:      GNU Library General Public License (LGPL)
+WebSite:      https://summernote.org/
+Copyright:    Copyright (c) 2015~ Summernote Team (https://github.com/orgs/summernote/people)
+License:      MIT
 
 
 DotNetOpenAuth

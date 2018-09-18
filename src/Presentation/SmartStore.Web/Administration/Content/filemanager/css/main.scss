@@ -1,0 +1,406 @@
+@import '../../_variables.scss';
+@import '../../../../Content/bs4/scss/_functions.scss';
+@import '../../../../Content/bs4/scss/_variables.scss';
+
+$fi-selected-bg: $gray-400;
+$fi-selected-bg: $component-active-bg;
+
+body {
+	background-color: #fff;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#wraper { 
+	width: 100%;
+	height: 100%;
+}
+
+#wraper, 
+#dlgNewDir, 
+#dlgFileProp, 
+#dlgAddFile, 
+#menuDir, 
+#menuFile, 
+#pnlRenameFile, 
+#pnlLoadingDirs, 
+#pnlDirName, 
+#pnlLoading, 
+#pnlEmptyDir, 
+#pnlSearchNoFiles, 
+#pnlFileProp, 
+#pnlDirList ul {
+	display: none;
+}
+
+#pnlFileList {
+	.selected,
+	.selected:hover {
+		background-color: $fi-selected-bg !important;
+	}
+
+	.icon {
+		float: left;
+		margin-right: 4px;
+
+		> .thumb {
+			display: none;
+		}
+	}
+
+	li {
+		float: left;
+		padding: 4px 4px 4px 8px;
+		clear: both;
+		width: 99%;
+		cursor: pointer;
+	}
+
+	.size {
+		float: right;
+		margin-left: 22px;
+		white-space: nowrap;
+	}
+
+	.time {
+		float: right;
+		margin-left: 22px;
+		width: 130px;
+		white-space: nowrap;
+	}
+
+	&.thumbView {
+		padding: 3px;
+
+		li {
+			//width:140px;
+			//height: 140px;
+			float: left !important;
+			clear: none;
+			margin: 3px;
+			overflow: hidden;
+			padding: 10px;
+			text-align: center;
+			vertical-align: middle;
+			border: 1px solid transparent;
+			position: relative;
+
+			&:hover {
+				background-color: $gray-200;
+			}
+
+			&:hover,
+			&.selected {
+				border-color: rgba(#000, 0.08);
+			}
+
+			.file-icon {
+				font-size: 84px;
+			}
+
+			&.file-image {
+				.file-icon {
+					display: none;
+				}
+
+				.thumb {
+					display: inline-block;
+				}
+			}
+		}
+
+		.time,
+		.size {
+			display: none;
+		}
+
+		.icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 140px;
+			height: 120px;
+			margin: 0;
+			padding: 0;
+			position: relative;
+			float: none;
+
+			> img {
+				max-width: 100%;
+				height: auto;
+			}
+
+			> img.thumb {
+				box-shadow: 2px 2px 6px rgba(#000, 0.25);
+			}
+		}
+
+		.name {
+			display: block !important;
+			font-size: 12px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			//width: 100% !important;
+			position: absolute;
+			left: 4px;
+			right: 4px;
+			bottom: 5px;
+			margin: 0;
+		}
+	}
+}
+
+.filesize {
+	font-weight: 600;
+	margin-top: 4px;
+	display: inline-block;
+}
+
+.pnlDragFile, 
+.pnlDragDir {
+	background: #fff;
+	opacity: 0.8;
+	float: left;
+	width: auto !important;
+	z-index: 999999;
+	position: absolute;
+}
+
+#pnlStatus {
+	padding: 5px;
+}
+
+.scrollPane {
+	width: 100%;
+	height: 400px;
+	overflow: auto;
+	position: relative;
+}
+
+.bottomLine {
+	background: $gray-100;
+	border-top: 1px solid rgba(#000, 0.12);
+	height: 36px;
+}
+
+input[type=text]::-ms-clear {
+	display: none;
+}
+
+
+td.pnlDirs {
+	width: 260px;
+	border-right: 1px solid rgba(0,0,0, 0.12);
+
+	.scrollPane {
+		width: 260px;
+	}
+}
+
+#pnlDirList {
+	//width: initial;
+	position: relative;
+
+	.dir-item {
+		padding: 3px 0.4rem;
+		cursor: pointer;
+		position: relative;
+		float: left;
+		min-width: 100%;
+
+		.dirPlus {
+			font-size: 10px;
+			width: 12px;
+			height: 10px;
+			margin-top: 1px;
+			margin-right: 8px;
+			text-align: center;
+		}
+
+		.dir {
+			padding-top: 2px;
+		}
+
+		.name {
+			white-space: nowrap;
+			display: block;
+		}
+
+		&:hover {
+			background-color: $gray-200;
+		}
+
+		&.selected,
+		&.selected:hover {
+			background-color: $fi-selected-bg !important;
+		}
+
+		&.indeterm {
+			background-color: $gray-200 !important;
+		}
+
+		&.dragover {
+			background-color: $gray-200 !important;
+		}
+	}
+
+	ul .dir-item {
+		padding-left: 1.4rem;
+	}
+
+	ul ul .dir-item {
+		padding-left: 2.4rem;
+	}
+
+	ul ul ul .dir-item {
+		padding-left: 3.4rem;
+	}
+
+	ul ul ul ul .dir-item {
+		padding-left: 4.4rem;
+	}
+
+	ul ul ul ul ul .dir-item {
+		padding-left: 5.4rem;
+	}
+
+	ul ul ul ul ul ul .dir-item {
+		padding-left: 6.4rem;
+	}
+
+	ul ul ul ul ul ul ul .dir-item {
+		padding-left: 7.4rem;
+	}
+
+	ul ul ul ul ul ul ul ul .dir-item {
+		padding-left: 8.4rem;
+	}
+
+	ul ul ul ul ul ul ul ul ul .dir-item {
+		padding-left: 9.4rem;
+	}
+}
+
+#pnlLoadingDirs {
+	margin-left: 5px;
+}
+
+
+.imgPreview {
+	max-width: 300px;
+}
+
+
+.actions {
+	padding: 3px 0 10px 5px;
+	background-color: $gray-100;
+	border-bottom: 1px solid rgba(0,0,0, 0.1);
+
+	> .btn-group {
+		padding-right: 5px;
+		margin-right: 5px;
+		border-right: 1px solid rgba(0, 0, 0, 0.12);
+	}
+
+	> .btn-group:last-child {
+		padding-right: 0;
+		margin-right: 0;
+		border-right: none;
+	}
+}
+
+
+#fileUploads {
+	width: 100%;
+}
+
+.uploadFilesList {
+	width: 100%;
+	height: 300px;
+	overflow: auto;
+}
+
+#uploadResult {
+}
+
+div.ui-tooltip {
+	max-width: 90%;
+}
+
+/* Upload dialog */
+.uploadFilesList {
+	font-size: 12px;
+}
+
+.fileUpload {
+	margin: 8px 0 0 0;
+	position: relative;
+	border: 1px solid #EEE;
+
+	.error {
+		font-weight: 600;
+	}
+}
+
+
+
+.fileName {
+	z-index: 2;
+	line-height: 20px;
+	height: 20px;
+	overflow: hidden;
+	padding: 0 13px 0 5px;
+}
+
+.progressPercent {
+	z-index: 2;
+}
+
+.stripes {
+	background: url('../images/stripes.gif') repeat-x;
+	opacity: 0.40;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	position: relative;
+}
+
+.uploadProgress {
+	position: absolute;
+	width: 0;
+	height: 100%;
+	top: 0;
+	left: 0;
+	z-index: -1;
+	background: #d3edff;
+	background: linear-gradient(to bottom, #d3edff 0%,#cbebff 47%,#a1dbff 100%);
+}
+
+.uploadError {
+	background: #ff8787;
+	background: linear-gradient(to bottom, #ff8787 0%,#ffa3a3 45%,#ff5e5e 100%);
+}
+
+.uploadComplete {
+	background: #dbff87;
+	background: linear-gradient(to bottom, #dbff87 0%,#e0f49c 45%,#bddd49 100%);
+}
+
+.uploadError .stripes, .uploadComplete .stripes {
+	display: none;
+}
+
+.removeUpload {
+	background: url(../images/sprite.png) no-repeat 6px -421px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 20px;
+	cursor: pointer;
+}

@@ -43,7 +43,7 @@
 	{
 		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
 			<a href="@Url.Action("CompareProducts", "Catalog")"  class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { compare = true })"
-			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+			   data-autohide="true" data-placement="@(isRtl ? "left" : "right")" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-repeat"></i>
 					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.CompareItemsCount == 0 ? "display:none" : "")" data-bind-to="CompareItemsCount">@Model.CompareItemsCount</span>
@@ -63,7 +63,7 @@
 	{
 		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
 			<a href="@Url.RouteUrl("Wishlist")" class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CartSummary", "ShoppingCart", new { wishlist = true })"
-				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				data-autohide="true" data-placement="@(isRtl ? "left" : "right")" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="icm icm-heart"></i>
 					<span class='badge badge-pill label-cart-amount badge-@labelStyle' style="@(Model.WishlistItemsCount == 0 ? "display:none" : "")" data-bind-to="WishlistItemsCount">@Model.WishlistItemsCount</span>
@@ -105,21 +105,22 @@
 
 </div>
 
-@using (Html.BeginZoneContent("end", key: "offcanvas-menu"))
+@using (Html.BeginZoneContent("aftercontent", key: "offcanvas-menu"))
 {
 	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-@(isRtl ? "right" : "left") offcanvas-shadow" data-blocker="true" data-overlay="true">
         <div class="offcanvas-content">
             <div id="menu-container" 
                  data-url-home="@(Url.Action("OffCanvasMenu", "Catalog"))" 
                  data-url-item="@(Url.Action("OffCanvasMenuCategories", "Catalog"))"
-                 data-url-manufacturer="@(Url.Action("OffCanvasMenuManufacturers", "Catalog"))">
+                 data-url-manufacturer="@(Url.Action("OffCanvasMenuManufacturers", "Catalog"))"
+				 data-public-store-navigation-allowed="@Model.PublicStoreNavigationAllowed.ToString().ToLower()">
                 <!-- AJAX -->
             </div>
         </div>
 	</aside>
 }
 
-@using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
+@using (Html.BeginZoneContent("aftercontent", key: "offcanvas-cart"))
 {
 	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-@(isRtl ? "left" : "right") offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
 		<div class="offcanvas-content">

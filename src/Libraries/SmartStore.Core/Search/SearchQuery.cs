@@ -7,7 +7,7 @@ using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
-	public enum SearchResultFlags
+    public enum SearchResultFlags
 	{
 		WithHits = 1 << 0,
 		WithFacets = 1 << 1,
@@ -65,10 +65,10 @@ namespace SmartStore.Core.Search
 		public int? LanguageId { get; protected set; }
 		public string LanguageCulture { get; protected set; }
 		public string CurrencyCode { get; protected set; }
-		public int? StoreId { get; protected set; }
+        public int? StoreId { get; protected set; }
 
-		// Search term
-		public string[] Fields { get; set; }
+        // Search term
+        public string[] Fields { get; set; }
 		public string Term { get; set; }
 		public bool EscapeTerm { get; protected set; }
 		public SearchMode Mode { get; protected set; }
@@ -164,7 +164,7 @@ namespace SmartStore.Core.Search
 
 		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4, int maxHitCount = 3)
 		{
-			Guard.IsPositive(maxSuggestions, nameof(maxSuggestions));
+            Guard.NotNegative(maxSuggestions, nameof(maxSuggestions));
 			Guard.IsPositive(minQueryLength, nameof(minQueryLength));
 			Guard.IsPositive(maxHitCount, nameof(maxHitCount));
 

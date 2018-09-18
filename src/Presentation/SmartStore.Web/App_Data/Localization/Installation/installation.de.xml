@@ -2,14 +2,8 @@
   <LocaleResource Name="AdminEmail">
     <Value>Administrator E-Mail</Value>
   </LocaleResource>
-  <LocaleResource Name="AdminEmailRequired">
-    <Value>Administrator E-Mail ist erforderlich</Value>
-  </LocaleResource>
   <LocaleResource Name="AdminPassword">
     <Value>Administrator Passwort</Value>
-  </LocaleResource>
-  <LocaleResource Name="AdminPasswordRequired">
-    <Value>Administrator Passwort ist erforderlich</Value>
   </LocaleResource>
   <LocaleResource Name="ConfigureDirectoryPermissions">
      <Value>Das Konto '{0}' hat keine 'Ändern' Rechte für den Ordner '{1}'. Bitte richten Sie entpr. Berechtigungen ein.</Value> 
@@ -20,14 +14,8 @@
   <LocaleResource Name="ConfirmPassword">
     <Value>Passwort bestätigen</Value>
   </LocaleResource>
-  <LocaleResource Name="ConfirmPasswordRequired">
-    <Value>Passwort-Bestätigung ist erforderlich</Value>
-  </LocaleResource>
   <LocaleResource Name="ConnectionString">
     <Value>Verbindungszeichenfolge</Value>
-  </LocaleResource>
-  <LocaleResource Name="ConnectionStringRequired">
-    <Value>Die SQL Verbindungszeichenfolge ist erforderlich</Value>
   </LocaleResource>
   <LocaleResource Name="ConnectionStringValues">
     <Value>Verbindungsdaten angeben</Value>
@@ -52,9 +40,6 @@
   </LocaleResource>
   <LocaleResource Name="DatabaseName">
     <Value>Datenbank Name</Value>
-  </LocaleResource>
-  <LocaleResource Name="DatabaseNameRequired">
-    <Value>Datenbank Name ist erforderlich</Value>
   </LocaleResource>
   <LocaleResource Name="DatabaseNotExists">
     <Value>Die Datenbank existiert nicht oder der Verbindungsaufbau ist nicht möglich</Value>
@@ -98,20 +83,11 @@
   <LocaleResource Name="SqlServerName">
     <Value>SQL Server Name</Value>
   </LocaleResource>
-  <LocaleResource Name="SqlServerNameRequired">
-    <Value>SQL Server Name ist notwendig</Value>
-  </LocaleResource>
   <LocaleResource Name="SqlServerPassword">
     <Value>Passwort</Value>
   </LocaleResource>
-  <LocaleResource Name="SqlServerPasswordRequired">
-    <Value>SQL Server Passwort ist erforderlich</Value>
-  </LocaleResource>
   <LocaleResource Name="SqlServerUsername">
     <Value>Benutzername</Value>
-  </LocaleResource>
-  <LocaleResource Name="SqlServerUsernameRequired">
-    <Value>SQL Server Benutzername ist erforderlich</Value>
   </LocaleResource>
   <LocaleResource Name="SqlStandard">
     <Value>SQL Server (Express) Datenbank verwenden</Value>
@@ -134,9 +110,6 @@
   
   <LocaleResource Name="PrimaryLanguage">
     <Value>Primäre Sprache</Value>
-  </LocaleResource>
-  <LocaleResource Name="PrimaryLanguageRequired">
-    <Value>Primäre Sprache ist erforderlich</Value>
   </LocaleResource>
   <LocaleResource Name="ConfirmInstall">
     <Value>Möchten Sie SmartStore.NET jetzt installieren?</Value>
@@ -186,6 +159,16 @@
 
   <LocaleResource Name="InstallOptions">
     <Value>Optionen</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Database">
+	<Value>Datenbank</Value>
+  </LocaleResource>
+  <LocaleResource Name="Connection">
+	<Value>Verbindung</Value>
+  </LocaleResource>
+  <LocaleResource Name="Authentication">
+	<Value>Authentifizierung</Value>
   </LocaleResource>
   
 </Language>

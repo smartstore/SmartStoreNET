@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Autofac;
 using SmartStore.Core.Data;
@@ -8,27 +7,28 @@ using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
 {
-	/// <summary>
-	/// Provides the context for the Execute method of the <see cref="ITask"/> interface.
-	/// </summary>
-	public class TaskExecutionContext
+    /// <summary>
+    /// Provides the context for the Execute method of the <see cref="ITask"/> interface.
+    /// </summary>
+    public class TaskExecutionContext
 	{
 		private readonly IComponentContext _componentContext;
-		private readonly ScheduleTask _originalTask;
+        private readonly ScheduleTaskHistory _originalTaskHistory;
 
-		internal TaskExecutionContext(IComponentContext componentContext, ScheduleTask originalTask)
-		{
-			_componentContext = componentContext;
-			_originalTask = originalTask;
-			Parameters = new Dictionary<string, string>();
-		}
+        internal TaskExecutionContext(IComponentContext componentContext, ScheduleTaskHistory originalTaskHistory)
+        {
+            _componentContext = componentContext;
+            _originalTaskHistory = originalTaskHistory;
+            Parameters = new Dictionary<string, string>();
+        }
 
-		public T Resolve<T>(object key = null) where T : class
+        public T Resolve<T>(object key = null) where T : class
 		{
 			if (key == null)
 			{
 				return _componentContext.Resolve<T>();
 			}
+
 			return _componentContext.ResolveKeyed<T>(key);
 		}
 
@@ -43,9 +43,9 @@ namespace SmartStore.Services.Tasks
         /// </summary>
         public CancellationToken CancellationToken { get; internal set; }
 
-        public ScheduleTask ScheduleTask { get; set; }
+        public ScheduleTaskHistory ScheduleTaskHistory { get; set; }
 
-		public IDictionary<string, string> Parameters { get; set; }
+        public IDictionary<string, string> Parameters { get; set; }
 
 		/// <summary>
 		/// Persists a task's progress information to the database
@@ -77,21 +77,24 @@ namespace SmartStore.Services.Tasks
 		/// <param name="immediately">if <c>true</c>, saves the updated task entity immediately, or lazily with the next database commit otherwise.</param>
 		public virtual void SetProgress(int? progress, string message, bool immediately =  false)
 		{
-			if (progress.HasValue)
-				Guard.InRange(progress.Value, 0, 100, nameof(progress));
+            if (progress.HasValue)
+            {
+                Guard.InRange(progress.Value, 0, 100, nameof(progress));
+            }
 
-			// update cloned entity
-			ScheduleTask.ProgressPercent = progress;
-			ScheduleTask.ProgressMessage = message;
+			// Update cloned entity.
+			ScheduleTaskHistory.ProgressPercent = progress;
+            ScheduleTaskHistory.ProgressMessage = message;
 
-			// update attached entity
-			_originalTask.ProgressPercent = progress;
-			_originalTask.ProgressMessage = message;
+            // Update attached entity.
+            _originalTaskHistory.ProgressPercent = progress;
+            _originalTaskHistory.ProgressMessage = message;
 
 			if (immediately)
 			{
-				try // dont't let this abort the task on failure
-				{
+                // Dont't let this abort the task on failure.
+                try
+                {
 					var dbContext = _componentContext.Resolve<IDbContext>();
 					//dbContext.ChangeState(_originalTask, System.Data.Entity.EntityState.Modified);
 					dbContext.SaveChanges();
@@ -122,11 +125,19 @@ namespace SmartStore.Services.Tasks
 		/// <returns>A transient context</returns>
 		public static TaskExecutionContext CreateTransientContext(IComponentContext componentContext, CancellationToken cancellationToken)
 		{
-			var originalTask = new ScheduleTask { Name = "Transient", IsHidden = true, Enabled = true };
-			var context = new TransientTaskExecutionContext(componentContext, originalTask);
+            var originalHistoryEntry = new ScheduleTaskHistory
+            {
+                ScheduleTask = new ScheduleTask
+                {
+                    Name = "Transient",
+                    IsHidden = true,
+                    Enabled = true
+                }
+            };
 
+			var context = new TransientTaskExecutionContext(componentContext, originalHistoryEntry);
 			context.CancellationToken = cancellationToken;
-			context.ScheduleTask = originalTask.Clone();
+            context.ScheduleTaskHistory = originalHistoryEntry.Clone();
 
 			return context;
 		}
@@ -134,8 +145,8 @@ namespace SmartStore.Services.Tasks
 
 	internal class TransientTaskExecutionContext : TaskExecutionContext
 	{
-		public TransientTaskExecutionContext(IComponentContext componentContext, ScheduleTask originalTask)
-			: base(componentContext, originalTask)
+		public TransientTaskExecutionContext(IComponentContext componentContext, ScheduleTaskHistory originalHistoryEntry)
+			: base(componentContext, originalHistoryEntry)
 		{
 		}
 

@@ -740,18 +740,27 @@ namespace SmartStore
 		/// <returns>true: success, false: failure</returns>
 		[DebuggerStepThrough]
         [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
-		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter)
+		public static bool SplitToPair(this string value, out string leftPart, out string rightPart, string delimiter, bool splitAfterLast = false)
 		{
-			int idx = -1;
-			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter) || (idx = value.IndexOf(delimiter)) == -1)
+			leftPart = value;
+			rightPart = "";
+
+			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter))
 			{
-				strLeft = value;
-				strRight = "";
 				return false;
 			}
 
-			strLeft = value.Substring(0, idx);
-			strRight = value.Substring(idx + delimiter.Length);
+			var idx = splitAfterLast
+				? value.LastIndexOf(delimiter)
+				: value.IndexOf(delimiter);
+
+			if (idx == -1)
+			{
+				return false;
+			}
+
+			leftPart = value.Substring(0, idx);
+			rightPart = value.Substring(idx + delimiter.Length);
 
 			return true;
 		}
@@ -883,7 +892,9 @@ namespace SmartStore
 			return string.Format(" {0}=\"{1}\"", name, htmlEncode ? HttpUtility.HtmlEncode(value) : value);
 		}
 		
-		/// <summary>Appends grow and uses delimiter if the string is not empty.</summary>
+		/// <summary>
+		/// Appends grow and uses delimiter if the string is not empty.
+		/// </summary>
         [DebuggerStepThrough]
 		public static string Grow(this string value, string grow, string delimiter) 
         {
@@ -893,7 +904,7 @@ namespace SmartStore
 			if (string.IsNullOrEmpty(grow))
 				return (string.IsNullOrEmpty(value) ? "" : value);
 
-			return string.Format("{0}{1}{2}", value, delimiter, grow);
+			return string.Concat(value, delimiter, grow);
 		}
 		
 		/// <summary>Returns n/a if string is empty else self.</summary>
@@ -937,6 +948,29 @@ namespace SmartStore
 				exc.Dump();
 			}
 			return value;
+		}
+
+		/// <summary>
+		/// Replaces digits in a string with culture native digits (if digit substitution for culture is required)
+		/// </summary>
+		[DebuggerStepThrough]
+		public static string ReplaceNativeDigits(this string value, IFormatProvider provider = null)
+		{
+			Guard.NotNull(value, nameof(value));
+			
+			provider = provider ?? NumberFormatInfo.CurrentInfo;
+			var nfi = NumberFormatInfo.GetInstance(provider);
+
+			if (nfi.DigitSubstitution == DigitShapes.None)
+			{
+				return value;
+			}
+
+			var nativeDigits = nfi.NativeDigits;
+			var rg = new Regex(@"\d");
+
+			var result = rg.Replace(value, m => nativeDigits[m.Value.ToInt()]);
+			return result;
 		}
 
 		[DebuggerStepThrough]

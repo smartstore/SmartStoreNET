@@ -14,8 +14,8 @@ namespace SmartStore.OfflinePayment.Validators
             //http://benjii.me/2010/11/credit-card-validator-attribute-for-asp-net-mvc-3/
 
             RuleFor(x => x.CardholderName).NotEmpty().WithMessage(localizationService.GetResource("Payment.CardholderName.Required"));
-            RuleFor(x => x.CardNumber).IsCreditCard().WithMessage(localizationService.GetResource("Payment.CardNumber.Wrong"));
-            RuleFor(x => x.CardCode).Matches(@"^[0-9]{3,4}$").WithMessage(localizationService.GetResource("Payment.CardCode.Wrong"));
+            RuleFor(x => x.CardNumber).CreditCard().WithMessage(localizationService.GetResource("Payment.CardNumber.Wrong"));
+            RuleFor(x => x.CardCode).CreditCardCvvNumber();
         }
 	}
 }

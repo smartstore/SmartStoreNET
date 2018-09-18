@@ -5,44 +5,44 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
+    var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
 
-	// TODO: (mc) Fetch this from the (new) parent model or the product category
-	var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
-	var paddingTop = string.Empty;
+    // TODO: (mc) Fetch this from the (new) parent model or the product category
+    var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
+    var paddingTop = string.Empty;
 
-	if (thumbAspectRatio != 1 && thumbAspectRatio > 0.2 && thumbAspectRatio < 2)
-	{
-		paddingTop = (thumbAspectRatio * 100) + "%";
-	}
+    if (thumbAspectRatio != 1 && thumbAspectRatio > 0.2 && thumbAspectRatio < 2)
+    {
+        paddingTop = (thumbAspectRatio * 100) + "%";
+    }
 
-	string pagerHtml = null;
-	pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
+    string pagerHtml = null;
+    pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
 
-	// TODO: (mc) AllowFiltering (?)
-	var hasActions = Model.PagedList.TotalPages > 1
-		|| Model.AllowSorting
-		|| Model.AllowViewModeChanging
-		|| Model.AllowFiltering;
+    // TODO: (mc) AllowFiltering (?)
+    var hasActions = Model.PagedList.TotalPages > 1
+        || Model.AllowSorting
+        || Model.AllowViewModeChanging
+        || Model.AllowFiltering;
 
-	var listCssClasses = new List<string> { "artlist" };
-	if (Model.ViewMode == ProductSummaryViewMode.List)
-	{
-		listCssClasses.Add("artlist-lines");
-	}
-	else
-	{
-		listCssClasses.Add("artlist-grid");
+    var listCssClasses = new List<string> { "artlist" };
+    if (Model.ViewMode == ProductSummaryViewMode.List)
+    {
+        listCssClasses.Add("artlist-lines");
+    }
+    else
+    {
+        listCssClasses.Add("artlist-grid");
 
-		if (Model.BoxedStyleItems)
-		{
-			listCssClasses.Add("artlist-boxed");
-		}
+        if (Model.BoxedStyleItems)
+        {
+            listCssClasses.Add("artlist-boxed");
+        }
 
-		// TODO: (mh) make 6-cols layout fit better per CSS (hide some elements etc.)
-		var colspan = (int)Model.GridColumnSpan;
-		listCssClasses.Add("artlist-{0}-cols".FormatInvariant(colspan));
-	}
+        // TODO: (mh) make 6-cols layout fit better per CSS (hide some elements etc.)
+        var colspan = (int)Model.GridColumnSpan;
+        listCssClasses.Add("artlist-{0}-cols".FormatInvariant(colspan));
+    }
 }
 
 @if (Model.ViewMode != ProductSummaryViewMode.List && paddingTop.HasValue())
@@ -115,7 +115,7 @@
 }
 
 @if (Model.PagedList.TotalPages > 1 && pagerHtml.HasValue())
-{	
+{
 	<div class="artlist-actions artlist-actions--bottom">
 		<div class="artlist-action-group artlist-action-group--page">
 			@Html.Raw(pagerHtml)

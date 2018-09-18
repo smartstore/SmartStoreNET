@@ -40,8 +40,10 @@ namespace SmartStore.Web.Framework.Security
 			var webHelper = WebHelper.Value;
 
 			var currentConnectionSecured = webHelper.IsCurrentConnectionSecured();
-	
-            if (securitySettings.ForceSslForAllPages)
+			var storeContext = StoreContext.Value;
+			var currentStore = storeContext.CurrentStore;
+
+			if (currentStore.ForceSslForAllPages)
             {
                 // all pages are forced to be SSL no matter of the specified value
                 this.SslRequirement = SslRequirement.Yes;
@@ -53,9 +55,6 @@ namespace SmartStore.Web.Framework.Security
                     {
                         if (!currentConnectionSecured)
                         {
-							var storeContext = StoreContext.Value;
-							var currentStore = storeContext.CurrentStore;
-
 							if (currentStore != null && currentStore.GetSecurityMode() > HttpSecurityMode.Unsecured)
                             {
                                 // redirect to HTTPS version of page

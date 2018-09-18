@@ -23,60 +23,37 @@
         </div>
     </div>
 
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnFrom)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CreatedOnFrom)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnTo)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.CreatedOnTo)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Logger)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.Logger)
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Message)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.Message)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LogLevelId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("LogLevelId", Model.AvailableLogLevels, T("Admin.Common.All"))
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-            </td>
-            <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn btn-secondary">
-                    <i class="fa fa-search"></i>
-                    <span>@T("Admin.Common.Search")</span>
-                </button>
-            </td>
-        </tr>
-    </table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CreatedOnFrom)
+			@Html.EditorFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CreatedOnTo)
+			@Html.EditorFor(model => model.CreatedOnTo, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.Logger)
+			@Html.TextBoxFor(model => Model.Logger, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.Message)
+			@Html.TextBoxFor(model => model.Message, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.LogLevelId)
+			@Html.DropDownList("LogLevelId", Model.AvailableLogLevels, T("Admin.Common.All"))
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.Search")</span>
+			</button>
+		</div>
+	</div>
 
-    @(Html.Telerik().Grid<LogModel>()
+	<div>
+		@(Html.Telerik().Grid<LogModel>()
 			.Name("log-grid")
 			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
 			.Columns(columns =>
@@ -101,6 +78,7 @@
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
 			.PreserveGridState()
 			.EnableCustomBinding(true))
+	</div>
     
     <script type="text/javascript">
 
@@ -162,7 +140,7 @@
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
             });
 
-            //wire up checkboxes. 
+            // Wire up checkboxes. 
             $(document).on('change', '#log-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {

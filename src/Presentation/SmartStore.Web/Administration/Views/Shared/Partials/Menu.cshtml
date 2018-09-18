@@ -59,7 +59,7 @@
 
         var itemUrl = GetNodeLink(node);
 
-        <li data-id="@item.Id" class="nav-item@(node.HasChildren ? " dropdown x-dropdown-hoverdrop" : "")">
+        <li data-id="nav-@item.Id" class="nav-item@(node.HasChildren ? " dropdown" : "")@(item.Id == "dashboard" ? " dropdown d-none d-md-block" : "")">
 			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
 				@if (item.Icon.HasValue())
 				{
@@ -88,7 +88,7 @@
     var isFirst = true;
 	var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
     
-    <ul class='dropdown-menu'>
+    <ul class='dropdown-menu dropdown-menu-light-icons'>
     @foreach (var node in nodes)
     {
         var item = node.Value;

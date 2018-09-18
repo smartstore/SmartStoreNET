@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 using System.Web;
 using SmartStore.Collections;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -15,13 +14,13 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Fakes;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Messages;
 
 namespace SmartStore.Services.Customers
 {
@@ -36,6 +35,9 @@ namespace SmartStore.Services.Customers
 		private readonly ICommonServices _services;
 		private readonly HttpContextBase _httpContext;
 		private readonly IUserAgent _userAgent;
+		private readonly CustomerSettings _customerSettings;
+		private readonly Lazy<IMessageModelProvider> _messageModelProvider;
+		private readonly Lazy<IGdprTool> _gdprTool;
 
 		public CustomerService(
             IRepository<Customer> customerRepository,
@@ -46,17 +48,23 @@ namespace SmartStore.Services.Customers
 			RewardPointsSettings rewardPointsSettings,
 			ICommonServices services,
 			HttpContextBase httpContext,
-			IUserAgent userAgent)
+			IUserAgent userAgent,
+			CustomerSettings customerSettings,
+			Lazy<IMessageModelProvider> messageModelProvider,
+			Lazy<IGdprTool> gdprTool)
         {
-            this._customerRepository = customerRepository;
-            this._customerRoleRepository = customerRoleRepository;
-            this._gaRepository = gaRepository;
-			this._rewardPointsHistoryRepository = rewardPointsHistoryRepository;
-            this._genericAttributeService = genericAttributeService;
-			this._rewardPointsSettings = rewardPointsSettings;
-			this._services = services;
-			this._httpContext = httpContext;
-			this._userAgent = userAgent;
+            _customerRepository = customerRepository;
+            _customerRoleRepository = customerRoleRepository;
+            _gaRepository = gaRepository;
+			_rewardPointsHistoryRepository = rewardPointsHistoryRepository;
+            _genericAttributeService = genericAttributeService;
+			_rewardPointsSettings = rewardPointsSettings;
+			_services = services;
+			_httpContext = httpContext;
+			_userAgent = userAgent;
+			_customerSettings = customerSettings;
+			_messageModelProvider = messageModelProvider;
+			_gdprTool = gdprTool;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -68,196 +76,192 @@ namespace SmartStore.Services.Customers
 
 		#region Customers
 
-		public virtual IPagedList<Customer> GetAllCustomers(
-			DateTime? registrationFrom,
-            DateTime? registrationTo, 
-			int[] customerRoleIds, 
-			string email, 
-			string username,
-            string firstName, 
-			string lastName, 
-			int dayOfBirth, 
-			int monthOfBirth,
-            string company, 
-			string phone, 
-			string zipPostalCode,
-            bool loadOnlyWithShoppingCart, 
-			ShoppingCartType? sct, 
-			int pageIndex, 
-			int pageSize)
+		public virtual IPagedList<Customer> SearchCustomers(CustomerSearchQuery q)
+		{
+			Guard.NotNull(q, nameof(q));
+
+			var query = _customerRepository.Table;
+
+			if (q.Email.HasValue())
+			{
+				query = query.Where(c => c.Email.Contains(q.Email));
+			}
+
+			if (q.Username.HasValue())
+			{
+				query = query.Where(c => c.Username.Contains(q.Username));
+			}
+
+			if (q.CustomerNumber.HasValue())
+			{
+				query = query.Where(c => c.CustomerNumber.Contains(q.CustomerNumber));
+			}
+
+			if (q.AffiliateId.GetValueOrDefault() > 0)
+			{
+				query = query.Where(c => c.AffiliateId == q.AffiliateId.Value);
+			}
+
+			if (q.SearchTerm.HasValue())
+			{
+				if (_customerSettings.CompanyEnabled)
+				{
+					query = query.Where(c => c.FullName.Contains(q.SearchTerm) || c.Company.Contains(q.SearchTerm));
+				}
+				else
+				{
+					query = query.Where(c => c.FullName.Contains(q.SearchTerm));
+				}
+			}
+
+			if (q.DayOfBirth.GetValueOrDefault() > 0)
+			{
+				query = query.Where(c => c.BirthDate.Value.Day == q.DayOfBirth.Value);
+			}
+
+			if (q.MonthOfBirth.GetValueOrDefault() > 0)
+			{
+				query = query.Where(c => c.BirthDate.Value.Month == q.MonthOfBirth.Value);
+			}
+
+			if (q.RegistrationFromUtc.HasValue)
+			{
+				query = query.Where(c => q.RegistrationFromUtc.Value <= c.CreatedOnUtc);
+			}	
+
+			if (q.RegistrationToUtc.HasValue)
+			{
+				query = query.Where(c => q.RegistrationToUtc.Value >= c.CreatedOnUtc);
+			}
+
+			if (q.LastActivityFromUtc.HasValue)
+			{
+				query = query.Where(c => q.LastActivityFromUtc.Value <= c.LastActivityDateUtc);
+			}
+
+			if (q.CustomerRoleIds != null && q.CustomerRoleIds.Length > 0)
+			{
+				query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Intersect(q.CustomerRoleIds).Count() > 0);
+			}
+
+			if (q.Deleted.HasValue)
+			{
+				query = query.Where(c => c.Deleted == q.Deleted.Value);
+			}
+
+			if (q.IsSystemAccount.HasValue)
+			{
+				query = q.IsSystemAccount.Value == true
+					? query.Where(c => !string.IsNullOrEmpty(c.SystemName))
+					: query.Where(c => string.IsNullOrEmpty(c.SystemName));
+			}
+
+			if (q.PasswordFormat.HasValue)
+			{
+				int passwordFormatId = (int)q.PasswordFormat.Value;
+				query = query.Where(c => c.PasswordFormatId == passwordFormatId);
+			}
+
+			// Search by phone
+			if (q.Phone.HasValue())
+			{
+				query = query
+					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
+					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+						z.Attribute.Key == SystemCustomerAttributeNames.Phone &&
+						z.Attribute.Value.Contains(q.Phone)))
+					.Select(z => z.Customer);
+			}
+
+			// Search by zip
+			if (q.ZipPostalCode.HasValue())
+			{
+				query = query
+					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
+					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+						z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
+						z.Attribute.Value.Contains(q.ZipPostalCode)))
+					.Select(z => z.Customer);
+			}
+
+			if (q.OnlyWithCart)
+			{
+				int? sctId = null;
+				if (q.CartType.HasValue)
+				{
+					sctId = (int)q.CartType.Value;
+				}			
+
+				query = q.CartType.HasValue ?
+					query.Where(c => c.ShoppingCartItems.Where(x => x.ShoppingCartTypeId == sctId).Count() > 0) :
+					query.Where(c => c.ShoppingCartItems.Count() > 0);
+			}
+
+			query = query.OrderByDescending(c => c.CreatedOnUtc);
+
+			var customers = new PagedList<Customer>(query, q.PageIndex, q.PageSize);
+
+			return customers;
+		}
+
+		public virtual IPagedList<Customer> GetAllCustomersByPasswordFormat(PasswordFormat passwordFormat)
         {
-            var query = _customerRepository.Table;
-            if (registrationFrom.HasValue)
-                query = query.Where(c => registrationFrom.Value <= c.CreatedOnUtc);
-            if (registrationTo.HasValue)
-                query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
-            query = query.Where(c => !c.Deleted);
-            if (customerRoleIds != null && customerRoleIds.Length > 0)
-                query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Intersect(customerRoleIds).Count() > 0);
-            if (!String.IsNullOrWhiteSpace(email))
-                query = query.Where(c => c.Email.Contains(email));
-            if (!String.IsNullOrWhiteSpace(username))
-                query = query.Where(c => c.Username.Contains(username));
-            if (!String.IsNullOrWhiteSpace(firstName))
-            {
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.FirstName &&
-                        z.Attribute.Value.Contains(firstName)))
-                    .Select(z => z.Customer);
-            }
-            if (!String.IsNullOrWhiteSpace(lastName))
-            {
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.LastName &&
-                        z.Attribute.Value.Contains(lastName)))
-                    .Select(z => z.Customer);
-            }
-            //date of birth is stored as a string into database.
-            //we also know that date of birth is stored in the following format YYYY-MM-DD (for example, 1983-02-18).
-            //so let's search it as a string
-            if (dayOfBirth > 0 && monthOfBirth > 0)
-            {
-                //both are specified
-                string dateOfBirthStr = monthOfBirth.ToString("00", CultureInfo.InvariantCulture) + "-" + dayOfBirth.ToString("00", CultureInfo.InvariantCulture);
-                //EndsWith is not supported by SQL Server Compact
-                //so let's use the following workaround http://social.msdn.microsoft.com/Forums/is/sqlce/thread/0f810be1-2132-4c59-b9ae-8f7013c0cc00
-                
-                //we also cannot use Length function in SQL Server Compact (not supported in this context)
-                //z.Attribute.Value.Length - dateOfBirthStr.Length = 5
-                //dateOfBirthStr.Length = 5
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.DateOfBirth &&
-                        z.Attribute.Value.Substring(5, 5) == dateOfBirthStr))
-                    .Select(z => z.Customer);
-            }
-            else if (dayOfBirth > 0)
-            {
-                //only day is specified
-                string dateOfBirthStr = dayOfBirth.ToString("00", CultureInfo.InvariantCulture);
-                //EndsWith is not supported by SQL Server Compact
-                //so let's use the following workaround http://social.msdn.microsoft.com/Forums/is/sqlce/thread/0f810be1-2132-4c59-b9ae-8f7013c0cc00
-                
-                //we also cannot use Length function in SQL Server Compact (not supported in this context)
-                //z.Attribute.Value.Length - dateOfBirthStr.Length = 8
-                //dateOfBirthStr.Length = 2
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.DateOfBirth &&
-                        z.Attribute.Value.Substring(8, 2) == dateOfBirthStr))
-                    .Select(z => z.Customer);
-            }
-            else if (monthOfBirth > 0)
-            {
-                //only month is specified
-                string dateOfBirthStr = "-" + monthOfBirth.ToString("00", CultureInfo.InvariantCulture) + "-";
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.DateOfBirth &&
-                        z.Attribute.Value.Contains(dateOfBirthStr)))
-                    .Select(z => z.Customer);
-            }
-            //search by company
-            if (!String.IsNullOrWhiteSpace(company))
-            {
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.Company &&
-                        z.Attribute.Value.Contains(company)))
-                    .Select(z => z.Customer);
-            }
-            //search by phone
-            if (!String.IsNullOrWhiteSpace(phone))
-            {
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.Phone &&
-                        z.Attribute.Value.Contains(phone)))
-                    .Select(z => z.Customer);
-            }
-            //search by zip
-            if (!String.IsNullOrWhiteSpace(zipPostalCode))
-            {
-                query = query
-                    .Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-                    .Where((z => z.Attribute.KeyGroup == "Customer" &&
-                        z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
-                        z.Attribute.Value.Contains(zipPostalCode)))
-                    .Select(z => z.Customer);
-            }
+			var q = new CustomerSearchQuery
+			{
+				PasswordFormat = passwordFormat,
+				PageIndex = 0,
+				PageSize = 500
+			};
 
-            if (loadOnlyWithShoppingCart)
-            {
-                int? sctId = null;
-                if (sct.HasValue)
-                    sctId = (int)sct.Value;
-
-                query = sct.HasValue ?
-                    query.Where(c => c.ShoppingCartItems.Where(x => x.ShoppingCartTypeId == sctId).Count() > 0) :
-                    query.Where(c => c.ShoppingCartItems.Count() > 0);
-            }
-            
-            query = query.OrderByDescending(c => c.CreatedOnUtc);
-
-            var customers = new PagedList<Customer>(query, pageIndex, pageSize);
-            return customers;
+			var customers = SearchCustomers(q);
+			return customers;
         }
 
-        public virtual IPagedList<Customer> GetAllCustomers(int affiliateId, int pageIndex, int pageSize)
+        public virtual IPagedList<Customer> GetOnlineCustomers(DateTime lastActivityFromUtc, int[] customerRoleIds,  int pageIndex,  int pageSize)
         {
-            var query = _customerRepository.Table;
-            query = query.Where(c => !c.Deleted);
-			query = query.Where(c => c.AffiliateId == affiliateId);
-            query = query.OrderByDescending(c => c.CreatedOnUtc);
+			var q = new CustomerSearchQuery
+			{
+				LastActivityFromUtc = lastActivityFromUtc,
+				CustomerRoleIds = customerRoleIds,
+				IsSystemAccount = false,
+				PageIndex = pageIndex,
+				PageSize = pageSize
+			};
 
-            var customers = new PagedList<Customer>(query, pageIndex, pageSize);
-            return customers;
-        }
+            var customers = SearchCustomers(q);
 
-        public virtual IList<Customer> GetAllCustomersByPasswordFormat(PasswordFormat passwordFormat)
-        {
-            int passwordFormatId = (int)passwordFormat;
+			customers.AlterQuery(x => x.OrderByDescending(c => c.LastActivityDateUtc));
 
-            var query = _customerRepository.Table;
-            query = query.Where(c => c.PasswordFormatId == passwordFormatId);
-            query = query.OrderByDescending(c => c.CreatedOnUtc);
-            var customers = query.ToList();
-            return customers;
-        }
-
-        public virtual IPagedList<Customer> GetOnlineCustomers(DateTime lastActivityFromUtc,
-            int[] customerRoleIds, int pageIndex, int pageSize)
-        {
-            var query = _customerRepository.Table;
-            query = query.Where(c => lastActivityFromUtc <= c.LastActivityDateUtc);
-            query = query.Where(c => !c.Deleted);
-            if (customerRoleIds != null && customerRoleIds.Length > 0)
-                query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Intersect(customerRoleIds).Count() > 0);
-            
-            query = query.OrderByDescending(c => c.LastActivityDateUtc);
-            var customers = new PagedList<Customer>(query, pageIndex, pageSize);
             return customers;
         }
 
         public virtual void DeleteCustomer(Customer customer)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
 
             if (customer.IsSystemAccount)
-                throw new SmartException(string.Format("System customer account ({0}) could not be deleted", customer.SystemName));
+                throw new SmartException(string.Format("System customer account ({0}) cannot not be deleted", customer.SystemName));
 
+			// Soft delete
             customer.Deleted = true;
-            UpdateCustomer(customer);
+
+			// Anonymize IP addresses
+			var language = customer.GetLanguage();
+
+			_gdprTool.Value.AnonymizeData(customer, x => x.LastIpAddress, IdentifierDataType.IpAddress, language);
+
+			foreach (var post in customer.ForumPosts)
+			{
+				_gdprTool.Value.AnonymizeData(post, x => x.IPAddress, IdentifierDataType.IpAddress, language);
+			}
+
+			// Customer Content
+			foreach (var item in customer.CustomerContent)
+			{
+				_gdprTool.Value.AnonymizeData(item, x => x.IpAddress, IdentifierDataType.IpAddress, language);
+			}
+
+			UpdateCustomer(customer);
         }
 
         public virtual Customer GetCustomerById(int customerId)
@@ -321,6 +325,7 @@ namespace SmartStore.Services.Customers
 						orderby c.Id
                         where c.Email == email
                         select c;
+
             var customer = query.FirstOrDefault();
             return customer;
         }
@@ -334,6 +339,7 @@ namespace SmartStore.Services.Customers
 						orderby c.Id
 						where c.SystemName == systemName
 						select c;
+
 			var customer = query.FirstOrDefault();
 			return customer;
         }
@@ -429,62 +435,64 @@ namespace SmartStore.Services.Customers
 								&& a.Value.Contains(clientIdent) // SQLCE doesn't like ntext in WHERE clauses
 							select c;
 				}
-
+				
 				return query.FirstOrDefault();
 			}
 		}
 
 		public virtual void InsertCustomer(Customer customer)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
 
-            _customerRepository.Insert(customer);
+			_customerRepository.Insert(customer);
         }
         
         public virtual void UpdateCustomer(Customer customer)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.NotNull(customer, nameof(customer));
 
-            _customerRepository.Update(customer);
+			_customerRepository.Update(customer);
         }
 
-		public virtual void ResetCheckoutData(Customer customer, int storeId,
-            bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
-            bool clearRewardPoints = false, bool clearShippingMethod = true,
-            bool clearPaymentMethod = true)
+		public virtual void ResetCheckoutData(
+			Customer customer, 
+			int storeId,
+            bool clearCouponCodes = false, 
+			bool clearCheckoutAttributes = false,
+            bool clearRewardPoints = false, 
+			bool clearShippingMethod = true,
+            bool clearPaymentMethod = true,
+			bool clearCreditBalance = false)
         {
-            if (customer == null)
-                throw new ArgumentNullException();
+			Guard.NotNull(customer, nameof(customer));
 
-            //clear entered coupon codes
-            if (clearCouponCodes)
+			if (clearCouponCodes)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.DiscountCouponCode, null);
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.GiftCardCouponCodes, null);
             }
 
-            //clear checkout attributes
             if (clearCheckoutAttributes)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.CheckoutAttributes, null);
             }
 
-            //clear reward points flag
             if (clearRewardPoints)
             {
 				_genericAttributeService.SaveAttribute<bool>(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, false, storeId);
             }
 
-            //clear selected shipping method
+			if (clearCreditBalance)
+			{
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseCreditBalanceDuringCheckout, decimal.Zero, storeId);
+			}
+
             if (clearShippingMethod)
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, storeId);
 				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.OfferedShippingOptions, null, storeId);
             }
 
-            //clear selected payment method
             if (clearPaymentMethod)
             {
 				_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, storeId);
@@ -619,23 +627,22 @@ namespace SmartStore.Services.Customers
         
         #region Customer roles
 
-        public virtual void DeleteCustomerRole(CustomerRole customerRole)
+        public virtual void DeleteCustomerRole(CustomerRole role)
         {
-            if (customerRole == null)
-                throw new ArgumentNullException("customerRole");
+			Guard.NotNull(role, nameof(role));
 
-            if (customerRole.IsSystemRole)
+			if (role.IsSystemRole)
                 throw new SmartException("System role could not be deleted");
 
-            _customerRoleRepository.Delete(customerRole);
+            _customerRoleRepository.Delete(role);
         }
 
-        public virtual CustomerRole GetCustomerRoleById(int customerRoleId)
+        public virtual CustomerRole GetCustomerRoleById(int roleId)
         {
-            if (customerRoleId == 0)
+            if (roleId == 0)
                 return null;
 
-            return _customerRoleRepository.GetById(customerRoleId);
+            return _customerRoleRepository.GetById(roleId);
         }
 
         public virtual CustomerRole GetCustomerRoleBySystemName(string systemName)
@@ -663,20 +670,18 @@ namespace SmartStore.Services.Customers
 			return customerRoles;
 		}
         
-        public virtual void InsertCustomerRole(CustomerRole customerRole)
+        public virtual void InsertCustomerRole(CustomerRole role)
         {
-            if (customerRole == null)
-                throw new ArgumentNullException("customerRole");
+			Guard.NotNull(role, nameof(role));
 
-            _customerRoleRepository.Insert(customerRole);
+			_customerRoleRepository.Insert(role);
         }
 
-        public virtual void UpdateCustomerRole(CustomerRole customerRole)
+        public virtual void UpdateCustomerRole(CustomerRole role)
         {
-            if (customerRole == null)
-                throw new ArgumentNullException("customerRole");
+			Guard.NotNull(role, nameof(role));
 
-            _customerRoleRepository.Update(customerRole);
+			_customerRoleRepository.Update(role);
         }
 
         #endregion

@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Plugins;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Plugins
 {
-	[Validator(typeof(PluginValidator))]
+    [Validator(typeof(PluginValidator))]
     public class PluginModel : ModelBase, ILocalizedModel<PluginLocalizedModel>
     {
         public PluginModel()
@@ -41,7 +41,7 @@ namespace SmartStore.Admin.Models.Plugins
         [AllowHtml]
         public string Author { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.DisplayOrder")] 
+        [SmartResourceDisplayName("Common.DisplayOrder")] 
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Configure")]
@@ -77,5 +77,13 @@ namespace SmartStore.Admin.Models.Plugins
 		[SmartResourceDisplayName("Common.Description")]
 		[AllowHtml]
 		public string Description { get; set; }
+    }
+
+    public partial class PluginValidator : AbstractValidator<PluginModel>
+    {
+        public PluginValidator()
+        {
+            RuleFor(x => x.FriendlyName).NotEmpty();
+        }
     }
 }

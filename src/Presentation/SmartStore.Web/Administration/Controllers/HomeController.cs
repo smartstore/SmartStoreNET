@@ -92,7 +92,7 @@ namespace SmartStore.Admin.Controllers
 			var result = _services.Cache.Get("admin:marketplacefeed", () => {
 				try
 				{
-					string url = "https://community.smartstore.com/index.php?/rss/downloads/";
+					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
 					var request = (HttpWebRequest)WebRequest.Create(url);
 					request.Timeout = 3000;
 					request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);

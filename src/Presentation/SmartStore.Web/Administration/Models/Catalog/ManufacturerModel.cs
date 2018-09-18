@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -13,8 +12,8 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Catalog
 {
 	[Validator(typeof(ManufacturerValidator))]
-    public class ManufacturerModel : EntityModelBase, ILocalizedModel<ManufacturerLocalizedModel>, IStoreSelector
-    {
+    public class ManufacturerModel : TabbableModel, ILocalizedModel<ManufacturerLocalizedModel>, IStoreSelector
+	{
         public ManufacturerModel()
         {
             Locales = new List<ManufacturerLocalizedModel>();
@@ -71,7 +70,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Deleted")]
         public bool Deleted { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
 		[SmartResourceDisplayName("Common.CreatedOn")]
@@ -82,7 +81,8 @@ namespace SmartStore.Admin.Models.Catalog
         
         public IList<ManufacturerLocalizedModel> Locales { get; set; }
 
-		//Store mapping
+		// Store mapping
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
@@ -114,7 +114,7 @@ namespace SmartStore.Admin.Models.Catalog
             [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.IsFeaturedProduct")]
             public bool IsFeaturedProduct { get; set; }
 
-            [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Products.Fields.DisplayOrder")]
+            [SmartResourceDisplayName("Common.DisplayOrder")]
             //we don't name it DisplayOrder because Telerik has a small bug 
             //"if we have one more editor with the same name on a page, it doesn't allow editing"
             //in our case it's category.DisplayOrder
@@ -152,4 +152,12 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SeName { get; set; }
     }
+
+	public partial class ManufacturerValidator : AbstractValidator<ManufacturerModel>
+	{
+		public ManufacturerValidator()
+		{
+			RuleFor(x => x.Name).NotEmpty();
+		}
+	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Messages;
@@ -18,12 +17,13 @@ namespace SmartStore.Data.Caching
 		private static readonly HashSet<string> _toxicSets = new HashSet<string>
 		{
 			typeof(ScheduleTask).Name,
+			typeof(ScheduleTaskHistory).Name,
 			typeof(Log).Name,
 			typeof(ActivityLog).Name,
 			typeof(QueuedEmail).Name
 		};
 
-		private const string KEYPREFIX = "efcache:*";
+		private const string KEYPREFIX = "efcache:";
 		private readonly object _lock = new object();
 
 		private bool _enabled;
@@ -248,8 +248,8 @@ namespace SmartStore.Data.Caching
 
 		public void Clear()
 		{
-			_cache.RemoveByPattern(KEYPREFIX);
-			_requestCache.Value.RemoveByPattern(KEYPREFIX);
+			_cache.RemoveByPattern(KEYPREFIX + "*");
+			_requestCache.Value.RemoveByPattern(KEYPREFIX + "*");
 		}
 
 		public virtual void InvalidateSets(IEnumerable<string> entitySets)
@@ -361,8 +361,14 @@ namespace SmartStore.Data.Caching
 
 			using (var sha = new SHA1CryptoServiceProvider())
 			{
-				key = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(key)));
-				return KEYPREFIX + "data:" + key;
+				try
+				{
+					return KEYPREFIX + "data:" + Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(key)));
+				}
+				catch
+				{
+					return KEYPREFIX + "data:" + key;
+				}
 			}
 		}
 	}

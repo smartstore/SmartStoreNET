@@ -61,7 +61,7 @@ namespace SmartStore.Services.Localization
 			Guard.NotNull(resource, nameof(resource));
 
             // cache
-			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
+			ClearCacheSegment(resource.ResourceName, resource.LanguageId);
 			
             // db
             _lsrRepository.Delete(resource);
@@ -77,7 +77,7 @@ namespace SmartStore.Services.Localization
 					var sqlDelete = "Delete From LocaleStringResource Where ResourceName Like '{0}%'".FormatWith(key.EndsWith(".") || !keyIsRootKey ? key : key + ".");
 					result = _dbContext.ExecuteSqlCommand(sqlDelete);
 
-					ClearCachedResourceSegment(key);
+					ClearCacheSegment(key);
 				}
 				catch (Exception exc) 
                 {
@@ -148,7 +148,7 @@ namespace SmartStore.Services.Localization
             _lsrRepository.Insert(resource);
 
 			// cache
-			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
+			ClearCacheSegment(resource.ResourceName, resource.LanguageId);
         }
 
         public virtual void UpdateLocaleStringResource(LocaleStringResource resource)
@@ -159,18 +159,18 @@ namespace SmartStore.Services.Localization
             object origKey = null;
 			if (_dbContext.TryGetModifiedProperty(resource, "ResourceName", out origKey))
 			{
-				ClearCachedResourceSegment((string)origKey, resource.LanguageId);
+				ClearCacheSegment((string)origKey, resource.LanguageId);
 			}
-			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
+			ClearCacheSegment(resource.ResourceName, resource.LanguageId);
 
 			_lsrRepository.Update(resource);
         }
 
-		protected virtual IDictionary<string, string> GetCachedResourceSegment(string forKey, int languageId)
+		protected virtual IDictionary<string, string> GetCacheSegment(string forKey, int languageId)
 		{
 			Guard.NotEmpty(forKey, nameof(forKey));
 
-			var segmentKey = GetSegmentKey(forKey);
+			var segmentKey = GetSegmentKeyPart(forKey);
 			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
 
 			return _cacheManager.Get(cacheKey, () => 
@@ -196,9 +196,9 @@ namespace SmartStore.Services.Localization
 		/// </summary>
 		/// <param name="forKey">The resource key for which a segment key should be created</param>
 		/// <param name="languageId">Language Id. If <c>null</c>, segments for all cached languages will be invalidated</param>
-		protected virtual void ClearCachedResourceSegment(string forKey, int? languageId = null)
+		protected virtual void ClearCacheSegment(string forKey, int? languageId = null)
 		{
-			var segmentKey = GetSegmentKey(forKey);
+			var segmentKey = GetSegmentKeyPart(forKey);
 
 			if (languageId.HasValue && languageId.Value > 0)
 			{
@@ -231,7 +231,7 @@ namespace SmartStore.Services.Localization
 
             resourceKey = resourceKey.EmptyNull().Trim().ToLowerInvariant();
 
-			var cachedSegment = GetCachedResourceSegment(resourceKey, languageId);
+			var cachedSegment = GetCacheSegment(resourceKey, languageId);
 
             if (!cachedSegment.TryGetValue(resourceKey, out result))
             {
@@ -561,8 +561,8 @@ namespace SmartStore.Services.Localization
 				{
 					var segmentKeys = new HashSet<string>();
 
-					toAdd.Each(x => segmentKeys.Add(GetSegmentKey(x.ResourceName)));
-					toUpdate.Each(x => segmentKeys.Add(GetSegmentKey(x.ResourceName)));
+					toAdd.Each(x => segmentKeys.Add(GetSegmentKeyPart(x.ResourceName)));
+					toUpdate.Each(x => segmentKeys.Add(GetSegmentKeyPart(x.ResourceName)));
 
 					_lsrRepository.InsertRange(toAdd);
 					toAdd.Clear();
@@ -575,7 +575,7 @@ namespace SmartStore.Services.Localization
 					// clear cache
 					foreach (var segmentKey in segmentKeys)
 					{
-						ClearCachedResourceSegment(segmentKey, language.Id);
+						ClearCacheSegment(segmentKey, language.Id);
 					}
 
 					return num;
@@ -690,7 +690,7 @@ namespace SmartStore.Services.Localization
 			return String.Format(LOCALESTRINGRESOURCES_SEGMENT_KEY, segment, languageId);
 		}
 
-		private string GetSegmentKey(string forKey)
+		private string GetSegmentKeyPart(string forKey)
 		{
 			return forKey.Substring(0, Math.Min(forKey.Length, 3)).ToLowerInvariant();
 		}

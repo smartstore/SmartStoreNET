@@ -1,5 +1,4 @@
 ﻿@model ForumSettingsModel
-@using Telerik.Web.Mvc.UI;
 @{
     ViewBag.Title = T("Admin.Configuration.Settings.Forums").Text;
 }
@@ -23,16 +22,27 @@
     @Html.ValidationSummary(false)
 
     <div class="adminContent">
-        <div class="adminTitle">
-            @Html.SmartLabelFor(model => model.ForumsEnabled)
-        </div>
-        <div class="adminData">
-			@Html.CheckBoxFor(model => model.ForumsEnabled, new { data_toggler_for = "#pnlForumsEnabled" })
-            @Html.ValidationMessageFor(model => model.ForumsEnabled)
-        </div>
+		<div class="adminRow">
+			<div class="adminTitle">
+				@Html.SmartLabelFor(model => model.ForumsEnabled)
+			</div>
+			<div class="adminData">
+				@Html.SettingEditorFor(model => model.ForumsEnabled, Html.CheckBoxFor(model => model.ForumsEnabled, new { data_toggler_for = "#pnlForumsEnabled" }))
+				@Html.ValidationMessageFor(model => model.ForumsEnabled)
+			</div>
+		</div>
 	</div>
 
 	<table id="pnlForumsEnabled" class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SignaturesEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SignaturesEnabled)
+                @Html.ValidationMessageFor(model => model.SignaturesEnabled)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.RelativeDateTimeFormattingEnabled)
@@ -98,6 +108,29 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ForumEditor)
+            </td>
+            <td class="adminData">
+				@Html.EnumSettingEditorFor(model => model.ForumEditor)
+                @Html.ValidationMessageFor(model => model.ForumEditor)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminSeparator" colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowSorting)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowSorting)
+                @Html.ValidationMessageFor(model => model.AllowSorting)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TopicsPageSize)
             </td>
             <td class="adminData">
@@ -124,25 +157,6 @@
             </td>
         </tr>
         <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ForumEditor)
-            </td>
-            <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.ForumEditor)
-                @Html.DropDownListForEnum(model => model.ForumEditor)
-                @Html.ValidationMessageFor(model => model.ForumEditor)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SignaturesEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SignaturesEnabled)
-                @Html.ValidationMessageFor(model => model.SignaturesEnabled)
-            </td>
-        </tr>
-        <tr>
             <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
@@ -152,7 +166,7 @@
                 @Html.SmartLabelFor(model => model.AllowPrivateMessages)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.AllowPrivateMessages, new { data_toggler_for = "#pnlPrivateMessages" })
+				@Html.SettingEditorFor(model => model.AllowPrivateMessages, Html.CheckBoxFor(model => model.AllowPrivateMessages, new { data_toggler_for = "#pnlPrivateMessages" }))
                 @Html.ValidationMessageFor(model => model.AllowPrivateMessages)
             </td>
         </tr>
@@ -186,7 +200,7 @@
                 @Html.SmartLabelFor(model => model.ForumFeedsEnabled)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.ForumFeedsEnabled, new { data_toggler_for = "#pnlForumFeeds" })
+				@Html.SettingEditorFor(model => model.ForumFeedsEnabled, Html.CheckBoxFor(model => model.ForumFeedsEnabled, new { data_toggler_for = "#pnlForumFeeds" }))
                 @Html.ValidationMessageFor(model => model.ForumFeedsEnabled)
             </td>
         </tr>

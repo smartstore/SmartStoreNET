@@ -199,8 +199,8 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CustomerReportService>().As<ICustomerReportService>().InstancePerRequest();
 
 			builder.RegisterType<PermissionService>().As<IPermissionService>().InstancePerRequest();
-
 			builder.RegisterType<AclService>().As<IAclService>().InstancePerRequest();
+			builder.RegisterType<GdprTool>().As<IGdprTool>().InstancePerRequest();
 
 			builder.RegisterType<GeoCountryLookup>().As<IGeoCountryLookup>().InstancePerRequest();
 			builder.RegisterType<CountryService>().As<ICountryService>().InstancePerRequest();
@@ -407,7 +407,19 @@ namespace SmartStore.Web.Framework
 			}
 			else
 			{
-				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
+				builder.Register<IDbContext>(c =>
+					{
+						try
+						{
+							return new SmartObjectContext(DataSettings.Current.DataConnectionString);
+						}
+						catch
+						{
+							// return new SmartObjectContext();
+							return null;
+						}
+
+					})
 					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
 					.InstancePerRequest();
 			}
@@ -480,6 +492,7 @@ namespace SmartStore.Web.Framework
 			builder.Register<Localizer>(c => c.Resolve<IText>().Get).InstancePerRequest();
 			builder.Register<LocalizerEx>(c => c.Resolve<IText>().GetEx).InstancePerRequest();
 
+			builder.RegisterType<LocalizationFileResolver>().As<ILocalizationFileResolver>().InstancePerRequest();
 			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>().InstancePerRequest();
 		}
 
@@ -560,14 +573,23 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+            // General.
 			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
-			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
-			builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
-			builder.RegisterType<FacetUrlHelper>().InstancePerRequest();
-			builder.RegisterType<FacetTemplateProvider>().As<IFacetTemplateProvider>().InstancePerRequest();
-		}
+            builder.RegisterType<FacetUrlHelper>().InstancePerRequest();
+            builder.RegisterType<FacetTemplateProvider>().As<IFacetTemplateProvider>().InstancePerRequest();
+
+            // Catalog.
+            builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
+            builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
+            builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
+            builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
+
+            // Forum.
+            builder.RegisterType<ForumSearchService>().As<IForumSearchService>().InstancePerRequest();
+            builder.RegisterType<LinqForumSearchService>().Named<IForumSearchService>("linq").InstancePerRequest();
+            builder.RegisterType<ForumSearchQueryFactory>().As<IForumSearchQueryFactory>().InstancePerRequest();
+            builder.RegisterType<ForumSearchQueryAliasMapper>().As<IForumSearchQueryAliasMapper>().InstancePerRequest();
+        }
 	}
 
 	public class EventModule : Module
@@ -678,6 +700,7 @@ namespace SmartStore.Web.Framework
 			{
 				pageHelperRegistration.PropertiesAutowired(PropertyWiringOptions.None);
 				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<SmartController>(-100);
+				builder.RegisterType<CookieConsentFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
 			}
 		}
 

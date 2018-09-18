@@ -8,6 +8,7 @@
     
     var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
     var renderMoreItem = false;
+	var rtl = WorkContext.WorkingLanguage.Rtl;
 }
 
 @functions {
@@ -41,8 +42,8 @@
     }
 }
 
-<div class="megamenu-nav megamenu-nav--prev">
-    <a href = "#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
+<div class="megamenu-nav megamenu-nav--prev @(rtl ? "omega" : "alpha")">
+	<a href="#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
 </div>
 
 <ul class="navbar-nav flex-row flex-nowrap" 
@@ -76,13 +77,13 @@
             @if(node.HasChildren && isDropDownActive)
             {   
                 <a href="@itemUrl" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu-@item.EntityId">
-                    @item.Text
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@item.Text</span>
                 </a>
             }
             else
             {
                 <a href="@itemUrl" class="nav-link">
-                    @item.Text
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@item.Text</span>
                 </a>
             }
 
@@ -105,6 +106,6 @@
     @{ Html.RenderWidget("mainmenu_after_last_item"); }
 </ul>
 
-<div class="megamenu-nav megamenu-nav--next">
-    <a href = "#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-right"></i></a>
+<div class="megamenu-nav megamenu-nav--next @(rtl ? "alpha" : "omega")">
+	<a href="#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-right"></i></a>
 </div>

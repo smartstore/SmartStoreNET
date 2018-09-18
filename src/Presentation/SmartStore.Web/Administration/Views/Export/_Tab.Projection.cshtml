@@ -61,10 +61,8 @@
 					@Html.DropDownListFor(x => x.Projection.AttributeCombinationValueMergingId, Model.Projection.AvailableAttributeCombinationValueMerging)
 					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationValueMergingId)
 
-					<span class="control-group warning">
-						<span class="help-inline">
-							@T("Admin.DataExchange.Export.NotPreviewCompatible")
-						</span>
+					<span class="d-block text-muted mt-1">
+						@T("Admin.DataExchange.Export.NotPreviewCompatible")
 					</span>
 				</td>
 			</tr>
@@ -89,11 +87,9 @@
 					@Html.EditorFor(x => x.Projection.OnlyIndividuallyVisibleAssociated)
 					@Html.ValidationMessageFor(x => x.Projection.OnlyIndividuallyVisibleAssociated)
 
-					<div class="control-group warning">
-						<span class="help-inline">
-							@T("Admin.DataExchange.Export.NotPreviewCompatible")
-						</span>
-					</div>
+					<span class="ml-3 text-muted" style="vertical-align:super">
+						@T("Admin.DataExchange.Export.NotPreviewCompatible")
+					</span>
 				</td>
 			</tr>
 		}

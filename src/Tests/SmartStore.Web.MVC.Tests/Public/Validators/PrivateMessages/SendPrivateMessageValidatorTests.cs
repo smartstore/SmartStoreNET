@@ -1,7 +1,6 @@
 ﻿using FluentValidation.TestHelper;
-using SmartStore.Web.Models.PrivateMessages;
-using SmartStore.Web.Validators.PrivateMessages;
 using NUnit.Framework;
+using SmartStore.Web.Models.PrivateMessages;
 
 namespace SmartStore.Web.MVC.Tests.Public.Validators.PrivateMessages
 {
@@ -13,7 +12,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.PrivateMessages
         [SetUp]
         public new void Setup()
         {
-            _validator = new SendPrivateMessageValidator(_localizationService);
+            _validator = new SendPrivateMessageValidator();
         }
 
         [Test]

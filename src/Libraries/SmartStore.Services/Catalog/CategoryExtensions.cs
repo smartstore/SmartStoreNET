@@ -111,7 +111,7 @@ namespace SmartStore.Services.Catalog
 		public static string GetCategoryPath(this ICategoryNode categoryNode, 
 			ICategoryService categoryService, 
 			int? languageId = null, 
-			bool withAlias = false,
+			string aliasPattern = null,
 			string separator = " » ")
 		{
 			Guard.NotNull(categoryNode, nameof(categoryNode));
@@ -119,7 +119,7 @@ namespace SmartStore.Services.Catalog
 			var treeNode = categoryService.GetCategoryTree(categoryNode.Id, true);
 			if (treeNode != null)
 			{
-				return categoryService.GetCategoryPath(treeNode, languageId, withAlias, separator);
+				return categoryService.GetCategoryPath(treeNode, languageId, aliasPattern, separator);
 			}
 
 			return string.Empty;

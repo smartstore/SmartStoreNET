@@ -67,12 +67,12 @@ namespace SmartStore.Services.Orders
         /// <summary>
         /// Adjust shipping rate (free shipping, additional charges, discounts)
         /// </summary>
-        /// <param name="shippingRate">Shipping rate to adjust</param>
+        /// <param name="shippingOption">Shipping option</param>
         /// <param name="cart">Cart</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Adjusted shipping rate</returns>
-		decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart, 
-			string shippingMethodName, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount);
+		decimal AdjustShippingRate(decimal shippingRate, IList<OrganizedShoppingCartItem> cart,
+			ShippingOption shippingOption, IList<ShippingMethod> shippingMethods, out Discount appliedDiscount);
 
         /// <summary>
         /// Gets shopping cart additional shipping charge
@@ -153,13 +153,15 @@ namespace SmartStore.Services.Orders
         /// Gets the shopping cart total
         /// </summary>
         /// <param name="cart">Shopping cart</param>
-        /// <param name="ignoreRewardPonts">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
+        /// <param name="ignoreRewardPoints">A value indicating whether we should ignore reward points (if enabled and a customer is going to use them)</param>
         /// <param name="usePaymentMethodAdditionalFee">A value indicating whether we should use payment method additional fee when calculating order total</param>
+		/// <param name="ignoreCreditBalance">A value indicating whether to ignore a credit balance.</param>
         /// <returns>Shopping cart total. TotalAmount is <c>null</c> if shopping cart total couldn't be calculated now.</returns>
         ShoppingCartTotal GetShoppingCartTotal(
             IList<OrganizedShoppingCartItem> cart,
-            bool ignoreRewardPonts = false,
-            bool usePaymentMethodAdditionalFee = true);
+            bool ignoreRewardPoints = false,
+            bool usePaymentMethodAdditionalFee = true,
+			bool ignoreCreditBalance = false);
 
 
         /// <summary>

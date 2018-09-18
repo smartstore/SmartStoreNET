@@ -1,8 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.ShoppingCart;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -25,5 +25,14 @@ namespace SmartStore.Web.Models.ShoppingCart
         public string Result { get; set; }
 
         public bool DisplayCaptcha { get; set; }
+    }
+
+    public class WishlistEmailAFriendValidator : AbstractValidator<WishlistEmailAFriendModel>
+    {
+        public WishlistEmailAFriendValidator()
+        {
+            RuleFor(x => x.FriendEmail).NotEmpty().EmailAddress();
+            RuleFor(x => x.YourEmailAddress).NotEmpty().EmailAddress();
+        }
     }
 }

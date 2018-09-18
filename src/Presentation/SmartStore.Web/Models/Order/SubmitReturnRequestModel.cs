@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.Order
 {
@@ -10,15 +11,16 @@ namespace SmartStore.Web.Models.Order
         public SubmitReturnRequestModel()
         {
             Items = new List<OrderItemModel>();
+			AddedReturnRequestIds = new List<int>();
             AvailableReturnReasons = new List<SelectListItem>();
             AvailableReturnActions= new List<SelectListItem>();
         }
 
-        public int OrderId { get; set; }
-        
+        public int OrderId { get; set; }        
         public IList<OrderItemModel> Items { get; set; }
-        
-        [AllowHtml]
+		public IList<int> AddedReturnRequestIds { get; set; }
+
+		[AllowHtml]
         [SmartResourceDisplayName("ReturnRequests.ReturnReason")]
         public string ReturnReason { get; set; }
         public IList<SelectListItem> AvailableReturnReasons { get; set; }
@@ -40,7 +42,7 @@ namespace SmartStore.Web.Models.Order
         {
             public int ProductId { get; set; }
 
-            public string ProductName { get; set; }
+            public LocalizedValue<string> ProductName { get; set; }
 
             public string ProductSeName { get; set; }
 

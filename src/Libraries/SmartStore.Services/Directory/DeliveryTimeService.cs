@@ -8,11 +8,12 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Directory
 {
-	public partial class DeliveryTimeService : IDeliveryTimeService
+    public partial class DeliveryTimeService : IDeliveryTimeService
     {
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
         private readonly IRepository<Product> _productRepository;
@@ -85,18 +86,10 @@ namespace SmartStore.Services.Directory
             return  _deliveryTimeRepository.GetByIdCached(deliveryTimeId, "deliverytime-{0}".FormatInvariant(deliveryTimeId));
         }
 
-		public virtual DeliveryTime GetDeliveryTime(Product product)
+        public virtual DeliveryTime GetDeliveryTime(Product product)
 		{
-			if (product == null)
-				return null;
-
-			if ((product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
-				&& _catalogSettings.DeliveryTimeIdForEmptyStock.HasValue && product.StockQuantity <= 0)
-			{
-				return GetDeliveryTimeById(_catalogSettings.DeliveryTimeIdForEmptyStock.Value);
-			}
-
-			return GetDeliveryTimeById(product.DeliveryTimeId ?? 0);
+            var deliveryTimeId = product.GetDeliveryTimeIdAccordingToStock(_catalogSettings);
+            return GetDeliveryTimeById(deliveryTimeId ?? 0);
 		}
 
         public virtual IList<DeliveryTime> GetAllDeliveryTimes()

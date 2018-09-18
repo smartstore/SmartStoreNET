@@ -30,13 +30,15 @@
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Name)
-				.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+				.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>")
+				.Width("30%");
 			columns.Bound(x => x.AllowsBilling)
-					.Width(50)
+					.Width("10%")
 					.ClientTemplate(@Html.SymbolForBool("AllowsBilling"))
 					.Centered();
 			columns.Bound(x => x.AllowsShipping)
 					.ClientTemplate(@Html.SymbolForBool("AllowsShipping"))
+					.Width("10%")
 					.Centered();
 			columns.Bound(x => x.TwoLetterIsoCode)
 				.Hidden(true);
@@ -46,19 +48,23 @@
 				.Hidden(true);
 			columns.Bound(x => x.SubjectToVat)
 					.ClientTemplate(@Html.SymbolForBool("SubjectToVat"))
+					.Width("10%")
 					.Centered();
 			columns.Bound(x => x.DisplayOrder)
+				.Width("10%")
 				.Centered();
 			columns.Bound(x => x.LimitedToStores)
+				.Width("10%")
 				.Hidden(true);
 			columns.Bound(x => x.Published)
 					.ClientTemplate(@Html.SymbolForBool("Published"))
+					.Width("10%")
 					.Centered();
 			columns.Command(commands =>
 			{
 				commands.Edit().Localize(T);
 				commands.Delete().Localize(T);
-			}).Width(160).HtmlAttributes(new { align = "right" });
+			}).Width("20%").HtmlAttributes(new { align = "right" });
 		})
 		.DataBinding(dataBinding => dataBinding.Ajax()
 			.Select("CountryList", "Country")

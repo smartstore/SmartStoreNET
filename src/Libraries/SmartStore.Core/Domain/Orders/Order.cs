@@ -20,8 +20,8 @@ namespace SmartStore.Core.Domain.Orders
     [DataContract]
 	public partial class Order : BaseEntity, IAuditable, ISoftDeletable
     {
-
-        private ICollection<DiscountUsageHistory> _discountUsageHistory;
+		private ICollection<WalletHistory> _walletHistory;
+		private ICollection<DiscountUsageHistory> _discountUsageHistory;
         private ICollection<GiftCardUsageHistory> _giftCardUsageHistory;
         private ICollection<OrderNote> _orderNotes;
         private ICollection<OrderItem> _orderItems;
@@ -230,10 +230,16 @@ namespace SmartStore.Core.Domain.Orders
         [DataMember]
         public decimal OrderDiscount { get; set; }
 
-        /// <summary>
-        /// /// Gets or sets the order total rounding amount
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets the wallet credit amount used to (partially) pay this order.
+		/// </summary>
+		[DataMember]
+		public decimal CreditBalance { get; set; }
+
+		/// <summary>
+		/// Gets or sets the order total rounding amount
+		/// </summary>
+		[DataMember]
         public decimal OrderTotalRounding { get; set; }
 
         /// <summary>
@@ -248,10 +254,10 @@ namespace SmartStore.Core.Domain.Orders
         [DataMember]
         public decimal RefundedAmount { get; set; }
 
-        /// <summary>
-        /// Gets or sets the value indicating whether reward points were earned for this order
-        /// </summary>
-        [DataMember]
+		/// <summary>
+		/// Gets or sets the value indicating whether reward points were earned for this order
+		/// </summary>
+		[DataMember]
         public bool RewardPointsWereAdded { get; set; }
         
         /// <summary>
@@ -495,10 +501,19 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual RewardPointsHistory RedeemedRewardPointsEntry { get; set; }
 
-        /// <summary>
-        /// Gets or sets discount usage history
-        /// </summary>
-        public virtual ICollection<DiscountUsageHistory> DiscountUsageHistory
+		/// <summary>
+		/// Gets or sets the wallet history.
+		/// </summary>
+		public virtual ICollection<WalletHistory> WalletHistory
+		{
+			get { return _walletHistory ?? (_walletHistory = new HashSet<WalletHistory>()); }
+			protected set { _walletHistory = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets discount usage history
+		/// </summary>
+		public virtual ICollection<DiscountUsageHistory> DiscountUsageHistory
         {
 			get { return _discountUsageHistory ?? (_discountUsageHistory = new HashSet<DiscountUsageHistory>()); }
             protected set { _discountUsageHistory = value; }

@@ -7,14 +7,14 @@ namespace SmartStore.Core.Domain.Customers
 		public CustomerSettings()
 		{
 			UsernamesEnabled = true;
-            CustomerNumberMethod = Customers.CustomerNumberMethod.Disabled;
-            CustomerNumberVisibility = Customers.CustomerNumberVisibility.None;
+            CustomerNumberMethod = CustomerNumberMethod.Disabled;
+            CustomerNumberVisibility = CustomerNumberVisibility.None;
 			DefaultPasswordFormat = PasswordFormat.Hashed;
 			HashedPasswordFormat = "SHA1";
 			PasswordMinLength = 6;
 			UserRegistrationType = UserRegistrationType.Standard;
 			AvatarMaximumSizeBytes = 512000;
-			DefaultAvatarEnabled = true;
+			DefaultAvatarEnabled = false;
 			CustomerNameFormat = CustomerNameFormat.ShowFirstName;
 			CustomerNameFormatMaxLength = 64;
 			GenderEnabled = true;
@@ -23,8 +23,8 @@ namespace SmartStore.Core.Domain.Customers
 			NewsletterEnabled = true;
 			OnlineCustomerMinutes = 20;
 			StoreLastVisitedPage = true;
-			StoreLastIpAddress = true;
-			DisplayPrivacyAgreementOnContactUs = false;
+			FirstNameRequired = false;
+			LastNameRequired = false;
 		}
 		
 		/// <summary>
@@ -151,16 +151,6 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating we should store last visited page URL for each customer
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to store last IP address for each customer
-		/// </summary>
-		public bool StoreLastIpAddress { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
-		/// </summary>
-		public bool DisplayPrivacyAgreementOnContactUs { get; set; }
         
         #region Form fields
 
@@ -174,10 +164,20 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool TitleEnabled { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether 'Date of Birth' is enabled
-        /// </summary>
-        public bool DateOfBirthEnabled { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether 'FirstName' is required
+		/// </summary>
+		public bool FirstNameRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether 'LastName' is required
+		/// </summary>
+		public bool LastNameRequired { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether 'Date of Birth' is enabled
+		/// </summary>
+		public bool DateOfBirthEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether 'Company' is enabled

@@ -25,7 +25,7 @@ namespace SmartStore.Core.Domain.Catalog
         {
             FileUploadAllowedExtensions = new List<string>();
 			AllowProductSorting = true;
-            DefaultSortOrder = ProductSortingEnum.Initial;
+            DefaultSortOrder = ProductSortingEnum.Relevance;
 			AllowProductViewModeChanging = true;
 			DefaultViewMode = "grid";
 			CategoryBreadcrumbEnabled = true;
@@ -80,6 +80,8 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowProductsFromSubcategories = true;
             ApplyTierPricePercentageToAttributePriceAdjustments = false;
             AllowDifferingEmailAddressForEmailAFriend = false;
+			AllowAnonymousUsersToEmailAFriend = false;
+			AllowAnonymousUsersToReviewProduct = false;
         }
 
         /// <summary>
@@ -399,15 +401,25 @@ namespace SmartStore.Core.Domain.Catalog
 
         public bool ShowDiscountSign { get; set; }
 
-		/// <summary>
-		/// Gets or sets the available customer selectable default page size options
-		/// </summary>
-		public string DefaultPageSizeOptions { get; set; }
+        /// <summary>
+        /// Gets or sets the price display style for prices
+        /// </summary>
+        public PriceDisplayStyle PriceDisplayStyle { get; set; }
 
-		/// <summary>
-		/// Gets or sets the price display type for prices in product lists
-		/// </summary>
-		public PriceDisplayType PriceDisplayType { get; set; }
+        /// <summary>
+        /// Displays a textual resources instead of the decimal value when prices are 0
+        /// </summary>
+        public bool DisplayTextForZeroPrices { get; set; }
+
+        /// <summary>
+        /// Gets or sets the available customer selectable default page size options
+        /// </summary>
+        public string DefaultPageSizeOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the price display type for prices in product lists
+        /// </summary>
+        public PriceDisplayType PriceDisplayType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to include "Short description" in compare products

@@ -84,26 +84,40 @@ namespace SmartStore.Web.Infrastructure
             #region Topic Widgets
 
             // add special "topic widgets" to the list
-			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, storeId, _workContext.WorkingLanguage.Id);
+			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, storeId, _workContext.WorkingLanguage.Id, _workContext.CurrentCustomer.GetRolesIdent());
             // get topic widgets from STATIC cache
 			var topicWidgets = _services.Cache.Get(allTopicsCacheKey, () =>
             {
 				using (var scope = new DbContextScope(forceNoTracking: true))
 				{
-					var allTopicWidgets = _topicService.GetAllTopics(storeId).Where(x => x.RenderAsWidget).ToList();
+					var allTopicWidgets = _topicService.GetAllTopics(storeId).AlterQuery(q =>
+					{
+						return q.Where(x => x.RenderAsWidget);
+					});
+
 					var stubs = allTopicWidgets
-						.Select(t => new TopicWidgetStub
+						.Select(t => 
 						{
-							Id = t.Id,
-							Bordered = t.WidgetBordered,
-							WrapContent = !t.WidgetWrapContent.HasValue || t.WidgetWrapContent.Value,
-							ShowTitle = t.WidgetShowTitle,
-							SystemName = t.SystemName.SanitizeHtmlId(),
-							Title = t.GetLocalized(x => t.Title),
-                            TitleTag = t.TitleTag,
-							Body = t.GetLocalized(x => t.Body, detectEmptyHtml: true),
-							WidgetZones = t.GetWidgetZones().ToArray(),
-							Priority = t.Priority
+							var locTitle = t.GetLocalized(x => t.Title);
+							var locBody = t.GetLocalized(x => t.Body, detectEmptyHtml: false);
+
+							return new TopicWidgetStub
+							{
+								Id = t.Id,
+								Bordered = t.WidgetBordered,
+								WrapContent = !t.WidgetWrapContent.HasValue || t.WidgetWrapContent.Value,
+								ShowTitle = t.WidgetShowTitle,
+								SystemName = t.SystemName.SanitizeHtmlId(),
+								ShortTitle = t.GetLocalized(x => x.ShortTitle),
+								Title = locTitle,
+								TitleRtl = locTitle.CurrentLanguage.Rtl,
+								Intro = t.GetLocalized(x => x.Intro),
+								Body = locBody,
+								BodyRtl = locBody.CurrentLanguage.Rtl,
+								TitleTag = t.TitleTag,
+								WidgetZones = t.GetWidgetZones().ToArray(),
+								Priority = t.Priority
+							};
 						})
 						.OrderBy(t => t.Priority)
 						.ToList();
@@ -134,16 +148,21 @@ namespace SmartStore.Web.Infrastructure
 									{"area", null},
 									{"widgetZone", zone},
 									{"model", new TopicWidgetModel 
-									{ 
-										Id = widget.Id,
-										SystemName = widget.SystemName,
-										WrapContent = widget.WrapContent,
-										ShowTitle = widget.ShowTitle,
-										IsBordered = widget.Bordered,
-										Title = String.IsNullOrEmpty(widget.Title) ? "div" : widget.Title,
-                                        TitleTag = widget.TitleTag ?? "h3",
-										Html = widget.Body
-									} }
+										{ 
+											Id = widget.Id,
+											SystemName = widget.SystemName,
+											WrapContent = widget.WrapContent,
+											ShowTitle = widget.ShowTitle,
+											IsBordered = widget.Bordered,
+											ShortTitle = widget.ShortTitle.NullEmpty(),
+											Title = widget.Title.NullEmpty(),
+											TitleTag = widget.TitleTag ?? "h3",
+											Intro = widget.Intro.NullEmpty(),
+											Html = widget.Body,
+											HtmlRtl = widget.BodyRtl,
+											TitleRtl = widget.TitleRtl
+										}
+									}
 								}
 							};
 
@@ -153,34 +172,6 @@ namespace SmartStore.Web.Infrastructure
 				}
 
 				return map;
-
-				#region Obsolete
-				//var result = from t in topicWidgets 
-				//			 where t.WidgetZones.Contains(widgetZone, StringComparer.InvariantCultureIgnoreCase)
-				//			 orderby t.Priority
-				//			 select new WidgetRouteInfo
-				//			 {
-				//				 ControllerName = "Topic",
-				//				 ActionName = "TopicWidget",
-				//				 RouteValues = new RouteValueDictionary()
-				//				 {
-				//					{"Namespaces", "SmartStore.Web.Controllers"},
-				//					{"area", null},
-				//					{"widgetZone", widgetZone},
-				//					{"model", new TopicWidgetModel 
-				//					{ 
-				//						Id = t.Id,
-				//						SystemName = t.SystemName,
-				//						ShowTitle = t.ShowTitle,
-				//						IsBordered = t.Bordered,
-				//						Title = t.Title,
-				//						Html = t.Body
-				//					} }
-				//				 }
-				//			 };
-
-				//return result.ToList(); 
-				#endregion
 			});
 
 			if (topicsByZone.ContainsKey(widgetZone.ToLower()))
@@ -200,7 +191,6 @@ namespace SmartStore.Web.Infrastructure
 			}
 
             #endregion
-
 
 			#region Request scoped widgets (provided by IWidgetProvider)
 
@@ -225,9 +215,14 @@ namespace SmartStore.Web.Infrastructure
 		public bool WrapContent { get; set; }
 		public bool ShowTitle { get; set; }
 		public bool Bordered { get; set; }
+		public string ShortTitle { get; set; }
 		public string Title { get; set; }
-		public string TitleTag { get; set; }
+		public string Intro { get; set; }
 		public string Body { get; set; }
+		public bool TitleRtl { get; set; }
+		public bool BodyRtl { get; set; }
+
+		public string TitleTag { get; set; }
 		public int Priority { get; set; }
 	}
 }

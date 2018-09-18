@@ -10,21 +10,26 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.SalesReport.Average.SumTodayOrders")]
         public string SumTodayOrders { get; set; }
+		public decimal SumTodayOrdersRaw { get; set; }
 
-        [SmartResourceDisplayName("Common.Count")]
+		[SmartResourceDisplayName("Common.Count")]
         public int CountTodayOrders { get; set; }
         
         [SmartResourceDisplayName("Admin.SalesReport.Average.SumThisWeekOrders")]
         public string SumThisWeekOrders { get; set; }
+		public decimal SumThisWeekOrdersRaw { get; set; }
 
-        [SmartResourceDisplayName("Admin.SalesReport.Average.SumThisMonthOrders")]
+		[SmartResourceDisplayName("Admin.SalesReport.Average.SumThisMonthOrders")]
         public string SumThisMonthOrders { get; set; }
+		public decimal SumThisMonthOrdersRaw { get; set; }
 
-        [SmartResourceDisplayName("Admin.SalesReport.Average.SumThisYearOrders")]
+		[SmartResourceDisplayName("Admin.SalesReport.Average.SumThisYearOrders")]
         public string SumThisYearOrders { get; set; }
+		public decimal SumThisYearOrdersRaw { get; set; }
 
-        [SmartResourceDisplayName("Admin.SalesReport.Average.SumAllTimeOrders")]
+		[SmartResourceDisplayName("Admin.SalesReport.Average.SumAllTimeOrders")]
         public string SumAllTimeOrders { get; set; }
+		public decimal SumAllTimeOrdersRaw { get; set; }
 
 		public string Url { get; set; }
     }

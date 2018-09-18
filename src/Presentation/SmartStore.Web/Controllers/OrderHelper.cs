@@ -239,6 +239,7 @@ namespace SmartStore.Web.Controllers
             model.MerchantCompanyInfo = companyInfoSettings;
             model.Id = order.Id;
             model.StoreId = order.StoreId;
+			model.CustomerLanguageId = order.CustomerLanguageId;
             model.CustomerComment = order.CustomerOrderComment;
             model.OrderNumber = order.GetOrderNumber();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc);
@@ -426,6 +427,13 @@ namespace SmartStore.Web.Controllers
                 model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-(_currencyService.ConvertCurrency(order.RedeemedRewardPointsEntry.UsedAmount, order.CurrencyRate)),
                     true, order.CustomerCurrencyCode, false, language);
             }
+
+			// Credit balance.
+			if (order.CreditBalance > decimal.Zero)
+			{
+				var convertedCreditBalance = _currencyService.ConvertCurrency(order.CreditBalance, order.CurrencyRate);
+				model.CreditBalance = _priceFormatter.FormatPrice(-convertedCreditBalance, true, order.CustomerCurrencyCode, false, language);
+			}
 
             // Total
             var roundingAmount = decimal.Zero;

@@ -40,7 +40,6 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ExternalMethods()
         {
-            //model
             var model = new List<ExternalAuthenticationMethodModel>();
 
 			foreach (var eam in _openAuthenticationService.LoadActiveExternalAuthenticationMethods(_storeContext.CurrentStore.Id))

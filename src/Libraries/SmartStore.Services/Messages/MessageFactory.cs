@@ -87,6 +87,12 @@ namespace SmartStore.Services.Messages
 			// Create and assign model
 			var model = messageContext.Model = new TemplateModel();
 
+			// Do not create message if the template does not exist, is not authorized or not active.
+			if (messageContext.MessageTemplate == null)
+			{
+				return new CreateMessageResult { Model = model, MessageContext = messageContext };
+			}
+
 			// Add all global template model parts
 			_modelProvider.AddGlobalModelParts(messageContext);
 
@@ -216,7 +222,7 @@ namespace SmartStore.Services.Messages
 		private string RenderBodyTemplate(MessageContext ctx)
 		{
 			var key = BuildTemplateKey(ctx);
-			var source = ctx.MessageTemplate.GetLocalized((x) => x.Body, ctx.Language.Id);
+			var source = ctx.MessageTemplate.GetLocalized((x) => x.Body, ctx.Language);
 			var fromCache = true;
 			var template = _templateManager.GetOrAdd(key, GetBodyTemplate);	
 
@@ -357,14 +363,15 @@ namespace SmartStore.Services.Messages
 					throw new ArgumentException("'MessageTemplateName' must not be empty if 'MessageTemplate' is null.", nameof(ctx));
 				}
 
-				ctx.MessageTemplate = GetActiveMessageTemplate(ctx.MessageTemplateName, ctx.Store.Id);
-				if (ctx.MessageTemplate == null)
+				ctx.MessageTemplate = _messageTemplateService.GetMessageTemplateByName(ctx.MessageTemplateName, ctx.Store.Id);
+
+				if (ctx.MessageTemplate != null && !ctx.TestMode && !ctx.MessageTemplate.IsActive)
 				{
-					throw new FileNotFoundException("The message template '{0}' does not exist.".FormatInvariant(ctx.MessageTemplateName));
+					ctx.MessageTemplate = null;
 				}
 			}
 
-			if (ctx.EmailAccount == null)
+			if (ctx.EmailAccount == null && ctx.MessageTemplate != null)
 			{
 				ctx.EmailAccount = GetEmailAccountOfMessageTemplate(ctx.MessageTemplate, ctx.Language.Id);
 			}			
@@ -376,20 +383,12 @@ namespace SmartStore.Services.Messages
 				parts = bagParts.Concat(parts.Except(bagParts));
 			}		
 
-			modelParts = parts.ToArray();
-		}
-
-		protected MessageTemplate GetActiveMessageTemplate(string messageTemplateName, int storeId)
-		{
-			var messageTemplate = _messageTemplateService.GetMessageTemplateByName(messageTemplateName, storeId);
-			if (messageTemplate == null || !messageTemplate.IsActive)
-				return null;
-
-			return messageTemplate;
+			modelParts = parts.Where(x => x != null).ToArray();
 		}
 
 		protected EmailAccount GetEmailAccountOfMessageTemplate(MessageTemplate messageTemplate, int languageId)
 		{
+			// Note that the email account to be used can be specified separately for each language, that's why we use GetLocalized here.
 			var accountId = messageTemplate.GetLocalized(x => x.EmailAccountId, languageId);
 			var account = _emailAccountService.GetEmailAccountById(accountId);
 
@@ -434,7 +433,7 @@ namespace SmartStore.Services.Messages
 			var factories = new Dictionary<string, Func<object>>(StringComparer.OrdinalIgnoreCase)
 			{
 				{ "BlogComment", () => GetRandomEntity<BlogComment>(x => true) },
-				{ "Product", () => GetRandomEntity<Product>(x => !x.Deleted && x.VisibleIndividually && x.Published) },
+				{ "Product", () => GetRandomEntity<Product>(x => !x.Deleted && !x.IsSystemProduct && x.VisibleIndividually && x.Published) },
 				{ "Customer", () => GetRandomEntity<Customer>(x => !x.Deleted && !x.IsSystemAccount && !string.IsNullOrEmpty(x.Email)) },
 				{ "Order", () => GetRandomEntity<Order>(x => !x.Deleted) },
 				{ "Shipment", () => GetRandomEntity<Shipment>(x => !x.Order.Deleted) },
@@ -448,8 +447,9 @@ namespace SmartStore.Services.Messages
 				{ "ForumPost", () => GetRandomEntity<ForumPost>(x => true) },
 				{ "PrivateMessage", () => GetRandomEntity<PrivateMessage>(x => true) },
 				{ "GiftCard", () => GetRandomEntity<GiftCard>(x => true) },
-				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && x.Product.VisibleIndividually && x.Product.Published) },
-				{ "NewsComment", () => GetRandomEntity<NewsComment>(x => x.NewsItem.Published) }
+				{ "ProductReview", () => GetRandomEntity<ProductReview>(x => !x.Product.Deleted && !x.Product.IsSystemProduct && x.Product.VisibleIndividually && x.Product.Published) },
+				{ "NewsComment", () => GetRandomEntity<NewsComment>(x => x.NewsItem.Published) },
+				{ "WalletHistory", () => GetRandomEntity<WalletHistory>(x => true) }
 			};
 
 			var modelNames = messageContext.MessageTemplate.ModelTypes
@@ -626,7 +626,7 @@ namespace SmartStore.Services.Messages
 			if (count > 0)
 			{
 				// Fetch a random one
-				var skip = new Random().Next(count - 1);
+				var skip = new Random().Next(count);
 				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
 			}
 			else

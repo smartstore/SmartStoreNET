@@ -19,7 +19,8 @@
     </div>
 </div>
 
-@(Html.Telerik().Grid<DiscountModel>(Model.Data)
+<div>
+	@(Html.Telerik().Grid<DiscountModel>(Model.Data)
 		.Name("discounts-grid")
 		.Columns(columns =>
 		{
@@ -27,6 +28,10 @@
 				.Width(400)
 				.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 				.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+			columns.Bound(x => x.StartDateUtc)
+				.Width(120);
+			columns.Bound(x => x.EndDateUtc)
+				.Width(120);
 			columns.Bound(x => x.UsePercentage)
 				.Width(120)
 				.Template(item => @Html.SymbolForBool(item.UsePercentage))
@@ -38,10 +43,7 @@
 			columns.Bound(x => x.FormattedDiscountAmount)
 				.Width(120)
 				.RightAlign();
-			columns.Bound(x => x.StartDateUtc)
-				.Width(120);
-			columns.Bound(x => x.EndDateUtc)
-				.Width(120);
 		})
 		.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Discount"))
 		.EnableCustomBinding(true))
+</div>

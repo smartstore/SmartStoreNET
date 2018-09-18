@@ -110,12 +110,6 @@ namespace SmartStore.Web.Framework.UI
             return this as TBuilder;
         }
 
-		public virtual TBuilder ComponentVersion(BootstrapVersion value)
-		{
-			this.Component.ComponentVersion = value;
-			return this as TBuilder;
-		}
-
 		public virtual TBuilder HtmlAttributes(object attributes)
         {
             return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));

@@ -21,7 +21,7 @@
 {{ Company }}
 {{ Street1 }}
 {{ Street2 }}
-{{ City }}, {{ State }} {{ ZipCode }}
+{{ ZipCode }} {{ City }}
 {{ Country | Upcase }}
 	]]></Format>
 	<Format code="BR" name="Brazil"><![CDATA[

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Customers;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Customers
 {
@@ -39,8 +40,11 @@ namespace SmartStore.Admin.Models.Customers
 		[DataType(DataType.Password)]
         public string Password { get; set; }
 
-        //form fields & properties
-        public bool GenderEnabled { get; set; }
+		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.Title")]
+		public string Title { get; set; }
+		public bool TitleEnabled { get; set; }
+
+		public bool GenderEnabled { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Gender")]
         public string Gender { get; set; }
 
@@ -141,7 +145,7 @@ namespace SmartStore.Admin.Models.Customers
         public bool DisplayVatNumber { get; set; }
 
         //registration date
-        [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastActivityDate")]
         public DateTime LastActivityDate { get; set; }
@@ -178,6 +182,8 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.Customers.AssociatedExternalAuth")]
         public IList<AssociatedExternalAuthModel> AssociatedExternalAuthRecords { get; set; }
+
+		public bool Deleted { get; set; }
 
         
         #region Nested classes
@@ -250,7 +256,7 @@ namespace SmartStore.Admin.Models.Customers
 			[SmartResourceDisplayName("Admin.Customers.Customers.Orders.Store")]
 			public string StoreName { get; set; }
 
-            [SmartResourceDisplayName("Admin.Customers.Customers.Orders.CreatedOn")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 
@@ -258,12 +264,47 @@ namespace SmartStore.Admin.Models.Customers
         {
             [SmartResourceDisplayName("Admin.Customers.Customers.ActivityLog.ActivityLogType")]
             public string ActivityLogTypeName { get; set; }
+
             [SmartResourceDisplayName("Admin.Customers.Customers.ActivityLog.Comment")]
             public string Comment { get; set; }
-            [SmartResourceDisplayName("Admin.Customers.Customers.ActivityLog.CreatedOn")]
+
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 
         #endregion
+    }
+
+    public partial class CustomerValidator : AbstractValidator<CustomerModel>
+    {
+        public CustomerValidator(CustomerSettings customerSettings)
+        {
+            if (customerSettings.FirstNameRequired)
+                RuleFor(x => x.FirstName).NotEmpty();
+
+            if (customerSettings.LastNameRequired)
+                RuleFor(x => x.LastName).NotEmpty();
+
+            if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
+                RuleFor(x => x.Company).NotEmpty();
+
+            if (customerSettings.StreetAddressRequired && customerSettings.StreetAddressEnabled)
+                RuleFor(x => x.StreetAddress).NotEmpty();
+
+            if (customerSettings.StreetAddress2Required && customerSettings.StreetAddress2Enabled)
+                RuleFor(x => x.StreetAddress2).NotEmpty();
+
+            if (customerSettings.ZipPostalCodeRequired && customerSettings.ZipPostalCodeEnabled)
+                RuleFor(x => x.ZipPostalCode).NotEmpty();
+
+            if (customerSettings.CityRequired && customerSettings.CityEnabled)
+                RuleFor(x => x.City).NotEmpty();
+
+            if (customerSettings.PhoneRequired && customerSettings.PhoneEnabled)
+                RuleFor(x => x.Phone).NotEmpty();
+
+            if (customerSettings.FaxRequired && customerSettings.FaxEnabled)
+                RuleFor(x => x.Fax).NotEmpty();
+        }
     }
 }

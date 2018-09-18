@@ -79,10 +79,8 @@ namespace SmartStore.Web.Framework
                 if (_cachedCustomer != null)
                     return _cachedCustomer;
 
-                Customer customer = null;
-
 				// Is system account?
-				if (TryGetSystemAccount(out customer))
+				if (TryGetSystemAccount(out var customer))
 				{
 					// Get out quickly. Bots tend to overstress the shop.
 					_cachedCustomer = customer;
@@ -243,10 +241,17 @@ namespace SmartStore.Web.Framework
 
                 if (customer != null)
                 {
-					customerLangId = this.CurrentCustomer.GetAttribute<int>(
-						SystemCustomerAttributeNames.LanguageId,
-						_attrService,
-						_storeContext.CurrentStore.Id);
+					if (customer.IsSystemAccount)
+					{
+						customerLangId = _httpContext.Request.QueryString["lid"].ToInt();
+					}
+					else
+					{
+						customerLangId = customer.GetAttribute<int>(
+							SystemCustomerAttributeNames.LanguageId,
+							_attrService,
+							_storeContext.CurrentStore.Id);
+					}
 				}
 
 				if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext.Request != null)
@@ -335,6 +340,9 @@ namespace SmartStore.Web.Framework
 
         private void SetCustomerLanguage(int languageId, int storeId)
         {
+            if (this.CurrentCustomer.IsSystemAccount)
+                return;
+
             _attrService.SaveAttribute(
                 this.CurrentCustomer,
                 SystemCustomerAttributeNames.LanguageId,

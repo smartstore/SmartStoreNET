@@ -121,7 +121,7 @@
             @Html.SmartLabelFor(model => model.DomainEndings)
         </td>
         <td class="adminData">
-			@Html.ListBoxFor(model => model.DomainEndings, Model.AvailableDomainEndings, new { multiple = "multiple", data_tags = "true" })
+			@Html.ListBoxFor(model => model.DomainEndingsArray, Model.AvailableDomainEndings, new { multiple = "multiple", data_tags = "true" })
             @Html.ValidationMessageFor(model => model.DomainEndings)
         </td>
     </tr>
@@ -151,7 +151,9 @@
 				@Html.SmartLabelFor(model => model.CreatedOn)
 			</td>
 			<td class="adminData">
-				@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+				<div class="form-control-plaintext">
+					@Html.DisplayFor(model => model.CreatedOn)
+				</div>
 			</td>
 		</tr>
 	}

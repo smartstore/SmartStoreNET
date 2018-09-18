@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,11 +10,14 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
@@ -330,6 +334,7 @@ namespace SmartStore.Admin.Controllers
             model.UtcTime = DateTime.UtcNow;
 			model.HttpHost = _services.WebHelper.ServerVariables("HTTP_HOST");
 
+			// DB size & used RAM
 			try
 			{
 				var mbSize = _services.DbContext.SqlQuery<decimal>("Select Sum(size)/128.0 From sysfiles").FirstOrDefault();
@@ -339,6 +344,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch {	}
 
+			// DB settings
 			try
 			{
 				if (DataSettings.Current.IsValid())
@@ -349,6 +355,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch { }
 
+			// Loaded assemblies
 			try
 			{
 				var assembly = Assembly.GetExecutingAssembly();
@@ -366,8 +373,60 @@ namespace SmartStore.Admin.Controllers
                     //Location = assembly.Location
                 });
             }
-            return View(model);
+
+			// MemCache stats
+			model.MemoryCacheStats = GetMemoryCacheStats();
+
+			return View(model);
         }
+
+		/// <summary>
+		/// Counts the size of all objects in both IMemoryCache and ASP.NET cache
+		/// </summary>
+		private IDictionary<string, long> GetMemoryCacheStats()
+		{
+			var stats = new Dictionary<string, long>();
+			var cache = _services.Cache;
+			var instanceLookups = new HashSet<object>(ReferenceEqualityComparer.Default);
+
+			// HttpRuntine cache
+			var keys = HttpRuntime.Cache.Cast<DictionaryEntry>().Select(x => x.Key.ToString()).ToArray();
+			foreach (var key in keys)
+			{
+				var value = HttpRuntime.Cache.Get(key);
+				var size = GetObjectSize(value);
+				
+				stats.Add("AspNetCache:" + key.Replace(':', '_'), size + Encoding.Default.GetByteCount(key));
+			}
+
+
+			// Memory cache
+			if (!cache.IsDistributedCache)
+			{
+				keys = cache.Keys("*").ToArray();
+				foreach (var key in keys)
+				{
+					var value = cache.Get<object>(key);
+					var size = GetObjectSize(value);
+
+					stats.Add(key, size + Encoding.Default.GetByteCount(key));
+				}
+			}
+
+			return stats;
+
+			long GetObjectSize(object obj)
+			{
+				try
+				{
+					return CommonHelper.GetObjectSizeInBytes(obj, instanceLookups);
+				}
+				catch
+				{
+					return 0;
+				}
+			}
+		}
 
 		private long GetPrivateBytes()
 		{
@@ -831,7 +890,6 @@ namespace SmartStore.Admin.Controllers
 
 			string[] paths = new string[]
 			{
-				appPath + @"Content\files\exportimport\",
 				appPath + @"Exchange\",
 				appPath + @"App_Data\Tenants\{0}\ExportProfiles\".FormatInvariant(DataSettings.Current.TenantName)
 			};

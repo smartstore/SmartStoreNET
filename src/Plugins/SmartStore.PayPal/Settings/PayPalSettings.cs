@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net;
 using SmartStore.Core.Configuration;
 
 namespace SmartStore.PayPal.Settings
@@ -8,12 +7,9 @@ namespace SmartStore.PayPal.Settings
     {
 		public PayPalSettingsBase()
 		{
-			SecurityProtocol = SecurityProtocolType.Tls12;
 			IpnChangesPaymentStatus = true;
 			AddOrderNotes = true;
 		}
-
-		public SecurityProtocolType? SecurityProtocol { get; set; }
 
 		public bool UseSandbox { get; set; }
 
@@ -109,10 +105,15 @@ namespace SmartStore.PayPal.Settings
 
 	public class PayPalPlusPaymentSettings : PayPalApiSettingsBase, ISettings
 	{
-		/// <summary>
-		/// Specifies other payment methods to be offered in payment wall
-		/// </summary>
-		public List<string> ThirdPartyPaymentMethods { get; set; }
+        public PayPalPlusPaymentSettings()
+        {
+            TransactMode = TransactMode.AuthorizeAndCapture;
+        }
+
+        /// <summary>
+        /// Specifies other payment methods to be offered in payment wall
+        /// </summary>
+        public List<string> ThirdPartyPaymentMethods { get; set; }
 
 		/// <summary>
 		/// Specifies whether to display the logo of a third party payment method

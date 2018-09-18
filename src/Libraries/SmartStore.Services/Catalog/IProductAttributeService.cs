@@ -43,6 +43,13 @@ namespace SmartStore.Services.Catalog
         /// <param name="productAttribute">Product attribute</param>
         void UpdateProductAttribute(ProductAttribute productAttribute);
 
+		/// <summary>
+		/// Gets the export mappings for a given field prefix.
+		/// </summary>
+		/// <param name="fieldPrefix">The export field prefix, e.g. gmc.</param>
+		/// <returns>A multimap with export field names to ProductAttribute.Id mappings.</returns>
+		Multimap<string, int> GetExportFieldMappings(string fieldPrefix);
+
 		#endregion
 
 		#region Product attribute options

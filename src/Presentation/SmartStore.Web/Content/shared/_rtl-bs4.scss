@@ -1,0 +1,314 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// RTL overrides for Bootstrap 4
+// ==============================================================
+
+[dir=rtl] {
+
+	// Common
+	// ----------------------------------------------
+
+	dd {
+		margin-right: 0;
+	}
+
+	th {
+		text-align: right;
+	}
+
+	.alert-dismissible {
+		padding-right: $alert-padding-x;
+		padding-left: ($close-font-size + $alert-padding-x * 2) !important;
+
+		.close {
+			right: auto;
+			left: 0;
+		}
+	}
+
+	.dropdown-menu:not(.colorpicker) {
+		left: initial !important;
+		right: 0;
+		text-align: right;
+
+        &.dropdown-menu-right,
+		&.dropdown-menu-left {
+			right: auto;
+			left: 0 !important;
+        }
+	}
+
+	.list-unstyled,
+	.list-inline {
+		padding-right: 0;
+	}
+
+	.list-inline &:not(:last-child) {
+		margin-left: $list-inline-padding;
+		margin-right: initial;
+	}
+
+	.navbar-nav {
+		padding-right: 0;
+	}
+
+
+	// Button Groups
+	// ----------------------------------------------
+
+	.btn + .btn,
+	.btn + .btn-group,
+	.btn-group + .btn,
+	.btn-group + .btn-group {
+		margin-right: -$btn-border-width;
+		margin-left: initial;
+	}
+
+	.btn-group {
+		> .btn:first-child {
+			margin-right: 0;
+		}
+		// Reset rounded corners
+		> .btn:not(:last-child):not(.dropdown-toggle),
+		> .btn-group:not(:last-child) > .btn {
+			border-radius: 0 $btn-border-radius $btn-border-radius 0;
+		}
+
+		> .btn:not(:first-child),
+		> .btn-group:not(:first-child) > .btn {
+			border-radius: $btn-border-radius 0 0 $btn-border-radius;
+		}
+	}
+
+	// Custom controls
+	// ----------------------------------------------
+	.custom-control {
+	  padding-right: $custom-control-gutter;
+	  padding-left: 0;
+	}
+	.custom-control-inline {
+	  margin-left: $custom-control-spacer-x;
+	  margin-right: 0;
+	}
+	.custom-control-label {
+		&::before {
+			right: 0;
+			left: initial;
+		}
+
+		&::after {
+			right: 0;
+			left: initial;
+		}
+	}
+
+	.custom-select {
+	  &[multiple],
+	  &[size]:not([size="1"]) {
+		padding-left: $custom-select-padding-x;
+		padding-right: 0;
+	  }
+	}
+	
+	.custom-file-label { 
+	  &::after {
+		left: 0;
+		right: initial;
+	
+		border-right: $custom-file-border-width solid $custom-file-border-color;
+		border-left: none;
+	  }
+	}
+
+
+	// Input Groups
+	// ----------------------------------------------
+
+	.input-group {
+		+ .form-control,
+		+ .custom-select,
+		+ .custom-file {
+			margin-right: -$input-border-width;
+			margin-left: initial;
+		}
+
+		> .form-control,
+		> .custom-select {
+			&:not(:last-child) {
+				border-radius: 0 $input-border-radius $input-border-radius 0;
+			}
+
+			&:not(:first-child) {
+				border-radius: 0 $input-border-radius $input-border-radius 0;
+			}
+		}
+	}
+
+	.input-group-prepend,
+	.input-group-append {
+		.btn + .btn,
+		.btn + .input-group-text,
+		.input-group-text + .input-group-text,
+		.input-group-text + .btn {
+			margin-right: -$input-border-width;
+			margin-left: initial;
+		}
+	}
+
+	.input-group-prepend {
+		margin-left: -$input-border-width;
+		margin-right: initial;
+	}
+
+	.input-group-append {
+		margin-right: -$input-border-width;
+		margin-left: initial;
+	}
+
+	.input-group > .input-group-prepend > .btn,
+	.input-group > .input-group-prepend > .input-group-text,
+	.input-group > .input-group-append:not(:last-child) > .btn,
+	.input-group > .input-group-append:not(:last-child) > .input-group-text,
+	.input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+	.input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
+		border-radius: 0 $input-border-radius $input-border-radius 0;
+	}
+
+	.input-group > .input-group-append > .btn,
+	.input-group > .input-group-append > .input-group-text,
+	.input-group > .input-group-prepend:not(:first-child) > .btn,
+	.input-group > .input-group-prepend:not(:first-child) > .input-group-text,
+	.input-group > .input-group-prepend:first-child > .btn:not(:first-child),
+	.input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child) {
+		border-radius: $input-border-radius 0 0 $input-border-radius;
+	}
+
+	.list-group {
+		padding-right: 0;
+	}
+
+	.modal-header .close {
+		margin-left: (-$modal-header-padding);
+		margin-right: auto;
+	}
+
+	.modal-footer {
+		> :not(:first-child) {
+			margin-right: .25rem;
+			margin-left: initial;
+		}
+		> :not(:last-child) {
+			margin-left: .25rem;
+			margin-right: initial;
+		}
+	}
+
+	.dropdown-toggle:after {
+		margin-right: $caret-width * .85;
+		margin-left: 0;
+	}
+
+	.form-check {
+		padding-right: $form-check-input-gutter;
+		padding-left: initial;
+
+		.form-check-input {
+			margin-right: -$form-check-input-gutter;
+			margin-left: initial;
+		}
+
+		&.form-check-inline {
+			padding-right: 0;
+			margin-left: $form-check-inline-margin-x;
+			margin-right: initial;
+
+			.form-check-input {
+				margin-left: $form-check-inline-input-margin-x;
+				margin-right: 0;
+			}
+		}
+	}
+
+	@mixin make-col-offset($size, $columns: $grid-columns) {
+		$num: $size / $columns;
+		margin-right: if($num == 0, 0, percentage($num));
+		margin-left: 0;
+	}
+
+	@mixin make-grid-columns($columns: $grid-columns, $gutter: $grid-gutter-width, $breakpoints: $grid-breakpoints) {
+		@each $breakpoint in map-keys($breakpoints) {
+			$infix: breakpoint-infix($breakpoint, $breakpoints);
+
+			@include media-breakpoint-up($breakpoint, $breakpoints) {
+				@for $i from 0 through ($columns - 1) {
+					@if not ($infix == "" and $i == 0) {
+						.offset#{$infix}-#{$i} {
+							@include make-col-offset($i, $columns);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@if $enable-grid-classes {
+		@include make-grid-columns();
+	}
+	// stylelint-disable declaration-no-important
+	@each $breakpoint in map-keys($grid-breakpoints) {
+		@include media-breakpoint-up($breakpoint) {
+			$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+			@each $prop, $abbrev in (margin: m, padding: p) {
+				@each $size, $length in $spacers {
+					.#{$abbrev}x#{$infix}-#{$size} {
+						#{$prop}-left: $length !important;
+						#{$prop}-right: $length !important;
+					}
+
+					.#{$abbrev}r#{$infix}-#{$size} {
+						#{$prop}-right: 0 !important;
+						#{$prop}-left: $length !important;
+					}
+
+					.#{$abbrev}l#{$infix}-#{$size} {
+						#{$prop}-left: 0 !important;
+						#{$prop}-right: $length !important;
+					}
+				}
+			}
+
+			.mx#{$infix}-auto {
+				margin-left: auto !important;
+				margin-right: auto !important;
+			}
+
+			.mr#{$infix}-auto {
+				margin-right: 0 !important;
+				margin-left: auto !important;
+			}
+
+			.ml#{$infix}-auto {
+				margin-right: auto !important;
+				margin-left: 0 !important;
+			}
+		}
+	}
+	// Adaption of BS _text.scss
+	@each $breakpoint in map-keys($grid-breakpoints) {
+		@include media-breakpoint-up($breakpoint) {
+			$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+			.text#{$infix}-right {
+				text-align: left !important;
+			}
+
+			.text#{$infix}-left {
+				text-align: right !important;
+			}
+		}
+	}
+}

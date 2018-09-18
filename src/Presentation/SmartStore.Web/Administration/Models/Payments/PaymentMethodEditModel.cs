@@ -36,6 +36,7 @@ namespace SmartStore.Admin.Models.Payments
         public bool RoundOrderTotalEnabled { get; set; }
 
 		// Store mapping
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }

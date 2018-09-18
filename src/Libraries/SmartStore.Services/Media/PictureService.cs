@@ -65,8 +65,7 @@ namespace SmartStore.Services.Media
 
 		static PictureService()
 		{
-			// TODO: (mc) make this configurable per web.config
-			_processedImagesRootPath = "media/image/";
+			_processedImagesRootPath = MediaFileSystem.GetMediaPublicPath() + "image/";
 			_fallbackImagesRootPath = "content/images/";
 		}
 
@@ -113,7 +112,7 @@ namespace SmartStore.Services.Media
 				else if (mediaSettings.AutoGenerateAbsoluteUrls)
 				{
 					var uri = httpContext.Request.Url;
-					_host = "{0}://{1}/{2}".FormatInvariant(uri.Scheme, uri.Authority, appPath);
+					_host = "//{0}{1}".FormatInvariant(uri.Authority, appPath);
 				}
 				else
 				{
@@ -172,7 +171,7 @@ namespace SmartStore.Services.Media
 
 			size = Size.Empty;
 
-			var originalSize = GetPictureSize(pictureBinary);
+			var originalSize = ImageHeader.GetDimensions(pictureBinary, mimeType);
 			var maxSize = _mediaSettings.MaximumImageSize;
 
 			var query = new ProcessImageQuery(pictureBinary)
@@ -261,57 +260,9 @@ namespace SmartStore.Services.Media
 			return _storageProvider.Value.LoadAsync(picture.ToMedia());
 		}
 
-		public virtual Size GetPictureSize(byte[] pictureBinary)
+		public virtual Size GetPictureSize(byte[] pictureBinary, string mimeType = null)
 		{
-			if (pictureBinary == null || pictureBinary.Length == 0)
-			{
-				return Size.Empty;
-			}
-
-			return GetPictureSize(new MemoryStream(pictureBinary), false);
-		}
-
-		protected virtual Size GetPictureSize(Stream input, bool leaveOpen = true)
-		{
-			Guard.NotNull(input, nameof(input));
-
-			var size = Size.Empty;
-
-			if (!input.CanSeek || input.Length == 0)
-			{
-				return size;
-			}
-
-			try
-			{
-				using (var reader = new BinaryReader(input, Encoding.UTF8, true))
-				{
-					size = ImageHeader.GetDimensions(reader);
-				}
-			}
-			catch (Exception)
-			{
-				// something went wrong with fast image access,
-				// so get original size the classic way
-				try
-				{
-					input.Seek(0, SeekOrigin.Begin);
-					using (var b = new Bitmap(input))
-					{
-						size = new Size(b.Width, b.Height);
-					}
-				}
-				catch { }
-			}
-			finally
-			{
-				if (!leaveOpen)
-				{
-					input.Dispose();
-				}	
-			}
-
-			return size;
+			return ImageHeader.GetDimensions(pictureBinary, mimeType);
 		}
 
 		public IDictionary<int, PictureInfo> GetPictureInfos(IEnumerable<int> pictureIds)
@@ -522,7 +473,7 @@ namespace SmartStore.Services.Media
                 {
                     try
                     {
-                        var size = GetPictureSize(stream, true);
+                        var size = ImageHeader.GetDimensions(stream, picture.MimeType, true);
                         picture.Width = size.Width;
                         picture.Height = size.Height;
                         picture.UpdatedOnUtc = DateTime.UtcNow;

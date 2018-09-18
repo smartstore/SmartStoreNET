@@ -144,7 +144,8 @@ namespace SmartStore.AmazonPay.Services
 			model.KeyShareUrl = GetPluginUrl("ShareKey", store.SslEnabled);
 			model.LanguageLocale = language.UniqueSeoCode.ToAmazonLanguageCode('_');
 			model.MerchantStoreDescription = store.Name.Truncate(2048);
-			model.MerchantPrivacyNoticeUrl = urlHelper.RouteUrl("Topic", new { SystemName = "privacyinfo" }, store.SslEnabled ? "https" : "http");
+
+			model.MerchantPrivacyNoticeUrl = urlHelper.RouteUrl("Topic", new { SeName = urlHelper.TopicSeName("privacyinfo") }, store.SslEnabled ? "https" : "http");
 			model.MerchantSandboxIpnUrl = model.IpnUrl;
 			model.MerchantProductionIpnUrl = model.IpnUrl;
 
@@ -155,12 +156,14 @@ namespace SmartStore.AmazonPay.Services
 
 			foreach (var entity in allStores)
 			{
-				if (entity.SecureUrl.HasValue())
+				// SSL required!
+				var shopUrl = entity.SslEnabled ? entity.SecureUrl : entity.Url;
+				if (shopUrl.HasValue())
 				{
 					try
 					{
-						var uri = new Uri(entity.SecureUrl);
 						// Only protocol and domain name.
+						var uri = new Uri(shopUrl);
 						var loginDomain = uri.GetLeftPart(UriPartial.Scheme | UriPartial.Authority).EmptyNull().TrimEnd('/');
 						model.MerchantLoginDomains.Add(loginDomain);
 
@@ -171,9 +174,8 @@ namespace SmartStore.AmazonPay.Services
 					}
 					catch { }
 
-					var urlRoot = entity.SecureUrl.EnsureEndsWith("/");
-					var payHandlerUrl = urlRoot + "Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
-					var authHandlerUrl = urlRoot + "Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
+					var payHandlerUrl = shopUrl.EnsureEndsWith("/") + "Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/PayButtonHandler";
+					var authHandlerUrl = shopUrl.EnsureEndsWith("/") + "Plugins/SmartStore.AmazonPay/AmazonPay/AuthenticationButtonHandler";
 
 					model.MerchantLoginRedirectUrls.Add(payHandlerUrl);
 					model.MerchantLoginRedirectUrls.Add(authHandlerUrl);
@@ -191,7 +193,7 @@ namespace SmartStore.AmazonPay.Services
 				var merchantCountry = _countryService.GetCountryById(_companyInformationSettings.CountryId);
 				if (merchantCountry != null)
 				{
-					model.MerchantCountry = merchantCountry.GetLocalized(x => x.Name, language.Id, false, false);
+					model.MerchantCountry = merchantCountry.GetLocalized(x => x.Name, language, false, false);
 				}
 			}
 
@@ -611,20 +613,6 @@ namespace SmartStore.AmazonPay.Services
 			if (data.State.IsCaseInsensitiveEqual("Completed") && _orderProcessingService.CanMarkOrderAsPaid(order))
 			{
 				_orderProcessingService.MarkOrderAsPaid(order);
-
-				// You can still perform captures against any open authorizations, but you cannot create any new authorizations on the
-				// Order Reference object. You can still execute refunds against the Order Reference object.
-				var orderAttribute = DeserializeOrderAttribute(order);
-
-				var closeRequest = new CloseOrderReferenceRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
-
-				var closeResponse = client.CloseOrderReference(closeRequest);
-				if (!closeResponse.GetSuccess())
-				{
-					LogError(closeResponse, true);
-				}
 			}
 			else if (data.State.IsCaseInsensitiveEqual("Declined") && _orderProcessingService.CanVoidOffline(order))
 			{
@@ -784,6 +772,31 @@ namespace SmartStore.AmazonPay.Services
 			});
 		}
 
+		public void CloseOrderReference(AmazonPaySettings settings, Order order)
+		{
+			// You can still perform captures against any open authorizations, but you cannot create any new authorizations on the
+			// Order Reference object. You can still execute refunds against the Order Reference object.
+			var orderAttribute = DeserializeOrderAttribute(order);
+			if (!orderAttribute.OrderReferenceClosed && orderAttribute.OrderReferenceId.HasValue())
+			{
+				var client = CreateClient(settings);
+				var closeRequest = new CloseOrderReferenceRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
+
+				var closeResponse = client.CloseOrderReference(closeRequest);
+				if (closeResponse.GetSuccess())
+				{
+					orderAttribute.OrderReferenceClosed = true;
+					SerializeOrderAttribute(orderAttribute, order);
+				}
+				else
+				{
+					LogError(closeResponse, true);
+				}
+			}
+		}
+
 		public void AddCustomerOrderNoteLoop(AmazonPayActionState state)
 		{
 			try
@@ -871,7 +884,7 @@ namespace SmartStore.AmazonPay.Services
 
 					// We must ignore countryAllowsBilling because the customer cannot choose another billing address in Amazon checkout.
 					//if (!countryAllowsBilling)
-					//	return false;
+					//	return;
 
 					var existingAddress = customer.Addresses.ToList().FindAddress(address, true);
 					if (existingAddress == null)
@@ -902,7 +915,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 				else
 				{
-					Logger.Error(new Exception(getOrderResponse.GetJson()), T("Plugins.Payments.AmazonPay.MissingBillingAddress"));
+					// No billing address at Amazon? We cannot proceed.
 				}
 			}
 			else
@@ -975,7 +988,9 @@ namespace SmartStore.AmazonPay.Services
 								{
 									// Must be redirected to checkout payment page.
 									_httpContext.Session["AmazonPayFailedPaymentReason"] = id;
-									_httpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
+
+                                    var urlHelper = new UrlHelper(_httpContext.Request.RequestContext);
+                                    _httpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 								}
 							}
 						}
@@ -991,12 +1006,6 @@ namespace SmartStore.AmazonPay.Services
 						return result;
 					}
 				}
-
-				var confirmRequest = new ConfirmOrderReferenceRequest()
-					.WithMerchantId(settings.SellerId)
-					.WithAmazonOrderReferenceId(state.OrderReferenceId);
-
-				client.ConfirmOrderReference(confirmRequest);
 			}
 			catch (Exception exception)
 			{
@@ -1032,6 +1041,13 @@ namespace SmartStore.AmazonPay.Services
 
 				informCustomerAboutErrors = settings.InformCustomerAboutErrors;
 				informCustomerAddErrors = settings.InformCustomerAddErrors;
+
+				// Confirm order. This already generates the payment object at Amazon.
+				var confirmRequest = new ConfirmOrderReferenceRequest()
+					.WithMerchantId(settings.SellerId)
+					.WithAmazonOrderReferenceId(state.OrderReferenceId);
+
+				client.ConfirmOrderReference(confirmRequest);
 
 				// Authorize.
 				if (settings.AuthorizeMethod == AmazonPayAuthorizeMethod.Omnichronous)
@@ -1111,7 +1127,9 @@ namespace SmartStore.AmazonPay.Services
 						{
 							// Must be redirected to checkout payment page.
 							_httpContext.Session["AmazonPayFailedPaymentReason"] = reason;
-							_httpContext.Response.RedirectToRoute(new { Controller = "Checkout", Action = "PaymentMethod", Area = "" });
+
+                            var urlHelper = new UrlHelper(_httpContext.Request.RequestContext);
+                            _httpContext.Response.Redirect(urlHelper.Action("PaymentMethod", "Checkout", new { area = "" }));
 						}
 					}
 				}
@@ -1187,11 +1205,29 @@ namespace SmartStore.AmazonPay.Services
 			try
 			{
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
-
 				var orderAttribute = new AmazonPayOrderAttribute
 				{
 					OrderReferenceId = state.OrderReferenceId
 				};
+
+				if (request.Order.PaymentStatus == PaymentStatus.Paid)
+				{
+					var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
+					var client = CreateClient(settings);
+					var closeRequest = new CloseOrderReferenceRequest()
+						.WithMerchantId(settings.SellerId)
+						.WithAmazonOrderReferenceId(orderAttribute.OrderReferenceId);
+
+					var closeResponse = client.CloseOrderReference(closeRequest);
+					if (closeResponse.GetSuccess())
+					{
+						orderAttribute.OrderReferenceClosed = true;
+					}
+					else
+					{
+						LogError(closeResponse, true);
+					}
+				}
 
 				SerializeOrderAttribute(orderAttribute, request.Order);
 			}
@@ -1203,7 +1239,7 @@ namespace SmartStore.AmazonPay.Services
 
 		public CapturePaymentResult Capture(CapturePaymentRequest request)
 		{
-			var result = new CapturePaymentResult()
+			var result = new CapturePaymentResult
 			{
 				NewPaymentStatus = request.Order.PaymentStatus
 			};
@@ -1360,9 +1396,9 @@ namespace SmartStore.AmazonPay.Services
 
 		public void ProcessIpn(HttpRequestBase request)
 		{
+			string json = null;
 			try
 			{
-				string json = null;
 				using (var reader = new StreamReader(request.InputStream))
 				{
 					json = reader.ReadToEnd();
@@ -1470,7 +1506,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 			catch (Exception exception)
 			{
-				Logger.Error(exception);
+				Logger.Error(exception, json);
 			}
 		}
 

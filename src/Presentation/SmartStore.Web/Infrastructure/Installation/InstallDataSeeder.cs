@@ -18,7 +18,6 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
-using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
@@ -276,75 +275,33 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		private void PopulateCategories()
         {
-            var categoriesFirstLevel = _data.CategoriesFirstLevel();
+			var categoriesFirstLevel = _data.CategoriesFirstLevel();
 			SaveRange(categoriesFirstLevel);
-            //search engine names
-            categoriesFirstLevel.Each(x =>
-            {
-                Save(new UrlRecord()
-                {
-                    EntityId = x.Id,
-                    EntityName = "Category",
-                    LanguageId = 0,
-                    Slug = ValidateSeName(x, x.Name),
-                    IsActive = true
-                });
-            });
+			PopulateUrlRecordsFor(categoriesFirstLevel);
 
             var categoriesSecondLevel = _data.CategoriesSecondLevel();
 			SaveRange(categoriesSecondLevel);
-            //search engine names
-            categoriesSecondLevel.Each(x =>
-            {
-                Save(new UrlRecord()
-                {
-                    EntityId = x.Id,
-                    EntityName = "Category",
-                    LanguageId = 0,
-					Slug = ValidateSeName(x, x.Name),
-                    IsActive = true
-                });
-            });
+			PopulateUrlRecordsFor(categoriesSecondLevel);
         }
 
 		private void PopulateManufacturers()
         {
             var manufacturers = _data.Manufacturers();
 			SaveRange(manufacturers);
-            //search engine names
-            manufacturers.Each(x =>
-            {
-                Save(new UrlRecord
-                {
-                    EntityId = x.Id,
-                    EntityName = "Manufacturer",
-                    LanguageId = 0,
-					Slug = ValidateSeName(x, x.Name),
-                    IsActive = true
-                });
-            });
-        }
+			PopulateUrlRecordsFor(manufacturers);
+		}
 
 		private void PopulateProducts()
         {
             var products = _data.Products();
 			SaveRange(products);
 
+            _data.AddDownloads(products);
+
 			// Fix MainPictureId
 			DataMigrator.FixProductMainPictureIds(_ctx);
 
-            // Search engine names
-            products.Each(x =>
-            {
-                Save(new UrlRecord
-                {
-                    EntityId = x.Id,
-                    EntityName = "Product",
-                    LanguageId = 0,
-					Slug = ValidateSeName(x, x.Name),
-                    IsActive = true
-                });
-            });
+			PopulateUrlRecordsFor(products);
 
 			_data.AssignGroupedProducts(products);
         }
@@ -353,37 +310,15 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             var blogPosts = _data.BlogPosts();
 			SaveRange(blogPosts);
-            //search engine names
-            blogPosts.Each(x =>
-            {
-                Save(new UrlRecord
-                {
-                    EntityId = x.Id,
-                    EntityName = "BlogPost",
-                    LanguageId = x.LanguageId,
-					Slug = ValidateSeName(x, x.Title),
-                    IsActive = true
-                });
-            });
-        }
+			PopulateUrlRecordsFor(blogPosts);
+		}
 
 		private void PopulateNews()
         {
             var newsItems = _data.NewsItems();
 			SaveRange(newsItems);
-            //search engine names
-            newsItems.Each(x =>
-            {
-                Save(new UrlRecord
-                {
-                    EntityId = x.Id,
-                    EntityName = "NewsItem",
-                    LanguageId = x.LanguageId,
-                    IsActive = true,
-					Slug = ValidateSeName(x, x.Title)
-                });
-            });
-        }
+			PopulateUrlRecordsFor(newsItems);
+		}
 
 		private void PopulateManufacturerTemplates()
         {
@@ -398,6 +333,13 @@ namespace SmartStore.Web.Infrastructure.Installation
                                 };
             SaveRange(_data.ManufacturerTemplates());
         }
+
+		private void PopulateTopics()
+		{
+			var topics = _data.Topics();
+			SaveRange(topics);
+			PopulateUrlRecordsFor(topics);
+		}
 
         private void AddProductTag(Product product, string tag)
         {
@@ -500,7 +442,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rs = new EfRepository<Setting>(_ctx);
 					rs.AutoCommitEnabled = false;
 
-					_settingService = new SettingService(NullCache.Instance, NullEventPublisher.Instance, rs);
+					_settingService = new SettingService(NullCache.Instance, rs);
 				}
 
 				return _settingService;
@@ -604,7 +546,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateCustomersAndUsers", () => PopulateCustomersAndUsers(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
-			Populate("PopulateTopics", _data.Topics());
+			Populate("PopulateTopics", PopulateTopics);
 			Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));
@@ -650,21 +592,37 @@ namespace SmartStore.Web.Infrastructure.Installation
 			get { return false; }
 		}
 
-        #endregion
+		#endregion
 
 		#region Utils
+
+		private void PopulateUrlRecordsFor<T>(IEnumerable<T> entities) where T : BaseEntity, ISlugSupported, new()
+		{
+			foreach (var entity in entities)
+			{
+				var ur = _data.CreateUrlRecordFor(entity);
+				if (ur != null)
+				{
+					ur.Slug = ValidateSeName(entity, ur.Slug);
+					Save(ur);
+				}
+			}
+		}
 
 		private string ValidateSeName<TEntity>(TEntity entity, string name)
 			where TEntity : BaseEntity, ISlugSupported
 		{
 			var seoSettings = new SeoSettings { LoadAllUrlAliasesOnStartup = false };
-			
+
 			if (_urlRecordService == null)
 			{
-				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false }, seoSettings);
+				_urlRecordService = new UrlRecordService(
+					NullCache.Instance, 
+					new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false },
+					seoSettings);
 			}
 
-			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, new SeoSettings());
+			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, seoSettings);
 		}
 
 		private void Populate<TEntity>(string stage, IEnumerable<TEntity> entities) 

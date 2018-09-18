@@ -5,7 +5,7 @@ namespace SmartStore.Web.Framework.UI
 {
 	public interface IBreadcrumb
 	{
-		void Track(MenuItem item);
+		void Track(MenuItem item, bool prepend = false);
 		IReadOnlyList<MenuItem> Trail { get; }
 	}
 
@@ -13,7 +13,7 @@ namespace SmartStore.Web.Framework.UI
 	{
 		private List<MenuItem> _trail;
 
-		public void Track(MenuItem item)
+		public void Track(MenuItem item, bool prepend = false)
 		{
 			Guard.NotNull(item, nameof(item));
 
@@ -22,7 +22,14 @@ namespace SmartStore.Web.Framework.UI
 				_trail = new List<MenuItem>();
 			}
 
-			_trail.Add(item);
+			if (prepend)
+			{
+				_trail.Insert(0, item);
+			}
+			else
+			{
+				_trail.Add(item);
+			}
 		}
 
 		public IReadOnlyList<MenuItem> Trail

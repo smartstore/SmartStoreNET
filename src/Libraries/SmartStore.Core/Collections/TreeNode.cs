@@ -172,7 +172,7 @@ namespace SmartStore.Collections
 					reader.Read();
 					objChildren = serializer.Deserialize(reader, sequenceType);
 				}
-				if (string.Equals(a, "Id", StringComparison.OrdinalIgnoreCase))
+				else if (string.Equals(a, "Id", StringComparison.OrdinalIgnoreCase))
 				{
 					reader.Read();
 					id = serializer.Deserialize<string>(reader);
@@ -196,14 +196,15 @@ namespace SmartStore.Collections
 			{
 				var metadataProp = FastProperty.GetProperty(objectType, "Metadata", PropertyCachingStrategy.Cached);
 				metadataProp.SetValue(treeNode, metadata);
-
-				if (id.HasValue())
-				{
-					var idProp = FastProperty.GetProperty(objectType, "Id", PropertyCachingStrategy.Cached);
-					idProp.SetValue(treeNode, id);
-				}
 			}
-			
+
+			// Set Id
+			if (id.HasValue())
+			{
+				var idProp = FastProperty.GetProperty(objectType, "Id", PropertyCachingStrategy.Cached);
+				idProp.SetValue(treeNode, id);
+			}
+
 			return treeNode;
 		}
 

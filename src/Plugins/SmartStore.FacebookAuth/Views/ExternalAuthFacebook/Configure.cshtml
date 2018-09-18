@@ -40,5 +40,13 @@
                 @Html.ValidationMessageFor(model => model.ClientSecret)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RedirectUrl)
+            </td>
+            <td class="adminData wide">
+				@Html.TextBoxFor(model => model.RedirectUrl, new { @readonly = "readonly", @class = "form-control-plaintext" })
+            </td>
+        </tr>
     </table>
 }

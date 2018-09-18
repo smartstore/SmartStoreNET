@@ -43,8 +43,20 @@ namespace SmartStore.Web.Framework.Theming.Assets
 
 			return base.GetFile(virtualPath);
         }
-        
-        public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
+
+		public override string GetFileHash(string virtualPath, IEnumerable virtualPathDependencies)
+		{
+			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
+			if (styleResult.IsPreprocessor && !(styleResult.IsThemeVars || styleResult.IsModuleImports) && virtualPathDependencies != null)
+			{
+				// Exclude the special imports from the file dependencies list
+				return base.GetFileHash(virtualPath, ThemeHelper.RemoveVirtualImports(virtualPathDependencies.Cast<string>()));
+			}
+
+			return base.GetFileHash(virtualPath, virtualPathDependencies);
+		}
+
+		public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
 			var styleResult = ThemeHelper.IsStyleSheet(virtualPath);
 
@@ -87,7 +99,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					// invalidate the cache when variables change
 					cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
 
-					if ((styleResult.IsSass || styleResult.IsLess) && (ThemeHelper.IsStyleValidationRequest()))
+					if (styleResult.IsSass && (ThemeHelper.IsStyleValidationRequest()))
 					{
 						// Special case: ensure that cached validation result gets nuked in a while,
 						// when ThemeVariableService publishes the entity changed messages.
@@ -95,8 +107,10 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					}
 				}
 
+				var files = ThemingVirtualPathProvider.MapDependencyPaths(fileDependencies);
+
 				return new CacheDependency(
-					ThemingVirtualPathProvider.MapDependencyPaths(fileDependencies), 
+					files, 
 					cacheKey == null ? new string[0] : new string[] { cacheKey }, 
 					utcStart);
             }

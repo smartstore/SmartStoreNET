@@ -7,18 +7,21 @@
         <h5 class="card-header">
             @T("Blog.Archive")
         </h5>
-        <div class="listbox card-block py-1">
+        <div class="listbox card-body py-1">
             <ul id="blog-month-list" class="list-unstyled">
                 @foreach (var yearItem in Model)
                 {
-                    <li class="year my-2 font-weight-bold">@(yearItem.Year)
-                        <ul id="blog-year-@(yearItem.Year)" class="list-unstyled">
+                    <li class="year my-2 font-weight-bold">
+						
+						<span>@yearItem.Year</span>
+						
+                        <ul id="blog-year-@yearItem.Year" class="list-unstyled">
                             @foreach (var monthItem in yearItem.Months)
                             {
                                 <li class="ml-3">
                                     <a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })" class="font-weight-normal color-body">
-                                        @(new DateTime(yearItem.Year, monthItem.Month, 1).ToString("MMMM"))
-                                        (@(monthItem.BlogPostCount))
+										<span>@(new DateTime(yearItem.Year, monthItem.Month, 1).ToNativeString("MMMM"))</span>
+                                        <span class="lrm">(@(monthItem.BlogPostCount))</span>
                                     </a> 
                                 </li>
                             }

@@ -6,6 +6,12 @@
 	$(function () {
 		$("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
 		toggleProductType();
+
+		// reset required-productids
+		$("#reset-required-productids").on("click", function (e) {
+			e.preventDefault();
+			$("#@Html.FieldIdFor(model => model.RequiredProductIds)").val("");
+		});
 	});
 
     function toggleProductType() {
@@ -85,7 +91,9 @@
 					@Html.SmartLabelFor(model => model.AssociatedToProductId)
 				</td>
 				<td class="adminData">
-					@Html.ActionLink(Model.AssociatedToProductName, "Edit", "Product", new { id = Model.AssociatedToProductId }, new { })
+					<div class="form-control-plaintext">
+						@Html.ActionLink(Model.AssociatedToProductName, "Edit", "Product", new { id = Model.AssociatedToProductId }, new { })
+					</div>
 				</td>
 			</tr>
 		}
@@ -130,7 +138,7 @@
 				@Html.SmartLabelFor(model => model.Locales[item].FullDescription)
 			</td>
 			<td class="adminData wide">
-				@Html.EditorFor(model => model.Locales[item].FullDescription, Html.RichEditorFlavor())
+				@Html.EditorFor(model => model.Locales[item].FullDescription, "Html")
 				@Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
 			</td>
 		</tr>
@@ -160,7 +168,7 @@
 				@Html.SmartLabelFor(model => model.FullDescription)
 			</td>
 			<td class="adminData wide">
-				@Html.EditorFor(x => x.FullDescription, Html.RichEditorFlavor())
+				@Html.EditorFor(x => x.FullDescription, "Html")
 				@Html.ValidationMessageFor(model => model.FullDescription)
 			</td>
 		</tr>
@@ -292,7 +300,9 @@
 					@Html.SmartLabelFor(model => model.CreatedOn)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.CreatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.CreatedOn)
+					</div>
 				</td>
 			</tr>
 		}
@@ -303,7 +313,9 @@
 					@Html.SmartLabelFor(model => model.UpdatedOn)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.UpdatedOn, new { @readonly = "readonly", @class = "form-control-plaintext" })
+					<div class="form-control-plaintext">
+						@Html.DisplayFor(model => model.UpdatedOn)
+					</div>
 				</td>
 			</tr>
 		}
@@ -331,7 +343,12 @@
 				</td>
 				<td class="adminData">
 					<div class="input-group">
-						@Html.EditorFor(model => model.RequiredProductIds)
+						@Html.TextBoxFor(model => model.RequiredProductIds, new { @readonly = "readonly" })
+						<span class="input-group-append">
+							<a class="btn btn-secondary" id="reset-required-productids" title="@T("Admin.Common.Reset")">
+								<i class="fa fa-times"></i>
+							</a>
+						</span>
 						<span class="input-group-append">
 							@(Html.SmartStore().EntityPicker()
 								.For(x => x.RequiredProductIds)
@@ -378,106 +395,6 @@
 				@Html.ValidationMessageFor(model => model.GiftCardTypeId)
 			</td>
 		</tr>
-	</table>
-
-	<table class="adminContent" id="group-downloads">
-		<tr class="adminSeparator">
-			<td colspan="2">
-				<hr />
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.IsDownload)
-			</td>
-			<td class="adminData">
-				@Html.CheckBoxFor(model => model.IsDownload, new { data_toggler_for = "#pnlIsDownload" })
-				@Html.ValidationMessageFor(model => model.IsDownload)
-			</td>
-		</tr>
-		<tbody id="pnlIsDownload">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DownloadId)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.DownloadId)
-					@Html.ValidationMessageFor(model => model.DownloadId)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.UnlimitedDownloads)
-				</td>
-				<td class="adminData">
-					@Html.CheckBoxFor(model => model.UnlimitedDownloads, new { data_toggler_for = "#pnlMaxNumberOfDownloads", data_toggler_reverse = true })
-					@Html.ValidationMessageFor(model => model.UnlimitedDownloads)
-				</td>
-			</tr>
-			<tr id="pnlMaxNumberOfDownloads">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.MaxNumberOfDownloads)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.MaxNumberOfDownloads)
-					@Html.ValidationMessageFor(model => model.MaxNumberOfDownloads)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DownloadExpirationDays)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.DownloadExpirationDays)
-					@Html.ValidationMessageFor(model => model.DownloadExpirationDays)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.DownloadActivationTypeId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.DownloadActivationTypeId, ((DownloadActivationType)Model.DownloadActivationTypeId).ToSelectList())
-					@Html.ValidationMessageFor(model => model.DownloadActivationTypeId)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.HasUserAgreement)
-				</td>
-				<td class="adminData">
-					@Html.CheckBoxFor(model => model.HasUserAgreement, new { data_toggler_for = "#pnlUserAgreementText" })
-					@Html.ValidationMessageFor(model => model.HasUserAgreement)
-				</td>
-			</tr>
-			<tr id="pnlUserAgreementText">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.UserAgreementText)
-				</td>
-				<td class="adminData wide">
-					@Html.EditorFor(model => model.UserAgreementText, Html.RichEditorFlavor())
-					@Html.ValidationMessageFor(model => model.UserAgreementText)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.HasSampleDownload)
-				</td>
-				<td class="adminData">
-					@Html.CheckBoxFor(model => model.HasSampleDownload, new {  data_toggler_for = "#pnlSampleDownloadFile" })
-					@Html.ValidationMessageFor(model => model.HasSampleDownload)
-				</td>
-			</tr>
-			<tr id="pnlSampleDownloadFile">
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SampleDownloadId)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.SampleDownloadId)
-					@Html.ValidationMessageFor(model => model.SampleDownloadId)
-				</td>
-			</tr>
-		</tbody>
 	</table>
 
 	<table class="adminContent" id="group-recurring">
@@ -628,7 +545,7 @@
 				@Html.SmartLabelFor(model => model.IsTaxExempt)
 			</td>
 			<td class="adminData">
-				@Html.CheckBoxFor(model => model.IsTaxExempt, new { data_toggler_for = "#pnlIsTaxExempt" })
+				@Html.CheckBoxFor(model => model.IsTaxExempt, new { data_toggler_for = "#pnlIsTaxExempt", data_toggler_reverse = "true" })
 				@Html.ValidationMessageFor(model => model.IsTaxExempt)
 			</td>
 		</tr>

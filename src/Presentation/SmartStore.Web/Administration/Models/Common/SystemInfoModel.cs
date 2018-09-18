@@ -68,7 +68,9 @@ namespace SmartStore.Admin.Models.Common
 
 		public bool ShrinkDatabaseEnabled { get; set; }
 
-        public class LoadedAssembly : ModelBase
+		public IDictionary<string, long> MemoryCacheStats { get; set; }
+
+		public class LoadedAssembly : ModelBase
         {
             public string FullName { get; set; }
             public string Location { get; set; }

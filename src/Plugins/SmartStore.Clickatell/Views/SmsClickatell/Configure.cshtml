@@ -75,20 +75,20 @@
                 @Html.ValidationMessageFor(model => model.TestMessage)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				@if (Model.TestSmsResult.HasValue())
-				{
-					<div class="alert @(Model.TestSucceeded ? "alert-info" : "alert-danger")  alert-dismissible">
+		@if (Model.TestSmsResult.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					&nbsp;
+				</td>
+				<td class="adminData">				
+					<div class="alert @(Model.TestSucceeded ? "alert-info" : "alert-danger") alert-dismissible">
 						@Model.TestSmsResult @Model.TestSmsDetailResult
 						<button class="close" data-dismiss="alert">&times;</button>
 					</div>
-				}
-			</td>
-		</tr>
+				</td>
+			</tr>
+		}
         <tr>
 			<td class="adminTitle">
 				&nbsp;

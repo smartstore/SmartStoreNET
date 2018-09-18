@@ -18,50 +18,31 @@
 	<button type="button" class="close" data-dismiss="alert">&times;</button>
 </div>
 
-<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SearchProductName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => Model.SearchProductName)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SearchCategoryId)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All"))
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SearchManufacturerId)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All"))
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SearchProductTypeId)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, T("Admin.Common.All"))
-        </td>
-    </tr>
-    <tr>
-		<td class="adminTitle">
-		</td>
-		<td class="adminData">
-            <button type="submit" id="search-products" value="search-products" class="btn btn-above">
-				<i class="fa fa-search"></i>
-				<span>@T("Admin.Common.Search")</span>
-			</button>
-        </td>
-    </tr>
-</table>
+<div class="row mt-3 grid-filter">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SearchProductName)
+		@Html.TextBoxFor(model => Model.SearchProductName, new { @class = "form-control" })
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SearchCategoryId)
+		@Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All"))
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SearchManufacturerId)
+		@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All"))
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.SearchProductTypeId)
+		@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, T("Admin.Common.All"))
+	</div>
+
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+			<span>@T("Admin.Common.ApplyFilter")</span>
+		</button>
+	</div>
+</div>
+
 
 <div>
 	@(Html.Telerik().Grid<OrderModel.AddOrderProductModel.ProductModel>()
@@ -87,7 +68,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#search-products').click(function () {
+		$('#btnSearch').click(function () {
             var grid = $('#products-grid').data('tGrid');
             grid.currentPage = 1; //new search. Set page size to 1
             grid.ajaxRequest();
@@ -97,7 +78,7 @@
 
     $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
         if (event.keyCode == 13) {
-            $("#search-products").click();
+			$("#btnSearch").click();
             return false;
         }
     });

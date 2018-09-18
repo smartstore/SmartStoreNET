@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Catalog
@@ -18,9 +20,9 @@ namespace SmartStore.Web.Models.Catalog
 
 			Items = new List<SummaryItem>();
 			AvailableSortOptions = new Dictionary<int, string>();
-			AvailablePageSizes = new int[0];
-			PagedList = products;
-		}
+            AvailablePageSizes = new int[0];
+            PagedList = products;
+        }
 
 		public int? ThumbSize { get; set; }
 		public bool ShowSku { get; set; }
@@ -59,10 +61,10 @@ namespace SmartStore.Web.Models.Catalog
 		public string RelevanceSortOrderName { get; set; }
 		public IDictionary<int, string> AvailableSortOptions { get; set; }
 
-		public IEnumerable<int> AvailablePageSizes { get; set; }
-		public IPageable PagedList { get; set; }
+        public IPageable PagedList { get; private set; }
+        public IEnumerable<int> AvailablePageSizes { get; set; }
 
-		public void Dispose()
+        public void Dispose()
 		{
 			if (Items != null)
 			{
@@ -101,9 +103,9 @@ namespace SmartStore.Web.Models.Catalog
 				}
 			}
 
-			public string Name { get; set; }
-			public string ShortDescription { get; set; }
-			public string FullDescription { get; set; }
+			public LocalizedValue<string> Name { get; set; }
+			public LocalizedValue<string> ShortDescription { get; set; }
+			public LocalizedValue<string> FullDescription { get; set; }
 			public string SeName { get; set; }
 			public string Sku { get; set; }
 			public string Weight { get; set; }
@@ -114,14 +116,16 @@ namespace SmartStore.Web.Models.Catalog
 			public int RatingSum { get; set; }
 			public int TotalReviews { get; set; }
 			public bool HideDeliveryTime { get; set; }
-			public string DeliveryTimeName { get; set; }
+			public LocalizedValue<string> DeliveryTimeName { get; set; }
 			public string DeliveryTimeHexValue { get; set; }
 			public bool IsShippingEnabled { get; set; }
 			public bool DisplayDeliveryTimeAccordingToStock { get; set; }
 			public string StockAvailablity { get; set; }
 			public string BasePriceInfo { get; set; }
+            public PriceDisplayStyle PriceDisplayStyle { get; set; }
+            public bool DisplayTextForZeroPrices { get; set; }
 
-			public int MinPriceProductId { get; set; } // Internal
+            public int MinPriceProductId { get; set; } // Internal
 
 			public ManufacturerOverviewModel Manufacturer { get; set; }
 			public PriceModel Price { get; set; }
@@ -171,13 +175,13 @@ namespace SmartStore.Web.Models.Catalog
 		public class ColorAttributeValue
 		{
 			public int AttributeId { get; set; }
-			public string AttributeName { get; set; }
+			public LocalizedValue<string> AttributeName { get; set; }
 			public int ProductAttributeId { get; set; }
 
 			public int Id { get; set; }
 			public string Color { get; set; }
 			public string Alias { get; set; }
-			public string FriendlyName { get; set; }
+			public LocalizedValue<string> FriendlyName { get; set; }
 			public string ProductUrl { get; set; }
 
 			public override int GetHashCode()
@@ -204,7 +208,7 @@ namespace SmartStore.Web.Models.Catalog
 		public class Attribute
 		{
 			public int Id { get; set; }
-			public string Name { get; set; }
+			public LocalizedValue<string> Name { get; set; }
 			public string Alias { get; set; }
 		}
 

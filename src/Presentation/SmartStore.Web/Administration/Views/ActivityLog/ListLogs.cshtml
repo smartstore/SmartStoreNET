@@ -3,6 +3,7 @@
 @{   
     ViewBag.Title = T("Admin.Configuration.ActivityLog.ActivityLog").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -22,59 +23,37 @@
         </div>
     </div>
 	
-    <table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CreatedOnFrom)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.CreatedOnFrom)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CreatedOnTo)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => model.CreatedOnTo)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ActivityLogTypeId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(ModelBase => ModelBase.ActivityLogTypeId, Model.ActivityLogType, T("Common.Unspecified"))
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerEmail)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CustomerEmail)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSystemAccount)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(model => Model.CustomerSystemAccount)
-			</td>
-		</tr>
-        <tr>
-			<td class="adminTitle"></td>
-			<td class="adminData">
-                <button type="submit" id="btnSearch" class="btn btn-secondary">
-                    <i class="fa fa-search"></i>
-                    <span>@T("Admin.Common.Search")</span>
-                </button>
-            </td>
-        </tr>
-    </table>
+	<div class="row mt-3 grid-filter">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CreatedOnFrom)
+			@Html.EditorFor(model => Model.CreatedOnFrom, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CreatedOnTo)
+			@Html.EditorFor(model => model.CreatedOnTo, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.ActivityLogTypeId)
+			@Html.DropDownListFor(ModelBase => ModelBase.ActivityLogTypeId, Model.ActivityLogType, T("Common.Unspecified"))
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CustomerEmail)
+			@Html.TextBoxFor(model => model.CustomerEmail, new { @class = "form-control" })
+		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.CustomerSystemAccount)
+			@Html.EditorFor(model => model.CustomerSystemAccount, new { @class = "form-control" })
+		</div>
 
-	<div class="mt-5">
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			<label>&nbsp;</label>
+			<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+				<span>@T("Admin.Common.ApplyFilter")</span>
+			</button>
+		</div>
+	</div>
+
+	<div class="mt-2">
 		@(Html.Telerik().Grid<ActivityLogModel>()
 			.Name("activityLog-grid")
 			.DataKeys(x =>
@@ -95,7 +74,7 @@
 				columns.Bound(x => x.CustomerId)
 					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
 				columns.Bound(x => x.IsSystemAccount)
-					.ClientTemplate("<i class='fa fa-fw icon-active-<#= IsSystemAccount #>'></i>&nbsp;<#= SystemAccountName #>")
+					.ClientTemplate("<i class='fa fa-fw icon-active-<#= IsSystemAccount #> mr-1'></i><#= SystemAccountName #>")
 					.Centered()
 					.Width(220);
 				columns.Bound(x => x.CreatedOn)

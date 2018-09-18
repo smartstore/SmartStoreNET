@@ -46,11 +46,19 @@ namespace SmartStore.Services.Security
 		/// <returns>ACL records</returns>
 		IList<AclRecord> GetAclRecordsFor(string entityName, int entityId);
 
-        /// <summary>
-        /// Inserts an ACL record
-        /// </summary>
-        /// <param name="aclRecord">ACL record</param>
-        void InsertAclRecord(AclRecord aclRecord);
+		/// <summary>
+		/// Save the ACL mappings for an entity
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <param name="entity">The entity</param>
+		/// <param name="selectedCustomerRoleIds">Array of selected customer role ids with access to the passed entity</param>
+		void SaveAclMappings<T>(T entity, int[] selectedCustomerRoleIds) where T : BaseEntity, IAclSupported;
+
+		/// <summary>
+		/// Inserts an ACL record
+		/// </summary>
+		/// <param name="aclRecord">ACL record</param>
+		void InsertAclRecord(AclRecord aclRecord);
         
         /// <summary>
         /// Inserts an ACL record

@@ -3,87 +3,68 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Topics;
-using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class TopicController : AdminControllerBase
     {
-        #region Fields
-
         private readonly ITopicService _topicService;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IPermissionService _permissionService;
-		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly IUrlRecordService _urlRecordService;
+		private readonly IAclService _aclService;
+		private readonly ICustomerService _customerService;
 
-        #endregion Fields
-
-        #region Constructors
-
-        public TopicController(ITopicService topicService, ILanguageService languageService,
-            ILocalizedEntityService localizedEntityService, ILocalizationService localizationService,
-			IPermissionService permissionService, IStoreService storeService,
-            IStoreMappingService storeMappingService, IEventPublisher eventPublisher)
+		public TopicController(
+			ITopicService topicService, 
+			ILanguageService languageService,
+            ILocalizedEntityService localizedEntityService, 
+            IStoreMappingService storeMappingService, 
+			IUrlRecordService urlRecordService,
+			IAclService aclService,
+			ICustomerService customerService)
         {
-            this._topicService = topicService;
-            this._languageService = languageService;
-            this._localizedEntityService = localizedEntityService;
-            this._localizationService = localizationService;
-            this._permissionService = permissionService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._eventPublisher = eventPublisher;
-        }
-
-        #endregion
-        
-        #region Utilities
+            _topicService = topicService;
+            _languageService = languageService;
+            _localizedEntityService = localizedEntityService;
+			_storeMappingService = storeMappingService;
+			_urlRecordService = urlRecordService;
+			_aclService = aclService;
+			_customerService = customerService;
+		}
 
         [NonAction]
         public void UpdateLocales(Topic topic, TopicModel model)
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                               x => x.Title,
-                                                               localized.Title,
-                                                               localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.ShortTitle, localized.ShortTitle, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.Title, localized.Title, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.Intro, localized.Intro, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(topic, x => x.Body, localized.Body, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
 
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.Body,
-                                                           localized.Body,
-                                                           localized.LanguageId);
+				var seName = topic.ValidateSeName(localized.SeName, localized.Title.NullEmpty() ?? localized.ShortTitle, false);
+				_urlRecordService.SaveSlug(topic, seName, localized.LanguageId);
 
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.MetaKeywords,
-                                                           localized.MetaKeywords,
-                                                           localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.MetaDescription,
-                                                           localized.MetaDescription,
-                                                           localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(topic,
-                                                           x => x.MetaTitle,
-                                                           localized.MetaTitle,
-                                                           localized.LanguageId);
-            }
+			}
         }
 
 		[NonAction]
@@ -96,26 +77,79 @@ namespace SmartStore.Admin.Controllers
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(topic);
 			}
 
-			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+			model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
 		}
 
-        #endregion
-        
-        #region List
+		[NonAction]
+		private void PrepareAclModel(TopicModel model, Topic topic, bool excludeProperties)
+		{
+			Guard.NotNull(model, nameof(model));
 
-        public ActionResult Index()
+			if (!excludeProperties)
+			{
+				if (topic != null)
+				{
+					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(topic);
+				}
+				else
+				{
+					model.SelectedCustomerRoleIds = new int[0];
+				}
+			}
+
+			model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
+		}
+
+		private string GetTopicUrl(Topic topic)
+		{
+			string url = null;
+
+			try
+			{
+				if (topic.LimitedToStores)
+				{
+					var storeMappings = _storeMappingService.GetStoreMappings(topic);
+					if (storeMappings.FirstOrDefault(x => x.StoreId == Services.StoreContext.CurrentStore.Id) == null)
+					{
+						var storeMapping = storeMappings.FirstOrDefault();
+						if (storeMapping != null)
+						{
+							var store = Services.StoreService.GetStoreById(storeMapping.StoreId);
+							if (store != null)
+							{
+								var baseUri = new Uri(Services.StoreService.GetHost(store));
+								url = baseUri.GetLeftPart(UriPartial.Authority) + Url.RouteUrl("Topic", new { SeName = topic.GetSeName() });
+							}
+						}
+					}
+				}
+
+				if (url.IsEmpty())
+				{
+					url = Url.RouteUrl("Topic", new { SeName = topic.GetSeName() }, Request.Url.Scheme);
+				}
+			}
+			catch (Exception exception)
+			{
+				Logger.Error(exception);
+			}
+
+			return url;
+		}
+
+		public ActionResult Index()
         {
             return RedirectToAction("List");
         }
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
 			var model = new TopicListModel();
 
-			foreach (var s in _storeService.GetAllStores())
+			foreach (var s in Services.StoreService.GetAllStores())
 			{
 				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
 			}
@@ -128,24 +162,41 @@ namespace SmartStore.Admin.Controllers
         {
 			var gridModel = new GridModel<TopicModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
 			{
-				var topics = _topicService.GetAllTopics(model.SearchStoreId);
+				var topics = _topicService.GetAllTopics(model.SearchStoreId, command.Page - 1, command.PageSize, true).AlterQuery(q =>
+				{
+					var q2 = q;
 
+					if (model.SystemName.HasValue())
+						q2 = q2.Where(x => x.SystemName.Contains(model.SystemName));
+
+					if (model.Title.HasValue())
+						q2 = q2.Where(x => x.Title.Contains(model.Title) || x.ShortTitle.Contains(model.Title));
+
+					if (model.RenderAsWidget.HasValue)
+						q2 = q2.Where(x => x.RenderAsWidget == model.RenderAsWidget.Value);
+
+					if (model.WidgetZone.HasValue())
+						q2 = q2.Where(x => x.WidgetZone.Contains(model.WidgetZone));
+
+					return q2.OrderBy(x => x.SystemName);
+				});
+				
 				gridModel.Data = topics.Select(x =>
 				{
 					var item = x.ToModel();
+					item.WidgetZone = x.WidgetZone.SplitSafe(",");
 					// otherwise maxJsonLength could be exceeded
 					item.Body = "";
 					return item;
 				});
 
-				gridModel.Total = topics.Count;
+				gridModel.Total = topics.TotalCount;
 			}
 			else
 			{
 				gridModel.Data = Enumerable.Empty<TopicModel>();
-
 				NotifyAccessDenied();
 			}
 
@@ -156,20 +207,16 @@ namespace SmartStore.Admin.Controllers
 			};
         }
 
-        #endregion
-
-        #region Create / Edit / Delete
-
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var model = new TopicModel();
-			//Stores
+		
 			PrepareStoresMappingModel(model, null, false);
-            //locales
-            AddLocales(_languageService, model.Locales);
+			PrepareAclModel(model, null, false);
+			AddLocales(_languageService, model.Locales);
 
             model.TitleTag = "h1";
 
@@ -179,7 +226,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(TopicModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -190,23 +237,35 @@ namespace SmartStore.Admin.Controllers
                 }
 
                 var topic = model.ToEntity();
-                _topicService.InsertTopic(topic);
-                //locales
-                UpdateLocales(topic, model);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Added"));
+                if (model.WidgetZone != null)
+                {
+                    topic.WidgetZone = string.Join(",", model.WidgetZone);
+                }
+
+                _topicService.InsertTopic(topic);
+
+				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
+				_urlRecordService.SaveSlug(topic, model.SeName, 0);
+
+				SaveStoreMappings(topic, model);
+				SaveAclMappings(topic, model);
+				UpdateLocales(topic, model);
+
+                NotifySuccess(T("Admin.ContentManagement.Topics.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = topic.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
 			PrepareStoresMappingModel(model, null, true);
+			PrepareAclModel(model, null, true);
 
-            return View(model);
+			return View(model);
         }
 
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var topic = _topicService.GetTopicById(id);
@@ -214,36 +273,38 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = topic.ToModel();
-            model.Url = Url.RouteUrl("Topic", new { SystemName = topic.SystemName }, "http");
+			model.Url = GetTopicUrl(topic);
 			
-			//Store
 			PrepareStoresMappingModel(model, topic, false);
-            
-			//locales
-            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			PrepareAclModel(model, topic, false);
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
-                locale.Title = topic.GetLocalized(x => x.Title, languageId, false, false);
-                locale.Body = topic.GetLocalized(x => x.Body, languageId, false, false);
+				locale.ShortTitle = topic.GetLocalized(x => x.ShortTitle, languageId, false, false);
+				locale.Title = topic.GetLocalized(x => x.Title, languageId, false, false);
+				locale.Intro = topic.GetLocalized(x => x.Intro, languageId, false, false);
+				locale.Body = topic.GetLocalized(x => x.Body, languageId, false, false);
                 locale.MetaKeywords = topic.GetLocalized(x => x.MetaKeywords, languageId, false, false);
                 locale.MetaDescription = topic.GetLocalized(x => x.MetaDescription, languageId, false, false);
                 locale.MetaTitle = topic.GetLocalized(x => x.MetaTitle, languageId, false, false);
+				locale.SeName = topic.GetSeName(languageId, false, false);
             });
 
-            return View(model);
+			model.WidgetZone = topic.WidgetZone.SplitSafe(",");
+
+			return View(model);
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
         public ActionResult Edit(TopicModel model, bool continueEditing, FormCollection form)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var topic = _topicService.GetTopicById(model.Id);
             if (topic == null)
                 return RedirectToAction("List");
-
-            model.Url = Url.RouteUrl("Topic", new { SystemName = topic.SystemName }, "http");
 
             if (!model.IsPasswordProtected)
             {
@@ -253,31 +314,39 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 topic = model.ToEntity(topic);
-                _topicService.UpdateTopic(topic);
+
+				if (model.WidgetZone != null)
+				{
+					topic.WidgetZone = string.Join(",", model.WidgetZone);
+				}
 				
-				//Stores
-				_storeMappingService.SaveStoreMappings<Topic>(topic, model.SelectedStoreIds);
-                
-				//locales
-                UpdateLocales(topic, model);
+				_topicService.UpdateTopic(topic);
 
-                _eventPublisher.Publish(new ModelBoundEvent(model, topic, form));
+				model.SeName = topic.ValidateSeName(model.SeName, topic.Title.NullEmpty() ?? topic.SystemName, true);
+				_urlRecordService.SaveSlug(topic, model.SeName, 0);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Updated"));
+				SaveStoreMappings(topic, model);
+				SaveAclMappings(topic, model);
+				UpdateLocales(topic, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
+
+                NotifySuccess(T("Admin.ContentManagement.Topics.Updated"));
                 return continueEditing ? RedirectToAction("Edit", topic.Id) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
-			//Store
+			// If we got this far, something failed, redisplay form.
+			model.Url = GetTopicUrl(topic);
 			PrepareStoresMappingModel(model, topic, true);
+			PrepareAclModel(model, topic, true);
 
-            return View(model);
+			return View(model);
         }
 
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
 
             var topic = _topicService.GetTopicById(id);
@@ -286,16 +355,55 @@ namespace SmartStore.Admin.Controllers
 
             if (topic.IsSystemTopic)
             {
-                NotifyError(_localizationService.GetResource("Admin.ContentManagement.Topics.CannotBeDeleted"));
+                NotifyError(T("Admin.ContentManagement.Topics.CannotBeDeleted"));
                 return RedirectToAction("List");
             }
             
             _topicService.DeleteTopic(topic);
 
-            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Deleted"));
+            NotifySuccess(T("Admin.ContentManagement.Topics.Deleted"));
             return RedirectToAction("List");
         }
-        
-        #endregion
+
+		// AJAX
+		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false)
+		{
+			var query = from x in _topicService.GetAllTopics(showHidden: true).SourceQuery
+						where (includeWidgets || !x.RenderAsWidget)
+						select x;
+
+			if (useTitles)
+			{
+				query = query.Where(x => !string.IsNullOrEmpty(x.Title));
+				query = query.OrderBy(x => x.Title);
+			}
+			else
+			{
+				query = query.OrderBy(x => x.SystemName);
+			}
+
+			var topics = query.ToList();
+
+			if (label.HasValue())
+			{
+				var labelTopic = new Topic();
+				if (useTitles)
+					labelTopic.Title = label;
+				else
+					labelTopic.SystemName = label;
+
+				topics.Insert(0, labelTopic);
+			}
+
+			var list = from x in topics
+					   select new
+					   {
+						   id = x.Id.ToString(),
+						   text = useTitles ? x.Title : x.SystemName,
+						   selected = x.Id == selectedId
+					   };
+
+			return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+		}
     }
 }

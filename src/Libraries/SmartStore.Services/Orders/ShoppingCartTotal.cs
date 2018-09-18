@@ -56,7 +56,12 @@ namespace SmartStore.Services.Orders
         /// </summary>
         public decimal RedeemedRewardPointsAmount { get; set; }
 
-        public ConvertedAmounts ConvertedFromPrimaryStoreCurrency { get; set; }
+		/// <summary>
+		/// Credit balance.
+		/// </summary>
+		public decimal CreditBalance { get; set; }
+
+		public ConvertedAmounts ConvertedFromPrimaryStoreCurrency { get; set; }
 
         public override string ToString()
         {

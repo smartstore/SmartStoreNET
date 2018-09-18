@@ -32,8 +32,9 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
@@ -208,8 +209,10 @@ namespace SmartStore.Web.Controllers
 					IsAssociatedProduct = isAssociatedProduct,
 					CompareEnabled = !isAssociatedProduct && _catalogSettings.CompareProductsEnabled,
 					TellAFriendEnabled = !isAssociatedProduct && _catalogSettings.EmailAFriendEnabled,
-					AskQuestionEnabled = !isAssociatedProduct && _catalogSettings.AskQuestionEnabled
-				};
+					AskQuestionEnabled = !isAssociatedProduct && _catalogSettings.AskQuestionEnabled,
+                    PriceDisplayStyle = _catalogSettings.PriceDisplayStyle,
+                    DisplayTextForZeroPrices = _catalogSettings.DisplayTextForZeroPrices
+                };
 
 				// Social share code
 				if (_catalogSettings.ShowShareButton && _catalogSettings.PageShareCode.HasValue())
@@ -294,11 +297,11 @@ namespace SmartStore.Web.Controllers
 						bundledProductModel.BundleItem.IsBundleItemPricing = item.BundleProduct.BundlePerItemPricing;
 
 						var bundleItemName = item.GetLocalized(x => x.Name);
-						if (bundleItemName.HasValue())
+						if (bundleItemName.Value.HasValue())
 							bundledProductModel.Name = bundleItemName;
 
 						var bundleItemShortDescription = item.GetLocalized(x => x.ShortDescription);
-						if (bundleItemShortDescription.HasValue())
+						if (bundleItemShortDescription.Value.HasValue())
 							bundledProductModel.ShortDescription = bundleItemShortDescription;
 
 						model.BundledItems.Add(bundledProductModel);
@@ -386,7 +389,13 @@ namespace SmartStore.Web.Controllers
 
 				// pictures
 				var pictures = _pictureService.GetPicturesByProductId(product.Id);
-				PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationPictureIds, isAssociatedProduct, productBundleItem, combination);
+
+                if (product.HasPreviewPicture && pictures.Count > 1)
+                {
+                    pictures.RemoveAt(0);
+                }
+
+                PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationPictureIds, isAssociatedProduct, productBundleItem, combination);
 
 				return model;
 			}
@@ -574,8 +583,8 @@ namespace SmartStore.Web.Controllers
 					}
 
 					if (defaultPicture == null)
-					{
-						model.GalleryStartIndex = 0;
+					{    
+                        model.GalleryStartIndex = 0;
 						defaultPicture = pictures.First();
 					}
 				}
@@ -969,9 +978,9 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-				var topic = _topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id);
+				var shippingInfoUrl = _urlHelper.TopicUrl("ShippingInfo");
 
-				if (topic == null)
+				if (shippingInfoUrl.IsEmpty())
 				{
 					model.LegalInfo = T("Tax.LegalInfoProductDetail2",
 						product.IsTaxExempt ? "" : taxInfo,
@@ -984,7 +993,7 @@ namespace SmartStore.Web.Controllers
 						product.IsTaxExempt ? "" : taxInfo,
 						product.IsTaxExempt ? "" : defaultTaxRate,
 						additionalShippingCosts,
-						_urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" }));
+						shippingInfoUrl);
 				}
             }
 
@@ -1120,7 +1129,7 @@ namespace SmartStore.Web.Controllers
 
 						if (productBundleItem == null || isBundleItemPricing)
 						{
-							if (finalPriceWithoutDiscountBase != oldPriceBase && oldPriceBase > decimal.Zero)
+							if (oldPriceBase > decimal.Zero && oldPriceBase > finalPriceWithoutDiscountBase)
 							{
 								model.ProductPrice.OldPriceValue = oldPrice;
 								model.ProductPrice.OldPrice = _priceFormatter.FormatPrice(oldPrice);
@@ -1158,6 +1167,8 @@ namespace SmartStore.Web.Controllers
                                 model.ProductPrice.NoteWithDiscount = T("Products.Bundle.PriceWithDiscount.Note");
                             }
 
+                            var basePriceAdjustment = (_priceCalculationService.GetFinalPrice(product, true) - finalPriceWithDiscount) * (-1);
+
                             model.BasePriceInfo = product.GetBasePriceInfo(
                                 _localizationService, 
                                 _priceFormatter, 
@@ -1165,18 +1176,21 @@ namespace SmartStore.Web.Controllers
                                 _taxService, 
                                 _priceCalculationService,
 								customer,
-                                currency, 
-                                (product.Price - finalPriceWithDiscount) * (-1));
+                                currency,
+                                basePriceAdjustment);
 						}
 
-						// Calculate saving
-						var regularPriceValue = Math.Max(finalPriceWithoutDiscount, oldPrice);
-						var currentPriceValue = finalPriceWithDiscount;
+						// Calculate saving.
+						// Discounted price has priority over the old price (avoids differing percentage discount in product lists and detail page).
+						//var regularPrice = Math.Max(finalPriceWithoutDiscount, oldPrice);
+						var regularPrice = finalPriceWithDiscount < finalPriceWithoutDiscount
+							? finalPriceWithoutDiscount
+							: oldPrice;
 
-						if (regularPriceValue > 0 && regularPriceValue > currentPriceValue)
+						if (regularPrice > 0 && regularPrice > finalPriceWithDiscount)
 						{
-							model.ProductPrice.SavingPercent = (float)((regularPriceValue - currentPriceValue) / regularPriceValue) * 100;
-							model.ProductPrice.SavingAmount = _priceFormatter.FormatPrice(regularPriceValue - currentPriceValue, true, false);
+							model.ProductPrice.SavingPercent = (float)((regularPrice - finalPriceWithDiscount) / regularPrice) * 100;
+							model.ProductPrice.SavingAmount = _priceFormatter.FormatPrice(regularPrice - finalPriceWithDiscount, true, false);
 						}
 					}
 				}
@@ -1309,11 +1323,23 @@ namespace SmartStore.Web.Controllers
 
 		public IList<ProductSpecificationModel> PrepareProductSpecificationModel(Product product)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
+			
+			if (_services.Cache.IsDistributedCache)
+			{
+				// How bad we cannot cache LocalizedValue in distributed caches
+				return Execute();
+			}
+			else
+			{
+				string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_SPECS_MODEL_KEY, product.Id, _services.WorkContext.WorkingLanguage.Id);
+				return _services.Cache.Get(cacheKey, () =>
+				{
+					return Execute();
+				});
+			}
 
-			string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_SPECS_MODEL_KEY, product.Id, _services.WorkContext.WorkingLanguage.Id);
-			return _services.Cache.Get(cacheKey, () =>
+			List<ProductSpecificationModel> Execute()
 			{
 				var model = _specificationAttributeService.GetProductSpecificationAttributesByProductId(product.Id, null, true)
 				   .Select(psa =>
@@ -1325,8 +1351,9 @@ namespace SmartStore.Web.Controllers
 						   SpecificationAttributeOption = psa.SpecificationAttributeOption.GetLocalized(x => x.Name)
 					   };
 				   }).ToList();
+
 				return model;
-			});
+			}
 		}
 
 		public NavigationModel PrepareCategoryNavigationModel(int currentCategoryId, int currentProductId)
@@ -1377,8 +1404,8 @@ namespace SmartStore.Web.Controllers
 					item = new ManufacturerOverviewModel
 					{
 						Id = manufacturer.Id,
-						Name = manufacturer.Name,
-						Description = manufacturer.Description,
+						Name = manufacturer.GetLocalized(x => x.Name),
+						Description = manufacturer.GetLocalized(x => x.Description, true),
 						SeName = manufacturer.GetSeName()
 
 					};

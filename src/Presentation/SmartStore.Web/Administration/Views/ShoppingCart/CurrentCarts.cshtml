@@ -19,48 +19,48 @@
     </div>
     <div>
         @(Html.Telerik().Grid<ShoppingCartModel>()
-            .Name("carts-grid")
-            .Columns(columns =>
-            {
-                columns.Bound(x => x.CustomerId)
-                    .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
-                columns.Bound(x => x.TotalItems)
+			.Name("carts-grid")
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.CustomerId)
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
+				columns.Bound(x => x.TotalItems)
 					.Centered()
 					.Width(100);
-            })
-            .DetailView(details => details.ClientTemplate(
-                    Html.Telerik().Grid<ShoppingCartItemModel>()
-                    .Name("cartitems-grid-<#= CustomerId #>")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(sci => sci.ProductName)
+			})
+			.DetailView(details => details.ClientTemplate(
+					Html.Telerik().Grid<ShoppingCartItemModel>()
+					.Name("cartitems-grid-<#= CustomerId #>")
+					.Columns(columns =>
+					{
+						columns.Bound(sci => sci.ProductName)
 							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                        columns.Bound(sci => sci.Quantity)
-							.Centered()
-							.Width(100);
-                        columns.Bound(sci => sci.UnitPrice)
-							.RightAlign()
-							.Width(120);
-                        columns.Bound(sci => sci.Total)
-							.RightAlign()
-							.Width(120);
 						columns.Bound(sci => sci.Store)
 							.Width(220);
-                        columns.Bound(sci => sci.UpdatedOn)
+						columns.Bound(sci => sci.UpdatedOn)
 							.Width(140);
-                    })
-                    .DataBinding(dataBinding => dataBinding.Ajax()
-                    .Select("GetCartDetails", "ShoppingCart", new
-                        {
-                            customerId =
-                                "<#= CustomerId #>"
-                        }))
-                    .ToHtmlString()
-                )
-                )
-                .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                .DataBinding(dataBinding => dataBinding.Ajax().Select("CurrentCarts", "ShoppingCart"))
+						columns.Bound(sci => sci.Quantity)
+							.Centered()
+							.Width(100);
+						columns.Bound(sci => sci.UnitPrice)
+							.RightAlign()
+							.Width(120);
+						columns.Bound(sci => sci.Total)
+							.RightAlign()
+							.Width(120);
+					})
+					.DataBinding(dataBinding => dataBinding.Ajax()
+					.Select("GetCartDetails", "ShoppingCart", new
+					{
+						customerId =
+								"<#= CustomerId #>"
+					}))
+					.ToHtmlString()
+				)
+				)
+				.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("CurrentCarts", "ShoppingCart"))
 				.PreserveGridState()
-                .EnableCustomBinding(true))
+				.EnableCustomBinding(true))
 	</div>
 }

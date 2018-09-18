@@ -21,7 +21,8 @@ namespace SmartStore.Core.Domain.Customers
         private ICollection<ShoppingCartItem> _shoppingCartItems;
         private ICollection<Order> _orders;
         private ICollection<RewardPointsHistory> _rewardPointsHistory;
-        private ICollection<ReturnRequest> _returnRequests;
+		private ICollection<WalletHistory> _walletHistory;
+		private ICollection<ReturnRequest> _returnRequests;
         private ICollection<Address> _addresses;
         private ICollection<ForumTopic> _forumTopics;
         private ICollection<ForumPost> _forumPosts;
@@ -143,13 +144,39 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
 		[DataMember, Index("IX_Customer_LastActivity")]
 		public DateTime LastActivityDateUtc { get; set; }
-        
-        #region Navigation properties
 
-        /// <summary>
-        /// Gets or sets customer generated content
-        /// </summary>
-        public virtual ICollection<ExternalAuthenticationRecord> ExternalAuthenticationRecords
+		/// <summary>
+		/// For future use
+		/// </summary>
+		public string Salutation { get; set; }
+
+		[DataMember]
+		public string Title { get; set; }
+
+		[DataMember]
+		public string FirstName { get; set; }
+
+		[DataMember]
+		public string LastName { get; set; }
+
+		[DataMember, Index("IX_Customer_FullName")]
+		public string FullName { get; set; }
+
+		[DataMember, Index("IX_Customer_Company")]
+		public string Company { get; set; }
+
+		[DataMember, Index("IX_Customer_CustomerNumber")]
+		public string CustomerNumber { get; set; }
+
+		[DataMember, Index("IX_Customer_BirthDate")]
+		public DateTime? BirthDate { get; set; }
+
+		#region Navigation properties
+
+		/// <summary>
+		/// Gets or sets customer generated content
+		/// </summary>
+		public virtual ICollection<ExternalAuthenticationRecord> ExternalAuthenticationRecords
         {
 			get { return _externalAuthenticationRecords ?? (_externalAuthenticationRecords = new HashSet<ExternalAuthenticationRecord>()); }
             protected set { _externalAuthenticationRecords = value; }
@@ -201,6 +228,21 @@ namespace SmartStore.Core.Domain.Customers
 			get { return _rewardPointsHistory ?? (_rewardPointsHistory = new HashSet<RewardPointsHistory>()); }
             protected set { _rewardPointsHistory = value; }            
         }
+
+		/// <summary>
+		/// Gets or sets the wallet history.
+		/// </summary>
+		public virtual ICollection<WalletHistory> WalletHistory
+		{
+			get
+			{
+				return _walletHistory ?? (_walletHistory = new HashSet<WalletHistory>());
+			}
+			protected set
+			{
+				_walletHistory = value;
+			}
+		}
 
         /// <summary>
         /// Gets or sets return request of this customer

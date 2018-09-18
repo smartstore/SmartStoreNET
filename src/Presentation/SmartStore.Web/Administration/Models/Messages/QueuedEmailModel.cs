@@ -1,12 +1,11 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Messages;
-using SmartStore.Core.Domain.Messages;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Messages
 {
@@ -48,7 +47,7 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string Body { get; set; }
 
-        [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.CreatedOn")]
+        [SmartResourceDisplayName("Common.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.SentTries")]
@@ -75,5 +74,16 @@ namespace SmartStore.Admin.Models.Messages
 			public string Name { get; set; }
 			public string MimeType { get; set; }
 		}
+    }
+
+    public partial class QueuedEmailValidator : AbstractValidator<QueuedEmailModel>
+    {
+        public QueuedEmailValidator()
+        {
+            RuleFor(x => x.Priority).NotEmpty().InclusiveBetween(0, 99999);
+            RuleFor(x => x.From).NotEmpty();
+            RuleFor(x => x.To).NotEmpty();
+            RuleFor(x => x.SentTries).NotEmpty().InclusiveBetween(0, 99999);
+        }
     }
 }

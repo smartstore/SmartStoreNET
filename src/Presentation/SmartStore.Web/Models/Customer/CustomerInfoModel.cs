@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.Customer;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.Customer
 {
-	[Validator(typeof(CustomerInfoValidator))]
+    [Validator(typeof(CustomerInfoValidator))]
     public partial class CustomerInfoModel : ModelBase
     {
         public CustomerInfoModel()
@@ -153,5 +154,52 @@ namespace SmartStore.Web.Models.Customer
         }
         
         #endregion
+    }
+
+    public class CustomerInfoValidator : AbstractValidator<CustomerInfoModel>
+    {
+        public CustomerInfoValidator(CustomerSettings customerSettings)
+        {
+            RuleFor(x => x.Email).NotEmpty();
+            RuleFor(x => x.Email).EmailAddress();
+
+            //form fields
+            if (customerSettings.FirstNameRequired)
+            {
+                RuleFor(x => x.FirstName).NotEmpty();
+            }
+            if (customerSettings.LastNameRequired)
+            {
+                RuleFor(x => x.LastName).NotEmpty();
+            }
+            if (customerSettings.CompanyRequired && customerSettings.CompanyEnabled)
+            {
+                RuleFor(x => x.Company).NotEmpty();
+            }
+            if (customerSettings.StreetAddressRequired && customerSettings.StreetAddressEnabled)
+            {
+                RuleFor(x => x.StreetAddress).NotEmpty();
+            }
+            if (customerSettings.StreetAddress2Required && customerSettings.StreetAddress2Enabled)
+            {
+                RuleFor(x => x.StreetAddress2).NotEmpty();
+            }
+            if (customerSettings.ZipPostalCodeRequired && customerSettings.ZipPostalCodeEnabled)
+            {
+                RuleFor(x => x.ZipPostalCode).NotEmpty();
+            }
+            if (customerSettings.CityRequired && customerSettings.CityEnabled)
+            {
+                RuleFor(x => x.City).NotEmpty();
+            }
+            if (customerSettings.PhoneRequired && customerSettings.PhoneEnabled)
+            {
+                RuleFor(x => x.Phone).NotEmpty();
+            }
+            if (customerSettings.FaxRequired && customerSettings.FaxEnabled)
+            {
+                RuleFor(x => x.Fax).NotEmpty();
+            }
+        }
     }
 }

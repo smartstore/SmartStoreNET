@@ -1,0 +1,138 @@
+/// <reference path="../shared/_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+/* PNOTIFY
+------------------------------------*/
+
+.alert.ui-pnotify-container {
+    padding-left: 70px !important;
+    //background: #fff !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
+    border-width: 1px;
+
+    &.alert { border-color: rgba(0,0,0, 0.12) !important }
+}
+
+.ui-pnotify-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3rem;
+    color: #fff;
+    z-index: 10;
+	float: none;
+	margin: 0;
+
+	@if $alert-info-is-primary {
+		// info should have primary color
+		.alert-info &	{ @include bubble('right', 'center', 8, $primary, $primary); }
+    }
+	@else {
+		.alert-info &	{ @include bubble('right', 'center', 8, $info, $info); }
+	}
+    .alert-success &    { @include bubble('right', 'center', 8, $success, $success); }
+    .alert-warning &    { @include bubble('right', 'center', 8, $warning, $warning); }
+    .alert-danger &     { @include bubble('right', 'center', 8, $danger, $danger); }
+
+    > span {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 1.25em;
+        line-height: 1.2em;
+        top: 50%;
+        transform: translateY(-50%);
+		float: none;
+		margin: 0;
+    }
+}
+
+.ui-pnotify-text {
+    font-size: $font-size-lg;
+    max-height: 250px;
+    overflow-y: auto;
+
+    > br {
+        display: block;
+        line-height: 2px;
+        content: '';
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .ui-pnotify-icon {
+        @include border-left-radius(0);
+    }
+}
+
+.ui-pnotify-closer, 
+.ui-pnotify-sticker {
+    width: 16px;
+    opacity: .35;
+	margin: 0;
+	padding-left: 2px;
+	position: relative;
+	top: -5px;
+	left: 5px;
+}
+
+.ui-pnotify-closer:hover, 
+.ui-pnotify-sticker:hover {
+    opacity: .75;
+}
+
+@media (min-width: 481px) {
+    .ui-pnotify.stack-topcenter,
+    .ui-pnotify.stack-bottomcenter {
+	    left: 50%;
+	    margin-left: -225px;
+    }
+
+    .ui-pnotify.stack-bottomcenter {
+	    top: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .ui-pnotify-mobile-able.ui-pnotify {
+        
+    }
+    .ui-pnotify-mobile-able {
+        margin-top: -80px;
+        font-size: inherit !important;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -85px;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -90px;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -95px;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -100px;
+    }
+}
+
+
+/* DARK VARIANT
+------------------------------------*/
+
+.ui-pnotify-dark .ui-pnotify-container {
+    background: #fff !important;
+    color: #fff !important;
+    box-shadow: none !important; 
+
+    &.alert-info       { background-color: $info !important }
+    &.alert-success    { background-color: $success !important }
+    &.alert-warning    { background-color: $warning !important }
+    &.alert-danger     { background-color: $danger !important }
+}
+
+.ui-pnotify-dark .ui-pnotify-icon {
+    background-color: rgba(0,0,0, 0.175) !important;
+}

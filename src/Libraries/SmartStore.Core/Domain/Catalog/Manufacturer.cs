@@ -88,7 +88,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets the available price ranges
         /// </summary>
-		[DataMember]
 		[Obsolete("Price ranges are calculated automatically since version 3")]
 		[StringLength(400)]
 		public string PriceRanges { get; set; }

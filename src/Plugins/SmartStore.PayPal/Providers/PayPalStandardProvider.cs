@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Routing;
@@ -331,7 +332,7 @@ namespace SmartStore.PayPal
         /// <returns>Result</returns>
         public bool GetPDTDetails(string tx, PayPalStandardPaymentSettings settings, out Dictionary<string, string> values, out string response)
         {
-			var request = settings.GetPayPalWebRequest();
+            var request = (HttpWebRequest)WebRequest.Create(settings.GetPayPalUrl());
 			request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
 
@@ -424,19 +425,6 @@ namespace SmartStore.PayPal
                 lst.Add(item);
 
                 cartTotal += orderItem.PriceExclTax;
-            }
-
-            // Rounding
-            if (order.OrderTotalRounding != decimal.Zero)
-            {
-                var item = new PayPalLineItem
-                {
-                    Type = PayPalItemType.Rounding,
-                    Name = T("ShoppingCart.Totals.Rounding").Text,
-                    Quantity = 1,
-                    Amount = order.OrderTotalRounding
-                };
-                lst.Add(item);
             }
 
             // Shipping
@@ -623,7 +611,6 @@ namespace SmartStore.PayPal
 		CartItem = 0,
 		Shipping,
 		PaymentFee,
-		Tax,
-        Rounding
+		Tax
 	}
 }

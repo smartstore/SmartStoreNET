@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Directory;
-using SmartStore.Web.Framework;
+﻿using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {

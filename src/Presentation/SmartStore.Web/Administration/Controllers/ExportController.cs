@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
+using SmartStore.Admin.Models.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -39,7 +40,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
 	public class ExportController : AdminControllerBase
 	{
 		private readonly IExportProfileService _exportService;
@@ -51,12 +52,14 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILanguageService _languageService;
 		private readonly ICurrencyService _currencyService;
 		private readonly IEmailAccountService _emailAccountService;
-		private readonly ICountryService _countryService;
+        private readonly IScheduleTaskService _scheduleTaskService;
+        private readonly ICountryService _countryService;
 		private readonly IDateTimeHelper _dateTimeHelper;
-		private readonly DataExchangeSettings _dataExchangeSettings;
+        private readonly AdminModelHelper _adminModelHelper;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly IDataExporter _dataExporter;
-		private readonly Lazy<CustomerSettings> _customerSettings;
+        private readonly DataExchangeSettings _dataExchangeSettings;
+        private readonly Lazy<CustomerSettings> _customerSettings;
 
 		public ExportController(
 			IExportProfileService exportService,
@@ -68,12 +71,14 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService,
 			ICurrencyService currencyService,
 			IEmailAccountService emailAccountService,
-			ICountryService countryService,
+            IScheduleTaskService scheduleTaskService,
+            ICountryService countryService,
 			IDateTimeHelper dateTimeHelper,
-			DataExchangeSettings dataExchangeSettings,
-			ITaskScheduler taskScheduler,
+            AdminModelHelper adminModelHelper,
+            ITaskScheduler taskScheduler,
 			IDataExporter dataExporter,
-			Lazy<CustomerSettings> customerSettings)
+            DataExchangeSettings dataExchangeSettings,
+            Lazy<CustomerSettings> customerSettings)
 		{
 			_exportService = exportService;
 			_pluginMediator = pluginMediator;
@@ -84,12 +89,14 @@ namespace SmartStore.Admin.Controllers
 			_languageService = languageService;
 			_currencyService = currencyService;
 			_emailAccountService = emailAccountService;
+            _scheduleTaskService = scheduleTaskService;
 			_countryService = countryService;
 			_dateTimeHelper = dateTimeHelper;
-			_dataExchangeSettings = dataExchangeSettings;
+            _adminModelHelper = adminModelHelper;
 			_taskScheduler = taskScheduler;
 			_dataExporter = dataExporter;
-			_customerSettings = customerSettings;
+            _dataExchangeSettings = dataExchangeSettings;
+            _customerSettings = customerSettings;
 		}
 
 		#region Utilities
@@ -321,7 +328,11 @@ namespace SmartStore.Admin.Controllers
 			return model;
 		}
 
-		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
+		private void PrepareProfileModel(
+            ExportProfileModel model,
+            ExportProfile profile, 
+            Provider<IExportProvider> provider, 
+            ScheduleTaskHistory lastHistoryEntry)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
@@ -333,7 +344,7 @@ namespace SmartStore.Admin.Controllers
 			model.Enabled = profile.Enabled;
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
-			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
+			model.IsTaskRunning = lastHistoryEntry?.IsRunning ?? false;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogPath());
 			model.HasActiveProvider = (provider != null);
@@ -470,6 +481,7 @@ namespace SmartStore.Admin.Controllers
 				ShippingStatusIds = filter.ShippingStatusIds,
 				CustomerRoleIds = filter.CustomerRoleIds,
 				IsActiveSubscriber = filter.IsActiveSubscriber,
+                WorkingLanguageId = filter.WorkingLanguageId,
 				ShoppingCartTypeId = filter.ShoppingCartTypeId
 			};
 
@@ -477,8 +489,16 @@ namespace SmartStore.Admin.Controllers
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
 
-			// deployment
-			model.Deployments = profile.Deployments
+            model.Filter.AvailableLanguages = new List<SelectListItem>();
+            model.Filter.AvailableLanguages.Add(new SelectListItem { Text = T("Common.Unspecified"), Value = "" });
+
+            foreach (var lang in _languageService.GetAllLanguages())
+            {
+                model.Filter.AvailableLanguages.Add(new SelectListItem { Text = lang.Name, Value = lang.Id.ToString() });
+            }
+
+            // deployment
+            model.Deployments = profile.Deployments
 				.Select(x =>
 				{
 					var deploymentModel = CreateDeploymentModel(profile, x, null, false);
@@ -547,7 +567,7 @@ namespace SmartStore.Admin.Controllers
 						.ToList();
 
 					model.Filter.AvailableCountries = allCountries
-						.Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name, language.Id, true, false), Value = x.Id.ToString() })
+						.Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name, language, true, false), Value = x.Id.ToString() })
 						.ToList();
 				}
 				else if (model.Provider.EntityType == ExportEntityType.Order)
@@ -613,7 +633,8 @@ namespace SmartStore.Admin.Controllers
 
 			var providers = _exportService.LoadAllExportProviders(0, false).ToList();
 			var profiles = _exportService.GetExportProfiles().ToList();
-			var model = new List<ExportProfileModel>();
+            var lastHistoryEntries = _scheduleTaskService.GetHistoryEntries(0, int.MaxValue, 0, true, true).ToDictionarySafe(x => x.ScheduleTaskId);
+            var model = new List<ExportProfileModel>();
 
 			foreach (var profile in profiles)
 			{
@@ -623,10 +644,11 @@ namespace SmartStore.Admin.Controllers
 					var profileModel = new ExportProfileModel();
 					var fileDetailsModel = CreateFileDetailsModel(profile, provider, null);
 
-					PrepareProfileModel(profileModel, profile, provider);
+                    lastHistoryEntries.TryGetValue(profile.SchedulingTaskId, out var lastHistoryEntry);
+                    PrepareProfileModel(profileModel, profile, provider, lastHistoryEntry);
 
 					profileModel.FileCount = fileDetailsModel.FileCount;
-					profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Url);
+                    profileModel.TaskModel = _adminModelHelper.CreateScheduleTaskModel(profile.ScheduleTask, lastHistoryEntry) ?? new ScheduleTaskModel();
 
 					model.Add(profileModel);
 				}
@@ -768,7 +790,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ExportProfileModel();
 
-			PrepareProfileModel(model, profile, provider);
+			PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetLastHistoryEntryByTaskId(profile.SchedulingTaskId));
 			PrepareProfileModelForEdit(model, profile, provider);
 
 			return View(model);
@@ -791,7 +813,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				PrepareProfileModel(model, profile, provider);
+				PrepareProfileModel(model, profile, provider, _scheduleTaskService.GetLastHistoryEntryByTaskId(profile.SchedulingTaskId));
 				PrepareProfileModelForEdit(model, profile, provider);
 				return View(model);
 			}
@@ -815,7 +837,7 @@ namespace SmartStore.Admin.Controllers
 			if (profile.Name.IsEmpty())
 				profile.Name = provider.Metadata.SystemName;
 
-			// projection
+			// Projection.
 			if (model.Projection != null)
 			{
 				var projection = new ExportProjection
@@ -848,7 +870,7 @@ namespace SmartStore.Admin.Controllers
 				profile.Projection = XmlHelper.Serialize(projection);
 			}
 
-			// filtering
+			// Filtering.
 			if (model.Filter != null)
 			{
 				var filter = new ExportFilter
@@ -883,13 +905,14 @@ namespace SmartStore.Admin.Controllers
 					ShippingStatusIds = model.Filter.ShippingStatusIds,
 					CustomerRoleIds = model.Filter.CustomerRoleIds,
 					IsActiveSubscriber = model.Filter.IsActiveSubscriber,
+                    WorkingLanguageId = model.Filter.WorkingLanguageId,
 					ShoppingCartTypeId = model.Filter.ShoppingCartTypeId
 				};
 
 				profile.Filtering = XmlHelper.Serialize(filter);
 			}
 
-			// provider configuration
+			// Provider configuration.
 			profile.ProviderConfigData = null;
 			try
 			{
@@ -1060,7 +1083,7 @@ namespace SmartStore.Admin.Controllers
 					var category = item.Entity as Category;
 					var model = new ExportPreviewCategoryModel();
 					model.Id = category.Id;
-					model.Breadcrumb = ((ICategoryNode)category).GetCategoryPath(_categoryService, withAlias: true);
+					model.Breadcrumb = ((ICategoryNode)category).GetCategoryPath(_categoryService, aliasPattern: "({0})");
 					model.FullName = item.FullName;
 					model.Alias = item.Alias;
 					model.Published = category.Published;

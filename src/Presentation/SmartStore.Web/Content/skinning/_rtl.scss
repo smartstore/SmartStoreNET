@@ -1,0 +1,61 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// RTL overrides for skinned libraries
+// TODO: photoswipe
+// ==============================================================
+
+
+[dir=rtl] {
+
+	// PNOTIFY
+	// -------
+
+	.alert.ui-pnotify-container {
+		padding-left: 1.25rem !important;
+		padding-right: 70px !important;
+	}
+
+	.ui-pnotify-icon {
+		right: 0;
+		left: auto;
+
+		&:before, 
+		&:after {
+			// No bubble in RTL mode, too much CSS!
+			border-width: 0 !important;
+		}
+	}
+
+	.ui-pnotify-closer, 
+	.ui-pnotify-sticker {
+		float: left;
+		padding-right: 2px;
+		padding-left: 0;
+		right: 5px;
+		left: auto;
+	}
+
+	// Touchspin
+	// ---------
+
+	.bootstrap-touchspin {
+		.input-group-btn {
+			&:first-child {
+				left: auto; 
+				right: 1px;
+			}
+			&:last-child {
+				right: auto; 
+				left: 0;
+			}
+
+			> .btn {
+				&.bootstrap-touchspin-down { text-align: left; padding-left: 4px; padding-right: 0; }
+				&.bootstrap-touchspin-up { text-align: right; padding-right: 4px; padding-left: 0; }
+			}
+		}
+	}
+}

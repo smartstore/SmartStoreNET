@@ -10,12 +10,13 @@
 {
 	var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
 
-	if (Model.FullDescription.HasValue())
+	if (Model.FullDescription.Value.HasValue())
 	{
-		var summary = Model.FullDescription.RemoveHtml().Truncate(300, "...");
+		var summary = Model.FullDescription.Value.RemoveHtml().Truncate(300, "...");
+		var langAttrs = Html.LanguageAttributes(Model.FullDescription);
 		x.Add().Text(@T("Products.Details"))
 				.Summary(summary)
-				.Content(Html.Raw("<div itemprop='description' class='text-body html-editor-content'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+				.Content(Html.Raw("<div " + langAttrs + " itemprop='description' class='text-body html-editor-content'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
 				.Selected(true);
 	}
 
@@ -30,13 +31,13 @@
 	{
 		x.Add().Text(@T("Reviews"))
 				.Content(TabReviews())
-				.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning : BadgeStyle.Default, true)
+				.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning : BadgeStyle.Secondary, true)
 				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
 	}
 
 	// Generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
-}).TabContentHeaderContent(TabContentHeader()).ComponentVersion(BootstrapVersion.V4).Fade(false)
+}).TabContentHeaderContent(TabContentHeader()).Fade(false)
 
 @helper TabReviews() {{
 	var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();

@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Directory
 {
@@ -22,10 +22,19 @@ namespace SmartStore.Admin.Models.Directory
         [UIHint("Decimal8")]
         public decimal Ratio { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Measures.Weights.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Measures.Weights.Fields.IsPrimaryWeight")]
         public bool IsPrimaryWeight { get; set; }
+    }
+
+    public partial class MeasureWeightValidator : AbstractValidator<MeasureWeightModel>
+    {
+        public MeasureWeightValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.SystemKeyword).NotEmpty();
+        }
     }
 }

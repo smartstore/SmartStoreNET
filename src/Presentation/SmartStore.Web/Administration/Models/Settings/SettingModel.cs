@@ -1,8 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -20,5 +20,13 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.AllSettings.Fields.StoreName")]
 		public string Store { get; set; }
 		public int StoreId { get; set; }
+    }
+
+    public partial class SettingValidator : AbstractValidator<SettingModel>
+    {
+        public SettingValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
     }
 }

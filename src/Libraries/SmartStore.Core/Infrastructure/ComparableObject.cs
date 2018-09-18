@@ -175,7 +175,6 @@ namespace SmartStore
 	[Serializable]
     public abstract class ComparableObject<T> : ComparableObject, IEquatable<T>
     {
-
         /// <summary>
         /// Adds an extra property to the type specific signature properties list.
         /// </summary>
@@ -198,7 +197,6 @@ namespace SmartStore
 
             return base.Equals(other);
         }
-
     }
 
 }

@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.Theming
 			}
 
             result.Append("<div class='ctl-label'>");
-            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name, new { @class = "col-form-label" }));
+            result.Append(html.Label(html.NameForThemeVar(info), displayName.NullEmpty() ?? "$" + info.Name, new { @class = "x-col-form-label" }));
 			if (hint.HasValue())
 			{
 				result.Append(html.Hint(hint).ToHtmlString());
@@ -107,7 +107,7 @@ namespace SmartStore.Web.Framework.Theming
 			if (currentTheme != info.Manifest)
 			{
 				// the variable is inherited from a base theme: display an info badge
-				var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-chain fa-flip-horizontal'></i>&nbsp;{0}</span>".FormatCurrent(info.Manifest.ThemeName);
+				var chainInfo = "<span class='themevar-chain-info'><i class='fa fa-chain fa-flip-horizontal'></i><span class='pl-1'>{0}</span></span>".FormatCurrent(info.Manifest.ThemeName);
 				return MvcHtmlString.Create(chainInfo);
 			}
 

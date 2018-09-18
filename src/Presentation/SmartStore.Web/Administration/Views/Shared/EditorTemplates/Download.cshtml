@@ -5,56 +5,86 @@
 @using SmartStore.Utilities;
 
 @functions {
-	bool? _minimalMode = null;
-	string _fieldName = null;
-	
-	private bool MinimalMode
-	{
-		get
-		{
-			if (!_minimalMode.HasValue)
-			{
-				_minimalMode = ViewData.ContainsKey("minimalMode") ? ViewData["minimalMode"].Convert<bool>() : false;			
-			}
-			return _minimalMode.Value;	
-		}
-	}
+    bool? _minimalMode = null;
+    string _fieldName = null;
+    int _entityId = 0;
+    string _entityName = null;
 
-	private string FieldName
-	{
-		get
-		{
-			if (_fieldName == null)
-			{
-				_fieldName = ViewData.ContainsKey("fieldName") ? ViewData["fieldName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
-			}
-			return _fieldName;
-		}
-	}
+    private bool MinimalMode
+    {
+        get
+        {
+            if (!_minimalMode.HasValue)
+            {
+                _minimalMode = ViewData.ContainsKey("minimalMode") ? ViewData["minimalMode"].Convert<bool>() : false;
+            }
+            return _minimalMode.Value;
+        }
+    }
+
+    private string FieldName
+    {
+        get
+        {
+            if (_fieldName == null)
+            {
+                _fieldName = ViewData.ContainsKey("fieldName") ? ViewData["fieldName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+            }
+            return _fieldName;
+        }
+    }
+
+    private int EntityId
+    {
+        get
+        {
+            if (_entityId == 0)
+            {
+                _entityId = ViewData.ContainsKey("entityId") ? ViewData["entityId"].Convert<int>() : 0;
+            }
+            return _entityId;
+        }
+    }
+
+    private string EntityName
+    {
+        get
+        {
+            if (_entityName == null)
+            {
+                _entityName = ViewData.ContainsKey("entityName") ? ViewData["entityName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+            }
+            return _entityName;
+        }
+    }
 }
 
 @{
-	var random = CommonHelper.GenerateRandomInteger();
-	var clientId = "download-editor-" + random;
-	var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
-	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
-	var initiallyShowUrlPanel = false;
-	var hasFile = false;
-	var downloadUrl = "";
-	if (download != null) {
-		downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
-		initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
-		hasFile = !download.UseDownloadUrl;
-	}
+    var random = CommonHelper.GenerateRandomInteger();
+    var clientId = "download-editor-" + random;
+    var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
+    var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
+    var fileName = string.Empty;
+    var initiallyShowUrlPanel = false;
+    var hasFile = false;
+    var downloadUrl = "";
+    if (download != null) {
+        downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
+        initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
+        hasFile = !download.UseDownloadUrl;
+        fileName = string.IsNullOrWhiteSpace(download.Filename) || download.Filename.IsCaseInsensitiveEqual("undefined")
+            ? download.Id.ToString()
+            : string.Concat(download.Filename, download.Extension);
+    }
 
-	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
+    Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
 }
 
 <div id="@clientId" class="form-row flex-nowrap download-editor@(MinimalMode ? " minimal" : "")"
 	 data-download-id="@Model.GetValueOrDefault()"
 	 data-use-url="@(initiallyShowUrlPanel ? "true" : "false")"
-	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })"
-	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })">
+	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })"
+	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })">
 
 	<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
 
@@ -96,15 +126,15 @@
 			{
 				<div class="col-auto">
 					<div class="form-control-plaintext text-truncate" style="min-width: 180px; max-width: 180px">
-						<a href="@downloadUrl" class="filename" title="@download.Filename@download.Extension">
-							@download.Filename@download.Extension
+						<a href="@downloadUrl" class="filename" title="@fileName">
+							@fileName
 						</a>
 					</div>
 				</div>
 			}
 			<div class="col">
 				@(Html.SmartStore().FileUploader()
-					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName }))
+					.UploadUrl(Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" }))
 					.AcceptedFileTypes("")
 					.IconCssClass(MinimalMode ? "fa fa-upload" : "")
 					.ButtonOutlineStyle(hasFile)
@@ -126,7 +156,7 @@
 					@{ var value = download != null ? download.DownloadUrl : ""; }
 					<input type="text" class="download-url-value form-control" value='@value' data-value='@value' />
 					<div class="input-group-append">
-						<a class="btn btn-outline-secondary save-download-url disabled" href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })">
+						<a class="btn btn-outline-secondary save-download-url disabled" href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName, entityId = EntityId, entityName = EntityName, area = "Admin" })">
 							<i class="fa fa-check"></i>
 							<span>@T("Common.Save")</span>
 						</a>

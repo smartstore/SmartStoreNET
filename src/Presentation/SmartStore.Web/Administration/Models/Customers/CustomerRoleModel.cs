@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.Customers;
-using SmartStore.Core.Domain.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Customers
 {
@@ -39,5 +38,13 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.CustomerRoles.Fields.SystemName")]
         public string SystemName { get; set; }
+    }
+
+    public partial class CustomerRoleValidator : AbstractValidator<CustomerRoleModel>
+    {
+        public CustomerRoleValidator()
+        {
+            RuleFor(x => x.Name).NotNull();
+        }
     }
 }

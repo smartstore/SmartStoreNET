@@ -49,7 +49,7 @@
                 @Html.SmartLabelFor(model => model.MinOrderSubtotalAmount)
             </td>
             <td class="adminData">
-				@Html.EditorFor(model => model.MinOrderSubtotalAmount, new { postfix = Model.PrimaryStoreCurrencyCode })
+				@Html.SettingEditorFor(model => model.MinOrderSubtotalAmount, null, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.MinOrderSubtotalAmount)
             </td>
         </tr>
@@ -58,7 +58,7 @@
                 @Html.SmartLabelFor(model => model.MinOrderTotalAmount)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MinOrderTotalAmount, new { postfix = Model.PrimaryStoreCurrencyCode })
+                @Html.SettingEditorFor(model => model.MinOrderTotalAmount, null, new { postfix = Model.PrimaryStoreCurrencyCode })
                 @Html.ValidationMessageFor(model => model.MinOrderTotalAmount)
             </td>
         </tr>
@@ -151,7 +151,7 @@
 		<button type="button" class="close" data-dismiss="alert">&times;</button>
 	</div>
 
-    <table class="adminContent">
+    <table class="adminContent mb-3">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ReturnRequestsEnabled)
@@ -166,7 +166,7 @@
                 @Html.SmartLabelFor(model => model.NumberOfDaysReturnRequestAvailable)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.NumberOfDaysReturnRequestAvailable)
+                @Html.SettingEditorFor(model => model.NumberOfDaysReturnRequestAvailable, null, new { postfix = T("Time.Days").Text })
                 @Html.ValidationMessageFor(model => model.NumberOfDaysReturnRequestAvailable)
             </td>
         </tr>

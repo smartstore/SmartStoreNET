@@ -337,8 +337,14 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageAffiliates))
 			{
-				var affiliate = _affiliateService.GetAffiliateById(affiliateId);
-				var customers = _customerService.GetAllCustomers(affiliate.Id, command.Page - 1, command.PageSize);
+				var q = new CustomerSearchQuery
+				{
+					AffiliateId = affiliateId,
+					PageIndex = command.Page - 1,
+					PageSize = command.PageSize
+				};
+
+				var customers = _customerService.SearchCustomers(q);
 
 				model.Data = customers.Select(customer =>
 				{

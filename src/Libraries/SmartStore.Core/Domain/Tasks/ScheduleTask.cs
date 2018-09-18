@@ -1,6 +1,5 @@
-﻿
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using SmartStore.Core.Data.Hooks;
@@ -11,6 +10,8 @@ namespace SmartStore.Core.Domain.Tasks
 	[Hookable(false)]
 	public class ScheduleTask : BaseEntity, ICloneable<ScheduleTask>
     {
+        private ICollection<ScheduleTaskHistory> _scheduleTaskHistory;
+
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -46,59 +47,46 @@ namespace SmartStore.Core.Domain.Tasks
         [Index("IX_NextRun_Enabled", 0)]
         public DateTime? NextRunUtc { get; set; }
 
-		[Index("IX_LastStart_LastEnd", 0)]
-        public DateTime? LastStartUtc { get; set; }
-
-		[Index("IX_LastStart_LastEnd", 1)]
-        public DateTime? LastEndUtc { get; set; }
-
-        public DateTime? LastSuccessUtc { get; set; }
-
-		public string LastError { get; set; }
-
+        /// <summary>
+        /// Indicates whether the task is hidden.
+        /// </summary>
         public bool IsHidden { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating the current percentual progress for a running task
-		/// </summary>
-		public int? ProgressPercent { get; set; }
+        /// <summary>
+        /// Indicates whether the task is executed decidedly on each machine of a web farm.
+        /// </summary>
+        public bool RunPerMachine { get; set; }
 
 		/// <summary>
-		/// Gets or sets the current progress message for a running task
-		/// </summary>
-		public string ProgressMessage { get; set; }
-
-		/// <summary>
-		/// Concurrency Token
-		/// </summary>
-		[Timestamp]
-		public byte[] RowVersion { get; set; }
-
-		/// <summary>
-		/// Gets a value indicating whether a task is running
-		/// </summary>
-		public bool IsRunning
-		{
-			get
-			{
-				var result = LastStartUtc.HasValue && LastStartUtc.Value > LastEndUtc.GetValueOrDefault();
-				return result;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow )
+		/// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow and is not running).
 		/// </summary>
 		public bool IsPending
 		{
 			get
 			{
-				var result = Enabled && NextRunUtc.HasValue && NextRunUtc <= DateTime.UtcNow;
+                var result = Enabled && NextRunUtc.HasValue && NextRunUtc <= DateTime.UtcNow && (LastHistoryEntry == null || !LastHistoryEntry.IsRunning);
 				return result;
 			}
 		}
 
-		public ScheduleTask Clone()
+        public ScheduleTaskHistory LastHistoryEntry { get; set; }
+
+        /// <summary>
+        /// Gets or sets the schedule task history.
+        /// </summary>
+        public virtual ICollection<ScheduleTaskHistory> ScheduleTaskHistory
+        {
+            get
+            {
+                return _scheduleTaskHistory ?? (_scheduleTaskHistory = new HashSet<ScheduleTaskHistory>());
+            }
+            protected set
+            {
+                _scheduleTaskHistory = value;
+            }
+        }
+
+        public ScheduleTask Clone()
 		{
 			return (ScheduleTask)this.MemberwiseClone();
 		}

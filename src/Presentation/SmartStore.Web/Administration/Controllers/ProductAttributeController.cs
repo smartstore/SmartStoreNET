@@ -65,7 +65,7 @@ namespace SmartStore.Admin.Controllers
 				model.PriceAdjustmentString = (option.ValueType == ProductVariantAttributeValueType.Simple ? option.PriceAdjustment.ToString("G29") : "");
 				model.WeightAdjustmentString = (option.ValueType == ProductVariantAttributeValueType.Simple ? option.WeightAdjustment.ToString("G29") : "");
 				model.TypeName = option.ValueType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
-				model.TypeNameClass = (option.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr-1 mr8" : "d-none hide hidden-xs-up");
+				model.TypeNameClass = (option.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr-2" : "d-none hide hidden-xs-up");
 
 				var linkedProduct = _productService.GetProductById(option.LinkedProductId);
 				if (linkedProduct != null)
@@ -138,8 +138,6 @@ namespace SmartStore.Admin.Controllers
 					.Select(x =>
 					{
 						var model = x.ToModel();
-						//model.OptionCount = x.ProductAttributeOptions.Count;
-
 						return model;
 					})
 					.ToList();

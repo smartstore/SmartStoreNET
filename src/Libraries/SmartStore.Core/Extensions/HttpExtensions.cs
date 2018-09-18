@@ -18,6 +18,7 @@ namespace SmartStore
     {
         private const string HTTP_CLUSTER_VAR = "HTTP_CLUSTER_HTTPS";
 		private const string HTTP_XFWDPROTO_VAR = "HTTP_X_FORWARDED_PROTO";
+		private const string CACHE_REGION_NAME = "SmartStoreNET:";
 
 		/// <summary>
 		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
@@ -140,7 +141,7 @@ namespace SmartStore
 
 		public static string BuildScopedKey(this Cache cache, string key)
 		{
-			return key.HasValue() ? "SmartStoreNET:" + key : null;
+			return key.HasValue() ? CACHE_REGION_NAME + key : null;
 		}
 
 		public static T GetOrAdd<T>(this Cache cache, string key, Func<T> acquirer, TimeSpan? duration = null)
@@ -170,11 +171,6 @@ namespace SmartStore
 
 		public static T GetItem<T>(this HttpContext httpContext, string key, Func<T> factory = null, bool forceCreation = true)
 		{
-			if (httpContext?.Items == null)
-			{
-				return default(T);
-			}
-
 			return GetItem<T>(new HttpContextWrapper(httpContext), key, factory, forceCreation);
 		}
 
@@ -208,14 +204,7 @@ namespace SmartStore
 
 		public static void RemoveByPattern(this Cache cache, string pattern)
 		{
-			var regionName = "SmartStoreNET:";
-
-			pattern = pattern == "*" ? regionName : pattern;
-
-			var keys = from entry in HttpRuntime.Cache.AsParallel().Cast<DictionaryEntry>()
-					   let key = entry.Key.ToString()
-					   where key.StartsWith(pattern, StringComparison.OrdinalIgnoreCase)
-					   select key;
+			var keys = cache.AllKeys(pattern);
 
 			foreach (var key in keys.ToArray())
 			{
@@ -223,7 +212,19 @@ namespace SmartStore
 			}
 		}
 
-        public static ControllerContext GetMasterControllerContext(this ControllerContext controllerContext)
+		public static string[] AllKeys(this Cache cache, string pattern)
+		{
+			pattern = pattern == "*" ? CACHE_REGION_NAME : pattern;
+
+			var keys = from entry in HttpRuntime.Cache.AsParallel().Cast<DictionaryEntry>()
+					   let key = entry.Key.ToString()
+					   where key.StartsWith(pattern, StringComparison.OrdinalIgnoreCase)
+					   select key;
+
+			return keys.ToArray();
+		}
+
+		public static ControllerContext GetMasterControllerContext(this ControllerContext controllerContext)
         {
             Guard.NotNull(controllerContext, nameof(controllerContext));
 

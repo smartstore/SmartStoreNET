@@ -22,7 +22,7 @@
       <th class="text-muted text-sm">Total</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class="mb-3">
   	<tr>
     	<td class="text-sm">{{ Order.CreatedOn | Date:'d' }}</td>
       <td class="text-sm">{{ Order.OrderNumber }}</td>
@@ -32,7 +32,7 @@
   </tbody>
 </table>
 
-<table class="w-100 brd mb-4">
+<table class="w-100 brd">
   <tbody>
   	<tr>
     	<td class="p-2">
@@ -68,12 +68,13 @@
     </tr>
   </tbody>
 </table>
+<p>&nbsp;</p>
 
 {% include 'order' %}
 
-<table id="conditions-of-use" class="mt-5 mb-4">
+<table id="conditions-of-use">
   <tr>
-  	<td class="text-sm text-muted-all">
+  	<td class="text-sm text-muted-all pt-5 pb-4">
       <h2 class="mb-3">{{ Order.ConditionsOfUse.Title }} </h2>
     	{{ Order.ConditionsOfUse.Body }}
     </td>
@@ -82,9 +83,9 @@
 
 <hr />
 
-<table id="disclaimer" class="mt-4">
+<table id="disclaimer">
   <tr>
-  	<td class="text-sm text-muted-all">
+  	<td class="text-sm text-muted-all pt-4">
       <h2 class="mb-3">{{ Order.Disclaimer.Title }} </h2>
     	{{ Order.Disclaimer.Body }}
     </td>

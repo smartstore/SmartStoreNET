@@ -46,7 +46,7 @@
 	}
 </script>
 
-<table class="adminContent">
+<table class="adminContent mb-3">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.ValueTypeId)
@@ -66,14 +66,14 @@
 			<div class="input-group">
 				<input type="text" class="form-control" id="linked-product-name" placeholder="@T("Common.Unspecified")" value="@Model.LinkedProductName" readonly>
 				<div class="input-group-append">
-					<button type="button" id="RemoveProductLinkageButton" class="btn btn-outline-secondary">
+					<button type="button" id="RemoveProductLinkageButton" class="btn btn-outline-secondary btn-to-danger">
 						<i class="fa fa-times"></i>
 						<span>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")</span>
 					</button>
 					@(Html.SmartStore().EntityPicker()
 						.For(x => x.LinkedProductId)
 						.IconCssClass("fa fa-link")
-						.HtmlAttribute("class", "btn btn-secondary")
+						.HtmlAttribute("class", "btn btn-outline-secondary")
 						.HtmlAttribute("id", "AddProductLinkageButton")
 						.MaxItems(1)
 						.AppendMode(false)
@@ -97,8 +97,6 @@
         </td>
     </tr>
 </table>
-
-<p></p>
 
 @(Html.LocalizedEditor<ProductModel.ProductVariantAttributeValueModel, ProductModel.ProductVariantAttributeValueLocalizedModel>("productattributevalue-localized",
 @<table class="adminContent">

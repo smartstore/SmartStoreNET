@@ -26,52 +26,66 @@
 					commands.Delete().Localize(T);
 				}).Width(140).HtmlAttributes(new { align = "right" });
 			})
+			.ToolBar(commands => commands.Template(OrderNotesGridCommands))
 			.EnableCustomBinding(true))
 </div>
 
-<table class="adminContent">
-	<tr>
-		<td colspan="2">
-			<div class="admin-config-group">
-				<div class="title">@T("Admin.Orders.OrderNotes.AddTitle")</div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.AddOrderNoteMessage)
-		</td>
-		<td class="adminData">
-			@Html.TextAreaFor(model => model.AddOrderNoteMessage, new { style = "height: 120px;" })
-			@Html.ValidationMessageFor(model => model.AddOrderNoteMessage)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.AddOrderNoteDisplayToCustomer)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(model => model.AddOrderNoteDisplayToCustomer)
-			@Html.ValidationMessageFor(model => model.AddOrderNoteDisplayToCustomer)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle"></td>
-		<td class="adminData">
-			<button type="button" name="addOrderNote" id="addOrderNote" class="btn btn-primary">
-				<i class="fa fa-plus"></i>
+@{Html.SmartStore().Window()
+	.Name("addrecord-window")
+	.Size(WindowSize.Large)
+	.Title(T("Admin.Orders.OrderNotes.AddButton"))
+	.Content(
+	@<text>
+		<form method="post">
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddOrderNoteMessage)
+					</td>
+					<td class="adminData">
+						@Html.TextAreaFor(model => model.AddOrderNoteMessage, new { style = "height: 120px;" })
+						@Html.ValidationMessageFor(model => model.AddOrderNoteMessage)
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AddOrderNoteDisplayToCustomer)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AddOrderNoteDisplayToCustomer)
+						@Html.ValidationMessageFor(model => model.AddOrderNoteDisplayToCustomer)
+					</td>
+				</tr>
+			</table>
+		</form>
+	</text>)
+	.FooterContent(
+	@<text>
+			<button type="button" class="btn btn-secondary btn-flat" data-dismiss="modal">
+				<span>@T("Admin.Common.Cancel")</span>
+			</button>
+			<button name="addOrderNote" id="addOrderNote" type="submit" class="btn btn-primary">
+				<i class="fa fa-check"></i>
 				<span>@T("Admin.Orders.OrderNotes.AddButton")</span>
 			</button>
-		</td>
-	</tr>
-</table>
+	</text>)
+	.Render();
+}
+
+@helper OrderNotesGridCommands(Grid<OrderModel.OrderNote> grid)
+{
+	<a href="#addrecord-window" id="addrecord-button" data-toggle="modal" class="t-button t-button-primary">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.Orders.OrderNotes.AddButton")</span>
+	</a>
+}
 
 <script type="text/javascript">
     $(document).ready(function () {
         $('#addOrderNote').click(function () {
             var orderNoteMessage = $("#@Html.FieldIdFor(model => model.AddOrderNoteMessage)").val();
             var orderNoteDisplayToCustomer = $("#@Html.FieldIdFor(model => model.AddOrderNoteDisplayToCustomer)").is(':checked');
-            $('#addOrderNote').attr('disabled', true);
+			
             $.ajax({
                 cache:false,
                 type: "POST",
@@ -80,12 +94,13 @@
                 success: function (data) {
                         var ordernotesGrid = $("#ordernotes-grid");
                         ordernotesGrid.data('tGrid').ajaxRequest();
-                        $('#addOrderNote').attr('disabled', false);
                 },
                 error:function (xhr, ajaxOptions, thrownError){
                     alert('Failed to add order note.')
-                    $('#addOrderNote').attr('disabled', false);
-                }
+				},
+				complete: function () {
+					$('#addrecord-window').modal('hide');
+				}
             });
         });
     });

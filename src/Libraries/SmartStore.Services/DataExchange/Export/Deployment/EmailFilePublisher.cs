@@ -38,6 +38,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					SendManually = false,
 					To = email,
 					Subject = deployment.EmailSubject.NaIfEmpty(),
+					Body = deployment.EmailSubject.NaIfEmpty(),
 					CreatedOnUtc = DateTime.UtcNow,
 					EmailAccountId = deployment.EmailAccountId
 				};

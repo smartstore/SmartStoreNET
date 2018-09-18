@@ -1,0 +1,95 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+/* On/Off switch button
+-------------------------------------------------------------- */
+
+.switch {
+	$h: $font-size-base * $line-height-base;
+	position: relative;
+	display: inline-block;
+	vertical-align: bottom;
+	margin: 0;
+	padding: 0;
+	user-select: none;
+	box-sizing: content-box;
+	height: $h;
+
+	> .switch-toggle {
+		position: relative;
+		display: inline-block;
+		vertical-align: middle;
+		width: 45px;
+		height: $h;
+		border-radius: $h;
+		background-color: #f2f2f2;
+		border: 1px solid rgba(0,0,0, 0.15);
+		cursor: pointer;
+		transition: background-color 0.4s cubic-bezier(.54,1.85,.5,1);
+
+		&:before {
+			position: absolute;
+			left: 1px;
+			top: 1px;
+			content: ' ';
+			width: calc(#{$h} - 4px);
+			height: calc(#{$h} - 4px);
+			border-radius: 50%;
+			background-color: #fff;
+			box-shadow: 0 0 3px rgba(#000, 0.2);
+			transition: left 0.4s cubic-bezier(.54,1.85,.5,1);
+		}
+
+		&:after {
+			position: absolute;
+			display: inline-block;
+			width: 27px;
+			height: 100%;
+			padding: 3px;
+			vertical-align: middle;
+			text-transform: lowercase;
+			font-size: 10px;
+			line-height: 100%;
+			text-align: center;
+			content: 'Aus';
+			content: attr(data-off);
+			color: #bbb;
+			left: auto;
+			right: 0;
+		}
+	}
+
+	> input[type=checkbox] {
+		position: absolute;
+		z-index: 0;
+		opacity: 0;
+		margin: 0;
+	}
+
+	> input[type=checkbox]:checked ~ .switch-toggle {
+		background-color: $orange;
+
+		&:before {
+			left: 26px;
+		}
+
+		&:after {
+			content: 'An';
+			content: attr(data-on);
+			color: rgba(#fff, 0.75);
+			left: 0;
+			right: auto;
+		}
+	}
+
+	&.switch-blue > input[type=checkbox]:checked ~ .switch-toggle {
+		background-color: $blue;
+	}
+
+	> input[type=checkbox]:disabled ~ .switch-toggle {
+		opacity: $btn-disabled-opacity;
+		cursor: default;
+		border-color: transparent;
+	}
+}

@@ -28,33 +28,24 @@
     </div>
 </div>
 
-<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CreatedOnFrom)
-        </td>
-        <td class="adminData">
-			@Html.TextBoxFor(model => model.CreatedOnFrom)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CreatedOnTo)
-        </td>
-        <td class="adminData">
-			@Html.TextBoxFor(model => model.CreatedOnTo)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle"></td>
-        <td class="adminData">
-            <button type="submit" id="btnSearch" class="btn btn-secondary">
-                <i class="fa fa-search"></i>
-                <span>@T("Admin.Common.Search")</span>
-            </button>
-        </td>
-    </tr>
-</table>
+
+<div class="row mt-3 grid-filter">
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.CreatedOnFrom)
+		@Html.EditorFor(model => model.CreatedOnFrom)
+	</div>
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		@Html.SmartLabelFor(model => model.CreatedOnTo)
+		@Html.EditorFor(model => model.CreatedOnTo)
+	</div>
+
+	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+		<label>&nbsp;</label>
+		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-secondary btn-block">
+			<span>@T("Admin.Common.Search")</span>
+		</button>
+	</div>
+</div>
 
 <div class="adminContent mt-3">
 
@@ -93,11 +84,11 @@
 					.Centered()
 					.Width(140);
 				columns.Bound(x => x.Id)
-					.Width(50)
-					.Centered()
-					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-					.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-					.Title(T("Admin.Common.Edit").Text);
+					.Width(120)
+					.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }, new { @class = "t-button" }))
+					.ClientTemplate("<a href=\"Edit/<#= Id #>\" class=\"t-button\">" + T("Admin.Common.Edit").Text + "</a>")
+					.Title(String.Empty)
+					.HtmlAttributes(new { align = "right" });
 			})
 			.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductReview"))

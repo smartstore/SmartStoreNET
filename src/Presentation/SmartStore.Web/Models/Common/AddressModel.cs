@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Localization;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Web.Mvc;
-using FluentValidation.Attributes;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Validators.Common;
 
 namespace SmartStore.Web.Models.Common
 {
-	[Validator(typeof(AddressValidator))]
+    [Validator(typeof(AddressValidator))]
     public partial class AddressModel : EntityModelBase
     {
         public AddressModel()
@@ -58,10 +60,12 @@ namespace SmartStore.Web.Models.Common
         [AllowHtml]
         public string CountryName { get; set; }
         public bool CountryEnabled { get; set; }
+        public bool CountryRequired { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.StateProvince")]
         public int? StateProvinceId { get; set; }
         public bool StateProvinceEnabled { get; set; }
+        public bool StateProvinceRequired { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.StateProvince")]
         [AllowHtml]
@@ -155,4 +159,66 @@ namespace SmartStore.Web.Models.Common
 			return sb.ToString();
 		}
 	}
+
+    public class AddressValidator : AbstractValidator<AddressModel>
+    {
+        public AddressValidator(Localizer T, AddressSettings addressSettings)
+        {
+            RuleFor(x => x.FirstName).NotEmpty();
+            RuleFor(x => x.LastName).NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+
+            if (addressSettings.CountryRequired && addressSettings.CountryEnabled)
+            {
+                RuleFor(x => x.CountryId)
+                    .NotNull()
+                    .NotEqual(0)
+                    .WithMessage(T("Address.Fields.Country.Required"));
+            }
+
+            if (addressSettings.StateProvinceRequired && addressSettings.StateProvinceEnabled)
+            {
+                RuleFor(x => x.StateProvinceId)
+                    .NotNull()
+                    .NotEqual(0)
+                    .WithMessage(T("Address.Fields.StateProvince.Required"));
+            }
+
+            if (addressSettings.CompanyRequired && addressSettings.CompanyEnabled)
+            {
+                RuleFor(x => x.Company).NotEmpty();
+            }
+            if (addressSettings.StreetAddressRequired && addressSettings.StreetAddressEnabled)
+            {
+                RuleFor(x => x.Address1).NotEmpty();
+            }
+            if (addressSettings.StreetAddress2Required && addressSettings.StreetAddress2Enabled)
+            {
+                RuleFor(x => x.Address2).NotEmpty();
+            }
+            if (addressSettings.ZipPostalCodeRequired && addressSettings.ZipPostalCodeEnabled)
+            {
+                RuleFor(x => x.ZipPostalCode).NotEmpty();
+            }
+            if (addressSettings.CityRequired && addressSettings.CityEnabled)
+            {
+                RuleFor(x => x.City).NotEmpty();
+            }
+            if (addressSettings.PhoneRequired && addressSettings.PhoneEnabled)
+            {
+                RuleFor(x => x.PhoneNumber).NotEmpty();
+            }
+            if (addressSettings.FaxRequired && addressSettings.FaxEnabled)
+            {
+                RuleFor(x => x.FaxNumber).NotEmpty();
+            }
+            if (addressSettings.ValidateEmailAddress)
+            {
+                RuleFor(x => x.EmailMatch)
+                    .NotEmpty()
+                    .Equal(x => x.Email)
+                    .WithMessage(T("Admin.Address.Fields.EmailMatch.MustMatchEmail"));
+            }
+        }
+    }
 }

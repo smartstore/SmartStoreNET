@@ -11,50 +11,38 @@ function openModalWindow(modalId) {
 }
 
 // global Admin namespace
-var Admin = {
-
+SmartStore.Admin = {
+	modelTrees: {},
 	checkboxCheck: function (obj, checked) {
 		if (checked)
 			$(obj).attr('checked', 'checked');
 		else
 			$(obj).removeAttr('checked');
 	},
-
 	checkAllOverriddenStoreValue: function (obj) {
-		$('input.multi-store-override-option').each(function (index, elem) {
-			Admin.checkboxCheck(elem, obj.checked);
-			Admin.checkOverriddenStoreValue(elem);
+		$('.multi-store-override-option').each(function (i, el) {
+			SmartStore.Admin.checkboxCheck(el, obj.checked);
+			SmartStore.Admin.checkOverriddenStoreValue(el);
 		});
 	},
+	checkOverriddenStoreValue: function (el) {
+		var checkbox = $(el);
+		var parentSelector = checkbox.data('parent-selector'),
+			parent = parentSelector ? $(parentSelector) : checkbox.closest('.multi-store-setting-group').find('> .multi-store-setting-control'),
+			checked = checkbox.is(':checked');
 
-	checkOverriddenStoreValue: function (checkbox) {
-		var parentSelector = $(checkbox).attr('data-parent-selector').toString(),
-			parent = (parentSelector.length > 0 ? $(parentSelector) : $(checkbox).closest('.switch').parent()),
-			checked = $(checkbox).is(':checked');
+		parent.find('input:not([type=hidden]), select').each(function (i, el) {
+			var input = $(el);
+			var tbox = input.data('tTextBox');
 
-		parent.find(':input:not([type=hidden])').each(function (index, elem) {
-			if ($(elem).is('select')) {
-				$(elem).select2(checked ? 'enable' : 'disable');
+			if (tbox) {
+				checked ? tbox.enable() : tbox.disable();
 			}
-			else if (!$(elem).hasClass('multi-store-override-option')) {
-				var tData = $(elem).data('tTextBox');
-
-				if (tData != null) {
-					if (checked)
-						tData.enable();
-					else
-						tData.disable();
-				}
-				else {
-					if (checked)
-						$(elem).removeAttr('disabled');
-					else
-						$(elem).attr('disabled', 'disabled');
-				}
+			else {
+				checked ? input.removeAttr('disabled') : input.attr('disabled', true);
 			}
 		});
 	},
-
 	movePluginActionButtons: function() {
 		// Move plugin specific action buttons (like 'Save') to top header section
 		var pluginActions = $('.plugin-config-container .plugin-actions');
@@ -72,7 +60,6 @@ var Admin = {
 			});
 		}
 	},
-
 	togglePanel: function(el /* the toggler */, animate) {
 		var ctl = $(el),
 			show = ctl.is(':checked'),
@@ -117,7 +104,6 @@ var Admin = {
 			}
 		});
 	},
-
 	TaskWatcher: (function () {
 		var interval;
 
@@ -129,7 +115,7 @@ var Admin = {
 						type: 'POST',
 						global: false,
 						url: opts.pollUrl,
-						dataType: 'json',
+						//dataType: 'json',
 						success: function (data) {
 							data = data || [];
 							var runningElements = [];
@@ -145,8 +131,8 @@ var Admin = {
 									else {
 										// new task
 										var row1 = $('<div class="hint clearfix" style="position: relative"></div>').appendTo(el);
-										row1.append($('<div class="text pull-left">' + (task.message || opts.defaultProgressMessage) + '</div>'));
-										row1.append($('<div class="percent pull-right">' + (task.percent >> 0 ? task.percent + ' %' : "") + '</div>'));
+										row1.append($('<div class="text float-left">' + (task.message || opts.defaultProgressMessage) + '</div>'));
+										row1.append($('<div class="percent float-right">' + (task.percent >> 0 ? task.percent + ' %' : "") + '</div>'));
 										var row2 = $('<div class="loading-bar mt-2"></div>').appendTo(el);
 										el.attr('data-running', 'true').data('running', true);
 										if (_.isFunction(opts.onTaskStarted)) {
@@ -160,7 +146,7 @@ var Admin = {
 							// remove runningElements for finished tasks (the ones currently running but are not in 'runningElements'
 							var currentlyRunningElements = opts.context.find(opts.elementsSelector + '[data-running=true]');
 							$.each(currentlyRunningElements, function (i, el) {
-								var shouldRun = _.find(runningElements, function (val) { return val == el; });
+								var shouldRun = _.find(runningElements, function (val) { return val === el; });			
 								if (!shouldRun) {
 									// restore element to it's init state
 									var jel = $(el);
@@ -173,6 +159,7 @@ var Admin = {
 						},
 						error: function (xhr, ajaxOptions, thrownError) {
 							window.clearInterval(interval);
+							console.error(thrownError);
 						}
 					});
 				}
@@ -182,11 +169,3 @@ var Admin = {
 		}
 	})()
 };
-
-(function () {
-	// TODO: (mc) BS4 > move SmartStore namespace to SmartStore.Web and replace $.smartstore.
-	// Also move 'Admin' object above to SmartStore.Admin.
-	SmartStore.Admin = {
-		modelTrees: {}
-	};
-})();

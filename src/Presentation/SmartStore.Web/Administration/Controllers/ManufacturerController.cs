@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -23,6 +24,8 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -54,11 +57,18 @@ namespace SmartStore.Admin.Controllers
 
 		#region Constructors
 
-		public ManufacturerController(ICategoryService categoryService, IManufacturerService manufacturerService,
-            IManufacturerTemplateService manufacturerTemplateService, IProductService productService,
-			IStoreService storeService,	IStoreMappingService storeMappingService,
-            IUrlRecordService urlRecordService, IPictureService pictureService,
-            ILanguageService languageService, ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
+		public ManufacturerController(
+			ICategoryService categoryService, 
+			IManufacturerService manufacturerService,
+            IManufacturerTemplateService manufacturerTemplateService, 
+			IProductService productService,
+			IStoreService storeService,	
+			IStoreMappingService storeMappingService,
+            IUrlRecordService urlRecordService, 
+			IPictureService pictureService,
+            ILanguageService languageService, 
+			ILocalizationService localizationService, 
+			ILocalizedEntityService localizedEntityService,
             IWorkContext workContext,
             ICustomerActivityService customerActivityService,
 			IPermissionService permissionService,
@@ -67,24 +77,24 @@ namespace SmartStore.Admin.Controllers
             AdminAreaSettings adminAreaSettings,
 			CatalogSettings catalogSettings)
         {
-            this._categoryService = categoryService;
-            this._manufacturerTemplateService = manufacturerTemplateService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._urlRecordService = urlRecordService;
-            this._pictureService = pictureService;
-            this._languageService = languageService;
-            this._localizationService = localizationService;
-            this._localizedEntityService = localizedEntityService;
-            this._workContext = workContext;
-            this._customerActivityService = customerActivityService;
-            this._permissionService = permissionService;
-			this._discountService = discountService;
-			this._dateTimeHelper = dateTimeHelper;
-            this._adminAreaSettings = adminAreaSettings;
-            this._catalogSettings = catalogSettings;
+            _categoryService = categoryService;
+            _manufacturerTemplateService = manufacturerTemplateService;
+            _manufacturerService = manufacturerService;
+            _productService = productService;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
+            _urlRecordService = urlRecordService;
+            _pictureService = pictureService;
+            _languageService = languageService;
+            _localizationService = localizationService;
+            _localizedEntityService = localizedEntityService;
+            _workContext = workContext;
+            _customerActivityService = customerActivityService;
+            _permissionService = permissionService;
+			_discountService = discountService;
+			_dateTimeHelper = dateTimeHelper;
+            _adminAreaSettings = adminAreaSettings;
+            _catalogSettings = catalogSettings;
 		}
 
         #endregion
@@ -130,9 +140,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void UpdatePictureSeoNames(Manufacturer manufacturer)
         {
-			var picture = _pictureService.GetPictureById(manufacturer.PictureId.GetValueOrDefault());
-            if (picture != null)
-                _pictureService.SetSeoFilename(picture.Id, _pictureService.GetPictureSeName(manufacturer.Name));
+			_pictureService.SetSeoFilename(manufacturer.PictureId.GetValueOrDefault(), _pictureService.GetPictureSeName(manufacturer.Name));
         }
 
         [NonAction]
@@ -179,7 +187,7 @@ namespace SmartStore.Admin.Controllers
 
 		#region List
 
-		//ajax
+		// AJAX
 		public ActionResult AllManufacturers(string label, int selectedId)
         {
             var manufacturers = _manufacturerService.GetAllManufacturers(true);
@@ -197,30 +205,41 @@ namespace SmartStore.Admin.Controllers
                            selected = m.Id == selectedId
                        };
 
-			var data = list.ToList();
+			var mainList = list.ToList();
 
-			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-				_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
-
-			// TODO: return two option groups... new JsonResult { Data = new object[] { new { text = "Last used", children = mruItems }, new { text = "All Manufacturers", children = items } } };
-			// and load them through select2.ajax option.
-
-			for (int i = mru.Count - 1; i >= 0; --i)
-			{
-				string id = mru[i];
-				var item = manufacturers.FirstOrDefault(x => x.Id.ToString() == id);
-				if (item != null)
+			var mruList = new MostRecentlyUsedList<string>(
+				_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+				_catalogSettings.MostRecentlyUsedManufacturersMaxSize)
+				.Reverse()
+				.Select(x => 
 				{
-					data.Insert(0, new
+					var item = manufacturers.FirstOrDefault(m => m.Id.ToString() == x);
+					if (item != null)
 					{
-						id = id,
-						text = item.Name,
-						selected = false
-					});
-				}
+						return new
+						{
+							id = x,
+							text = item.Name,
+							selected = false
+						};
+					}
+
+					return null;
+				})
+				.Where(x => x != null)
+				.ToList();
+
+			object data = mainList;
+			if (mruList.Count > 0)
+			{
+				data = new List<object>
+				{
+					new Dictionary<string, object> { ["text"] = T("Common.Mru").Text, ["children"] = mruList },
+					new Dictionary<string, object> { ["text"] = T("Admin.Catalog.Manufacturers").Text, ["children"] = mainList, ["main"] = true }
+				};
 			}
 
-            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Index()
@@ -334,7 +353,7 @@ namespace SmartStore.Admin.Controllers
 				UpdatePictureSeoNames(manufacturer);
 				
 				// Stores
-				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
+				SaveStoreMappings(manufacturer, model);
 
                 // activity log
                 _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
@@ -379,7 +398,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Edit(ManufacturerModel model, bool continueEditing)
+		[ValidateInput(false)]
+		public ActionResult Edit(ManufacturerModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -392,11 +412,7 @@ namespace SmartStore.Admin.Controllers
             {
                 manufacturer = model.ToEntity(manufacturer);
 				MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
-
-				////TBD: is it really necessary here already?
-				//manufacturer.UpdatedOnUtc = DateTime.UtcNow;
-				//_manufacturerService.UpdateManufacturer(manufacturer);
-
+				
 				// search engine name
 				model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
 				_urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
@@ -421,15 +437,18 @@ namespace SmartStore.Admin.Controllers
 				}
 
 				manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
+				manufacturer.UpdatedOnUtc = DateTime.UtcNow;
 
 				// Commit now
 				_manufacturerService.UpdateManufacturer(manufacturer);
+				
+				Services.EventPublisher.Publish(new ModelBoundEvent(model, manufacturer, form));
 
 				// update picture seo file name
 				UpdatePictureSeoNames(manufacturer);
 				
 				// Stores
-				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
+				SaveStoreMappings(manufacturer, model);
 
                 // activity log
                 _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);
@@ -437,8 +456,7 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Updated"));
                 return continueEditing ? RedirectToAction("Edit", manufacturer.Id) : RedirectToAction("List");
             }
-
-
+			
             //If we got this far, something failed, redisplay form
             //templates
             PrepareTemplatesModel(model);

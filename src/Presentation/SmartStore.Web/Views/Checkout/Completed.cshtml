@@ -24,7 +24,7 @@
             @{ Html.RenderWidget("checkout_completed_top"); }
             <div class="body fs-h5">
                 <p>
-                    @T("Checkout.OrderNumber"): &nbsp;
+					<span>@T("Checkout.OrderNumber"):</span>
 					<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" rel="nofollow"><strong>@Model.OrderNumber</strong></a>
                 </p>
             </div>

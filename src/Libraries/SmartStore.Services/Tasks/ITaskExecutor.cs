@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks

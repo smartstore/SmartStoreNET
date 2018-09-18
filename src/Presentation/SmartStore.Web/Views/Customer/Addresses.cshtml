@@ -34,7 +34,7 @@
         var address = Model.Addresses[i];
                     
         <div class="card card-shadow address-list-item">
-            <div class="card-block">
+            <div class="card-body">
 				<h4 class="card-title">@address.GetFormattedName()</h4>
 
 				<div class="mb-2">
@@ -67,7 +67,7 @@
                 <a class="btn btn-secondary btn-lg btn-flat rounded-0 edit-address-button" href="@Url.Action("AddressEdit", new { id = address.Id })">
 					<span>@T("Common.Edit")</span>
 				</a>
-                <a class="btn btn-danger btn-lg btn-flat rounded-0 delete-address-button" href="@Url.Action("AddressDelete", new { id = address.Id })" onclick="return confirm(@T("Common.AreYouSure").JsText);">
+                <a class="btn btn-danger btn-lg btn-flat rounded-0 delete-address-button" href="@Url.Action("AddressDelete", new { id = address.Id })" onclick='return confirm(@T("Common.AreYouSure").JsText);'>
 					<span>@T("Common.Delete")</span>
 				</a>
             </div>

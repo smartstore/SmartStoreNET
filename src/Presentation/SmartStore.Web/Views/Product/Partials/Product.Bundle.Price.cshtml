@@ -6,8 +6,8 @@
 	@if (Model.ProductPrice.PriceWithDiscount.HasValue())
 	{
 		@Html.Raw(T("Products.Bundle.YouSave",
-					"<span class='pd-bundle-price-offer'>" + Model.ProductPrice.PriceWithDiscount + "</span>",
-					"<span class='pd-bundle-price-regular'>" + Model.ProductPrice.Price + "</span>"));
+					"<span class='pd-bundle-price-offer lrm'>" + Model.ProductPrice.PriceWithDiscount + "</span>",
+					"<span class='pd-bundle-price-regular lrm'>" + Model.ProductPrice.Price + "</span>"));
 	}
 	else
 	{

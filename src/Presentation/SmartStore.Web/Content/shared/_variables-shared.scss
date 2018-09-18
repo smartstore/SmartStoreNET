@@ -1,0 +1,63 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+//
+// General
+// --------------------------------------------------
+
+$alert-info-is-primary:		false !default;
+$enable-lightbtn-tweak:		false !default;
+$enable-social-buttons:		true !default;
+
+
+//
+// Typo
+// --------------------------------------------------
+
+$font-size-xs:				0.75rem !default;
+$font-weight-medium:        600 !default;
+$headings-lg-font-weight:   400 !default;
+$headings-sm-font-weight:   $font-weight-medium !default;
+
+
+// Material tabs
+// ==============================================================
+
+$mtab-text-transform:		none !default;
+$mtab-font-weight:			$font-weight-medium !default;
+$mtab-color:				inherit !default;
+
+
+//
+// Brand color variables
+// --------------------------------------------------
+
+$clr-brand-facebook:            #3b5998 !default;
+$clr-brand-twitter:             #55acee !default;
+$clr-brand-github:              #bd2c00 !default;
+$clr-brand-github2:             #ff9933 !default;
+$clr-brand-github3:             #4183c4 !default;
+$clr-brand-google:              #4285f4 !default;
+$clr-brand-google2:             #db4437 !default;
+$clr-brand-google3:             #f4b400 !default;
+$clr-brand-google4:             #0f9d58 !default;
+$clr-brand-google5:             #e7e6dd !default;
+$clr-brand-googleplus:          #dd4b39 !default;
+$clr-brand-amazon:              #ff9900 !default;
+$clr-brand-atlassian:           #003366 !default;
+$clr-brand-dropbox:             #007ee5 !default;
+$clr-brand-ebay:                #e53238 !default;
+$clr-brand-flickr:              #0063dc !default;
+$clr-brand-html5:               #ec6231 !default;
+$clr-brand-instagram:           #3f729b !default;
+$clr-brand-linkedin:            #007bb6 !default;
+$clr-brand-paypal:              #3b7bbf !default;
+$clr-brand-pinterest:           #cc2127 !default;
+$clr-brand-rss:                 #ee802f !default;
+$clr-brand-skype:               #00aff0 !default;
+$clr-brand-stackoverflow:       #ef8236 !default;
+$clr-brand-xing:                #126567 !default;
+$clr-brand-youtube:             #cd201f !default;
+$clr-brand-microsoft:           #f65314 !default;
+$clr-brand-windows:             #00bcf2 !default;
+$clr-brand-bitbucket:           #205081 !default;

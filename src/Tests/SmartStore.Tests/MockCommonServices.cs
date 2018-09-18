@@ -34,6 +34,8 @@ namespace SmartStore.Tests
 		public MockCommonServices(IComponentContext container)
 		{
 			_container = container;
+
+			EventPublisher = MockRepository.GenerateStub<IEventPublisher>();
 		}
 
 		public IComponentContext Container => _container;
@@ -43,7 +45,7 @@ namespace SmartStore.Tests
 		public IStoreContext StoreContext => MockRepository.GenerateMock<IStoreContext>();
 		public IWebHelper WebHelper => MockRepository.GenerateMock<IWebHelper>();
 		public IWorkContext WorkContext => MockRepository.GenerateMock<IWorkContext>();
-		public IEventPublisher EventPublisher => NullEventPublisher.Instance;
+		public IEventPublisher EventPublisher { get; set; }
 		public ILocalizationService Localization => MockRepository.GenerateMock<ILocalizationService>();
 		public ICustomerActivityService CustomerActivity => MockRepository.GenerateMock<ICustomerActivityService>();
 		public IPictureService PictureService => MockRepository.GenerateMock<IPictureService>();

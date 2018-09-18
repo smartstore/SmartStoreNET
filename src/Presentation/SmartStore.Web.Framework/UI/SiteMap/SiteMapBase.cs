@@ -36,7 +36,7 @@ namespace SmartStore.Web.Framework.UI
 					using (Services.Chronometer.Step("Build SiteMap '{0}'".FormatInvariant(this.Name)))
 					{
 						var root = Build();
-
+						
 						// Menu publisher
 						MenuPublisher.RegisterMenus(root, this.Name);
 

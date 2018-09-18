@@ -1,7 +1,8 @@
-﻿@using SmartStore.Web.Models.Search
-
-@model SearchResultModel.HitGroup
-
+﻿@using SmartStore.Web.Models.Search;
+@model SearchResultModelBase.HitGroup
+@{
+    var parentModel = Model.Parent as SearchResultModel;
+}
 
 @if (Model.DisplayName.HasValue())
 {
@@ -18,7 +19,7 @@
 				}
 				else
 				{
-					@Html.Raw(Model.Parent.SearchResult.Highlight(hit.Label, "<span class='instasearch-match'>", "</span>", false))
+					@Html.Raw(parentModel.Highlight(hit.Label, "name", parentModel.Query, null, "<span class='instasearch-match pl-1'>", "</span>"))
 				}
 				@if (hit.Tag.HasValue())
 				{

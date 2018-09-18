@@ -9,6 +9,7 @@ using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -59,13 +60,6 @@ namespace SmartStore.Web.Models.ShoppingCart
         public string CustomerComment { get; set; }
         public string MeasureUnitName { get; set; }
 
-		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
-		public bool? SubscribeToNewsLetter { get; set; }
-
-		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
-		public string ThirdPartyEmailHandOverLabel { get; set; }
-		public bool? AcceptThirdPartyEmailHandOver { get; set; }
-
 		public bool DisplayEsdRevocationWaiverBox { get; set; }
         public bool DisplayMoveToWishlistButton { get; set; }
 
@@ -87,7 +81,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public int ProductId { get; set; }
 
-            public string ProductName { get; set; }
+            public LocalizedValue<string> ProductName { get; set; }
 
             public string ProductSeName { get; set; }
 
@@ -105,9 +99,9 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public int EnteredQuantity { get; set; }
 
-            public string QuantityUnitName { get; set; }
+            public LocalizedValue<string> QuantityUnitName { get; set; }
 
-            public List<SelectListItem> AllowedQuantities { get; set; }
+			public List<SelectListItem> AllowedQuantities { get; set; }
 
             public int MinOrderAmount { get; set; }
 
@@ -127,11 +121,11 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public bool IsShipEnabled { get; set; }
 
-            public string DeliveryTimeName { get; set; }
+            public LocalizedValue<string> DeliveryTimeName { get; set; }
             
             public string DeliveryTimeHexValue { get; set; }
 
-            public string ShortDesc { get; set; }
+            public LocalizedValue<string> ShortDesc { get; set; }
             
             public string BasePrice { get; set; }
 

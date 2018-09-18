@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Boards
 {
-    public partial class ForumTopicPageModel
+    public partial class ForumTopicPageModel : EntityModelBase
     {
         public ForumTopicPageModel()
         {
-            this.ForumPostModels = new List<ForumPostModel>();
+            ForumPostModels = new List<ForumPostModel>();
         }
 
-        public int Id { get; set; }
         public string Subject { get; set; }
         public string SeName { get; set; }
 

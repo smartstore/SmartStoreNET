@@ -68,12 +68,16 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareShippingMethodModel(ShippingMethodModel model, ShippingMethod shippingMethod)
 		{
-			var allFilters = _shippingService.GetAllShippingMethodFilters();
-
 			if (shippingMethod != null)
 			{
-				model.FilterConfigurationUrls = allFilters
-					.Select(x => "'" + x.GetConfigurationUrl(shippingMethod.Id) + "'")
+				var allFilters = _shippingService.GetAllShippingMethodFilters();
+				var configUrls = allFilters
+					.Select(x => x.GetConfigurationUrl(shippingMethod.Id))
+					.Where(x => x.HasValue())
+					.ToList();
+
+				model.FilterConfigurationUrls = configUrls
+					.Select(x => string.Concat("'", x, "'"))
 					.OrderBy(x => x)
 					.ToList();
 
@@ -207,7 +211,7 @@ namespace SmartStore.Admin.Controllers
                 var sm = model.ToEntity();
                 _shippingService.InsertShippingMethod(sm);
 
-				_storeMappingService.SaveStoreMappings(sm, model.SelectedStoreIds);
+				SaveStoreMappings(sm, model);
 
 				UpdateLocales(sm, model);
 
@@ -255,7 +259,7 @@ namespace SmartStore.Admin.Controllers
                 sm = model.ToEntity(sm);
                 _shippingService.UpdateShippingMethod(sm);
 
-				_storeMappingService.SaveStoreMappings(sm, model.SelectedStoreIds);
+				SaveStoreMappings(sm, model);
 
 				UpdateLocales(sm, model);
 

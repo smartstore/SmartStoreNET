@@ -39,6 +39,12 @@ namespace SmartStore.Core.Domain.Forums
         public int Views { get; set; }
 
         /// <summary>
+        /// Gets or sets the first post identifier, for example of the first search hit.
+        /// This property is not a data member.
+        /// </summary>
+        public int FirstPostId { get; set; }
+
+        /// <summary>
         /// Gets or sets the last post identifier
         /// </summary>
         public int LastPostId { get; set; }

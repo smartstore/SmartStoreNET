@@ -12,7 +12,7 @@ namespace SmartStore.Web.Framework.Filters
 		public Lazy<IWebHelper> WebHelper { get; set; }
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<ICustomerService> CustomerService { get; set; }
-		public Lazy<CustomerSettings> CustomerSettings { get; set; }
+		public Lazy<PrivacySettings> PrivacySettings { get; set; }
 
 		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -30,7 +30,7 @@ namespace SmartStore.Web.Framework.Filters
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-			if (!CustomerSettings.Value.StoreLastIpAddress)
+			if (!PrivacySettings.Value.StoreLastIpAddress)
 				return;
 
 			// Update IP address.

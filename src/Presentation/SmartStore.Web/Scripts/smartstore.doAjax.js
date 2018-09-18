@@ -69,7 +69,7 @@
 			    opt.url = $(element).attr('action');
 		}
 
-        opt.url = (_.isUndefined(opt.url) ? findUrl(element) : opt.url);
+		opt.url = (_.isUndefined(opt.url) ? findUrl(element) : opt.url);
 	}
 
 	function findUrl(element) {
@@ -116,7 +116,7 @@
 			type: opt.type,
 			data: opt.data,
 			url: opt.url + (_.isEmpty(opt.appendToUrl) ? '' : opt.appendToUrl),
-			async: opt.async,
+			async: opt.async === undefined ? true : opt.async,
 			beforeSend: function () {
 				_.call(opt.callbackBeforeSend);
 			},

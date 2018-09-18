@@ -6,7 +6,27 @@ using SmartStore;
 
 namespace SmartStore.Core
 {
-    public static class SmartStoreVersion
+	public class HelpTopic
+	{
+		public static HelpTopic CronExpressions = new HelpTopic("cron", "Managing+Scheduled+Tasks#ManagingScheduledTasks-Cron", "Geplante+Aufgaben+verwalten#GeplanteAufgabenverwalten-CronAusdruck");
+
+		public HelpTopic(string name, string enPath, string dePath)
+		{
+			Guard.NotEmpty(name, nameof(name));
+			Guard.NotEmpty(enPath, nameof(enPath));
+			Guard.NotEmpty(dePath, nameof(dePath));
+
+			Name = name;
+			EnPath = enPath;
+			DePath = dePath;
+		}
+
+		public string Name { get; private set; }
+		public string EnPath { get; private set; }
+		public string DePath { get; private set; }
+	}
+
+	public static class SmartStoreVersion
     {
         private static readonly Version s_infoVersion = new Version("1.0.0.0");
         private static readonly List<Version> s_breakingChangesHistory = new List<Version> 
@@ -16,15 +36,17 @@ namespace SmartStore.Core
             //       A release with breaking changes should definitely have at least
             //       a greater minor version.
             new Version("1.2"),
-            new Version("1.2.1"), // MC: had to be :-(
+            new Version("1.2.1"),
             new Version("2.0"),
 			new Version("2.1"),
 			new Version("2.2"),
             new Version("2.5"),
-			new Version("3.0")
+			new Version("3.0"),
+			new Version("3.1"),
+			new Version("3.1.5")
 		};
 
-		private const string HELP_BASEURL = "http://docs.smartstore.com/display/";
+		private const string HELP_BASEURL = "https://docs.smartstore.com/display/";
 
 		static SmartStoreVersion()
         {
@@ -68,8 +90,19 @@ namespace SmartStore.Core
             }
         }
 
+		public static string GenerateHelpUrl(string languageCode, HelpTopic topic)
+		{
+			Guard.NotEmpty(languageCode, nameof(languageCode));
+			Guard.NotNull(topic, nameof(topic));
+
+			var path = languageCode.IsCaseInsensitiveEqual("de") ? topic.DePath : topic.EnPath;
+			return GenerateHelpUrl(languageCode, path);
+		}
+
 		public static string GenerateHelpUrl(string languageCode, string path)
 		{
+			Guard.NotEmpty(languageCode, nameof(languageCode));
+
 			return String.Concat(
 				HELP_BASEURL,
 				GetUserGuideSpaceKey(languageCode),
@@ -79,10 +112,9 @@ namespace SmartStore.Core
 
 		public static string GetUserGuideSpaceKey(string languageCode)
 		{
-            if(languageCode.Equals("de"))
-                return "SDDE30";
-
-            return "SMNET30";
+			return languageCode.IsCaseInsensitiveEqual("de") 
+				? "SDDE31" 
+				: "SMNET31";
 		}
 
         /// <summary>

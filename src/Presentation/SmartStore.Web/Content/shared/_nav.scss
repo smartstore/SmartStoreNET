@@ -1,0 +1,296 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// General
+// ==============================================================
+
+.nav ~ .tab-content {
+    margin: 1rem 0;
+}
+
+.nav-link-summary {
+    display: none;
+}
+
+
+// Material Tabs
+// ==============================================================
+
+.nav-tabs-line {
+	position: relative;
+
+	.nav-item {
+		position: relative;
+	}
+
+	.nav-link {
+		color: $mtab-color;
+		text-transform: $mtab-text-transform;
+		font-weight: $mtab-font-weight;
+		font-size: 0.9375rem;
+		text-align: center;
+		position: relative;
+		border-width: 0;
+		background-color: transparent;
+		padding: 0.825rem 1rem;
+		transition: color 0.05s ease-in-out, background-color 0.05s ease-in-out;
+
+		&:hover {
+			color: $nav-tabs-link-active-color;
+		}
+
+		&:hover:not(.active) {
+			background-color: rgba(#000, 0.025);
+		}
+
+		&:active:not(.active) {
+			background-color: rgba(#000, 0.05);
+		}
+
+		&.active {
+			color: $nav-tabs-link-active-color;
+		}
+
+		&.disabled {
+			opacity: 0.4;
+		}
+
+		> i, > img {
+			display: none;
+		}
+
+        .badge {
+			vertical-align: text-top;
+        }
+
+		@include media-breakpoint-up(lg) {
+			> i, > img {
+				display: inline-block;
+			}
+		}
+	}
+
+	.nav-link:not(.disabled):before {
+		position: absolute;
+		content: '';
+		bottom: 0;
+		left: 50%;
+		right: 50%;
+		height: 2px;
+		background: rgba(#000, 0.2);
+		transition: all 0.12s ease-out;
+	}
+
+	.nav-link:hover:before {
+		left: 0;
+		right: 0;
+	}
+
+	.nav-link.active:before,
+	.nav-link.active:focus:before,
+	.nav-item.open .nav-link:before,
+	.nav-item.open .nav-link:focus:before {
+		left: 0;
+		right: 0;
+		background: theme-color("warning");
+	}
+}
+
+
+// Stacked Material tabs (strip on the sides)
+// TODO: implement right positioning
+// ==============================================================
+
+.tabs-left .nav-tabs .nav-link {
+	border-radius: $nav-tabs-border-radius 0 0 $nav-tabs-border-radius;
+}
+
+@include media-breakpoint-up(lg) {
+	.tabs-left {
+		flex-wrap: nowrap;
+	}
+
+	.tabs-left > .nav-aside > .nav-tabs-line {
+		border-bottom: none;
+		border-right: 1px solid $nav-tabs-border-color;
+
+		.nav-link:not(.disabled):before {
+			// disable selection animations
+			display: none;
+		}
+
+		.nav-item {
+			margin: 0;
+			margin-right: -1px;
+		}
+
+		.nav-link {
+			text-align: left;
+			border: 1px solid transparent;
+			border-left-width: 2px;
+			transition: none;
+			padding: 0.625rem 1.25rem;
+			padding-right: 1.25rem;
+			font-size: inherit;
+
+			> img, > i {
+				margin-right: 0.75rem;
+				margin-left: -0.5rem;
+			}
+		}
+
+		.nav-link.active,
+		.nav-link.active:focus,
+		.nav-item.open .nav-link,
+		.nav-item.open .nav-link:focus {
+			border-top-color: $nav-tabs-border-color;
+			border-bottom-color: $nav-tabs-border-color;
+			border-left-color: theme-color("warning");
+		}
+	}
+}
+
+@include media-breakpoint-up(lg) {
+	/*.nav-aside {
+		flex: 0 0 auto;
+		width: auto;
+		max-width: none;
+	}
+
+	.nav-content {
+		flex-basis: 0;
+		flex-grow: 1;
+		max-width: 100%;
+	}*/
+}
+
+
+// Responsive Tabs
+// ==============================================================
+
+.tab-content-header {
+    display: none;
+}
+
+// The collapsable tab strip in page body
+.nav-responsive.collapsed {
+    position: relative;
+
+    .nav-tabs {
+        flex-direction: column;
+
+        .nav-link { 
+            position: relative;
+            display: block; 
+            text-transform: none;
+            font-weight: $font-weight-medium;
+            text-align: left;
+            color: $list-group-action-color !important;
+            background-color: $list-group-bg;
+            border: $list-group-border-width solid $list-group-border-color;
+            border-radius: 0;
+            padding: .75rem 2.2rem .75rem 1.25rem;
+            // Place the border on the list items and negative margin up for better styling
+            margin-bottom: -$list-group-border-width;
+            @include transition(background-color 0.12s linear);
+
+            .nav-link-summary {
+                display: block;
+                font-weight: 400;
+                font-size: $font-size-base;
+            }
+
+            &:hover {
+                color: $list-group-action-hover-color;
+                background-color: $list-group-hover-bg;
+            }
+            &:active {
+                background-color: darken($list-group-hover-bg, 4%);
+            }
+
+            &:before {
+                display: none;
+            }
+
+            &:not(.disabled):after {
+                font-family: FontAwesome;
+                content: "\f105"; // angle-right
+                //color: #ccc;
+                font-size: 1.5rem;
+                line-height: 1;
+                position: absolute;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        }
+
+        // Round the first and last items
+        .nav-item:first-child .nav-link {
+            @include border-top-radius($list-group-border-radius);
+        }
+        .nav-item:last-child .nav-link {
+            margin-bottom: 0;
+            @include border-bottom-radius($list-group-border-radius);
+        }
+    }
+}
+
+
+// 
+// The moved tab content
+// ==============================================================
+
+.offcanvas-nav {
+    .tab-content {
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+    }
+
+    .tab-content-header {
+        display: block;
+        flex-grow: 0;
+    }
+
+    .tab-pane {
+        flex-grow: 1;
+        padding: 1.5rem;
+        padding-top: 1rem;
+    }
+}
+
+
+// 
+// Add icon support to nav tabs and pills (BS4)
+// ==============================================================
+
+.nav {
+	.nav-link > img,
+	.nav-link > i {
+		vertical-align: baseline;
+		font-size: inherit;
+		margin-right: 0.5rem;
+		color: $text-muted;
+
+		+ span {
+			// Reset left space
+			padding-left: 0 !important;
+		}
+	}
+
+	.nav-link:hover > i,
+	.nav-link.active > i {
+		color: inherit;
+	}
+
+	.nav-link > .chevron {
+		margin-left: 3px;
+	}
+
+	.tabs-left .nav-link > i {
+		min-width: 1rem;
+	}
+}

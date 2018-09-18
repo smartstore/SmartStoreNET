@@ -22,7 +22,9 @@ namespace SmartStore.Data.Tests.Media
 				ContentType = "application/x-zip-co",
                 Filename = "file",
                 Extension = ".zip",
-                IsNew = true
+                IsNew = true,
+                EntityName = "Product",
+                EntityId = 1
             };
 
             var fromDb = SaveAndLoadEntity(download);
@@ -35,6 +37,8 @@ namespace SmartStore.Data.Tests.Media
             fromDb.Filename.ShouldEqual("file");
             fromDb.Extension.ShouldEqual(".zip");
             fromDb.IsNew.ShouldEqual(true);
+            fromDb.EntityName.ShouldEqual("Product");
+            fromDb.EntityId.ShouldEqual(1);
         }
     }
 }

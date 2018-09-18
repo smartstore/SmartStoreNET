@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Web.Mvc;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
-	[Validator(typeof(ExportDeploymentValidator))]
+    [Validator(typeof(ExportDeploymentValidator))]
 	public class ExportDeploymentModel : EntityModelBase
 	{
 		public int ProfileId { get; set; }
@@ -85,5 +87,45 @@ namespace SmartStore.Admin.Models.DataExchange
 				get { return Error.IsEmpty(); }
 			}
 		}
+
 	}
+
+    public partial class ExportDeploymentValidator : AbstractValidator<ExportDeploymentModel>
+    {
+        public ExportDeploymentValidator(Localizer T)
+        {
+            RuleFor(x => x.Name).NotEmpty();
+
+            RuleFor(x => x.EmailAddresses)
+                .NotEmpty()
+                .When(x => x.DeploymentType == ExportDeploymentType.Email);
+
+            RuleFor(x => x.Url)
+                .NotEmpty()
+                .When(x => x.DeploymentType == ExportDeploymentType.Http || x.DeploymentType == ExportDeploymentType.Ftp);
+
+            RuleFor(x => x.Username)
+                .NotEmpty()
+                .When(x => x.DeploymentType == ExportDeploymentType.Ftp);
+
+            //RuleFor(x => x.Password)
+            //	.NotEmpty()
+            //	.When(x => x.DeploymentType == ExportDeploymentType.Ftp);
+
+            RuleFor(x => x.FileSystemPath)
+                .Must(x =>
+                {
+                    var isValidPath =
+                        x.HasValue() &&
+                        !x.IsCaseInsensitiveEqual("con") &&
+                        x != "~/" &&
+                        x != "~" &&
+                        x.IndexOfAny(Path.GetInvalidPathChars()) == -1;
+
+                    return isValidPath;
+                })
+                .When(x => x.DeploymentType == ExportDeploymentType.FileSystem)
+				.WithMessage(x => string.Format(T("Admin.Validation.InvalidPath").Text, x.FileSystemPath.NaIfEmpty()));
+        }
+    }
 }

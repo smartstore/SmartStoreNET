@@ -28,40 +28,25 @@
     }
 </div>
 
-<div id="export-profile-dialog" class="modal fade" tabindex="-1" data-profile="@T("Common.Profile")">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title"></h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body"></div>
-			<div class="modal-footer">
-				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-				<button class="btn btn-primary">@T("Common.OK")</button>
-			</div>
-		</div>
-	</div>
-</div>
+@{Html.SmartStore().Window()
+	.Name("export-profile-dialog")
+	.Size(WindowSize.Large)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal"><span>@T("Common.Cancel")</span></button>
+		<button class="btn btn-primary"><span>@T("Common.OK")</span></button>
+	</text>)
+	.Render();
+}
 
-<div id="export-profile-file-dialog" class="modal fade" tabindex="-1">
-	<div class="modal-dialog modal-flex modal-flex-sm" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">@T("Admin.DataExchange.Export.ExportFiles")</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body"></div>
-			<div class="modal-footer">
-				<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-			</div>
-		</div>
-	</div>
-</div>
+@{Html.SmartStore().Window()
+	.Name("export-profile-file-dialog")
+	.Title(T("Admin.DataExchange.Export.ExportFiles"))
+	.Size(WindowSize.FlexSmall)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal"><span>@T("Common.Cancel")</span></button>
+	</text>)
+	.Render();
+}
 
 <script type="text/javascript">
 
@@ -223,7 +208,7 @@
 			return false;
 		});
 
-		Admin.TaskWatcher.startWatching({
+		SmartStore.Admin.TaskWatcher.startWatching({
 			context: $('#ExportProfileListContainer'),
 			elementsSelector: '.task-progress',
 			defaultProgressMessage: @T("Admin.System.ScheduleTasks.RunNow.IsRunning").JsText,
@@ -236,7 +221,7 @@
 				tr.find('.btn-log').addClass('hide');
 				tr.find('.next-run-info').addClass('hide');
 				
-				$('body, html').animate({ scrollTop: tr.offset().top }, 'slow');
+				$('body, html').animate({ scrollTop: tr.offset().top - 70 }, 'slow');
 			},
 			onTaskCompleted: function (taskId, el) {
 				var tr = el.closest('tr'),

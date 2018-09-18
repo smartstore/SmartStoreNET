@@ -1,12 +1,13 @@
-﻿using System.Net;
-using System.Web;
+﻿using System.Web;
+using Newtonsoft.Json;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
-using SmartStore.Services.Orders;
+using SmartStore.Services.Common;
 
 namespace SmartStore.PayPal
 {
-	internal static class MiscExtensions
+    internal static class MiscExtensions
 	{
 		public static string GetPayPalUrl(this PayPalSettingsBase settings)
 		{
@@ -15,26 +16,54 @@ namespace SmartStore.PayPal
 				"https://www.paypal.com/cgi-bin/webscr";
 		}
 
-		public static HttpWebRequest GetPayPalWebRequest(this PayPalSettingsBase settings)
+		public static PayPalSessionData GetPayPalState(this HttpContextBase httpContext, string key)
 		{
-			if (settings.SecurityProtocol.HasValue)
-			{
-				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
-			}
+            Guard.NotEmpty(key, nameof(key));
 
-			var request = (HttpWebRequest)WebRequest.Create(GetPayPalUrl(settings));
-			return request;
+			var state = httpContext.GetCheckoutState();
+
+            if (!state.CustomProperties.ContainsKey(key))
+            {
+                state.CustomProperties.Add(key, new PayPalSessionData());
+            }
+
+			var session = state.CustomProperties.Get(key) as PayPalSessionData;
+            return session;
 		}
 
-		public static PayPalSessionData GetPayPalSessionData(this HttpContextBase httpContext, CheckoutState state = null)
-		{
-			if (state == null)
-				state = httpContext.GetCheckoutState();
+        public static PayPalSessionData GetPayPalState(
+            this HttpContextBase httpContext,
+            string key,
+            Customer customer,
+            int storeId,
+            IGenericAttributeService genericAttributeService)
+        {
+            Guard.NotNull(httpContext, nameof(httpContext));
+            Guard.NotNull(customer, nameof(customer));
+            Guard.NotNull(genericAttributeService, nameof(genericAttributeService));
 
-			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
-				state.CustomProperties.Add(PayPalPlusProvider.SystemName, new PayPalSessionData());
+            var session = httpContext.GetPayPalState(key);
 
-			return state.CustomProperties.Get(PayPalPlusProvider.SystemName) as PayPalSessionData;
-		}
-	}
+            if (session.AccessToken.IsEmpty() || session.PaymentId.IsEmpty())
+            {
+                try
+                {
+                    var str = customer.GetAttribute<string>(key + ".SessionData", genericAttributeService, storeId);
+                    if (str.HasValue())
+                    {
+                        var storedSessionData = JsonConvert.DeserializeObject<PayPalSessionData>(str);
+                        if (storedSessionData != null)
+                        {
+                            // Only token and paymentId required.
+                            session.AccessToken = storedSessionData.AccessToken;
+                            session.PaymentId = storedSessionData.PaymentId;
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            return session;
+        }
+    }
 }

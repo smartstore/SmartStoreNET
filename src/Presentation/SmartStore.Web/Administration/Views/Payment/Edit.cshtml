@@ -2,7 +2,7 @@
 @{
 	ViewBag.Title = string.Concat(T("Common.Edit"), " - ", (ViewBag.Title as string) ?? Model.SystemName);
 
-	Html.AddScriptParts(true, "~/Scripts/2012.2.607/telerik.common.min.js");
+	Html.AddScriptParts(true, "~/Administration/Content/telerik/js/2012.2.607/telerik.common.min.js");
 }
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "payment-method-form" }))
@@ -71,7 +71,7 @@
 				@Html.SmartLabelFor(model => model.Locales[item].FullDescription)
 			</td>
 			<td class="adminData wide">
-				@Html.EditorFor(model => model.Locales[item].FullDescription, Html.RichEditorFlavor())
+				@Html.EditorFor(model => model.Locales[item].FullDescription, "Html")
 				@Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
 			</td>
 		</tr>
@@ -101,7 +101,7 @@
 				@Html.SmartLabelFor(model => model.FullDescription)
 			</td>
 			<td class="adminData wide">
-				@Html.EditorFor(x => x.FullDescription, Html.RichEditorFlavor())
+				@Html.EditorFor(x => x.FullDescription, "Html")
 				@Html.ValidationMessageFor(model => model.FullDescription)
 			</td>
 		</tr>

@@ -15,7 +15,7 @@ namespace SmartStore.Services.Seo
 {
     public static class SeoExtensions
     {
-        #region Product tag
+        #region Entities
 
         /// <summary>
         /// Gets product tag SE (search engine) name
@@ -36,15 +36,10 @@ namespace SmartStore.Services.Seo
         /// <returns>Product tag SE (search engine) name</returns>
         public static string GetSeName(this ProductTag productTag, int languageId)
         {
-            if (productTag == null)
-                throw new ArgumentNullException("productTag");
-            string seName = GetSeName(productTag.GetLocalized(x => x.Name, languageId));
-            return seName;
+			Guard.NotNull(productTag, nameof(productTag));
+
+			return GetSeName((string)productTag.GetLocalized(x => x.Name, languageId));
         }
-
-        #endregion
-
-        #region Blog / news
 
         /// <summary>
         /// Gets blog post SE (search engine) name
@@ -53,10 +48,9 @@ namespace SmartStore.Services.Seo
         /// <returns>Blog post SE (search engine) name</returns>
         public static string GetSeName(this BlogPost blogPost)
         {
-            if (blogPost == null)
-                throw new ArgumentNullException("blogPost");
-            string seName = GetSeName(blogPost.Title);
-            return seName;
+			Guard.NotNull(blogPost, nameof(blogPost));
+
+			return GetSeName(blogPost.Title);
         }
 
         /// <summary>
@@ -66,10 +60,9 @@ namespace SmartStore.Services.Seo
         /// <returns>Blog post SE (search engine) name</returns>
         public static string GetSeName(this BlogPostTag blogPostTag)
         {
-            if (blogPostTag == null)
-                throw new ArgumentNullException("blogPostTag");
-            string seName = GetSeName(blogPostTag.Name);
-            return seName;
+			Guard.NotNull(blogPostTag, nameof(blogPostTag));
+
+			return GetSeName(blogPostTag.Name);
         }
 
         /// <summary>
@@ -79,26 +72,21 @@ namespace SmartStore.Services.Seo
         /// <returns>News item SE (search engine) name</returns>
         public static string GetSeName(this NewsItem newsItem)
         {
-            if (newsItem == null)
-                throw new ArgumentNullException("newsItem");
-            string seName = GetSeName(newsItem.Title);
-            return seName;
+			Guard.NotNull(newsItem, nameof(newsItem));
+
+			return GetSeName(newsItem.Title);
         }
 
-        #endregion
-
-        #region Forum
-
-        /// <summary>
-        /// Gets ForumTopic SE (search engine) name
-        /// </summary>
-        /// <param name="forumTopic">ForumTopic</param>
-        /// <returns>ForumTopic SE (search engine) name</returns>
-        public static string GetSeName(this ForumTopic forumTopic)
+		/// <summary>
+		/// Gets ForumTopic SE (search engine) name
+		/// </summary>
+		/// <param name="forumTopic">ForumTopic</param>
+		/// <returns>ForumTopic SE (search engine) name</returns>
+		public static string GetSeName(this ForumTopic forumTopic)
         {
-            if (forumTopic == null)
-                throw new ArgumentNullException("forumTopic");
-            string seName = GetSeName(forumTopic.Subject);
+			Guard.NotNull(forumTopic, nameof(forumTopic));
+
+			string seName = GetSeName(forumTopic.Subject);
 
             // Trim SE name to avoid URLs that are too long
             var maxLength = 100;
@@ -109,10 +97,6 @@ namespace SmartStore.Services.Seo
 
             return seName;
         }
-
-		#endregion
-
-		#region ICategoryNode
 
 		/// <summary>
 		/// Get search engine name for a category node
@@ -133,7 +117,7 @@ namespace SmartStore.Services.Seo
 
 		#endregion
 
-		#region General
+		#region Generic
 
 		/// <summary>
 		/// Get search engine name
@@ -278,9 +262,7 @@ namespace SmartStore.Services.Seo
 		{
 			Guard.NotNull(urlRecordService, nameof(urlRecordService));
 			Guard.NotNull(seoSettings, nameof(seoSettings));
-
-			if (entity == null)
-				throw new ArgumentNullException("entity");
+			Guard.NotNull(entity, nameof(entity));
 
 			// use name if sename is not specified
 			if (String.IsNullOrWhiteSpace(seName) && !String.IsNullOrWhiteSpace(name))
@@ -320,12 +302,10 @@ namespace SmartStore.Services.Seo
 			int i = 2;
 			var tempSeName = seName;
 
-			extraSlugLookup = extraSlugLookup ?? ((s) => null);
-
 			while (true)
 			{
 				// check whether such slug already exists (and that it's not the current entity)
-				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup(tempSeName);
+				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup?.Invoke(tempSeName);
 				var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
 
 				if (!reserved1 && urlRecord != null && languageId.HasValue)

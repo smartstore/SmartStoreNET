@@ -33,13 +33,12 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class LanguageController : AdminControllerBase
     {
         #region Fields
@@ -49,7 +48,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IPluginFinder _pluginFinder;
-        private readonly PluginMediator _pluginMediator;
         private readonly ICountryService _countryService;
 		private readonly ICommonServices _services;
         private readonly IDateTimeHelper _dateTimeHelper;
@@ -65,7 +63,6 @@ namespace SmartStore.Admin.Controllers
             IGenericAttributeService genericAttributeService,
             AdminAreaSettings adminAreaSettings,
 			IPluginFinder pluginFinder,
-            PluginMediator pluginMediator,
             ICountryService countryService,
 			ICommonServices services,
             IDateTimeHelper dateTimeHelper,
@@ -76,7 +73,6 @@ namespace SmartStore.Admin.Controllers
             _genericAttributeService = genericAttributeService;
             _adminAreaSettings = adminAreaSettings;
 			_pluginFinder = pluginFinder;
-            _pluginMediator = pluginMediator;
 			_countryService = countryService;
 			_services = services;
             _dateTimeHelper = dateTimeHelper;
@@ -89,14 +85,12 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareLanguageModel(LanguageModel model, Language language, bool excludeProperties)
 		{
-			var languageId = _services.WorkContext.WorkingLanguage.Id;
-
 			var allCultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
 				.OrderBy(x => x.DisplayName)
 				.ToList();
 
 			var allCountryNames = _countryService.GetAllCountries(true)
-				.ToDictionarySafe(x => x.TwoLetterIsoCode.EmptyNull().ToLower(), x => x.GetLocalized(y => y.Name, languageId, true, false));
+				.ToDictionarySafe(x => x.TwoLetterIsoCode.EmptyNull().ToLower(), x => x.GetLocalized(y => y.Name, _services.WorkContext.WorkingLanguage, true, false));
 
 			model.AvailableCultures = allCultures
 				.Select(x => new SelectListItem { Text = "{0} [{1}]".FormatInvariant(x.DisplayName, x.IetfLanguageTag), Value = x.IetfLanguageTag })
@@ -147,17 +141,26 @@ namespace SmartStore.Admin.Controllers
 
 			model.AvailableFlags = model.AvailableFlags.OrderBy(x => x.Text).ToList();
 			model.AvailableStores = _services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+
+			if (language != null)
+			{
+				var lastImportInfos = GetLastResourcesImportInfos();
+				if (lastImportInfos.TryGetValue(language.Id, out LastResourcesImportInfo info))
+				{
+					model.LastResourcesImportOn = info.ImportedOn;
+					model.LastResourcesImportOnString = model.LastResourcesImportOn.Value.RelativeFormat(false, "f");
+				}
+			}
 		}
 
 		private void PrepareAvailableLanguageModel(
             AvailableLanguageModel model,
             AvailableResourcesModel resources,
-            Dictionary<int , GenericAttribute> translatedPercentageAtLastImport,
+            Dictionary<int, LastResourcesImportInfo> lastImportInfos,
             Language language = null,
             LanguageDownloadState state = null)
         {
-            GenericAttribute attribute = null;
-
+            // Source Id (aka SetId), not entity Id!
             model.Id = resources.Id;
 			model.PreviousSetId = resources.PreviousSetId;
             model.IsInstalled = language != null;
@@ -176,15 +179,18 @@ namespace SmartStore.Admin.Controllers
             model.UpdatedOnString = model.UpdatedOn.RelativeFormat(false, "f");
             model.FlagImageFileName = GetFlagFileName(resources.Language.Culture);
 
-            if (language != null && translatedPercentageAtLastImport.TryGetValue(language.Id, out attribute))
+            if (language != null && lastImportInfos.TryGetValue(language.Id, out LastResourcesImportInfo info))
             {
                 // Only show percent at last import if it's less than the current percentage.
-                var percentAtLastImport = Math.Round(attribute.Value.Convert<decimal>(), 2);
+                var percentAtLastImport = Math.Round(info.TranslatedPercentage, 2);
                 if (percentAtLastImport < model.TranslatedPercentage)
                 {
                     model.TranslatedPercentageAtLastImport = percentAtLastImport;
                 }
-            }
+
+				model.LastResourcesImportOn = info.ImportedOn;
+				model.LastResourcesImportOnString = model.LastResourcesImportOn.Value.RelativeFormat(false, "f");
+			}
 		}
 
         private async Task<CheckAvailableResourcesResult> CheckAvailableResources(bool enforce = false)
@@ -221,10 +227,10 @@ namespace SmartStore.Admin.Controllers
                         }
                     }
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
                     NotifyError(T("Admin.Configuration.Languages.CheckAvailableLanguagesFailed"));
-                    Logger.ErrorsAll(exception);
+                    Logger.ErrorsAll(ex);
                 }
             }
 
@@ -295,11 +301,28 @@ namespace SmartStore.Admin.Controllers
 			return null;
         }
 
-        #endregion
+		private Dictionary<int, LastResourcesImportInfo> GetLastResourcesImportInfos()
+		{
+			Dictionary<int, LastResourcesImportInfo> result = null;
 
-        #region Languages
+			try
+			{
+				var attributes = _genericAttributeService.GetAttributes("LastResourcesImportInfo", "Language").ToList();
+				result = attributes.ToDictionarySafe(x => x.EntityId, x => JsonConvert.DeserializeObject<LastResourcesImportInfo>(x.Value));
+			}
+			catch (Exception exception)
+			{
+				Logger.Error(exception);
+			}
 
-        public ActionResult Index()
+			return result ?? new Dictionary<int, LastResourcesImportInfo>();
+		}
+
+		#endregion
+
+		#region Languages
+
+		public ActionResult Index()
         {
             return RedirectToAction("List");
         }
@@ -309,8 +332,22 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
                 return AccessDeniedView();
 
-            var languages = _languageService.GetAllLanguages(true);
-            var model = languages.Select(x => x.ToModel()).ToList();
+			var lastImportInfos = GetLastResourcesImportInfos();
+			var languages = _languageService.GetAllLanguages(true);
+            var model = languages.Select(x =>
+			{
+				var langModel = x.ToModel();
+				langModel.Name = GetCultureDisplayName(x.LanguageCulture) ?? x.Name;
+
+				if (lastImportInfos.TryGetValue(x.Id, out LastResourcesImportInfo info))
+				{
+					langModel.LastResourcesImportOn = info.ImportedOn;
+					langModel.LastResourcesImportOnString = langModel.LastResourcesImportOn.Value.RelativeFormat(false, "f");
+				}
+
+				return langModel;
+			})
+			.ToList();
 
             return View(model);
         }
@@ -324,8 +361,7 @@ namespace SmartStore.Admin.Controllers
             var languageDic = languages.ToDictionarySafe(x => x.LanguageCulture, StringComparer.OrdinalIgnoreCase);
 
             var downloadState = _asyncState.Get<LanguageDownloadState>();
-            var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
-
+			var lastImportInfos = GetLastResourcesImportInfos();
 			var checkResult = await CheckAvailableResources(enforce);
 
 			var model = new AvailableLanguageListModel();
@@ -340,7 +376,7 @@ namespace SmartStore.Admin.Controllers
 					languageDic.TryGetValue(resources.Language.Culture, out Language language);
 
 					var alModel = new AvailableLanguageModel();
-                    PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, language, downloadState);
+                    PrepareAvailableLanguageModel(alModel, resources, lastImportInfos, language, downloadState);
 
                     model.Languages.Add(alModel);
                 }
@@ -372,7 +408,7 @@ namespace SmartStore.Admin.Controllers
                 var language = model.ToEntity();
                 _languageService.InsertLanguage(language);
 
-				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
+				SaveStoreMappings(language, model);
 
 				var plugins = _pluginFinder.GetPluginDescriptors(true);
 				var filterLanguages = new List<Language>() { language };
@@ -407,8 +443,8 @@ namespace SmartStore.Admin.Controllers
             var model = language.ToModel();
             PrepareLanguageModel(model, language, false);
 
-            // Provide combobox with downloadable resources for this language.
-            var translatedPercentageAtLastImport = _genericAttributeService.GetAttributes("TranslatedPercentageAtLastImport", "Language").ToDictionarySafe(x => x.EntityId);
+			// Provide combobox with downloadable resources for this language.
+			var lastImportInfos = GetLastResourcesImportInfos();
             var checkResult = await CheckAvailableResources();
 			string cultureParentName = null;
 
@@ -442,7 +478,7 @@ namespace SmartStore.Admin.Controllers
 					if (downloadDisplayOrder != 0)
 					{
 						var alModel = new AvailableLanguageModel();
-						PrepareAvailableLanguageModel(alModel, resources, translatedPercentageAtLastImport, language);
+						PrepareAvailableLanguageModel(alModel, resources, lastImportInfos, language);
 						alModel.DisplayOrder = downloadDisplayOrder;
 
 						model.AvailableDownloadLanguages.Add(alModel);
@@ -476,7 +512,7 @@ namespace SmartStore.Admin.Controllers
                 language = model.ToEntity(language);
                 _languageService.UpdateLanguage(language);
 
-				_storeMappingService.SaveStoreMappings(language, model.SelectedStoreIds);
+				SaveStoreMappings(language, model);
 
                 NotifySuccess(T("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
@@ -739,7 +775,12 @@ namespace SmartStore.Admin.Controllers
 
                     _services.Localization.ImportResourcesFromXml(language, xmlDoc, null, false, mode, updateTouched);
 
-                    _genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", availableResources.TranslatedPercentage);
+					var str = JsonConvert.SerializeObject(new LastResourcesImportInfo
+					{
+						TranslatedPercentage = availableResources.TranslatedPercentage,
+						ImportedOn = DateTime.UtcNow
+					});
+					_genericAttributeService.SaveAttribute(language, "LastResourcesImportInfo", str);
 
                     NotifySuccess(T("Admin.Configuration.Languages.Imported"));
                 }
@@ -815,7 +856,12 @@ namespace SmartStore.Admin.Controllers
 
                 services.Localization.ImportResourcesFromXml(language, xmlDoc);
 
-                genericAttributeService.SaveAttribute(language, "TranslatedPercentageAtLastImport", resources.TranslatedPercentage);
+				var str = JsonConvert.SerializeObject(new LastResourcesImportInfo
+				{
+					TranslatedPercentage = resources.TranslatedPercentage,
+					ImportedOn = DateTime.UtcNow
+				});
+				genericAttributeService.SaveAttribute(language, "LastResourcesImportInfo", str);
             }
             catch (Exception exception)
             {

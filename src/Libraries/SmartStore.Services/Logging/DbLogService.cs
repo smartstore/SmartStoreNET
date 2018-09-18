@@ -88,8 +88,8 @@ namespace SmartStore.Services.Logging
 			string logger, 
 			string message, 
 			LogLevel? logLevel, 
-			int pageIndex, int 
-			pageSize)
+			int pageIndex, 
+			int pageSize)
 		{
 			// force flush to get most recent entries
 			_loggerFactory.FlushAll();

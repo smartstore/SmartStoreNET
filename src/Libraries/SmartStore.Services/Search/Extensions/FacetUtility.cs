@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Services.Search.Extensions
 {
-	public static class FacetUtility
+    /// <summary>
+    /// Contains methods that are specifically required for facet processing.
+    /// </summary>
+    public static class FacetUtility
 	{
 		private const double MAX_PRICE = 1000000000;
 
@@ -32,6 +39,18 @@ namespace SmartStore.Services.Search.Extensions
 			{ 20000000, 2500000 },
 			{ 50000000, 5000000 }
 		};
+
+        private static string GetPublicName(string firstName, string lastName)
+        {
+            string result = firstName;
+
+            if (!string.IsNullOrWhiteSpace(result) && !string.IsNullOrWhiteSpace(lastName))
+            {
+                result = string.Concat(result, " ", lastName.First(), ".");
+            }
+
+            return result;
+        }
 
 		public static double GetNextPrice(double price)
 		{
@@ -120,5 +139,92 @@ namespace SmartStore.Services.Search.Extensions
 				};
 			}
 		}
-	}
+
+        public static IQueryable<Customer> GetCustomersByNumberOfPosts(
+            IRepository<ForumPost> forumPostRepository,
+            IRepository<StoreMapping> storeMappingRepository,
+            int storeId,
+            int minHitCount = 1)
+        {
+            var postQuery = forumPostRepository.TableUntracked
+                .Expand(x => x.Customer)
+                .Expand(x => x.Customer.BillingAddress)
+                .Expand(x => x.Customer.ShippingAddress)
+                .Expand(x => x.Customer.Addresses);
+
+            if (storeId > 0)
+            {
+                postQuery =
+                    from p in postQuery
+                    join sm in storeMappingRepository.TableUntracked on new { eid = p.ForumTopic.Forum.ForumGroupId, ename = "ForumGroup" } equals new { eid = sm.EntityId, ename = sm.EntityName } into gsm
+                    from sm in gsm.DefaultIfEmpty()
+                    where !p.ForumTopic.Forum.ForumGroup.LimitedToStores || sm.StoreId == storeId
+                    select p;
+            }
+
+            var groupQuery =
+                from p in postQuery
+                group p by p.CustomerId into grp
+                select new
+                {
+                    Count = grp.Count(),
+                    grp.FirstOrDefault().Customer   // Cannot be null.
+                };
+
+            groupQuery = minHitCount > 1
+                ? groupQuery.Where(x => x.Count >= minHitCount)
+                : groupQuery;
+
+            var query = groupQuery
+                .OrderByDescending(x => x.Count)
+                .Select(x => x.Customer)
+                .Where(x => x.CustomerRoles.FirstOrDefault(y => y.SystemName == SystemCustomerRoleNames.Guests) == null && !x.Deleted && x.Active && !x.IsSystemAccount);
+
+            return query;
+        }
+
+        /// <summary>
+        /// Gets the string resource key for a facet group kind
+        /// </summary>
+        /// <param name="kind">Facet group kind</param>
+        /// <returns>Resource key</returns>
+        public static string GetLabelResourceKey(FacetGroupKind kind)
+        {
+            switch (kind)
+            {
+                case FacetGroupKind.Category:
+                    return "Search.Facet.Category";
+                case FacetGroupKind.Brand:
+                    return "Search.Facet.Manufacturer";
+                case FacetGroupKind.Price:
+                    return "Search.Facet.Price";
+                case FacetGroupKind.Rating:
+                    return "Search.Facet.Rating";
+                case FacetGroupKind.DeliveryTime:
+                    return "Search.Facet.DeliveryTime";
+                case FacetGroupKind.Availability:
+                    return "Search.Facet.Availability";
+                case FacetGroupKind.NewArrivals:
+                    return "Search.Facet.NewArrivals";
+                case FacetGroupKind.Forum:
+                    return "Search.Facet.Forum";
+                case FacetGroupKind.Customer:
+                    return "Search.Facet.Customer";
+                case FacetGroupKind.Date:
+                    return "Search.Facet.Date";
+                default:
+                    return null;
+            }
+        }
+
+        public static string GetFacetAliasSettingKey(FacetGroupKind kind, int languageId, string scope = null)
+        {
+            if (scope.HasValue())
+            {
+                return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}-{scope}";
+            }
+
+            return $"FacetGroupKind-{kind.ToString()}-Alias-{languageId}";
+        }
+    }
 }

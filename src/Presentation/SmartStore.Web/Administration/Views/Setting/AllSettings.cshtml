@@ -25,14 +25,17 @@
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Name).Width("25%");
-			columns.Bound(x => x.Value).Width("55%").EditorTemplateName("MultilineText");
+			columns.Bound(x => x.Value)
+				.Width("55%")
+				.HtmlAttributes(new { style = "max-width: 600px;" })
+				.EditorTemplateName("MultilineText");
 			columns.Bound(x => x.Store).EditorTemplateName("Store").Width("15%");
 			columns.Command(commands =>
 			{
 				commands.Edit().Localize(T);
 				commands.Delete().Localize(T);
-			});
-
+			})
+			.HtmlAttributes(new { align = "right" });
 		})
 		.ToolBar(x => x.Insert())
 		.Editable(x =>
@@ -63,7 +66,11 @@
 	function grid_onStoreEdit(e) {
 		if (e.mode == "edit") {
 			_.delay(function () {
-				$('#Store').val(e.dataItem['StoreId']).trigger('change');
+				$('#Store')
+					.data('select-selected-id', e.dataItem['StoreId'])
+					.data('select-init-text', e.dataItem['Store'])
+					.val(e.dataItem['StoreId'])
+					.trigger('change');
 			}, 0);
 		}
     }

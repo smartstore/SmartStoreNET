@@ -18,7 +18,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public void Execute(TaskExecutionContext ctx)
 		{
-			var profileId = ctx.ScheduleTask.Alias.ToInt();
+			var profileId = ctx.ScheduleTaskHistory.ScheduleTask.Alias.ToInt();
 			var profile = _importProfileService.GetImportProfileById(profileId);
 
 			var request = new DataImportRequest(profile);

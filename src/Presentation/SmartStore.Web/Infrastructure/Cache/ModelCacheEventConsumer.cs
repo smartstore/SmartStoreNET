@@ -100,12 +100,14 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// Key for TopicModel caching
 		/// </summary>
 		/// <remarks>
-		/// {0} : topic id
+		/// {0} : topic id/systemname
 		/// {1} : language id
 		/// {2} : store id
+		/// {3} : role ids
 		/// </remarks>
-		public const string TOPIC_MODEL_KEY = "pres:topic:details-{0}-{1}-{2}";
-		public const string TOPIC_PATTERN_KEY = "pres:topic:details*";
+		public const string TOPIC_BY_SYSTEMNAME_KEY = "pres:topic:page.bysystemname-{0}-{1}-{2}-{3}";
+		public const string TOPIC_BY_ID_KEY = "pres:topic:page.byid-{0}-{1}-{2}-{3}";
+		public const string TOPIC_PATTERN_KEY = "pres:topic:page*";
 
 		/// <summary>
 		/// Key for TopicWidget caching
@@ -113,9 +115,10 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// <remarks>
 		/// {0} : store id
 		/// {1} : language id
+		/// {2} : role ids
 		/// </remarks>
+		public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}-{2}";
 		public const string TOPIC_WIDGET_PATTERN_KEY = "pres:topic:widget*";
-		public const string TOPIC_WIDGET_ALL_MODEL_KEY = "pres:topic:widget-all-{0}-{1}";
 
 		/// <summary>
 		/// Key for CategoryTemplate caching
@@ -297,6 +300,8 @@ namespace SmartStore.Web.Infrastructure.Cache
 					_cacheManager.RemoveByPattern(CART_PICTURE_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(HOMEPAGE_BESTSELLERS_IDS_PATTERN_KEY);
 					_cacheManager.RemoveByPattern(PRODUCTS_ALSO_PURCHASED_IDS_PATTERN_KEY);
+					_cacheManager.RemoveByPattern(PRODUCTTAG_POPULAR_PATTERN_KEY);
+					_cacheManager.RemoveByPattern(PRODUCTTAG_BY_PRODUCT_PATTERN_KEY);
 				}
 			}
 			else if (entity is Manufacturer)
@@ -389,6 +394,17 @@ namespace SmartStore.Web.Infrastructure.Cache
 			else if (entity is StateProvince)
 			{
 				_cacheManager.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
+			}
+			else if (entity is LocalizedProperty lp)
+			{
+				if (lp.LocaleKeyGroup == nameof(Topic))
+				{
+					_cacheManager.RemoveByPattern(TOPIC_WIDGET_PATTERN_KEY);
+					if (state != EntityState.Added)
+					{
+						_cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);
+					}
+				}
 			}
 			else if (entity is Setting)
 			{

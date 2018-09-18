@@ -44,7 +44,7 @@ namespace SmartStore.Web.Infrastructure
 
 		public override string Name
 		{
-			get { return SiteMapName; }
+			get => SiteMapName;
 		}
 
 		public override bool ApplyPermissions
@@ -132,11 +132,13 @@ namespace SmartStore.Web.Infrastructure
 		private TreeNode<MenuItem> ConvertNode(TreeNode<ICategoryNode> node, IDictionary<int, PictureInfo> allPictureInfos)
 		{
 			var cat = node.Value;
+			var name = cat.Id > 0 ? cat.GetLocalized(x => x.Name) : null;
 
 			var menuItem = new MenuItem
 			{
 				EntityId = cat.Id,
-				Text = cat.Id > 0 ? cat.GetLocalized(x => x.Name) : cat.Name,
+				Text = name?.Value ?? cat.Name,
+				Rtl = name?.CurrentLanguage?.Rtl ?? false,
 				BadgeText = cat.Id > 0 ? cat.GetLocalized(x => x.BadgeText) : null,
 				BadgeStyle = (BadgeStyle)cat.BadgeStyle,
 				RouteName = cat.Id > 0 ? "Category" : "HomePage"
@@ -170,7 +172,7 @@ namespace SmartStore.Web.Infrastructure
 
 	public class CatalogSiteMapInvalidationConsumer : IConsumer<CategoryTreeChangedEvent>
 	{
-		private readonly ISiteMap _siteMap;
+		private readonly Lazy<ISiteMapService> _siteMapService;
 		private readonly ICommonServices _services;
 		private readonly CatalogSettings _catalogSettings;
 
@@ -178,13 +180,18 @@ namespace SmartStore.Web.Infrastructure
 		private bool _countsResetted = false;
 
 		public CatalogSiteMapInvalidationConsumer(
-			ISiteMapService siteMapService,
+			Lazy<ISiteMapService> siteMapService,
 			ICommonServices services,
 			CatalogSettings catalogSettings)
 		{
-			_siteMap = siteMapService.GetSiteMap("catalog");
+			_siteMapService = siteMapService;
 			_services = services;
 			_catalogSettings = catalogSettings;
+		}
+
+		private ISiteMap GetSiteMap()
+		{
+			return _siteMapService.Value.GetSiteMap("catalog");
 		}
 
 		public void HandleEvent(CategoryTreeChangedEvent eventMessage)
@@ -205,7 +212,7 @@ namespace SmartStore.Web.Infrastructure
 		{
 			if (condition && !_invalidated)
 			{
-				_siteMap.ClearCache();
+				GetSiteMap().ClearCache();
 				_invalidated = true;
 			}
 		}
@@ -214,7 +221,7 @@ namespace SmartStore.Web.Infrastructure
 		{
 			if (!_countsResetted && _catalogSettings.ShowCategoryProductNumber)
 			{
-				var allCachedTrees = _siteMap.GetAllCachedTrees();
+				var allCachedTrees = GetSiteMap().GetAllCachedTrees();
 				foreach (var kvp in allCachedTrees)
 				{
 					bool dirty = false;

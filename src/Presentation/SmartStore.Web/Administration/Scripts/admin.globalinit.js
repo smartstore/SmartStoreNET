@@ -1,12 +1,12 @@
 /// <reference path="admin.common.js" />
 
 (function ($, window, document, undefined) {
-    
+
 	var _commonPluginFactories = [
 		// panel toggling
 		function (ctx) {
-			ctx.find('input[type=checkbox][data-toggler-for]').each(function (i, el) {
-				Admin.togglePanel(el, false);
+            ctx.find('input[type=checkbox][data-toggler-for]').each(function (i, el) {
+				SmartStore.Admin.togglePanel(el, false);
 			});
 		},
 		// select2
@@ -17,14 +17,14 @@
 		function (ctx) {
 			ctx.find(".cph").tooltip({
 				selector: "a.hint",
-				placement: "left",
+				placement: SmartStore.globalization.culture.isRTL ? "right" : "left",
 				trigger: 'hover',
 				delay: { show: 400, hide: 0 }
 			});
 		},
 		// switch
 		function (ctx) {
-			ctx.find(".adminData > input[type=checkbox]").each(function (i, el) {
+			ctx.find(".adminData > input[type=checkbox], .multi-store-setting-control > input[type=checkbox]").each(function (i, el) {
 				var wrap = $(el)
 					.wrap('<label class="switch"></label>')
 					.after('<span class="switch-toggle" data-on="' + window.Res['Common.On'] + '" data-off="' + window.Res['Common.Off'] + '"></span>');
@@ -37,8 +37,8 @@
 				return !$(this).parent().hasClass("t-group-indicator");
 			}));
 
-			// skin telerik grids with bootstrap table
-			ctx.find(".t-grid > table").addClass("table");
+			//// skin telerik grids with bootstrap table (obsolete: styled per Sass @extend now)
+			//ctx.find(".t-grid > table").addClass("table");
 		},
 		// btn-trigger
 		function (ctx) {
@@ -51,7 +51,11 @@
 				button.click();
 				return false;
 			});
-		}
+		},
+		// ColorPicker
+		function (ctx) {
+			ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false, align: SmartStore.globalization.culture.isRTL ? 'left' : 'right' });
+		},
 	];
 
 
@@ -66,7 +70,6 @@
 	};
 
     $(document).ready(function () {
-
         var html = $("html");
 
         html.removeClass("not-ready").addClass("ready");
@@ -75,7 +78,7 @@
 
     	// Handle panel toggling
         $(document).on('change', 'input[type=checkbox][data-toggler-for]', function (e) {
-        	Admin.togglePanel(e.target, true);
+			SmartStore.Admin.togglePanel(e.target, true);
         });
 
         $("#page").tooltip({
@@ -98,9 +101,9 @@
         });
 
 		// check overridden store settings
-        $('input.multi-store-override-option').each(function (index, elem) {
-        	Admin.checkOverriddenStoreValue(elem);
-        });
+        $('.multi-store-override-option').each(function (i, el) {
+			SmartStore.Admin.checkOverriddenStoreValue(el);
+		});
 
         // publish entity commit messages
         $('.entity-commit-trigger').on('click', function (e) {
@@ -112,7 +115,11 @@
                     id: el.data('commit-id')
                 });
             }
-        });
+		});
+
+		// Because we restyled the grid, the filter dropdown does not position
+		// correctly anymore. We have to reposition it.
+		Hacks.Telerik.handleGridFilter();
 
         // sticky section-header
         var navbar = $("#navbar");
@@ -142,19 +149,18 @@
         		if (!content.length)
         			return;
 
-        		var height = initialHeight = content.height(),
+				var height = initialHeight = content.outerHeight(false),
                              outerHeight,
-                             winHeight = $(document).height(),
+                             winHeight = $(window).height(),
                              top,
-                             offset;
+                             offset = 0;
 
         		if (initial === true) {
         			top = content.offset().top;
-        			offset = content.outerHeight(false) - content.height();
-        			if ($('html').hasClass('wkit')) offset += 2; // dont know why!
-        			content.data("initial-height", initialHeight)
-                                       .data("initial-top", top)
-                                       .data("initial-offset", offset);
+					content
+						.data("initial-height", initialHeight)
+						.data("initial-offset", offset)
+						.data("initial-top", top);
         		}
         		else {
         			top = content.data("initial-top");
@@ -162,8 +168,7 @@
         			initialHeight = content.data("initial-height");
         		}
 
-        		content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
-
+				content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
 			};
 
 			if (!$('body').is('.popup.bare')) {

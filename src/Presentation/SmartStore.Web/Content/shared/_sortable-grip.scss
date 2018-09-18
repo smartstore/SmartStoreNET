@@ -1,0 +1,38 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Sortable gripp
+// ------------------------------
+
+.sortable-grip {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 100%;
+	width: 5px;
+	cursor: move;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.1s ease-in-out;
+    background-color: transparent;
+    background-repeat: repeat;
+    background-position: 0 0;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAcCAYAAABCgc61AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAC1JREFUKFNjOHPmzH8QBgIUNm4JEIENYxUE4VE7MDBWQRAetQMDYxX8//8/AwD+OQx3RnVSQgAAAABJRU5ErkJggg==');
+
+}
+
+.sortable-item:hover .sortable-grip {
+	visibility: visible;
+	opacity: 1;
+}
+
+.sortable-placeholder {
+	border: 1px dotted #ccc;
+	background: $gray-100;
+}
+
+/*.sortable-dragging {
+	border: 1px dashed #CCC;
+	background: none;
+}*/

@@ -314,6 +314,7 @@
     <Compile Include="Theming\TwoLevelViewLocationCache.cs" />
     <Compile Include="Theming\WebViewPage.cs" />
     <Compile Include="Theming\WebViewPageHelper.cs" />
+    <Compile Include="UI\Blocks\IBlockContainer.cs" />
     <Compile Include="UI\Choices\ChoiceItemModel.cs" />
     <Compile Include="UI\Choices\GenericChoiceModel.cs" />
     <Compile Include="UI\Choices\ChoiceModel.cs" />
@@ -356,6 +357,7 @@
     <Compile Include="UI\Components\Window\WindowBuilder.cs" />
     <Compile Include="UI\Components\Window\Window.cs" />
     <Compile Include="UI\Breadcrumb.cs" />
+    <Compile Include="UI\Blocks\IBlock.cs" />
     <Compile Include="UI\IWidgetProvider.cs" />
     <Compile Include="UI\IWidgetSelector.cs" />
     <Compile Include="UI\BundleBuilder.cs" />

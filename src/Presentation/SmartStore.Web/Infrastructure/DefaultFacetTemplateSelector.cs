@@ -19,8 +19,8 @@ namespace SmartStore.Web.Infrastructure
 			var routeValues = new RouteValueDictionary(new
 			{
 				area = "",
-				facetGroup = facetGroup,
-				templateName = templateName
+				facetGroup,
+				templateName
 			});
 
 			return new RouteInfo(action, controller, routeValues);

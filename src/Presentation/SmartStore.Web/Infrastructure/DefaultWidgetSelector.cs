@@ -142,7 +142,7 @@ namespace SmartStore.Web.Infrastructure
 							{
 								ControllerName = "Topic",
 								ActionName = "TopicWidget",
-								RouteValues = new RouteValueDictionary()
+								RouteValues = new RouteValueDictionary
 								{
 									{"Namespaces", "SmartStore.Web.Controllers"},
 									{"area", null},

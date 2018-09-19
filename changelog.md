@@ -18,6 +18,7 @@
 * Added option to display a captcha on forum pages when creating or replying to a topic.
 * MegaSearch: Supports searching for forum posts.
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
+* Viveum: Supports payment via "Virtual Account Brands" like PayPal.
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).

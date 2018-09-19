@@ -501,6 +501,10 @@
                 "Auf Forenseiten anzeigen",
                 "Specifies whether to display a CAPTCHA on forum pages when creating or replying to a topic.",
                 "Legt fest, ob ein CAPTCHA auf Forenseiten angezeigt werden soll, wenn ein Thema erstellt oder darauf geantwortet wird.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem",
+                "The type cannot be changed to \"Product\" because the product \"{0}\" is bundle item of a product bundle.",
+                "Der Typ kann nicht in \"Produkt\" geändert werden, weil das Produkt \"{0}\" auf der Stückliste eines Produkt-Bundle steht.");
         }
     }
 }

@@ -1025,7 +1025,7 @@ namespace SmartStore.Services.Catalog
 			return _productBundleItemRepository.GetById(bundleItemId);
 		}
 
-		public virtual IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false)
+        public virtual IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false)
 		{
 			var query =
 				from pbi in _productBundleItemRepository.Table
@@ -1043,7 +1043,7 @@ namespace SmartStore.Services.Catalog
 			return bundleItemData;
 		}
 
-		public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
+        public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
@@ -1061,6 +1061,23 @@ namespace SmartStore.Services.Catalog
 			return map;
 		}
 
-		#endregion
-	}
+        public virtual bool IsBundleItem(int productId)
+        {
+            if (productId == 0)
+            {
+                return false;
+            }
+
+            var query =
+                from pbi in _productBundleItemRepository.TableUntracked
+                join bundle in _productRepository.TableUntracked on pbi.BundleProductId equals bundle.Id
+                where pbi.ProductId == productId && !bundle.Deleted && !bundle.IsSystemProduct
+                select pbi;
+
+            var result = query.Any();
+            return result;
+        }
+
+        #endregion
+    }
 }

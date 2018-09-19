@@ -3477,14 +3477,29 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult ProductAttributeValueEditPopup(string btnId, string formId, ProductModel.ProductVariantAttributeValueModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+            {
+                return AccessDeniedView();
+            }
 
 			var pvav = _productAttributeService.GetProductVariantAttributeValueById(model.Id);
-			if (pvav == null)
-				return RedirectToAction("List", "Product");
+            if (pvav == null)
+            {
+                return RedirectToAction("List", "Product");
+            }
 
-			if (ModelState.IsValid)
+            if (model.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage)
+            {
+                if (_productService.IsBundleItem(pvav.ProductVariantAttribute.ProductId))
+                {
+                    var product = _productService.GetProductById(pvav.ProductVariantAttribute.ProductId);
+                    var productName = product?.Name.NaIfEmpty();
+
+                    ModelState.AddModelError(string.Empty, T("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem", productName));
+                }
+            }
+
+            if (ModelState.IsValid)
 			{
 				pvav.Name = model.Name;
 				pvav.Alias = model.Alias;
@@ -3510,9 +3525,9 @@ namespace SmartStore.Admin.Controllers
 
 					UpdateLocales(pvav, model);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 

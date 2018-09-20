@@ -16,7 +16,9 @@
 * Added option to add multiple file versions to product download section
 * Added options for alternating price display (in badges)
 * Added option to display a captcha on forum pages when creating or replying to a topic.
-* MegaSearch: Supports searching for forum posts.
+* **MegaSearch**:
+	* Supports searching for forum posts.
+	* #1172 Option to display related search terms on search page.
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
 * Viveum: Supports payment via "Virtual Account Brands" like PayPal.
 

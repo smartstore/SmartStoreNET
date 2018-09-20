@@ -70,9 +70,11 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost, ValidateInput(false)]
 		public ActionResult InstantSearch(CatalogSearchQuery query)
-		{		
-			if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
-				return Content(string.Empty);
+		{
+            if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
+            {
+                return Content(string.Empty);
+            }
 
 			query
 				.BuildFacetMap(false)
@@ -97,12 +99,10 @@ namespace SmartStore.Web.Controllers
 			mappingSettings.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
 			mappingSettings.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
 
-			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
+			// Add product hits.
+			model.TopProducts = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
-			// Add product hits
-			model.TopProducts = summaryModel;
-
-            // Add spell checker suggestions (if any)
+            // Add spell checker suggestions (if any).
             model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
 
             return PartialView(model);
@@ -131,9 +131,9 @@ namespace SmartStore.Web.Controllers
 			{
 				result = _catalogSearchService.Search(query);
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				model.Error = exception.ToString();
+				model.Error = ex.ToString();
 				result = new CatalogSearchResult(query);
 			}
 
@@ -166,14 +166,11 @@ namespace SmartStore.Web.Controllers
 			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
-			// Prepare paging/sorting/mode stuff
+			// Prepare paging/sorting/mode stuff.
 			_catalogHelper.MapListActions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);
 
-			// Add product hits
+			// Add product hits.
 			model.TopProducts = summaryModel;
-
-			// Add spell checker suggestions (if any)
-            model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
 
             return View(model);
 		}

@@ -1802,8 +1802,6 @@ namespace SmartStore.Web.Controllers
 
             PrepareSearchResult(model, null);
 
-            model.AddSpellCheckerSuggestions(model.SearchResult.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
-
             return View(model);
         }
 

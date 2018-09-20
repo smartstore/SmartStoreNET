@@ -55,6 +55,7 @@
 * NullReferenceException in manufacturer list when there is no manufacturer.
 * Wrong order of featured products on category page.
 * #1504 Cart item price calculation wrong if attribute combinations with text types are involved.
+* #1485 Dropdown list for product sorting does not work with Internet Explorer 11.
 
 
 ## SmartStore.NET 3.1.5

@@ -503,8 +503,8 @@
                 "Legt fest, ob ein CAPTCHA auf Forenseiten angezeigt werden soll, wenn ein Thema erstellt oder darauf geantwortet wird.");
 
             builder.AddOrUpdate("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem",
-                "The type cannot be changed to \"Product\" because the product \"{0}\" is bundle item of a product bundle.",
-                "Der Typ kann nicht in \"Produkt\" geändert werden, weil das Produkt \"{0}\" auf der Stückliste eines Produkt-Bundle steht.");
+                "The product \"{0}\" cannot be assigned an attribute of the type \"product\" because it is bundle item of a product bundle.",
+                "Dem Produkt \"{0}\" kann kein Attribut vom Typ \"Produkt\" zugeordnet werden, weil es auf der Stückliste eines Produkt-Bundle steht.");
 
             builder.AddOrUpdate("Search.RelatedSearchTerms",
                 "Related search terms",

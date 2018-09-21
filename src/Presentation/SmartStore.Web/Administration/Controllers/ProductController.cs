@@ -3368,14 +3368,29 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult ProductAttributeValueCreatePopup(string btnId, string formId, ProductModel.ProductVariantAttributeValueModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+            {
+                return AccessDeniedView();
+            }
 
 			var pva = _productAttributeService.GetProductVariantAttributeById(model.ProductVariantAttributeId);
-			if (pva == null)
-				return RedirectToAction("List", "Product");
+            if (pva == null)
+            {
+                return RedirectToAction("List", "Product");
+            }
 
-			if (ModelState.IsValid)
+            if (model.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage)
+            {
+                if (_productService.IsBundleItem(pva.ProductId))
+                {
+                    var product = _productService.GetProductById(pva.ProductId);
+                    var productName = product?.Name.NaIfEmpty();
+
+                    ModelState.AddModelError(string.Empty, T("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem", productName));
+                }
+            }
+
+            if (ModelState.IsValid)
 			{
 				var pvav = new ProductVariantAttributeValue
 				{
@@ -3389,17 +3404,18 @@ namespace SmartStore.Admin.Controllers
 					IsPreSelected = model.IsPreSelected,
 					DisplayOrder = model.DisplayOrder,
 					ValueTypeId = model.ValueTypeId,
-					LinkedProductId = model.LinkedProductId,
 					Quantity = model.Quantity
 				};
 
-				try
+                pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
+
+                try
 				{
 					_productAttributeService.InsertProductVariantAttributeValue(pvav);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 
@@ -3420,7 +3436,7 @@ namespace SmartStore.Admin.Controllers
 				return View(model);
 			}
 
-			//If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			return View(model);
 		}
 
@@ -3511,11 +3527,7 @@ namespace SmartStore.Admin.Controllers
 				pvav.DisplayOrder = model.DisplayOrder;
 				pvav.ValueTypeId = model.ValueTypeId;
 				pvav.Quantity = model.Quantity;
-
-				if (pvav.ValueType == ProductVariantAttributeValueType.Simple)
-					pvav.LinkedProductId = 0;
-				else
-					pvav.LinkedProductId = model.LinkedProductId;
+                pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
 				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
@@ -3537,7 +3549,7 @@ namespace SmartStore.Admin.Controllers
 				return View(model);
 			}
 
-			//If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			return View(model);
 		}
 

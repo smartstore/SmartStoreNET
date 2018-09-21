@@ -69,13 +69,24 @@
 			</div>
 		</div>
 
+		@if (Model.DisplayCaptcha)
+		{
+			<div class="row justify-content-end mt-3">
+                <div class="col-sm-9">
+				    <div class="captcha-box">
+					    @Html.Raw(Html.GenerateCaptcha())
+				    </div>
+                </div>
+			</div>
+		}
+
         <div class="row justify-content-end">
             <div class="col-sm-9 mt-3">
                 <button type="submit" class="btn btn-primary">
 					<i class="fa fa-reply"></i>
                     <span>@T("Forum.Submit")</span>
 				</button>
-                <button class="btn btn-secondary" onclick="setLocation('@Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName }) '); return false;">
+                <button class="btn btn-secondary" onclick="setLocation('@Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName })'); return false;">
                     <i class="fa fa-times"></i>
                     <span>@T("Forum.Cancel")</span>
                 </button>

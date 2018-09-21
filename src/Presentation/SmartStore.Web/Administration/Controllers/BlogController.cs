@@ -14,6 +14,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
@@ -147,8 +148,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(BlogPostModel model, bool continueEditing)
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public ActionResult Create(BlogPostModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
@@ -168,6 +169,8 @@ namespace SmartStore.Admin.Controllers
 
 				// Stores
 				SaveStoreMappings(blogPost, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, blogPost, form));
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
@@ -199,8 +202,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
 		}
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-		public ActionResult Edit(BlogPostModel model, bool continueEditing)
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+		public ActionResult Edit(BlogPostModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
                 return AccessDeniedView();
@@ -223,6 +226,8 @@ namespace SmartStore.Admin.Controllers
 
 				// Stores
 				SaveStoreMappings(blogPost, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, blogPost, form));
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");

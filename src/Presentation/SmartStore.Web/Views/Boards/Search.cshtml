@@ -36,7 +36,7 @@
     </div>
 
     <div class="page-body">
-        <div class="search-input mt-4 mb-5">
+        <div class="search-input mt-4">
             @if (Model.AllowFiltering && Model.SearchResult.Facets.Any())
             {
                 <div class="mb-4">
@@ -44,7 +44,7 @@
                 </div>
             }
 
-            <div class="w-75 mb-2">
+            <div class="w-75 mb-4">
                 @{ Html.RenderAction("SearchBox", "Boards"); }
             </div>
 
@@ -68,10 +68,10 @@
 			    </div>
 		    }
 
-		    @if (suggestions.Any() && (Model.AttemptedTerm.HasValue() || Model.TotalCount == 0))
+		    @if (suggestions.Any())
 		    {
 			    <p class="search-suggestions">
-				    <strong>@T("Search.DidYouMean")</strong>
+				    <strong>@(T(Model.AttemptedTerm.HasValue() || Model.TotalCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
 				    @{ 
 					    var links = string.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("BoardSearch", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
 				    }

@@ -12,6 +12,7 @@ namespace SmartStore.Web.Models.Boards
     {
         public int ForumTopicId { get; set; }
         public bool IsEdit { get; set; }
+        public bool DisplayCaptcha { get; set; }
 
         [AllowHtml]
         public string Text { get; set; }

@@ -495,6 +495,20 @@
                 "Filter by language",
                 "Nach Sprache filtern");
             
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnForumPage",
+                "Show on forum pages",
+                "Auf Forenseiten anzeigen",
+                "Specifies whether to display a CAPTCHA on forum pages when creating or replying to a topic.",
+                "Legt fest, ob ein CAPTCHA auf Forenseiten angezeigt werden soll, wenn ein Thema erstellt oder darauf geantwortet wird.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem",
+                "The product \"{0}\" cannot be assigned an attribute of the type \"product\" because it is bundle item of a product bundle.",
+                "Dem Produkt \"{0}\" kann kein Attribut vom Typ \"Produkt\" zugeordnet werden, weil es auf der Stückliste eines Produkt-Bundle steht.");
+
+            builder.AddOrUpdate("Search.RelatedSearchTerms",
+                "Related search terms",
+                "Verwandte Suchbegriffe");
         }
     }
 }

@@ -391,7 +391,14 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Map of bundle items</returns>
 		Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false);
 
-		#endregion
+        /// <summary>
+        /// Checks whether a product is a bundle item.
+        /// </summary>
+        /// <param name="productId">Product identifier.</param>
+        /// <returns>True if the product is a bundle item.</returns>
+        bool IsBundleItem(int productId);
+
+        #endregion
     }
 
 	[Flags]

@@ -398,7 +398,10 @@
             builder.AddOrUpdate("Search.Facet.Date.Older", "and older", "und älter");
 
             builder.AddOrUpdate("Forum.PostText", "Post text", "Beitragstext");
+            builder.AddOrUpdate("Forum.Sticky", "Sticky topic", "Festes Thema");
+
             builder.AddOrUpdate("Search.HitsFor", "{0} hits for {1}", "{0} Treffer für {1}");
+            builder.AddOrUpdate("Search.NoMoreHitsFound", "There were no more hits found.", "Es wurden keine weiteren Treffer gefunden.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",
                 "The wildcard mode can slow down the search for a large number of objects.",
@@ -485,6 +488,27 @@
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.Default", "Default", "Standard");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.BadgeAll", "In bagdes", "Markiert");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayStyle.BadgeFreeProductsOnly", "Badge free products only", "Nur kostenlose Produkte markieren");
+
+            builder.AddOrUpdate("Admin.DataExchange.Export.Filter.WorkingLanguageId",
+                "Language",
+                "Sprache",
+                "Filter by language",
+                "Nach Sprache filtern");
+            
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnForumPage",
+                "Show on forum pages",
+                "Auf Forenseiten anzeigen",
+                "Specifies whether to display a CAPTCHA on forum pages when creating or replying to a topic.",
+                "Legt fest, ob ein CAPTCHA auf Forenseiten angezeigt werden soll, wenn ein Thema erstellt oder darauf geantwortet wird.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem",
+                "The product \"{0}\" cannot be assigned an attribute of the type \"product\" because it is bundle item of a product bundle.",
+                "Dem Produkt \"{0}\" kann kein Attribut vom Typ \"Produkt\" zugeordnet werden, weil es auf der Stückliste eines Produkt-Bundle steht.");
+
+            builder.AddOrUpdate("Search.RelatedSearchTerms",
+                "Related search terms",
+                "Verwandte Suchbegriffe");
         }
     }
 }

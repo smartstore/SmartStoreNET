@@ -10,7 +10,7 @@ using System.Web.Mvc;
 namespace SmartStore.Admin.Models.Blogs
 {
     [Validator(typeof(BlogPostValidator))]
-    public class BlogPostModel : EntityModelBase, IStoreSelector
+    public class BlogPostModel : TabbableModel, IStoreSelector
 	{
 		[SmartResourceDisplayName("Admin.ContentManagement.Blog.BlogPosts.Fields.Language")]
         public int LanguageId { get; set; }

@@ -50,8 +50,9 @@ namespace SmartStore.Web.Controllers
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILanguageService _languageService;
+        private readonly IGenericAttributeService _genericAttributeService;
 
-		private readonly MediaSettings _mediaSettings;
+        private readonly MediaSettings _mediaSettings;
         private readonly BlogSettings _blogSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CustomerSettings _customerSettings;
@@ -74,6 +75,7 @@ namespace SmartStore.Web.Controllers
 			ICustomerActivityService customerActivityService,
 			IStoreMappingService storeMappingService,
 			ILanguageService languageService,
+            IGenericAttributeService genericAttributeService,
             MediaSettings mediaSettings,
 			BlogSettings blogSettings,
             LocalizationSettings localizationSettings,
@@ -81,25 +83,26 @@ namespace SmartStore.Web.Controllers
             CaptchaSettings captchaSettings,
             SeoSettings seoSettings)
         {
-            this._blogService = blogService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._pictureService = pictureService;
-            this._localizationService = localizationService;
-            this._customerContentService = customerContentService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._webHelper = webHelper;
-            this._cacheManager = cacheManager;
-            this._customerActivityService = customerActivityService;
-			this._storeMappingService = storeMappingService;
-			this._languageService = languageService;
+            _blogService = blogService;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _pictureService = pictureService;
+            _localizationService = localizationService;
+            _customerContentService = customerContentService;
+            _dateTimeHelper = dateTimeHelper;
+            _webHelper = webHelper;
+            _cacheManager = cacheManager;
+            _customerActivityService = customerActivityService;
+			_storeMappingService = storeMappingService;
+			_languageService = languageService;
+            _genericAttributeService = genericAttributeService;
 
-            this._mediaSettings = mediaSettings;
-            this._blogSettings = blogSettings;
-            this._localizationSettings = localizationSettings;
-            this._customerSettings = customerSettings;
-            this._captchaSettings = captchaSettings;
-            this._seoSettings = seoSettings;
+            _mediaSettings = mediaSettings;
+            _blogSettings = blogSettings;
+            _localizationSettings = localizationSettings;
+            _customerSettings = customerSettings;
+            _captchaSettings = captchaSettings;
+            _seoSettings = seoSettings;
         }
 
         #endregion
@@ -109,11 +112,8 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected void PrepareBlogPostModel(BlogPostModel model, BlogPost blogPost, bool prepareComments)
         {
-            if (blogPost == null)
-                throw new ArgumentNullException("blogPost");
-
-            if (model == null)
-                throw new ArgumentNullException("model");
+            Guard.NotNull(blogPost, nameof(blogPost));
+            Guard.NotNull(model, nameof(model));
 
             model.Id = blogPost.Id;
             model.MetaTitle = blogPost.MetaTitle;
@@ -123,43 +123,39 @@ namespace SmartStore.Web.Controllers
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
+            model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnBlogCommentPage;
+			model.Comments.AllowComments = blogPost.AllowComments;
+			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
+			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
+
             model.Tags = blogPost.ParseTags().Select(x => new BlogPostTagModel
-			{ Name = x,
-				SeName = SeoHelper.GetSeName(x,
+            {
+                Name = x,
+                SeName = SeoHelper.GetSeName(x,
                 _seoSettings.ConvertNonWesternChars,
                 _seoSettings.AllowUnicodeCharsInUrls,
                 _seoSettings.SeoNameCharConversion)
             }).ToList();
-            model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnBlogCommentPage;
-			model.Comments.AllowComments = blogPost.AllowComments;
-			model.Comments.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
-			model.Comments.NumberOfComments = blogPost.ApprovedCommentCount;
-			model.Comments.AllowCustomersToUploadAvatars = _customerSettings.AllowCustomersToUploadAvatars;
 
             if (prepareComments)
             {
                 var blogComments = blogPost.BlogComments.Where(pr => pr.IsApproved).OrderBy(pr => pr.CreatedOnUtc);
                 foreach (var bc in blogComments)
                 {
+                    var isGuest = bc.Customer.IsGuest();
+
                     var commentModel = new CommentModel(model.Comments)
                     {
                         Id = bc.Id,
                         CustomerId = bc.CustomerId,
-                        CustomerName = bc.Customer.FormatUserName(),
+                        CustomerName = bc.Customer.FormatUserName(_customerSettings, T, false),
                         CommentText = bc.CommentText,
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(bc.CreatedOnUtc, DateTimeKind.Utc),
 						CreatedOnPretty = bc.CreatedOnUtc.RelativeFormat(true, "f"),
-						AllowViewingProfiles = _customerSettings.AllowViewingProfiles && bc.Customer != null && !bc.Customer.IsGuest()
+						AllowViewingProfiles = _customerSettings.AllowViewingProfiles && !isGuest
                     };
 
-                    if (_customerSettings.AllowCustomersToUploadAvatars)
-                    {
-                        var customer = bc.Customer;
-                        string avatarUrl = _pictureService.GetUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
-                        if (String.IsNullOrEmpty(avatarUrl) && _customerSettings.DefaultAvatarEnabled)
-                            avatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
-                        commentModel.CustomerAvatarUrl = avatarUrl;
-                    }
+                    commentModel.Avatar = bc.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, commentModel.CustomerName);
 
                     model.Comments.Comments.Add(commentModel);
                 }

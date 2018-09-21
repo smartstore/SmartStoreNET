@@ -1,6 +1,6 @@
 ﻿@using SmartStore.Web.Models.Customer;
 @using SmartStore.Web.Framework.UI;
-@model CustomerAvatarModel
+@model CustomerAvatarEditModel
 @{
 	Layout = "_MyAccount";
 	ViewBag.PageClassToken = "avatar";
@@ -15,25 +15,25 @@
 }
 
 <div id="AvatarUploadContainer">
-	@if (!Model.AvatarUrl.HasValue())
-	{
-		<div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
-	}
-
 	<div class="mb-2">
-		<img src="@(Model.AvatarUrl.NullEmpty() ?? Model.PictureFallbackUrl)" class="img-thumbnail@(Model.AvatarUrl.HasValue() ? "" : " xd-none")" alt="Avatar" style="max-width: 120px;" />
+        @{ Html.RenderPartial("Customer.Avatar", Model.Avatar); }
 	</div>
 
 	@(Html.SmartStore().FileUploader()
 		.Name("uploadedFile")
 		.UploadUrl(Url.Action("UploadAvatar", "Customer"))
 		.AcceptedFileTypes("gif|jpe?g|png")
-		.ShowRemoveButton(Model.AvatarUrl.HasValue())
+		.ShowRemoveButton(Model.Avatar.PictureUrl.HasValue())
 		.ShowRemoveButtonAfterUpload(true)
 		.UploadText(T("Common.FileUploader.Upload"))
 		.OnUploadCompletedHandlerName("onAvatarUploaded")
 		.OnFileRemoveHandlerName("onAvatarRemoved")
 	)
+
+	@if (!Model.Avatar.PictureUrl.HasValue())
+	{
+		<div class="alert alert-info mt-2">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
+	}
 </div>
 
 <script type="text/javascript">
@@ -41,13 +41,14 @@
 		window['onAvatarUploaded'] = function (e, el, data) {
 			var result = data.result;
 			if (result.success) {
-				$('#AvatarUploadContainer img').attr('src', result.avatarUrl).show();
+                window.location = '@Url.Action("Avatar", "Customer", new { area = "" })';
 			}
 		};
 
-		window['onAvatarRemoved'] = function (e, el) {
-			$.post('@Url.Action("RemoveAvatar", "Customer")');
-			$('#AvatarUploadContainer img').attr('src', '@Html.Raw(Model.PictureFallbackUrl)');
+        window['onAvatarRemoved'] = function (e, el) {
+			$(this).doPostData({
+				url: '@Url.Action("RemoveAvatar", "Customer", new { area = "" })'
+			});
 		}
     });
 </script>

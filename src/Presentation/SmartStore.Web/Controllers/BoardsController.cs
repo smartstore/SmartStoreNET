@@ -45,6 +45,7 @@ namespace SmartStore.Web.Controllers
         private readonly ForumSearchSettings _searchSettings;
         private readonly CustomerSettings _customerSettings;
         private readonly MediaSettings _mediaSettings;
+        private readonly CaptchaSettings _captchaSettings;
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly IBreadcrumb _breadcrumb;
         private readonly Lazy<IFacetTemplateProvider> _templateProvider;
@@ -60,6 +61,7 @@ namespace SmartStore.Web.Controllers
             ForumSearchSettings searchSettings,
             CustomerSettings customerSettings,
             MediaSettings mediaSettings,
+            CaptchaSettings captchaSettings,
             IDateTimeHelper dateTimeHelper,
 			IBreadcrumb breadcrumb,
             Lazy<IFacetTemplateProvider> templateProvider,
@@ -74,6 +76,7 @@ namespace SmartStore.Web.Controllers
             _searchSettings = searchSettings;
             _customerSettings = customerSettings;
             _mediaSettings = mediaSettings;
+            _captchaSettings = captchaSettings;
             _dateTimeHelper = dateTimeHelper;
             _breadcrumb = breadcrumb;
             _templateProvider = templateProvider;
@@ -82,14 +85,19 @@ namespace SmartStore.Web.Controllers
 
         #region Utilities
 
-        private ForumTopicRowModel PrepareForumTopicRowModel(ForumTopic topic, Dictionary<int, ForumPost> lastPosts)
+        private ForumTopicRowModel PrepareForumTopicRowModel(
+            ForumTopic topic,
+            Dictionary<int, ForumPost> lastPosts,
+            ForumPost firstPost = null)
         {
-            var topicModel = new ForumTopicRowModel
+            var customer = topic.Customer;
+
+            var model = new ForumTopicRowModel
             {
                 Id = topic.Id,
                 Subject = topic.Subject,
                 SeName = topic.GetSeName(),
-                FirstPostId = topic.FirstPostId,
+                FirstPostId = firstPost?.Id ?? topic.FirstPostId,
                 LastPostId = topic.LastPostId,
                 NumPosts = topic.NumPosts,
                 Views = topic.Views,
@@ -97,17 +105,19 @@ namespace SmartStore.Web.Controllers
                 ForumTopicType = topic.ForumTopicType,
                 CustomerId = topic.CustomerId,
                 AllowViewingProfiles = _customerSettings.AllowViewingProfiles,
-                CustomerName = topic.Customer.FormatUserName(true),
-                IsCustomerGuest = topic.Customer.IsGuest(),
+                CustomerName = customer.FormatUserName(_customerSettings, T, true),
+                IsCustomerGuest = customer.IsGuest(),
                 PostsPageSize = _forumSettings.PostsPageSize
             };
 
+            model.Avatar = customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, model.CustomerName);
+
             if (topic.LastPostId != 0 && lastPosts.TryGetValue(topic.LastPostId, out var lastPost))
             {
-                PrepareLastPostModel(topicModel.LastPost, lastPost);
+                PrepareLastPostModel(model.LastPost, lastPost);
             }
 
-            return topicModel;
+            return model;
         }
 
         private ForumRowModel PrepareForumRowModel(Forum forum, Dictionary<int, ForumPost> lastPosts)
@@ -146,6 +156,7 @@ namespace SmartStore.Web.Controllers
             var lastPostIds = forums
                 .Where(x => x.LastPostId != 0)
                 .Select(x => x.LastPostId)
+                .Distinct()
                 .ToArray();
 
             var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
@@ -380,6 +391,7 @@ namespace SmartStore.Web.Controllers
             var lastPostIds = topics
                 .Where(x => x.LastPostId != 0)
                 .Select(x => x.LastPostId)
+                .Distinct()
                 .ToArray();
 
             var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
@@ -517,6 +529,7 @@ namespace SmartStore.Web.Controllers
             var lastPostIds = topics
                 .Where(x => x.LastPostId != 0)
                 .Select(x => x.LastPostId)
+                .Distinct()
                 .ToArray();
 
             var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
@@ -547,6 +560,7 @@ namespace SmartStore.Web.Controllers
             var lastPostIds = topics
                 .Where(x => x.LastPostId != 0)
                 .Select(x => x.LastPostId)
+                .Distinct()
                 .ToArray();
 
             var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
@@ -682,7 +696,7 @@ namespace SmartStore.Web.Controllers
                         IsCurrentCustomerAllowedToDeletePost = _forumService.IsCustomerAllowedToDeletePost(customer, post),
                         CustomerId = post.CustomerId,
                         AllowViewingProfiles = _customerSettings.AllowViewingProfiles,
-                        CustomerName = post.Customer.FormatUserName(true),
+                        CustomerName = post.Customer.FormatUserName(_customerSettings, T, false),
                         IsCustomerForumModerator = post.Customer.IsForumModerator(),
                         IsCustomerGuest= post.Customer.IsGuest(),
                         ShowCustomersPostCount = _forumSettings.ShowCustomersPostCount,
@@ -697,16 +711,8 @@ namespace SmartStore.Web.Controllers
                     forumPostModel.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
                         ? post.CreatedOnUtc.RelativeFormat(true, "f")
                         : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
-                    
-                    if (_customerSettings.AllowCustomersToUploadAvatars)
-                    {
-                        var avatarId = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-                        forumPostModel.CustomerAvatarUrl = _pictureService.GetUrl(avatarId, _mediaSettings.AvatarPictureSize, FallbackPictureType.NoFallback);
-                        if (forumPostModel.CustomerAvatarUrl.IsEmpty() && _customerSettings.DefaultAvatarEnabled)
-                        {
-                            forumPostModel.CustomerAvatarUrl = _pictureService.GetFallbackUrl(_mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
-                        }
-                    }
+
+                    forumPostModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, forumPostModel.CustomerName, true);
 
                     // Location.
                     forumPostModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
@@ -847,6 +853,7 @@ namespace SmartStore.Web.Controllers
             var model = new EditForumTopicModel();
             model.Id = 0;
             model.IsEdit = false;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumId = forum.Id;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -863,19 +870,25 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-		[GdprConsent]
-		public ActionResult TopicCreate(EditForumTopicModel model)
+        [ValidateCaptcha]
+        [GdprConsent]
+		public ActionResult TopicCreate(EditForumTopicModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forum = _forumService.GetForumById(model.ForumId);
             if (forum == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
@@ -963,6 +976,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = false;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumId = forum.Id;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -1003,6 +1017,7 @@ namespace SmartStore.Web.Controllers
             var model = new EditForumTopicModel();
 
             model.IsEdit = true;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.TopicPriorities = ForumTopicTypesList();
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
@@ -1030,18 +1045,24 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult TopicEdit(EditForumTopicModel model)
+        [ValidateCaptcha]
+        public ActionResult TopicEdit(EditForumTopicModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forumTopic = _forumService.GetTopicById(model.Id);
             if (forumTopic == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
             var forum = forumTopic.Forum;
             if (forum == null)
@@ -1146,6 +1167,7 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = true;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
             model.ForumId = forum.Id;
@@ -1220,6 +1242,7 @@ namespace SmartStore.Web.Controllers
                 Id = 0,
                 ForumTopicId = forumTopic.Id,
                 IsEdit = false,
+                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = forumTopic.Subject,
@@ -1264,19 +1287,25 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-		[GdprConsent]
-		public ActionResult PostCreate(EditForumPostModel model)
+        [ValidateCaptcha]
+        [GdprConsent]
+		public ActionResult PostCreate(EditForumPostModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forumTopic = _forumService.GetTopicById(model.ForumTopicId);
             if (forumTopic == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
@@ -1365,6 +1394,7 @@ namespace SmartStore.Web.Controllers
             }
 
             model.IsEdit = false;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumTopicId = forumTopic.Id;
             model.ForumTopicSubject = forumTopic.Subject;
@@ -1412,6 +1442,7 @@ namespace SmartStore.Web.Controllers
                 Id = forumPost.Id,
                 ForumTopicId = forumTopic.Id,
                 IsEdit = true,
+                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
                 ForumName = forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = forumTopic.Subject,
@@ -1435,18 +1466,24 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult PostEdit(EditForumPostModel model)
+        [ValidateCaptcha]
+        public ActionResult PostEdit(EditForumPostModel model, bool captchaValid)
         {
             if (!_forumSettings.ForumsEnabled)
             {
 				return HttpNotFound();
             }
 
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
+            }
+
             var customer = Services.WorkContext.CurrentCustomer;
             var forumPost = _forumService.GetPostById(model.Id);
             if (forumPost == null)
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
 
             if (!_forumService.IsCustomerAllowedToEditPost(customer, forumPost))
@@ -1533,6 +1570,7 @@ namespace SmartStore.Web.Controllers
 
             // Redisplay form.
             model.IsEdit = true;
+            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumTopicId = forumTopic.Id;
             model.ForumTopicSubject = forumTopic.Subject;
@@ -1604,10 +1642,29 @@ namespace SmartStore.Web.Controllers
             return PartialView("~/Views/Search/Partials/SearchBox.cshtml", model);
         }
 
+        [ChildActionOnly]
+        public ActionResult Filters(IForumSearchResultModel model)
+        {
+            if (model == null)
+            {
+                return new EmptyResult();
+            }
+
+            // Set facet counters to 0 because they refer to posts, not topics, and would confuse here.
+            foreach (var group in model.SearchResult.Facets.Values)
+            {
+                group.Facets.Each(x => x.HitCount = 0);
+            }
+
+            ViewBag.TemplateProvider = _templateProvider.Value;
+
+            return PartialView(model);
+        }
+
         [HttpPost, ValidateInput(false)]
         public ActionResult InstantSearch(ForumSearchQuery query)
         {
-            if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
+            if (!_forumSettings.ForumsEnabled || string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
             {
                 return Content(string.Empty);
             }
@@ -1630,6 +1687,7 @@ namespace SmartStore.Web.Controllers
 
             if (result.Hits.Any())
             {
+                var processedIds = new HashSet<int>();
                 var hitGroup = new SearchResultModelBase.HitGroup(model)
                 {
                     Name = "InstantSearchHits",
@@ -1637,11 +1695,17 @@ namespace SmartStore.Web.Controllers
                     Ordinal = 1
                 };
 
-                hitGroup.Hits.AddRange(result.Hits.Select(x => new SearchResultModelBase.HitItem
+                foreach (var post in result.Hits)
                 {
-                    Label = x.Subject,
-                    Url = Url.RouteUrl("TopicSlug", new { id = x.Id, slug = x.GetSeName() }) + (x.FirstPostId == 0 ? "" : string.Concat("#", x.FirstPostId))
-                }));
+                    if (processedIds.Add(post.TopicId))
+                    {
+                        hitGroup.Hits.Add(new SearchResultModelBase.HitItem
+                        {
+                            Label = post.ForumTopic.Subject,
+                            Url = Url.RouteUrl("TopicSlug", new { id = post.TopicId, slug = post.ForumTopic.GetSeName() }) + string.Concat("#", post.Id)
+                        });
+                    }
+                }
 
                 model.HitGroups.Add(hitGroup);
             }
@@ -1736,35 +1800,74 @@ namespace SmartStore.Web.Controllers
             model.Term = query.Term;
             model.TotalCount = model.SearchResult.TotalHitsCount;
 
-            var lastPostIds = model.SearchResult.Hits
-                .Where(x => x.LastPostId != 0)
-                .Select(x => x.LastPostId)
-                .ToArray();
-
-            var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
-
-            model.PagedList = new PagedList<ForumTopicRowModel>(
-                model.SearchResult.Hits.Select(x => PrepareForumTopicRowModel(x, lastPosts)),
-                model.SearchResult.Hits.PageIndex,
-                model.SearchResult.Hits.PageSize,
-                model.SearchResult.TotalHitsCount);
-
-            model.AddSpellCheckerSuggestions(model.SearchResult.SpellCheckerSuggestions, T, x => Url.RouteUrl("BoardSearch", new { q = x }));
+            PrepareSearchResult(model, null);
 
             return View(model);
         }
 
-        [ChildActionOnly]
-        public ActionResult Filters(IForumSearchResultModel model)
+        // Ajax.
+        [HttpPost, ValidateInput(false)]
+        public ActionResult Search(ForumSearchQuery query, int[] renderedTopicIds)
         {
-            if (model == null)
+            if (!_forumSettings.ForumsEnabled || query.Term.IsEmpty() || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
             {
-                return new EmptyResult();
+                return Content(string.Empty);
             }
 
-            ViewBag.TemplateProvider = _templateProvider.Value;
+            query.BuildFacetMap(false).CheckSpelling(0);
 
-            return PartialView(model);
+            var model = new ForumSearchResultModel(query);
+
+            try
+            {
+                model.SearchResult = _forumSearchService.Search(query);
+            }
+            catch (Exception ex)
+            {
+                model.SearchResult = new ForumSearchResult(query);
+                model.Error = ex.ToString();
+            }
+
+            model.PostsPageSize = _forumSettings.PostsPageSize;
+            model.Term = query.Term;
+            model.TotalCount = model.SearchResult.TotalHitsCount;
+
+            PrepareSearchResult(model, renderedTopicIds);
+
+            return PartialView("SearchHits", model);
+        }
+
+        private void PrepareSearchResult(ForumSearchResultModel model, int[] renderedTopicIds)
+        {
+            // The search result may contain duplicate topics.
+            // Make sure that no topic is rendered more than once.
+            var hits = model.SearchResult.Hits;
+            var lastPostIds = hits
+                .Where(x => x.ForumTopic.LastPostId != 0)
+                .Select(x => x.ForumTopic.LastPostId)
+                .Distinct()
+                .ToArray();
+
+            var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
+            var renderedIds = new HashSet<int>(renderedTopicIds ?? new int[0]);
+            var hitModels = new List<ForumTopicRowModel>();
+
+            foreach (var post in hits)
+            {
+                if (renderedIds.Add(post.TopicId))
+                {
+                    var hitModel = PrepareForumTopicRowModel(post.ForumTopic, lastPosts, post);
+                    hitModels.Add(hitModel);
+                }
+            }
+
+            model.PagedList = new PagedList<ForumTopicRowModel>(
+                hitModels,
+                hits.PageIndex,
+                hits.PageSize,
+                model.TotalCount);
+
+            model.CumulativeHitCount = renderedIds.Count;
         }
 
         #endregion

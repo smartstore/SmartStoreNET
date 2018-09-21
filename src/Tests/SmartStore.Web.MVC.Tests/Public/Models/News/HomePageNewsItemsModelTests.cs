@@ -40,7 +40,6 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
                 Id = 3,
                 CustomerId = 4,
                 CustomerName = "CustomerName 1",
-                CustomerAvatarUrl = "CustomerAvatarUrl 1",
                 CommentTitle = "CommentTitle 1",
                 CommentText = "CommentText 1",
                 CreatedOn = new DateTime(2010, 01, 02),
@@ -67,7 +66,6 @@ namespace SmartStore.Web.MVC.Tests.Public.Models.News
             newsItemModel2.Comments.Comments[0].Id.ShouldEqual(3);
             newsItemModel2.Comments.Comments[0].CustomerId.ShouldEqual(4);
             newsItemModel2.Comments.Comments[0].CustomerName.ShouldEqual("CustomerName 1");
-            newsItemModel2.Comments.Comments[0].CustomerAvatarUrl.ShouldEqual("CustomerAvatarUrl 1");
             newsItemModel2.Comments.Comments[0].CommentTitle.ShouldEqual("CommentTitle 1");
             newsItemModel2.Comments.Comments[0].CommentText.ShouldEqual("CommentText 1");
             newsItemModel2.Comments.Comments[0].CreatedOn.ShouldEqual(new DateTime(2010, 01, 02));

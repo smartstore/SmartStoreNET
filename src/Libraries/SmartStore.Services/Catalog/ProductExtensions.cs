@@ -1,21 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
-using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Catalog
 {
-	public static class ProductExtensions
+    public static class ProductExtensions
     {
 		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
         {
@@ -29,12 +26,16 @@ namespace SmartStore.Services.Catalog
 			if (selectedAttributes.IsEmpty())
 				return null;
 
-			// let's find appropriate record
+			// Let's find appropriate record.
 			var combination = productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes);
 
-			if (combination != null && combination.IsActive)
+            if (combination != null && combination.IsActive)
             {
-				product.MergeWithCombination(combination);
+                product.MergeWithCombination(combination);
+            }
+            else if (product.MergedDataValues != null)
+            {
+                product.MergedDataValues.Clear();
             }
 
 			return combination;

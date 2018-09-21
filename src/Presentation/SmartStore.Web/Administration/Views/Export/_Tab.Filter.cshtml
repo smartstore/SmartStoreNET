@@ -312,6 +312,15 @@
 				@Html.ValidationMessageFor(x => x.Filter.IsActiveSubscriber)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(x => x.Filter.WorkingLanguageId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.Filter.WorkingLanguageId, Model.Filter.AvailableLanguages)
+                @Html.ValidationMessageFor(x => x.Filter.WorkingLanguageId)
+            </td>
+        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Filter.CreatedFrom)

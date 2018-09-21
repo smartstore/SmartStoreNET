@@ -75,10 +75,10 @@
 			</div>
 		}
 
-		@if (suggestions.Any() && (Model.AttemptedTerm.HasValue() || Model.TotalProductsCount == 0))
+		@if (suggestions.Any())
 		{
 			<p class="search-suggestions">
-				<strong>@T("Search.DidYouMean")</strong>
+				<strong>@(T(Model.AttemptedTerm.HasValue() || Model.TotalProductsCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
 				@{ 
 					var links = String.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("Search", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
 				}

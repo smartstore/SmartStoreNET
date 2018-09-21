@@ -15,11 +15,18 @@
 * Added option to display preview pictures in product lists
 * Added option to add multiple file versions to product download section
 * Added options for alternating price display (in badges)
+* Added option to display a captcha on forum pages when creating or replying to a topic.
+* **MegaSearch**:
+	* Supports searching for forum posts.
+	* #1172 Option to display related search terms on search page.
+* Customer avatar: Letter with colored background if no avatar image was uploaded.
+* Viveum: Supports payment via "Virtual Account Brands" like PayPal.
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
 * Debitoor: Partially update customer instead of full update to avoid all fields being overwritten
 * #1479 Show in messages the delivery time at the time of purchase
+* #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
@@ -47,6 +54,8 @@
 * In a multi-store, message templates may have loaded the wrong disclaimer and conditions-of-use text.
 * NullReferenceException in manufacturer list when there is no manufacturer.
 * Wrong order of featured products on category page.
+* #1504 Cart item price calculation wrong if attribute combinations with text types are involved.
+* #1485 Dropdown list for product sorting does not work with Internet Explorer 11.
 
 
 ## SmartStore.NET 3.1.5

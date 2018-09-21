@@ -34,10 +34,10 @@ namespace SmartStore.Services.Search
         }
 
         /// <summary>
-        /// Bypasses the index provider and directly searches in the database
+        /// Bypasses the index provider and directly searches in the database.
         /// </summary>
-        /// <param name="searchQuery">Search query</param>
-        /// <returns>Forum search result</returns>
+        /// <param name="searchQuery">Search query.</param>
+        /// <returns>Forum search result.</returns>
         protected virtual ForumSearchResult SearchDirect(ForumSearchQuery searchQuery)
 		{
 			// Fallback to linq search.
@@ -64,7 +64,7 @@ namespace SmartStore.Services.Search
 					var totalCount = 0;
 					string[] spellCheckerSuggestions = null;
 					IEnumerable<ISearchHit> searchHits;
-					Func<IList<ForumTopic>> hitsFactory = null;
+					Func<IList<ForumPost>> hitsFactory = null;
                     IDictionary<string, FacetGroup> facets = null;
 
                     _services.EventPublisher.Publish(new ForumSearchingEvent(searchQuery));
@@ -90,33 +90,10 @@ namespace SmartStore.Services.Search
 						{
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
-                                var postIds = searchHits
-                                    .Select(x => new
-                                    {
-                                        TopicId = x.GetInt("topicid"),
-                                        PostId = x.GetInt("id")
-                                    })
-                                    .ToMultimap(x => x.TopicId, x => x.PostId);
-
-                                hitsFactory = () =>
-                                {
-                                    var topicIds = postIds.Select(x => x.Key).ToArray();
-                                    var hits = _forumService.Value.GetTopicsByIds(topicIds);
-
-                                    // Provide the id of the first hit, so that we can jump directly to the post when opening the topic.
-                                    foreach (var topic in hits)
-                                    {
-                                        if (postIds.ContainsKey(topic.Id))
-                                        {
-                                            // Unified order: we only sort by ForumPost.Id to save an additional database query here.
-                                            topic.FirstPostId = postIds[topic.Id].OrderBy(x => x).FirstOrDefault();
-                                        }
-                                    }
-
-                                    return hits;
-                                };
+                                var postIds = searchHits.Select(x => x.EntityId).ToArray();
+                                hitsFactory = () => _forumService.Value.GetPostsByIds(postIds);
                             }
-						}
+                        }
 
                         if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithFacets))
                         {
@@ -171,7 +148,7 @@ namespace SmartStore.Services.Search
 			return SearchDirect(searchQuery);
 		}
 
-		public IQueryable<ForumTopic> PrepareQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery = null)
+		public IQueryable<ForumPost> PrepareQuery(ForumSearchQuery searchQuery, IQueryable<ForumPost> baseQuery = null)
         {
 			var linqForumSearchService = _services.Container.ResolveNamed<IForumSearchService>("linq");
 			return linqForumSearchService.PrepareQuery(searchQuery, baseQuery);

@@ -36,7 +36,7 @@
     </div>
 
     <div class="page-body">
-        <div class="search-input mt-4 mb-5">
+        <div class="search-input mt-4">
             @if (Model.AllowFiltering && Model.SearchResult.Facets.Any())
             {
                 <div class="mb-4">
@@ -44,7 +44,7 @@
                 </div>
             }
 
-            <div class="w-75 mb-2">
+            <div class="w-75 mb-4">
                 @{ Html.RenderAction("SearchBox", "Boards"); }
             </div>
 
@@ -68,10 +68,10 @@
 			    </div>
 		    }
 
-		    @if (suggestions.Any() && (Model.AttemptedTerm.HasValue() || Model.TotalCount == 0))
+		    @if (suggestions.Any())
 		    {
 			    <p class="search-suggestions">
-				    <strong>@T("Search.DidYouMean")</strong>
+				    <strong>@(T(Model.AttemptedTerm.HasValue() || Model.TotalCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
 				    @{ 
 					    var links = string.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("BoardSearch", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
 				    }
@@ -90,10 +90,8 @@
                     </div>
                 }
 
-                <div class="fsearch-actions--page ml-auto pt-3">
-                    @T("Search.HitsFor", 
-                        "<span id='CurrentSearchHitCount' data-cumulative-count='{0}'>{1}</span>+".FormatInvariant(Model.SearchResult.Hits.Count, Model.SearchResult.Hits.Count.ToString("N0")),
-                        "<b class='font-weight-medium'>{0}</b>".FormatInvariant(Model.Term.NaIfEmpty()))
+                <div id="SearchHitsCount" class="fsearch-actions--page ml-auto pt-3">
+                    @SearchHitCount()
                 </div>
             </div>
         }
@@ -102,10 +100,11 @@
             <div class="topics-group table-responsive">
                 @if (Model.TotalCount > 0)
                 {
-                    <table class="table">
+                    <table id="ForumSearchResult" class="table">
                         <thead>
                             <tr>
-                                <th class="topic-name" colspan="2">
+                                <th></th>
+                                <th class="topic-name">
                                     @T("Forum.TopicTitle")
                                 </th>
                                 <th class="replies">
@@ -119,96 +118,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
-                        @foreach (ForumTopicRowModel topic in Model.PagedList)
-                        {
-                            <tr class="topic">
-                                <td class="image">
-                                    @{
-                                        var topicType = "post";
-                                        var topicText = string.Empty;
-                                        var topicIcon = "fa fa-comment-o";
-                                        switch (topic.ForumTopicType)
-                                        {
-                                            case ForumTopicType.Normal:
-                                                topicType = "post";
-                                                topicIcon = "fa fa-comment-o";
-                                                break;
-                                            case ForumTopicType.Sticky:
-                                                topicType = "poststicky";
-                                                topicIcon = "fa fa-thumb-tack";
-                                                topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
-                                                break;
-                                            case ForumTopicType.Announcement:
-                                                topicType = "post-annoucement";
-                                                topicIcon = "fa fa-bullhorn";
-                                                topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
-                                                break;
-                                            default:
-                                                topicType = "post";
-                                                topicIcon = "fa fa-comment-o";
-                                                break;
-                                        }
-                                        <div class="@topicType">
-                                            <i class="icon @topicIcon"></i>
-                                        </div>
-                                    }
-                                </td>
-                                <td class="topic-name">
-                                    @if (!string.IsNullOrEmpty(topicText))
-                                    {
-                                        <span class="topictype" dir="auto">@Html.Raw(topicText)</span>
-                                    }
-                                    <a href="@(Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.SeName }))@(Html.Raw(topic.AnchorTag))" class="topic-title">
-                                        @Html.Raw(Model.Highlight(topic.Subject, "subject", Model.Query, null, "<mark>", "</mark>"))
-                                    </a>
-                                    @if (topic.NumPosts > Model.PostsPageSize)
-                                    {
-                                        @(Html.SmartStore().Pager(topic.TotalPostPages)
-                                            .HtmlAttributes(new { @class = "topics-pager" })
-                                            .WithRenderer<ForumTopicPagerRenderer>()
-                                            .ShowPrevious(false)
-                                            .ShowNext(false)
-                                            .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
-                                            .Alignment(PagerAlignment.Left)
-                                            .Size(PagerSize.Mini)
-                                            .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
-                                    }
-                                    <div class="topic-starter">
-										@if (topic.CustomerId > 0)
-										{
-											<div class="d-flex">
-												<span class="pr-1">@T("Forum.Author"):</span>
-												@if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
-												{
-													<span>@Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })</span>
-												}
-												else
-												{
-													<span>@topic.CustomerName</span>
-												}
-											</div>
-                                            if (topic.FirstPostId != 0 && Model.SearchResult.Engine != null && Model.Query.Fields != null && Model.Query.Fields.Contains("text"))
-                                            {
-                                                <div class="mt-2">
-                                                    @Html.Raw(Model.SearchResult.Engine.Highlight(topic.FirstPostId, "text", "<mark>", "</mark>", 3))
-                                                </div>
-                                            }
-										}
-                                    </div>
-                                </td>
-                                <td class="replies">
-                                    @topic.NumReplies.ToString("N0")
-                                </td>
-                                <td class="views">
-                                    @topic.Views.ToString("N0")
-                                </td>
-                                <td class="last-post">
-                                    @{ Html.RenderPartial("LastPost", topic.LastPost); }
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
+                        @{ Html.RenderPartial("SearchHits"); }
                     </table>
                 }
             </div>
@@ -216,8 +126,20 @@
     </div>
 </div>
 
+@helper SearchHitCount()
+{
+    var countHtml = "<span class='cumulative-count'>{0}</span>".FormatInvariant(Model.CumulativeHitCount.ToString("N0"));
+    if (Model.SearchResult.Hits.HasNextPage)
+    {
+        countHtml += "<span class='more-hits-sign'>+</span>";
+    }
+
+    @T("Search.HitsFor", countHtml, "<b class='font-weight-medium'>{0}</b>".FormatInvariant(Model.Term.NaIfEmpty()))
+}
+
 <script type="text/javascript">
     $(document).ready(function () {
+        var result = $('#ForumSearchResult');
 
         // Sorting changed.
         $('.fsearch-actions').on('change', '.artlist-action-select', function (e) {
@@ -229,6 +151,54 @@
 		    var url = window.modifyUrl(url, qname, val);
 		    window.setLocation(url);
 	    });
+
+        // Auto load more search hits.
+        $(document).scroll( function() {           
+            var container = result.find('.load-more:not(.loading)');
+
+            if (container.visible(true, false, 'vertical')) {
+                var newPage = container.data('page'),
+                    url = window.modifyUrl(window.location.href, 'i', newPage);
+
+                // IDs of already rendered topics, to avoid rendering them again when the list is extended.
+                var renderedTopicIds = result.find('tr.topic').map(function() {
+                    return $(this).data('id');
+                }).get();
+
+                //console.log(page + '. ' + url + '. ' + renderedTopicIds.toString());
+
+                $.ajax({
+                    cache: false,
+                    type: 'POST',
+                    async: true,
+                    url: url,
+                    data: { renderedTopicIds: renderedTopicIds },
+                    beforeSend: function () {
+                        container.addClass('loading').append(createCircularSpinner(20, true));
+                    },
+                    success: function (response) {
+                        // Replace empty tbody at table end by page representing tbody.
+                        container.replaceWith(response);
+
+                        // Update cumulative hit counter.
+                        $counter = $('#SearchHitsCount');
+                        $pageBody = result.find('tbody[data-page=' + newPage + ']');
+                        $counter.find('.cumulative-count').text($pageBody.data('cumulativehits'));
+                        if (!$pageBody.data('hasnextpage')) {
+                            $counter.find('.more-hits-sign').hide();
+                        }
+                    },
+                    error: function (objXml) {
+                        result.find('.load-more:not(.loading)').removeClass('loading');
+
+                        if (objXml != null && objXml.responseText != null && objXml.responseText !== '') {
+                            displayNotification(objXml.responseText, 'error');
+			            }
+                    }
+		        });
+
+            }
+        });
 
     });
 </script>

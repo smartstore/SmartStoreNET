@@ -8,6 +8,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 {
 	public interface IBlockEntity
 	{
+		int Id { get; set; }
 		string BlockType { get; set; }
 		string Model { get; set; }
 		string TagLine { get; set; }

@@ -14,7 +14,6 @@ namespace SmartStore.Web.Framework.UI.Blocks
 
 		public string SystemName { get; set; }
 		public string FriendlyName { get; set; }
-		public string Description { get; set; }
 		public string Icon { get; set; }
 		public int DisplayOrder { get; set; }
 		public bool IsInternal { get; set; }
@@ -24,10 +23,10 @@ namespace SmartStore.Web.Framework.UI.Blocks
 	{
 		string SystemName { get; }
 		string FriendlyName { get; }
-		string Description { get; }
 		string Icon { get; }
 		int DisplayOrder { get; }
 		bool IsInternal { get; }
+		bool IsInbuilt { get; }
 		Type BlockClrType { get; }
 		Type BlockHandlerClrType { get; }
 	}
@@ -36,10 +35,10 @@ namespace SmartStore.Web.Framework.UI.Blocks
 	{
 		public string SystemName { get; set; }
 		public string FriendlyName { get; set; }
-		public string Description { get; set; }
 		public string Icon { get; set; }
 		public int DisplayOrder { get; set; }
 		public bool IsInternal { get; set; }
+		public bool IsInbuilt { get; set; }
 		public Type BlockClrType { get; set; }
 		public Type BlockHandlerClrType { get; set; }
 	}

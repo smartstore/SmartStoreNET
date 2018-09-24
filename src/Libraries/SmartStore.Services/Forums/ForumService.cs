@@ -204,7 +204,11 @@ namespace SmartStore.Services.Forums
                 return null;
             }
 
-            return _forumRepository.GetById(forumId);
+            var entity = _forumRepository.Table
+                .Expand(x => x.ForumGroup)
+                .FirstOrDefault(x => x.Id == forumId);
+
+            return entity;
         }
 
         public virtual IList<Forum> GetAllForumsByGroupId(int forumGroupId)
@@ -275,7 +279,11 @@ namespace SmartStore.Services.Forums
                 return null;
             }
 
-            var entity = _forumTopicRepository.Table.FirstOrDefault(x => x.Id == forumTopicId);
+            var entity = _forumTopicRepository.Table
+                .Expand(x => x.Forum)
+                .Expand(x => x.Forum.ForumGroup)
+                .FirstOrDefault(x => x.Id == forumTopicId);
+
             return entity;
         }
 
@@ -459,7 +467,12 @@ namespace SmartStore.Services.Forums
                 return null;
             }
 
-            var forumPost = _forumPostRepository.Table.FirstOrDefault(x => x.Id == forumPostId);
+            var forumPost = _forumPostRepository.Table
+                .Expand(x => x.ForumTopic)
+                .Expand(x => x.ForumTopic.Forum)
+                .Expand(x => x.ForumTopic.Forum.ForumGroup)
+                .FirstOrDefault(x => x.Id == forumPostId);
+
             return forumPost;
         }
 

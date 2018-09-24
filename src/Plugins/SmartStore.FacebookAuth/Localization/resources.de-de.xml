@@ -1,6 +1,6 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
 	<LocaleResource Name="Plugins.FriendlyName.SmartStore.FacebookAuth" AppendRootKey="false">
-		<Value>Facebook</Value>
+		<Value>Facebook Login</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdminInstruction">
 		<Value>

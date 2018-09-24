@@ -509,6 +509,10 @@
             builder.AddOrUpdate("Search.RelatedSearchTerms",
                 "Related search terms",
                 "Verwandte Suchbegriffe");
+
+            builder.AddOrUpdate("Plugins.CannotLoadModule",
+                "The plugin or provider \"{0}\" cannot be loaded.",
+                "Das Plugin oder der Provider \"{0}\" kann nicht geladen werden.");
         }
     }
 }

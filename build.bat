@@ -32,6 +32,6 @@ echo "Unable to detect suitable MsBuild version (15.0). Build may not succeed."
 cd /d %~dp0
 
 echo "Restoring NuGet packages"
-lib\nuget\nuget.exe restore "src\SmartStoreNET.Full-sym.sln"
+lib\nuget\nuget.exe restore "src\SmartStoreNET.sln"
 
 call "!MsBuildPath!" SmartStoreNET.proj /p:SlnName=SmartStoreNET /m /p:DebugSymbols=false /p:DebugType=None /maxcpucount %*

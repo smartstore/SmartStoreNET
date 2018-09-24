@@ -6,14 +6,14 @@
 
     <div class="offcanvas-menu-header offcanvas-tabs">
         <ul class="nav nav-tabs nav-tabs-line row no-gutters" role="tablist">
-			@if (ViewBag.ShowCategories == true)
-			{
-				<li class="nav-item col">
-					<a id="category-tab" class="nav-link" data-toggle="tab" href="#ocm-categories" role="tab" data-initialized="false">
-						<span class="title">@T("Offcanvas.Menu.Categories")</span>
-					</a>
-				</li>
-			}
+            @if (ViewBag.ShowCategories == true)
+            {
+                <li class="nav-item col">
+                    <a id="category-tab" class="nav-link" data-toggle="tab" href="#ocm-categories" role="tab" data-initialized="false">
+                        <span class="title">@T("Offcanvas.Menu.Categories")</span>
+                    </a>
+                </li>
+            }
             @if (ViewBag.ShowManufacturers == true)
             {
                 <li class="nav-item col">

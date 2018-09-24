@@ -103,44 +103,52 @@ body {
 	padding: 0;
 }
 
-header {
+.page-main {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 72px 72px minmax(calc(100vh - 122px), auto);
+}
+
+#header {
 	@include gradient-bg($indigo);
-	padding-bottom: 50px;
+    grid-column: 1 / -1;
+    grid-row: 1 / span 2;
 
 	.popup & {
 		display: none;
 	}
 }
 
-.cph {
-   padding-top: 55px;
-}
-
 #content {
 	position: relative;
-	height: auto;
-	margin: 0 15px;
-	margin-top: -50px;
-	background-color: #fff;
+	margin: 0 ($content-padding-x / 2);
 	padding: $content-padding-y ($content-padding-x / 2);
 	padding-bottom: $content-padding-x * 2;
-	box-shadow: 0 0 6px rgba(0,0,0, 0.2);
-	border-top-left-radius: $border-radius;
-	border-top-right-radius: $border-radius;
+    box-shadow: 0 8px 16px rgba(#32325d, .1), 0 -2px 8px rgba(#000, .09);
+	border-radius: $border-radius-lg $border-radius-lg 0 0;
+    background-color: #fff;
+    grid-column: 1 / -1;
+    grid-row: 2 / -1;
 
 	@include media-breakpoint-up(lg) {
-		margin-left: 30px;
-		margin-right: 30px;
+		margin-left: $content-padding-x;
+		margin-right: $content-padding-x;
 		padding-left: $content-padding-x;
 		padding-right: $content-padding-x;
 	}
+
+    .popup & {
+	    margin: 0;
+	    border: 0;
+	    box-shadow: none;
+	    border-radius: 0;
+        grid-row: 1 / -1;
+    }
 }
 
-.popup #content {
-	margin: 0;
-	border: 0;
-	box-shadow: none;
-	border-radius: 0;
+.cph {
+    display: flex;
+    flex-flow: column;
 }
 
 .popup.bare {
@@ -155,28 +163,9 @@ header {
 	}
 }
 
-.section-title {
-	border-bottom: solid 3px $gray-300;
-	padding-bottom: 1px;
-	margin-bottom: 10px;
-	color: #009FFF;
-	font-size: 14px;
-	font-weight: 700;
-	vertical-align: bottom;
-}
-
-.section-title img {
-	vertical-align: middle;
-	padding-bottom: 2px;
-}
-
 .section-header {
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	padding: 0.75rem ($content-padding-x / 2);
-	transition: background-color 0.1s ease-in-out, padding 0.1s ease-in-out;
+    padding-bottom: 0.75rem;
+	transition: background-color 0.1s ease-in-out;
 
 	@include make-row();
 	flex-wrap: nowrap;
@@ -255,6 +244,10 @@ header {
 		z-index: 600;
 		left: $content-padding-x / 2;
 		right: $content-padding-x / 2;
+        top: 0;
+		padding-left: $content-padding-x / 2;
+		padding-right: $content-padding-x / 2;
+        padding-top: $content-padding-y;
 		margin-left: 0 !important;
 		margin-right: 0 !important;
 		background: $gray-100;
@@ -265,16 +258,13 @@ header {
 			// add the killed scrollbar width
 			margin-right: 17px !important;
 		}
-	}
 
-	@include media-breakpoint-up(lg) {
-		padding-left: $content-padding-x;
-		padding-right: $content-padding-x;
-
-		&.sticky {
+	    @include media-breakpoint-up(lg) {
 			left: $content-padding-x;
 			right: $content-padding-x;
-		}
+            padding-left: $content-padding-x;
+		    padding-right: $content-padding-x;
+	    }
 	}
 }
 

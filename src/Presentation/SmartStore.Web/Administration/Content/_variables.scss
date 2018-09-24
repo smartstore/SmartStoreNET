@@ -4,14 +4,14 @@
 // SmartStore CI colors
 // --------------------------------------------------
 
-$sm-orange1:	#ee9B00;
+$sm-orange1:	#f7a833;
 $sm-orange2:	#e77c00;
-$sm-green1:		#44b284;
+$sm-green1:		#009e74;
 $sm-bluegreen:	#2c8d8a;
 $sm-red1:		#ee1111;
 $sm-red2:		#dc3000;
 $sm-red3:		#db004f;
-$sm-blue:		#37a0e6;
+$sm-blue:		#307abe;
 $sm-blue2:		#18509f;
 $sm-violet:		#55237d;
 $sm-gray1:		#dadada;
@@ -92,7 +92,7 @@ $link-color:	desaturate(darken($primary, 12%), 0%); //#0277bb;
 $theme-color-interval:		8%;
 
 // The yiq lightness value that determines when the lightness of color changes from "dark" to "light". Acceptable values are between 0 and 255.
-$yiq-contrasted-threshold:	164;
+$yiq-contrasted-threshold:	179;
 
 // Customize the light and dark text colors for use in our YIQ color contrast function.
 $yiq-text-dark:				$gray-800;

@@ -33,8 +33,13 @@
 	min-height: 300px;
 }
 
-.modal-dialog-app > .modal-content > .modal-body {
-    padding: $border-radius 0;
+.modal-dialog-app > .modal-content {
+    border-radius: 0;
+
+    > .modal-body {
+        //padding: $border-radius 0;
+        padding: 0;
+    }
 }
 
 .modal-closer {

@@ -123,7 +123,7 @@
 
         // sticky section-header
         var navbar = $("#navbar");
-        var navbarHeight = navbar.height() || 1;
+        var navbarHeight = navbar.height() || 0;
         var sectionHeader = $('.section-header');
         var sectionHeaderHasButtons = undefined;
 
@@ -132,50 +132,14 @@
                 sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
             }
             if (sectionHeaderHasButtons === true) {
-            	var y = $(this).scrollTop();
+                var y = $(this).scrollTop();
                 sectionHeader.toggleClass("sticky", y >= navbarHeight);
             }
         }).trigger('resize');
 
         $(window).on('load', function () {
-
         	// swap classes onload and domready
         	html.removeClass("loading").addClass("loaded");
-
-        	// make #content fit into viewspace
-        	var fitContentToWindow = function (initial) {
-        		var content = $('#content');
-
-        		if (!content.length)
-        			return;
-
-				var height = initialHeight = content.outerHeight(false),
-                             outerHeight,
-                             winHeight = $(window).height(),
-                             top,
-                             offset = 0;
-
-        		if (initial === true) {
-        			top = content.offset().top;
-					content
-						.data("initial-height", initialHeight)
-						.data("initial-offset", offset)
-						.data("initial-top", top);
-        		}
-        		else {
-        			top = content.data("initial-top");
-        			offset = content.data("initial-offset");
-        			initialHeight = content.data("initial-height");
-        		}
-
-				content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
-			};
-
-			if (!$('body').is('.popup.bare')) {
-				fitContentToWindow(true);
-				$(window).on("resize", fitContentToWindow);
-			}
-
         });
 
     });

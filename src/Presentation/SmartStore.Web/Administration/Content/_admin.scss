@@ -104,6 +104,7 @@ body {
 }
 
 .page-main {
+    position: relative;
     display: grid;
     grid-template-columns: 100%;
     grid-template-rows: 72px 72px minmax(calc(100vh - 122px), auto);
@@ -129,6 +130,7 @@ body {
     background-color: #fff;
     grid-column: 1 / -1;
     grid-row: 2 / -1;
+    z-index: 9;
 
 	@include media-breakpoint-up(lg) {
 		margin-left: $content-padding-x;
@@ -147,6 +149,7 @@ body {
 }
 
 .cph {
+    position: relative;
     display: flex;
     flex-flow: column;
 }
@@ -268,7 +271,7 @@ body {
 	}
 }
 
-.popup .section-header.sticky {
+.popup .section-header.sticky { 
 	left: 0;
 	right: 0;
 	top: 0;
@@ -883,7 +886,7 @@ textarea:not([class*="form-control"]) {
 		font-family: $headings-font-family;
 		font-weight: $headings-font-weight;
 		color: inherit; 
-		border-bottom: 1px solid $gray-300;
+        border-bottom: 1px solid rgba(#000, 0.11);
 	}
 	.sub-title {
 		font-family: $font-family-base;

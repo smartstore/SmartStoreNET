@@ -25,16 +25,17 @@ namespace SmartStore
 		{
 			try
 			{
-				if (request != null)
+				// TODO: not really reliable. Change this.
+				var area = request?.RequestContext?.RouteData?.GetAreaName();
+				if (area != null)
 				{
-					var area = request.RequestContext.RouteData.GetAreaName();
-					if (area != null)
-					{
-						return area.IsCaseInsensitiveEqual("admin");
-					}
+					return area.IsCaseInsensitiveEqual("admin");
 				}
-
-				return false;
+				else
+				{
+					var paths = new[] { "~/administration/", "~/admin/" };
+					return paths.Any(x => request?.AppRelativeCurrentExecutionFilePath?.StartsWith(x, StringComparison.OrdinalIgnoreCase) == true);
+				}
 			}
 			catch
 			{
@@ -56,13 +57,9 @@ namespace SmartStore
 		{
 			try
 			{
-				if (request != null)
-				{
-					var area = request.RequestContext.RouteData.GetAreaName();
-					return area.IsEmpty();
-				}
-
-				return false;
+				// TODO: not really reliable. Change this.
+				var area = request?.RequestContext?.RouteData?.GetAreaName();
+				return area.IsEmpty();
 			}
 			catch
 			{

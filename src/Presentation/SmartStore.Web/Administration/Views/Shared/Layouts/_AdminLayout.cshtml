@@ -59,6 +59,8 @@
 			</header>		
 		}
 
+		@{ Html.RenderZone("beforemaincontent"); }
+
 		<div id="content">
 			<div class="cph">
 				@{ Html.RenderWidget("admin_content_before"); }
@@ -70,6 +72,8 @@
 				<div class="bar"></div>
 			</div>
 		</div>
+
+		@{ Html.RenderZone("aftermaincontent"); }
 	</div>
 
 	@{ Html.RenderPartial("_Notifications"); }

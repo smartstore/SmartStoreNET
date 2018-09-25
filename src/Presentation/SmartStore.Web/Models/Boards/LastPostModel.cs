@@ -14,7 +14,8 @@ namespace SmartStore.Web.Models.Boards
         public bool IsCustomerGuest { get; set; }
 
         public string PostCreatedOnStr { get; set; }
-        
+        public bool Published { get; set; }
+
         public bool ShowTopic { get; set; }
     }
 }

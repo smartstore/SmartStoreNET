@@ -11,22 +11,22 @@ namespace SmartStore.Core.Domain.Forums
 			TopicSubjectMaxLength = 450;
 			PostMaxLength = 4000;
 			StrippedTopicMaxLength = 45;
-			TopicsPageSize = 10;
-			PostsPageSize = 10;
-            SearchResultsPageSize = 12;
+			TopicsPageSize = 20;
+			PostsPageSize = 20;
+            ForumFeedCount = 20;
+            SearchResultsPageSize = 20;
+            LatestCustomerPostsPageSize = 20;
             AllowSorting = true;
-            LatestCustomerPostsPageSize = 10;
-			ShowCustomersPostCount = true;
+            ShowCustomersPostCount = true;
 			ForumEditor = EditorType.BBCodeEditor;
 			SignaturesEnabled = true;
-			PrivateMessagesPageSize = 10;
-			ForumSubscriptionsPageSize = 10;
+			PrivateMessagesPageSize = 20;
+			ForumSubscriptionsPageSize = 20;
 			PMSubjectMaxLength = 450;
 			PMTextMaxLength = 4000;
 			HomePageActiveDiscussionsTopicCount = 5;
 			ActiveDiscussionsPageTopicCount = 50;
 			ActiveDiscussionsFeedCount = 25;
-			ForumFeedCount = 10;
 		}
 		
 		/// <summary>

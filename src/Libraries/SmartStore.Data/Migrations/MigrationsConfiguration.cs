@@ -513,6 +513,12 @@
             builder.AddOrUpdate("Plugins.CannotLoadModule",
                 "The plugin or provider \"{0}\" cannot be loaded.",
                 "Das Plugin oder der Provider \"{0}\" kann nicht geladen werden.");
+
+            builder.AddOrUpdate("Admin.System.ScheduleTasks.RunPerMachine",
+                "Run per machine",
+                "Pro Maschine ausführen",
+                "Indicates whether the task is executed decidedly on each machine of a web farm.",
+                "Gibt an, ob die Aufgabe auf jeder Maschine einer Webfarm dezidiert ausgeführt wird.");
         }
     }
 }

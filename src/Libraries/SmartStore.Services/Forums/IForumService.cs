@@ -57,13 +57,6 @@ namespace SmartStore.Services.Forums
         Forum GetForumById(int forumId);
 
         /// <summary>
-        /// Gets forums by group identifier
-        /// </summary>
-        /// <param name="forumGroupId">The forum group identifier</param>
-        /// <returns>Forums</returns>
-        IList<Forum> GetAllForumsByGroupId(int forumGroupId);
-
-        /// <summary>
         /// Deletes a forum
         /// </summary>
         /// <param name="forum">Forum</param>
@@ -105,8 +98,9 @@ namespace SmartStore.Services.Forums
         /// <param name="forumId">The forum identifier</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum Topics</returns>
-        IPagedList<ForumTopic> GetAllTopics(int forumId, int pageIndex, int pageSize);
+        IPagedList<ForumTopic> GetAllTopics(int forumId, int pageIndex, int pageSize, bool showHidden = false);
 
         /// <summary>
         /// Gets active forum topics
@@ -179,8 +173,9 @@ namespace SmartStore.Services.Forums
         /// <param name="ascSort">Sort order</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum Posts</returns>
-        IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, bool ascSort, int pageIndex, int pageSize);
+        IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, bool ascSort, int pageIndex, int pageSize, bool showHidden = false);
 
         /// <summary>
         /// Deletes a forum post

@@ -23,8 +23,9 @@ namespace SmartStore.Services.Forums
         /// Gets all forum groups
         /// </summary>
         /// <param name="storeId">Store identifier</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum groups</returns>
-		IList<ForumGroup> GetAllForumGroups(int storeId = 0);
+		IList<ForumGroup> GetAllForumGroups(int storeId = 0, bool showHidden = false);
 
         /// <summary>
         /// Deletes a forum group
@@ -112,8 +113,9 @@ namespace SmartStore.Services.Forums
         /// </summary>
         /// <param name="forumId">The forum identifier</param>
         /// <param name="topicCount">Count of forum topics to return</param>
+        /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum Topics</returns>
-        IList<ForumTopic> GetActiveTopics(int forumId, int topicCount);
+        IList<ForumTopic> GetActiveTopics(int forumId, int topicCount, bool showHidden = false);
 
         /// <summary>
         /// Deletes a forum topic

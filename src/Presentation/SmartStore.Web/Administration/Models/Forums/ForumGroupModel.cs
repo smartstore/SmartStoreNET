@@ -10,7 +10,7 @@ using System.Web.Mvc;
 namespace SmartStore.Admin.Models.Forums
 {
     [Validator(typeof(ForumGroupValidator))]
-	public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>, IStoreSelector
+	public class ForumGroupModel : EntityModelBase, ILocalizedModel<ForumGroupLocalizedModel>, IStoreSelector, IAclSelector
     {
         public ForumGroupModel()
         {
@@ -41,8 +41,11 @@ namespace SmartStore.Admin.Models.Forums
 		public IEnumerable<SelectListItem> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-		public IList<ForumModel> ForumModels { get; set; }
+        public bool SubjectToAcl { get; set; }
+        public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
+        public int[] SelectedCustomerRoleIds { get; set; }
 
+        public IList<ForumModel> ForumModels { get; set; }
 		public IList<ForumGroupLocalizedModel> Locales { get; set; }
     }
 

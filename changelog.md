@@ -15,7 +15,9 @@
 * Added option to display preview pictures in product lists
 * Added option to add multiple file versions to product download section
 * Added options for alternating price display (in badges)
-* Added option to display a captcha on forum pages when creating or replying to a topic.
+* **Forum**:
+	* Added option to display a captcha on forum pages when creating or replying to a topic.
+	* #417 Restrict forum groups to specific customer roles.
 * **MegaSearch**:
 	* Supports searching for forum posts.
 	* #1172 Option to display related search terms on search page.

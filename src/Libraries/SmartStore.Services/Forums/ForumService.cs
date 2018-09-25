@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
@@ -19,6 +20,7 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<ForumPost> _forumPostRepository;
         private readonly IRepository<PrivateMessage> _forumPrivateMessageRepository;
         private readonly IRepository<ForumSubscription> _forumSubscriptionRepository;
+        private readonly IRepository<AclRecord> _aclRepository;
         private readonly ForumSettings _forumSettings;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IGenericAttributeService _genericAttributeService;
@@ -33,6 +35,7 @@ namespace SmartStore.Services.Forums
             IRepository<ForumPost> forumPostRepository,
             IRepository<PrivateMessage> forumPrivateMessageRepository,
             IRepository<ForumSubscription> forumSubscriptionRepository,
+            IRepository<AclRecord> aclRepository,
             ForumSettings forumSettings,
             IRepository<Customer> customerRepository,
             IGenericAttributeService genericAttributeService,
@@ -46,6 +49,7 @@ namespace SmartStore.Services.Forums
             _forumPostRepository = forumPostRepository;
             _forumPrivateMessageRepository = forumPrivateMessageRepository;
             _forumSubscriptionRepository = forumSubscriptionRepository;
+            _aclRepository = aclRepository;
             _forumSettings = forumSettings;
             _customerRepository = customerRepository;
             _genericAttributeService = genericAttributeService;
@@ -146,8 +150,9 @@ namespace SmartStore.Services.Forums
             return _forumGroupRepository.GetById(forumGroupId);
         }
 
-        public virtual IList<ForumGroup> GetAllForumGroups(int storeId = 0)
+        public virtual IList<ForumGroup> GetAllForumGroups(int storeId = 0, bool showHidden = false)
         {
+            var joinApplied = false;
             var query = _forumGroupRepository.Table.Expand(x => x.Forums);
 
             if (!QuerySettings.IgnoreMultiStore && storeId > 0)
@@ -159,6 +164,25 @@ namespace SmartStore.Services.Forums
                     where !fg.LimitedToStores || storeId == sm.StoreId
                     select fg;
 
+                joinApplied = true;
+            }
+
+            if (!showHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+
+                query = 
+                    from fg in query
+                    join a in _aclRepository.Table on new { a1 = fg.Id, a2 = "ForumGroup" } equals new { a1 = a.EntityId, a2 = a.EntityName } into fg_acl
+                    from a in fg_acl.DefaultIfEmpty()
+                    where !fg.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
+                    select fg;
+
+                joinApplied = true;
+            }
+
+            if (joinApplied)
+            {
                 query =
                     from fg in query
                     group fg by fg.Id into fgGroup
@@ -317,8 +341,9 @@ namespace SmartStore.Services.Forums
             return topics;
         }
 
-        public virtual IList<ForumTopic> GetActiveTopics(int forumId, int count)
+        public virtual IList<ForumTopic> GetActiveTopics(int forumId, int count, bool showHidden = false)
         {
+            var joinApplied = false;
             var query =
 				from ft in _forumTopicRepository.Table
 				where (forumId == 0 || ft.ForumId == forumId) && (ft.LastPostTime.HasValue)
@@ -337,14 +362,35 @@ namespace SmartStore.Services.Forums
 					where !fg.LimitedToStores || currentStoreId == sm.StoreId
 					select ft;
 
-				query =
-					from ft in query
-					group ft by ft.Id into ftGroup
-					orderby ftGroup.Key
-					select ftGroup.FirstOrDefault();
+                joinApplied = true;
 			}
 
-			query = query.OrderByDescending(x => x.LastPostTime);
+            if (!showHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+
+                query =
+                    from ft in query
+                    join ff in _forumRepository.Table on ft.ForumId equals ff.Id
+                    join fg in _forumGroupRepository.Table on ff.ForumGroupId equals fg.Id
+                    join a in _aclRepository.Table on new { a1 = fg.Id, a2 = "ForumGroup" } equals new { a1 = a.EntityId, a2 = a.EntityName } into fg_acl
+                    from a in fg_acl.DefaultIfEmpty()
+                    where !fg.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
+                    select ft;
+
+                joinApplied = true;
+            }
+
+            if (joinApplied)
+            {
+                query =
+                    from ft in query
+                    group ft by ft.Id into ftGroup
+                    orderby ftGroup.Key
+                    select ftGroup.FirstOrDefault();
+            }
+
+            query = query.OrderByDescending(x => x.LastPostTime);
 
             var forumTopics = query.Take(count).ToList();
             return forumTopics;

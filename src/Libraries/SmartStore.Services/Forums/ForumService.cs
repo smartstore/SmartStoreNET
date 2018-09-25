@@ -20,12 +20,12 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<ForumPost> _forumPostRepository;
         private readonly IRepository<PrivateMessage> _forumPrivateMessageRepository;
         private readonly IRepository<ForumSubscription> _forumSubscriptionRepository;
+        private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<AclRecord> _aclRepository;
         private readonly ForumSettings _forumSettings;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ICommonServices _services;
 
         public ForumService(
@@ -35,12 +35,12 @@ namespace SmartStore.Services.Forums
             IRepository<ForumPost> forumPostRepository,
             IRepository<PrivateMessage> forumPrivateMessageRepository,
             IRepository<ForumSubscription> forumSubscriptionRepository,
+            IRepository<StoreMapping> storeMappingRepository,
             IRepository<AclRecord> aclRepository,
             ForumSettings forumSettings,
             IRepository<Customer> customerRepository,
             IGenericAttributeService genericAttributeService,
             ICustomerService customerService,
-			IRepository<StoreMapping> storeMappingRepository,
 			ICommonServices services)
         {
             _forumGroupRepository = forumGroupRepository;
@@ -49,12 +49,12 @@ namespace SmartStore.Services.Forums
             _forumPostRepository = forumPostRepository;
             _forumPrivateMessageRepository = forumPrivateMessageRepository;
             _forumSubscriptionRepository = forumSubscriptionRepository;
+            _storeMappingRepository = storeMappingRepository;
             _aclRepository = aclRepository;
             _forumSettings = forumSettings;
             _customerRepository = customerRepository;
             _genericAttributeService = genericAttributeService;
             _customerService = customerService;
-			_storeMappingRepository = storeMappingRepository;
 			_services = services;
         }
 

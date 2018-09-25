@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Search;
@@ -18,20 +19,32 @@ namespace SmartStore.Services.Search
     public partial class LinqForumSearchService : SearchServiceBase, IForumSearchService
     {
         private readonly IRepository<ForumPost> _forumPostRepository;
+        private readonly IRepository<ForumTopic> _forumTopicRepository;
+        private readonly IRepository<Forum> _forumRepository;
+        private readonly IRepository<ForumGroup> _forumGroupRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
+        private readonly IRepository<AclRecord> _aclRepository;
         private readonly IForumService _forumService;
         private readonly ICommonServices _services;
         private readonly CustomerSettings _customerSettings;
 
         public LinqForumSearchService(
             IRepository<ForumPost> forumPostRepository,
+            IRepository<ForumTopic> forumTopicRepository,
+            IRepository<Forum> forumRepository,
+            IRepository<ForumGroup> forumGroupRepository,
             IRepository<StoreMapping> storeMappingRepository,
+            IRepository<AclRecord> aclRepository,
             IForumService forumService,
             ICommonServices services,
             CustomerSettings customerSettings)
 		{
             _forumPostRepository = forumPostRepository;
+            _forumTopicRepository = forumTopicRepository;
+            _forumRepository = forumRepository;
+            _forumGroupRepository = forumGroupRepository;
             _storeMappingRepository = storeMappingRepository;
+            _aclRepository = aclRepository;
             _forumService = forumService;
 			_services = services;
             _customerSettings = customerSettings;
@@ -84,6 +97,23 @@ namespace SmartStore.Services.Search
 
             // Filters.
             FlattenFilters(searchQuery.Filters, filters);
+
+            if (!QuerySettings.IgnoreAcl)
+            {
+                var roleIds = GetIdList(filters, "roleid");
+                if (roleIds.Any())
+                {
+                    query =
+                        from fp in query
+                        join ft in _forumTopicRepository.TableUntracked on fp.TopicId equals ft.Id
+                        join ff in _forumRepository.Table on ft.ForumId equals ff.Id
+                        join fg in _forumGroupRepository.Table on ff.ForumGroupId equals fg.Id
+                        join a in _aclRepository.Table on new { a1 = fg.Id, a2 = "ForumGroup" } equals new { a1 = a.EntityId, a2 = a.EntityName } into fg_acl
+                        from a in fg_acl.DefaultIfEmpty()
+                        where !fg.SubjectToAcl || roleIds.Contains(a.CustomerRoleId)
+                        select fp;
+                }
+            }
 
             foreach (IAttributeSearchFilter filter in filters)
             {

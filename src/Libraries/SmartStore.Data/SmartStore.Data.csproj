@@ -623,9 +623,9 @@
     <Compile Include="Migrations\201809171309522_NewsletterSubscriptionLanguage.Designer.cs">
       <DependentUpon>201809171309522_NewsletterSubscriptionLanguage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201809241947314_ForumGroupAcl.cs" />
-    <Compile Include="Migrations\201809241947314_ForumGroupAcl.Designer.cs">
-      <DependentUpon>201809241947314_ForumGroupAcl.cs</DependentUpon>
+    <Compile Include="Migrations\201809251233170_ForumGroupAcl.cs" />
+    <Compile Include="Migrations\201809251233170_ForumGroupAcl.Designer.cs">
+      <DependentUpon>201809251233170_ForumGroupAcl.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1124,8 +1124,8 @@
     <EmbeddedResource Include="Migrations\201809171309522_NewsletterSubscriptionLanguage.resx">
       <DependentUpon>201809171309522_NewsletterSubscriptionLanguage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809241947314_ForumGroupAcl.resx">
-      <DependentUpon>201809241947314_ForumGroupAcl.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201809251233170_ForumGroupAcl.resx">
+      <DependentUpon>201809251233170_ForumGroupAcl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -39,6 +39,11 @@ namespace SmartStore.Core.Domain.Forums
         public DateTime UpdatedOnUtc { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the entity is published
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
         /// Gets the topic
         /// </summary>
         public virtual ForumTopic ForumTopic { get; set; }

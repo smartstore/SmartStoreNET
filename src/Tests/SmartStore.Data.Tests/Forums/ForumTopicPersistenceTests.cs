@@ -65,6 +65,7 @@ namespace SmartStore.Data.Tests.Forums
                 UpdatedOnUtc = DateTime.UtcNow,
                 NumPosts = 100,
                 CustomerId = customerFromDb.Id,
+                Published = true
             };
 
             var forumTopicFromDb = SaveAndLoadEntity(forumTopic);

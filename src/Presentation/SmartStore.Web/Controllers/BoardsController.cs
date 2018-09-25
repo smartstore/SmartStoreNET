@@ -940,7 +940,8 @@ namespace SmartStore.Web.Controllers
                         ForumId = forum.Id,
                         CustomerId = customer.Id,
                         TopicTypeId = (int) topicType,
-                        Subject = subject
+                        Subject = subject,
+                        Published = true
                     };
                     _forumService.InsertTopic(forumTopic, true);
 
@@ -950,6 +951,7 @@ namespace SmartStore.Web.Controllers
                         CustomerId = customer.Id,
                         Text = text,
                         IPAddress = ipAddress,
+                        Published = true
                     };
                     _forumService.InsertPost(forumPost, false);
 
@@ -1122,6 +1124,7 @@ namespace SmartStore.Web.Controllers
                             CustomerId = forumTopic.CustomerId,
                             Text = text,
                             IPAddress = ipAddress,
+                            Published = true
                         };
 
                         _forumService.InsertPost(firstPost, false);
@@ -1327,7 +1330,8 @@ namespace SmartStore.Web.Controllers
                         TopicId = forumTopic.Id,
                         CustomerId = customer.Id,
                         Text = text,
-                        IPAddress = ipAddress
+                        IPAddress = ipAddress,
+                        Published = true
                     };
 
                     _forumService.InsertPost(forumPost, true);

@@ -519,6 +519,13 @@
                 "Pro Maschine ausführen",
                 "Indicates whether the task is executed decidedly on each machine of a web farm.",
                 "Gibt an, ob die Aufgabe auf jeder Maschine einer Webfarm dezidiert ausgeführt wird.");
+
+            builder.Delete("Address.Fields.Required.Hint");
+
+            builder.AddOrUpdate("Common.FormFields.Required.Hint",
+                "* Input elements with asterisk are required and have to be filled out.",
+                "* Eingabefelder mit Sternchen sind Pflichfelder und müssen ausgefüllt werden.");
+
         }
     }
 }

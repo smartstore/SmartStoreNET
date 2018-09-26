@@ -2,6 +2,13 @@
 @using SmartStore.Web;
 @using SmartStore.Web.Models.Boards;
 @model EditForumPostModel
+@{
+    var cancelUrl = Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName });
+    if (Model.Id != 0)
+    {
+        cancelUrl = string.Concat(cancelUrl, "#", Model.Id);
+    }
+}
 @using (Html.BeginForm())
 {
     <div class="page post-edit">
@@ -86,7 +93,7 @@
                     <i class="fa fa-reply"></i>
                     <span>@T("Forum.Submit")</span>
                 </button>
-                <a class="btn btn-secondary" href="@Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })">
+                <a class="btn btn-secondary" href="@cancelUrl">
                     <i class="fa fa-times"></i>
                     <span>@T("Forum.Cancel")</span>
                 </a>

@@ -69,6 +69,11 @@ $forum-unobstrusive-link-color: #646464;
 	white-space: nowrap;
 }
 
+.topics-group .topic.disabled {
+    opacity: .5;
+}
+
+
 /* Forum Topic
 ================================================ */
 .forum-topic {

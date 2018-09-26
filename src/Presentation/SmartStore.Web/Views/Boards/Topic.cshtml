@@ -52,14 +52,13 @@
     @ButtonBar()
 
     <div class="posts">
-        @foreach (var post in @Model.ForumPostModels)
+        @foreach (var post in Model.ForumPostModels)
         {
             Html.RenderPartial("_ForumPost", post);
         }
     </div>
 
     @ButtonBar()
-
 </div>
 
 @helper ButtonBar()
@@ -72,12 +71,11 @@
 
     <div class="topic-options row my-2">
 		<div class="col">
-			<button class="btn btn-primary" onclick="setLocation('@Url.Action("PostCreate", new { id = @Model.Id })')">
+			<a class="btn btn-primary" href="@Url.Action("PostCreate", new { id = Model.Id })">
 				<i class="fa fa-share"></i>
 				<span>@T("Forum.Reply")</span>
-			</button>
+			</a>
 		</div>
-        
 
         @if (Model.IsCustomerAllowedToSubscribe)
         {
@@ -85,7 +83,7 @@
                 <i class="fa fa-bookmark"></i>
                 @Ajax.ActionLink(Model.WatchTopicText,
                     "TopicWatch",
-                    new { id = @Model.Id },
+                    new { id = Model.Id },
                     new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleTopicWatch" },
                     new { @class = "watch-topic-link-button" })
             </div>

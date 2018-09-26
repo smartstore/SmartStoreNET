@@ -2,7 +2,7 @@
 @model ForumPostModel
 @Html.Raw("<a name=\"{0}\"></a>".FormatInvariant(Model.Id))
 
-<div class="block block-bordered forum-post card" id="@Html.Encode(String.Format("post{0}", Model.Id))">
+<div class="block block-bordered forum-post card" id="post@(Model.Id)">
     <div class="block-title card-header">
         @if (Model.CustomerId > 0)
         {
@@ -17,7 +17,6 @@
         }
 
         <div class="d-flex align-items-center">
-
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {
                 <i class="fa fa-pencil-square-o"></i>
@@ -41,7 +40,7 @@
         </div>
     </div>
 
-    <div class="block-body card-body row">
+    <div class="block-body card-body row@(Model.Published ? "" : " disabled")">
         <div class="post-info col-2 d-none d-sm-block">
             <div class="user-info mt-3 text-center">
                 <div class="avatar">
@@ -69,7 +68,7 @@
 							<span class="stat-value">@Model.CustomerJoinDate.ToNativeString("d")</span>
                         </div>
                     }
-                    @if (Model.ShowCustomersLocation && !Model.IsCustomerGuest & !String.IsNullOrEmpty(Model.CustomerLocation))
+                    @if (Model.ShowCustomersLocation && !Model.IsCustomerGuest && Model.CustomerLocation.HasValue())
                     {
                         <div class="location">
                             <span class="pr-1">@T("Forum.Location"):</span>
@@ -78,7 +77,7 @@
                     }
                     @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
 				    {
-                        <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
+                        <a class="btn btn btn-outline-info btn-flat button-pm mt-2" rel="nofollow" href="@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })">
                             <i class="fa fa-user"></i>
                             <span>@T("Forum.PrivateMessages.PM")</span>
                         </a>
@@ -98,7 +97,7 @@
                 @Html.Hidden("Id", Model.Id)
             </div>
 
-            @if (Model.SignaturesEnabled & !String.IsNullOrEmpty(Model.FormattedSignature))
+            @if (Model.SignaturesEnabled && Model.FormattedSignature.HasValue())
             {
                 <div class="signature text-muted" dir="auto">
                     @Html.Raw(Model.FormattedSignature)
@@ -112,10 +111,10 @@
             <a href="#" class="btn btn-link btn-sm font-weight-600">
                 @T("Forum.Top")
             </a>
-            <button class="btn btn-outline-info btn-flat btn-sm" onclick="setLocation('@Url.Action("PostCreate", new { id = Model.ForumTopicId, quote = Model.Id })')">
+            <a class="btn btn-outline-info btn-flat btn-sm" href="@Url.Action("PostCreate", new { id = Model.ForumTopicId, quote = Model.Id })">
                 <i class="fa fa-quote-left"></i>
                 <span>@T("Forum.QuotePost")</span>
-            </button>
+            </a>
         </div>
     </div>
 </div>

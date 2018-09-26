@@ -11,10 +11,8 @@
         <div class="page-title">
             <h2>@T("Forum.MoveTopic")</h2>
         </div>
-
         <div class="page-body">
             <h4 class="my-3">@T("Forum.SelectTheForumToMoveTopic")</h4>
-
             <div>
                 @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"), new { @class = "form-control" })
             </div>
@@ -23,9 +21,9 @@
                 <button type="submit" class="btn btn-primary">
 					<span>@T("Forum.Submit")</span>
 				</button>
-                <button class="btn btn-secondary" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.Id, slug = Model.TopicSeName })')">
+                <a class="btn btn-secondary" href="@Url.RouteUrl("TopicSlug", new { id = Model.Id, slug = Model.TopicSeName })">
                     <span>@T("Forum.Cancel")</span>
-                </button>
+                </a>
             </div>
         </div>
     </div>

@@ -273,7 +273,7 @@ namespace SmartStore.Web.Controllers
 			forum = forum ?? topic?.Forum;
 			if (forum != null)
 			{
-				var forumName = group.GetLocalized(x => x.Name);
+				var forumName = forum.GetLocalized(x => x.Name);
 				_breadcrumb.Track(new MenuItem
 				{
 					Text = forumName,
@@ -1064,7 +1064,7 @@ namespace SmartStore.Web.Controllers
                 IsCustomerAllowedToEdit = _forumService.IsCustomerAllowedToEditTopic(customer, topic)
             };
 
-            if (!model.IsCustomerAllowedToEdit && customer.Id != topic.CustomerId)
+            if (!model.IsCustomerAllowedToEdit)
             {
                 return new HttpUnauthorizedResult();
             }
@@ -1433,7 +1433,7 @@ namespace SmartStore.Web.Controllers
             {
                 Id = post.Id,
                 IsEdit = true,
-                Published = true,
+                Published = post.Published,
                 ForumTopicId = post.ForumTopic.Id,
                 DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
@@ -1448,7 +1448,7 @@ namespace SmartStore.Web.Controllers
                 IsCustomerAllowedToEdit = _forumService.IsCustomerAllowedToEditPost(customer, post)
             };
 
-            if (!model.IsCustomerAllowedToEdit && customer.Id != post.CustomerId)
+            if (!model.IsCustomerAllowedToEdit)
             {
                 return new HttpUnauthorizedResult();
             }

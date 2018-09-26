@@ -9,8 +9,8 @@ namespace SmartStore.Data.Migrations
         {
             DropIndex("dbo.Forums_Topic", new[] { "ForumId" });
             DropIndex("dbo.Forums_Forum", new[] { "ForumGroupId" });
-            AddColumn("dbo.Forums_Post", "Published", c => c.Boolean(nullable: false));
-            AddColumn("dbo.Forums_Topic", "Published", c => c.Boolean(nullable: false));
+            AddColumn("dbo.Forums_Post", "Published", c => c.Boolean(nullable: false, defaultValue: true));
+            AddColumn("dbo.Forums_Topic", "Published", c => c.Boolean(nullable: false, defaultValue: true));
             AddColumn("dbo.Forums_Group", "SubjectToAcl", c => c.Boolean(nullable: false));
             CreateIndex("dbo.Forums_Post", "CreatedOnUtc");
             CreateIndex("dbo.Forums_Post", "Published");

@@ -841,20 +841,18 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToEditTopic(Customer customer, ForumTopic topic)
         {
-            if (topic == null || customer == null || customer.IsGuest())
+            if (customer != null && topic != null)
             {
-                return false;
-            }
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
 
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToEditPosts && topic.Published)
-            {
-                var ownTopic = customer.Id == topic.CustomerId;
-                return ownTopic;
+                if (_forumSettings.AllowCustomersToEditPosts && topic.Published)
+                {
+                    var ownTopic = customer.Id == topic.CustomerId;
+                    return ownTopic;
+                }
             }
 
             return false;
@@ -862,12 +860,7 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToMoveTopic(Customer customer, ForumTopic topic)
         {
-            if (topic == null || customer == null || customer.IsGuest())
-            {
-                return false;
-            }
-
-            if (customer.IsForumModerator())
+            if (customer != null && customer.IsForumModerator())
             {
                 return true;
             }
@@ -877,20 +870,18 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToDeleteTopic(Customer customer, ForumTopic topic)
         {
-            if (topic == null || customer == null || customer.IsGuest())
+            if (topic != null && customer != null)
             {
-                return false;
-            }
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
 
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToDeletePosts && topic.Published)
-            {
-                var ownTopic = customer.Id == topic.CustomerId;
-                return ownTopic;
+                if (_forumSettings.AllowCustomersToDeletePosts && topic.Published)
+                {
+                    var ownTopic = customer.Id == topic.CustomerId;
+                    return ownTopic;
+                }
             }
 
             return false;
@@ -903,7 +894,7 @@ namespace SmartStore.Services.Forums
                 return false;
             }
 
-            if (customer.IsGuest() && !_forumSettings.AllowGuestsToCreatePosts)
+            if (!_forumSettings.AllowGuestsToCreatePosts && customer.IsGuest())
             {
                 return false;
             }
@@ -913,20 +904,18 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToEditPost(Customer customer, ForumPost post)
         {
-            if (post == null || customer == null || customer.IsGuest())
+            if (post != null && customer != null)
             {
-                return false;
-            }
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
 
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToEditPosts && post.Published)
-            {
-                var ownPost = customer.Id == post.CustomerId;
-                return ownPost;
+                if (_forumSettings.AllowCustomersToEditPosts && post.Published)
+                {
+                    var ownPost = customer.Id == post.CustomerId;
+                    return ownPost;
+                }
             }
 
             return false;
@@ -934,36 +923,19 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToDeletePost(Customer customer, ForumPost post)
         {
-            if (post == null || customer == null || customer.IsGuest())
+            if (post != null && customer != null)
             {
-                return false;
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
+
+                if (_forumSettings.AllowCustomersToDeletePosts && post.Published)
+                {
+                    var ownPost = customer.Id == post.CustomerId;
+                    return ownPost;
+                }
             }
-
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToDeletePosts && post.Published)
-            {
-                var ownPost = customer.Id == post.CustomerId;
-                return ownPost;
-            }
-
-            return false;
-        }
-
-        public virtual bool IsCustomerAllowedToSetTopicPriority(Customer customer)
-        {
-            if (customer == null || customer.IsGuest())
-            {
-                return false;
-            }
-
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }            
 
             return false;
         }

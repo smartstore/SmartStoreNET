@@ -349,13 +349,6 @@ namespace SmartStore.Services.Forums
         bool IsCustomerAllowedToDeletePost(Customer customer, ForumPost post);
 
         /// <summary>
-        /// Check whether customer is allowed to set topic priority
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <returns>True if allowed, otherwise false</returns>
-        bool IsCustomerAllowedToSetTopicPriority(Customer customer);
-
-        /// <summary>
         /// Check whether customer is allowed to watch topics
         /// </summary>
         /// <param name="customer">Customer</param>

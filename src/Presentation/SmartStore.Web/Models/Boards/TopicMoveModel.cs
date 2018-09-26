@@ -13,6 +13,8 @@ namespace SmartStore.Web.Models.Boards
 
         public int ForumSelected { get; set; }
         public string TopicSeName { get; set; }
+        public bool IsCustomerAllowedToEdit { get; set; }
+        public int CustomerId { get; set; }
 
         public IEnumerable<SelectListItem> ForumList { get; set; }
     }

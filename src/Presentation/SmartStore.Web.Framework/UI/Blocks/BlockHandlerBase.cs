@@ -62,12 +62,12 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			entity.Model = JsonConvert.SerializeObject(block, Formatting.None, settings);
 		}
 
-		public void Render(IBlockContainer<T> element, string[] templates, HtmlHelper htmlHelper)
+		public void Render(IBlockContainer element, string[] templates, HtmlHelper htmlHelper)
 		{
 			RenderCore(element, templates, htmlHelper, htmlHelper.ViewContext.Writer);
 		}
 
-		public IHtmlString ToHtmlString(IBlockContainer<T> element, string[] templates, HtmlHelper htmlHelper)
+		public IHtmlString ToHtmlString(IBlockContainer element, string[] templates, HtmlHelper htmlHelper)
 		{
 			using (var writer = new StringWriter(CultureInfo.CurrentCulture))
 			{
@@ -76,7 +76,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			}
 		}
 
-		protected virtual void RenderCore(IBlockContainer<T> element, string[] templates, HtmlHelper htmlHelper, TextWriter textWriter)
+		protected virtual void RenderCore(IBlockContainer element, string[] templates, HtmlHelper htmlHelper, TextWriter textWriter)
 		{
 			Guard.NotNull(element, nameof(element));
 			Guard.NotNull(templates, nameof(templates));
@@ -89,6 +89,8 @@ namespace SmartStore.Web.Framework.UI.Blocks
 				throw new InvalidOperationException("The return value of the 'GetRoute()' method cannot be NULL.");
 			}
 
+			routeInfo.RouteValues["model"] = element.Block;
+
 			var originalWriter = htmlHelper.ViewContext.Writer;
 			htmlHelper.ViewContext.Writer = textWriter;
 
@@ -98,7 +100,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			}
 		}
 
-		protected abstract RouteInfo GetRoute(IBlockContainer<T> element, string template);
+		protected abstract RouteInfo GetRoute(IBlockContainer element, string template);
 
 		/// <summary>
 		/// Add locales for localizable entities

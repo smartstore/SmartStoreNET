@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 		public bool IsInternal { get; set; }
 	}
 
-	public class IBlockMetadata
+	public interface IBlockMetadata
 	{
 		string SystemName { get; }
 		string FriendlyName { get; }

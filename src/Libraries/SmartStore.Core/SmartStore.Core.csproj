@@ -181,6 +181,7 @@
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Collections\TreeNodeBase.cs" />
+    <Compile Include="ComponentModel\FastInvoker.cs" />
     <Compile Include="ComponentModel\MiniMapper.cs" />
     <Compile Include="Collections\ReferenceEqualityComparer.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />

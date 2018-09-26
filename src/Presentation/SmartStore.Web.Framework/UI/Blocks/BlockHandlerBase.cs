@@ -89,7 +89,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 				throw new InvalidOperationException("The return value of the 'GetRoute()' method cannot be NULL.");
 			}
 
-			routeInfo.RouteValues["model"] = element.Block;
+			//routeInfo.RouteValues["model"] = element.Block;
 
 			var originalWriter = htmlHelper.ViewContext.Writer;
 			htmlHelper.ViewContext.Writer = textWriter;

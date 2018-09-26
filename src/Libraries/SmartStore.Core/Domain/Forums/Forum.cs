@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Seo;
 
@@ -12,6 +13,7 @@ namespace SmartStore.Core.Domain.Forums
         /// <summary>
         /// Gets or sets the forum group identifier
         /// </summary>
+        [Index("IX_ForumGroupId_DisplayOrder", Order = 0)]
         public int ForumGroupId { get; set; }
 
         /// <summary>
@@ -57,6 +59,7 @@ namespace SmartStore.Core.Domain.Forums
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
+        [Index("IX_ForumGroupId_DisplayOrder", Order = 1)]
         public int DisplayOrder { get; set; }
 
         /// <summary>

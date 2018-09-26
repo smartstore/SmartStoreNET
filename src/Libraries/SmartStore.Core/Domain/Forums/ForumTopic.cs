@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Core.Domain.Forums
@@ -11,6 +12,7 @@ namespace SmartStore.Core.Domain.Forums
         /// <summary>
         /// Gets or sets the forum identifier
         /// </summary>
+        [Index("IX_ForumId_Published", Order = 0)]
         public int ForumId { get; set; }
 
         /// <summary>
@@ -21,16 +23,19 @@ namespace SmartStore.Core.Domain.Forums
         /// <summary>
         /// Gets or sets the topic type identifier
         /// </summary>
+        [Index("IX_TopicTypeId_LastPostTime", Order = 0)]
         public int TopicTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the subject
         /// </summary>
+        [Index]
         public string Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the number of posts
         /// </summary>
+        [Index]
         public int NumPosts { get; set; }
 
         /// <summary>
@@ -57,11 +62,13 @@ namespace SmartStore.Core.Domain.Forums
         /// <summary>
         /// Gets or sets the last post date and time
         /// </summary>
+        [Index("IX_TopicTypeId_LastPostTime", Order = 1)]
         public DateTime? LastPostTime { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of instance creation
         /// </summary>
+        [Index]
         public DateTime CreatedOnUtc { get; set; }
 
         /// <summary>
@@ -72,6 +79,7 @@ namespace SmartStore.Core.Domain.Forums
         /// <summary>
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
+        [Index("IX_ForumId_Published", Order = 1)]
         public bool Published { get; set; }
 
         /// <summary>

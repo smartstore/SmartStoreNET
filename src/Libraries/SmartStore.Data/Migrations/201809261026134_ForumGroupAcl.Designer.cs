@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201809251233170_ForumGroupAcl"; }
+            get { return "201809261026134_ForumGroupAcl"; }
         }
         
         string IMigrationMetadata.Source

@@ -64,6 +64,7 @@ namespace SmartStore.Services.Search
             var cnf = _customerSettings.CustomerNameFormat;
             var fields = searchQuery.Fields;
             var filters = new List<ISearchFilter>();
+            var customer = _services.WorkContext.CurrentCustomer;
             var query = baseQuery ?? _forumPostRepository.TableUntracked.Expand(x => x.ForumTopic);
 
             // Apply search term.
@@ -95,8 +96,31 @@ namespace SmartStore.Services.Search
                 }
             }
 
-            // Filters.
-            FlattenFilters(searchQuery.Filters, filters);
+            // Flatten filters.
+            foreach (var filter in searchQuery.Filters)
+            {
+                var combinedFilter = filter as ICombinedSearchFilter;
+                if (combinedFilter != null)
+                {
+                    // Find VisibleOnly combined filter and process it separately.
+                    var cf = combinedFilter.Filters.OfType<IAttributeSearchFilter>().ToArray();
+                    if (cf.Length == 2 && cf[0].FieldName == "published" && true == (bool)cf[0].Term && cf[1].FieldName == "customerid")
+                    {
+                        if (!customer.IsForumModerator())
+                        {
+                            query = query.Where(x => x.ForumTopic.Published && (x.Published || x.CustomerId == customer.Id));
+                        }
+                    }
+                    else
+                    {
+                        FlattenFilters(combinedFilter.Filters, filters);
+                    }
+                }
+                else
+                {
+                    filters.Add(filter);
+                }
+            }
 
             if (!QuerySettings.IgnoreAcl)
             {
@@ -150,6 +174,10 @@ namespace SmartStore.Services.Search
                 else if (filter.FieldName == "customerid")
                 {
                     query = query.Where(x => x.CustomerId == (int)filter.Term);
+                }
+                else if (filter.FieldName == "published")
+                {
+                    query = query.Where(x => x.Published == (bool)filter.Term);
                 }
                 else if (filter.FieldName == "createdon")
                 {

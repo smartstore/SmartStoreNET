@@ -84,7 +84,7 @@ namespace SmartStore.Services.Search.Modelling
                 .BuildFacetMap(!isInstantSearch);
 
             // Visibility.
-            query.VisibleOnly(!QuerySettings.IgnoreAcl ? _services.WorkContext.CurrentCustomer : null);
+            query.VisibleOnly(_services.WorkContext.CurrentCustomer, !QuerySettings.IgnoreAcl);
 
             // Store.
             if (!QuerySettings.IgnoreMultiStore)

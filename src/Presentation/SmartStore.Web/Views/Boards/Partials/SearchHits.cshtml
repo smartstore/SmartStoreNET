@@ -10,7 +10,7 @@
     data-cumulativehits="@Model.CumulativeHitCount.ToString("N0")">
     @foreach (ForumTopicRowModel topic in Model.PagedList)
     {
-        <tr class="topic" data-id="@topic.Id">
+        <tr data-id="@topic.Id" class="topic@(topic.Published ? "" : " disabled")">
             <td class="image">
                 @{ Html.RenderPartial("Customer.Avatar", topic.Avatar); }
             </td>

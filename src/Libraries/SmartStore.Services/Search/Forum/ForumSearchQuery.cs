@@ -3,6 +3,7 @@ using System.Linq;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Search;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Search
 {
@@ -66,31 +67,41 @@ namespace SmartStore.Services.Search
             }
         }
 
-        public ForumSearchQuery VisibleOnly(Customer customer)
+        public ForumSearchQuery VisibleOnly(Customer customer, bool includeCustomerRoles)
         {
             if (customer != null)
             {
-                var allowedCustomerRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
-
-                return VisibleOnly(allowedCustomerRoleIds);
-            }
-
-            return VisibleOnly(new int[0]);
-        }
-
-        public ForumSearchQuery VisibleOnly(params int[] allowedCustomerRoleIds)
-        {
-            if (allowedCustomerRoleIds != null && allowedCustomerRoleIds.Length > 0)
-            {
-                var roleIds = allowedCustomerRoleIds.Where(x => x != 0).Distinct().ToList();
-                if (roleIds.Any())
+                if (!customer.IsForumModerator())
                 {
-                    roleIds.Insert(0, 0);
-                    WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
+                    // See also LinqForumSearchService.
+                    var publishedCombined = SearchFilter.Combined(
+                        SearchFilter.ByField("published", true).ExactMatch().NotAnalyzed(),
+                        SearchFilter.ByField("customerid", customer.Id).ExactMatch().NotAnalyzed());
+
+                    WithFilter(publishedCombined);
+                }
+
+                if (includeCustomerRoles)
+                {
+                    var allowedRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
+                    if (allowedRoleIds != null && allowedRoleIds.Length > 0)
+                    {
+                        var roleIds = allowedRoleIds.Where(x => x != 0).Distinct().ToList();
+                        if (roleIds.Any())
+                        {
+                            roleIds.Insert(0, 0);
+                            WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
+                        }
+                    }
                 }
             }
 
             return this;
+        }
+
+        public ForumSearchQuery PublishedOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
         }
 
         public override ForumSearchQuery HasStoreId(int id)

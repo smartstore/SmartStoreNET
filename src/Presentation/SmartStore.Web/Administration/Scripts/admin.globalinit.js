@@ -123,7 +123,7 @@
 
         // sticky section-header
         var navbar = $("#navbar");
-        var navbarHeight = navbar.height() || 0;
+        var navbarHeight = navbar.height() || 1;
         var sectionHeader = $('.section-header');
         var sectionHeaderHasButtons = undefined;
 

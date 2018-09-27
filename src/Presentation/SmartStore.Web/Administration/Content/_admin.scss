@@ -3,6 +3,17 @@
 /// <reference path="../../Content/shared/_mixins.scss" />
 /// <reference path="../../Content/bs4/scss/bootstrap.scss" />
 
+$section-header-height: 70px;
+
+:root {
+    --content-padding-x: $content-padding-x / 2;
+    --content-padding-y: $content-padding-y;
+
+    @include media-breakpoint-up(lg) {
+        --content-padding-x: $content-padding-x;
+    }
+}
+
 //
 // Legacy BS elements
 // --------------------------------------------------
@@ -122,22 +133,19 @@ body {
 
 #content {
 	position: relative;
-	margin: 0 ($content-padding-x / 2);
-	padding: $content-padding-y ($content-padding-x / 2);
-	padding-bottom: $content-padding-x * 2;
+	margin: 0 var(--content-padding-x);
+	padding-left: var(--content-padding-x);
+    padding-right: var(--content-padding-x);
+    padding-top: $section-header-height;
+    padding-bottom: $content-padding-x * 2;
+
     box-shadow: 0 8px 16px rgba(#32325d, .1), 0 -2px 8px rgba(#000, .09);
 	border-radius: $border-radius-lg $border-radius-lg 0 0;
     background-color: #fff;
     grid-column: 1 / -1;
     grid-row: 2 / -1;
     z-index: 9;
-
-	@include media-breakpoint-up(lg) {
-		margin-left: $content-padding-x;
-		margin-right: $content-padding-x;
-		padding-left: $content-padding-x;
-		padding-right: $content-padding-x;
-	}
+    overflow-x: hidden;
 
     .popup & {
 	    margin: 0;
@@ -149,7 +157,6 @@ body {
 }
 
 .cph {
-    position: relative;
     display: flex;
     flex-flow: column;
 }
@@ -167,9 +174,16 @@ body {
 }
 
 .section-header {
-    padding-bottom: 0.75rem;
-	transition: background-color 0.1s ease-in-out;
-
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    padding-left: var(--content-padding-x);
+	padding-right: var(--content-padding-x);
+    padding-top: var(--content-padding-y);
+    padding-bottom: var(--content-padding-y);
+    transition: box-shadow 0.25s ease;
+    
 	@include make-row();
 	flex-wrap: nowrap;
 	margin-left: 0;
@@ -245,29 +259,18 @@ body {
 	&.sticky {
 		position: fixed;
 		z-index: 600;
-		left: $content-padding-x / 2;
-		right: $content-padding-x / 2;
-        top: 0;
-		padding-left: $content-padding-x / 2;
-		padding-right: $content-padding-x / 2;
-        padding-top: $content-padding-y;
-		margin-left: 0 !important;
-		margin-right: 0 !important;
-		background: $gray-100;
+		left: var(--content-padding-x);
+		right: var(--content-padding-x);
+        padding-left: var(--content-padding-x);
+		padding-right: var(--content-padding-x);
 		background: #fff;
-		border-bottom: 1px solid rgba(0,0,0, 0.08);
+		//border-bottom: 1px solid rgba(0,0,0, 0.08); 
+        box-shadow: 0 8px 16px 0 rgba(#32325d, .1), 0 2px 7px 0 rgba(#000, .07);
 
 		.modal-open & {
 			// add the killed scrollbar width
 			margin-right: 17px !important;
 		}
-
-	    @include media-breakpoint-up(lg) {
-			left: $content-padding-x;
-			right: $content-padding-x;
-            padding-left: $content-padding-x;
-		    padding-right: $content-padding-x;
-	    }
 	}
 }
 

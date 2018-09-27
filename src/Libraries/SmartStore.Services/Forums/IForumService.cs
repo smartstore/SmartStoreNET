@@ -15,9 +15,9 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Gets a forum group
         /// </summary>
-        /// <param name="forumGroupId">The forum group identifier</param>
+        /// <param name="groupId">The forum group identifier</param>
         /// <returns>Forum group</returns>
-        ForumGroup GetForumGroupById(int forumGroupId);
+        ForumGroup GetForumGroupById(int groupId);
 
         /// <summary>
         /// Gets all forum groups
@@ -30,20 +30,20 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Deletes a forum group
         /// </summary>
-        /// <param name="forumGroup">Forum group</param>
-        void DeleteForumGroup(ForumGroup forumGroup);
+        /// <param name="group">Forum group</param>
+        void DeleteForumGroup(ForumGroup group);
 
         /// <summary>
         /// Inserts a forum group
         /// </summary>
-        /// <param name="forumGroup">Forum group</param>
-        void InsertForumGroup(ForumGroup forumGroup);
+        /// <param name="group">Forum group</param>
+        void InsertForumGroup(ForumGroup group);
 
         /// <summary>
         /// Updates the forum group
         /// </summary>
-        /// <param name="forumGroup">Forum group</param>
-        void UpdateForumGroup(ForumGroup forumGroup);
+        /// <param name="group">Forum group</param>
+        void UpdateForumGroup(ForumGroup group);
 
         #endregion
 
@@ -81,9 +81,9 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Gets a forum topic
         /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
+        /// <param name="topicId">The forum topic identifier</param>
         /// <returns>Forum Topic</returns>
-        ForumTopic GetTopicById(int forumTopicId);
+        ForumTopic GetTopicById(int topicId);
 
         /// <summary>
         /// Gets forum topics by identifiers
@@ -114,38 +114,38 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Deletes a forum topic
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
-        void DeleteTopic(ForumTopic forumTopic);
+        /// <param name="topic">Forum topic</param>
+        void DeleteTopic(ForumTopic topic);
 
         /// <summary>
         /// Inserts a forum topic
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
+        /// <param name="topic">Forum topic</param>
         /// <param name="sendNotifications">A value indicating whether to send notifications to subscribed customers</param>
-        void InsertTopic(ForumTopic forumTopic, bool sendNotifications);
+        void InsertTopic(ForumTopic topic, bool sendNotifications);
 
         /// <summary>
         /// Updates the forum topic
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
-        void UpdateTopic(ForumTopic forumTopic);
+        /// <param name="topic">Forum topic</param>
+        void UpdateTopic(ForumTopic topic);
 
         /// <summary>
         /// Moves the forum topic
         /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
+        /// <param name="topicId">The forum topic identifier</param>
         /// <param name="newForumId">New forum identifier</param>
         /// <returns>Moved forum topic</returns>
-        ForumTopic MoveTopic(int forumTopicId, int newForumId);
+        ForumTopic MoveTopic(int topicId, int newForumId);
 
         /// <summary>
         /// Calculates topic page index by post identifier
         /// </summary>
-        /// <param name="forumTopicId">Topic identifier</param>
+        /// <param name="topicId">Topic identifier</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="postId">Post identifier</param>
         /// <returns>Page index</returns>
-        int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId);
+        int CalculateTopicPageIndex(int topicId, int pageSize, int postId);
 
         #endregion
 
@@ -154,9 +154,9 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Gets a forum post
         /// </summary>
-        /// <param name="forumPostId">The forum post identifier</param>
+        /// <param name="postId">The forum post identifier</param>
         /// <returns>Forum Post</returns>
-        ForumPost GetPostById(int forumPostId);
+        ForumPost GetPostById(int postId);
 
         /// <summary>
         /// Gets forum posts by identifiers.
@@ -168,33 +168,33 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Gets all forum posts
         /// </summary>
-        /// <param name="forumTopicId">The forum topic identifier</param>
+        /// <param name="topicId">The forum topic identifier</param>
         /// <param name="customerId">The customer identifier</param>
         /// <param name="ascSort">Sort order</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">Whether to load hidden records</param>
         /// <returns>Forum Posts</returns>
-        IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, bool ascSort, int pageIndex, int pageSize, bool showHidden = false);
+        IPagedList<ForumPost> GetAllPosts(int topicId, int customerId, bool ascSort, int pageIndex, int pageSize, bool showHidden = false);
 
         /// <summary>
         /// Deletes a forum post
         /// </summary>
-        /// <param name="forumPost">Forum post</param>
-        void DeletePost(ForumPost forumPost);
+        /// <param name="post">Forum post</param>
+        void DeletePost(ForumPost post);
 
         /// <summary>
         /// Inserts a forum post
         /// </summary>
-        /// <param name="forumPost">The forum post</param>
+        /// <param name="post">The forum post</param>
         /// <param name="sendNotifications">A value indicating whether to send notifications to subscribed customers</param>
-        void InsertPost(ForumPost forumPost, bool sendNotifications);
+        void InsertPost(ForumPost post, bool sendNotifications);
 
         /// <summary>
         /// Updates the forum post
         /// </summary>
-        /// <param name="forumPost">Forum post</param>
-        void UpdatePost(ForumPost forumPost);
+        /// <param name="post">Forum post</param>
+        void UpdatePost(ForumPost post);
 
         #endregion
 
@@ -203,9 +203,9 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Gets a private message
         /// </summary>
-        /// <param name="privateMessageId">The private message identifier</param>
+        /// <param name="messageId">The private message identifier</param>
         /// <returns>Private message</returns>
-        PrivateMessage GetPrivateMessageById(int privateMessageId);
+        PrivateMessage GetPrivateMessageById(int messageId);
 
         /// <summary>
         /// Gets private messages
@@ -232,20 +232,20 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Deletes a private message
         /// </summary>
-        /// <param name="privateMessage">Private message</param>
-        void DeletePrivateMessage(PrivateMessage privateMessage);
+        /// <param name="message">Private message</param>
+        void DeletePrivateMessage(PrivateMessage message);
 
         /// <summary>
         /// Inserts a private message
         /// </summary>
-        /// <param name="privateMessage">Private message</param>
-        void InsertPrivateMessage(PrivateMessage privateMessage);
+        /// <param name="message">Private message</param>
+        void InsertPrivateMessage(PrivateMessage message);
 
         /// <summary>
         /// Updates the private message
         /// </summary>
-        /// <param name="privateMessage">Private message</param>
-        void UpdatePrivateMessage(PrivateMessage privateMessage);
+        /// <param name="message">Private message</param>
+        void UpdatePrivateMessage(PrivateMessage message);
 
         #endregion
 

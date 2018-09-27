@@ -146,17 +146,8 @@
             </td>
             <td class="adminData">
 				@Html.SettingEditorFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, 
-					Html.CheckBoxFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars, new { data_toggler_for = "#pnlDefaultAvatarEnabled" }))
+					Html.CheckBoxFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars))
                 @Html.ValidationMessageFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
-            </td>
-        </tr>
-        <tr id="pnlDefaultAvatarEnabled">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.DefaultAvatarEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.DefaultAvatarEnabled)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.DefaultAvatarEnabled)
             </td>
         </tr>
         <tr>

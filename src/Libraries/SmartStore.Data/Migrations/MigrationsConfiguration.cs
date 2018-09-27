@@ -453,6 +453,7 @@
             builder.Delete(
                 "Admin.Configuration.Settings.Search.DefaultSortOrderMode",
                 "Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts",
+                "Admin.Configuration.Settings.CustomerUser.DefaultAvatarEnabled",
                 "Forum.Search.LimitResultsToPrevious.AllResults",
                 "Forum.Search.LimitResultsToPrevious.1day",
                 "Forum.Search.LimitResultsToPrevious.7days",

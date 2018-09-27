@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Drawing;
@@ -25,7 +24,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
 {
-	[Serializable]
+    [Serializable]
 	public class PictureInfo
 	{
 		public int Id { get; set; }
@@ -53,7 +52,6 @@ namespace SmartStore.Services.Media
         private readonly IImageProcessor _imageProcessor;
         private readonly IImageCache _imageCache;
 		private readonly Provider<IMediaStorageProvider> _storageProvider;
-		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
 		private readonly ICacheManager _cacheManager;
 
@@ -78,7 +76,7 @@ namespace SmartStore.Services.Media
             IImageProcessor imageProcessor,
             IImageCache imageCache,
 			IProviderManager providerManager,
-			IStoreContext storeContext,
+            IStoreContext storeContext,
 			HttpContextBase httpContext,
 			ICacheManager cacheManager)
         {
@@ -89,7 +87,6 @@ namespace SmartStore.Services.Media
             _mediaSettings = mediaSettings;
             _imageProcessor = imageProcessor;
             _imageCache = imageCache;
-			_storeContext = storeContext;
 			_httpContext = httpContext;
 			_cacheManager = cacheManager;
 
@@ -142,9 +139,6 @@ namespace SmartStore.Services.Media
 			{
 				case FallbackPictureType.Entity:
 					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
-					break;
-				case FallbackPictureType.Avatar:
-					defaultImageFileName = _settingService.GetSettingByKey("Media.Customer.DefaultAvatarImageName", "default-avatar.jpg");
 					break;
 				default:
 					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");

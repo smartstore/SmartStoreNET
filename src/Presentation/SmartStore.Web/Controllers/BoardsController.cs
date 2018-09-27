@@ -686,7 +686,7 @@ namespace SmartStore.Web.Controllers
                 if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
                 {
                     topic.Views += 1;
-                    _forumService.UpdateTopic(topic);
+                    _forumService.UpdateTopic(topic, false);
                 }
             }
             catch (Exception ex)
@@ -956,8 +956,8 @@ namespace SmartStore.Web.Controllers
 
                     if (customer.IsForumModerator())
                     {
-                        model.Published = model.Published;
-                        model.TopicTypeId = model.TopicTypeId;
+                        topic.Published = model.Published;
+                        topic.TopicTypeId = model.TopicTypeId;
                     }
 
                     topic.Subject = _forumSettings.TopicSubjectMaxLength > 0 && model.Subject.Length > _forumSettings.TopicSubjectMaxLength
@@ -980,12 +980,12 @@ namespace SmartStore.Web.Controllers
 
                     _forumService.InsertPost(post, false);
 
-                    topic.NumPosts = 1;
+                    topic.NumPosts = topic.Published ? 1 : 0;
                     topic.LastPostId = post.Id;
                     topic.LastPostCustomerId = post.CustomerId;
                     topic.LastPostTime = post.CreatedOnUtc;
 
-                    _forumService.UpdateTopic(topic);
+                    _forumService.UpdateTopic(topic, false);
 
                     // Subscription.
                     if (_forumService.IsCustomerAllowedToSubscribe(customer))
@@ -1112,8 +1112,10 @@ namespace SmartStore.Web.Controllers
             {
                 try
                 {
+                    var updateStatistics = false;
                     if (customer.IsForumModerator())
                     {
+                        updateStatistics = topic.Published != model.Published;
                         topic.Published = model.Published;
                         topic.TopicTypeId = model.TopicTypeId;
                     }
@@ -1122,7 +1124,7 @@ namespace SmartStore.Web.Controllers
                         ? model.Subject.Substring(0, _forumSettings.TopicSubjectMaxLength)
                         : model.Subject;
 
-                    _forumService.UpdateTopic(topic);
+                    _forumService.UpdateTopic(topic, updateStatistics);
 
                     var text = _forumSettings.PostMaxLength > 0 && model.Text.Length > _forumSettings.PostMaxLength
                         ? model.Text.Substring(0, _forumSettings.PostMaxLength)
@@ -1132,7 +1134,7 @@ namespace SmartStore.Web.Controllers
                     if (firstPost != null)
                     {
                         firstPost.Text = text;
-                        _forumService.UpdatePost(firstPost);
+                        _forumService.UpdatePost(firstPost, false);
                     }
                     else
                     {
@@ -1496,8 +1498,10 @@ namespace SmartStore.Web.Controllers
             {
                 try
                 {
+                    var updateStatistics = false;
                     if (customer.IsForumModerator())
                     {
+                        updateStatistics = post.Published != model.Published;
                         post.Published = model.Published;
                     }
 
@@ -1505,7 +1509,7 @@ namespace SmartStore.Web.Controllers
                         ? model.Text.Substring(0, _forumSettings.PostMaxLength)
                         : model.Text;
 
-                    _forumService.UpdatePost(post);
+                    _forumService.UpdatePost(post, updateStatistics);
 
                     // Subscription.
                     if (_forumService.IsCustomerAllowedToSubscribe(customer))

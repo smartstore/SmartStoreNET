@@ -60,7 +60,7 @@ namespace SmartStore.Services.Forums
 
         public DbQuerySettings QuerySettings { get; set; }
 
-        protected virtual void UpdateForumStats(Forum forum)
+        protected virtual void UpdateForumStatistics(Forum forum)
         {
             if (forum == null)
             {
@@ -85,7 +85,11 @@ namespace SmartStore.Services.Forums
             forum.LastPostId = lastValues?.LastPostId ?? 0;
             forum.LastPostCustomerId = lastValues?.LastPostCustomerId ?? 0;
             forum.LastPostTime = lastValues?.LastPostTime;
-            forum.NumTopics = _forumTopicRepository.Table.Where(x => x.ForumId == forum.Id && x.Published).Count();
+
+            forum.NumTopics = _forumTopicRepository
+                .Table.Where(x => x.ForumId == forum.Id && x.Published)
+                .Count();
+
             forum.NumPosts = (
                 from ft in _forumTopicRepository.Table
                 join fp in _forumPostRepository.Table on ft.Id equals fp.TopicId
@@ -95,7 +99,7 @@ namespace SmartStore.Services.Forums
             UpdateForum(forum);
         }
 
-        protected virtual void UpdateForumTopicStats(ForumTopic topic)
+        protected virtual void UpdateTopicStatistics(ForumTopic topic)
         {
             if (topic == null)
             {
@@ -117,17 +121,20 @@ namespace SmartStore.Services.Forums
             topic.LastPostId = lastValues?.LastPostId ?? 0;
             topic.LastPostCustomerId = lastValues?.LastPostCustomerId ?? 0;
             topic.LastPostTime = lastValues?.LastPostTime;
-            topic.NumPosts = _forumPostRepository.Table.Where(x => x.TopicId == topic.Id && x.Published).Count();
 
-            UpdateTopic(topic);
+            topic.NumPosts = topic.Published
+                ? _forumPostRepository.Table.Where(x => x.TopicId == topic.Id && x.Published).Count()
+                : 0;
+
+            UpdateTopic(topic, false);
         }
 
-        protected virtual void UpdateCustomerStats(Customer customer)
+        protected virtual void UpdateCustomerStatistics(Customer customer)
         {
             if (customer != null)
             {
                 var numPosts = _forumPostRepository.Table
-                    .Where(x => x.CustomerId == customer.Id && x.Published)
+                    .Where(x => x.CustomerId == customer.Id && x.ForumTopic.Published && x.Published)
                     .Count();
 
                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ForumPostCount, numPosts);
@@ -253,21 +260,27 @@ namespace SmartStore.Services.Forums
             }
 
             // Delete forum subscriptions (topics).
-            var queryTopicIds = from ft in _forumTopicRepository.Table
-                                where ft.ForumId == forum.Id
-                                select ft.Id;
-            var queryFs1 = from fs in _forumSubscriptionRepository.Table
-                           where queryTopicIds.Contains(fs.TopicId)
-                           select fs;
+            var queryTopicIds = 
+                from ft in _forumTopicRepository.Table
+                where ft.ForumId == forum.Id
+                select ft.Id;
+
+            var queryFs1 = 
+                from fs in _forumSubscriptionRepository.Table
+                where queryTopicIds.Contains(fs.TopicId)
+                select fs;
+
             foreach (var fs in queryFs1.ToList())
             {
                 _forumSubscriptionRepository.Delete(fs);
             }
 
             // Delete forum subscriptions (forum).
-            var queryFs2 = from fs in _forumSubscriptionRepository.Table
-                           where fs.ForumId == forum.Id
-                           select fs;
+            var queryFs2 = 
+                from fs in _forumSubscriptionRepository.Table
+                where fs.ForumId == forum.Id
+                select fs;
+
             foreach (var fs2 in queryFs2.ToList())
             {
                 _forumSubscriptionRepository.Delete(fs2);
@@ -403,7 +416,7 @@ namespace SmartStore.Services.Forums
 
             var forum = topic.Forum ?? GetForumById(topic.ForumId);
 
-            UpdateForumStats(forum);
+            UpdateForumStatistics(forum);
 
             if (sendNotifications)
             {
@@ -425,11 +438,21 @@ namespace SmartStore.Services.Forums
             }
         }
 
-        public virtual void UpdateTopic(ForumTopic topic)
+        public virtual void UpdateTopic(ForumTopic topic, bool updateStatistics)
         {
             Guard.NotNull(topic, nameof(topic));
 
             _forumTopicRepository.Update(topic);
+
+            if (updateStatistics)
+            {
+                var forum = topic.Forum ?? GetForumById(topic.ForumId);
+                var customer = topic.Customer ?? _customerService.GetCustomerById(topic.CustomerId);
+
+                UpdateForumStatistics(forum);
+                UpdateTopicStatistics(topic);
+                UpdateCustomerStatistics(customer);
+            }
         }
 
         public virtual void DeleteTopic(ForumTopic topic)
@@ -451,30 +474,25 @@ namespace SmartStore.Services.Forums
                 _forumSubscriptionRepository.Delete(subscription);
             }
 
-            UpdateForumStats(forum);
-            UpdateCustomerStats(customer);
+            UpdateForumStatistics(forum);
+            UpdateCustomerStatistics(customer);
         }
 
         public virtual ForumTopic MoveTopic(int topicId, int newForumId)
         {
             var topic = GetTopicById(topicId);
-            if (topic == null)
-            {
-                return topic;
-            }
-
-            if (IsCustomerAllowedToMoveTopic(_services.WorkContext.CurrentCustomer, topic))
+            if (topic != null && IsCustomerAllowedToMoveTopic(_services.WorkContext.CurrentCustomer, topic))
             {
                 var previousForumId = topic.ForumId;
                 var newForum = GetForumById(newForumId);
+
                 if (newForum != null && previousForumId != newForumId)
                 {
                     topic.ForumId = newForum.Id;
-                    UpdateTopic(topic);
+                    UpdateTopic(topic, false);
 
-                    var previousForum = topic.Forum ?? GetForumById(topic.ForumId);
-                    UpdateForumStats(previousForum);
-                    UpdateForumStats(newForum);
+                    UpdateForumStatistics(GetForumById(previousForumId));
+                    UpdateForumStatistics(newForum);
                 }
             }
 
@@ -483,19 +501,17 @@ namespace SmartStore.Services.Forums
 
         public virtual int CalculateTopicPageIndex(int topicId, int pageSize, int postId)
         {
-            if (pageSize <= 0 || postId == 0)
+            if (pageSize > 0 && postId != 0)
             {
-                return 0;
-            }
+                var query = GetPostQuery(topicId, 0, true, true);
+                var postIds = query.Select(x => x.Id).ToList();
 
-            var query = GetPostQuery(topicId, 0, true, true);
-            var postIds = query.Select(x => x.Id).ToList();
-
-            for (var i = 0; i < postIds.Count; ++i)
-            {
-                if (postIds[i] == postId)
+                for (var i = 0; i < postIds.Count; ++i)
                 {
-                    return i / pageSize;
+                    if (postIds[i] == postId)
+                    {
+                        return i / pageSize;
+                    }
                 }
             }
 
@@ -593,9 +609,9 @@ namespace SmartStore.Services.Forums
             var forum = topic.Forum ?? GetForumById(topic.ForumId);
             var customer = post.Customer ?? _customerService.GetCustomerById(post.CustomerId);
 
-            UpdateForumTopicStats(topic);
-            UpdateForumStats(forum);
-            UpdateCustomerStats(customer);
+            UpdateTopicStatistics(topic);
+            UpdateForumStatistics(forum);
+            UpdateCustomerStatistics(customer);
 
             if (sendNotifications)
             {
@@ -621,11 +637,22 @@ namespace SmartStore.Services.Forums
             }
         }
 
-        public virtual void UpdatePost(ForumPost post)
+        public virtual void UpdatePost(ForumPost post, bool updateStatistics)
         {
             Guard.NotNull(post, nameof(post));
 
             _forumPostRepository.Update(post);
+
+            if (updateStatistics)
+            {
+                var topic = post.ForumTopic ?? GetTopicById(post.TopicId);
+                var forum = topic.Forum ?? GetForumById(topic.ForumId);
+                var customer = post.Customer ?? _customerService.GetCustomerById(post.CustomerId);
+
+                UpdateForumStatistics(forum);
+                UpdateTopicStatistics(topic);
+                UpdateCustomerStatistics(customer);
+            }
         }
 
         public virtual void DeletePost(ForumPost post)
@@ -653,11 +680,11 @@ namespace SmartStore.Services.Forums
             }
             else
             {
-                UpdateForumTopicStats(topic);
+                UpdateTopicStatistics(topic);
             }
 
-            UpdateForumStats(forum);
-            UpdateCustomerStats(customer);
+            UpdateForumStatistics(forum);
+            UpdateCustomerStatistics(customer);
         }
 
         #endregion

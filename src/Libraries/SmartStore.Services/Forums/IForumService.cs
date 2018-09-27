@@ -128,7 +128,8 @@ namespace SmartStore.Services.Forums
         /// Updates the forum topic
         /// </summary>
         /// <param name="topic">Forum topic</param>
-        void UpdateTopic(ForumTopic topic);
+        /// <param name="updateStatistics">A value indicating whether to update counter.</param>
+        void UpdateTopic(ForumTopic topic, bool updateStatistics);
 
         /// <summary>
         /// Moves the forum topic
@@ -194,7 +195,8 @@ namespace SmartStore.Services.Forums
         /// Updates the forum post
         /// </summary>
         /// <param name="post">Forum post</param>
-        void UpdatePost(ForumPost post);
+        /// <param name="updateStatistics">A value indicating whether to update counter.</param>
+        void UpdatePost(ForumPost post, bool updateStatistics);
 
         #endregion
 

@@ -114,10 +114,12 @@ namespace SmartStore.Core.Domain.Forums
         {
             get
             {
-                int result = 0;
                 if (NumPosts > 0)
-                    result = NumPosts - 1;
-                return result;
+                {
+                    return NumPosts - 1;
+                }
+
+                return 0;
             }
         }
     }

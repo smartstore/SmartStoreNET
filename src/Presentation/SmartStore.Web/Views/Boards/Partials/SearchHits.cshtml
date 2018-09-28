@@ -76,13 +76,16 @@
 </tbody>
 @if (Model.PagedList.TotalCount == 0 || !Model.PagedList.HasNextPage)
 {
-    <tfoot class="border-0">
-        <tr>
-            <td colspan="5">
-                <span class="text-muted">@T("Search.NoMoreHitsFound")</span>
-            </td>
-        </tr>
-    </tfoot>
+    if (Model.PagedList.TotalPages > 1)
+    {
+        <tfoot class="border-0">
+            <tr>
+                <td colspan="5">
+                    <span class="text-muted">@T("Search.NoMoreHitsFound")</span>
+                </td>
+            </tr>
+        </tfoot>
+    }
 }
 else if (Model.Error.HasValue())
 {

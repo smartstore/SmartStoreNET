@@ -150,17 +150,17 @@ namespace SmartStore.Web.Controllers
             return forumModel;
         }
 
-        private ForumGroupModel PrepareForumGroupModel(ForumGroup forumGroup)
+        private ForumGroupModel PrepareForumGroupModel(ForumGroup group)
         {
             var forumGroupModel = new ForumGroupModel
             {
-                Id = forumGroup.Id,
-                Name = forumGroup.GetLocalized(x => x.Name),
-                Description = forumGroup.GetLocalized(x => x.Description),
-				SeName = forumGroup.GetSeName()
+                Id = group.Id,
+                Name = group.GetLocalized(x => x.Name),
+                Description = group.GetLocalized(x => x.Description),
+				SeName = group.GetSeName()
             };
 
-            var lastPostIds = forumGroup.Forums
+            var lastPostIds = group.Forums
                 .Where(x => x.LastPostId != 0)
                 .Select(x => x.LastPostId)
                 .Distinct()
@@ -168,7 +168,7 @@ namespace SmartStore.Web.Controllers
 
             var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
 
-            foreach (var forum in forumGroup.Forums)
+            foreach (var forum in group.Forums.OrderBy(x => x.DisplayOrder))
             {
                 var forumModel = PrepareForumRowModel(forum, lastPosts);
                 forumModel.LastPost.ShowTopic = true;
@@ -222,31 +222,6 @@ namespace SmartStore.Web.Controllers
             });
 
             return list;
-        }
-
-        private IEnumerable<SelectListItem> ForumGroupsForumsList()
-        {
-            var forumsList = new List<SelectListItem>();
-            var separator = "--";
-            var store = Services.StoreContext.CurrentStore;
-            var forumGroups = _forumService.GetAllForumGroups(store.Id);
-
-            foreach (var fg in forumGroups)
-            {
-                // Add the forum group with Value of 0 so it won't be used as a target forum.
-                forumsList.Add(new SelectListItem { Text = fg.GetLocalized(x => x.Name), Value = "0" });
-
-                foreach (var f in fg.Forums)
-                {
-                    forumsList.Add(new SelectListItem 
-                    {
-                        Text = separator + f.GetLocalized(x => x.Name),
-                        Value = f.Id.ToString()
-                    });
-                }
-            }
-
-            return forumsList;
         }
 
 		private void CreateForumBreadcrumb(ForumGroup group = null, Forum forum = null, ForumTopic topic = null)
@@ -346,17 +321,17 @@ namespace SmartStore.Web.Controllers
             }
 
             var store = Services.StoreContext.CurrentStore;
-            var forumGroups = _forumService.GetAllForumGroups(store.Id);
+            var groups = _forumService.GetAllForumGroups(store.Id);
 
             var model = new BoardsIndexModel
             {
                 CurrentTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow)
             };
 
-            foreach (var forumGroup in forumGroups)
+            foreach (var group in groups)
             {
-                var forumGroupModel = PrepareForumGroupModel(forumGroup);
-                model.ForumGroups.Add(forumGroupModel);
+                var groupModel = PrepareForumGroupModel(group);
+                model.ForumGroups.Add(groupModel);
             }
 
             return View(model);
@@ -369,14 +344,14 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
             }
 
-            var forumGroup = _forumService.GetForumGroupById(id);
-            if (forumGroup == null || !_storeMappingService.Authorize(forumGroup) || !_aclService.Authorize(forumGroup))
+            var group = _forumService.GetForumGroupById(id);
+            if (group == null || !_storeMappingService.Authorize(group) || !_aclService.Authorize(group))
             {
                 return HttpNotFound();
             }
 
-            var model = PrepareForumGroupModel(forumGroup);
-			CreateForumBreadcrumb(group: forumGroup);
+            var model = PrepareForumGroupModel(group);
+			CreateForumBreadcrumb(group: group);
 
 			return View(model);
         }
@@ -514,10 +489,10 @@ namespace SmartStore.Web.Controllers
                 return Json(new { Subscribed = subscribed, Text = returnText, Error = true });
             }
 
-            var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, forum.Id, 0, 0, 1).FirstOrDefault();
-            if (forumSubscription == null)
+            var subscription = _forumService.GetAllSubscriptions(customer.Id, forum.Id, 0, 0, 1).FirstOrDefault();
+            if (subscription == null)
             {
-                forumSubscription = new ForumSubscription
+                subscription = new ForumSubscription
                 {
                     SubscriptionGuid = Guid.NewGuid(),
                     CustomerId = customer.Id,
@@ -525,13 +500,13 @@ namespace SmartStore.Web.Controllers
                     CreatedOnUtc = DateTime.UtcNow
                 };
 
-                _forumService.InsertSubscription(forumSubscription);
+                _forumService.InsertSubscription(subscription);
                 subscribed = true;
                 returnText = T("Forum.UnwatchForum");
             }
             else
             {
-                _forumService.DeleteSubscription(forumSubscription);
+                _forumService.DeleteSubscription(subscription);
                 subscribed = false;
             }
 
@@ -836,7 +811,22 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            model.ForumList = ForumGroupsForumsList();
+            // Forums select box.
+            model.Forums = new List<SelectListItem>();
+            var groups = _forumService.GetAllForumGroups(Services.StoreContext.CurrentStore.Id);
+            foreach (var group in groups)
+            {
+                var optGroup = new SelectListGroup { Name = group.GetLocalized(x => x.Name) };
+                foreach (var forum in group.Forums.OrderBy(x => x.DisplayOrder))
+                {
+                    model.Forums.Add(new SelectListItem
+                    {
+                        Text = forum.GetLocalized(x => x.Name),
+                        Value = forum.Id.ToString(),
+                        Group = optGroup
+                    });
+                }
+            }
 
             CreateForumBreadcrumb(topic: topic);
 
@@ -1597,21 +1587,21 @@ namespace SmartStore.Web.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var forumTopic = post.ForumTopic;
-            var forumId = forumTopic.Forum.Id;
-            var forumSlug = forumTopic.Forum.GetSeName();
+            var topic = post.ForumTopic;
+            var forumId = topic.Forum.Id;
+            var forumSlug = topic.Forum.GetSeName();
 
             _forumService.DeletePost(post);
 
             // Get topic one more time because it can be deleted (first or only post deleted).
-            forumTopic = _forumService.GetTopicById(post.TopicId);
-            if (forumTopic == null)
+            topic = _forumService.GetTopicById(post.TopicId);
+            if (topic == null)
             {
                 return RedirectToRoute("ForumSlug", new { id = forumId, slug = forumSlug });
             }
             else
             {
-                return RedirectToRoute("TopicSlug", new { id = forumTopic.Id, slug = forumTopic.GetSeName() });
+                return RedirectToRoute("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() });
             }
         }
 

@@ -127,15 +127,17 @@
         var sectionHeader = $('.section-header');
         var sectionHeaderHasButtons = undefined;
 
-        $(window).on("scroll resize", function (e) {
-            if (sectionHeaderHasButtons === undefined) {
-                sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
-            }
-            if (sectionHeaderHasButtons === true) {
-                var y = $(this).scrollTop();
-                sectionHeader.toggleClass("sticky", y >= navbarHeight);
-            }
-        }).trigger('resize');
+        if (!sectionHeader.hasClass('nofix')) {
+            $(window).on("scroll resize", function (e) {
+                if (sectionHeaderHasButtons === undefined) {
+                    sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
+                }
+                if (sectionHeaderHasButtons === true) {
+                    var y = $(this).scrollTop();
+                    sectionHeader.toggleClass("sticky", y >= navbarHeight);
+                }
+            }).trigger('resize');
+        }
 
         $(window).on('load', function () {
         	// swap classes onload and domready

@@ -27,21 +27,21 @@
         <div class="manage btn-group my-3">
             @if (Model.IsCustomerAllowedToEditTopic)
 			{
-				<a href='@Url.Action("TopicEdit", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow">
+				<a href="@Url.Action("TopicEdit", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow">
 					<i class="fa fa-pencil-square-o"></i>
                     <span>@T("Forum.EditTopic")</span>
 				</a>
 			}
             @if (Model.IsCustomerAllowedToDeleteTopic)
 			{
-				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow" onclick='@(String.Format("return confirm({0});", T("Common.AreYouSure").JsText))'>
+				<a href="@Url.Action("TopicDelete", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow" onclick='return confirm(@T("Common.AreYouSure").JsText);'>
 					<i class="fa fa-trash-o"></i>
 					<span>@T("Forum.DeleteTopic")</span>
 				</a>
 			}
             @if (Model.IsCustomerAllowedToMoveTopic)
 			{
-				<a href='@Url.Action("TopicMove", new { id = Model.Id })' class="btn btn-secondary" rel="nofollow">
+				<a href="@Url.Action("TopicMove", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow">
 					<i class="fa fa-arrows"></i>
 					<span>@T("Forum.MoveTopic")</span>
 				</a>
@@ -65,6 +65,7 @@
 {
     var pager = Html.SmartStore().Pager(Model.PostsPageIndex, Model.PostsPageSize, Model.PostsTotalRecords)
         .Name("paginator")
+        .QueryParam("page")
         .Size(PagerSize.Small)
         .Alignment(PagerAlignment.Centered)
         .Route("TopicSlug", new RouteValues { id = Model.Id, slug = Model.SeName });

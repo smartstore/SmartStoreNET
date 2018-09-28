@@ -11,6 +11,7 @@
 
     var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
         .Name("paginator")
+        .QueryParam("page")
         .ShowSummary(false)
         .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
         .Alignment(PagerAlignment.Right);
@@ -134,6 +135,7 @@
                             @if (topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                    .QueryParam("page")
                                     .HtmlAttributes(new { @class = "topics-pager" })
                                     .WithRenderer<ForumTopicPagerRenderer>()
                                     .ShowPrevious(false)

@@ -20,23 +20,22 @@
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {
                 <i class="fa fa-pencil-square-o"></i>
-                @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
+                @Html.ActionLink(T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
             }
                 
             @if (Model.IsCurrentCustomerAllowedToDeletePost)
             {
                 <i class="fa fa-times"></i>
-                @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm({0});", T("Common.AreYouSure").JsText), @class = "delete-post-link-button" })
+                @Html.ActionLink(T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = "return confirm(" + T("Common.AreYouSure").JsText + ");", @class = "delete-post-link-button" })
             }
-
-            @if (@Model.CurrentTopicPage > 1)
-            {
-                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName, page = Model.CurrentTopicPage }, new { @class = "post-link", title = T("Forum.PostLinkTitle") })
+            @{
+                var postLinkRoutValues = Model.CurrentTopicPage == 1
+                    ? (object)(new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })
+                    : (object)(new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName, page = Model.CurrentTopicPage });
             }
-            else
-            {
-                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { @class = "post-link pr-0", title = T("Forum.PostLinkTitle") })
-            }
+            <a class="post-link" title="@T("Forum.PostLinkTitle")" href="@(Url.RouteUrl("TopicSlug", postLinkRoutValues))#@(Model.Id)">
+                #@(Model.Id)
+            </a>
         </div>
     </div>
 

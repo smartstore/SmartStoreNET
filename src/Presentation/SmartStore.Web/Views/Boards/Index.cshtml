@@ -19,7 +19,7 @@
 
     @foreach (var forumGroup in Model.ForumGroups)
     {
-        Html.RenderPartial("_ForumGroupPartial", forumGroup);
+        Html.RenderPartial("ForumGroup", forumGroup);
     }
     
     @{ Html.RenderAction("ActiveDiscussionsSmall"); }

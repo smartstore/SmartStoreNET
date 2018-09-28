@@ -1532,7 +1532,7 @@
     <Content Include="Views\Boards\Partials\_ActiveTopics.cshtml" />
     <Content Include="Views\Boards\Partials\_CreateUpdatePost.cshtml" />
     <Content Include="Views\Boards\Partials\_CreateUpdateTopic.cshtml" />
-    <Content Include="Views\Boards\Partials\_ForumGroupPartial.cshtml" />
+    <Content Include="Views\Boards\Partials\ForumGroup.cshtml" />
     <Content Include="Views\Boards\Partials\_ForumPost.cshtml" />
     <Content Include="Views\Catalog\Partials\CategoryMenu.cshtml" />
     <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />

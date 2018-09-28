@@ -91,6 +91,7 @@
                             @if (@topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                    .QueryParam("page")
                                     .HtmlAttributes(new { @class = "topics-pager" })
                                     .WithRenderer<ForumTopicPagerRenderer>()
                                     .ShowPrevious(false)

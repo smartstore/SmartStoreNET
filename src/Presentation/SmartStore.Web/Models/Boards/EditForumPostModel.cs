@@ -14,6 +14,7 @@ namespace SmartStore.Web.Models.Boards
         public bool IsEdit { get; set; }
         public bool Published { get; set; }
         public bool DisplayCaptcha { get; set; }
+        public bool IsFirstPost { get; set; }
 
         [AllowHtml]
         public string Text { get; set; }

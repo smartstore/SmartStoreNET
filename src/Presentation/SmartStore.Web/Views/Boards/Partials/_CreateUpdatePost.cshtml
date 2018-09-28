@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        @if (Model.IsModerator)
+        @if (Model.IsModerator && !Model.IsFirstPost)
         {
             <div class="row justify-content-end">
                 <div class="col-sm-9">

@@ -1431,11 +1431,14 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
             }
 
+            var firstPost = post.ForumTopic.GetFirstPost(_forumService);
+
             var model = new EditForumPostModel
             {
                 Id = post.Id,
                 IsEdit = true,
                 Published = post.Published,
+                IsFirstPost = firstPost?.Id == post.Id,
                 ForumTopicId = post.ForumTopic.Id,
                 DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
@@ -1501,8 +1504,13 @@ namespace SmartStore.Web.Controllers
                     var updateStatistics = false;
                     if (customer.IsForumModerator())
                     {
-                        updateStatistics = post.Published != model.Published;
-                        post.Published = model.Published;
+                        // Do not allow to unpublish first post. NumReplies would be wrong. Unpublish topic instead.
+                        var firstPost = post.ForumTopic.GetFirstPost(_forumService);
+                        if (firstPost?.Id != post.Id)
+                        {
+                            updateStatistics = post.Published != model.Published;
+                            post.Published = model.Published;
+                        }
                     }
 
                     post.Text = _forumSettings.PostMaxLength > 0 && model.Text.Length > _forumSettings.PostMaxLength

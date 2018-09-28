@@ -1,5 +1,4 @@
-﻿using System;
-using SmartStore.Core.Domain.Customers;
+﻿using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Html;
 using SmartStore.Core.Infrastructure;
@@ -12,14 +11,17 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Formats the forum post text
         /// </summary>
-        /// <param name="forumPost">Forum post</param>
+        /// <param name="post">Forum post</param>
         /// <returns>Formatted text</returns>
-        public static string FormatPostText(this ForumPost forumPost)
+        public static string FormatPostText(this ForumPost post)
         {
-            string text = forumPost.Text;
+            Guard.NotNull(post, nameof(post));
 
-            if (String.IsNullOrEmpty(text))
+            var text = post.Text;
+            if (text.IsEmpty())
+            {
                 return string.Empty;
+            }
 
             switch (EngineContext.Current.Resolve<ForumSettings>().ForumEditor)
             {
@@ -43,27 +45,26 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Strips the topic subject
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
+        /// <param name="topic">Forum topic</param>
         /// <returns>Formatted subject</returns>
-        public static string StripTopicSubject(this ForumTopic forumTopic)
+        public static string StripTopicSubject(this ForumTopic topic)
         {
-            string subject = forumTopic.Subject;
-            if (String.IsNullOrEmpty(subject))
+            Guard.NotNull(topic, nameof(topic));
+
+            var subject = topic.Subject;
+            if (subject.IsEmpty())
             {
                 return subject;
             }
 
-            int strippedTopicMaxLength = EngineContext.Current.Resolve<ForumSettings>().StrippedTopicMaxLength;
-            if (strippedTopicMaxLength > 0)
+            var strippedTopicMaxLength = EngineContext.Current.Resolve<ForumSettings>().StrippedTopicMaxLength;
+            if (strippedTopicMaxLength > 0 && subject.Length > strippedTopicMaxLength)
             {
-                if (subject.Length > strippedTopicMaxLength)
+                var index = subject.IndexOf(" ", strippedTopicMaxLength);
+                if (index > 0)
                 {
-                    int index = subject.IndexOf(" ", strippedTopicMaxLength);
-                    if (index > 0)
-                    {
-                        subject = subject.Substring(0, index);
-                        subject += "...";
-                    }
+                    subject = subject.Substring(0, index);
+                    subject += "…";
                 }
             }
 
@@ -77,28 +78,30 @@ namespace SmartStore.Services.Forums
         /// <returns>Formatted text</returns>
         public static string FormatForumSignatureText(this string text)
         {
-            if (String.IsNullOrEmpty(text))
+            if (text.IsEmpty())
+            {
                 return string.Empty;
+            }
 
-            text = SmartStore.Core.Html.HtmlUtils.FormatText(text, false, true, false, false, false, false);
-            return text;
+            return HtmlUtils.FormatText(text, false, true, false, false, false, false);
         }
 
         /// <summary>
         /// Formats the private message text
         /// </summary>
-        /// <param name="pm">Private message</param>
+        /// <param name="message">Private message</param>
         /// <returns>Formatted text</returns>
-        public static string FormatPrivateMessageText(this PrivateMessage pm)
+        public static string FormatPrivateMessageText(this PrivateMessage message)
         {
-            string text = pm.Text;
+            Guard.NotNull(message, nameof(message));
 
-            if (String.IsNullOrEmpty(text))
+            var text = message.Text;
+            if (text.IsEmpty())
+            {
                 return string.Empty;
+            }
 
-            text = SmartStore.Core.Html.HtmlUtils.FormatText(text, false, true, false, true, false, false);
-
-            return text;
+            return HtmlUtils.FormatText(text, false, true, false, true, false, false);
         }
         
         /// <summary>
@@ -109,8 +112,8 @@ namespace SmartStore.Services.Forums
         /// <returns>Forum topic</returns>
         public static ForumTopic GetLastTopic(this Forum forum, IForumService forumService)
         {
-            if (forum == null)
-                throw new ArgumentNullException("forum");
+            Guard.NotNull(forum, nameof(forum));
+            Guard.NotNull(forumService, nameof(forumService));
 
             return forumService.GetTopicById(forum.LastTopicId);
         }
@@ -123,8 +126,8 @@ namespace SmartStore.Services.Forums
         /// <returns>Forum topic</returns>
         public static ForumPost GetLastPost(this Forum forum, IForumService forumService)
         {
-            if (forum == null)
-                throw new ArgumentNullException("forum");
+            Guard.NotNull(forum, nameof(forum));
+            Guard.NotNull(forumService, nameof(forumService));
 
             return forumService.GetPostById(forum.LastPostId);
         }
@@ -137,8 +140,8 @@ namespace SmartStore.Services.Forums
         /// <returns>Customer</returns>
         public static Customer GetLastPostCustomer(this Forum forum, ICustomerService customerService)
         {
-            if (forum == null)
-                throw new ArgumentNullException("forum");
+            Guard.NotNull(forum, nameof(forum));
+            Guard.NotNull(customerService, nameof(customerService));
 
             return customerService.GetCustomerById(forum.LastPostCustomerId);
         }
@@ -146,17 +149,19 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Get first post
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
+        /// <param name="topic">Forum topic</param>
         /// <param name="forumService">Forum service</param>
         /// <returns>Forum post</returns>
-        public static ForumPost GetFirstPost(this ForumTopic forumTopic, IForumService forumService)
+        public static ForumPost GetFirstPost(this ForumTopic topic, IForumService forumService)
         {
-            if (forumTopic == null)
-                throw new ArgumentNullException("forumTopic");
+            Guard.NotNull(topic, nameof(topic));
+            Guard.NotNull(forumService, nameof(forumService));
 
-            var forumPosts = forumService.GetAllPosts(forumTopic.Id, 0, true, 0, 1);
-            if (forumPosts.Count > 0)
-                return forumPosts[0];
+            var posts = forumService.GetAllPosts(topic.Id, 0, true, 0, 1);
+            if (posts.Count > 0)
+            {
+                return posts[0];
+            }
 
             return null;
         }
@@ -164,29 +169,29 @@ namespace SmartStore.Services.Forums
         /// <summary>
         /// Get last post
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
+        /// <param name="topic">Forum topic</param>
         /// <param name="forumService">Forum service</param>
         /// <returns>Forum post</returns>
-        public static ForumPost GetLastPost(this ForumTopic forumTopic, IForumService forumService)
+        public static ForumPost GetLastPost(this ForumTopic topic, IForumService forumService)
         {
-            if (forumTopic == null)
-                throw new ArgumentNullException("forumTopic");
+            Guard.NotNull(topic, nameof(topic));
+            Guard.NotNull(forumService, nameof(forumService));
 
-            return forumService.GetPostById(forumTopic.LastPostId);
+            return forumService.GetPostById(topic.LastPostId);
         }
 
         /// <summary>
         /// Get forum last post customer
         /// </summary>
-        /// <param name="forumTopic">Forum topic</param>
+        /// <param name="topic">Forum topic</param>
         /// <param name="customerService">Customer service</param>
         /// <returns>Customer</returns>
-        public static Customer GetLastPostCustomer(this ForumTopic forumTopic, ICustomerService customerService)
+        public static Customer GetLastPostCustomer(this ForumTopic topic, ICustomerService customerService)
         {
-            if (forumTopic == null)
-                throw new ArgumentNullException("forumTopic");
+            Guard.NotNull(topic, nameof(topic));
+            Guard.NotNull(customerService, nameof(customerService));
 
-            return customerService.GetCustomerById(forumTopic.LastPostCustomerId);
+            return customerService.GetCustomerById(topic.LastPostCustomerId);
         }
     }
 }

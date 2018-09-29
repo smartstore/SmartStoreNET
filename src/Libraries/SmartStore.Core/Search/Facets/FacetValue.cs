@@ -100,8 +100,8 @@ namespace SmartStore.Core.Search.Facets
 			{
 				var combiner = HashCodeCombiner
 					.Start()
-					.Add(Value.GetHashCode())
-					.Add(UpperValue.GetHashCode());
+					.Add(Value)
+					.Add(UpperValue);
 
 				return combiner.CombinedHash;
 			}

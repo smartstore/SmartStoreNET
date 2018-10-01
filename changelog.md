@@ -37,7 +37,7 @@
 * #1479 Show in messages the delivery time at the time of purchase
 * #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
 * #1106 BMECat: import & export support for product keywords
-* #1499 Add hint to forms indicating that fields with an asterisk (*)
+* #1499 Added hint to forms indicating that fields with an asterisk (*)
 * Added filter for newsletter subscriber export by working language
 * Refactored download section  
 * Enhanced EntityPicker to pick from customers, manufacturers & categories

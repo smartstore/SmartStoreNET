@@ -2,7 +2,7 @@
 @model ForumPostModel
 @Html.Raw("<a name=\"{0}\"></a>".FormatInvariant(Model.Id))
 
-<div class="block block-bordered forum-post card" id="post@(Model.Id)">
+<div class="block block-bordered forum-post card" id="post@(Model.Id)" data-id="@Model.Id">
     <div class="block-title card-header">
         @if (Model.CustomerId > 0)
         {
@@ -114,6 +114,17 @@
                 <i class="fa fa-quote-left"></i>
                 <span>@T("Forum.QuotePost")</span>
             </a>
+            @if (Model.AllowVoting)
+            {
+                <button type="button" class="btn btn-outline-success btn-flat btn-sm post-vote-button post-vote-up@(Model.Vote ? " hide" : "")" value="true">
+                    <i class="fa fa-thumbs-up"></i>
+                    <span>@T("Common.LikeIt")</span>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-flat btn-sm post-vote-button post-vote-down@(Model.Vote ? "" : " hide")" value="false">
+                    <i class="fa fa-thumbs-down"></i>
+                    <span>@T("Common.DoNotLikeIt")</span>
+                </button>
+            }
         </div>
     </div>
 </div>

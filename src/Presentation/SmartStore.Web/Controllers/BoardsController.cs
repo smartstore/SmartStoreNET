@@ -45,6 +45,7 @@ namespace SmartStore.Web.Controllers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
+        private readonly ICustomerContentService _customerContentService;
         private readonly ForumSettings _forumSettings;
         private readonly ForumSearchSettings _searchSettings;
         private readonly CustomerSettings _customerSettings;
@@ -63,6 +64,7 @@ namespace SmartStore.Web.Controllers
             IGenericAttributeService genericAttributeService,
             IStoreMappingService storeMappingService,
             IAclService aclService,
+            ICustomerContentService customerContentService,
             ForumSettings forumSettings,
             ForumSearchSettings searchSettings,
             CustomerSettings customerSettings,
@@ -80,6 +82,7 @@ namespace SmartStore.Web.Controllers
             _genericAttributeService = genericAttributeService;
             _storeMappingService = storeMappingService;
             _aclService = aclService;
+            _customerContentService = customerContentService;
             _forumSettings = forumSettings;
             _searchSettings = searchSettings;
             _customerSettings = customerSettings;
@@ -696,7 +699,7 @@ namespace SmartStore.Web.Controllers
                 
             foreach (var post in posts)
             {
-                var forumPostModel = new ForumPostModel
+                var postModel = new ForumPostModel
                 {
                     Id = post.Id,
                     Published = post.Published,
@@ -717,26 +720,32 @@ namespace SmartStore.Web.Controllers
                     AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                     SignaturesEnabled = _forumSettings.SignaturesEnabled,
                     FormattedSignature = post.Customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature).FormatForumSignatureText(),
+                    AllowVoting = _forumSettings.AllowCustomersToVoteOnPosts && post.CustomerId != customer.Id
                 };
 
-                forumPostModel.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
+                if (postModel.AllowVoting)
+                {
+                    postModel.Vote = post.ForumPostVotes.FirstOrDefault(x => x.CustomerId == customer.Id)?.Vote ?? false;
+                }
+
+                postModel.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
                     ? post.CreatedOnUtc.RelativeFormat(true, "f")
                     : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
 
-                forumPostModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, forumPostModel.CustomerName, true);
+                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, postModel.CustomerName, true);
 
                 // Location.
-                forumPostModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
+                postModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
                 if (_customerSettings.ShowCustomersLocation)
                 {
                     var countryId = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
                     var country = _countryService.GetCountryById(countryId);
-                    forumPostModel.CustomerLocation = country != null ? country.GetLocalized(x => x.Name) : string.Empty;
+                    postModel.CustomerLocation = country != null ? country.GetLocalized(x => x.Name) : string.Empty;
                 }
 
                 // Page number is needed for creating post link in _ForumPost partial view.
-                forumPostModel.CurrentTopicPage = page;
-                model.ForumPostModels.Add(forumPostModel);
+                postModel.CurrentTopicPage = page;
+                model.ForumPostModels.Add(postModel);
             }
 
 			CreateForumBreadcrumb(topic: topic);
@@ -1603,6 +1612,64 @@ namespace SmartStore.Web.Controllers
             {
                 return RedirectToRoute("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() });
             }
+        }
+
+        [HttpPost]
+        public ActionResult PostVote(int id, bool vote)
+        {
+            if (!_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToVoteOnPosts)
+            {
+                return HttpNotFound();
+            }
+
+            var customer = Services.WorkContext.CurrentCustomer;
+            var post = _forumService.GetPostById(id);
+
+            if (post == null || !_storeMappingService.Authorize(post.ForumTopic.Forum.ForumGroup) || !_aclService.Authorize(post.ForumTopic.Forum.ForumGroup))
+            {
+                return HttpNotFound();
+            }
+
+            if (!_forumSettings.AllowGuestsToVoteOnPosts && customer.IsGuest())
+            {
+                return Json(new { success = false, message = T("Forum.Post.Vote.OnlyRegistered").Text });
+            }
+
+            // Do not allow to vote for own posts.
+            if (post.CustomerId == customer.Id)
+            {
+                return Json(new { success = false, message = T("Forum.Post.Vote.OwnPostNotAllowed").Text });
+            }
+
+            var voteEntity = post.ForumPostVotes.FirstOrDefault(x => x.CustomerId == customer.Id);
+            if (vote)
+            {
+                if (voteEntity == null)
+                {
+                    voteEntity = new ForumPostVote
+                    {
+                        ForumPostId = post.Id,
+                        Vote = true,
+                        CustomerId = customer.Id,
+                        IpAddress = Services.WebHelper.GetCurrentIpAddress()
+                    };
+                    _customerContentService.InsertCustomerContent(voteEntity);
+                }
+                else
+                {
+                    voteEntity.Vote = true;
+                    _customerContentService.UpdateCustomerContent(voteEntity);
+                }
+            }
+            else
+            {
+                if (voteEntity != null)
+                {
+                    _customerContentService.DeleteCustomerContent(voteEntity);
+                }
+            }
+
+            return Json(new { success = true, message = T("Forum.Post.Vote.SuccessfullyVoted").Text });
         }
 
         #endregion

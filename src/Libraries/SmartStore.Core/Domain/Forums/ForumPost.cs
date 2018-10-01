@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using SmartStore.Core.Domain.Customers;
 
@@ -9,6 +10,8 @@ namespace SmartStore.Core.Domain.Forums
     /// </summary>
     public partial class ForumPost : BaseEntity, IAuditable
 	{
+        private ICollection<ForumPostVote> _forumPostVotes;
+
         /// <summary>
         /// Gets or sets the forum topic identifier
         /// </summary>
@@ -55,5 +58,14 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets the customer
         /// </summary>
         public virtual Customer Customer { get; set; }
+
+        /// <summary>
+        /// Forum post votes.
+        /// </summary>
+        public virtual ICollection<ForumPostVote> ForumPostVotes
+        {
+            get { return _forumPostVotes ?? (_forumPostVotes = new HashSet<ForumPostVote>()); }
+            protected set { _forumPostVotes = value; }
+        }
     }
 }

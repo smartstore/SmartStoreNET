@@ -235,6 +235,7 @@
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />
     <Compile Include="Domain\DataExchange\ExportProfile.cs" />
     <Compile Include="Domain\Forums\ForumDateFilter.cs" />
+    <Compile Include="Domain\Forums\ForumPostVote.cs" />
     <Compile Include="Domain\Forums\ForumTopicSorting.cs" />
     <Compile Include="Domain\Media\MediaStorage.cs" />
     <Compile Include="Domain\Media\IHasMedia.cs" />

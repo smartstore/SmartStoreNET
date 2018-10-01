@@ -147,6 +147,7 @@
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
+    <Compile Include="Mapping\Forums\ForumPostVoteMap.cs" />
     <Compile Include="Mapping\Media\MediaStorageMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
@@ -626,6 +627,10 @@
     <Compile Include="Migrations\201809261026134_ForumGroupAcl.cs" />
     <Compile Include="Migrations\201809261026134_ForumGroupAcl.Designer.cs">
       <DependentUpon>201809261026134_ForumGroupAcl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810011954195_ForumPostVote.cs" />
+    <Compile Include="Migrations\201810011954195_ForumPostVote.Designer.cs">
+      <DependentUpon>201810011954195_ForumPostVote.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1126,6 +1131,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809261026134_ForumGroupAcl.resx">
       <DependentUpon>201809261026134_ForumGroupAcl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810011954195_ForumPostVote.resx">
+      <DependentUpon>201810011954195_ForumPostVote.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

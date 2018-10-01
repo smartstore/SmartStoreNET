@@ -527,6 +527,20 @@
                 "* Input elements with asterisk are required and have to be filled out.",
                 "* Eingabefelder mit Sternchen sind Pflichfelder und müssen ausgefüllt werden.");
 
+            builder.AddOrUpdate("Forum.Post.Vote.OnlyRegistered",
+                "Only registered users can vote for posts.",
+                "Nur registrierte Benutzer können Beiträge bewerten.");
+
+            builder.AddOrUpdate("Forum.Post.Vote.OwnPostNotAllowed",
+                "You cannot vote for your own post.",
+                "Sie können nicht Ihren eigenen Beitrag bewerten.");
+
+            builder.AddOrUpdate("Forum.Post.Vote.SuccessfullyVoted",
+                "Thank you for your vote.",
+                "Danke für Ihre Bewertung.");
+
+            builder.AddOrUpdate("Common.LikeIt", "I like it", "Gefällt mir");
+            builder.AddOrUpdate("Common.DoNotLikeIt", "I do not like it anymore", "Gefällt mir nicht mehr");
         }
     }
 }

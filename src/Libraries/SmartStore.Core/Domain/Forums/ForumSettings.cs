@@ -27,7 +27,8 @@ namespace SmartStore.Core.Domain.Forums
 			HomePageActiveDiscussionsTopicCount = 5;
 			ActiveDiscussionsPageTopicCount = 50;
 			ActiveDiscussionsFeedCount = 25;
-		}
+            AllowCustomersToVoteOnPosts = true;
+        }
 		
 		/// <summary>
         /// Gets or sets a value indicating whether forums are enabled
@@ -63,6 +64,16 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets a value indicating whether customers are allowed to delete posts that they created
         /// </summary>
         public bool AllowCustomersToDeletePosts { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether customer can vote on posts
+        /// </summary>
+        public bool AllowCustomersToVoteOnPosts { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether guests are allowed to vote on posts
+        /// </summary>
+        public bool AllowGuestsToVoteOnPosts { get; set; }
 
         /// <summary>
         /// Gets or sets maximum length of topic subject

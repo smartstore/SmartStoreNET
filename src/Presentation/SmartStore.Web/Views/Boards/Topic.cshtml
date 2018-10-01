@@ -93,3 +93,30 @@
         @pager
     </div>
 }
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// Post voting.
+		$('button.post-vote-button').on('click', function () {
+            var self = $(this),
+                postId = self.closest('.forum-post').data('id');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("PostVote", "Boards")',
+                data: { "id": postId, "vote": self.attr('value') },
+                cache: false,
+                success: function (resp) {
+                    if (resp.success) {
+                        self.closest('div').find(self.hasClass('post-vote-up') ? '.post-vote-down' : '.post-vote-up').show();
+                        self.hide();
+                    }
+
+                    displayNotification(resp.message, resp.success ? 'success' : 'error');
+                }
+            });
+        });
+
+	});
+</script>

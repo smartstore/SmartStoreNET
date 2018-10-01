@@ -160,12 +160,15 @@ namespace SmartStore.Web.Controllers
 			{
 				// Find parent grouped product.
 				var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
-
 				if (parentGroupedProduct == null)
 					return HttpNotFound();
 
-				var routeValues = new RouteValueDictionary();
-				routeValues.Add("SeName", parentGroupedProduct.GetSeName());
+                var seName = parentGroupedProduct.GetSeName();
+                if (seName.IsEmpty())
+                    return HttpNotFound();
+
+                var routeValues = new RouteValueDictionary();
+				routeValues.Add("SeName", seName);
 
 				// Add query string parameters.
 				Request.QueryString.AllKeys.Each(x => routeValues.Add(x, Request.QueryString[x]));

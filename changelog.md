@@ -1,8 +1,12 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
 ### New Features
+* **EmailReminder**:
+	* Reminders for open shopping carts
+	* Reminders for product reviews
+	* Reminders to visit the shop after a long absence
 * #1144 Enable multi server search index
 * Made Topic ACL enabled
 * Implemented paging & filtering for Topic grid
@@ -25,12 +29,18 @@
 	* #1172 Option to display related search terms on search page.
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
 * Viveum: Supports payment via "Virtual Account Brands" like PayPal.
+* Added options for alternating price display (in badges)
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
 * Debitoor: Partially update customer instead of full update to avoid all fields being overwritten
 * #1479 Show in messages the delivery time at the time of purchase
 * #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
+* #1106 BMECat: import & export support for product keywords
+* #1499 Add hint to forms indicating that fields with an asterisk (*)
+* Added filter for newsletter subscriber export by working language
+* Refactored download section  
+* Enhanced EntityPicker to pick from customers, manufacturers & categories
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
@@ -61,6 +71,9 @@
 * #1504 Cart item price calculation wrong if attribute combinations with text types are involved.
 * #1485 Dropdown list for product sorting does not work with Internet Explorer 11.
 * #1468 Twitter authentication not working anymore.
+* Newsletter subscription didn't work when customer privacy setting DisplayGdprConsentOnForms was turned off
+* Fixed social media image detection
+* Fixed redirection of bots when several languages were active
 
 
 ## SmartStore.NET 3.1.5

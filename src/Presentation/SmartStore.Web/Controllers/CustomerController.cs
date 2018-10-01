@@ -39,6 +39,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Web.Controllers
 {
@@ -82,18 +83,18 @@ namespace SmartStore.Web.Controllers
         private readonly IWebHelper _webHelper;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly ProductUrlHelper _productUrlHelper;
-
-        private readonly MediaSettings _mediaSettings;
+		private readonly MediaSettings _mediaSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CaptchaSettings _captchaSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
 		private readonly PluginMediator _pluginMediator;
+		private readonly IEventPublisher _eventPublisher;
 
-        #endregion
+		#endregion
 
-        #region Ctor
+		#region Ctor
 
-        public CustomerController(
+		public CustomerController(
             ICommonServices services,
             IAuthenticationService authenticationService,
             IDateTimeHelper dateTimeHelper,
@@ -122,7 +123,7 @@ namespace SmartStore.Web.Controllers
 			MediaSettings mediaSettings,
             LocalizationSettings localizationSettings,
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
-			PluginMediator pluginMediator)
+			PluginMediator pluginMediator, IEventPublisher eventPublisher)
         {
             _services = services;
             _authenticationService = authenticationService;
@@ -160,13 +161,13 @@ namespace SmartStore.Web.Controllers
             _webHelper = webHelper;
             _customerActivityService = customerActivityService;
 			_productUrlHelper = productUrlHelper;
-
 			_mediaSettings = mediaSettings;
             _localizationSettings = localizationSettings;
             _captchaSettings = captchaSettings;
             _externalAuthenticationSettings = externalAuthenticationSettings;
 			_pluginMediator = pluginMediator;
-        }
+			_eventPublisher = eventPublisher;
+		}
 
         #endregion
 
@@ -484,6 +485,8 @@ namespace SmartStore.Web.Controllers
                     _authenticationService.SignIn(customer, model.RememberMe);
 
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
+
+					_eventPublisher.Publish(new CustomerLogedInEvent { Customer = customer });
 
 					// Redirect home where redirect to referrer would be confusing.
 					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?") || returnUrl.Contains(@"/passwordrecoveryconfirm"))

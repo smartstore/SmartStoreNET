@@ -23,6 +23,7 @@
 	* Added option to display a captcha on forum pages when creating or replying to a topic.
 	* #417 Restrict forum groups to specific customer roles.
 	* Added published property to forum topic and post.
+	* Added voting for forum posts.
 	* Several performance improvements.
 * **MegaSearch**:
 	* Supports searching for forum posts.

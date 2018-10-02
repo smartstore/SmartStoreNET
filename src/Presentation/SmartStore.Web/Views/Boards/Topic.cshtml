@@ -100,17 +100,25 @@
 		// Post voting.
 		$('button.post-vote-button').on('click', function () {
             var self = $(this),
-                postId = self.closest('.forum-post').data('id');
+                post = self.closest('.forum-post');
 
             $.ajax({
                 type: 'POST',
                 url: '@Url.Action("PostVote", "Boards")',
-                data: { "id": postId, "vote": self.attr('value') },
+                data: { "id": post.data('id'), "vote": self.attr('value') },
                 cache: false,
                 success: function (resp) {
                     if (resp.success) {
                         self.closest('div').find(self.hasClass('post-vote-up') ? '.post-vote-down' : '.post-vote-up').show();
                         self.hide();
+
+                        // Update counter.
+                        if (resp.voteCount > 0) {
+                            post.find('.votes').show().find('.vote-count').text(resp.voteCountString);
+                        }
+                        else {
+                            post.find('.votes').text(resp.voteCountString).hide();
+                        }
                     }
 
                     displayNotification(resp.message, resp.success ? 'success' : 'error');

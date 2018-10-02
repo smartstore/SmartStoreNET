@@ -85,9 +85,16 @@
             </div>
         </div>
         <div class="post-content col col-sm-10">
-            <div class="posttime text-muted">
-                <span class="pr-1">@T("Forum.Posted"):</span>
-				<span class="stat-value">@Model.PostCreatedOnStr</span>
+            <div class="post-stats text-muted mb-1">
+                <span class="posttime">
+                    <span class="pr-1">@T("Forum.Posted"):</span>
+				    <span class="stat-value">@Model.PostCreatedOnStr</span>
+                </span>
+                <span class="votes@(Model.VoteCount > 0 ? "" : " hide")" title="@T("Common.Liked")">
+                    <span class="pl-1 pr-1">&middot;</span>
+                    <span><i class="fa fa-thumbs-up"></i></span>
+				    <span class="vote-count stat-value">@Model.VoteCount.ToString("N0")</span>
+                </span>
             </div>
             <div class="post-body">
                 <div class="posttext" dir="auto">

@@ -725,7 +725,15 @@ namespace SmartStore.Web.Controllers
 
                 if (postModel.AllowVoting)
                 {
-                    postModel.Vote = post.ForumPostVotes.FirstOrDefault(x => x.CustomerId == customer.Id)?.Vote ?? false;
+                    if (!_forumSettings.AllowGuestsToVoteOnPosts && customer.IsGuest())
+                    {
+                        postModel.AllowVoting = false;
+                    }
+                    else
+                    {
+                        postModel.Vote = post.ForumPostVotes.FirstOrDefault(x => x.CustomerId == customer.Id)?.Vote ?? false;
+                        postModel.VoteCount = post.ForumPostVotes.Count;
+                    }
                 }
 
                 postModel.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
@@ -1642,6 +1650,8 @@ namespace SmartStore.Web.Controllers
             }
 
             var voteEntity = post.ForumPostVotes.FirstOrDefault(x => x.CustomerId == customer.Id);
+            var voteCount = post.ForumPostVotes.Count;
+
             if (vote)
             {
                 if (voteEntity == null)
@@ -1654,6 +1664,7 @@ namespace SmartStore.Web.Controllers
                         IpAddress = Services.WebHelper.GetCurrentIpAddress()
                     };
                     _customerContentService.InsertCustomerContent(voteEntity);
+                    ++voteCount;
                 }
                 else
                 {
@@ -1666,10 +1677,17 @@ namespace SmartStore.Web.Controllers
                 if (voteEntity != null)
                 {
                     _customerContentService.DeleteCustomerContent(voteEntity);
+                    --voteCount;
                 }
             }
 
-            return Json(new { success = true, message = T("Forum.Post.Vote.SuccessfullyVoted").Text });
+            return Json(new 
+            {
+                success = true,
+                message = T("Forum.Post.Vote.SuccessfullyVoted").Text,
+                voteCount,
+                voteCountString = voteCount.ToString("N0")
+            });
         }
 
         #endregion

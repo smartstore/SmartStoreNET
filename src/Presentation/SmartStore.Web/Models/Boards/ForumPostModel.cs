@@ -41,6 +41,7 @@ namespace SmartStore.Web.Models.Boards
 
         public bool AllowVoting { get; set; }
         public bool Vote { get; set; }
+        public int VoteCount { get; set; }
 
         public CustomerAvatarModel Avatar { get; set; }
     }

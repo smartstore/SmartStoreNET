@@ -539,8 +539,21 @@
                 "Thank you for your vote.",
                 "Danke für Ihre Bewertung.");
 
+            builder.AddOrUpdate("Common.Liked", "Liked", "Gefällt");
             builder.AddOrUpdate("Common.LikeIt", "I like it", "Gefällt mir");
             builder.AddOrUpdate("Common.DoNotLikeIt", "I do not like it anymore", "Gefällt mir nicht mehr");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Forums.AllowCustomersToVoteOnPosts",
+                "Allow customers to vote on posts",
+                "Benutzer können Beiträge bewerten",
+                "Specifies whether customers can vote on posts.",
+                "Legt fest, ob Benutzer Beiträge bewerten können.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Forums.AllowGuestsToVoteOnPosts",
+                "Allow guests to vote on posts",
+                "Gäste können Beiträge bewerten",
+                "Specifies whether guests can vote on posts.",
+                "Legt fest, ob Gäste Beiträge bewerten können.");
         }
     }
 }

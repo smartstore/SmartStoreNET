@@ -92,13 +92,6 @@ $forum-unobstrusive-link-color: #646464;
         }
     }
     .post-content {
-		/*
-	    .functions {
-	        right: 10px;
-	        bottom: 10px;
-	        .fa-quote-left { font-size: 10px;}
-        }
-		*/
         .signature {
 	        position: absolute;
 	        bottom: 10px;
@@ -110,7 +103,7 @@ $forum-unobstrusive-link-color: #646464;
     }
 }
 .post-info .user-info .user-stats, 
-.post-content .posttime {
+.post-content .post-stats {
     font-size: $font-size-xs;
 }
 .posttext .quotefrom {
@@ -121,9 +114,6 @@ $forum-unobstrusive-link-color: #646464;
 }
 .posttext blockquote {
 	margin-bottom: 0;
-}
-.post-content .posttime {
-	margin-bottom: 5px;
 }
 
 /* Forum Search

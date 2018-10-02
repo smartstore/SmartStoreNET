@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -74,6 +74,7 @@
 * Newsletter subscription didn't work when customer privacy setting DisplayGdprConsentOnForms was turned off
 * Fixed social media image detection
 * Fixed redirection of bots when several languages were active
+* Region cannot be selected in checkout when entering a billing or shipping address
 
 
 ## SmartStore.NET 3.1.5

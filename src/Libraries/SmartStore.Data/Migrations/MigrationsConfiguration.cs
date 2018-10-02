@@ -554,6 +554,19 @@
                 "Gäste können Beiträge bewerten",
                 "Specifies whether guests can vote on posts.",
                 "Legt fest, ob Gäste Beiträge bewerten können.");
+
+            // Typos.
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements")
+                .Value("de", "Voraussetzungen");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.DiscountRequirementType")
+                .Value("de", "Typ der Voraussetzung");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Hint")
+                .Value("de", "Voraussetzungen für den Rabatt");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.Remove")
+                .Value("de", "Voraussetzung für den Rabatt entfernen");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.SaveBeforeEdit")
+                .Value("de", "Sie müssen den Rabatt zunächst speichern, bevor Sie Voraussetzungen für seine Anwendung festlegen können");
+
         }
     }
 }

@@ -81,6 +81,7 @@
 
     @if (Model.CountryEnabled)
     {
+		var fieldPrefix = ViewData.TemplateInfo.HtmlFieldPrefix.NullEmpty() ?? "Address";
         <div class="form-group row">
             @Html.LabelFor(model => model.CountryId, new { @class = "col-{0}-3 col-form-label required".FormatInvariant(breakpoint) })
             <div class="col-@breakpoint-9">
@@ -88,7 +89,7 @@
 				new
 				{
 					@class = "form-control country-input country-selector",
-					data_region_control_selector = "#Address_StateProvinceId",
+					data_region_control_selector = "#{0}_StateProvinceId".FormatInvariant(fieldPrefix),
 					data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
 					data_addEmptyStateIfRequired = "true"
 				})

@@ -25,7 +25,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			return Activator.CreateInstance<T>();
 		}
 
-		public virtual T Load(IBlockEntity entity, bool editMode)
+		public virtual T Load(IBlockEntity entity, StoryViewMode viewMode)
 		{
 			Guard.NotNull(entity, nameof(entity));
 

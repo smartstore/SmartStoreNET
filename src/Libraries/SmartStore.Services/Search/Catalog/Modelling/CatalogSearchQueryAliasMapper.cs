@@ -70,7 +70,7 @@ namespace SmartStore.Services.Search.Modelling
 		protected void CachedLocalizedAlias(string localeKeyGroup, Action<LocalizedProperty> caching)
 		{
 			_localizedPropertyRepository.TableUntracked
-				.Where(x => x.LocaleKeyGroup == localeKeyGroup && x.LocaleKey == "Alias" && x.LocaleValue != null && x.LocaleValue != string.Empty)
+				.Where(x => x.LocaleKeyGroup == localeKeyGroup && x.LocaleKey == "Alias" && x.LocaleValue != null)
 				.ToList()
 				.ForEach(caching);
 		}

@@ -17,6 +17,7 @@ namespace SmartStore.Admin.Models.Polls
 
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.Language")]
         public int LanguageId { get; set; }
+        public List<SelectListItem> AvailableLanguages { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.Language")]
         [AllowHtml]

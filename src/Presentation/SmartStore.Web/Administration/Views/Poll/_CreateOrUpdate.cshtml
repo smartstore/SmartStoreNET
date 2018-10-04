@@ -21,7 +21,7 @@
                 @Html.SmartLabelFor(model => model.LanguageId)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.LanguageId, new SelectList(ViewBag.AllLanguages, "Id", "Name"))
+                @Html.DropDownListFor(model => model.LanguageId, Model.AvailableLanguages)
             </td>
         </tr>
         <tr>

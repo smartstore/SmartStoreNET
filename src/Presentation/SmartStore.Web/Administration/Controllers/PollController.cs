@@ -65,7 +65,11 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.GridPageSize = _adminAreaSettings.GridPageSize;
-		}
+
+            model.AvailableLanguages = _languageService.GetAllLanguages(true)
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                .ToList();
+        }
 
 		#endregion Utilities
 
@@ -143,11 +147,11 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
                 return AccessDeniedView();
 
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
-            var model = new PollModel();
-            model.Published = true;
-            model.ShowOnHomePage = true;
+            var model = new PollModel
+            {
+                Published = true,
+                ShowOnHomePage = true
+            };
 
 			PreparePollModel(model, null, false);
 
@@ -174,11 +178,8 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
             }
 
-            // If we got this far, something failed, redisplay form.
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-			
+            // If we got this far, something failed, redisplay form.		
 			PreparePollModel(model, null, true);
-
             return View(model);
         }
 
@@ -191,7 +192,6 @@ namespace SmartStore.Admin.Controllers
             if (poll == null)
                 return RedirectToAction("List");
 
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
             var model = poll.ToModel();
             model.StartDate = poll.StartDateUtc;
             model.EndDate = poll.EndDateUtc;
@@ -226,10 +226,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-            ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-
 			PreparePollModel(model, poll, true);
-
             return View(model);
         }
 

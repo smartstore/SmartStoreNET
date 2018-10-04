@@ -12,6 +12,9 @@ namespace SmartStore.Admin.Models.Polls
     [Validator(typeof(PollValidator))]
     public class PollModel : EntityModelBase, IStoreSelector
     {
+        public bool UsernamesEnabled { get; set; }
+        public int GridPageSize { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Polls.Fields.Language")]
         public int LanguageId { get; set; }
 

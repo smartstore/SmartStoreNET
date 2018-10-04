@@ -30,7 +30,8 @@
 	* #1172 Option to display related search terms on search page.
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
 * Viveum: Supports payment via "Virtual Account Brands" like PayPal.
-* Added options for alternating price display (in badges)
+* Added options for alternating price display (in badges).
+* #1515 Poll: Add result tab with a list of answers and customers for a poll
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).

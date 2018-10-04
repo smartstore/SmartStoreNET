@@ -567,6 +567,8 @@
             builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.SaveBeforeEdit")
                 .Value("de", "Sie müssen den Rabatt zunächst speichern, bevor Sie Voraussetzungen für seine Anwendung festlegen können");
 
+            builder.AddOrUpdate("Common.Voting", "Voting", "Abstimmung");
+            builder.AddOrUpdate("Common.Answer", "Answer", "Antwort");
         }
     }
 }

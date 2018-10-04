@@ -3,55 +3,53 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Polls;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Polls;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Polls;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
-using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class PollController : AdminControllerBase
 	{
-		#region Fields
-
         private readonly IPollService _pollService;
         private readonly ILanguageService _languageService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
+        private readonly CustomerSettings _customerSettings;
 
-		#endregion
-
-		#region Constructors
-
-        public PollController(IPollService pollService, ILanguageService languageService,
-            IDateTimeHelper dateTimeHelper, ILocalizationService localizationService,
-            IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
+        public PollController(
+            IPollService pollService,
+            ILanguageService languageService,
+            IDateTimeHelper dateTimeHelper,
+            IPermissionService permissionService,
+            AdminAreaSettings adminAreaSettings,
 			IStoreService storeService,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+            CustomerSettings customerSettings)
         {
-            this._pollService = pollService;
-            this._languageService = languageService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._localizationService = localizationService;
-            this._permissionService = permissionService;
-            this._adminAreaSettings = adminAreaSettings;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
+            _pollService = pollService;
+            _languageService = languageService;
+            _dateTimeHelper = dateTimeHelper;
+            _permissionService = permissionService;
+            _adminAreaSettings = adminAreaSettings;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
+            _customerSettings = customerSettings;
 		}
-
-		#endregion 
 
 		#region Utilities
 
@@ -65,6 +63,8 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
+            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
 		}
 
 		#endregion Utilities
@@ -170,11 +170,11 @@ namespace SmartStore.Admin.Controllers
 
 				SaveStoreMappings(poll, model);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Added"));
+                NotifySuccess(T("Admin.ContentManagement.Polls.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 			
 			PreparePollModel(model, null, true);
@@ -221,11 +221,11 @@ namespace SmartStore.Admin.Controllers
 
 				SaveStoreMappings(poll, model);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Updated"));
+                NotifySuccess(T("Admin.ContentManagement.Polls.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
 			PreparePollModel(model, poll, true);
@@ -245,7 +245,7 @@ namespace SmartStore.Admin.Controllers
             
             _pollService.DeletePoll(poll);
 
-            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Deleted"));
+            NotifySuccess(T("Admin.ContentManagement.Polls.Deleted"));
             return RedirectToAction("List");
         }
 
@@ -291,7 +291,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-
         [GridAction(EnableCustomBinding = true)]
         public ActionResult PollAnswerUpdate(PollAnswerModel model, GridCommand command)
         {
@@ -301,7 +300,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (!ModelState.IsValid)
 				{
-					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
 					return Content(modelStateErrors.FirstOrDefault());
 				}
 
@@ -339,7 +338,6 @@ namespace SmartStore.Admin.Controllers
             return PollAnswers(pollId, command);
         }
 
-
         [GridAction(EnableCustomBinding = true)]
         public ActionResult PollAnswerDelete(int id, GridCommand command)
         {
@@ -352,6 +350,50 @@ namespace SmartStore.Admin.Controllers
 			}
 
             return PollAnswers(pollId, command);
+        }
+
+        #endregion
+
+        #region Voting records
+
+        [HttpPost, GridAction(EnableCustomBinding = true)]
+        public ActionResult VotingRecords(int pollId, GridCommand command)
+        {
+            var model = new GridModel<PollVotingRecordModel>();
+
+            if (_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
+            {
+                var guestString = T("Admin.Customers.Guest").Text;
+                var votings = _pollService.GetVotingRecords(pollId, command.Page - 1, command.PageSize);
+
+                model.Data = votings.Select(x =>
+                {
+                    var votingModel = new PollVotingRecordModel
+                    {
+                        Id = x.Id,
+                        CustomerId = x.CustomerId,
+                        IsGuest = x.Customer.IsGuest(),
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+                        AnswerName = x.PollAnswer.Name,
+                        Username = x.Customer.Username,
+                        FullName = x.Customer.GetFullName()
+                    };
+
+                    votingModel.Email = x.Customer.Email.HasValue() ? x.Customer.Email : (votingModel.IsGuest ? guestString : "".NaIfEmpty());
+
+                    return votingModel;
+                });
+
+                model.Total = votings.TotalCount;
+            }
+            else
+            {
+                model.Data = Enumerable.Empty<PollVotingRecordModel>();
+
+                NotifyAccessDenied();
+            }
+
+            return new JsonResult { Data = model };
         }
 
         #endregion

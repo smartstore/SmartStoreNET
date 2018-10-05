@@ -1162,6 +1162,7 @@
     <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="Content\vendors\underscore\underscore.min.js" />
     <Content Include="Content\vendors\underscore\underscore.js" />
+    <Content Include="Content\vendors\wow\wow.js" />
     <Content Include="Themes\FlexBlue\preview.png" />
     <Content Include="Themes\FlexBlack\preview.png" />
     <Content Include="Scripts\smartstore.entitypicker.js" />

@@ -43,6 +43,7 @@
 * Added filter for newsletter subscriber export by working language
 * Refactored download section  
 * Enhanced EntityPicker to pick from customers, manufacturers & categories
+* #1510 Breadcrumb of an associated product should include the grouped product if it has no assigned categories.
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

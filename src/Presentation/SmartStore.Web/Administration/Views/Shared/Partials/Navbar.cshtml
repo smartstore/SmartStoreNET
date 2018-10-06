@@ -7,7 +7,7 @@
     var currentCustomer = this.WorkContext.CurrentCustomer;
     var currentLanguage = this.WorkContext.WorkingLanguage;
     var userName = (string)ViewBag.UserName;
-    var stores = (IList<Store>)ViewBag.Stores;
+    var stores = ((IList<Store>)ViewBag.Stores) ?? new List<Store>();
     string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
     string communityUrl = (currentLanguageCode == "de" ?
         "http://community.smartstore.com" :

@@ -569,6 +569,14 @@
 
             builder.AddOrUpdate("Common.Voting", "Voting", "Abstimmung");
             builder.AddOrUpdate("Common.Answer", "Answer", "Antwort");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description",
+                "Manage form fields that are displayed during registration.",
+                "Verwalten Sie Formularfelder, die während der Registrierung angezeigt werden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description",
+                "Manage form fields that are displayed during checkout and on \"My account\" page.",
+                "Verwalten Sie Formularfelder, die während des Checkout-Prozesses und im \"Mein Konto\" Bereich angezeigt werden.");
         }
     }
 }

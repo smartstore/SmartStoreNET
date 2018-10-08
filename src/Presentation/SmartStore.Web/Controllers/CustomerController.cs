@@ -1361,6 +1361,7 @@ namespace SmartStore.Web.Controllers
 
             var model = new CustomerAddressEditModel();
             model.Address.PrepareModel(null, false, _addressSettings, _localizationService, _stateProvinceService, () => _countryService.GetAllCountries());
+            model.Address.Email = customer?.Email;
 
             return View(model);
         }

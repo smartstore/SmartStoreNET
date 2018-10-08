@@ -125,11 +125,11 @@ namespace SmartStore.Web.Controllers
 			if (!product.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
 				return HttpNotFound();
 
-			//ACL (access control list)
+			// ACL (access control list)
 			if (!_aclService.Authorize(product))
 				return HttpNotFound();
 
-			//Store mapping
+			// Store mapping
 			if (!_storeMappingService.Authorize(product))
 				return HttpNotFound();
 
@@ -172,13 +172,15 @@ namespace SmartStore.Web.Controllers
 			{
 				_helper.GetCategoryBreadCrumb(0, productId).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
 
-                // Add parent product if product has no category assigned.
+                // Add trail of parent product if product has no category assigned.
                 var hasTrail = _breadcrumb.Trail?.Any() ?? false;
                 if (!hasTrail)
                 {
                     var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
                     if (parentGroupedProduct != null)
                     {
+                        _helper.GetCategoryBreadCrumb(0, parentGroupedProduct.Id).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
+
                         _breadcrumb.Track(new MenuItem
                         {
                             Text = parentGroupedProduct.GetLocalized(x => x.Name),

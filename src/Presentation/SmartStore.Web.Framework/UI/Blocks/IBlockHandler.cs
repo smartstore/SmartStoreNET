@@ -8,6 +8,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 	{
 		Public,
 		Preview,
+		GridEdit,
 		Edit
 	}
 

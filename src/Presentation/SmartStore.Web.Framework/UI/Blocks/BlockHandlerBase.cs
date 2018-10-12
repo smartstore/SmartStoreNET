@@ -62,12 +62,12 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			entity.Model = JsonConvert.SerializeObject(block, Formatting.None, settings);
 		}
 
-		public void Render(IBlockContainer element, string[] templates, HtmlHelper htmlHelper)
+		public void Render(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
 		{
 			RenderCore(element, templates, htmlHelper, htmlHelper.ViewContext.Writer);
 		}
 
-		public IHtmlString ToHtmlString(IBlockContainer element, string[] templates, HtmlHelper htmlHelper)
+		public IHtmlString ToHtmlString(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
 		{
 			using (var writer = new StringWriter(CultureInfo.CurrentCulture))
 			{
@@ -76,7 +76,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			}
 		}
 
-		protected virtual void RenderCore(IBlockContainer element, string[] templates, HtmlHelper htmlHelper, TextWriter textWriter)
+		protected virtual void RenderCore(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
 		{
 			Guard.NotNull(element, nameof(element));
 			Guard.NotNull(templates, nameof(templates));

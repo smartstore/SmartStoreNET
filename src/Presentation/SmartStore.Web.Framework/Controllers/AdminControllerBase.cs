@@ -19,6 +19,11 @@ using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.Controllers
 {
+	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+	public sealed class NonAdminAttribute : Attribute
+	{
+	}
+
 	[AdminValidateIpAddress(Order = 100)]
 	[RequireHttpsByConfig(SslRequirement.Yes, Order = 110)]
     [CustomerLastActivity(Order = 100)]
@@ -26,27 +31,22 @@ namespace SmartStore.Web.Framework.Controllers
 	[AdminThemed(Order = -1)]
 	public abstract class AdminControllerBase : SmartController
     { 
-        /// <summary>
-        /// Initialize controller
-        /// </summary>
-        /// <param name="requestContext">Request context</param>
-        protected override void Initialize(RequestContext requestContext)
-        {
-			var routeData = requestContext.RouteData;
-			if (routeData != null && !routeData.DataTokens.ContainsKey("ParentActionViewContext"))
-			{
-				EngineContext.Current.Resolve<IWorkContext>().IsAdmin = true;
-			}
-            base.Initialize(requestContext);
-        }
-        
-        /// <summary>
-        /// Add locales for localizable entities
-        /// </summary>
-        /// <typeparam name="TLocalizedModelLocal">Localizable model</typeparam>
-        /// <param name="languageService">Language service</param>
-        /// <param name="locales">Locales</param>
-        protected virtual void AddLocales<TLocalizedModelLocal>(ILanguageService languageService, IList<TLocalizedModelLocal> locales) where TLocalizedModelLocal : ILocalizedModelLocal
+		protected override void OnActionExecuting(ActionExecutingContext filterContext)
+		{
+			if (filterContext.IsChildAction)
+				return;
+
+			var isNonAdmin = filterContext.ActionDescriptor.HasAttribute<NonAdminAttribute>(true);
+			Services.Resolve<IWorkContext>().IsAdmin = !isNonAdmin;
+		}
+
+		/// <summary>
+		/// Add locales for localizable entities
+		/// </summary>
+		/// <typeparam name="TLocalizedModelLocal">Localizable model</typeparam>
+		/// <param name="languageService">Language service</param>
+		/// <param name="locales">Locales</param>
+		protected virtual void AddLocales<TLocalizedModelLocal>(ILanguageService languageService, IList<TLocalizedModelLocal> locales) where TLocalizedModelLocal : ILocalizedModelLocal
         {
             AddLocales(languageService, locales, null);
         }

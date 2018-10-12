@@ -8,7 +8,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
-	public class RequestCache : IRequestCache
+	public class RequestCache : DisposableObject, IRequestCache
 	{
 		const string RegionName = "SmartStoreNET:";
 
@@ -123,6 +123,12 @@ namespace SmartStore.Core.Caching
 		private string BuildKey(string key)
 		{
 			return RegionName + key.EmptyNull();
+		}
+
+		protected override void OnDispose(bool disposing)
+		{
+			if (disposing)
+				Clear();
 		}
 	}
 }

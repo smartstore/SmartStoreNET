@@ -14,13 +14,15 @@ namespace SmartStore.Web.Framework.UI
 	public class WidgetProvider : IWidgetProvider
 	{
 		private readonly IApplicationEnvironment _env;
+		private readonly HttpRequestBase _httpRequest;
 
 		private Multimap<string, WidgetRouteInfo> _zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
 		private Multimap<Regex, WidgetRouteInfo> _zoneExpressionWidgetsMap = new Multimap<Regex, WidgetRouteInfo>();
 
-		public WidgetProvider(IApplicationEnvironment env)
+		public WidgetProvider(IApplicationEnvironment env, HttpRequestBase httpRequest)
 		{
 			_env = env;
+			_httpRequest = httpRequest;
 		}
 
 		public void RegisterAction(string[] widgetZones, string actionName, string controllerName, RouteValueDictionary routeValues, int order = 0)
@@ -28,6 +30,11 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotNull(widgetZones, nameof(widgetZones));
 			Guard.NotEmpty(actionName, nameof(actionName));
 			Guard.NotEmpty(controllerName, nameof(controllerName));
+
+			if (_httpRequest.QueryString["nowidgets"] != null)
+			{
+				return;
+			}
 
 			if (_zoneWidgetsMap == null)
 			{
@@ -54,6 +61,11 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotNull(widgetZoneExpression, nameof(widgetZoneExpression));
 			Guard.NotEmpty(actionName, nameof(actionName));
 			Guard.NotEmpty(controllerName, nameof(controllerName));
+
+			if (_httpRequest.QueryString["nowidgets"] != null)
+			{
+				return;
+			}
 
 			if (_zoneExpressionWidgetsMap == null)
 			{

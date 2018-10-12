@@ -37,6 +37,7 @@ namespace SmartStore.Web.Framework.UI
 		public ButtonStyle ButtonStyle { get; set; }
 		public bool ButtonOutlineStyle { get; set; }
 		public bool ShowRemoveButton { get; set; }
+		public bool Compact { get; set; }
 
 		public string CancelText { get; set; }
 		public string RemoveText { get; set; }

@@ -1768,6 +1768,7 @@
     <Content Include="Views\Boards\Partials\SearchHits.cshtml" />
     <Content Include="Views\Shared\Partials\Customer.Avatar.cshtml" />
     <Content Include="Views\Shared\Layouts\_Layout.Bare.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Range.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

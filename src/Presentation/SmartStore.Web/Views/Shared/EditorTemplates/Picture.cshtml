@@ -23,6 +23,14 @@
 			return true;
 		}
 	}
+
+	private bool Compact
+	{
+		get
+		{
+			return ViewData["compact"].Convert<bool?>() == true;
+		}
+	}
 }
 
 @{
@@ -46,6 +54,7 @@
 			.AcceptedFileTypes("gif|jpe?g|png")
 			.ShowRemoveButton(picture != null)
 			.ShowRemoveButtonAfterUpload(true)
+			.Compact(ViewData["compact"].Convert<bool?>() == true)
 			.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
 		)
 	</div>

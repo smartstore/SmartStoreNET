@@ -28,8 +28,8 @@ namespace SmartStore.Web.Framework.Theming
 
 			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|js|cshtml|svg|json|liquid)(\?explicit)*$".FormatInvariant(ThemesBasePath);
 			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-			s_themeVarsPattern = new Regex(@"\.(db|app)/themevars(.scss)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-			s_moduleImportsPattern = new Regex(@"\.app/moduleimports.scss$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_themeVarsPattern = new Regex(@"\.(db|app)/[_]?themevars(.scss)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_moduleImportsPattern = new Regex(@"\.app/[_]?moduleimports.scss", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_extensionlessPathPattern = new Regex(@"~/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 		}
 
@@ -114,7 +114,7 @@ namespace SmartStore.Web.Framework.Theming
 			return HttpContext.Current?.Request?.QueryString["validate"] != null;
 		}
 
-		internal static IsStyleSheetResult IsStyleSheet(string path)
+		internal static StyleSheetResult IsStyleSheet(string path)
 		{
 			var extension = Path.GetExtension(path).ToLowerInvariant();
 
@@ -125,14 +125,20 @@ namespace SmartStore.Web.Framework.Theming
 			}
 			else if (extension == ".css")
 			{
-				return new IsStyleSheetResult { Path = path, IsCss = true };
+				return new StyleSheetResult { Path = path, IsCss = true, Extension = extension };
 			}
-			else if (extension == ".scss")
+			else if (extension == ".scss" || extension == ".sass")
 			{
-				return new IsStyleSheetResult { Path = path, IsSass = true };
+				return new StyleSheetResult { Path = path, IsSass = true, Extension = extension };
 			}
 			else if (extension.IsEmpty())
 			{
+				if (path.Contains("/scss/"))
+				{
+					// Bootstrap and other libaries may import SASS files without extension
+					return new StyleSheetResult { Path = path, IsSass = true };
+				}
+				
 				// StyleBundles are  extension-less, so we have to ask 'BundleTable' 
 				// if a style bundle has been registered for the given path.
 				if (s_extensionlessPathPattern.IsMatch(path))
@@ -140,18 +146,20 @@ namespace SmartStore.Web.Framework.Theming
 					var bundle = BundleTable.Bundles.GetBundleFor(path);
 					if (bundle != null && ((bundle is SmartStyleBundle || bundle is StyleBundle)))
 					{
-						return new IsStyleSheetResult { Path = path, IsBundle = true };
+						return new StyleSheetResult { Path = path, IsBundle = true };
 					}
 				}
 			}
-			else if (extension.EndsWith("?explicit"))
+			else if (extension.Contains("?explicit"))
 			{
 				// Handle virtual Sass imports with '?explicit' query
 				// TBD: (mc) other query params could exist
 
 				// Process again, this time without query
 				var pathWithoutQuery = path.Substring(0, path.IndexOf('?'));
-				return IsStyleSheet(pathWithoutQuery);
+				var result = IsStyleSheet(pathWithoutQuery);
+				result.IsExplicit = true;
+				return result;
 			}
 
 			return null;
@@ -187,41 +195,30 @@ namespace SmartStore.Web.Framework.Theming
 			// strip out query
 			return "{0}{1}/{2}".FormatCurrent(ThemesBasePath, themeName, relativePath);
 		}
+	}
 
-		internal class IsStyleSheetResult
+	internal class StyleSheetResult
+	{
+		public string Path { get; set; }
+		public string Extension { get; set; }
+		public bool IsCss { get; set; }
+		public bool IsSass { get; set; }
+		public bool IsBundle { get; set; }
+		public bool IsExplicit { get; set; }
+
+		public bool IsPreprocessor
 		{
-			public string Path { get; set; }
-			public bool IsCss { get; set; }
-			public bool IsSass { get; set; }
-			public bool IsBundle { get; set; }
+			get { return IsSass; }
+		}
 
-			public string Extension
-			{
-				get
-				{
-					if (IsSass)
-						return ".scss";
-					else if (IsBundle)
-						return "";
+		public bool IsThemeVars
+		{
+			get { return IsPreprocessor && ThemeHelper.PathIsThemeVars(Path); }
+		}
 
-					return ".css";
-				}
-			}
-
-			public bool IsPreprocessor
-			{
-				get { return IsSass; }
-			}
-
-			public bool IsThemeVars
-			{
-				get { return IsPreprocessor && ThemeHelper.PathIsThemeVars(Path); }
-			}
-
-			public bool IsModuleImports
-			{
-				get { return IsSass && ThemeHelper.PathIsModuleImports(Path); }
-			}
+		public bool IsModuleImports
+		{
+			get { return IsSass && ThemeHelper.PathIsModuleImports(Path); }
 		}
 	}
 }

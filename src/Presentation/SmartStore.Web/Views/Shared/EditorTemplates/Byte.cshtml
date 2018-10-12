@@ -44,6 +44,7 @@
 			.EmptyMessage(T("Common.EnterValue"))
 			.MinValue(0)
 			.MaxValue(255)
+			.IncrementStep(ViewData["step"].Convert<byte?>() ?? 1)
 			.Value(Value)
 	)
 

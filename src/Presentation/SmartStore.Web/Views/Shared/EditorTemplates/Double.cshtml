@@ -43,6 +43,9 @@
 			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
 			.EmptyMessage(T("Common.EnterValue"))
 			.Value(Value)
+			.MinValue(ViewData["min"].Convert<double?>())
+			.MaxValue(ViewData["max"].Convert<double?>())
+			.IncrementStep(ViewData["step"].Convert<double?>() ?? 1)
 			.DecimalDigits(4)   //always display 4 digits
 	)
 

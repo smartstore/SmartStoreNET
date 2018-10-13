@@ -20,7 +20,9 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Search.Rendering;
+using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -41,6 +43,9 @@ namespace SmartStore.Web.Controllers
         private readonly ICountryService _countryService;
         private readonly IForumSearchService _forumSearchService;
         private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IStoreMappingService _storeMappingService;
+        private readonly IAclService _aclService;
+        private readonly ICustomerContentService _customerContentService;
         private readonly ForumSettings _forumSettings;
         private readonly ForumSearchSettings _searchSettings;
         private readonly CustomerSettings _customerSettings;
@@ -57,6 +62,9 @@ namespace SmartStore.Web.Controllers
             ICountryService countryService,
             IForumSearchService forumSearchService,
             IGenericAttributeService genericAttributeService,
+            IStoreMappingService storeMappingService,
+            IAclService aclService,
+            ICustomerContentService customerContentService,
             ForumSettings forumSettings,
             ForumSearchSettings searchSettings,
             CustomerSettings customerSettings,
@@ -72,6 +80,9 @@ namespace SmartStore.Web.Controllers
             _countryService = countryService;
             _forumSearchService = forumSearchService;
             _genericAttributeService = genericAttributeService;
+            _storeMappingService = storeMappingService;
+            _aclService = aclService;
+            _customerContentService = customerContentService;
             _forumSettings = forumSettings;
             _searchSettings = searchSettings;
             _customerSettings = customerSettings;
@@ -95,6 +106,7 @@ namespace SmartStore.Web.Controllers
             var model = new ForumTopicRowModel
             {
                 Id = topic.Id,
+                Published = topic.Published,
                 Subject = topic.Subject,
                 SeName = topic.GetSeName(),
                 FirstPostId = firstPost?.Id ?? topic.FirstPostId,
@@ -141,19 +153,17 @@ namespace SmartStore.Web.Controllers
             return forumModel;
         }
 
-        private ForumGroupModel PrepareForumGroupModel(ForumGroup forumGroup)
+        private ForumGroupModel PrepareForumGroupModel(ForumGroup group)
         {
             var forumGroupModel = new ForumGroupModel
             {
-                Id = forumGroup.Id,
-                Name = forumGroup.GetLocalized(x => x.Name),
-                Description = forumGroup.GetLocalized(x => x.Description),
-				SeName = forumGroup.GetSeName()
+                Id = group.Id,
+                Name = group.GetLocalized(x => x.Name),
+                Description = group.GetLocalized(x => x.Description),
+				SeName = group.GetSeName()
             };
 
-            var forums = _forumService.GetAllForumsByGroupId(forumGroup.Id);
-
-            var lastPostIds = forums
+            var lastPostIds = group.Forums
                 .Where(x => x.LastPostId != 0)
                 .Select(x => x.LastPostId)
                 .Distinct()
@@ -161,7 +171,7 @@ namespace SmartStore.Web.Controllers
 
             var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
 
-            foreach (var forum in forums)
+            foreach (var forum in group.Forums.OrderBy(x => x.DisplayOrder))
             {
                 var forumModel = PrepareForumRowModel(forum, lastPosts);
                 forumModel.LastPost.ShowTopic = true;
@@ -184,6 +194,7 @@ namespace SmartStore.Web.Controllers
                 model.AllowViewingProfiles = _customerSettings.AllowViewingProfiles;
                 model.CustomerName = post.Customer.FormatUserName(true);
                 model.IsCustomerGuest = post.Customer.IsGuest();
+                model.Published = post.Published;
 
                 model.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
                     ? post.CreatedOnUtc.RelativeFormat(true, "f")
@@ -216,28 +227,6 @@ namespace SmartStore.Web.Controllers
             return list;
         }
 
-        private IEnumerable<SelectListItem> ForumGroupsForumsList()
-        {
-            var forumsList = new List<SelectListItem>();
-            var separator = "--";
-            var store = Services.StoreContext.CurrentStore;
-            var forumGroups = _forumService.GetAllForumGroups(store.Id);
-
-            foreach (var fg in forumGroups)
-            {
-                // Add the forum group with Value of 0 so it won't be used as a target forum.
-                forumsList.Add(new SelectListItem { Text = fg.GetLocalized(x => x.Name), Value = "0" });
-
-                var forums = _forumService.GetAllForumsByGroupId(fg.Id);
-                foreach (var f in forums)
-                {
-                    forumsList.Add(new SelectListItem { Text = string.Format("{0}{1}", separator, f.GetLocalized(x => x.Name)), Value = f.Id.ToString() });
-                }
-            }
-
-            return forumsList;
-        }
-
 		private void CreateForumBreadcrumb(ForumGroup group = null, Forum forum = null, ForumTopic topic = null)
 		{
 			_breadcrumb.Track(new MenuItem
@@ -262,7 +251,7 @@ namespace SmartStore.Web.Controllers
 			forum = forum ?? topic?.Forum;
 			if (forum != null)
 			{
-				var forumName = group.GetLocalized(x => x.Name);
+				var forumName = forum.GetLocalized(x => x.Name);
 				_breadcrumb.Track(new MenuItem
 				{
 					Text = forumName,
@@ -301,6 +290,28 @@ namespace SmartStore.Web.Controllers
             }
         }
 
+        private bool IsTopicVisible(ForumTopic topic, Customer customer)
+        {
+            if (topic == null)
+            {
+                return false;
+            }
+            if (!topic.Published && topic.CustomerId != customer.Id && !customer.IsForumModerator())
+            {
+                return false;
+            }
+            if (!_storeMappingService.Authorize(topic.Forum.ForumGroup))
+            {
+                return false;
+            }
+            if (!_aclService.Authorize(topic.Forum.ForumGroup))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Forum group
@@ -313,17 +324,17 @@ namespace SmartStore.Web.Controllers
             }
 
             var store = Services.StoreContext.CurrentStore;
-            var forumGroups = _forumService.GetAllForumGroups(store.Id);
+            var groups = _forumService.GetAllForumGroups(store.Id);
 
             var model = new BoardsIndexModel
             {
                 CurrentTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow)
             };
 
-            foreach (var forumGroup in forumGroups)
+            foreach (var group in groups)
             {
-                var forumGroupModel = PrepareForumGroupModel(forumGroup);
-                model.ForumGroups.Add(forumGroupModel);
+                var groupModel = PrepareForumGroupModel(group);
+                model.ForumGroups.Add(groupModel);
             }
 
             return View(model);
@@ -336,14 +347,14 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
             }
 
-            var forumGroup = _forumService.GetForumGroupById(id);
-            if (forumGroup == null)
+            var group = _forumService.GetForumGroupById(id);
+            if (group == null || !_storeMappingService.Authorize(group) || !_aclService.Authorize(group))
             {
                 return HttpNotFound();
             }
 
-            var model = PrepareForumGroupModel(forumGroup);
-			CreateForumBreadcrumb(group: forumGroup);
+            var model = PrepareForumGroupModel(group);
+			CreateForumBreadcrumb(group: group);
 
 			return View(model);
         }
@@ -356,21 +367,32 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             var customer = Services.WorkContext.CurrentCustomer;
             var forum = _forumService.GetForumById(id);
-            if (forum == null)
+            if (forum == null || !_storeMappingService.Authorize(forum.ForumGroup) || !_aclService.Authorize(forum.ForumGroup))
             {
                 return HttpNotFound();
             }
 
-            var model = new ForumPageModel();
-            model.Id = forum.Id;
-            model.Name = forum.GetLocalized(x => x.Name);
-            model.SeName = forum.GetSeName();
-            model.Description = forum.GetLocalized(x => x.Description);
+            var pageSize = _forumSettings.TopicsPageSize > 0 ? _forumSettings.TopicsPageSize : 20;
+            var topics = _forumService.GetAllTopics(forum.Id, page - 1, pageSize);
+
+            var model = new ForumPageModel
+            {
+                Id = forum.Id,
+                Name = forum.GetLocalized(x => x.Name),
+                SeName = forum.GetSeName(),
+                Description = forum.GetLocalized(x => x.Description),
+                TopicPageSize = topics.PageSize,
+                TopicTotalRecords = topics.TotalCount,
+                TopicPageIndex = topics.PageIndex,
+                IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer),
+                ForumFeedsEnabled = _forumSettings.ForumFeedsEnabled,
+                PostsPageSize = _forumSettings.PostsPageSize
+            };
 
             // Subscription.
             if (_forumService.IsCustomerAllowedToSubscribe(customer))
@@ -385,15 +407,11 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            var pageSize = _forumSettings.TopicsPageSize > 0 ? _forumSettings.TopicsPageSize : 10;
-            var topics = _forumService.GetAllTopics(forum.Id, (page - 1), pageSize);
-
             var lastPostIds = topics
                 .Where(x => x.LastPostId != 0)
                 .Select(x => x.LastPostId)
                 .Distinct()
                 .ToArray();
-
             var lastPosts = _forumService.GetPostsByIds(lastPostIds).ToDictionary(x => x.Id);
 
             foreach (var topic in topics)
@@ -401,13 +419,6 @@ namespace SmartStore.Web.Controllers
                 var topicModel = PrepareForumTopicRowModel(topic, lastPosts);
                 model.ForumTopics.Add(topicModel);
             }
-
-            model.TopicPageSize = topics.PageSize;
-            model.TopicTotalRecords = topics.TotalCount;
-            model.TopicPageIndex = topics.PageIndex;
-            model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
-            model.ForumFeedsEnabled = _forumSettings.ForumFeedsEnabled;
-            model.PostsPageSize = _forumSettings.PostsPageSize;
 
 			CreateForumBreadcrumb(forum: forum);
             SaveLastForumVisit(customer);
@@ -439,12 +450,12 @@ namespace SmartStore.Web.Controllers
             }
 
 			var forum = _forumService.GetForumById(id);
-            if (forum == null)
+            if (forum == null || !_storeMappingService.Authorize(forum.ForumGroup) || !_aclService.Authorize(forum.ForumGroup))
             {
                 return new RssActionResult { Feed = feed };
             }
 
-			feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(store.Name, forum.GetLocalized(x => x.Name, language)));
+            feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(store.Name, forum.GetLocalized(x => x.Name, language)));
 
 			var items = new List<SyndicationItem>();
 			var topics = _forumService.GetAllTopics(id, 0, _forumSettings.ForumFeedCount);
@@ -473,20 +484,18 @@ namespace SmartStore.Web.Controllers
             var customer = Services.WorkContext.CurrentCustomer;
             var forum = _forumService.GetForumById(id);
 
-            if (forum == null)
+            if (forum == null || 
+                !_storeMappingService.Authorize(forum.ForumGroup) ||
+                !_aclService.Authorize(forum.ForumGroup) ||
+                !_forumService.IsCustomerAllowedToSubscribe(customer))
             {
                 return Json(new { Subscribed = subscribed, Text = returnText, Error = true });
             }
 
-            if (!_forumService.IsCustomerAllowedToSubscribe(customer))
+            var subscription = _forumService.GetAllSubscriptions(customer.Id, forum.Id, 0, 0, 1).FirstOrDefault();
+            if (subscription == null)
             {
-                return Json(new { Subscribed = subscribed, Text = returnText, Error = true });
-            }
-
-            var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, forum.Id, 0, 0, 1).FirstOrDefault();
-            if (forumSubscription == null)
-            {
-                forumSubscription = new ForumSubscription
+                subscription = new ForumSubscription
                 {
                     SubscriptionGuid = Guid.NewGuid(),
                     CustomerId = customer.Id,
@@ -494,13 +503,13 @@ namespace SmartStore.Web.Controllers
                     CreatedOnUtc = DateTime.UtcNow
                 };
 
-                _forumService.InsertSubscription(forumSubscription);
+                _forumService.InsertSubscription(subscription);
                 subscribed = true;
                 returnText = T("Forum.UnwatchForum");
             }
             else
             {
-                _forumService.DeleteSubscription(forumSubscription);
+                _forumService.DeleteSubscription(subscription);
                 subscribed = false;
             }
 
@@ -634,107 +643,123 @@ namespace SmartStore.Web.Controllers
             }
 
             var customer = Services.WorkContext.CurrentCustomer;
-            var forumTopic = _forumService.GetTopicById(id);
+            var topic = _forumService.GetTopicById(id);
 
-            if (forumTopic != null)
+            if (!IsTopicVisible(topic, customer))
             {
-                var posts = _forumService.GetAllPosts(forumTopic.Id, 0, true, page - 1, _forumSettings.PostsPageSize);
-
-                // If no posts area loaded, redirect to the first page.
-                if (posts.Count == 0 && page > 1)
-                {
-                    return RedirectToRoute("TopicSlug", new { id = forumTopic.Id, slug = forumTopic.GetSeName() });
-                }
-
-                // Update view count.
-                try
-                {
-                    if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
-                    {
-                        forumTopic.Views += 1;
-                        _forumService.UpdateTopic(forumTopic);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-
-                var model = new ForumTopicPageModel();
-                model.Id = forumTopic.Id;
-                model.Subject= forumTopic.Subject;
-                model.SeName = forumTopic.GetSeName();
-                model.IsCustomerAllowedToEditTopic = _forumService.IsCustomerAllowedToEditTopic(customer, forumTopic);
-                model.IsCustomerAllowedToDeleteTopic = _forumService.IsCustomerAllowedToDeleteTopic(customer, forumTopic);
-                model.IsCustomerAllowedToMoveTopic = _forumService.IsCustomerAllowedToMoveTopic(customer, forumTopic);
-                model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
-
-                if (model.IsCustomerAllowedToSubscribe)
-                {
-                    model.WatchTopicText = T("Forum.WatchTopic");
-
-                    var forumTopicSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumTopic.Id, 0, 1).FirstOrDefault();
-                    if (forumTopicSubscription != null)
-                    {
-                        model.WatchTopicText = T("Forum.UnwatchTopic");
-                    }
-                }
-                
-				model.PostsPageIndex = posts.PageIndex;
-                model.PostsPageSize = posts.PageSize;
-                model.PostsTotalRecords = posts.TotalCount;
-
-                foreach (var post in posts)
-                {
-                    var forumPostModel = new ForumPostModel
-                    {
-                        Id = post.Id,
-                        ForumTopicId =  post.TopicId,
-                        ForumTopicSeName = forumTopic.GetSeName(),
-                        FormattedText = post.FormatPostText(),
-                        IsCurrentCustomerAllowedToEditPost = _forumService.IsCustomerAllowedToEditPost(customer, post),
-                        IsCurrentCustomerAllowedToDeletePost = _forumService.IsCustomerAllowedToDeletePost(customer, post),
-                        CustomerId = post.CustomerId,
-                        AllowViewingProfiles = _customerSettings.AllowViewingProfiles,
-                        CustomerName = post.Customer.FormatUserName(_customerSettings, T, false),
-                        IsCustomerForumModerator = post.Customer.IsForumModerator(),
-                        IsCustomerGuest= post.Customer.IsGuest(),
-                        ShowCustomersPostCount = _forumSettings.ShowCustomersPostCount,
-                        ForumPostCount = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount),
-                        ShowCustomersJoinDate = _customerSettings.ShowCustomersJoinDate,
-                        CustomerJoinDate = post.Customer.CreatedOnUtc,
-                        AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
-                        SignaturesEnabled = _forumSettings.SignaturesEnabled,
-                        FormattedSignature = post.Customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature).FormatForumSignatureText(),
-                    };
-
-                    forumPostModel.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
-                        ? post.CreatedOnUtc.RelativeFormat(true, "f")
-                        : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
-
-                    forumPostModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, forumPostModel.CustomerName, true);
-
-                    // Location.
-                    forumPostModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
-                    if (_customerSettings.ShowCustomersLocation)
-                    {
-                        var countryId = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
-                        var country = _countryService.GetCountryById(countryId);
-                        forumPostModel.CustomerLocation = country != null ? country.GetLocalized(x => x.Name) : string.Empty;
-                    }
-
-                    // Page number is needed for creating post link in _ForumPost partial view.
-                    forumPostModel.CurrentTopicPage = page;
-                    model.ForumPostModels.Add(forumPostModel);
-                }
-
-				CreateForumBreadcrumb(topic: forumTopic);
-                SaveLastForumVisit(customer);
-
-                return View(model);
+                return HttpNotFound();
             }
 
-            return RedirectToRoute("Boards");
+            var posts = _forumService.GetAllPosts(topic.Id, 0, true, page - 1, _forumSettings.PostsPageSize);
+
+            // If no posts area loaded, redirect to the first page.
+            if (posts.Count == 0 && page > 1)
+            {
+                return RedirectToRoute("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() });
+            }
+
+            // Update view count.
+            try
+            {
+                if (!customer.Deleted && customer.Active && !customer.IsSystemAccount)
+                {
+                    topic.Views += 1;
+                    _forumService.UpdateTopic(topic, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            var model = new ForumTopicPageModel
+            {
+                Id = topic.Id,
+                Subject = topic.Subject,
+                SeName = topic.GetSeName(),
+                IsCustomerAllowedToEditTopic = _forumService.IsCustomerAllowedToEditTopic(customer, topic),
+                IsCustomerAllowedToDeleteTopic = _forumService.IsCustomerAllowedToDeleteTopic(customer, topic),
+                IsCustomerAllowedToMoveTopic = _forumService.IsCustomerAllowedToMoveTopic(customer, topic),
+                IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer),
+                PostsPageIndex = posts.PageIndex,
+                PostsPageSize = posts.PageSize,
+                PostsTotalRecords = posts.TotalCount
+            };
+
+            if (model.IsCustomerAllowedToSubscribe)
+            {
+                model.WatchTopicText = T("Forum.WatchTopic");
+
+                var forumTopicSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, topic.Id, 0, 1).FirstOrDefault();
+                if (forumTopicSubscription != null)
+                {
+                    model.WatchTopicText = T("Forum.UnwatchTopic");
+                }
+            }
+                
+            foreach (var post in posts)
+            {
+                var postModel = new ForumPostModel
+                {
+                    Id = post.Id,
+                    Published = post.Published,
+                    ForumTopicId =  post.TopicId,
+                    ForumTopicSeName = topic.GetSeName(),
+                    FormattedText = post.FormatPostText(),
+                    IsCurrentCustomerAllowedToEditPost = _forumService.IsCustomerAllowedToEditPost(customer, post),
+                    IsCurrentCustomerAllowedToDeletePost = _forumService.IsCustomerAllowedToDeletePost(customer, post),
+                    CustomerId = post.CustomerId,
+                    AllowViewingProfiles = _customerSettings.AllowViewingProfiles,
+                    CustomerName = post.Customer.FormatUserName(_customerSettings, T, false),
+                    IsCustomerForumModerator = post.Customer.IsForumModerator(),
+                    IsCustomerGuest= post.Customer.IsGuest(),
+                    ShowCustomersPostCount = _forumSettings.ShowCustomersPostCount,
+                    ForumPostCount = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount),
+                    ShowCustomersJoinDate = _customerSettings.ShowCustomersJoinDate,
+                    CustomerJoinDate = post.Customer.CreatedOnUtc,
+                    AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
+                    SignaturesEnabled = _forumSettings.SignaturesEnabled,
+                    FormattedSignature = post.Customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature).FormatForumSignatureText(),
+                    AllowVoting = _forumSettings.AllowCustomersToVoteOnPosts && post.CustomerId != customer.Id
+                };
+
+                if (postModel.AllowVoting)
+                {
+                    if (!_forumSettings.AllowGuestsToVoteOnPosts && customer.IsGuest())
+                    {
+                        postModel.AllowVoting = false;
+                    }
+                    else
+                    {
+                        postModel.Vote = post.ForumPostVotes.FirstOrDefault(x => x.CustomerId == customer.Id)?.Vote ?? false;
+                        postModel.VoteCount = post.ForumPostVotes.Count;
+                    }
+                }
+
+                postModel.PostCreatedOnStr = _forumSettings.RelativeDateTimeFormattingEnabled
+                    ? post.CreatedOnUtc.RelativeFormat(true, "f")
+                    : _dateTimeHelper.ConvertToUserTime(post.CreatedOnUtc, DateTimeKind.Utc).ToString("f");
+
+                postModel.Avatar = post.Customer.ToAvatarModel(_genericAttributeService, _pictureService, _customerSettings, _mediaSettings, Url, postModel.CustomerName, true);
+
+                // Location.
+                postModel.ShowCustomersLocation = _customerSettings.ShowCustomersLocation;
+                if (_customerSettings.ShowCustomersLocation)
+                {
+                    var countryId = post.Customer.GetAttribute<int>(SystemCustomerAttributeNames.CountryId);
+                    var country = _countryService.GetCountryById(countryId);
+                    postModel.CustomerLocation = country != null ? country.GetLocalized(x => x.Name) : string.Empty;
+                }
+
+                // Page number is needed for creating post link in _ForumPost partial view.
+                postModel.CurrentTopicPage = page;
+                model.ForumPostModels.Add(postModel);
+            }
+
+			CreateForumBreadcrumb(topic: topic);
+            SaveLastForumVisit(customer);
+
+            return View(model);
         }
 
         [HttpPost]
@@ -743,37 +768,31 @@ namespace SmartStore.Web.Controllers
             var subscribed = false;
             var returnText = T("Forum.WatchTopic").Text;
             var customer = Services.WorkContext.CurrentCustomer;
-            var forumTopic = _forumService.GetTopicById(id);
+            var topic = _forumService.GetTopicById(id);
 
-            if (forumTopic == null)
+            if (!IsTopicVisible(topic, customer) || !_forumService.IsCustomerAllowedToSubscribe(customer))
             {
                 return Json(new { Subscribed = subscribed, Text = returnText, Error = true });
             }
 
-            if (!_forumService.IsCustomerAllowedToSubscribe(customer))
+            var subscription = _forumService.GetAllSubscriptions(customer.Id, 0, topic.Id, 0, 1).FirstOrDefault();
+            if (subscription == null)
             {
-                return Json(new { Subscribed = subscribed, Text = returnText, Error = true });
-            }
-
-            var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumTopic.Id, 0, 1).FirstOrDefault();
-
-            if (forumSubscription == null)
-            {
-                forumSubscription = new ForumSubscription
+                subscription = new ForumSubscription
                 {
                     SubscriptionGuid = Guid.NewGuid(),
                     CustomerId = customer.Id,
-                    TopicId = forumTopic.Id,
+                    TopicId = topic.Id,
                     CreatedOnUtc = DateTime.UtcNow
                 };
 
-                _forumService.InsertSubscription(forumSubscription);
+                _forumService.InsertSubscription(subscription);
                 subscribed = true;
                 returnText = T("Forum.UnwatchTopic");
             }
             else
             {
-                _forumService.DeleteSubscription(forumSubscription);
+                _forumService.DeleteSubscription(subscription);
                 subscribed = false;
             }
 
@@ -784,23 +803,49 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
-            var forumTopic = _forumService.GetTopicById(id);
+            var customer = Services.WorkContext.CurrentCustomer;
+            var topic = _forumService.GetTopicById(id);
 
-            if (forumTopic == null)
+            if (!IsTopicVisible(topic, customer))
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
-            var model = new TopicMoveModel();
-            model.ForumList = ForumGroupsForumsList();
-            model.Id = forumTopic.Id;
-            model.TopicSeName = forumTopic.GetSeName();
-            model.ForumSelected = forumTopic.ForumId;
+            var model = new TopicMoveModel
+            {
+                Id = topic.Id,
+                TopicSeName = topic.GetSeName(),
+                ForumSelected = topic.ForumId,
+                CustomerId = topic.CustomerId,
+                IsCustomerAllowedToEdit = _forumService.IsCustomerAllowedToMoveTopic(customer, topic)
+            };
 
-			CreateForumBreadcrumb(topic: forumTopic);
+            if (!model.IsCustomerAllowedToEdit && customer.Id != topic.CustomerId)
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            // Forums select box.
+            model.Forums = new List<SelectListItem>();
+            var groups = _forumService.GetAllForumGroups(Services.StoreContext.CurrentStore.Id);
+            foreach (var group in groups)
+            {
+                var optGroup = new SelectListGroup { Name = group.GetLocalized(x => x.Name) };
+                foreach (var forum in group.Forums.OrderBy(x => x.DisplayOrder))
+                {
+                    model.Forums.Add(new SelectListItem
+                    {
+                        Text = forum.GetLocalized(x => x.Name),
+                        Value = forum.Id.ToString(),
+                        Group = optGroup
+                    });
+                }
+            }
+
+            CreateForumBreadcrumb(topic: topic);
 
 			return View(model);
         }
@@ -810,58 +855,67 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-                return RedirectToRoute("HomePage");
-            }
-
-            var forumTopic = _forumService.GetTopicById(model.Id);
-            if (forumTopic == null)
-            {
-                return RedirectToRoute("Boards");
-            }
-
-            var newForumId = model.ForumSelected;
-            var forum = _forumService.GetForumById(newForumId);
-
-            if (forum != null && forumTopic.ForumId != newForumId)
-            {
-                _forumService.MoveTopic(forumTopic.Id, newForumId);
-            }
-
-            return RedirectToRoute("TopicSlug", new { id = forumTopic.Id, slug = forumTopic.GetSeName() });
-        }
-
-		[GdprConsent]
-		public ActionResult TopicCreate(int id)
-        {
-            if (!_forumSettings.ForumsEnabled)
-            {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             var customer = Services.WorkContext.CurrentCustomer;
-            var forum = _forumService.GetForumById(id);
-            if (forum == null)
-            {
-				return HttpNotFound();
-            }
+            var topic = _forumService.GetTopicById(model.Id);
 
-            if (_forumService.IsCustomerAllowedToCreateTopic(customer, forum) == false)
+            if (!IsTopicVisible(topic, customer))
+            {
+                return HttpNotFound();
+            }
+            if (!_forumService.IsCustomerAllowedToMoveTopic(customer, topic))
             {
                 return new HttpUnauthorizedResult();
             }
 
-            var model = new EditForumTopicModel();
-            model.Id = 0;
-            model.IsEdit = false;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
-            model.ForumId = forum.Id;
-            model.ForumName = forum.GetLocalized(x => x.Name);
-            model.ForumSeName = forum.GetSeName();
-            model.ForumEditor = _forumSettings.ForumEditor;
-            model.IsCustomerAllowedToSetTopicPriority = _forumService.IsCustomerAllowedToSetTopicPriority(customer);
-            model.TopicPriorities = ForumTopicTypesList();
-            model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
-            model.Subscribed = false;
+            var newForumId = model.ForumSelected;
+            var forum = _forumService.GetForumById(newForumId);
+            if (forum != null && topic.ForumId != newForumId)
+            {
+                _forumService.MoveTopic(topic.Id, newForumId);
+            }
+
+            return RedirectToRoute("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() });
+        }
+
+        [GdprConsent]
+        public ActionResult TopicCreate(int id)
+        {
+            if (!_forumSettings.ForumsEnabled)
+            {
+                return HttpNotFound();
+            }
+
+            var customer = Services.WorkContext.CurrentCustomer;
+            var forum = _forumService.GetForumById(id);
+
+            if (forum == null || !_storeMappingService.Authorize(forum.ForumGroup) || !_aclService.Authorize(forum.ForumGroup))
+            {
+                return HttpNotFound();
+            }
+            if (!_forumService.IsCustomerAllowedToCreateTopic(customer, forum))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            var model = new EditForumTopicModel
+            {
+                Id = 0,
+                IsEdit = false,
+                Published = true,
+                SeName = string.Empty,
+                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                ForumId = forum.Id,
+                ForumName = forum.GetLocalized(x => x.Name),
+                ForumSeName = forum.GetSeName(),
+                ForumEditor = _forumSettings.ForumEditor,
+                IsModerator = customer.IsForumModerator(),
+                TopicPriorities = ForumTopicTypesList(),
+                IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer),
+                Subscribed = false,
+            };
 
 			CreateForumBreadcrumb(forum: forum);
 
@@ -879,74 +933,66 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
             }
 
+            var customer = Services.WorkContext.CurrentCustomer;
+            var forum = _forumService.GetForumById(model.ForumId);
+            if (forum == null || !_storeMappingService.Authorize(forum.ForumGroup) || !_aclService.Authorize(forum.ForumGroup))
+            {
+                return HttpNotFound();
+            }
+            if (!_forumService.IsCustomerAllowedToCreateTopic(customer, forum))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
-            }
-
-            var customer = Services.WorkContext.CurrentCustomer;
-            var forum = _forumService.GetForumById(model.ForumId);
-            if (forum == null)
-            {
-                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (!_forumService.IsCustomerAllowedToCreateTopic(customer, forum))
-                    {
-                        return new HttpUnauthorizedResult();
-                    }
-
-                    var subject = model.Subject;
-                    var maxSubjectLength = _forumSettings.TopicSubjectMaxLength;
-                    if (maxSubjectLength > 0 && subject.Length > maxSubjectLength)
-                    {
-                        subject = subject.Substring(0, maxSubjectLength);
-                    }
-
-                    var text = model.Text;
-                    var maxPostLength = _forumSettings.PostMaxLength;
-                    if (maxPostLength > 0 && text.Length > maxPostLength)
-                    {
-                        text = text.Substring(0, maxPostLength);
-                    }
-
-                    var topicType = ForumTopicType.Normal;
-					var utcNow = DateTime.UtcNow;
-                    var ipAddress = Services.WebHelper.GetCurrentIpAddress();
-
-                    if (_forumService.IsCustomerAllowedToSetTopicPriority(customer))
-                    {
-                        topicType = (ForumTopicType)Enum.ToObject(typeof (ForumTopicType), model.TopicTypeId);
-                    }
-
-                    var forumTopic = new ForumTopic
+                    var topic = new ForumTopic
                     {
                         ForumId = forum.Id,
                         CustomerId = customer.Id,
-                        TopicTypeId = (int) topicType,
-                        Subject = subject
+                        Published = true,
+                        TopicTypeId = (int)ForumTopicType.Normal
                     };
-                    _forumService.InsertTopic(forumTopic, true);
 
-                    var forumPost = new ForumPost
+                    if (customer.IsForumModerator())
                     {
-                        TopicId = forumTopic.Id,
+                        topic.Published = model.Published;
+                        topic.TopicTypeId = model.TopicTypeId;
+                    }
+
+                    topic.Subject = _forumSettings.TopicSubjectMaxLength > 0 && model.Subject.Length > _forumSettings.TopicSubjectMaxLength
+                        ? model.Subject.Substring(0, _forumSettings.TopicSubjectMaxLength)
+                        : model.Subject;
+
+                    _forumService.InsertTopic(topic, true);
+
+                    var post = new ForumPost
+                    {
+                        TopicId = topic.Id,
                         CustomerId = customer.Id,
-                        Text = text,
-                        IPAddress = ipAddress,
+                        IPAddress = Services.WebHelper.GetCurrentIpAddress(),
+                        Published = true
                     };
-                    _forumService.InsertPost(forumPost, false);
 
-                    forumTopic.NumPosts = 1;
-                    forumTopic.LastPostId = forumPost.Id;
-                    forumTopic.LastPostCustomerId = forumPost.CustomerId;
-                    forumTopic.LastPostTime = forumPost.CreatedOnUtc;
+                    post.Text = _forumSettings.PostMaxLength > 0 && model.Text.Length > _forumSettings.PostMaxLength
+                        ? model.Text.Substring(0, _forumSettings.PostMaxLength)
+                        : model.Text;
 
-                    _forumService.UpdateTopic(forumTopic);
+                    _forumService.InsertPost(post, false);
+
+                    topic.NumPosts = topic.Published ? 1 : 0;
+                    topic.LastPostId = post.Id;
+                    topic.LastPostCustomerId = post.CustomerId;
+                    topic.LastPostTime = post.CreatedOnUtc;
+
+                    _forumService.UpdateTopic(topic, false);
 
                     // Subscription.
                     if (_forumService.IsCustomerAllowedToSubscribe(customer))
@@ -957,15 +1003,15 @@ namespace SmartStore.Web.Controllers
                             {
                                 SubscriptionGuid = Guid.NewGuid(),
                                 CustomerId = customer.Id,
-                                TopicId = forumTopic.Id,
-                                CreatedOnUtc = utcNow
+                                TopicId = topic.Id,
+                                CreatedOnUtc = DateTime.UtcNow
                             };
 
                             _forumService.InsertSubscription(forumSubscription);
                         }
                     }
 
-                    return RedirectToRoute("TopicSlug", new {id = forumTopic.Id, slug = forumTopic.GetSeName()});
+                    return RedirectToRoute("TopicSlug", new {id = topic.Id, slug = topic.GetSeName()});
                 }
                 catch (Exception ex)
                 {
@@ -974,14 +1020,14 @@ namespace SmartStore.Web.Controllers
             }
 
             // Redisplay form.
+            model.Id = 0;
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = false;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
             model.ForumId = forum.Id;
             model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
-            model.Id = 0;
-            model.IsCustomerAllowedToSetTopicPriority = _forumService.IsCustomerAllowedToSetTopicPriority(customer);
+            model.IsModerator = customer.IsForumModerator();
             model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
             model.ForumEditor = _forumSettings.ForumEditor;
 
@@ -992,53 +1038,52 @@ namespace SmartStore.Web.Controllers
         {
             if (!_forumSettings.ForumsEnabled)
             {
-				return HttpNotFound();
+                return HttpNotFound();
             }
 
             var customer = Services.WorkContext.CurrentCustomer;
-            var forumTopic = _forumService.GetTopicById(id);
-            if (forumTopic == null)
+            var topic = _forumService.GetTopicById(id);
+
+            if (!IsTopicVisible(topic, customer))
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
 
-            if (!_forumService.IsCustomerAllowedToEditTopic(customer, forumTopic))
+            var firstPost = topic.GetFirstPost(_forumService);
+            var model = new EditForumTopicModel
+            {
+                Id = topic.Id,
+                IsEdit = true,
+                Published = topic.Published,
+                SeName = topic.GetSeName(),
+                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                TopicPriorities = ForumTopicTypesList(),
+                ForumName = topic.Forum.GetLocalized(x => x.Name),
+                ForumSeName = topic.Forum.GetSeName(),
+                Text = firstPost?.Text,
+                Subject = topic.Subject,
+                TopicTypeId = topic.TopicTypeId,
+                ForumId = topic.Forum.Id,
+                ForumEditor = _forumSettings.ForumEditor,
+                CustomerId = topic.CustomerId,
+                IsModerator = customer.IsForumModerator(),
+                IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer),
+                IsCustomerAllowedToEdit = _forumService.IsCustomerAllowedToEditTopic(customer, topic)
+            };
+
+            if (!model.IsCustomerAllowedToEdit)
             {
                 return new HttpUnauthorizedResult();
             }
 
-            var forum = forumTopic.Forum;
-            if (forum == null)
-            {
-                return RedirectToRoute("Boards");
-            }
-
-			var firstPost = forumTopic.GetFirstPost(_forumService);
-            var model = new EditForumTopicModel();
-
-            model.IsEdit = true;
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
-            model.TopicPriorities = ForumTopicTypesList();
-            model.ForumName = forum.GetLocalized(x => x.Name);
-            model.ForumSeName = forum.GetSeName();
-            model.Text = firstPost.Text;
-            model.Subject = forumTopic.Subject;
-            model.TopicTypeId = forumTopic.TopicTypeId;
-            model.Id = forumTopic.Id;
-            model.ForumId = forum.Id;
-            model.ForumEditor = _forumSettings.ForumEditor;
-
-            model.IsCustomerAllowedToSetTopicPriority = _forumService.IsCustomerAllowedToSetTopicPriority(customer);
-            model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
-
             // Subscription.
             if (model.IsCustomerAllowedToSubscribe)
             {
-                var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumTopic.Id, 0, 1).FirstOrDefault();
+                var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, topic.Id, 0, 1).FirstOrDefault();
                 model.Subscribed = forumSubscription != null;
             }
 
-			CreateForumBreadcrumb(forum: forum, topic: forumTopic);
+			CreateForumBreadcrumb(forum: topic.Forum, topic: topic);
 
 			return View(model);
         }
@@ -1053,74 +1098,60 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
-            {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
-            }
-
             var customer = Services.WorkContext.CurrentCustomer;
-            var forumTopic = _forumService.GetTopicById(model.Id);
-            if (forumTopic == null)
+            var topic = _forumService.GetTopicById(model.Id);
+
+            if (!IsTopicVisible(topic, customer))
             {
                 return HttpNotFound();
             }
-            var forum = forumTopic.Forum;
-            if (forum == null)
+            if (!_forumService.IsCustomerAllowedToEditTopic(customer, topic))
             {
-                return RedirectToRoute("Boards");
+                return new HttpUnauthorizedResult();
+            }
+
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
+            {
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (!_forumService.IsCustomerAllowedToEditTopic(customer, forumTopic))
+                    var updateStatistics = false;
+                    if (customer.IsForumModerator())
                     {
-                        return new HttpUnauthorizedResult();
+                        updateStatistics = topic.Published != model.Published;
+                        topic.Published = model.Published;
+                        topic.TopicTypeId = model.TopicTypeId;
                     }
 
-                    var subject = model.Subject;
-                    var maxSubjectLength = _forumSettings.TopicSubjectMaxLength;
-                    if (maxSubjectLength > 0 && subject.Length > maxSubjectLength)
-                    {
-                        subject = subject.Substring(0, maxSubjectLength);
-                    }
+                    topic.Subject = _forumSettings.TopicSubjectMaxLength > 0 && model.Subject.Length > _forumSettings.TopicSubjectMaxLength
+                        ? model.Subject.Substring(0, _forumSettings.TopicSubjectMaxLength)
+                        : model.Subject;
 
-                    var text = model.Text;
-                    var maxPostLength = _forumSettings.PostMaxLength;
-                    if (maxPostLength > 0 && text.Length > maxPostLength)
-                    {
-                        text = text.Substring(0, maxPostLength);
-                    }
+                    _forumService.UpdateTopic(topic, updateStatistics);
 
-                    var topicType = ForumTopicType.Normal;
-                    var ipAddress = Services.WebHelper.GetCurrentIpAddress();
-                    var utcNow = DateTime.UtcNow;
+                    var text = _forumSettings.PostMaxLength > 0 && model.Text.Length > _forumSettings.PostMaxLength
+                        ? model.Text.Substring(0, _forumSettings.PostMaxLength)
+                        : model.Text;
 
-                    if (_forumService.IsCustomerAllowedToSetTopicPriority(customer))
-                    {
-                        topicType = (ForumTopicType) Enum.ToObject(typeof (ForumTopicType), model.TopicTypeId);
-                    }
-
-                    forumTopic.TopicTypeId = (int) topicType;
-                    forumTopic.Subject = subject;
-
-                    _forumService.UpdateTopic(forumTopic);
-
-                    var firstPost = forumTopic.GetFirstPost(_forumService);
+                    var firstPost = topic.GetFirstPost(_forumService);
                     if (firstPost != null)
                     {
                         firstPost.Text = text;
-                        _forumService.UpdatePost(firstPost);
+                        _forumService.UpdatePost(firstPost, false);
                     }
                     else
                     {
                         firstPost = new ForumPost
                         {
-                            TopicId = forumTopic.Id,
-                            CustomerId = forumTopic.CustomerId,
+                            TopicId = topic.Id,
+                            CustomerId = topic.CustomerId,
                             Text = text,
-                            IPAddress = ipAddress,
+                            IPAddress = Services.WebHelper.GetCurrentIpAddress(),
+                            Published = true
                         };
 
                         _forumService.InsertPost(firstPost, false);
@@ -1129,7 +1160,7 @@ namespace SmartStore.Web.Controllers
                     // Subscription.
                     if (_forumService.IsCustomerAllowedToSubscribe(customer))
                     {
-                        var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumTopic.Id, 0, 1).FirstOrDefault();
+                        var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, topic.Id, 0, 1).FirstOrDefault();
 
                         if (model.Subscribed)
                         {
@@ -1139,8 +1170,8 @@ namespace SmartStore.Web.Controllers
                                 {
                                     SubscriptionGuid = Guid.NewGuid(),
                                     CustomerId = customer.Id,
-                                    TopicId = forumTopic.Id,
-                                    CreatedOnUtc = utcNow
+                                    TopicId = topic.Id,
+                                    CreatedOnUtc = DateTime.UtcNow
                                 };
 
                                 _forumService.InsertSubscription(forumSubscription);
@@ -1156,7 +1187,7 @@ namespace SmartStore.Web.Controllers
                     }
 
                     // Redirect to the topic page with the topic slug.
-                    return RedirectToRoute("TopicSlug", new {id = forumTopic.Id, slug = forumTopic.GetSeName()});
+                    return RedirectToRoute("TopicSlug", new {id = topic.Id, slug = topic.GetSeName()});
                 }
                 catch (Exception ex)
                 {
@@ -1167,13 +1198,14 @@ namespace SmartStore.Web.Controllers
             // Redisplay form.
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = true;
+            model.Published = topic.Published;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
-            model.ForumName = forum.GetLocalized(x => x.Name);
-            model.ForumSeName = forum.GetSeName();
-            model.ForumId = forum.Id;
+            model.ForumName = topic.Forum.GetLocalized(x => x.Name);
+            model.ForumSeName = topic.Forum.GetSeName();
+            model.ForumId = topic.Forum.Id;
             model.ForumEditor = _forumSettings.ForumEditor;
-
-            model.IsCustomerAllowedToSetTopicPriority = _forumService.IsCustomerAllowedToSetTopicPriority(customer);
+            model.CustomerId = customer.Id;
+            model.IsModerator = customer.IsForumModerator();
             model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
 
             return View(model);
@@ -1186,22 +1218,24 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
             }
 
-            var forumTopic = _forumService.GetTopicById(id);
-            if (forumTopic != null)
+            var customer = Services.WorkContext.CurrentCustomer;
+            var topic = _forumService.GetTopicById(id);
+
+            if (!IsTopicVisible(topic, customer))
             {
-                if (!_forumService.IsCustomerAllowedToDeleteTopic(Services.WorkContext.CurrentCustomer, forumTopic))
-                {
-                    return new HttpUnauthorizedResult();
-                }
+                return HttpNotFound();
+            }
+            if (!_forumService.IsCustomerAllowedToDeleteTopic(customer, topic))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
-                var forum = _forumService.GetForumById(forumTopic.ForumId);
+            var forum = _forumService.GetForumById(topic.ForumId);
+            _forumService.DeleteTopic(topic);
 
-                _forumService.DeleteTopic(forumTopic);
-
-                if (forum != null)
-                {
-                    return RedirectToRoute("ForumSlug", new { id = forum.Id, slug = forum.GetSeName() });
-                }
+            if (forum != null)
+            {
+                return RedirectToRoute("ForumSlug", new { id = forum.Id, slug = forum.GetSeName() });
             }
 
             return RedirectToRoute("Boards");
@@ -1220,41 +1254,37 @@ namespace SmartStore.Web.Controllers
             }
 
             var customer = Services.WorkContext.CurrentCustomer;
-            var forumTopic = _forumService.GetTopicById(id);
-            if (forumTopic == null)
-            {
-                return RedirectToRoute("Boards");
-            }
+            var topic = _forumService.GetTopicById(id);
 
-            if (!_forumService.IsCustomerAllowedToCreatePost(customer, forumTopic))
+            if (topic == null || !_storeMappingService.Authorize(topic.Forum.ForumGroup) || !_aclService.Authorize(topic.Forum.ForumGroup))
+            {
+                return HttpNotFound();
+            }
+            if (!_forumService.IsCustomerAllowedToCreatePost(customer, topic))
             {
                 return new HttpUnauthorizedResult();
-            }
-
-            var forum = forumTopic.Forum;
-            if (forum == null)
-            {
-                return RedirectToRoute("Boards");
             }
 
             var model = new EditForumPostModel
             {
                 Id = 0,
-                ForumTopicId = forumTopic.Id,
+                ForumTopicId = topic.Id,
                 IsEdit = false,
+                Published = true,
                 DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
                 ForumEditor = _forumSettings.ForumEditor,
-                ForumName = forum.GetLocalized(x => x.Name),
-                ForumTopicSubject = forumTopic.Subject,
-                ForumTopicSeName = forumTopic.GetSeName(),
+                ForumName = topic.Forum.GetLocalized(x => x.Name),
+                ForumTopicSubject = topic.Subject,
+                ForumTopicSeName = topic.GetSeName(),
+                IsModerator = customer.IsForumModerator(),
                 IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer),
-                Subscribed = false,
+                Subscribed = false
             };
             
             // Subscription.
             if (model.IsCustomerAllowedToSubscribe)
             {
-                var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumTopic.Id, 0, 1).FirstOrDefault();
+                var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, topic.Id, 0, 1).FirstOrDefault();
                 model.Subscribed = forumSubscription != null;
             }
 
@@ -1263,25 +1293,24 @@ namespace SmartStore.Web.Controllers
             if (quote.HasValue)
             {
                 var quotePost = _forumService.GetPostById(quote.Value);
-                if (quotePost != null && quotePost.TopicId == forumTopic.Id)
+                if (quotePost != null && quotePost.TopicId == topic.Id)
                 {
                     var quotePostText = quotePost.Text;
 
                     switch (_forumSettings.ForumEditor)
                     {
                         case EditorType.SimpleTextBox:
-                            text = String.Format("{0}:\n{1}\n", quotePost.Customer.FormatUserName(), quotePostText);
+                            text = string.Format("{0}:\n{1}\n", quotePost.Customer.FormatUserName(), quotePostText);
                             break;
                         case EditorType.BBCodeEditor:
-                            text = String.Format("[quote={0}]{1}[/quote]", quotePost.Customer.FormatUserName(), BBCodeHelper.RemoveQuotes(quotePostText));
+                            text = string.Format("[quote={0}]{1}[/quote]", quotePost.Customer.FormatUserName(), BBCodeHelper.RemoveQuotes(quotePostText));
                             break;
                     }
                     model.Text = text;
                 }
             }
 
-			CreateForumBreadcrumb(forum: forum, topic: forumTopic);
-
+			CreateForumBreadcrumb(forum: topic.Forum, topic: topic);
 			return View(model);
         }
 
@@ -1296,51 +1325,50 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
             }
 
+            var customer = Services.WorkContext.CurrentCustomer;
+            var topic = _forumService.GetTopicById(model.ForumTopicId);
+
+            if (topic == null || !_storeMappingService.Authorize(topic.Forum.ForumGroup) || !_aclService.Authorize(topic.Forum.ForumGroup))
+            {
+                return HttpNotFound();
+            }
+            if (!_forumService.IsCustomerAllowedToCreatePost(customer, topic))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
             {
                 ModelState.AddModelError("", T("Common.WrongCaptcha"));
-            }
-
-            var customer = Services.WorkContext.CurrentCustomer;
-            var forumTopic = _forumService.GetTopicById(model.ForumTopicId);
-            if (forumTopic == null)
-            {
-                return HttpNotFound();
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (!_forumService.IsCustomerAllowedToCreatePost(customer, forumTopic))
+                    var post = new ForumPost
                     {
-                        return new HttpUnauthorizedResult();
-                    }
-
-                    var text = model.Text;
-                    var maxPostLength = _forumSettings.PostMaxLength;
-                    if (maxPostLength > 0 && text.Length > maxPostLength)
-                    {
-                        text = text.Substring(0, maxPostLength);
-                    }
-
-					var utcNow = DateTime.UtcNow;
-                    var ipAddress = Services.WebHelper.GetCurrentIpAddress();
-
-                    var forumPost = new ForumPost
-                    {
-                        TopicId = forumTopic.Id,
+                        TopicId = topic.Id,
                         CustomerId = customer.Id,
-                        Text = text,
-                        IPAddress = ipAddress
+                        IPAddress = Services.WebHelper.GetCurrentIpAddress(),
+                        Published = true
                     };
 
-                    _forumService.InsertPost(forumPost, true);
+                    if (customer.IsForumModerator())
+                    {
+                        post.Published = model.Published;
+                    }
+
+                    post.Text = _forumSettings.PostMaxLength > 0 && model.Text.Length > _forumSettings.PostMaxLength
+                        ? model.Text.Substring(0, _forumSettings.PostMaxLength)
+                        : model.Text;
+
+                    _forumService.InsertPost(post, true);
 
                     // Subscription.
                     if (_forumService.IsCustomerAllowedToSubscribe(customer))
                     {
-                        var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumPost.TopicId, 0, 1).FirstOrDefault();
+                        var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, post.TopicId, 0, 1).FirstOrDefault();
                         if (model.Subscribed)
                         {
                             if (forumSubscription == null)
@@ -1349,8 +1377,8 @@ namespace SmartStore.Web.Controllers
                                 {
                                     SubscriptionGuid = Guid.NewGuid(),
                                     CustomerId = customer.Id,
-                                    TopicId = forumPost.TopicId,
-                                    CreatedOnUtc = utcNow
+                                    TopicId = post.TopicId,
+                                    CreatedOnUtc = DateTime.UtcNow
                                 };
 
                                 _forumService.InsertSubscription(forumSubscription);
@@ -1365,20 +1393,14 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
-                    var pageSize = _forumSettings.PostsPageSize > 0 ? _forumSettings.PostsPageSize : 10;
-                    var pageIndex = (_forumService.CalculateTopicPageIndex(forumPost.TopicId, pageSize, forumPost.Id) + 1);
-                    var url = string.Empty;
+                    var pageSize = _forumSettings.PostsPageSize > 0 ? _forumSettings.PostsPageSize : 20;
+                    var pageIndex = _forumService.CalculateTopicPageIndex(post.TopicId, pageSize, post.Id) + 1;
 
-                    if (pageIndex > 1)
-                    {
-                        url = Url.RouteUrl("TopicSlug", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName(), page = pageIndex });
-                    }
-                    else
-                    {
-                        url = Url.RouteUrl("TopicSlug", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName() });
-                    }
+                    var url = pageIndex > 1
+                        ? Url.RouteUrl("TopicSlug", new { id = post.TopicId, slug = post.ForumTopic.GetSeName(), page = pageIndex })
+                        : Url.RouteUrl("TopicSlug", new { id = post.TopicId, slug = post.ForumTopic.GetSeName() });
 
-                    return Redirect(string.Format("{0}#{1}", url, forumPost.Id));
+                    return Redirect(string.Concat(url, "#", post.Id));
                 }
                 catch (Exception ex)
                 {
@@ -1387,19 +1409,14 @@ namespace SmartStore.Web.Controllers
             }
 
             // Redisplay form.
-            var forum = forumTopic.Forum;
-            if (forum == null)
-            {
-                return RedirectToRoute("Boards");
-            }
-
+            model.Id = 0;
             model.IsEdit = false;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
-            model.ForumName = forum.GetLocalized(x => x.Name);
-            model.ForumTopicId = forumTopic.Id;
-            model.ForumTopicSubject = forumTopic.Subject;
-            model.ForumTopicSeName = forumTopic.GetSeName();
-            model.Id = 0;
+            model.ForumName = topic.Forum.GetLocalized(x => x.Name);
+            model.ForumTopicId = topic.Id;
+            model.ForumTopicSubject = topic.Subject;
+            model.ForumTopicSeName = topic.GetSeName();
+            model.IsModerator = customer.IsForumModerator();
             model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
             model.ForumEditor = _forumSettings.ForumEditor;
             
@@ -1414,52 +1431,48 @@ namespace SmartStore.Web.Controllers
             }
 
             var customer = Services.WorkContext.CurrentCustomer;
-            var forumPost = _forumService.GetPostById(id);
+            var post = _forumService.GetPostById(id);
 
-            if (forumPost == null)
+            if (post == null || !_storeMappingService.Authorize(post.ForumTopic.Forum.ForumGroup) || !_aclService.Authorize(post.ForumTopic.Forum.ForumGroup))
             {
-                return RedirectToRoute("Boards");
+                return HttpNotFound();
             }
-            if (!_forumService.IsCustomerAllowedToEditPost(customer, forumPost))
+
+            var firstPost = post.ForumTopic.GetFirstPost(_forumService);
+
+            var model = new EditForumPostModel
+            {
+                Id = post.Id,
+                IsEdit = true,
+                Published = post.Published,
+                IsFirstPost = firstPost?.Id == post.Id,
+                ForumTopicId = post.ForumTopic.Id,
+                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
+                ForumEditor = _forumSettings.ForumEditor,
+                ForumName = post.ForumTopic.Forum.GetLocalized(x => x.Name),
+                ForumTopicSubject = post.ForumTopic.Subject,
+                ForumTopicSeName = post.ForumTopic.GetSeName(),
+                Subscribed = false,
+                Text = post.Text,
+                CustomerId = customer.Id,
+                IsModerator = customer.IsForumModerator(),
+                IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer),
+                IsCustomerAllowedToEdit = _forumService.IsCustomerAllowedToEditPost(customer, post)
+            };
+
+            if (!model.IsCustomerAllowedToEdit)
             {
                 return new HttpUnauthorizedResult();
             }
 
-            var forumTopic = forumPost.ForumTopic;
-            if (forumTopic == null)
-            {
-                return RedirectToRoute("Boards");
-            }
-
-            var forum = forumTopic.Forum;
-            if (forum == null)
-            {
-                return RedirectToRoute("Boards");
-            }
-
-            var model = new EditForumPostModel
-            {
-                Id = forumPost.Id,
-                ForumTopicId = forumTopic.Id,
-                IsEdit = true,
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage,
-                ForumEditor = _forumSettings.ForumEditor,
-                ForumName = forum.GetLocalized(x => x.Name),
-                ForumTopicSubject = forumTopic.Subject,
-                ForumTopicSeName = forumTopic.GetSeName(),
-                IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer),
-                Subscribed = false,
-                Text = forumPost.Text,
-            };
-
             // Subscription.
             if (model.IsCustomerAllowedToSubscribe)
             {
-                var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumTopic.Id, 0, 1).FirstOrDefault();
+                var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, post.ForumTopic.Id, 0, 1).FirstOrDefault();
                 model.Subscribed = forumSubscription != null;
             }
 
-			CreateForumBreadcrumb(forum: forum, topic: forumTopic);
+			CreateForumBreadcrumb(forum: post.ForumTopic.Forum, topic: post.ForumTopic);
 
 			return View(model);
         }
@@ -1474,55 +1487,49 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
             }
 
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
-            {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
-            }
-
             var customer = Services.WorkContext.CurrentCustomer;
-            var forumPost = _forumService.GetPostById(model.Id);
-            if (forumPost == null)
+            var post = _forumService.GetPostById(model.Id);
+
+            if (post == null || !_storeMappingService.Authorize(post.ForumTopic.Forum.ForumGroup) || !_aclService.Authorize(post.ForumTopic.Forum.ForumGroup))
             {
                 return HttpNotFound();
             }
-
-            if (!_forumService.IsCustomerAllowedToEditPost(customer, forumPost))
+            if (!_forumService.IsCustomerAllowedToEditPost(customer, post))
             {
                 return new HttpUnauthorizedResult();
             }
 
-            var forumTopic = forumPost.ForumTopic;
-            if (forumTopic == null)
+            if (_captchaSettings.Enabled && _captchaSettings.ShowOnForumPage && !captchaValid)
             {
-                return RedirectToRoute("Boards");
-            }
-
-            var forum = forumTopic.Forum;
-            if (forum == null)
-            {
-                return RedirectToRoute("Boards");
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var utcNow = DateTime.UtcNow;
-                    var text = model.Text;
-                    var maxPostLength = _forumSettings.PostMaxLength;
-                    if (maxPostLength > 0 && text.Length > maxPostLength)
+                    var updateStatistics = false;
+                    if (customer.IsForumModerator())
                     {
-                        text = text.Substring(0, maxPostLength);
+                        // Do not allow to unpublish first post. NumReplies would be wrong. Unpublish topic instead.
+                        var firstPost = post.ForumTopic.GetFirstPost(_forumService);
+                        if (firstPost?.Id != post.Id)
+                        {
+                            updateStatistics = post.Published != model.Published;
+                            post.Published = model.Published;
+                        }
                     }
 
-                    forumPost.Text = text;
+                    post.Text = _forumSettings.PostMaxLength > 0 && model.Text.Length > _forumSettings.PostMaxLength
+                        ? model.Text.Substring(0, _forumSettings.PostMaxLength)
+                        : model.Text;
 
-                    _forumService.UpdatePost(forumPost);
+                    _forumService.UpdatePost(post, updateStatistics);
 
                     // Subscription.
                     if (_forumService.IsCustomerAllowedToSubscribe(customer))
                     {
-                        var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, forumPost.TopicId, 0, 1).FirstOrDefault();
+                        var forumSubscription = _forumService.GetAllSubscriptions(customer.Id, 0, post.TopicId, 0, 1).FirstOrDefault();
                         if (model.Subscribed)
                         {
                             if (forumSubscription == null)
@@ -1531,8 +1538,8 @@ namespace SmartStore.Web.Controllers
                                 {
                                     SubscriptionGuid = Guid.NewGuid(),
                                     CustomerId = customer.Id,
-                                    TopicId = forumPost.TopicId,
-                                    CreatedOnUtc = utcNow
+                                    TopicId = post.TopicId,
+                                    CreatedOnUtc = DateTime.UtcNow
                                 };
 
                                 _forumService.InsertSubscription(forumSubscription);
@@ -1547,20 +1554,14 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
-                    var pageSize = _forumSettings.PostsPageSize > 0 ? _forumSettings.PostsPageSize : 10;
-                    var pageIndex = (_forumService.CalculateTopicPageIndex(forumPost.TopicId, pageSize, forumPost.Id) + 1);
-                    var url = string.Empty;
+                    var pageSize = _forumSettings.PostsPageSize > 0 ? _forumSettings.PostsPageSize : 20;
+                    var pageIndex = _forumService.CalculateTopicPageIndex(post.TopicId, pageSize, post.Id) + 1;
 
-                    if (pageIndex > 1)
-                    {
-                        url = Url.RouteUrl("TopicSlug", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName(), page = pageIndex });
-                    }
-                    else
-                    {
-                        url = Url.RouteUrl("TopicSlug", new { id = forumPost.TopicId, slug = forumPost.ForumTopic.GetSeName() });
-                    }
+                    var url = pageIndex > 1
+                        ? Url.RouteUrl("TopicSlug", new { id = post.TopicId, slug = post.ForumTopic.GetSeName(), page = pageIndex })
+                        : Url.RouteUrl("TopicSlug", new { id = post.TopicId, slug = post.ForumTopic.GetSeName() });
 
-                    return Redirect(string.Format("{0}#{1}", url, forumPost.Id));
+                    return Redirect(string.Concat(url, "#", post.Id));
                 }
                 catch (Exception ex)
                 {
@@ -1570,15 +1571,18 @@ namespace SmartStore.Web.Controllers
 
             // Redisplay form.
             model.IsEdit = true;
+            model.Published = post.Published;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnForumPage;
-            model.ForumName = forum.GetLocalized(x => x.Name);
-            model.ForumTopicId = forumTopic.Id;
-            model.ForumTopicSubject = forumTopic.Subject;
-            model.ForumTopicSeName = forumTopic.GetSeName();
-            model.Id = forumPost.Id;
-            model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
+            model.ForumName = post.ForumTopic.Forum.GetLocalized(x => x.Name);
+            model.ForumTopicId = post.ForumTopic.Id;
+            model.ForumTopicSubject = post.ForumTopic.Subject;
+            model.ForumTopicSeName = post.ForumTopic.GetSeName();
+            model.Id = post.Id;
             model.ForumEditor = _forumSettings.ForumEditor;
-            
+            model.CustomerId = customer.Id;
+            model.IsModerator = customer.IsForumModerator();
+            model.IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(customer);
+
             return View(model);
         }
 
@@ -1589,34 +1593,101 @@ namespace SmartStore.Web.Controllers
                 return HttpNotFound();
             }
 
-            var forumPost = _forumService.GetPostById(id);
-            if (forumPost != null)
+            var post = _forumService.GetPostById(id);
+
+            if (post == null || !_storeMappingService.Authorize(post.ForumTopic.Forum.ForumGroup) || !_aclService.Authorize(post.ForumTopic.Forum.ForumGroup))
             {
-                if (!_forumService.IsCustomerAllowedToDeletePost(Services.WorkContext.CurrentCustomer, forumPost))
+                return HttpNotFound();
+            }
+            if (!_forumService.IsCustomerAllowedToDeletePost(Services.WorkContext.CurrentCustomer, post))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            var topic = post.ForumTopic;
+            var forumId = topic.Forum.Id;
+            var forumSlug = topic.Forum.GetSeName();
+
+            _forumService.DeletePost(post);
+
+            // Get topic one more time because it can be deleted (first or only post deleted).
+            topic = _forumService.GetTopicById(post.TopicId);
+            if (topic == null)
+            {
+                return RedirectToRoute("ForumSlug", new { id = forumId, slug = forumSlug });
+            }
+            else
+            {
+                return RedirectToRoute("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult PostVote(int id, bool vote)
+        {
+            if (!_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToVoteOnPosts)
+            {
+                return HttpNotFound();
+            }
+
+            var customer = Services.WorkContext.CurrentCustomer;
+            var post = _forumService.GetPostById(id);
+
+            if (post == null || !_storeMappingService.Authorize(post.ForumTopic.Forum.ForumGroup) || !_aclService.Authorize(post.ForumTopic.Forum.ForumGroup))
+            {
+                return HttpNotFound();
+            }
+
+            if (!_forumSettings.AllowGuestsToVoteOnPosts && customer.IsGuest())
+            {
+                return Json(new { success = false, message = T("Forum.Post.Vote.OnlyRegistered").Text });
+            }
+
+            // Do not allow to vote for own posts.
+            if (post.CustomerId == customer.Id)
+            {
+                return Json(new { success = false, message = T("Forum.Post.Vote.OwnPostNotAllowed").Text });
+            }
+
+            var voteEntity = post.ForumPostVotes.FirstOrDefault(x => x.CustomerId == customer.Id);
+            var voteCount = post.ForumPostVotes.Count;
+
+            if (vote)
+            {
+                if (voteEntity == null)
                 {
-                    return new HttpUnauthorizedResult();
-                }
-
-                var forumTopic = forumPost.ForumTopic;
-                var forumId = forumTopic.Forum.Id;
-                var forumSlug = forumTopic.Forum.GetSeName();
-                var url = string.Empty;
-
-                _forumService.DeletePost(forumPost);
-
-                // Get topic one more time because it can be deleted (first or only post deleted).
-                forumTopic = _forumService.GetTopicById(forumPost.TopicId);
-                if (forumTopic == null)
-                {
-                    return RedirectToRoute("ForumSlug", new { id = forumId, slug = forumSlug });
+                    voteEntity = new ForumPostVote
+                    {
+                        ForumPostId = post.Id,
+                        Vote = true,
+                        CustomerId = customer.Id,
+                        IpAddress = Services.WebHelper.GetCurrentIpAddress()
+                    };
+                    _customerContentService.InsertCustomerContent(voteEntity);
+                    ++voteCount;
                 }
                 else
                 {
-                    return RedirectToRoute("TopicSlug", new { id = forumTopic.Id, slug = forumTopic.GetSeName() });
+                    voteEntity.Vote = true;
+                    _customerContentService.UpdateCustomerContent(voteEntity);
+                }
+            }
+            else
+            {
+                if (voteEntity != null)
+                {
+                    _customerContentService.DeleteCustomerContent(voteEntity);
+                    --voteCount;
                 }
             }
 
-            return RedirectToRoute("Boards");
+            return Json(new 
+            {
+                success = true,
+                message = T("Forum.Post.Vote.SuccessfullyVoted").Text,
+                voteCount,
+                voteCountString = voteCount.ToString("N0")
+            });
         }
 
         #endregion

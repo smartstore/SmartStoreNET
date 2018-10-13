@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<CustomerUserSettingsLocalizedModel>
+    public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<CustomerUserSettingsLocalizedModel>
 	{
         public CustomerUserSettingsModel()
         {
@@ -56,9 +56,6 @@ namespace SmartStore.Admin.Models.Settings
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowCustomersToUploadAvatars")]
             public bool AllowCustomersToUploadAvatars { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DefaultAvatarEnabled")]
-            public bool DefaultAvatarEnabled { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ShowCustomersLocation")]
             public bool ShowCustomersLocation { get; set; }

@@ -9,8 +9,7 @@ namespace SmartStore
 	{
 		public static string GetAreaName(this RouteData routeData)
 		{
-			object area;
-			if (routeData.DataTokens.TryGetValue("area", out area))
+			if (routeData.DataTokens.TryGetValue("area", out object area))
 			{
 				return (area as string);
 			}

@@ -3946,13 +3946,15 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult DeleteDownloadVersion(int downloadId, int productId)
         {
-            if (downloadId == 0)
-                NotifySuccess("Der Download wurde nicht gefunden.");
-
             var download = _downloadService.GetDownloadById(downloadId);
+            if (download == null)
+            {
+                return HttpNotFound();
+            }
+
             _downloadService.DeleteDownload(download);
 
-            NotifySuccess("Der Download wurde erfolgreich gelöscht.");
+            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
             return RedirectToAction("Edit", new { id = productId });
         }

@@ -1,0 +1,34 @@
+﻿@model object
+
+@using System.Globalization;
+
+@{ 
+	if (Model == null || !Model.GetType().IsNumericType() || Model.GetType().IsGenericType)
+	{
+		//throw new InvalidOperationException("The model item to be used in a range editor must be numeric and non-nullable.");
+	}
+
+	var containerCssClass = "range-slider";
+	if (ViewData.ContainsKey("class"))
+	{
+		containerCssClass += " " + ViewData["class"].ToString();
+	}
+
+	var sliderCssClass = "form-control{0} form-control-range px-0".FormatInvariant(ViewData.ContainsKey("size") ? "-" + ViewData["size"].ToString() : "");
+
+	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+	var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+
+	var metadataValues = ViewData.ModelMetadata.AdditionalValues;
+
+	var min = (ViewData["min"].Convert<decimal?>() ?? metadataValues.Get("min").Convert<decimal?>() ?? 0m).ToString(CultureInfo.InvariantCulture);
+	var max = (ViewData["max"].Convert<decimal?>() ?? metadataValues.Get("max").Convert<decimal?>() ?? 100m).ToString(CultureInfo.InvariantCulture);
+	var step = (ViewData["step"].Convert<decimal?>() ?? metadataValues.Get("step").Convert<decimal?>() ?? 1m).ToString(CultureInfo.InvariantCulture);
+
+	var invariantValue = ViewData.Model.Convert<decimal>().ToString(CultureInfo.InvariantCulture);
+}
+
+<div class="@containerCssClass" style="--slider-value: @invariantValue">
+	@Html.Hidden(string.Empty, ViewData.Model)
+	<input type="range" class="@sliderCssClass" data-target="#@id" min="@min" max="@max" step="@step" value="@invariantValue" />
+</div>

@@ -81,17 +81,18 @@
 
     @if (Model.CountryEnabled)
     {
+		var fieldPrefix = ViewData.TemplateInfo.HtmlFieldPrefix.NullEmpty() ?? "Address";
         <div class="form-group row">
             @Html.LabelFor(model => model.CountryId, new { @class = "col-{0}-3 col-form-label{1}".FormatInvariant(breakpoint, Model.CountryRequired ? " required" : "") })
             <div class="col-@breakpoint-9">
                 @Html.DropDownList("CountryId", Model.AvailableCountries,
-                new
-                {
-                    @class = "form-control country-input country-selector",
-                    data_region_control_selector = "#Address_StateProvinceId",
-                    data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
-                    data_addEmptyStateIfRequired = "true"
-                })
+				new
+				{
+					@class = "form-control country-input country-selector",
+					data_region_control_selector = "#{0}_StateProvinceId".FormatInvariant(fieldPrefix),
+					data_states_ajax_url = Url.Action("GetStatesByCountryId", "Country"),
+					data_addEmptyStateIfRequired = "true"
+				})
                 @Html.ValidationMessageFor(model => model.CountryId)
             </div>
         </div>
@@ -129,7 +130,7 @@
 
     <div class="form-group row">
         <div class="offset-@breakpoint-3 col-@breakpoint-9 text-muted address-required-hint">
-            @T("Address.Fields.Required.Hint")
+            @T("Common.FormFields.Required.Hint")
         </div>
     </div>
 

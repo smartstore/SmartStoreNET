@@ -851,7 +851,6 @@
     <Content Include="Content\editors\summernote\summernote-bs4.min.js" />
     <Content Include="Content\fontastic\fontastic.css" />
     <Content Include="Content\fontastic\fonts\fontastic.svg" />
-    <Content Include="Content\Images\default-avatar.jpg" />
     <Content Include="Content\placeholder.txt" />
     <Content Include="Content\print-rtl.css" />
     <Content Include="Content\vendors\drift\Drift.js" />
@@ -1163,6 +1162,7 @@
     <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="Content\vendors\underscore\underscore.min.js" />
     <Content Include="Content\vendors\underscore\underscore.js" />
+    <Content Include="Content\vendors\wow\wow.js" />
     <Content Include="Themes\FlexBlue\preview.png" />
     <Content Include="Themes\FlexBlack\preview.png" />
     <Content Include="Scripts\smartstore.entitypicker.js" />
@@ -1533,7 +1533,7 @@
     <Content Include="Views\Boards\Partials\_ActiveTopics.cshtml" />
     <Content Include="Views\Boards\Partials\_CreateUpdatePost.cshtml" />
     <Content Include="Views\Boards\Partials\_CreateUpdateTopic.cshtml" />
-    <Content Include="Views\Boards\Partials\_ForumGroupPartial.cshtml" />
+    <Content Include="Views\Boards\Partials\ForumGroup.cshtml" />
     <Content Include="Views\Boards\Partials\_ForumPost.cshtml" />
     <Content Include="Views\Catalog\Partials\CategoryMenu.cshtml" />
     <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
@@ -1767,6 +1767,8 @@
     <Content Include="Views\Boards\Partials\InstantSearch.cshtml" />
     <Content Include="Views\Boards\Partials\SearchHits.cshtml" />
     <Content Include="Views\Shared\Partials\Customer.Avatar.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Layout.Bare.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Range.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

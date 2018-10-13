@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Models.Catalog
 
         [UIHint("Picture")]
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Picture")]
-        public int PictureId { get; set; }
+        public int? PictureId { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.PageSize")]
         public int? PageSize { get; set; }

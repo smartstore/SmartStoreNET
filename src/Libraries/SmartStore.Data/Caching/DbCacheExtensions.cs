@@ -116,8 +116,7 @@ namespace SmartStore.Data.Caching
 				return null;
 			}
 			
-			DbCacheEntry entry;
-			if (!cache.RequestTryGet(cacheKey.Key, out entry))
+			if (!cache.RequestTryGet(cacheKey.Key, out var entry))
 			{
 				entry = cache.RequestPut(cacheKey.Key, valueFactory(), cacheKey.AffectedEntitySets);
 			}
@@ -196,73 +195,52 @@ namespace SmartStore.Data.Caching
 
 		private class CacheKey<T>
 		{
-			private readonly IQueryable<T> _source;
-			private string _key;
-			private string[] _affectedEntitySets;
-			private ObjectQuery _objectQuery;
-			private bool _objectQueryResolved;
-
 			public CacheKey(IQueryable<T> source, string customKey = null)
 			{
 				Guard.NotNull(source, nameof(source));
 
-				_source = source;
-				_key = customKey.NullEmpty();
+				GenerateKeyAndAffectedEntitySets(source, customKey);
 			}
 
-			private void EnsureObjectQuery()
+			private void GenerateKeyAndAffectedEntitySets(IQueryable<T> source, string customKey = null)
 			{
-				if (!_objectQueryResolved && _objectQuery == null)
+				var objectQuery = DbCacheUtil.GetObjectQuery(source) ?? source as ObjectQuery;
+
+				var key = customKey.NullEmpty();
+				if (objectQuery != null && string.IsNullOrEmpty(key))
 				{
-					_objectQuery = DbCacheUtil.GetObjectQuery(_source) ?? _source as ObjectQuery;
-					_objectQueryResolved = true;
+					var commandInfo = objectQuery.GetCommandInfo();
+
+					var sb = new StringBuilder();
+					sb.AppendLine(commandInfo.Sql);
+
+					foreach (DbParameter parameter in commandInfo.Parameters)
+					{
+						sb.Append(parameter.ParameterName);
+						sb.Append(";");
+						sb.Append(parameter.Value);
+						sb.AppendLine(";");
+					}
+
+					key = sb.ToString();
 				}
+
+				Key = key;
+				AffectedEntitySets = objectQuery != null
+					? objectQuery.GetAffectedEntitySets()
+					: new string[0];
 			}
 
 			public string Key
 			{
-				get
-				{
-					if (_key == null && !_objectQueryResolved)
-					{
-						EnsureObjectQuery();
-						if (_objectQuery != null)
-						{
-							var commandInfo = _objectQuery.GetCommandInfo();
-
-							var sb = new StringBuilder();
-							sb.AppendLine(commandInfo.Sql);
-
-							foreach (DbParameter parameter in commandInfo.Parameters)
-							{
-								sb.Append(parameter.ParameterName);
-								sb.Append(";");
-								sb.Append(parameter.Value);
-								sb.AppendLine(";");
-							}
-
-							_key = sb.ToString();
-						}
-					}
-
-					return _key;
-				}
+				get;
+				private set;
 			}
 
 			public string[] AffectedEntitySets
 			{
-				get
-				{
-					if (_affectedEntitySets == null)
-					{
-						EnsureObjectQuery();
-						_affectedEntitySets = _objectQuery != null
-							? _objectQuery.GetAffectedEntitySets()
-							: new string[0];
-					}
-
-					return _affectedEntitySets;
-				}
+				get;
+				private set;
 			}
 		}
 	}

@@ -547,7 +547,6 @@ namespace SmartStore.Services.Catalog.Importer
 							if (pictureBinary != null && pictureBinary.Length > 0)
 							{
 								var currentProductPictures = _productPictureRepository.TableUntracked
-									.Expand(x => x.Picture)
 									.Expand(x => x.Picture.MediaStorage)
 									.Where(x => x.ProductId == row.Entity.Id)
 									.ToList();
@@ -560,16 +559,14 @@ namespace SmartStore.Services.Catalog.Importer
 								{
 									displayOrder = (currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0);
 								}
-
-								var size = Size.Empty;
-								pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
+                                
 								pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 								if (pictureBinary != null && pictureBinary.Length > 0)
 								{
-									// no equal picture found in sequence
-									var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
-									if (newPicture != null)
+                                    var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false); ;
+
+                                    if (newPicture != null)
 									{
 										var mapping = new ProductPicture
 										{

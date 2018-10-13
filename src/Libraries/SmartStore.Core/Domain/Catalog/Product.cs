@@ -22,32 +22,21 @@ namespace SmartStore.Core.Domain.Catalog
 	{
 		#region static
 
-		private static readonly HashSet<string> _visibilityAffectingProductProps = new HashSet<string>();
-
-		static Product()
+		private static readonly HashSet<string> _visibilityAffectingProductProps = new HashSet<string>
 		{
-			AddPropsToSet(_visibilityAffectingProductProps,
-				x => x.AvailableEndDateTimeUtc,
-				x => x.AvailableStartDateTimeUtc,
-				x => x.Deleted,
-				x => x.LowStockActivityId,
-				x => x.LimitedToStores,
-				x => x.ManageInventoryMethodId,
-				x => x.MinStockQuantity,
-				x => x.Published,
-				x => x.SubjectToAcl,
-				x => x.VisibleIndividually);
-		}
+			nameof(Product.AvailableEndDateTimeUtc),
+			nameof(Product.AvailableStartDateTimeUtc),
+			nameof(Product.Deleted),
+			nameof(Product.LowStockActivityId),
+			nameof(Product.LimitedToStores),
+			nameof(Product.ManageInventoryMethodId),
+			nameof(Product.MinStockQuantity),
+			nameof(Product.Published),
+			nameof(Product.SubjectToAcl),
+			nameof(Product.VisibleIndividually)
+		};
 
-		static void AddPropsToSet(HashSet<string> props, params Expression<Func<Product, object>>[] lambdas)
-		{
-			foreach (var lambda in lambdas)
-			{
-				props.Add(lambda.ExtractPropertyInfo().Name);
-			}
-		}
-
-		public static HashSet<string> GetVisibilityAffectingPropertyNames()
+		public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()
 		{
 			return _visibilityAffectingProductProps;
 		}

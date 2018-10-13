@@ -7,6 +7,7 @@
 
 .switch {
 	$h: $font-size-base * $line-height-base;
+    $h-sm: $font-size-sm * $line-height-sm;
 	position: relative;
 	display: inline-block;
 	vertical-align: bottom;
@@ -15,6 +16,10 @@
 	user-select: none;
 	box-sizing: content-box;
 	height: $h;
+
+    .switcher-sm > & {
+        height: $h-sm;
+    }
 
 	> .switch-toggle {
 		position: relative;

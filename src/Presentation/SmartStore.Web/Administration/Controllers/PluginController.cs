@@ -589,6 +589,7 @@ namespace SmartStore.Admin.Controllers
 
 			ViewBag.RefreshPage = true;
 			ViewBag.btnId = btnId;
+
 			return View(model);
 		}
 

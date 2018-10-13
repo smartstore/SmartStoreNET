@@ -11,6 +11,21 @@
 			return value;
 		}
 	}
+
+	private string CssClass
+	{
+		get
+		{
+			var cls = "input-group date datetimepicker-group";
+
+			if (ViewData.ContainsKey("size"))
+			{
+				cls += " input-group-" + ViewData["size"].Convert<string>();
+			}
+
+			return cls;
+		}
+	}
 }
 
 @{

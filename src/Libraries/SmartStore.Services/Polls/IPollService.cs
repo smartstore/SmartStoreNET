@@ -72,5 +72,14 @@ namespace SmartStore.Services.Polls
         /// <param name="customerId">Customer identifier</param>
         /// <returns>Result</returns>
         bool AlreadyVoted(int pollId, int customerId);
+
+        /// <summary>
+        /// Get voting records for a poll.
+        /// </summary>
+        /// <param name="pollId">Poll identifier.</param>
+        /// <param name="pageIndex">Page index.</param>
+        /// <param name="pageSize">Page size.</param>
+        /// <returns>List of voting records.</returns>
+        IPagedList<PollVotingRecord> GetVotingRecords(int pollId, int pageIndex, int pageSize);
     }
 }

@@ -14,7 +14,6 @@ namespace SmartStore.Core.Domain.Customers
 			PasswordMinLength = 6;
 			UserRegistrationType = UserRegistrationType.Standard;
 			AvatarMaximumSizeBytes = 512000;
-			DefaultAvatarEnabled = false;
 			CustomerNameFormat = CustomerNameFormat.ShowFirstName;
 			CustomerNameFormatMaxLength = 64;
 			GenderEnabled = true;
@@ -81,11 +80,6 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a maximum avatar size (in bytes)
         /// </summary>
         public int AvatarMaximumSizeBytes { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to display default user avatar.
-        /// </summary>
-        public bool DefaultAvatarEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers location is shown

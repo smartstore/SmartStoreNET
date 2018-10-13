@@ -187,7 +187,7 @@ namespace SmartStore.Services.Messages
 			{
 				parsed = RenderTemplate(email, ctx, required);
 
-				if (required || parsed != null)
+				if (required || parsed.HasValue())
 				{
 					return parsed.Convert<EmailAddress>();
 				}

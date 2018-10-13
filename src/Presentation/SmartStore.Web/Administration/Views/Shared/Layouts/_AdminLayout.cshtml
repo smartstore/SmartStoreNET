@@ -33,42 +33,49 @@
 		</div>
     }
 	
-	@if (IsSectionDefined("header"))
-    {
-		@RenderSection("header")
-    }
-    else
-    {
-		<header>
-			@if (IsSectionDefined("navbar"))
-            {
-				@RenderSection("navbar")
-            }
-            else
-            {
-                Html.RenderWidget("admin_navbar_before");
-                Html.RenderAction("Navbar", "Common", new { area = "Admin" });
-                Html.RenderWidget("admin_navbar_after");
-            }
+	<div class="page-main">
+		@if (IsSectionDefined("header"))
+		{
+			@RenderSection("header")
+		}
+		else
+		{
+			<header id="header">
+				@if (IsSectionDefined("navbar"))
+				{
+					@RenderSection("navbar")
+				}
+				else
+				{
+					Html.RenderWidget("admin_navbar_before");
+					Html.RenderAction("Navbar", "Common", new { area = "Admin" });
+					Html.RenderWidget("admin_navbar_after");
+				}
 
-			<div id="breadcrumb">
-				<!-- SiteMapPath here-->
-				@{ Html.RenderWidget("admin_breadcrumb"); }
+				<div id="breadcrumb">
+					<!-- SiteMapPath here-->
+					@{ Html.RenderWidget("admin_breadcrumb"); }
+				</div>
+			</header>		
+		}
+
+		@{ Html.RenderZone("beforemaincontent"); }
+
+		<div id="content">
+			<div class="cph">
+				@{ Html.RenderWidget("admin_content_before"); }
+				@RenderBody()
 			</div>
-		</header>		
-    }
-
-    @{ Html.RenderWidget("admin_content_before"); }
-    <div id="content">
-        <div class="cph">
-            @RenderBody()
-        </div>
-		<div id="ajax-busy">
-			<div class="bar"></div>
-			<div class="bar"></div>
-			<div class="bar"></div>
+			<div id="ajax-busy">
+				<div class="bar"></div>
+				<div class="bar"></div>
+				<div class="bar"></div>
+			</div>
 		</div>
-    </div>
+
+		@{ Html.RenderZone("aftermaincontent"); }
+	</div>
+
 	@{ Html.RenderPartial("_Notifications"); }
     @{ Html.RenderWidget("admin_content_after"); }
 </div>

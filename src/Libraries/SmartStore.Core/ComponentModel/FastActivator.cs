@@ -44,6 +44,8 @@ namespace SmartStore.ComponentModel
 			return Invoker(parameters);
 		}
 
+		#region Static
+
 		/// <summary>
 		/// Creates a single fast constructor invoker. The result is not cached.
 		/// </summary>
@@ -77,8 +79,6 @@ namespace SmartStore.ComponentModel
 
 			return lambda.Compile();
 		}
-
-		#region Static
 
 		/// <summary>
 		/// Creates and caches fast constructor invokers 

@@ -1,22 +1,19 @@
 using System.Web.Routing;
 using SmartStore.Core.Plugins;
-using SmartStore.FacebookAuth.Core;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.FacebookAuth
 {
-	/// <summary>
-	/// Facebook externalAuth processor
-	/// </summary>
-	public class FacebookExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod, IConfigurable
+    /// <summary>
+    /// Facebook externalAuth processor
+    /// </summary>
+    public class FacebookExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod, IConfigurable
     {
-        private readonly FacebookExternalAuthSettings _facebookExternalAuthSettings;
         private readonly ILocalizationService _localizationService;
 
-        public FacebookExternalAuthMethod(FacebookExternalAuthSettings facebookExternalAuthSettings, ILocalizationService localizationService)
+        public FacebookExternalAuthMethod(ILocalizationService localizationService)
         {
-            _facebookExternalAuthSettings = facebookExternalAuthSettings;
             _localizationService = localizationService;
         }
 

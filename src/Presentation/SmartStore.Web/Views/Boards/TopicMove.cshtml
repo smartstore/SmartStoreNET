@@ -1,5 +1,5 @@
-﻿@model TopicMoveModel
-@using SmartStore.Web.Models.Boards;
+﻿@using SmartStore.Web.Models.Boards;
+@model TopicMoveModel
 @{    
     Layout = "_Layout";
     Html.AddTitleParts(T("Forum.PageTitle.MoveTopic").Text);
@@ -11,21 +11,20 @@
         <div class="page-title">
             <h2>@T("Forum.MoveTopic")</h2>
         </div>
-
         <div class="page-body">
-            <h4 class="my-3">@T("Forum.SelectTheForumToMoveTopic")</h4>
-
-            <div>
-                @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"), new { @class = "form-control" })
+            <div class="form-group">
+                <label for="@Html.IdFor(x => x.ForumSelected)">@T("Forum.SelectTheForumToMoveTopic")</label>
+                @Html.DropDownListFor(x => x.ForumSelected, Model.Forums, new { @class = "form-control" })
             </div>
-
             <div class="options my-3">
                 <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-reply"></i>
 					<span>@T("Forum.Submit")</span>
 				</button>
-                <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.Id, slug = Model.TopicSeName })')">
+                <a class="btn btn-secondary" href="@Url.RouteUrl("TopicSlug", new { id = Model.Id, slug = Model.TopicSeName })">
+                    <i class="fa fa-times"></i>
                     <span>@T("Forum.Cancel")</span>
-                </button>
+                </a>
             </div>
         </div>
     </div>

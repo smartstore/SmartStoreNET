@@ -113,13 +113,12 @@ else
 	</div>
 }
 
-<form method="POST" action="@Url.Action("Create", "Import", new { area = "Admin" })">
-	@{Html.SmartStore().Window()
-		.Name("import-profile-dialog")
-		.Title(T("Common.Profile") + " - " + T("Admin.Common.AddNew"))
-		.RenderAtPageEnd(false)
-		.HtmlAttribute("data-profile", T("Common.Profile").Text)
-		.Content(@<text>
+@{Html.SmartStore().Window()
+	.Name("import-profile-dialog")
+	.Title(T("Common.Profile") + " - " + T("Admin.Common.AddNew"))
+	.HtmlAttribute("data-profile", T("Common.Profile").Text)
+	.Content(@<text>
+        <form method="POST" action="@Url.Action("Create", "Import", new { area = "Admin" })" class="import-profile-form">
 			<p class="text-muted">
 				@T("Admin.DataExchange.Import.ProfileCreationNote")
 			</p>
@@ -146,14 +145,14 @@ else
 					&nbsp;
 				</div>
 			</div>
-		</text>)
-		.FooterContent(@<text>
-			<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-			<button type="submit" class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
-		</text>)
-		.Render();
-	}
-</form>
+        </form>
+	</text>)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+		<button type="button" class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
+	</text>)
+	.Render();
+}
 
 <script>
 	window['onUploadCompleted'] = function (e, el, data) {
@@ -175,6 +174,11 @@ else
 			e.preventDefault();
 			$('#import-profile-dialog').modal('show');
 			return false;
+        });
+
+		// submit dialog form
+        $('#import-profile-dialog').on('click', '.btn-primary', function () {
+			$('#import-profile-dialog').find('.import-profile-form').submit();
 		});
 
 		// start task

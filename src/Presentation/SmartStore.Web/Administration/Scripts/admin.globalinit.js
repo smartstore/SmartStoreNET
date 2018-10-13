@@ -24,7 +24,7 @@
 		},
 		// switch
 		function (ctx) {
-			ctx.find(".adminData > input[type=checkbox], .multi-store-setting-control > input[type=checkbox]").each(function (i, el) {
+            ctx.find(".adminData > input[type=checkbox], .multi-store-setting-control > input[type=checkbox], .switcher > input[type=checkbox]").each(function (i, el) {
 				var wrap = $(el)
 					.wrap('<label class="switch"></label>')
 					.after('<span class="switch-toggle" data-on="' + window.Res['Common.On'] + '" data-off="' + window.Res['Common.Off'] + '"></span>');
@@ -117,6 +117,19 @@
             }
 		});
 
+        // Range slider
+        $(document).on('input', '.range-slider > .form-control-range[data-target]', function (e) {
+            // move invariant value from slider to an associated hidden field
+            // as formatted value. Client validation will fail otherwise.
+            var el = $(this);
+
+            if (el.parent().is('.color-opacity-slider')) {
+                el.parent().css('--slider-value', el.val());
+            }
+
+            $(el.data('target')).val(SmartStore.globalization.formatNumber(parseFloat(el.val())));
+        });
+
 		// Because we restyled the grid, the filter dropdown does not position
 		// correctly anymore. We have to reposition it.
 		Hacks.Telerik.handleGridFilter();
@@ -127,55 +140,21 @@
         var sectionHeader = $('.section-header');
         var sectionHeaderHasButtons = undefined;
 
-        $(window).on("scroll resize", function (e) {
-            if (sectionHeaderHasButtons === undefined) {
-                sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
-            }
-            if (sectionHeaderHasButtons === true) {
-            	var y = $(this).scrollTop();
-                sectionHeader.toggleClass("sticky", y >= navbarHeight);
-            }
-        }).trigger('resize');
+        if (!sectionHeader.hasClass('nofix')) {
+            $(window).on("scroll resize", function (e) {
+                if (sectionHeaderHasButtons === undefined) {
+                    sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
+                }
+                if (sectionHeaderHasButtons === true) {
+                    var y = $(this).scrollTop();
+                    sectionHeader.toggleClass("sticky", y >= navbarHeight);
+                }
+            }).trigger('resize');
+        }
 
         $(window).on('load', function () {
-
         	// swap classes onload and domready
         	html.removeClass("loading").addClass("loaded");
-
-        	// make #content fit into viewspace
-        	var fitContentToWindow = function (initial) {
-        		var content = $('#content');
-
-        		if (!content.length)
-        			return;
-
-				var height = initialHeight = content.outerHeight(false),
-                             outerHeight,
-                             winHeight = $(window).height(),
-                             top,
-                             offset = 0;
-
-        		if (initial === true) {
-        			top = content.offset().top;
-					content
-						.data("initial-height", initialHeight)
-						.data("initial-offset", offset)
-						.data("initial-top", top);
-        		}
-        		else {
-        			top = content.data("initial-top");
-        			offset = content.data("initial-offset");
-        			initialHeight = content.data("initial-height");
-        		}
-
-				content.css("min-height", Math.max(initialHeight, winHeight - offset - top) + "px");
-			};
-
-			if (!$('body').is('.popup.bare')) {
-				fitContentToWindow(true);
-				$(window).on("resize", fitContentToWindow);
-			}
-
         });
 
     });

@@ -29,12 +29,20 @@ html {
 }
 
 body { 
-    background: $site-bg; 
-}
+    background: $site-bg;
 
-body.popup { 
-    padding: 1.25rem; 
-    background: $body-bg;
+    &.popup { 
+        padding: 1.25rem; 
+        background: $body-bg;
+    }
+
+    &.bare {
+        padding: 0;
+        margin: 0;
+        background: $body-bg;
+        border: 0;
+        overflow-y: auto;
+    }
 }
 
 #header {

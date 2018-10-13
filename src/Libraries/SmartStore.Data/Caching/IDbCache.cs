@@ -77,7 +77,7 @@ namespace SmartStore.Data.Caching
 		void RequestInvalidateItem(string key);
 	}
 
-	internal class NullDbCache : IDbCache
+	public class NullDbCache : IDbCache
 	{
 		public bool Enabled
 		{

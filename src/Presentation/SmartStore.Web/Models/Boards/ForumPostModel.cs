@@ -21,6 +21,7 @@ namespace SmartStore.Web.Models.Boards
         public bool IsCustomerGuest { get; set; }
 
         public string PostCreatedOnStr { get; set; }
+        public bool Published { get; set; }
 
         public bool ShowCustomersPostCount { get; set; }
         public int ForumPostCount { get; set; }
@@ -37,6 +38,10 @@ namespace SmartStore.Web.Models.Boards
         public string FormattedSignature { get; set; }
 
         public int CurrentTopicPage { get; set; }
+
+        public bool AllowVoting { get; set; }
+        public bool Vote { get; set; }
+        public int VoteCount { get; set; }
 
         public CustomerAvatarModel Avatar { get; set; }
     }

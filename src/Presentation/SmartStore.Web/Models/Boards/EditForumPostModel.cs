@@ -12,7 +12,9 @@ namespace SmartStore.Web.Models.Boards
     {
         public int ForumTopicId { get; set; }
         public bool IsEdit { get; set; }
+        public bool Published { get; set; }
         public bool DisplayCaptcha { get; set; }
+        public bool IsFirstPost { get; set; }
 
         [AllowHtml]
         public string Text { get; set; }
@@ -22,8 +24,12 @@ namespace SmartStore.Web.Models.Boards
         public string ForumTopicSubject { get; set; }
         public string ForumTopicSeName { get; set; }
 
+        public bool IsModerator { get; set; }
         public bool IsCustomerAllowedToSubscribe { get; set; }
         public bool Subscribed { get; set; }
+
+        public bool IsCustomerAllowedToEdit { get; set; }
+        public int CustomerId { get; set; }
     }
 
     public class EditForumPostValidator : AbstractValidator<EditForumPostModel>

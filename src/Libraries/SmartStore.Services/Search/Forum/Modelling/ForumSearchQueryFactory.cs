@@ -83,6 +83,9 @@ namespace SmartStore.Services.Search.Modelling
                 .WithCurrency(_services.WorkContext.WorkingCurrency)
                 .BuildFacetMap(!isInstantSearch);
 
+            // Visibility.
+            query.VisibleOnly(_services.WorkContext.CurrentCustomer, !QuerySettings.IgnoreAcl);
+
             // Store.
             if (!QuerySettings.IgnoreMultiStore)
             {

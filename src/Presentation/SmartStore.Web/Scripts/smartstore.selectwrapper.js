@@ -141,12 +141,12 @@
                 return;
             }
 
-            if (Modernizr.touchevents && !sel.hasClass("skin")) {
-                if (sel.find('option[data-color], option[data-imageurl]').length === 0) {
-                    // skip skinning if device is mobile and no rich content exists (color & image)
-                    return;
-                }
-            }
+            //if (Modernizr.touchevents && !sel.hasClass("skin")) {
+            //    if (sel.find('option[data-color], option[data-imageurl]').length === 0) {
+            //        // skip skinning if device is mobile and no rich content exists (color & image)
+            //        return;
+            //    }
+            //}
 
             var placeholder = getPlaceholder();
 

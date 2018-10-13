@@ -25,6 +25,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Domain.Forums;
 
 namespace SmartStore.Services.Customers
 {
@@ -151,8 +152,16 @@ namespace SmartStore.Services.Customers
 					model["ForumPosts"] = forumPosts.Select(x => _messageModelProvider.CreateModelPart(x, true)).ToList();
 				}
 
-				// Product reviews
-				var productReviews = customer.CustomerContent.OfType<ProductReview>();
+                // Forum post votes
+                var forumPostVotes = customer.CustomerContent.OfType<ForumPostVote>();
+                if (forumPostVotes.Any())
+                {
+                    ignoreMemberNames = new string[] { "CustomerId", "UpdatedOn" };
+                    model["ForumPostVotes"] = forumPostVotes.Select(x => _messageModelProvider.CreateModelPart(x, true, ignoreMemberNames)).ToList();
+                }
+
+                // Product reviews
+                var productReviews = customer.CustomerContent.OfType<ProductReview>();
 				if (productReviews.Any())
 				{
 					model["ProductReviews"] = productReviews.Select(x => _messageModelProvider.CreateModelPart(x, true)).ToList();

@@ -22,7 +22,8 @@ namespace SmartStore.Data.Migrations
                 else
                 {
                     Sql(@"SET LOCK_TIMEOUT 20000;");
-                    DropIndex("Log", "IX_Log_ContentHash");
+                    // SQL CE: DropIndex fails during installation, IF EXISTS not supported.
+                    //DropIndex("Log", "IX_Log_ContentHash");
                     Sql(@"DELETE FROM Log;");
                 }
             }

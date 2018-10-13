@@ -55,18 +55,25 @@
 		}
 
 		// Adapt to jQuery validate
-		if (typeof $.validator !== undefined) {
-			$.extend($.validator.methods, {
-				number: function (value, element) {
-					return this.optional(element) || !isNaN(g.parseFloat(value));
+        if (typeof $.validator !== undefined) {
+
+            function _getValue(value, element) {
+                return $(element).is('[type=range]')
+                    ? parseFloat(value)
+                    : g.parseFloat(value);
+            }
+
+            $.extend($.validator.methods, {
+                number: function (value, element) {
+                    return this.optional(element) || !isNaN(_getValue(value, element));
 				},
 				date: function (value, element) {
 					if (this.optional(element)) return true;
 					var validPatterns = ['L LTS', 'L LT', 'L', 'LTS', 'LT'];
 					return moment(value, $(element).data('format') || validPatterns, true /* exact */).isValid();
 				},
-				range: function (value, element, param) {
-					var val = g.parseFloat(value);
+                range: function (value, element, param) {
+                    var val = _getValue(value, element);
 					return this.optional(element) || (val >= param[0] && val <= param[1]);
 				}
 			});

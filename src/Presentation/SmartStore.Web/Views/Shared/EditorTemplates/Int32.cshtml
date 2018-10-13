@@ -21,12 +21,30 @@
 			return ViewData["postfix"] as string;
 		}
 	}
+
+	private string CssClass
+	{
+		get
+		{
+			var cls = "numerictextbox-group flex-grow-1";
+
+			if (ViewData.ContainsKey("size"))
+			{
+				cls += " numerictextbox-group-" + ViewData["size"].Convert<string>();
+			}
+
+			return cls;
+		}
+	}
 }
 
-<div class="numerictextbox-group flex-grow-1">
+<div class="@CssClass">
 	@(Html.Telerik().IntegerTextBox()
 			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
 			.EmptyMessage(T("Common.EnterValue"))
+			.MinValue(ViewData["min"].Convert<int?>())
+			.MaxValue(ViewData["max"].Convert<int?>())
+			.IncrementStep(ViewData["step"].Convert<int?>() ?? 1)
 			.Value(Value)
 	)
 

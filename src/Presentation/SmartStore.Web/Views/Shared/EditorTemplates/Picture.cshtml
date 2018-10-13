@@ -23,6 +23,14 @@
 			return true;
 		}
 	}
+
+	private bool Compact
+	{
+		get
+		{
+			return ViewData["compact"].Convert<bool?>() == true;
+		}
+	}
 }
 
 @{
@@ -33,19 +41,22 @@
 	var picture = pictureService.GetPictureById(pictureId);
 }
 
-<div class="form-row align-items-center fileupload-container">
-	<div class="col-auto">
-		@Html.HiddenFor(x => x, new { @class = "hidden" })
-		<img src="@Url.Picture(pictureId, mediaSettings.ProductThumbPictureSize)" style="max-width: 100px; max-height: 64px" class="img-thumbnail" alt="" />
+<div class="fileupload-container">
+	<div class="fileupload-thumb-stage">
+		<div class="fileupload-thumb" style="background-image: url('@Url.Picture(pictureId, mediaSettings.ProductThumbPictureSize)')">
+			@Html.HiddenFor(x => x, new { @class = "hidden" })
+			@*<img src="@Url.Picture(pictureId, mediaSettings.ProductThumbPictureSize)" style="max-width: 64px; max-height: 64px" class="yimg-thumbnail" alt="" />*@
+		</div>
 	</div>
 
-	<div class="col">
+	<div class="fileupload-controls">
 		@(Html.SmartStore().FileUploader()
 			.UploadUrl(Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, validate = ValidatePicture, area = "Admin" }))
 			.HtmlAttribute("data-fallback-url", pictureService.GetFallbackUrl(mediaSettings.ProductThumbPictureSize))
 			.AcceptedFileTypes("gif|jpe?g|png")
 			.ShowRemoveButton(picture != null)
 			.ShowRemoveButtonAfterUpload(true)
+			.Compact(ViewData["compact"].Convert<bool?>() == true)
 			.OnUploadCompletedHandlerName("onUploadCompleted_" + random)
 		)
 	</div>

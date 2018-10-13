@@ -14,7 +14,6 @@ using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -52,9 +51,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPaymentService _paymentService;
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly IOrderService _orderService;
-        private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
-		private readonly ISettingService _settingService;
         private readonly OrderSettings _orderSettings;
         private readonly PaymentSettings _paymentSettings;
         private readonly AddressSettings _addressSettings;
@@ -66,47 +63,54 @@ namespace SmartStore.Web.Controllers
 
 		#region Constructors
 
-		public CheckoutController(IWorkContext workContext, IStoreContext storeContext,
-            IShoppingCartService shoppingCartService, ILocalizationService localizationService, 
-            ITaxService taxService, ICurrencyService currencyService, 
-            IPriceFormatter priceFormatter, IOrderProcessingService orderProcessingService,
-            ICustomerService customerService,  IGenericAttributeService genericAttributeService,
+		public CheckoutController(
+            IWorkContext workContext,
+            IStoreContext storeContext,
+            IShoppingCartService shoppingCartService, 
+            ILocalizationService localizationService, 
+            ITaxService taxService, 
+            ICurrencyService currencyService, 
+            IPriceFormatter priceFormatter, 
+            IOrderProcessingService orderProcessingService,
+            ICustomerService customerService,
+            IGenericAttributeService genericAttributeService,
             ICountryService countryService,
-            IStateProvinceService stateProvinceService, IShippingService shippingService,
+            IStateProvinceService stateProvinceService, 
+            IShippingService shippingService,
 			IPaymentService paymentService, 
 			IOrderTotalCalculationService orderTotalCalculationService,
-            IOrderService orderService, IWebHelper webHelper,
-            HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
+            IOrderService orderService,
+            HttpContextBase httpContext,
             OrderSettings orderSettings, 
-            PaymentSettings paymentSettings, AddressSettings addressSettings,
-            ShoppingCartSettings shoppingCartSettings, ShippingSettings shippingSettings,
-			ISettingService settingService, PluginMediator pluginMediator)
+            PaymentSettings paymentSettings,
+            AddressSettings addressSettings,
+            ShoppingCartSettings shoppingCartSettings,
+            ShippingSettings shippingSettings,
+			PluginMediator pluginMediator)
         {
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._shoppingCartService = shoppingCartService;
-            this._localizationService = localizationService;
-            this._taxService = taxService;
-            this._currencyService = currencyService;
-            this._priceFormatter = priceFormatter;
-            this._orderProcessingService = orderProcessingService;
-            this._customerService = customerService;
-            this._genericAttributeService = genericAttributeService;
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._shippingService = shippingService;
-            this._paymentService = paymentService;
-            this._orderTotalCalculationService = orderTotalCalculationService;
-            this._orderService = orderService;
-            this._webHelper = webHelper;
-            this._httpContext = httpContext;
-			this._settingService = settingService;
-            this._orderSettings = orderSettings;
-            this._paymentSettings = paymentSettings;
-            this._addressSettings = addressSettings;
-            this._shippingSettings = shippingSettings;
-            this._shoppingCartSettings = shoppingCartSettings;
-			this._pluginMediator = pluginMediator;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _shoppingCartService = shoppingCartService;
+            _localizationService = localizationService;
+            _taxService = taxService;
+            _currencyService = currencyService;
+            _priceFormatter = priceFormatter;
+            _orderProcessingService = orderProcessingService;
+            _customerService = customerService;
+            _genericAttributeService = genericAttributeService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _shippingService = shippingService;
+            _paymentService = paymentService;
+            _orderTotalCalculationService = orderTotalCalculationService;
+            _orderService = orderService;
+            _httpContext = httpContext;
+            _orderSettings = orderSettings;
+            _paymentSettings = paymentSettings;
+            _addressSettings = addressSettings;
+            _shippingSettings = shippingSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+			_pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -131,19 +135,19 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected CheckoutBillingAddressModel PrepareBillingAddressModel(int? selectedCountryId = null)
         {
+            var customer = _workContext.CurrentCustomer;
             var model = new CheckoutBillingAddressModel();
-            //existing addresses
-            var addresses = _workContext.CurrentCustomer.Addresses.Where(a => a.Country == null || a.Country.AllowsBilling).ToList();
+            
+            // Existing addresses.
+            var addresses = customer.Addresses.Where(a => a.Country == null || a.Country.AllowsBilling).ToList();
             foreach (var address in addresses)
             {
                 var addressModel = new AddressModel();
-                addressModel.PrepareModel(address, 
-                    false, 
-                    _addressSettings);
+                addressModel.PrepareModel(address, false, _addressSettings);
                 model.ExistingAddresses.Add(addressModel);
             }
 
-            //new address
+            // New address.
             model.NewAddress.CountryId = selectedCountryId;
             model.NewAddress.PrepareModel(null,
                 false,
@@ -151,25 +155,27 @@ namespace SmartStore.Web.Controllers
                 _localizationService,
                 _stateProvinceService,
                 () => _countryService.GetAllCountriesForBilling());
+            model.NewAddress.Email = customer?.Email;
+
             return model;
         }
 
         [NonAction]
         protected CheckoutShippingAddressModel PrepareShippingAddressModel(int? selectedCountryId = null)
         {
+            var customer = _workContext.CurrentCustomer;
             var model = new CheckoutShippingAddressModel();
-            //existing addresses
-            var addresses = _workContext.CurrentCustomer.Addresses.Where(a => a.Country == null || a.Country.AllowsShipping).ToList();
+            
+            // Existing addresses.
+            var addresses = customer.Addresses.Where(a => a.Country == null || a.Country.AllowsShipping).ToList();
             foreach (var address in addresses)
             {
                 var addressModel = new AddressModel();
-                addressModel.PrepareModel(address,
-                    false,
-                    _addressSettings);
+                addressModel.PrepareModel(address, false, _addressSettings);
                 model.ExistingAddresses.Add(addressModel);
             }
 
-            //new address
+            // New address.
             model.NewAddress.CountryId = selectedCountryId;
             model.NewAddress.PrepareModel(null,
                 false,
@@ -177,6 +183,8 @@ namespace SmartStore.Web.Controllers
                 _localizationService,
                 _stateProvinceService,
                 () => _countryService.GetAllCountriesForShipping());
+            model.NewAddress.Email = customer?.Email;
+
             return model;
         }
 
@@ -468,16 +476,14 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult BillingAddress()
         {
-            //validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
                 return new HttpUnauthorizedResult();
 
-            //model
             var model = PrepareBillingAddressModel();
             return View(model);
         }
@@ -529,13 +535,12 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult ShippingAddress()
         {
-            //validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
                 return new HttpUnauthorizedResult();
 
             if (!cart.RequiresShipping())
@@ -545,7 +550,6 @@ namespace SmartStore.Web.Controllers
                 return RedirectToAction("ShippingMethod");
             }
 
-            //model
             var model = PrepareShippingAddressModel();
             return View(model);
         }
@@ -980,7 +984,7 @@ namespace SmartStore.Web.Controllers
 
             return PartialView(model);
         }
+        
         #endregion
-
     }
 }

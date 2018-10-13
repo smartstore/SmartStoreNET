@@ -30,10 +30,10 @@
             
             @if (isPartial)
             {        
-                <button class="btn btn-outline-info btn-flat" onclick="setLocation('@Url.Action("ActiveDiscussions")')">
+                <a class="btn btn-outline-info btn-flat" href="@Url.Action("ActiveDiscussions")">
                     <i class="fa fa-th-list"></i>
                     <span>@T("Forum.ActiveDiscussions.ViewAll")</span>
-                </button>
+                </a>
             }
         </div>
     </div>
@@ -91,6 +91,7 @@
                             @if (@topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                    .QueryParam("page")
                                     .HtmlAttributes(new { @class = "topics-pager" })
                                     .WithRenderer<ForumTopicPagerRenderer>()
                                     .ShowPrevious(false)

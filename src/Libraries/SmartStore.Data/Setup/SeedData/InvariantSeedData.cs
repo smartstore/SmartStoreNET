@@ -13306,82 +13306,72 @@ namespace SmartStore.Data.Setup
 		public IList<Poll> Polls()
 		{
 			var defaultLanguage = _ctx.Set<Language>().FirstOrDefault();
-			var poll1 = new Poll()
+			var poll1 = new Poll
 			{
 				Language = defaultLanguage,
 				Name = "How do you like the shop?",
-				SystemKeyword = "RightColumnPoll",
+				SystemKeyword = "Blog",
 				Published = true,
 				DisplayOrder = 1,
 			};
 
-			poll1.PollAnswers.Add(new PollAnswer()
+			poll1.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Excellent",
 				DisplayOrder = 1,
 			});
 
-			poll1.PollAnswers.Add(new PollAnswer()
+			poll1.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Good",
 				DisplayOrder = 2,
 			});
 
-			poll1.PollAnswers.Add(new PollAnswer()
+			poll1.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Poor",
 				DisplayOrder = 3,
 			});
 
-			poll1.PollAnswers.Add(new PollAnswer()
+			poll1.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Very bad",
 				DisplayOrder = 4,
 			});
 
 
-			//_pollAnswerRepository.Table.Where(x => x.DisplayOrder < 5).Each(y =>
-			//    {
-			//        poll1.PollAnswers.Add(y);
-			//    });
-
-			var poll2 = new Poll()
+			var poll2 = new Poll
 			{
 				Language = defaultLanguage,
 				Name = "How often do you buy online?",
-				SystemKeyword = "RightColumnPoll",
+				SystemKeyword = "Blog",
 				Published = true,
 				DisplayOrder = 2,
 			};
 
-			poll2.PollAnswers.Add(new PollAnswer()
+			poll2.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Daily",
 				DisplayOrder = 1,
 			});
 
-			poll2.PollAnswers.Add(new PollAnswer()
+			poll2.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Once a week",
 				DisplayOrder = 2,
 			});
 
-			poll2.PollAnswers.Add(new PollAnswer()
+			poll2.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Every two weeks",
 				DisplayOrder = 3,
 			});
 
-			poll2.PollAnswers.Add(new PollAnswer()
+			poll2.PollAnswers.Add(new PollAnswer
 			{
 				Name = "Once a month",
 				DisplayOrder = 4,
 			});
-
-			//_pollAnswerRepository.Table.Where(x => x.DisplayOrder > 4).Each(y =>
-			//{
-			//    poll2.PollAnswers.Add(y);
-			//});
 
 
 			var entities = new List<Poll>

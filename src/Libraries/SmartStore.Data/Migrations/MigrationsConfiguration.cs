@@ -453,6 +453,7 @@
             builder.Delete(
                 "Admin.Configuration.Settings.Search.DefaultSortOrderMode",
                 "Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts",
+                "Admin.Configuration.Settings.CustomerUser.DefaultAvatarEnabled",
                 "Forum.Search.LimitResultsToPrevious.AllResults",
                 "Forum.Search.LimitResultsToPrevious.1day",
                 "Forum.Search.LimitResultsToPrevious.7days",
@@ -509,6 +510,73 @@
             builder.AddOrUpdate("Search.RelatedSearchTerms",
                 "Related search terms",
                 "Verwandte Suchbegriffe");
+
+            builder.AddOrUpdate("Plugins.CannotLoadModule",
+                "The plugin or provider \"{0}\" cannot be loaded.",
+                "Das Plugin oder der Provider \"{0}\" kann nicht geladen werden.");
+
+            builder.AddOrUpdate("Admin.System.ScheduleTasks.RunPerMachine",
+                "Run per machine",
+                "Pro Maschine ausführen",
+                "Indicates whether the task is executed decidedly on each machine of a web farm.",
+                "Gibt an, ob die Aufgabe auf jeder Maschine einer Webfarm dezidiert ausgeführt wird.");
+
+            builder.Delete("Address.Fields.Required.Hint");
+
+            builder.AddOrUpdate("Common.FormFields.Required.Hint",
+                "* Input elements with asterisk are required and have to be filled out.",
+                "* Eingabefelder mit Sternchen sind Pflichfelder und müssen ausgefüllt werden.");
+
+            builder.AddOrUpdate("Forum.Post.Vote.OnlyRegistered",
+                "Only registered users can vote for posts.",
+                "Nur registrierte Benutzer können Beiträge bewerten.");
+
+            builder.AddOrUpdate("Forum.Post.Vote.OwnPostNotAllowed",
+                "You cannot vote for your own post.",
+                "Sie können nicht Ihren eigenen Beitrag bewerten.");
+
+            builder.AddOrUpdate("Forum.Post.Vote.SuccessfullyVoted",
+                "Thank you for your vote.",
+                "Danke für Ihre Bewertung.");
+
+            builder.AddOrUpdate("Common.Liked", "Liked", "Gefällt");
+            builder.AddOrUpdate("Common.LikeIt", "I like it", "Gefällt mir");
+            builder.AddOrUpdate("Common.DoNotLikeIt", "I do not like it anymore", "Gefällt mir nicht mehr");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Forums.AllowCustomersToVoteOnPosts",
+                "Allow customers to vote on posts",
+                "Benutzer können Beiträge bewerten",
+                "Specifies whether customers can vote on posts.",
+                "Legt fest, ob Benutzer Beiträge bewerten können.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Forums.AllowGuestsToVoteOnPosts",
+                "Allow guests to vote on posts",
+                "Gäste können Beiträge bewerten",
+                "Specifies whether guests can vote on posts.",
+                "Legt fest, ob Gäste Beiträge bewerten können.");
+
+            // Typos.
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements")
+                .Value("de", "Voraussetzungen");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.DiscountRequirementType")
+                .Value("de", "Typ der Voraussetzung");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Hint")
+                .Value("de", "Voraussetzungen für den Rabatt");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.Remove")
+                .Value("de", "Voraussetzung für den Rabatt entfernen");
+            builder.AddOrUpdate("Admin.Promotions.Discounts.Requirements.SaveBeforeEdit")
+                .Value("de", "Sie müssen den Rabatt zunächst speichern, bevor Sie Voraussetzungen für seine Anwendung festlegen können");
+
+            builder.AddOrUpdate("Common.Voting", "Voting", "Abstimmung");
+            builder.AddOrUpdate("Common.Answer", "Answer", "Antwort");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description",
+                "Manage form fields that are displayed during registration.",
+                "Verwalten Sie Formularfelder, die während der Registrierung angezeigt werden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description",
+                "Manage form fields that are displayed during checkout and on \"My account\" page.",
+                "Verwalten Sie Formularfelder, die während des Checkout-Prozesses und im \"Mein Konto\" Bereich angezeigt werden.");
         }
     }
 }

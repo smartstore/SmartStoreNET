@@ -498,7 +498,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.StartDate, mo => mo.Ignore())
 				.ForMember(dest => dest.EndDate, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.UsernamesEnabled, mo => mo.Ignore())
+                .ForMember(dest => dest.GridPageSize, mo => mo.Ignore());
 			CreateMap<PollModel, Poll>()
 				.ForMember(dest => dest.PollAnswers, mo => mo.Ignore())
 				.ForMember(dest => dest.Language, mo => mo.Ignore())

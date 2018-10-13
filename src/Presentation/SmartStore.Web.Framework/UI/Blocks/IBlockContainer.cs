@@ -2,10 +2,10 @@
 
 namespace SmartStore.Web.Framework.UI.Blocks
 {
-	public interface IBlockContainer<out T> where T : IBlock
+	public interface IBlockContainer
 	{
 		string BlockType { get; }
-		T Block { get; }
+		IBlock Block { get; }
 		IBlockMetadata Metadata { get; }
 		//IBlockHandler<T> Handler { get; }
 		

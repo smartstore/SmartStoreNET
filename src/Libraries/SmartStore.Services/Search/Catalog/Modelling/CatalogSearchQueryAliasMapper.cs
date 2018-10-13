@@ -69,10 +69,15 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected void CachedLocalizedAlias(string localeKeyGroup, Action<LocalizedProperty> caching)
 		{
-			_localizedPropertyRepository.TableUntracked
-				.Where(x => x.LocaleKeyGroup == localeKeyGroup && x.LocaleKey == "Alias" && x.LocaleValue != null && x.LocaleValue != string.Empty)
-				.ToList()
-				.ForEach(caching);
+            var properties = _localizedPropertyRepository.TableUntracked
+                .Where(x => x.LocaleKeyGroup == localeKeyGroup && x.LocaleKey == "Alias")
+                .ToList();
+
+            // SQL CE: leads to an error when checked in the query.
+            properties
+                .Where(x => !string.IsNullOrWhiteSpace(x.LocaleValue))
+                .ToList()
+                .ForEach(caching);
 		}
 
 		#region Specification Attributes

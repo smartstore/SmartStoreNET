@@ -211,6 +211,7 @@
     <Compile Include="Customers\CustomerSearchQuery.cs" />
     <Compile Include="Customers\Events\CustomerAnonymizedEvent.cs" />
     <Compile Include="Customers\Events\CustomerExportedEvent.cs" />
+    <Compile Include="Customers\Events\CustomerLogedInEvent.cs" />
     <Compile Include="Customers\Events\CustomerRegisteredEvent.cs" />
     <Compile Include="Customers\GdprTool.cs" />
     <Compile Include="Customers\IGdprTool.cs" />

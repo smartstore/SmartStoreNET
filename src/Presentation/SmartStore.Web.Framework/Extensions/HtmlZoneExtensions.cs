@@ -23,16 +23,23 @@ namespace SmartStore.Web.Framework
 			internal const string ItemsKey = "DocumentTail.Snippets";
 			private const string UniqueKeysKey = "DocumentTail.UniqueKeys";
 
+			private readonly ViewContext _viewContext;
+			private readonly TextWriter _originalViewContextWriter;
 			private readonly WebViewPage _page;
 			private readonly string _targetZone;
 			private readonly ZoneInjectMode _injectMode;
 
-			public DocumentZone(WebViewPage page, string targetZone, ZoneInjectMode injectMode, string key)
+			public DocumentZone(HtmlHelper html, string targetZone, ZoneInjectMode injectMode, string key)
 			{
 				Guard.NotEmpty(targetZone, nameof(targetZone));
 
-				_page = page;
-				_page.OutputStack.Push(new StringWriter());
+				_viewContext = html.ViewContext;
+				_originalViewContextWriter = _viewContext.Writer;
+				_page = (WebViewPage)html.ViewDataContainer;
+
+				var writer = new StringWriter();
+				_page.OutputStack.Push(writer);
+				_viewContext.Writer = writer;
 
 				_targetZone = targetZone;
 				_injectMode = injectMode;
@@ -78,7 +85,10 @@ namespace SmartStore.Web.Framework
 				if (storage == null)
 					return;
 
-				var content = ((StringWriter)_page.OutputStack.Pop()).ToString();
+				var writer = ((StringWriter)_page.OutputStack.Pop());
+				var content = writer.ToString();
+
+				_viewContext.Writer = _originalViewContextWriter;
 
 				if (_injectMode == ZoneInjectMode.Append)
 				{
@@ -109,7 +119,7 @@ namespace SmartStore.Web.Framework
 				return ActionDisposable.Empty;
 			}
 
-			return new DocumentZone((WebViewPage)helper.ViewDataContainer, targetZone, injectMode, key);
+			return new DocumentZone(helper, targetZone, injectMode, key);
 		}
 
 		public static void RenderZone(this HtmlHelper helper, string zone)

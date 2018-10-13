@@ -258,6 +258,9 @@ namespace SmartStore.Services.Messages
 				case ForumPost x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
+                case ForumPostVote x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
 				case Forum x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
@@ -887,7 +890,27 @@ namespace SmartStore.Services.Messages
 			return m;
 		}
 
-		protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
+        protected virtual object CreateModelPart(ForumPostVote part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
+
+            var m = new Dictionary<string, object>
+            {
+                { "ForumPostId", part.ForumPostId },
+                { "Vote", part.Vote },
+                { "TopicId", part.ForumPost.TopicId },
+                { "TopicSubject", part.ForumPost.ForumTopic.Subject.NullEmpty() },
+            };
+
+            ApplyCustomerContentPart(m, part, messageContext);
+
+            PublishModelPartCreatedEvent(part, m);
+
+            return m;
+        }
+
+        protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));

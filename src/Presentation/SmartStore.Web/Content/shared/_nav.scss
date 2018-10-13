@@ -72,6 +72,28 @@
 		}
 	}
 
+    &.nav-inverse .nav-link {
+        color: rgba($yiq-text-light, 0.4);
+
+		&:hover {
+			color: rgba($yiq-text-light, 0.75);
+		}
+
+		&:hover:not(.active) {
+			background-color: rgba(#fff, 0.08);
+		}
+
+		&:active:not(.active) {
+            color: $yiq-text-light;
+			background-color: rgba(#fff, 0.16);
+		}
+
+		&.active {
+            background-color: transparent;
+			color: $yiq-text-light;
+		}
+    }
+
 	.nav-link:not(.disabled):before {
 		position: absolute;
 		content: '';
@@ -150,20 +172,6 @@
 			border-left-color: theme-color("warning");
 		}
 	}
-}
-
-@include media-breakpoint-up(lg) {
-	/*.nav-aside {
-		flex: 0 0 auto;
-		width: auto;
-		max-width: none;
-	}
-
-	.nav-content {
-		flex-basis: 0;
-		flex-grow: 1;
-		max-width: 100%;
-	}*/
 }
 
 

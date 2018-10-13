@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Search;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Search
 {
@@ -63,6 +65,43 @@ namespace SmartStore.Services.Search
                 default:
                     return this;
             }
+        }
+
+        public ForumSearchQuery VisibleOnly(Customer customer, bool includeCustomerRoles)
+        {
+            if (customer != null)
+            {
+                if (!customer.IsForumModerator())
+                {
+                    // See also LinqForumSearchService.
+                    var publishedCombined = SearchFilter.Combined(
+                        SearchFilter.ByField("published", true).ExactMatch().NotAnalyzed(),
+                        SearchFilter.ByField("customerid", customer.Id).ExactMatch().NotAnalyzed());
+
+                    WithFilter(publishedCombined);
+                }
+
+                if (includeCustomerRoles)
+                {
+                    var allowedRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
+                    if (allowedRoleIds != null && allowedRoleIds.Length > 0)
+                    {
+                        var roleIds = allowedRoleIds.Where(x => x != 0).Distinct().ToList();
+                        if (roleIds.Any())
+                        {
+                            roleIds.Insert(0, 0);
+                            WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
+                        }
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        public ForumSearchQuery PublishedOnly(bool value)
+        {
+            return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
         }
 
         public override ForumSearchQuery HasStoreId(int id)

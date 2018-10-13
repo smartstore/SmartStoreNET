@@ -53,6 +53,12 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
+		public FileUploaderBuilder<TModel> Compact(bool value)
+		{
+			base.Component.Compact = value;
+			return this;
+		}
+
 		public FileUploaderBuilder<TModel> AcceptedFileTypes(string value)
 		{
 			if (value.IsEmpty())

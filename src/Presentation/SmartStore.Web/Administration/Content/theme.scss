@@ -19,6 +19,7 @@
 @import "../../Content/vendors/select2/scss/core.scss";
 @import "../../Content/vendors/colorpicker/scss/_colorpicker.scss";
 @import "../../Content/vendors/datetimepicker/scss/_tempusdominus.scss";
+@import "../../Content/vendors/aos/scss/aos.scss";
 
 
 // Button tweaks:
@@ -90,7 +91,6 @@
 @import '../../Content/shared/_dropdown.scss';
 @import "../../Content/shared/_throbber.scss";
 @import "../../Content/shared/_spinner.scss";
-@import '../../Content/shared/_animate.scss';
 @import "../../Content/shared/_sortable-grip.scss";
 @import "../../Content/shared/_entity-picker.scss";
 @import '../../Content/shared/_choice.scss';

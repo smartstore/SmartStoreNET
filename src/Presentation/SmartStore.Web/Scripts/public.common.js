@@ -170,6 +170,16 @@
         		}
         	});
         }
+
+        // Init reveal on scroll with AOS library
+        if (typeof AOS !== 'undefined') {
+            AOS.init({ once: true });
+        }
+
+        // Parallax
+        if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
+            SmartStore.parallax.init({ context: document.body, selector: '.parallax' });
+        }
         
         applyCommonPlugins($("body"));
     });

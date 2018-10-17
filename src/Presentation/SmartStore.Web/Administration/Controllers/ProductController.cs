@@ -256,7 +256,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.IsEsd = m.IsEsd;
 			p.IsTaxExempt = m.IsTaxExempt;
-			p.TaxCategoryId = m.TaxCategoryId;
+			p.TaxCategoryId = m.TaxCategoryId ?? 0;
 			p.CustomsTariffNumber = m.CustomsTariffNumber;
 			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
@@ -728,6 +728,12 @@ namespace SmartStore.Admin.Controllers
 					Selected = product != null && !setPredefinedValues && tc.Id == product.TaxCategoryId
 				});
 			}
+
+            // Do not pre-select a tax category that is not stored.
+            if (product != null && product.TaxCategoryId == 0)
+            {
+                model.AvailableTaxCategories.Insert(0, new SelectListItem { Text = T("Common.PleaseSelect"), Value = "", Selected = true });
+            }
 
             // delivery times
             var defaultDeliveryTime = _deliveryTimesService.GetDefaultDeliveryTime();

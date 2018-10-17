@@ -265,6 +265,30 @@ table th {
 	@extend .text-muted;
 }
 
+.animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeInDown {
+    from  { opacity: 0; transform: translate3d(0, -20px, 0); }
+    to    { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fadeOutLeft {
+    from  { opacity: 1; }
+    to    { opacity: 0; transform: translate3d(-20px, 0, 0); }
+}
+
+@keyframes fadeOutRight {
+    from  { opacity: 1; }
+    to    { opacity: 0; transform: translate3d(20px, 0, 0); }
+}
+
+.fadeOutLeft    { animation-name: fadeOutLeft; }
+.fadeOutRight   { animation-name: fadeOutRight; }
+.fadeInDown     { animation-name: fadeInDown; }
+
 //
 // Profiler sucks on small screens
 // ------------------------------------------------------

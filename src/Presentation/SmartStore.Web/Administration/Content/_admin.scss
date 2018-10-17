@@ -917,6 +917,13 @@ textarea:not([class*="form-control"]) {
 .admin-config-group {
 	display: block;
 	width: 100%;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+        text-decoration: none;
+        color: inherit;
+    }
 
 	.title,
 	.small-title,
@@ -940,12 +947,36 @@ textarea:not([class*="form-control"]) {
 		margin-bottom: 12px;
 	}
 	.title {
+        display: block;
 		margin: 12px 0;
 	}
 	.small-title {
 		margin: 2px 0;
 		padding: 2px 0;
 	}
+}
+
+a.admin-config-group[data-toggle=collapse] {
+    position: relative;
+
+    &:after {
+	    display: block;
+	    position: absolute;
+	    font-family: FontAwesome;
+	    font-size: 1.2rem;
+	    line-height: 1;
+	    content: "\f107";
+        color: $body-color;
+	    //content: "\f077";
+        right: 0;
+	    top: 50%;
+	    margin-top: -7px;
+	    transition: transform 0.25s ease-in-out;
+    }
+
+    &.collapsed:after {
+        transform: rotate(-90deg);
+    }
 }
 
 

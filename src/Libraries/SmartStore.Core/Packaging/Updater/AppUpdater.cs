@@ -210,7 +210,6 @@ namespace SmartStore.Core.Packaging
 
 		#endregion
 
-
 		#region Migrations
 
 		internal void ExecuteMigrations()
@@ -419,9 +418,9 @@ namespace SmartStore.Core.Packaging
 
         private void DeleteSearchIndex()
         {
-            var tenantPath = CommonHelper.MapPath("~/App_Data/Tenants/Default");
+			var tenantPath = CommonHelper.MapPath(DataSettings.Current.TenantPath);
 
-            try
+			try
             {
                 var indexingDir = new DirectoryInfo(Path.Combine(tenantPath, "Indexing"));
                 if (indexingDir.Exists)
@@ -443,7 +442,6 @@ namespace SmartStore.Core.Packaging
         }
 
 		#endregion
-
 
 		protected override void OnDispose(bool disposing)
 		{

@@ -6,14 +6,6 @@
 
 ; (function ($, window, document, undefined) {
 
-    //var noParallax = $('body').hasClass('no-parallax'),
-    //    win = $(window),
-    //    winHeight = win.height();
-
-    //$('.parallax').each(function (i, el) {
-
-    //});
-
     var initialized = false,
         stages = [],
         win,
@@ -76,21 +68,5 @@
             }
         }
     };
-
-    //SmartStore.parallax = {
-    //    init: function (ctx, selector) {
-    //        if (noParallax)
-    //            return;
-
-    //        selector = selector || '.parallax';
-    //    }
-    //};
-
-    // PARALLAX DATA API
-    // ======================================================
-
-    $(function () {
-        SmartStore.parallax.init();
-    });
 
 })(jQuery, window, document);

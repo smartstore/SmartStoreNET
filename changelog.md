@@ -2,6 +2,9 @@
 
 ## SmartStore.NET 3.2
 
+### Highlights
+* #1202 Search: update to Lucene.NET 4.8
+
 ### New Features
 * **EmailReminder**:
 	* Reminders for open shopping carts

@@ -13,12 +13,20 @@ using SmartStore.Core;
 using System.Web.Mvc;
 
 namespace SmartStore
-{  
-    public static class HttpExtensions
-    {
-        private const string HTTP_CLUSTER_VAR = "HTTP_CLUSTER_HTTPS";
-		private const string HTTP_XFWDPROTO_VAR = "HTTP_X_FORWARDED_PROTO";
+{
+	public static class HttpExtensions
+	{
 		private const string CACHE_REGION_NAME = "SmartStoreNET:";
+
+		private static readonly List<Tuple<string, string>> _sslHeaders = new List<Tuple<string, string>>
+		{
+			new Tuple<string, string>("HTTP_CLUSTER_HTTPS", "on"),
+			new Tuple<string, string>("X-Forwarded-Proto", "https"),
+			new Tuple<string, string>("x-arr-ssl", null),
+			new Tuple<string, string>("X-Forwarded-Protocol", "https"),
+			new Tuple<string, string>("X-Forwarded-Ssl", "on"),
+			new Tuple<string, string>("X-Url-Scheme", "https")
+		};
 
 		/// <summary>
 		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
@@ -28,10 +36,22 @@ namespace SmartStore
 		/// <returns></returns>
 		public static bool IsSecureConnection(this HttpRequestBase request)
         {
-            return (request.IsSecureConnection
-				|| (request.ServerVariables[HTTP_CLUSTER_VAR] != null || request.ServerVariables[HTTP_CLUSTER_VAR] == "on")
-				|| (request.ServerVariables[HTTP_XFWDPROTO_VAR] != null || request.ServerVariables[HTTP_XFWDPROTO_VAR] == "https"));
-        }
+			if (request.IsSecureConnection)
+			{
+				return true;
+			}
+
+			foreach (var tuple in _sslHeaders)
+			{
+				var serverVar = request.ServerVariables[tuple.Item1];
+				if (serverVar != null)
+				{
+					return tuple.Item2 == null || tuple.Item2.Equals(serverVar, StringComparison.OrdinalIgnoreCase);
+				}
+			}
+
+			return false;
+		}
 
 
 		/// <summary>

@@ -29,32 +29,6 @@ namespace SmartStore
 		};
 
 		/// <summary>
-		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
-		/// Works with Cloud's load balancers.
-		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		public static bool IsSecureConnection(this HttpRequestBase request)
-        {
-			if (request.IsSecureConnection)
-			{
-				return true;
-			}
-
-			foreach (var tuple in _sslHeaders)
-			{
-				var serverVar = request.ServerVariables[tuple.Item1];
-				if (serverVar != null)
-				{
-					return tuple.Item2 == null || tuple.Item2.Equals(serverVar, StringComparison.OrdinalIgnoreCase);
-				}
-			}
-
-			return false;
-		}
-
-
-		/// <summary>
 		/// Returns wether the specified url is local to the host or not
 		/// </summary>
 		/// <param name="request"></param>
@@ -124,10 +98,35 @@ namespace SmartStore
 		/// <returns></returns>
 		public static bool IsSecureConnection(this HttpRequest request)
         {
-            return (request.IsSecureConnection || (request.ServerVariables[HTTP_CLUSTER_VAR] != null || request.ServerVariables[HTTP_CLUSTER_VAR] == "on"));
+            return IsSecureConnection(new HttpRequestWrapper(request));
         }
 
-	    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+		/// <summary>
+		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
+		/// Works with Cloud's load balancers.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
+		public static bool IsSecureConnection(this HttpRequestBase request)
+		{
+			if (request.IsSecureConnection)
+			{
+				return true;
+			}
+
+			foreach (var tuple in _sslHeaders)
+			{
+				var serverVar = request.ServerVariables[tuple.Item1];
+				if (serverVar != null)
+				{
+					return tuple.Item2 == null || tuple.Item2.Equals(serverVar, StringComparison.OrdinalIgnoreCase);
+				}
+			}
+
+			return false;
+		}
+
+		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 	    public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
 			CopyCookie(webRequest, httpRequest, FormsAuthentication.FormsCookieName);

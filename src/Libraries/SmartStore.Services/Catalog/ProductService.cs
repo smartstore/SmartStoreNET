@@ -1054,8 +1054,10 @@ namespace SmartStore.Services.Catalog
 				orderby pbi.DisplayOrder
 				select pbi;
 
-			var map = query.Include(x => x.Product)
-				.ToList()
+            var map = query
+                .Include(x => x.Product)
+                .Include(x => x.BundleProduct)
+                .ToList()
 				.ToMultimap(x => x.BundleProductId, x => x);
 
 			return map;

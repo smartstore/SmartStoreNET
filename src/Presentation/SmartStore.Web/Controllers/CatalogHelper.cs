@@ -734,7 +734,7 @@ namespace SmartStore.Web.Controllers
 					{
 						ProductBundleItemAttributeFilter attributeFilter = null;
 
-						if (productBundleItem.FilterOut(pvaValue, out attributeFilter))
+						if (productBundleItem?.Item?.FilterOut(pvaValue, out attributeFilter) ?? false)
 							continue;
 
 						if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)

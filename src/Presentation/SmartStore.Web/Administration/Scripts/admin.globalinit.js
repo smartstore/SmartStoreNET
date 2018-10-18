@@ -127,7 +127,10 @@
                 el.parent().css('--slider-value', el.val());
             }
 
-            $(el.data('target')).val(SmartStore.globalization.formatNumber(parseFloat(el.val())));
+            var g = SmartStore.globalization;
+            var nf = g.culture.numberFormat;
+
+            $(el.data('target')).val(g.formatNumber(parseFloat(el.val())).replace(nf[","], ""));
         });
 
 		// Because we restyled the grid, the filter dropdown does not position

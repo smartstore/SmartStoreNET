@@ -35,6 +35,7 @@
 * Viveum: Supports payment via "Virtual Account Brands" like PayPal.
 * Added options for alternating price display (in badges).
 * #1515 Poll: Add result tab with a list of answers and customers for a poll
+* Added export and import of product tags.
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).

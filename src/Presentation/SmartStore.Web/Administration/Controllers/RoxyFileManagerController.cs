@@ -115,13 +115,24 @@ namespace SmartStore.Admin.Controllers
 		{
 			extension = extension.EmptyNull().ToLower();
 
-			if (extension == ".swf" || extension == ".flv")
-				return "flash";
+            var mimeType = MimeTypes.MapNameToMimeType(extension).EmptyNull();
 
-			if (MimeTypes.MapNameToMimeType(extension).EmptyNull().StartsWith("image"))
+            if (extension == ".swf" || extension == ".flv")
+				return "flash";
+            
+            if (mimeType.StartsWith("image"))
 				return "image";
 
-			return "file";
+            if (mimeType.StartsWith("audio"))
+                return "audio";
+
+            if (mimeType.StartsWith("video"))
+                return "video";
+
+            if (mimeType.EndsWith("/pdf"))
+                return "pdf";
+
+            return "file";
 		}
 
 		private bool IsAllowedFileType(string extension)

@@ -1773,6 +1773,9 @@
     <Content Include="Views\Shared\Partials\Customer.Avatar.cshtml" />
     <Content Include="Views\Shared\Layouts\_Layout.Bare.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Range.cshtml" />
+    <Content Include="Themes\Flex\Content\_accordion.scss">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,85 @@
+﻿/// <reference path="../../../Content/shared/_variables-shared.scss" />
+/// <reference path="_variables.scss" />
+/// <reference path="../../../Content/bs4/scss/bootstrap.scss" />
+
+//
+// Accordion
+// --------------------------------------------------
+
+.accordion {
+    padding-bottom: 1px;
+
+    .card+.card {
+        margin-top: -2px;
+    }
+
+    .card-title {
+        margin: 0;
+        transition: background-color ease-in-out 0.12s;
+
+        &:hover {
+            background-color: $gray-200;
+        }
+
+        .fa-chevron {
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+            top: 50%;
+            margin-top: -8px;
+            opacity: 0.4;
+            transition: transform 0.35s ease-out;
+        }
+
+        .card-title-link {
+            background-color: $danger;
+            color: #fff !important;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: block;
+            position: relative;
+            vertical-align: middle;
+            padding: 15px 12px 15px 40px;
+
+            &[aria-expanded=true] .fa-chevron {
+                opacity: 1;
+                transform: rotate(-180deg);
+            }
+
+            &.collapsed {
+                background-color: $card-cap-bg !important;
+                color: inherit !important;
+            }
+        }
+
+        .hint {
+            display: inline-block;
+            font-size: 0.85rem;
+            opacity: 0.4;
+            line-height: 1.5;
+        }
+    }
+
+    .card-header {
+        padding: 0; 
+    }
+    
+    .card,
+    .card .card-header { 
+        border-radius: 0;
+    }
+
+    .card:first-child,
+    .card:first-child .card-header,
+    .card:first-child .card-title-link { 
+        border-top-left-radius: $border-radius;  
+        border-top-right-radius: $border-radius;
+    }
+
+    .card:last-child,
+    .card:last-child .card-header{ 
+        border-bottom-left-radius: $border-radius;  
+        border-bottom-right-radius: $border-radius;
+    }
+}

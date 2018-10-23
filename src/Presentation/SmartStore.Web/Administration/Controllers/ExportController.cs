@@ -160,18 +160,32 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (System.IO.File.Exists(path) && !list.Any(x => x.FilePath == path))
 			{
-				var fi = new ExportFileDetailsModel.FileInfo();
-				fi.FilePath = path;
-				fi.FileName = Path.GetFileName(path);
-				fi.FileExtension = Path.GetExtension(path);
-				fi.DisplayOrder = (fi.FileExtension.IsCaseInsensitiveEqual(".zip") ? 0 : 1);
+                var fi = new ExportFileDetailsModel.FileInfo
+                {
+                    FilePath = path,
+                    FileName = Path.GetFileName(path),
+                    FileExtension = Path.GetExtension(path)
+                };
 
-				if (fileInfo != null)
+                fi.DisplayOrder = fi.FileExtension.IsCaseInsensitiveEqual(".zip") ? 0 : 1;
+
+                if (fileInfo != null)
 				{
-					if (fileInfo.Label.HasValue())
-						fi.Label = fileInfo.Label;
-					else if (fileInfo.IsDataFile)
-						fi.Label = T("Admin.Common.Data");
+                    fi.EntityType = fileInfo.EntityType;
+
+                    if (fileInfo.Label.HasValue())
+                    {
+                        fi.Label = fileInfo.Label;
+                    }
+                    else
+                    {
+                        fi.Label = T("Admin.Common.Data");
+
+                        if (fileInfo.EntityType.HasValue)
+                        {
+                            fi.Label = string.Concat(fi.Label, " ", fileInfo.EntityType.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext));
+                        }
+                    }
 				}
 
 				if (store != null)
@@ -342,12 +356,13 @@ namespace SmartStore.Admin.Controllers
 			model.FolderName = profile.FolderName;
 			model.FileNamePattern = profile.FileNamePattern;
 			model.Enabled = profile.Enabled;
+            model.ExportRelatedData = profile.ExportRelatedData;
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 			model.IsTaskRunning = lastHistoryEntry?.IsRunning ?? false;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogPath());
-			model.HasActiveProvider = (provider != null);
+			model.HasActiveProvider = provider != null;
 			model.FileNamePatternDescriptions = T("Admin.DataExchange.Export.FileNamePatternDescriptions").Text.SplitSafe(";");
 
 			model.Provider = new ExportProfileModel.ProviderModel();
@@ -403,7 +418,7 @@ namespace SmartStore.Admin.Controllers
 			
 			model.AvailableCompletedEmailAddresses = new MultiSelectList(profile.CompletedEmailAddresses.SplitSafe(","));
 
-			// projection
+			// Projection.
 			model.Projection = new ExportProjectionModel
 			{
 				StoreId = projection.StoreId,
@@ -448,7 +463,7 @@ namespace SmartStore.Admin.Controllers
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
 
-			// filtering
+			// Filtering.
 			model.Filter = new ExportFilterModel
 			{
 				StoreId = filter.StoreId,
@@ -497,7 +512,7 @@ namespace SmartStore.Admin.Controllers
                 model.Filter.AvailableLanguages.Add(new SelectListItem { Text = lang.Name, Value = lang.Id.ToString() });
             }
 
-            // deployment
+            // Deployment.
             model.Deployments = profile.Deployments
 				.Select(x =>
 				{
@@ -612,9 +627,9 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 				}
-				catch (Exception exc)
+				catch (Exception ex)
 				{
-					NotifyError(exc);
+					NotifyError(ex);
 				}
 			}
 		}
@@ -822,6 +837,7 @@ namespace SmartStore.Admin.Controllers
 			profile.FileNamePattern = model.FileNamePattern;
 			profile.FolderName = model.FolderName;
 			profile.Enabled = model.Enabled;
+            profile.ExportRelatedData = model.ExportRelatedData;
 			profile.Offset = model.Offset;
 			profile.Limit = model.Limit ?? 0;
 			profile.BatchSize = model.BatchSize ?? 0;
@@ -922,9 +938,9 @@ namespace SmartStore.Admin.Controllers
 					profile.ProviderConfigData = XmlHelper.Serialize(model.CustomProperties["ProviderConfigData"], configInfo.ModelType);
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				NotifyError(exc);
+				NotifyError(ex);
 			}
 
 			_exportService.UpdateExportProfile(profile);

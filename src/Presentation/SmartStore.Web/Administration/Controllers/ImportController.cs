@@ -124,6 +124,7 @@ namespace SmartStore.Admin.Controllers
 			model.Name = profile.Name;
 			model.EntityType = profile.EntityType;
 			model.Enabled = profile.Enabled;
+            model.ImportRelatedData = profile.ImportRelatedData;
 			model.Skip = (profile.Skip == 0 ? (int?)null : profile.Skip);
 			model.Take = (profile.Take == 0 ? (int?)null : profile.Take);
 			model.UpdateOnly = profile.UpdateOnly;
@@ -311,9 +312,9 @@ namespace SmartStore.Admin.Controllers
 						.ToList();
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				NotifyError(exception, true, false);
+				NotifyError(ex, true, false);
 			}
 		}
 
@@ -450,7 +451,7 @@ namespace SmartStore.Admin.Controllers
 
 						if (column.IsEmpty())
 						{
-							// tell mapper to explicitly ignore the property
+							// Tell mapper to explicitly ignore the property.
 							map.AddMapping(property, null, property, "[IGNOREPROPERTY]");
 						}
 						else if (!column.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
@@ -463,10 +464,10 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
 				hasErrors = true;
-				NotifyError(exception, true, false);
+				NotifyError(ex, true, false);
 			}
 
 			if (!ModelState.IsValid || hasErrors)
@@ -478,10 +479,11 @@ namespace SmartStore.Admin.Controllers
 			profile.Name = model.Name;
 			profile.EntityType = model.EntityType;
 			profile.Enabled = model.Enabled;
+            profile.ImportRelatedData = model.ImportRelatedData;
 			profile.Skip = model.Skip ?? 0;
 			profile.Take = model.Take ?? 0;
 			profile.UpdateOnly = model.UpdateOnly;
-			profile.KeyFieldNames = (model.KeyFieldNames == null ? null : string.Join(",", model.KeyFieldNames));
+			profile.KeyFieldNames = model.KeyFieldNames == null ? null : string.Join(",", model.KeyFieldNames);
 
 			try
 			{
@@ -522,10 +524,10 @@ namespace SmartStore.Admin.Controllers
 					profile.ExtraData = XmlHelper.Serialize(extraData);
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
 				hasErrors = true;
-				NotifyError(exception, true, false);
+				NotifyError(ex, true, false);
 			}
 
 			if (!hasErrors)

@@ -13,7 +13,10 @@ namespace SmartStore.Core.Domain.DataExchange
 		Customer,
 		Order,
 		NewsLetterSubscription,
-		ShoppingCartItem
+		ShoppingCartItem,
+
+        // Related data
+        TierPrice = 100
 	}
 
 	/// <summary>

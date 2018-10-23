@@ -34,7 +34,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.RecordsSkip")]
+        [SmartResourceDisplayName("Admin.DataExchange.Import.ImportRelatedData")]
+        public bool ImportRelatedData { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.RecordsSkip")]
 		public int? Skip { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]

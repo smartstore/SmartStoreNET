@@ -15,7 +15,7 @@
 				foreach (var file in grp)
 				{
 					<div class="py-1">
-						<span class="badge badge-info">
+						<span class="badge badge-light">
 							@Html.IconForFileExtension(file.FileExtension, false)
 							@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
 						</span>
@@ -41,7 +41,7 @@
 				{
 					<div class="py-1 d-flex copy-to-clipboard-container">
 						<div>
-							<span class="badge badge-success">
+							<span class="badge @(file.EntityType.HasValue ? "badge-success" : "badge-secondary")">
 								@Html.IconForFileExtension(file.FileExtension, false)
 								@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
 							</span>

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	[Serializable]
+    [Serializable]
 	public class DataExportResult
 	{
 		public DataExportResult()
@@ -55,10 +56,10 @@ namespace SmartStore.Services.DataExchange.Export
 			/// </summary>
 			public string Label { get; set; }
 
-			/// <summary>
-			/// Whether the file contains entity data
-			/// </summary>
-			public bool IsDataFile { get; set; }
-		}
+            /// <summary>
+            /// The entity type.
+            /// </summary>
+            public ExportEntityType? EntityType { get; set; }
+        }
 	}
 }

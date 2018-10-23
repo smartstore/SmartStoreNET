@@ -102,6 +102,18 @@
 				@Html.ValidationMessageFor(x => x.Enabled)
 			</td>
 		</tr>
+		@if (Model.EntityType == ImportEntityType.Product)
+		{
+			<tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.ImportRelatedData)
+			    </td>
+			    <td class="adminData">
+				    @Html.EditorFor(x => x.ImportRelatedData)
+				    @Html.ValidationMessageFor(x => x.ImportRelatedData)
+			    </td>
+			</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Name)

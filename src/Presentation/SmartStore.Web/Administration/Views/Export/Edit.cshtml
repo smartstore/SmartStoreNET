@@ -121,6 +121,18 @@
 				@Html.ValidationMessageFor(x => x.Enabled)
 			</td>
 		</tr>
+        @if (Model.Provider.EntityType == ExportEntityType.Product && Model.Provider.IsFileBasedExport)
+        {
+		    <tr>
+			    <td class="adminTitle">
+				    @Html.SmartLabelFor(x => x.ExportRelatedData)
+			    </td>
+			    <td class="adminData">
+				    @Html.EditorFor(x => x.ExportRelatedData)
+				    @Html.ValidationMessageFor(x => x.ExportRelatedData)
+			    </td>
+		    </tr>
+        }
 		@if (Model.ScheduleTaskId > 0)
 		{
 			<tr class="mb-5">
@@ -337,13 +349,13 @@
 				try
 				{
 					@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
-				}
-				catch (Exception exception)
-				{
+                }
+                catch (Exception ex)
+                {
 					<div class="alert alert-danger">
 						@T("Admin.Configuration.Plugins.UnknownError")
 					</div>
-					<pre>@exception.ToString()</pre>
+					<pre>@ex.ToString()</pre>
 				}
 			}
 			else

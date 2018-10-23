@@ -76,7 +76,7 @@ namespace SmartStore.Services.Tasks
             {
                 ScheduleTaskId = task.Id,
                 IsRunning = true,
-                MachineName = _env.MachineName,
+                MachineName = _env.MachineName.EmptyNull(),
                 StartedOnUtc = DateTime.UtcNow
             };
 

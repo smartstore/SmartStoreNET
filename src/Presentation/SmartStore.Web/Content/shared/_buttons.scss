@@ -547,6 +547,101 @@ $btn-size-sm: $input-height-sm;
 }
 
 
+// 3d Buttons (colorized drop shadows)
+// -----------------------------------------------------
+
+@mixin button-3d-state($color, $state: "normal") {
+    $c: theme-color($color);
+    
+    $c1: mix($c, #000, 40%);
+    $c2: mix($c, #000, 10%);
+    $o1: 0.11;
+    $o2: 0.09;
+
+    @if $color == "secondary" or $color == "light" {
+        $c1: #333;
+        $c2: #000;
+        $o1: 0.11;
+        $o2: 0.08;
+    }
+
+    border-color: $c;
+
+    @if $state == 'normal' {
+        box-shadow: 0 4px 6px rgba($c1, $o1), 0 1px 3px rgba($c2, $o2);
+    }
+    @else if $state == 'pressed' {
+        @if $color == 'secondary' {
+            background-color: $gray-100;
+            border-color: $gray-100;
+        }
+        box-shadow: 0 2px 4px rgba($c1, $o1 * 1.36), 0 1px 2px rgba($c2, $o2 * 1.25);
+    }
+    @else if $state == 'active' {
+        @if $color == 'secondary' {
+            background-color: #fff;
+        }
+        //box-shadow: 0 7px 14px rgba($c1, $o1 * 0.9), 0 3px 6px rgba($c2, $o2);
+        box-shadow: 0 9px 16px rgba($c1, $o1 * 1.4), 0 3px 6px rgba($c2, $o2);
+    }
+}
+
+.btn-3d {
+    transition-property: transform, box-shadow, color, background-color, border-color, opacity;
+    transition-timing-function: cubic-bezier(.2, 1, .22, 1);
+    transition-timing-function: cubic-bezier(0.25, 1, 0.33, 1);
+    transition-duration: .35s;
+    
+    &:hover, &.hover,
+    &:focus, &.focus {
+        transform: translateY(-3px);
+    }
+
+    &:active, &.active,
+    &:disabled, &.disabled,
+    .show > &.dropdown-toggle {
+        transform: translateY(1px);
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .btn-3d.btn-#{$color} {
+        @include button-3d-state($color, 'normal');
+    }
+
+	.btn-3d.btn-#{$color},
+    .btn-3d.btn-outline-#{$color} {
+        &:not(:disabled):not(.disabled):hover, 
+        &:not(:disabled):not(.disabled).hover,
+        &:not(:disabled):not(.disabled):focus, 
+        &:not(:disabled):not(.disabled).focus {
+            @include button-3d-state($color, 'active');
+        }
+
+        &:disabled, 
+        &.disabled {
+            @if $color == 'secondary' {
+                @include button-3d-state($color, 'pressed');
+                background-color: #fff;
+            }
+            @else {
+                box-shadow: none;
+            }
+            
+        }
+
+        &:not(:disabled):not(.disabled):active, 
+        &:not(:disabled):not(.disabled):active:focus,
+        &:not(:disabled):not(.disabled).active, 
+        &:not(:disabled):not(.disabled).active:focus,
+        .show > &.dropdown-toggle, 
+        .show > &.dropdown-toggle:focus {
+            @include button-3d-state($color, 'pressed');
+        }
+	}
+}
+
+
 // Social buttons
 // --------------------------------------------------
 

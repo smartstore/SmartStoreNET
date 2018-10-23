@@ -1,8 +1,13 @@
+// ----------------------------------
+// Edit info (mc):
+//  - Removed root html:not(.no-js)
+//  - body[data-aos-easing="#{$key}"] & >> body[data-aos-easing="#{$key}"] [data-aos]
+// ----------------------------------
+
 // Animations variables
 $aos-distance: 100px !default;
 
 @media screen {
-  html:not(.no-js) {
     /**
     * Fade animations:
     * fade
@@ -176,5 +181,4 @@ $aos-distance: 100px !default;
       transform: perspective(2500px) rotateX(100deg);
       &.aos-animate {transform: perspective(2500px) rotateX(0);}
     }
-  }
 }

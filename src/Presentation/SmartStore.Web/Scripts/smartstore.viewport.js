@@ -70,7 +70,7 @@
          */
 		isAnyActive: function (breakpoints) {
             var found = false;
-            var width = self.html.width();
+            var width = window.innerWidth;
 
 			$.each(breakpoints, function (index, alias) {
 				// Once first breakpoint matches, return true and break out of the loop
@@ -132,8 +132,6 @@
 
 				var acceptedBreakpoints = breakpointList.slice(start, end);
 
-                //console.log("BREAKPOINTS", str, acceptedBreakpoints);
-
 				return internal.isAnyActive(acceptedBreakpoints);
 			}
 		}
@@ -142,9 +140,6 @@
 
 	// Public methods and properties
 	var self = {
-
-        html: null,
-
 		/**
          * Determines default debouncing interval of 'changed' method
          */
@@ -164,7 +159,7 @@
                 if (alias == str) {
                     var min = internal.breakpoints[alias];
                     var max = internal.breakpoints[breakpoints[index + 1]] || 999999;
-                    var width = self.html.width();
+                    var width = window.innerWidth;
 
                     if (width >= min && width < max) {
                         match = true;
@@ -180,7 +175,6 @@
          * Initialize breakpoint detection divs
          */
         init: function () {
-            self.html = $('html');
             internal.resolveBreakpoints();
 
             // Notify subscribers about page/content width change

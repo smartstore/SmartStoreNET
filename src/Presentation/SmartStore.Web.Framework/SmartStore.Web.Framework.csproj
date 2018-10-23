@@ -318,6 +318,7 @@
     <Compile Include="UI\Choices\ChoiceItemModel.cs" />
     <Compile Include="UI\Choices\GenericChoiceModel.cs" />
     <Compile Include="UI\Choices\ChoiceModel.cs" />
+    <Compile Include="UI\Components\BoxSpacing.cs" />
     <Compile Include="UI\Components\EntityPicker\EntityPicker.cs" />
     <Compile Include="UI\Components\EntityPicker\EntityPickerBuilder.cs" />
     <Compile Include="UI\Components\FileUploader\FileUploaderBuilder.cs" />

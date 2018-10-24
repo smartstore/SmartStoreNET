@@ -15,9 +15,13 @@ namespace SmartStore.Core.Domain.DataExchange
 		NewsLetterSubscription,
 		ShoppingCartItem,
 
-        // Related data
-        TierPrice = 100
-	}
+        // Related data (data without own export provider or importer).
+        TierPrice = 100,
+        ProductVariantAttribute,
+        ProductVariantAttributeValue,
+        ProductVariantAttributeCombination,
+        ProductSpecificationAttribute
+    }
 
 	/// <summary>
 	/// Supported deployment types
@@ -140,7 +144,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Whether to export attribute combinations as products including parent product. Only effective with CanProjectAttributeCombinations.
 		/// </summary>
-		UsesAttributeCombinationParent = 1 << 14
+		UsesAttributeCombinationParent = 1 << 14,
+
+        /// <summary>
+        /// Whether to provide extra data units for related data
+        /// </summary>
+        UsesRelatedDataUnits = 1 << 15
 	}
 
 	/// <summary>

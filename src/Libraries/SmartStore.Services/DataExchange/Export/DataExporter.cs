@@ -496,26 +496,37 @@ namespace SmartStore.Services.DataExchange.Export
 			return ctx.ExecuteContext.DataSegmenter as IExportDataSegmenterProvider;
 		}
 
-        private void AddUnitsForRelatedData(DataExporterContext ctx)
+        private IEnumerable<ExportDataUnit> GetRelatedDataUnits(DataExporterContext ctx)
         {
-            if (ctx.Request.Provider.Value.EntityType != ExportEntityType.Product)
+            // Related data is data without own export provider or importer. For a flat formatted export
+            // they have to be exported together with metadata to know what to be edited.
+            ExportEntityType[] types = null;
+
+            switch (ctx.Request.Provider.Value.EntityType)
             {
-                return;
+                case ExportEntityType.Product:
+                    types = new ExportEntityType[]
+                    {
+                        ExportEntityType.TierPrice,
+                        ExportEntityType.ProductVariantAttribute,
+                        ExportEntityType.ProductVariantAttributeValue,
+                        ExportEntityType.ProductVariantAttributeCombination,
+                        ExportEntityType.ProductSpecificationAttribute
+                    };
+                    break;
+                default:
+                    return Enumerable.Empty<ExportDataUnit>();
             }
 
-            var entityTypes = new ExportEntityType[]
-            {
-                ExportEntityType.TierPrice
-            };
-
+            var result = new List<ExportDataUnit>();
             var context = ctx.ExecuteContext;
             var fileExtension = Path.GetExtension(context.FileName);
 
-            foreach (var type in entityTypes)
+            foreach (var type in types)
             {
                 var fileName = ctx.Request.Profile.ResolveFileNamePattern(ctx.Store, context.FileIndex, context.MaxFileNameLength, type.ToString()) + fileExtension;
 
-                context.ExtraDataUnits.Add(new ExportDataUnit
+                result.Add(new ExportDataUnit
                 {
                     IsRelatedData = true,
                     EntityType = type,
@@ -524,6 +535,8 @@ namespace SmartStore.Services.DataExchange.Export
                     DataStream = new MemoryStream()
                 });
             }
+
+            return result;
         }
 
 		private bool CallProvider(DataExporterContext ctx, string method, string path)
@@ -1372,9 +1385,9 @@ namespace SmartStore.Services.DataExchange.Export
                         context.FileName = profile.ResolveFileNamePattern(ctx.Store, context.FileIndex, context.MaxFileNameLength) + fileExtension;
 						path = Path.Combine(context.Folder, context.FileName);
 
-                        if (profile.ExportRelatedData)
+                        if (profile.ExportRelatedData && ctx.Supports(ExportFeatures.UsesRelatedDataUnits))
                         {
-                            AddUnitsForRelatedData(ctx);
+                            context.ExtraDataUnits.AddRange(GetRelatedDataUnits(ctx));
                         }
 					}
 

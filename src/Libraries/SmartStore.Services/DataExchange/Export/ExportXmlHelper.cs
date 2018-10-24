@@ -752,7 +752,6 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("BasePriceAmount", entityPvac.BasePriceAmount.HasValue ? entityPvac.BasePriceAmount.Value.ToString(_culture) : "");
 					_writer.Write("BasePriceBaseAmount", entityPvac.BasePriceBaseAmount.HasValue ? entityPvac.BasePriceBaseAmount.Value.ToString() : "");
 					_writer.Write("AssignedPictureIds", entityPvac.AssignedPictureIds);
-					_writer.Write("DeliveryTimeId", entityPvac.DeliveryTimeId.HasValue ? entityPvac.DeliveryTimeId.Value.ToString() : "");
 					_writer.Write("IsActive", entityPvac.IsActive.ToString());
 
 					WriteDeliveryTime(combination.DeliveryTime, "DeliveryTime");

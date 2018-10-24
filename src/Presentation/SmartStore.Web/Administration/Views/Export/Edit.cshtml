@@ -121,7 +121,7 @@
 				@Html.ValidationMessageFor(x => x.Enabled)
 			</td>
 		</tr>
-        @if (Model.Provider.EntityType == ExportEntityType.Product && Model.Provider.IsFileBasedExport)
+        @if (Model.Provider.IsFileBasedExport && Model.Provider.Feature.HasFlag(ExportFeatures.UsesRelatedDataUnits))
         {
 		    <tr>
 			    <td class="adminTitle">

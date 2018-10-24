@@ -62,6 +62,11 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			entity.Model = JsonConvert.SerializeObject(block, Formatting.None, settings);
 		}
 
+		public virtual string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity)
+		{
+			return sourceEntity.Model;
+		}
+
 		public void Render(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
 		{
 			RenderCore(element, templates, htmlHelper, htmlHelper.ViewContext.Writer);

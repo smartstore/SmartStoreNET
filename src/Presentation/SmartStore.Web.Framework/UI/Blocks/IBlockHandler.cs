@@ -22,7 +22,11 @@ namespace SmartStore.Web.Framework.UI.Blocks
 	public interface IBlockHandler<T> : IBlockHandler where T : IBlock
 	{
 		T Create(IBlockEntity entity);
+
 		T Load(IBlockEntity entity, StoryViewMode viewMode);
+
 		void Save(T block, IBlockEntity entity);
+
+		string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity);
 	}
 }

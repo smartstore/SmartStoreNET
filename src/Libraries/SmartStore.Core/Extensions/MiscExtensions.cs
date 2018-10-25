@@ -28,6 +28,7 @@ namespace SmartStore
 				}
 				exception = exception.InnerException;
 			}
+
 			return sb.ToString();
 		}
 
@@ -74,7 +75,8 @@ namespace SmartStore
 		/// <param name="delimiter">Delimiter to use</param>
 		public static void Grow(this StringBuilder sb, string grow, string delimiter)
 		{
-			Guard.NotNull(delimiter, "delimiter");
+			if (delimiter == null)
+				throw new ArgumentNullException(nameof(delimiter));
 
 			if (!string.IsNullOrWhiteSpace(grow))
 			{

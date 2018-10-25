@@ -241,9 +241,14 @@ namespace SmartStore
 			 Func<TSource, TElement> elementSelector,
 			 IEqualityComparer<TKey> comparer)
 		{
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(keySelector, nameof(keySelector));
-			Guard.NotNull(elementSelector, nameof(elementSelector));
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			if (keySelector == null)
+				throw new ArgumentNullException(nameof(keySelector));
+
+			if (elementSelector == null)
+				throw new ArgumentNullException(nameof(elementSelector));
 
 			var dictionary = new Dictionary<TKey, TElement>(comparer);
 
@@ -276,8 +281,11 @@ namespace SmartStore
 		/// <returns>The sorted entity collection</returns>
 		public static IEnumerable<TEntity> OrderBySequence<TEntity>(this IEnumerable<TEntity> source, IEnumerable<int> ids) where TEntity : BaseEntity
 		{
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(ids, nameof(ids));
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			if (ids == null)
+				throw new ArgumentNullException(nameof(ids));
 
 			var sorted = from id in ids
 						 join entity in source on id equals entity.Id
@@ -309,9 +317,14 @@ namespace SmartStore
 												Func<TSource, TValue> valueSelector,
 												IEqualityComparer<TKey> comparer)
 		{
-			Guard.NotNull(source, nameof(source));
-			Guard.NotNull(keySelector, nameof(keySelector));
-			Guard.NotNull(valueSelector, nameof(valueSelector));
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			if (keySelector == null)
+				throw new ArgumentNullException(nameof(keySelector));
+
+			if (valueSelector == null)
+				throw new ArgumentNullException(nameof(valueSelector));
 
 			var map = new Multimap<TKey, TValue>(comparer);
 
@@ -329,9 +342,10 @@ namespace SmartStore
 
 		public static void AddRange(this NameValueCollection initial, NameValueCollection other)
         {
-            Guard.NotNull(initial, "initial");
+			if (initial == null)
+				throw new ArgumentNullException(nameof(initial));
 
-            if (other == null)
+			if (other == null)
                 return;
 
             foreach (var item in other.AllKeys)

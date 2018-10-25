@@ -82,7 +82,7 @@ namespace SmartStore.Utilities
 
 						if (convertNonWesternChars)
 						{
-							c2 = TryRemoveDiacritic(c);
+							c2 = c.TryRemoveDiacritic();
 						}
 
 						if ((allowUnicodeChars && Char.IsLetterOrDigit(c2)) || (c2 >= 'a' && c2 <= 'z'))
@@ -101,17 +101,6 @@ namespace SmartStore.Utilities
 				return sb.ToString().Substring(0, sb.Length - 1).Trim('/');
 			else
 				return sb.ToString().Trim('/');
-		}
-
-		private static char TryRemoveDiacritic(char c)
-		{
-			var normalized = c.ToString().Normalize(NormalizationForm.FormD);
-			if (normalized.Length > 1)
-			{
-				return normalized[0];
-			}
-
-			return c;
 		}
 
 		public static void ResetUserSeoCharacterTable()

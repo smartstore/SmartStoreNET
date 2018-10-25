@@ -48,28 +48,26 @@ namespace SmartStore
             }
         }
 
-        public static void AppendInValue(this IDictionary<string, object> instance, string key, string separator, object value)
+        public static void AppendInValue(this IDictionary<string, object> instance, string key, string separator, string value)
         {
 			AddInValue(instance, key, separator, value, false);
 		}
 
-        public static void PrependInValue(this IDictionary<string, object> instance, string key, string separator, object value)
+        public static void PrependInValue(this IDictionary<string, object> instance, string key, string separator, string value)
         {
 			AddInValue(instance, key, separator, value, true);
         }
 
-		private static void AddInValue(IDictionary<string, object> instance, string key, string separator, object value, bool prepend = false)
+		private static void AddInValue(IDictionary<string, object> instance, string key, string separator, string value, bool prepend = false)
 		{
-			var valueStr = value.ToString();
-
-			if (!instance.ContainsKey(key))
+			if (!instance.TryGetValue(key, out var obj))
 			{
-				instance[key] = valueStr;
+				instance[key] = value;
 			}
 			else
 			{
-				var arr = instance[key].ToString().Trim().Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
-				var arrValue = valueStr.Trim().Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
+				var arr = obj.ToString().Trim().Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
+				var arrValue = value.Trim().Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
 
 				arr = prepend ? arrValue.Union(arr) : arr.Union(arrValue);
 
@@ -79,7 +77,8 @@ namespace SmartStore
 
 		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> instance, TKey key)
 		{
-			Guard.NotNull(instance, nameof(instance));
+			if (instance == null)
+				throw new ArgumentNullException(nameof(instance));
 
 			instance.TryGetValue(key, out var val);
 			return val;
@@ -87,7 +86,8 @@ namespace SmartStore
 
 		public static ExpandoObject ToExpandoObject(this IDictionary<string, object> source, bool castIfPossible = false)
         {
-			Guard.NotNull(source, nameof(source));
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
 
 			if (castIfPossible && source is ExpandoObject)
             {

@@ -36,7 +36,6 @@ namespace SmartStore
 		/// <returns></returns>
 		public static bool IsAppLocalUrl(this HttpRequestBase request, string url)
 		{
-
 			if (string.IsNullOrWhiteSpace(url))
 			{
 				return false;

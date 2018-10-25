@@ -14,20 +14,21 @@ namespace SmartStore
             if (other == null)
                 return;
 
-            var list = initial as List<T>;
+			if (initial is List<T> list)
+			{
+				list.AddRange(other);
+				return;
+			}
 
-            if (list != null)
-            {
-                list.AddRange(other);
-                return;
-            }
-
-            other.Each(x => initial.Add(x));
+			foreach (var local in other)
+			{
+				initial.Add(local);
+			}
         }
 
         public static bool IsNullOrEmpty<T>(this ICollection<T> source)
         {
-            return (source == null || source.Count == 0);
+            return source == null || source.Count == 0;
         }
     }
 }

@@ -225,6 +225,11 @@ namespace SmartStore.Admin.Models.DataExchange
                     return FileSystemHelper.IsSafeRootPath(x);
                 })
                 .WithMessage(T("Admin.DataExchange.Export.FolderName.Validate"));
+
+            RuleFor(x => x.ExportRelatedData)
+                .Must(x => x == false)
+                .When(x => x.Projection.AttributeCombinationAsProduct)
+                .WithMessage(T("Admin.DataExchange.Export.ExportRelatedData.Validate"));
         }
     }
 }

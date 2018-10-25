@@ -17,10 +17,8 @@ namespace SmartStore.Core.Domain.DataExchange
 
         // Related data (data without own export provider or importer).
         TierPrice = 100,
-        ProductVariantAttribute,
         ProductVariantAttributeValue,
-        ProductVariantAttributeCombination,
-        ProductSpecificationAttribute
+        ProductVariantAttributeCombination
     }
 
 	/// <summary>

@@ -508,10 +508,8 @@ namespace SmartStore.Services.DataExchange.Export
                     types = new ExportEntityType[]
                     {
                         ExportEntityType.TierPrice,
-                        ExportEntityType.ProductVariantAttribute,
                         ExportEntityType.ProductVariantAttributeValue,
-                        ExportEntityType.ProductVariantAttributeCombination,
-                        ExportEntityType.ProductSpecificationAttribute
+                        ExportEntityType.ProductVariantAttributeCombination
                     };
                     break;
                 default:
@@ -524,14 +522,21 @@ namespace SmartStore.Services.DataExchange.Export
 
             foreach (var type in types)
             {
-                var fileName = ctx.Request.Profile.ResolveFileNamePattern(ctx.Store, context.FileIndex, context.MaxFileNameLength, type.ToString()) + fileExtension;
+                // Convention: Must end with type name because that's how the import identifies the entity.
+                // Be careful in case of accidents with file names. They must not be too long.
+                var fileName = $"{ctx.Store.Id}-{context.FileIndex.ToString("D4")}-{type.ToString()}";
+
+                if (File.Exists(Path.Combine(context.Folder, fileName + fileExtension)))
+                {
+                    fileName = $"{CommonHelper.GenerateRandomDigitCode(4)}-{fileName}";
+                }
 
                 result.Add(new ExportDataUnit
                 {
                     IsRelatedData = true,
                     EntityType = type,
                     DisplayInFileDialog = true,
-                    FileName = fileName,
+                    FileName = fileName + fileExtension,
                     DataStream = new MemoryStream()
                 });
             }

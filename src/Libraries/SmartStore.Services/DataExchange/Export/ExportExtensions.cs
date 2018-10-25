@@ -128,9 +128,8 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <param name="store">Store</param>
 		/// <param name="fileIndex">One based file index</param>
 		/// <param name="maxFileNameLength">The maximum length of the file name</param>
-        /// <param name="suffix">Optional file name suffix</param>
 		/// <returns>Resolved file name pattern</returns>
-		public static string ResolveFileNamePattern(this ExportProfile profile, Store store, int fileIndex, int maxFileNameLength, string suffix = null)
+		public static string ResolveFileNamePattern(this ExportProfile profile, Store store, int fileIndex, int maxFileNameLength)
 		{
 			var sb = new StringBuilder(profile.FileNamePattern);
 
@@ -154,11 +153,6 @@ namespace SmartStore.Services.DataExchange.Export
             if (profile.FileNamePattern.Contains("%Timestamp%"))
             {
                 sb.Replace("%Timestamp%", DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture));
-            }
-
-            if (suffix.HasValue())
-            {
-                sb.Append("-" + suffix);
             }
 
 			var result = sb.ToString()

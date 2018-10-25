@@ -579,10 +579,12 @@
                 "Verwalten Sie Formularfelder, die während des Checkout-Prozesses und im \"Mein Konto\" Bereich angezeigt werden.");
 
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.TierPrice", "Tier price", "Staffelpreis");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.ProductVariantAttribute", "Product variant attribute", "Produkt Variant Attribut");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.ProductVariantAttributeValue", "Product attribute option", "Produkt Attribut Option");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.ProductVariantAttributeCombination", "Product attribute combination", "Produkt Attribut Kombination");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.ProductSpecificationAttribute", "Product specification attribute", "Produkt Spezifikations Attribut");
+
+            builder.AddOrUpdate("Admin.DataExchange.Export.ExportRelatedData.Validate",
+                "Related data cannot be exported if the option \"Export attribute combinations\" is activated.",
+                "Zugehörige Daten können nicht exportiert werden, wenn die Option \"Attributkombinationen exportieren\" aktiviert ist.");
         }
     }
 }

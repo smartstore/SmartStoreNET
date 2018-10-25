@@ -15,7 +15,8 @@ namespace SmartStore.Services.Catalog
 		/// Parses, prefetches & caches all passed attribute definitions for the current request
 		/// </summary>
 		/// <param name="attributesXml">All attribute definitions to prefetch</param>
-		void PrefetchProductVariantAttributes(IEnumerable<string> attributesXml);
+        /// <returns>Number of fetched attributes</returns>
+		int PrefetchProductVariantAttributes(IEnumerable<string> attributesXml);
 
 		/// <summary>
 		/// Gets selected product variant attributes as a map of integer ids with their corresponding values.
@@ -38,13 +39,18 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute values</returns>
         IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributesXml);
 
-		/// <summary>
-		/// Get list of product variant attribute values
-		/// </summary>
-		/// <param name="attributeCombination">Map of combined attributes</param>
-		/// <param name="attributes">Product variant attributes</param>
-		/// <returns>Collection of product variant attribute values</returns>
-		ICollection<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes);
+        /// <summary>
+        /// Clear cached product variant attribute values.
+        /// </summary>
+        void ClearCachedAttributeValues();
+
+        /// <summary>
+        /// Get list of product variant attribute values
+        /// </summary>
+        /// <param name="attributeCombination">Map of combined attributes</param>
+        /// <param name="attributes">Product variant attributes</param>
+        /// <returns>Collection of product variant attribute values</returns>
+        ICollection<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes);
 
 		/// <summary>
 		/// Gets selected product variant attribute value

@@ -23,9 +23,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Name { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
-		public List<string> ExistingFileNames { get; set; }
+        public List<ImportFile> ExistingFiles { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Entity")]
+        [SmartResourceDisplayName("Admin.Common.Entity")]
 		public ImportEntityType EntityType { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Entity")]

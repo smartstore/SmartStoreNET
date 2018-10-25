@@ -239,6 +239,7 @@
     <Compile Include="DataExchange\Import\IEntityImporter.cs" />
     <Compile Include="DataExchange\Import\ImportExtraData.cs" />
     <Compile Include="DataExchange\Import\ImportExecuteContext.cs" />
+    <Compile Include="DataExchange\Import\ImportFile.cs" />
     <Compile Include="DataExchange\Import\Internal\DataImporterContext.cs" />
     <Compile Include="DataExchange\Import\DataImportTask.cs" />
     <Compile Include="DataExchange\Import\DataTable\IDataTable.cs" />

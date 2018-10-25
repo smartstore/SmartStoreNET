@@ -63,12 +63,10 @@ namespace SmartStore.Admin.Controllers
 
 				return true;
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				error = exception.ToAllMessages();
-
+				error = ex.ToAllMessages();
 				FileSystemHelper.Delete(path);
-
 				return false;
 			}
 		}
@@ -125,8 +123,8 @@ namespace SmartStore.Admin.Controllers
 			model.EntityType = profile.EntityType;
 			model.Enabled = profile.Enabled;
             model.ImportRelatedData = profile.ImportRelatedData;
-			model.Skip = (profile.Skip == 0 ? (int?)null : profile.Skip);
-			model.Take = (profile.Take == 0 ? (int?)null : profile.Take);
+			model.Skip = profile.Skip == 0 ? (int?)null : profile.Skip;
+			model.Take = profile.Take == 0 ? (int?)null : profile.Take;
 			model.UpdateOnly = profile.UpdateOnly;
 			model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",").Distinct().ToArray();
 			model.ScheduleTaskId = profile.SchedulingTaskId;
@@ -135,16 +133,25 @@ namespace SmartStore.Admin.Controllers
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
 			model.EntityTypeName = profile.EntityType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+            model.ExistingFiles = profile.GetImportFiles();
 
-			model.ExistingFileNames = profile.GetImportFiles()
-				.Select(x => Path.GetFileName(x))
-				.ToList();
+            foreach (var file in model.ExistingFiles)
+            {
+                if (file.IsRelatedData && file.EntityType.HasValue)
+                {
+                    file.Label = string.Concat(T("Admin.Common.Data"), " ", file.EntityType.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext));
+                }
+            }
 
-			if (profile.ResultInfo.HasValue())
-				model.ImportResult = XmlHelper.Deserialize<SerializableImportResult>(profile.ResultInfo);
+            if (profile.ResultInfo.HasValue())
+            {
+                model.ImportResult = XmlHelper.Deserialize<SerializableImportResult>(profile.ResultInfo);
+            }
 
-			if (!forEdit)
-				return;
+            if (!forEdit)
+            {
+                return;
+            }
 
 			CsvConfiguration csvConfiguration = null;
 
@@ -160,11 +167,11 @@ namespace SmartStore.Admin.Controllers
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
 			}
 
-			// Common configuration
+			// Common configuration.
 			var extraData = XmlHelper.Deserialize<ImportExtraData>(profile.ExtraData);
 			model.ExtraData.NumberOfPictures = extraData.NumberOfPictures;
 
-			// Column mapping
+			// Column mapping.
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
 			model.AvailableEntityProperties = new List<ColumnMappingItemModel>();
 			model.AvailableKeyFieldNames = new List<SelectListItem>();
@@ -180,7 +187,7 @@ namespace SmartStore.Admin.Controllers
 				var storedMap = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
 
-				// Property name to localized property name
+				// Property name to localized property name.
 				var allProperties = _importProfileService.GetImportableEntityProperties(profile.EntityType);
 
 				switch (profile.EntityType)
@@ -239,7 +246,7 @@ namespace SmartStore.Admin.Controllers
 
 						if (x.Value.IgnoreProperty)
 						{
-							// Explicitly ignore the property
+							// Explicitly ignore the property.
 							mapping.Column = null;
 							mapping.Default = null;
 						}
@@ -251,15 +258,15 @@ namespace SmartStore.Admin.Controllers
 					})
 					.ToList();
 
-				var files = profile.GetImportFiles();
-				if (!files.Any())
-					return;
+                var file = model.ExistingFiles.FirstOrDefault(x => !x.IsRelatedData);
+                if (file == null)
+                {
+                    return;
+                }
 
-				var filePath = files.First();
-
-				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				using (var stream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, 0, 1);
+					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(file.Path), stream, stream.Length, csvConfiguration, 0, 1);
 
 					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 					{
@@ -275,7 +282,7 @@ namespace SmartStore.Admin.Controllers
 							PropertyDescription = GetPropertyDescription(allProperties, column.Name)
 						});
 
-						// Auto map where field equals property name
+						// Auto map where field equals property name.
 						if (!model.ColumnMappings.Any(x => x.Column == column.Name))
 						{
 							var kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(column.Name));
@@ -298,7 +305,7 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 
-					// Sorting
+					// Sorting.
 					model.AvailableSourceColumns = model.AvailableSourceColumns
 						.OrderBy(x => x.PropertyDescription)
 						.ToList();
@@ -581,9 +588,9 @@ namespace SmartStore.Admin.Controllers
 
 				return RedirectToAction("List");
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				NotifyError(exception);
+				NotifyError(ex);
 			}
 
 			return RedirectToAction("Edit", new { id = profile.Id });
@@ -619,13 +626,11 @@ namespace SmartStore.Admin.Controllers
 						var profile = _importProfileService.GetImportProfileById(id);
 						if (profile != null)
 						{
-							var files = profile.GetImportFiles();
-							if (files.Any())
+							var files = profile.GetImportFiles(false);
+                            var file = files.FirstOrDefault();
+							if (file != null && !postedFile.FileExtension.IsCaseInsensitiveEqual(file.Extension))
 							{
-								var extension = Path.GetExtension(files.First());
-
-								if (!postedFile.FileExtension.IsCaseInsensitiveEqual(extension))
-									error = T("Admin.Common.FileTypeMustEqual", extension.Substring(1).ToUpper());
+                                error = T("Admin.Common.FileTypeMustEqual", file.Extension.Substring(1).ToUpper());
 							}
 
 							if (!error.HasValue())
@@ -640,11 +645,15 @@ namespace SmartStore.Admin.Controllers
 									success = IsValidImportFile(path, out error);
 									if (success)
 									{
-										var fileType = (Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx") ? ImportFileType.XLSX : ImportFileType.CSV);
-										if (fileType != profile.FileType)
+										var fileType = Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx") ? ImportFileType.XLSX : ImportFileType.CSV;
+                                        if (fileType != profile.FileType)
 										{
-											profile.FileType = fileType;
-											_importProfileService.UpdateImportProfile(profile);
+                                            var tmp = new ImportFile(path);
+                                            if (!tmp.IsRelatedData)
+                                            {
+                                                profile.FileType = fileType;
+                                                _importProfileService.UpdateImportProfile(profile);
+                                            }
 										}
 									}
 								}
@@ -658,13 +667,16 @@ namespace SmartStore.Admin.Controllers
 				error = T("Admin.AccessDenied.Description");
 			}
 
-			if (!success && error.IsEmpty())
-				error = T("Admin.Common.UploadFileFailed");
+            if (!success && error.IsEmpty())
+            {
+                error = T("Admin.Common.UploadFileFailed");
+            }
+            if (error.HasValue())
+            {
+                NotifyError(error);
+            }
 
-			if (error.HasValue())
-				NotifyError(error);
-
-			return Json(new { success = success, tempFile = tempFile, error = error });
+			return Json(new { success, tempFile, error });
 		}
 
 		[HttpPost]
@@ -774,12 +786,12 @@ namespace SmartStore.Admin.Controllers
 				var profile = _importProfileService.GetImportProfileById(id);
 				if (profile != null)
 				{
-					var importFiles = profile.GetImportFiles();
 					var path = Path.Combine(profile.GetImportFolder(true), name);
 					FileSystemHelper.Delete(path);
 				}
 			}
-			return RedirectToAction("Edit", new { id = id });
+
+			return RedirectToAction("Edit", new { id });
 		}
 	}
 }

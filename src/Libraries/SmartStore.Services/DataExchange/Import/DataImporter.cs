@@ -186,8 +186,10 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private void ImportCoreInner(DataImporterContext ctx, string filePath)
 		{
-			if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
-				return;
+            if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
+            {
+                return;
+            }
 
 			{
 				var logHead = new StringBuilder();
@@ -195,7 +197,7 @@ namespace SmartStore.Services.DataExchange.Import
 				logHead.AppendLine(new string('-', 40));
 				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
 				logHead.Append("Import profile:\t\t" + ctx.Request.Profile.Name);
-				logHead.AppendLine(ctx.Request.Profile.Id == 0 ? " (volatile)" : " (Id {0})".FormatInvariant(ctx.Request.Profile.Id));
+				logHead.AppendLine(ctx.Request.Profile.Id == 0 ? " (volatile)" : $" (Id {ctx.Request.Profile.Id})");
 
 				logHead.AppendLine("Entity:\t\t\t" + ctx.Request.Profile.EntityType.ToString());
 				logHead.AppendLine("File:\t\t\t" + Path.GetFileName(filePath));
@@ -208,7 +210,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (!File.Exists(filePath))
 			{
-				throw new SmartException("File does not exist {0}.".FormatInvariant(filePath));
+				throw new SmartException($"File does not exist {filePath}.");
 			}
 
 			CsvConfiguration csvConfiguration = null;
@@ -240,10 +242,10 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					ctx.Importer.Execute(ctx.ExecuteContext);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
 					ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-					ctx.ExecuteContext.Result.AddError(exception, "The importer failed: {0}.".FormatInvariant(exception.ToAllMessages()));
+					ctx.ExecuteContext.Result.AddError(ex, $"The importer failed: {ex.ToAllMessages()}.");
 				}
 
 				if (ctx.ExecuteContext.IsMaxFailures)
@@ -290,9 +292,9 @@ namespace SmartStore.Services.DataExchange.Import
 						ctx.ExecuteContext.ColumnMap = mapConverter.ConvertFrom<ColumnMap>(ctx.Request.Profile.ColumnMapping) ?? new ColumnMap();
 					}
 
-					var files = ctx.Request.Profile.GetImportFiles();
+					var files = ctx.Request.Profile.GetImportFiles(false);
 
-					if (files.Count == 0)
+					if (!files.Any())
 						throw new SmartException("No files to import.");
 
 					if (!HasPermission(ctx))
@@ -302,11 +304,11 @@ namespace SmartStore.Services.DataExchange.Import
 
 					_services.EventPublisher.Publish(new ImportExecutingEvent(ctx.ExecuteContext));
 
-					files.ForEach(x => ImportCoreInner(ctx, x));
+					files.ForEach(x => ImportCoreInner(ctx, x.Path));
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ctx.ExecuteContext.Result.AddError(exception);
+					ctx.ExecuteContext.Result.AddError(ex);
 				}
 				finally
 				{
@@ -317,31 +319,31 @@ namespace SmartStore.Services.DataExchange.Import
 
 						_services.EventPublisher.Publish(new ImportExecutedEvent(ctx.ExecuteContext));
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						ctx.ExecuteContext.Result.AddError(exception);
+						ctx.ExecuteContext.Result.AddError(ex);
 					}
 
 					try
 					{
-						// database context sharing problem: if there are entities in modified state left by the provider due to SaveChanges failure,
+						// Database context sharing problem: if there are entities in modified state left by the provider due to SaveChanges failure,
 						// then all subsequent SaveChanges would fail too (e.g. IImportProfileService.UpdateImportProfile, IScheduledTaskService.UpdateTask...).
 						// so whatever it is, detach\dispose all what the tracker still has tracked.
 
 						_services.DbContext.DetachAll(false);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						ctx.ExecuteContext.Result.AddError(exception);
+						ctx.ExecuteContext.Result.AddError(ex);
 					}
 
 					try
 					{
 						SendCompletionEmail(ctx);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						ctx.ExecuteContext.Result.AddError(exception);
+						ctx.ExecuteContext.Result.AddError(ex);
 					}
 
 					try
@@ -349,9 +351,9 @@ namespace SmartStore.Services.DataExchange.Import
 						ctx.ExecuteContext.Result.EndDateUtc = DateTime.UtcNow;
 						LogResult(ctx);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						logger.ErrorsAll(exception);
+						logger.ErrorsAll(ex);
 					}
 
 					try
@@ -359,9 +361,9 @@ namespace SmartStore.Services.DataExchange.Import
 						ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
 						_importProfileService.UpdateImportProfile(ctx.Request.Profile);
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						logger.ErrorsAll(exception);
+						logger.ErrorsAll(ex);
 					}
 
 					try
@@ -369,9 +371,9 @@ namespace SmartStore.Services.DataExchange.Import
 						ctx.Request.CustomData.Clear();
 						ctx.Log = null;
 					}
-					catch (Exception exception)
+					catch (Exception ex)
 					{
-						logger.ErrorsAll(exception);
+						logger.ErrorsAll(ex);
 					}
 				}
 			}

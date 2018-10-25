@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,7 +12,6 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;

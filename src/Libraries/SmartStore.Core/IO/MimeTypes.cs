@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Web;
 using Microsoft.Win32;
-using System.IO;
 
 namespace SmartStore.Core.IO
 { 
@@ -781,38 +779,6 @@ namespace SmartStore.Core.IO
 			}
 
 			return null;
-
-			//return _mimeMap.GetOrAdd(mimeType, k => {
-			//	string result;
-
-			//	try
-			//	{
-			//		using (var key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false))
-			//		{
-			//			object value = key != null ? key.GetValue("Extension", null) : null;
-			//			result = value != null ? value.ToString().Trim('.') : null;
-			//		}
-			//	}
-			//	catch
-			//	{
-			//		string[] parts = mimeType.Split('/');
-			//		result = parts[parts.Length - 1];
-			//		switch (result)
-			//		{
-			//			case "pjpeg":
-			//				result = "jpg";
-			//				break;
-			//			case "x-png":
-			//				result = "png";
-			//				break;
-			//			case "x-icon":
-			//				result = "ico";
-			//				break;
-			//		}
-			//	}
-
-			//	return result;
-			//});
         }
 
 		private static void ShuffleMap(Dictionary<string, string> source, Dictionary<string, string> target)

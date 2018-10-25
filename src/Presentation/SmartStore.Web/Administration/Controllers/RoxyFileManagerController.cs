@@ -115,32 +115,36 @@ namespace SmartStore.Admin.Controllers
 		{
 			extension = extension.EmptyNull().ToLower();
 
-            var mimeType = MimeTypes.MapNameToMimeType(extension).EmptyNull();
+			var mimeType = MimeTypes.MapNameToMimeType(extension).EmptyNull();
+			var slashIndex = mimeType.IndexOf('/');
+			if (slashIndex < 0)
+				return "file";
 
-            if (extension == ".swf" || extension == ".flv")
-            {
-                return "flash";
-            }
-            else if (mimeType.StartsWith("image"))
-            {
-                return "image";
-            }
-			else if (mimeType.StartsWith("audio"))
-            {
-                return "audio";
-            }
-            else if (mimeType.StartsWith("video"))
-            {
-                return "video";
-            }
-            else if (mimeType.EndsWith("/pdf"))
-            {
-                return "pdf";
-            }
-            else
-            {
-                return "file";
-            }
+			var mediaType = mimeType.Substring(0, slashIndex);
+			var subType = mimeType.Substring(slashIndex + 1);
+
+			switch (mediaType)
+			{
+				case "image":
+				case "audio":
+				case "video":
+					return mediaType;
+				case "application":
+					if (extension == ".pdf")
+					{
+						return "pdf";
+					}
+					else if (extension == ".swf")
+					{
+						return "flash";
+					}
+					else
+					{
+						return "file";
+					}
+				default:
+					return "file";
+			}
 		}
 
 		private bool IsAllowedFileType(string extension)
@@ -779,7 +783,7 @@ namespace SmartStore.Admin.Controllers
 						var dest = Path.Combine(tempDir, file.FileName);
 						file.SaveAs(dest);
 
-						if (GetFileContentType(extension).IsCaseInsensitiveEqual("image"))
+						if (GetFileContentType(extension) == "image")
 						{
 							ImageResize(dest, dest, width, height, notify);
 						}

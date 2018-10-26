@@ -481,7 +481,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance, new SecuritySettings());
+					var storeService = new StoreService(new EfRepository<Store>(_ctx));
 					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();

@@ -50,7 +50,7 @@ namespace SmartStore.Web.Framework
 		{
 			try
 			{
-				var value = _httpContext.Request.RequestContext.RouteData.DataTokens[OverriddenStoreIdKey];
+				var value = _httpContext.Request.RequestContext.RouteData?.DataTokens?.Get(OverriddenStoreIdKey);
 				if (value != null)
 				{
 					return (int)value;

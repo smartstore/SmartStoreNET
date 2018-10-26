@@ -40,7 +40,6 @@ namespace SmartStore.Core.Data.Hooks
 		{
 		}
 
-
 		public virtual void OnAfterSave(IHookedEntity entry)
 		{
 			var entity = entry.Entity as TEntity;

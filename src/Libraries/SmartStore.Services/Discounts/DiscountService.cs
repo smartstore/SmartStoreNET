@@ -13,6 +13,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Collections;
+using SmartStore.Core.Data.Hooks;
 
 namespace SmartStore.Services.Discounts
 {
@@ -55,16 +56,15 @@ namespace SmartStore.Services.Discounts
 			_settingService = settingService;
 			_providerManager = providerManager;
 			_discountValidityCache = new Dictionary<DiscountKey, bool>();
-
 		}
 
-        /// <summary>
-        /// Checks discount limitation for customer
-        /// </summary>
-        /// <param name="discount">Discount</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>Value indicating whether discount can be used</returns>
-        protected virtual bool CheckDiscountLimitations(Discount discount, Customer customer)
+		/// <summary>
+		/// Checks discount limitation for customer
+		/// </summary>
+		/// <param name="discount">Discount</param>
+		/// <param name="customer">Customer</param>
+		/// <returns>Value indicating whether discount can be used</returns>
+		protected virtual bool CheckDiscountLimitations(Discount discount, Customer customer)
         {
 			Guard.NotNull(discount, nameof(discount));
 
@@ -236,8 +236,6 @@ namespace SmartStore.Services.Discounts
 				return result;
 			}
 
-			System.Diagnostics.Debug.WriteLine("D - IsDiscountValid: " + discount.Name);
-
 			// Check coupon code
 			if (discount.RequiresCouponCode)
             {
@@ -292,9 +290,6 @@ namespace SmartStore.Services.Discounts
 					Store = store
                 };
 
-				System.Diagnostics.Debug.WriteLine("D - CheckRequirement: " + request.DiscountRequirement.DiscountRequirementRuleSystemName);
-
-				// TODO: cache result... CheckRequirement is called very often
 				if (!requirementRule.Value.CheckRequirement(request))
                     return Cached(false);
             }

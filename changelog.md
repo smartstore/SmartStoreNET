@@ -3,7 +3,8 @@
 ## SmartStore.NET 3.2
 
 ### Highlights
-* #1202 Search: update to Lucene.NET 4.8
+* (Perf) #1202 Search: update to Lucene.NET 4.8
+* (Perf) Huge performance increase in discount resolution and calculation
 
 ### New Features
 * **EmailReminder**:

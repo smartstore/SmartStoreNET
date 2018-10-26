@@ -70,9 +70,9 @@ namespace SmartStore.Services.Catalog
 		/// <param name="product">Product</param>
         /// <param name="customer">Customer</param>
         /// <returns>Discounts</returns>
-        protected virtual IList<Discount> GetAllowedDiscounts(Product product, Customer customer, PriceCalculationContext context = null)
+        protected virtual ICollection<Discount> GetAllowedDiscounts(Product product, Customer customer, PriceCalculationContext context = null)
         {
-            var result = new List<Discount>();
+            var result = new HashSet<Discount>();
             if (_catalogSettings.IgnoreDiscounts)
                 return result;
 
@@ -99,7 +99,7 @@ namespace SmartStore.Services.Catalog
 				{
 					foreach (var discount in appliedDiscounts)
 					{
-						if (discount.DiscountType == DiscountType.AssignedToSkus && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+						if (discount.DiscountType == DiscountType.AssignedToSkus && !result.Contains(discount) && _discountService.IsDiscountValid(discount, customer))
 						{
 							result.Add(discount);
 						}
@@ -130,7 +130,7 @@ namespace SmartStore.Services.Catalog
 
                             foreach (var discount in categoryDiscounts)
                             {
-								if (discount.DiscountType == DiscountType.AssignedToCategories && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+								if (discount.DiscountType == DiscountType.AssignedToCategories && !result.Contains(discount) && _discountService.IsDiscountValid(discount, customer))
 								{
 									result.Add(discount);
 								}
@@ -163,7 +163,7 @@ namespace SmartStore.Services.Catalog
 
 							foreach (var discount in manuDiscounts)
 							{
-								if (discount.DiscountType == DiscountType.AssignedToManufacturers && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+								if (discount.DiscountType == DiscountType.AssignedToManufacturers && !result.Contains(discount) && _discountService.IsDiscountValid(discount, customer))
 								{
 									result.Add(discount);
 								}

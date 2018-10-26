@@ -181,10 +181,10 @@
                         hint = option.data('hint');
 
                     if (imageUrl) {
-                        return $('<span><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
+                        return $('<span class="choice-item"><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
                     }
                     else if (color) {
-                        return $('<span><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
+                        return $('<span class="choice-item"><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
                     }
                     else if (hint && isResult) {
                         return $('<span class="select2-option"><span>' + item.text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');

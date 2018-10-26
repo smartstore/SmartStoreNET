@@ -16,7 +16,7 @@
 	var hasColor = item.Color.HasValue() && item.Color != "transparent";
 	<div class="form-check">
 		<input class="form-check-input" type="@type" id="@checkId" name="@controlId" value="@item.Id" @Html.Attr("checked", "checked", item.IsPreSelected) @Html.Attr("disabled", "disabled", item.IsDisabled) />
-		<label class="form-check-label" for="@checkId">
+		<label class="form-check-label choice-item" for="@checkId">
 			@if (item.ImageUrl.HasValue())
 			{
 				if (item.SeName.HasValue())

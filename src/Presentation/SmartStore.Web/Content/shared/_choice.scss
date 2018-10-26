@@ -17,11 +17,16 @@
 	&:after { content: ' *' }
 }
 
+.choice-item {
+    display: inline-flex;
+    align-items: center;
+}
+
 .choice-item-img,
 .choice-item-color {
     display: inline-block;
     text-decoration: none !important;
-    margin-right: 0.25rem;
+    margin-right: 0.4rem;
     overflow: hidden;
 }
 

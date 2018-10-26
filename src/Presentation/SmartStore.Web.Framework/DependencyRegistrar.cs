@@ -361,14 +361,14 @@ namespace SmartStore.Web.Framework
 			builder.Register(x => (IEfDataProvider)x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
 
 			builder.RegisterType<DefaultDbHookHandler>().As<IDbHookHandler>().InstancePerRequest();
-
+			
 			builder.RegisterType<EfDbCache>().As<IDbCache>().SingleInstance();
 
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				// register DB Hooks (only when app was installed properly)
 
-				Func<Type, Type> findHookedType = (t) => 
+				Type findHookedType(Type t)
 				{
 					var x = t;
 					while (x != null)
@@ -381,7 +381,7 @@ namespace SmartStore.Web.Framework
 					}
 
 					return typeof(BaseEntity);
-				};
+				}
 
 				var hooks = _typeFinder.FindClassesOfType<IDbHook>(ignoreInactivePlugins: true);
 				foreach (var hook in hooks)
@@ -395,7 +395,7 @@ namespace SmartStore.Web.Framework
 						{
 							m.For(em => em.HookedType, hookedType);
 							m.For(em => em.ImplType, hook);
-							m.For(em => em.IsLoadHook, typeof(IDbLoadHook).IsAssignableFrom(hook));
+							m.For(em => em.IsLoadHook, false);
 							m.For(em => em.Important, hook.HasAttribute<ImportantAttribute>(false));
 						});
 				}

@@ -157,7 +157,7 @@ namespace SmartStore.Data
 			return IsHookableEntityType(entry.EntityType);
 		}
 
-		private bool IsHookableEntityType(Type entityType)
+		private static bool IsHookableEntityType(Type entityType)
 		{
 			var isHookable = _hookableEntities.GetOrAdd(entityType, t =>
 			{
@@ -318,9 +318,9 @@ namespace SmartStore.Data
 				{
 					changedHookEntries = _changedEntries
 						.Select(x => new HookedEntity(x))
-						.Where(x => _ctx.IsHookableEntityType(x.EntityType))
+						.Where(x => IsHookableEntityType(x.EntityType))
 						.ToArray();
-
+					
 					// Regardless of validation (possible fixing validation errors too)
 					processedHooks = _hookHandler.TriggerPreSaveHooks(changedHookEntries, importantHooksOnly, out anyStateChanged);
 

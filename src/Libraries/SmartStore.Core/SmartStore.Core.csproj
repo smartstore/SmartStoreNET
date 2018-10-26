@@ -200,7 +200,6 @@
     <Compile Include="Data\Hooks\HookableAttribute.cs" />
     <Compile Include="Data\Hooks\HookMetadata.cs" />
     <Compile Include="Data\Hooks\ImportantAttribute.cs" />
-    <Compile Include="Data\Hooks\DbLoadHook.cs" />
     <Compile Include="Data\Hooks\DbSaveHook.cs" />
     <Compile Include="Data\Hooks\DefaultDbHookHandler.cs" />
     <Compile Include="Data\Hooks\HookedEntity.cs" />

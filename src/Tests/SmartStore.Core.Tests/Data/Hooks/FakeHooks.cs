@@ -11,27 +11,6 @@ using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Core.Tests.Data.Hooks
 {
-	[Important]
-	internal class Hook_CategoryProductManufacturer_Load : DbLoadHook<BaseEntity>
-	{
-		public override void OnLoaded(BaseEntity entity)
-		{
-			var type = entity.GetUnproxiedType();
-			if (type != typeof(Product) && type != typeof(Category) && type != typeof(Manufacturer)) {
-				throw new NotSupportedException();
-			}
-		}
-	}
-
-	internal class Hook_Product_Load : DbLoadHook<Product>
-	{
-		public override void OnLoaded(BaseEntity entity) { }
-	}
-
-	internal class Hook_Void_Load : DbLoadHook<BaseEntity>
-	{
-	}
-
 	internal class Hook_Entity_Inserted_Deleted_Update : DbSaveHook<BaseEntity>
 	{
 		protected override void OnInserted(BaseEntity entity, IHookedEntity entry) {}

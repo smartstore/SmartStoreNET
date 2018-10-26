@@ -1,8 +1,6 @@
-﻿@model ImportProfileListModel
-
-@using SmartStore.Core.Domain.DataExchange;
+﻿@using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
-
+@model ImportProfileListModel
 @{
 	ViewBag.Title = T("Common.Import").Text;
 }
@@ -49,7 +47,7 @@
 							@if (profile.ExistingFiles.Any())
 							{
 								<ul class="fa-ul mb-0 ml-0">
-									@foreach (var file in profile.ExistingFiles.Where(x => !x.IsRelatedData))
+									@foreach (var file in profile.ExistingFiles.Where(x => !x.RelatedType.HasValue))
 									{
 										<li title="@file.Name">
 											@Html.IconForFileExtension(file.Extension, false)

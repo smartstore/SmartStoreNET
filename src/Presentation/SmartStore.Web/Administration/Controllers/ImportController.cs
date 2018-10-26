@@ -137,9 +137,9 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var file in model.ExistingFiles)
             {
-                if (file.IsRelatedData && file.EntityType.HasValue)
+                if (file.RelatedType.HasValue)
                 {
-                    file.Label = string.Concat(T("Admin.Common.Data"), " ", file.EntityType.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext));
+                    file.Label = string.Concat(T("Admin.Common.Data"), " ", file.RelatedType.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext));
                 }
             }
 
@@ -258,7 +258,7 @@ namespace SmartStore.Admin.Controllers
 					})
 					.ToList();
 
-                var file = model.ExistingFiles.FirstOrDefault(x => !x.IsRelatedData);
+                var file = model.ExistingFiles.FirstOrDefault(x => !x.RelatedType.HasValue);
                 if (file == null)
                 {
                     return;
@@ -649,7 +649,7 @@ namespace SmartStore.Admin.Controllers
                                         if (fileType != profile.FileType)
 										{
                                             var tmp = new ImportFile(path);
-                                            if (!tmp.IsRelatedData)
+                                            if (!tmp.RelatedType.HasValue)
                                             {
                                                 profile.FileType = fileType;
                                                 _importProfileService.UpdateImportProfile(profile);

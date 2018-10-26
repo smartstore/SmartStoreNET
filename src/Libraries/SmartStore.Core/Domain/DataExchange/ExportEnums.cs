@@ -13,18 +13,23 @@ namespace SmartStore.Core.Domain.DataExchange
 		Customer,
 		Order,
 		NewsLetterSubscription,
-		ShoppingCartItem,
+		ShoppingCartItem
+    }
 
-        // Related data (data without own export provider or importer).
-        TierPrice = 100,
+    /// <summary>
+    /// Supported related entity types (data without own export provider or importer).
+    /// </summary>
+    public enum RelatedEntityType
+    {
+        TierPrice = 0,
         ProductVariantAttributeValue,
         ProductVariantAttributeCombination
     }
 
-	/// <summary>
-	/// Supported deployment types
-	/// </summary>
-	public enum ExportDeploymentType
+    /// <summary>
+    /// Supported deployment types
+    /// </summary>
+    public enum ExportDeploymentType
 	{
 		FileSystem = 0,
 		Email,

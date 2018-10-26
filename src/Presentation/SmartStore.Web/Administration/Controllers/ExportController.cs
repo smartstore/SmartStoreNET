@@ -171,7 +171,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (fileInfo != null)
 				{
-                    fi.EntityType = fileInfo.EntityType;
+                    fi.RelatedType = fileInfo.RelatedType;
 
                     if (fileInfo.Label.HasValue())
                     {
@@ -181,9 +181,9 @@ namespace SmartStore.Admin.Controllers
                     {
                         fi.Label = T("Admin.Common.Data");
 
-                        if (fileInfo.EntityType.HasValue)
+                        if (fileInfo.RelatedType.HasValue)
                         {
-                            fi.Label = string.Concat(fi.Label, " ", fileInfo.EntityType.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext));
+                            fi.Label = string.Concat(fi.Label, " ", fileInfo.RelatedType.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext));
                         }
                     }
 				}
@@ -240,13 +240,10 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 
-				// add public files
-				ExportDeployment publicDeployment = null;
-
-				if (deployment == null)
-					publicDeployment = profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
-				else
-					publicDeployment = (deployment.DeploymentType == ExportDeploymentType.PublicFolder ? deployment : null);
+				// Add public files.
+				var publicDeployment = deployment == null
+					? profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder)
+				    : (deployment.DeploymentType == ExportDeploymentType.PublicFolder ? deployment : null);
 
 				if (publicDeployment != null)
 				{
@@ -269,7 +266,7 @@ namespace SmartStore.Admin.Controllers
 
 						foreach (var file in resultInfo.Files)
 						{
-							var store = (file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId));
+							var store = file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId);
 
 							AddFileInfo(
 								model.PublicFiles,
@@ -281,9 +278,9 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				NotifyError(exception);
+				NotifyError(ex);
 			}
 
 			return model;

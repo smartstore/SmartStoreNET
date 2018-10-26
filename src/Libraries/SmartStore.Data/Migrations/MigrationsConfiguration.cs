@@ -578,13 +578,17 @@
                 "Manage form fields that are displayed during checkout and on \"My account\" page.",
                 "Verwalten Sie Formularfelder, die während des Checkout-Prozesses und im \"Mein Konto\" Bereich angezeigt werden.");
 
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.TierPrice", "Tier price", "Staffelpreis");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.ProductVariantAttributeValue", "Attribute option", "Attribut-Option");
-            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.ProductVariantAttributeCombination", "Attribute combination", "Attribut-Kombination");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.RelatedEntityType.TierPrice", "Tier price", "Staffelpreis");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.RelatedEntityType.ProductVariantAttributeValue", "Attribute option", "Attribut-Option");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.RelatedEntityType.ProductVariantAttributeCombination", "Attribute combination", "Attribut-Kombination");
 
             builder.AddOrUpdate("Admin.DataExchange.Export.ExportRelatedData.Validate",
                 "Related data cannot be exported if the option \"Export attribute combinations\" is activated.",
                 "Zugehörige Daten können nicht exportiert werden, wenn die Option \"Attributkombinationen exportieren\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Common.ProcessingInfo",
+                "{0}: {1} of {2} processed",
+                "{0}: {1} von {2} verarbeitet");
         }
     }
 }

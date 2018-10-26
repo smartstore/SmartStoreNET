@@ -47,19 +47,19 @@ namespace SmartStore.Services.DataExchange.Export
 			public int StoreId { get; set; }
 
 			/// <summary>
-			/// Name of file
+			/// Name of file.
 			/// </summary>
 			public string FileName { get; set; }
 
 			/// <summary>
-			/// Short optional text that describes the content of the file
+			/// Short optional text that describes the content of the file.
 			/// </summary>
 			public string Label { get; set; }
 
             /// <summary>
-            /// The entity type.
+            /// The related entity type.
             /// </summary>
-            public ExportEntityType? EntityType { get; set; }
+            public RelatedEntityType? RelatedType { get; set; }
         }
 	}
 }

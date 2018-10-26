@@ -496,20 +496,20 @@ namespace SmartStore.Services.DataExchange.Export
 			return ctx.ExecuteContext.DataSegmenter as IExportDataSegmenterProvider;
 		}
 
-        private IEnumerable<ExportDataUnit> GetRelatedDataUnits(DataExporterContext ctx)
+        private IEnumerable<ExportDataUnit> GetDataUnitsForRelatedEntities(DataExporterContext ctx)
         {
             // Related data is data without own export provider or importer. For a flat formatted export
             // they have to be exported together with metadata to know what to be edited.
-            ExportEntityType[] types = null;
+            RelatedEntityType[] types = null;
 
             switch (ctx.Request.Provider.Value.EntityType)
             {
                 case ExportEntityType.Product:
-                    types = new ExportEntityType[]
+                    types = new RelatedEntityType[]
                     {
-                        ExportEntityType.TierPrice,
-                        ExportEntityType.ProductVariantAttributeValue,
-                        ExportEntityType.ProductVariantAttributeCombination
+                        RelatedEntityType.TierPrice,
+                        RelatedEntityType.ProductVariantAttributeValue,
+                        RelatedEntityType.ProductVariantAttributeCombination
                     };
                     break;
                 default:
@@ -533,8 +533,7 @@ namespace SmartStore.Services.DataExchange.Export
 
                 result.Add(new ExportDataUnit
                 {
-                    IsRelatedData = true,
-                    EntityType = type,
+                    RelatedType = type,
                     DisplayInFileDialog = true,
                     FileName = fileName + fileExtension,
                     DataStream = new MemoryStream()
@@ -578,7 +577,7 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (method == "Execute")
                 {
-                    foreach (var unit in context.ExtraDataUnits.Where(x => x.IsRelatedData))
+                    foreach (var unit in context.ExtraDataUnits.Where(x => x.RelatedType.HasValue))
                     {
                         StreamToFile(ctx, unit.DataStream, Path.Combine(context.Folder, unit.FileName), x => unit.DataStream = null);
                     }
@@ -1392,7 +1391,7 @@ namespace SmartStore.Services.DataExchange.Export
 
                         if (profile.ExportRelatedData && ctx.Supports(ExportFeatures.UsesRelatedDataUnits))
                         {
-                            context.ExtraDataUnits.AddRange(GetRelatedDataUnits(ctx));
+                            context.ExtraDataUnits.AddRange(GetDataUnitsForRelatedEntities(ctx));
                         }
 					}
 
@@ -1405,8 +1404,7 @@ namespace SmartStore.Services.DataExchange.Export
 							ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
 							{
 								StoreId = ctx.Store.Id,
-								FileName = context.FileName,
-                                EntityType = provider.Value.EntityType
+								FileName = context.FileName
                             });
                         }
 					}
@@ -1438,7 +1436,7 @@ namespace SmartStore.Services.DataExchange.Export
                         context.DataStreamId = x.Id;
 
                         var path = x.FileName.HasValue() ? Path.Combine(context.Folder, x.FileName) : null;
-                        var success = !x.IsRelatedData
+                        var success = !x.RelatedType.HasValue
                             ? CallProvider(ctx, "OnExecuted", path)
                             : true;
 
@@ -1450,7 +1448,7 @@ namespace SmartStore.Services.DataExchange.Export
                                 StoreId = ctx.Store.Id,
                                 FileName = x.FileName,
                                 Label = x.Label,
-                                EntityType = x.EntityType
+                                RelatedType = x.RelatedType
                             });
                         }
                     });

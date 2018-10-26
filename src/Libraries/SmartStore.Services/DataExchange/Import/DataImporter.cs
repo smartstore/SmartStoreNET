@@ -184,9 +184,12 @@ namespace SmartStore.Services.DataExchange.Import
 			//_services.DbContext.SaveChanges();
 		}
 
-		private void ImportCoreInner(DataImporterContext ctx, string filePath)
+		private void ImportCoreInner(DataImporterContext ctx, ImportFile file)
 		{
-            if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
+            var context = ctx.ExecuteContext;
+            var profile = ctx.Request.Profile;
+
+            if (context.Abort == DataExchangeAbortion.Hard)
             {
                 return;
             }
@@ -196,11 +199,11 @@ namespace SmartStore.Services.DataExchange.Import
 				logHead.AppendLine();
 				logHead.AppendLine(new string('-', 40));
 				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
-				logHead.Append("Import profile:\t\t" + ctx.Request.Profile.Name);
-				logHead.AppendLine(ctx.Request.Profile.Id == 0 ? " (volatile)" : $" (Id {ctx.Request.Profile.Id})");
+				logHead.Append("Import profile:\t\t" + profile.Name);
+				logHead.AppendLine(profile.Id == 0 ? " (volatile)" : $" (Id {profile.Id})");
 
-				logHead.AppendLine("Entity:\t\t\t" + ctx.Request.Profile.EntityType.ToString());
-				logHead.AppendLine("File:\t\t\t" + Path.GetFileName(filePath));
+				logHead.AppendLine("Entity:\t\t\t" + profile.EntityType.ToString());
+				logHead.AppendLine("File:\t\t\t" + Path.GetFileName(file.Path));
 
 				var customer = _services.WorkContext.CurrentCustomer;
 				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
@@ -208,61 +211,58 @@ namespace SmartStore.Services.DataExchange.Import
 				ctx.Log.Info(logHead.ToString());
 			}
 
-			if (!File.Exists(filePath))
+			if (!File.Exists(file.Path))
 			{
-				throw new SmartException($"File does not exist {filePath}.");
+				throw new SmartException($"File does not exist {file.Path}.");
 			}
 
-			CsvConfiguration csvConfiguration = null;
-			var extension = Path.GetExtension(filePath);
-
-			if ((new string[] { ".csv", ".txt", ".tab" }).Contains(extension, StringComparer.OrdinalIgnoreCase))
+			using (var stream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				var converter = new CsvConfigurationConverter();
-				csvConfiguration = converter.ConvertFrom<CsvConfiguration>(ctx.Request.Profile.FileTypeConfiguration);
-			}
+                var csvConfiguration = file.IsCsv
+                    ? (new CsvConfigurationConverter().ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration) ?? CsvConfiguration.ExcelFriendlyConfiguration)
+                    : CsvConfiguration.ExcelFriendlyConfiguration;
 
-			if (csvConfiguration == null)
-			{
-				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
-			}
-
-			using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				ctx.ExecuteContext.DataTable = LightweightDataTable.FromFile(
-					Path.GetFileName(filePath),
+                context.DataTable = LightweightDataTable.FromFile(
+					Path.GetFileName(file.Path),
 					stream,
 					stream.Length,
-					csvConfiguration,
-					ctx.Request.Profile.Skip,
-					ctx.Request.Profile.Take > 0 ? ctx.Request.Profile.Take : int.MaxValue
-				);
+                    csvConfiguration,
+					profile.Skip,
+					profile.Take > 0 ? profile.Take : int.MaxValue);
 
-				try
+                context.ColumnMap = file.RelatedType.HasValue ? new ColumnMap() : ctx.ColumnMap;
+                context.File = file;
+
+                try
 				{
-					ctx.Importer.Execute(ctx.ExecuteContext);
+					ctx.Importer.Execute(context);
 				}
 				catch (Exception ex)
 				{
-					ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-					ctx.ExecuteContext.Result.AddError(ex, $"The importer failed: {ex.ToAllMessages()}.");
+					context.Abort = DataExchangeAbortion.Hard;
+					context.Result.AddError(ex, $"The importer failed: {ex.ToAllMessages()}.");
 				}
 
-				if (ctx.ExecuteContext.IsMaxFailures)
-					ctx.ExecuteContext.Result.AddWarning("Import aborted. The maximum number of failures has been reached.");
-
-				if (ctx.CancellationToken.IsCancellationRequested)
-					ctx.ExecuteContext.Result.AddWarning("Import aborted. A cancellation has been requested.");
+                if (context.IsMaxFailures)
+                {
+                    context.Result.AddWarning("Import aborted. The maximum number of failures has been reached.");
+                }
+                if (ctx.CancellationToken.IsCancellationRequested)
+                {
+                    context.Result.AddWarning("Import aborted. A cancellation has been requested.");
+                }
 			}
 		}
 
 		private void ImportCoreOuter(DataImporterContext ctx)
 		{
-			if (ctx.Request.Profile == null || !ctx.Request.Profile.Enabled)
-				return;
+            var profile = ctx.Request.Profile;
+            if (profile == null || !profile.Enabled)
+            {
+                return;
+            }
 
-			var logPath = ctx.Request.Profile.GetImportLogPath();
-
+			var logPath = profile.GetImportLogPath();
 			FileSystemHelper.Delete(logPath);
 
 			using (var logger = new TraceLogger(logPath))
@@ -282,17 +282,12 @@ namespace SmartStore.Services.DataExchange.Import
 					ctx.ExecuteContext.Services = _services;
 					ctx.ExecuteContext.Log = logger;
 					ctx.ExecuteContext.Languages = _languageService.GetAllLanguages(true);
-					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;
-					ctx.ExecuteContext.KeyFieldNames = ctx.Request.Profile.KeyFieldNames.SplitSafe(",");
-					ctx.ExecuteContext.ImportFolder = ctx.Request.Profile.GetImportFolder();
-					ctx.ExecuteContext.ExtraData = XmlHelper.Deserialize<ImportExtraData>(ctx.Request.Profile.ExtraData);
+					ctx.ExecuteContext.UpdateOnly = profile.UpdateOnly;
+					ctx.ExecuteContext.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",");
+					ctx.ExecuteContext.ImportFolder = profile.GetImportFolder();
+					ctx.ExecuteContext.ExtraData = XmlHelper.Deserialize<ImportExtraData>(profile.ExtraData);
 
-					{
-						var mapConverter = new ColumnMapConverter();
-						ctx.ExecuteContext.ColumnMap = mapConverter.ConvertFrom<ColumnMap>(ctx.Request.Profile.ColumnMapping) ?? new ColumnMap();
-					}
-
-					var files = ctx.Request.Profile.GetImportFiles(false);
+                    var files = profile.GetImportFiles(profile.ImportRelatedData);
 
 					if (!files.Any())
 						throw new SmartException("No files to import.");
@@ -300,11 +295,11 @@ namespace SmartStore.Services.DataExchange.Import
 					if (!HasPermission(ctx))
 						throw new SmartException("You do not have permission to perform the selected import.");
 
-					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);
+					ctx.Importer = _importerFactory(profile.EntityType);
 
 					_services.EventPublisher.Publish(new ImportExecutingEvent(ctx.ExecuteContext));
 
-					files.ForEach(x => ImportCoreInner(ctx, x.Path));
+					files.ForEach(x => ImportCoreInner(ctx, x));
 				}
 				catch (Exception ex)
 				{
@@ -358,8 +353,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 					try
 					{
-						ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
-						_importProfileService.UpdateImportProfile(ctx.Request.Profile);
+						profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
+						_importProfileService.UpdateImportProfile(profile);
 					}
 					catch (Exception ex)
 					{

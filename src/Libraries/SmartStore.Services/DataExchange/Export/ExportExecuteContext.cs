@@ -232,9 +232,9 @@ namespace SmartStore.Services.DataExchange.Export
 		public Stream DataStream { get; internal set; }
 
         /// <summary>
-        /// The entity type.
+        /// The related entity type.
         /// </summary>
-        public ExportEntityType? EntityType { get; set; }
+        public RelatedEntityType? RelatedType { get; set; }
 
         /// <summary>
         /// The name of the file to be created
@@ -250,10 +250,5 @@ namespace SmartStore.Services.DataExchange.Export
 		/// Whether to display the file in the profile file dialog
 		/// </summary>
 		public bool DisplayInFileDialog { get; set; }
-
-        /// <summary>
-        /// Indicates whether this data unit contains related data (e.g. tier prices) of an primary entity (e.g. product).
-        /// </summary>
-        public bool IsRelatedData { get; internal set; }
     }
 }

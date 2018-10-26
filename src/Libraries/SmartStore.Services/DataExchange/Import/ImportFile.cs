@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Services.DataExchange.Import
@@ -14,13 +15,11 @@ namespace SmartStore.Services.DataExchange.Import
             var fileName = System.IO.Path.GetFileNameWithoutExtension(path);
             if (fileName.HasValue())
             {
-                foreach (ExportEntityType type in Enum.GetValues(typeof(ExportEntityType)))
+                foreach (RelatedEntityType type in Enum.GetValues(typeof(RelatedEntityType)))
                 {
-                    if (type >= ExportEntityType.TierPrice && fileName.EndsWith(type.ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (fileName.EndsWith(type.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        IsRelatedData = true;
-                        EntityType = type;
-                        break;
+                        RelatedType = type;
                     }
                 }
             }
@@ -42,14 +41,20 @@ namespace SmartStore.Services.DataExchange.Import
         public string Extension => System.IO.Path.GetExtension(Path);
 
         /// <summary>
-        /// Indicates whether the file contains related data.
+        /// Indicates whether the file has an CSV file extension.
         /// </summary>
-        public bool IsRelatedData { get; private set; }
+        internal bool IsCsv
+        {
+            get
+            {
+                return (new string[] { ".csv", ".txt", ".tab" }).Contains(Extension, StringComparer.OrdinalIgnoreCase);
+            }
+        }
 
         /// <summary>
-        /// Entity type. Only known for related data.
+        /// Related entity type.
         /// </summary>
-        public ExportEntityType? EntityType { get; private set; }
+        public RelatedEntityType? RelatedType { get; private set; }
 
         /// <summary>
         /// File label text.

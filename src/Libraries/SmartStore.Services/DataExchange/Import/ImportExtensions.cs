@@ -43,9 +43,9 @@ namespace SmartStore.Services.DataExchange.Import
         /// Gets import files for an import profile.
         /// </summary>
         /// <param name="profile">Import profile.</param>
-        /// <param name="includeRelatedDataFiles">Whether to include related data files.</param>
+        /// <param name="includeRelatedFiles">Whether to include related data files.</param>
         /// <returns>List of import files.</returns>
-        public static List<ImportFile> GetImportFiles(this ImportProfile profile, bool includeRelatedDataFiles = true)
+        public static List<ImportFile> GetImportFiles(this ImportProfile profile, bool includeRelatedFiles = true)
         {
             var result = new List<ImportFile>();
             var importFolder = profile.GetImportFolder(true);
@@ -56,7 +56,7 @@ namespace SmartStore.Services.DataExchange.Import
                 foreach (var path in paths)
                 {
                     var file = new ImportFile(path);
-                    if (!includeRelatedDataFiles && file.IsRelatedData)
+                    if (!includeRelatedFiles && file.RelatedType.HasValue)
                     {
                         continue;
                     }
@@ -64,7 +64,8 @@ namespace SmartStore.Services.DataExchange.Import
                     result.Add(file);
                 }
 
-                result = result.OrderBy(x => x.IsRelatedData).ThenBy(x => x.Path).ToList();
+                // Always main data files first.
+                result = result.OrderBy(x => x.RelatedType).ThenBy(x => x.Path).ToList();
                 return result;
             }
 

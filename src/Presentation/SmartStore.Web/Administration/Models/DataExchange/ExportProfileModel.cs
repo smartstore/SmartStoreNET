@@ -178,9 +178,9 @@ namespace SmartStore.Admin.Models.DataExchange
 			public int StoreId { get; set; }
 			public string StoreName { get; set; }
 			public string Label { get; set; }
-            public ExportEntityType? EntityType { get; set; }
-
             public int DisplayOrder { get; set; }
+
+            public RelatedEntityType? RelatedType { get; set; }
 
 			public string FilePath { get; set; }
 			public string FileUrl { get; set; }

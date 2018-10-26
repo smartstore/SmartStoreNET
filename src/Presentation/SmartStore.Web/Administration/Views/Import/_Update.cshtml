@@ -7,7 +7,7 @@
 @Html.HiddenFor(model => model.TempFileName)
 @Html.HiddenFor(model => model.EntityType)
 
-@if (Model.ExistingFiles.Count(x => !x.IsRelatedData) > 1)
+@if (Model.ExistingFiles.Count(x => !x.RelatedType.HasValue) > 1)
 {
 	<div class="alert alert-warning alert-dismissible">
 		@T("Admin.DataExchange.Import.MultipleFilesSameFileTypeNote")
@@ -219,7 +219,7 @@
     Html.RenderPartial("CsvConfiguration", Model.CsvConfiguration, viewData);
 }
 
-@if (Model.ExistingFiles.Any(x => !x.IsRelatedData))
+@if (Model.ExistingFiles.Any(x => !x.RelatedType.HasValue))
 {
     Html.RenderPartial("_ColumnMappings");
 }

@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Localization;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
@@ -27,7 +28,7 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly IRepository<ProductCategory> _productCategoryRepository;
         private readonly IRepository<ProductTag> _productTagRepository;
         private readonly IRepository<Product> _productRepository;
-        private readonly ICommonServices _services;
+        private readonly IRepository<TierPrice> _tierPriceRepository;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IPictureService _pictureService;
         private readonly IManufacturerService _manufacturerService;
@@ -53,7 +54,7 @@ namespace SmartStore.Services.Catalog.Importer
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<ProductTag> productTagRepository,
             IRepository<Product> productRepository,
-            ICommonServices services,
+            IRepository<TierPrice> tierPriceRepository,
             ILocalizedEntityService localizedEntityService,
             IPictureService pictureService,
             IManufacturerService manufacturerService,
@@ -67,7 +68,7 @@ namespace SmartStore.Services.Catalog.Importer
             _productCategoryRepository = productCategoryRepository;
             _productTagRepository = productTagRepository;
             _productRepository = productRepository;
-            _services = services;
+            _tierPriceRepository = tierPriceRepository;
             _localizedEntityService = localizedEntityService;
             _pictureService = pictureService;
             _manufacturerService = manufacturerService;
@@ -75,198 +76,288 @@ namespace SmartStore.Services.Catalog.Importer
             _productService = productService;
             _productTemplateService = productTemplateService;
             _fileDownloadManager = fileDownloadManager;
+
+            T = NullLocalizer.Instance;
         }
+
+        public Localizer T { get; set; }
 
         protected override void Import(ImportExecuteContext context)
         {
+            using (var scope = new DbContextScope(ctx: context.Services.DbContext, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+            {
+                if (context.File.RelatedType.HasValue)
+                {
+                    switch (context.File.RelatedType.Value)
+                    {
+                        case RelatedEntityType.TierPrice:
+                            ImportTierPrices(context);
+                            break;
+                        case RelatedEntityType.ProductVariantAttributeValue:
+                            ImportAttributeValues(context);
+                            break;
+                        case RelatedEntityType.ProductVariantAttributeCombination:
+                            ImportAttributeCombinations(context);
+                            break;
+                    }
+                }
+                else
+                {
+                    Initialize(context);
+                    ImportProducts(context);
+                }
+            }
+        }
+
+        protected virtual void ImportProducts(ImportExecuteContext context)
+        {            
+            var segmenter = context.DataSegmenter;
             var srcToDestId = new Dictionary<int, ImportProductMapping>();
-            var importStartTime = DateTime.UtcNow;
             var templateViewPaths = _productTemplateService.GetAllProductTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
-            using (var scope = new DbContextScope(ctx: _productRepository.Context, hooksEnabled: false, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+            while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
             {
-                var segmenter = context.DataSegmenter;
+                var batch = segmenter.GetCurrentBatch<Product>();
 
-                Initialize(context);
+                // Perf: detach entities
+                _productRepository.Context.DetachEntities(x =>
+                {
+                    return x is Product || x is UrlRecord || x is StoreMapping || x is ProductVariantAttribute || x is LocalizedProperty ||
+                            x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
+                            x is ProductPicture || x is Picture || x is ProductTag || x is TierPrice;
+                });
+                //_productRepository.Context.DetachAll(true);
+
+                context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
+
+                // ===========================================================================
+                // 1.) Import products
+                // ===========================================================================
+                int savedProducts = 0;
+                try
+                {
+                    savedProducts = ProcessProducts(context, batch, templateViewPaths, srcToDestId);
+                }
+                catch (Exception ex)
+                {
+                    context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProducts");
+                }
+
+                // reduce batch to saved (valid) products.
+                // No need to perform import operations on errored products.
+                batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
+
+                // update result object
+                context.Result.NewRecords += batch.Count(x => x.IsNew);
+                context.Result.ModifiedRecords += Math.Max(0, savedProducts - context.Result.NewRecords);
+
+                // ===========================================================================
+                // 2.) Import SEO Slugs
+                // IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
+                //            as Slugs are going to be validated against existing ones in DB.
+                // ===========================================================================
+                if (segmenter.HasColumn("SeName", true) || batch.Any(x => x.IsNew || x.NameChanged))
+                {
+                    try
+                    {
+                        _productRepository.Context.AutoDetectChangesEnabled = true;
+                        ProcessSlugs(context, batch, typeof(Product).Name);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessSlugs");
+                    }
+                    finally
+                    {
+                        _productRepository.Context.AutoDetectChangesEnabled = false;
+                    }
+                }
+
+                // ===========================================================================
+                // 3.) Import StoreMappings
+                // ===========================================================================
+                if (segmenter.HasColumn("StoreIds"))
+                {
+                    try
+                    {
+                        ProcessStoreMappings(context, batch);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessStoreMappings");
+                    }
+                }
+
+                // ===========================================================================
+                // 4.) Import Localizations
+                // ===========================================================================
+                try
+                {
+                    ProcessLocalizations(context, batch, _localizableProperties);
+                }
+                catch (Exception ex)
+                {
+                    context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
+                }
+
+                // ===========================================================================
+                // 5.) Import product category mappings
+                // ===========================================================================
+                if (segmenter.HasColumn("CategoryIds"))
+                {
+                    try
+                    {
+                        ProcessProductCategories(context, batch);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductCategories");
+                    }
+                }
+
+                // ===========================================================================
+                // 6.) Import product manufacturer mappings
+                // ===========================================================================
+                if (segmenter.HasColumn("ManufacturerIds"))
+                {
+                    try
+                    {
+                        ProcessProductManufacturers(context, batch);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductManufacturers");
+                    }
+                }
+
+                // ===========================================================================
+                // 7.) Import product picture mappings
+                // ===========================================================================
+                if (segmenter.HasColumn("ImageUrls"))
+                {
+                    try
+                    {
+                        ProcessProductPictures(context, batch);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductPictures");
+                    }
+                }
+
+                // ===========================================================================
+                // 8.) Import product tag names
+                // ===========================================================================
+                if (segmenter.HasColumn("TagNames"))
+                {
+                    try
+                    {
+                        ProcessProductTags(context, batch);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductTags");
+                    }
+                }
+            }
+
+            // ===========================================================================
+            // 9.) Map parent id of inserted products
+            // ===========================================================================
+            if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentGroupedProductId") && !segmenter.IsIgnored("ParentGroupedProductId"))
+            {
+                segmenter.Reset();
 
                 while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
                 {
                     var batch = segmenter.GetCurrentBatch<Product>();
 
-                    // Perf: detach entities
-                    _productRepository.Context.DetachEntities(x =>
-                    {
-                        return x is Product || x is UrlRecord || x is StoreMapping || x is ProductVariantAttribute || x is LocalizedProperty ||
-                               x is ProductBundleItem || x is ProductCategory || x is ProductManufacturer || x is Category || x is Manufacturer ||
-                               x is ProductPicture || x is Picture || x is ProductTag || x is TierPrice;
-                    });
-                    //_productRepository.Context.DetachAll(true);
+                    _productRepository.Context.DetachAll(false);
 
-                    context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
-
-                    // ===========================================================================
-                    // 1.) Import products
-                    // ===========================================================================
-                    int savedProducts = 0;
                     try
                     {
-                        savedProducts = ProcessProducts(context, batch, templateViewPaths, srcToDestId);
+                        ProcessProductMappings(context, batch, srcToDestId);
                     }
                     catch (Exception ex)
                     {
-                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProducts");
-                    }
-
-                    // reduce batch to saved (valid) products.
-                    // No need to perform import operations on errored products.
-                    batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
-
-                    // update result object
-                    context.Result.NewRecords += batch.Count(x => x.IsNew);
-                    context.Result.ModifiedRecords += Math.Max(0, savedProducts - context.Result.NewRecords);
-
-                    // ===========================================================================
-                    // 2.) Import SEO Slugs
-                    // IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
-                    //            as Slugs are going to be validated against existing ones in DB.
-                    // ===========================================================================
-                    if (segmenter.HasColumn("SeName", true) || batch.Any(x => x.IsNew || x.NameChanged))
-                    {
-                        try
-                        {
-                            _productRepository.Context.AutoDetectChangesEnabled = true;
-                            ProcessSlugs(context, batch, typeof(Product).Name);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessSlugs");
-                        }
-                        finally
-                        {
-                            _productRepository.Context.AutoDetectChangesEnabled = false;
-                        }
-                    }
-
-                    // ===========================================================================
-                    // 3.) Import StoreMappings
-                    // ===========================================================================
-                    if (segmenter.HasColumn("StoreIds"))
-                    {
-                        try
-                        {
-                            ProcessStoreMappings(context, batch);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessStoreMappings");
-                        }
-                    }
-
-                    // ===========================================================================
-                    // 4.) Import Localizations
-                    // ===========================================================================
-                    try
-                    {
-                        ProcessLocalizations(context, batch, _localizableProperties);
-                    }
-                    catch (Exception ex)
-                    {
-                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
-                    }
-
-                    // ===========================================================================
-                    // 5.) Import product category mappings
-                    // ===========================================================================
-                    if (segmenter.HasColumn("CategoryIds"))
-                    {
-                        try
-                        {
-                            ProcessProductCategories(context, batch);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductCategories");
-                        }
-                    }
-
-                    // ===========================================================================
-                    // 6.) Import product manufacturer mappings
-                    // ===========================================================================
-                    if (segmenter.HasColumn("ManufacturerIds"))
-                    {
-                        try
-                        {
-                            ProcessProductManufacturers(context, batch);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductManufacturers");
-                        }
-                    }
-
-                    // ===========================================================================
-                    // 7.) Import product picture mappings
-                    // ===========================================================================
-                    if (segmenter.HasColumn("ImageUrls"))
-                    {
-                        try
-                        {
-                            ProcessProductPictures(context, batch);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductPictures");
-                        }
-                    }
-
-                    // ===========================================================================
-                    // 8.) Import product tag names
-                    // ===========================================================================
-                    if (segmenter.HasColumn("TagNames"))
-                    {
-                        try
-                        {
-                            ProcessProductTags(context, batch);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductTags");
-                        }
+                        context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessParentMappings");
                     }
                 }
+            }
 
-                // ===========================================================================
-                // 9.) Map parent id of inserted products
-                // ===========================================================================
-                if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentGroupedProductId") && !segmenter.IsIgnored("ParentGroupedProductId"))
-				{
-					segmenter.Reset();
+            // ===========================================================================
+            // 10.) PostProcess: normalization
+            // ===========================================================================
+            DataMigrator.FixProductMainPictureIds(_productRepository.Context, UtcNow);
+        }
 
-					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
-					{
-						var batch = segmenter.GetCurrentBatch<Product>();
+        protected virtual void ImportTierPrices(ImportExecuteContext context)
+        {
+            var segmenter = context.DataSegmenter;
+            var entityName = RelatedEntityType.TierPrice.GetLocalizedEnum(context.Services.Localization, context.Services.WorkContext);
+            var processingInfo = T("Admin.Common.ProcessingInfo").Text;
 
-						_productRepository.Context.DetachAll(false);
+            while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
+            {
+                var batch = segmenter.GetCurrentBatch<TierPrice>();
+                var msg = processingInfo.FormatInvariant(entityName, segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
+                context.SetProgress(msg);
 
-						try
-						{
-							ProcessProductMappings(context, batch, srcToDestId);
-						}
-						catch (Exception ex)
-						{
-							context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessParentMappings");
-						}
-					}
-				}
+                try
+                {
+                    _productRepository.AutoCommitEnabled = false;
 
-				// ===========================================================================
-				// 10.) PostProcess: normalization
-				// ===========================================================================
-				DataMigrator.FixProductMainPictureIds(_productRepository.Context, importStartTime);
-			}
-		}
+                    foreach (var row in batch)
+                    {
+                        var id = row.GetDataValue<int>("Id");
+                        var tierPrice = id > 0 ? _tierPriceRepository.GetById(id) : null;
 
-		protected virtual int ProcessProducts(
+                        if (tierPrice == null)
+                        {
+                            if (context.UpdateOnly)
+                            {
+                                continue;
+                            }
+
+                            tierPrice = new TierPrice();
+                        }
+
+                        row.Initialize(tierPrice, null);
+
+                        row.SetProperty(context.Result, (x) => x.StoreId);
+                        row.SetProperty(context.Result, (x) => x.CustomerRoleId);
+                        row.SetProperty(context.Result, (x) => x.Quantity);
+                        row.SetProperty(context.Result, (x) => x.Price);
+                        row.SetProperty(context.Result, (x) => x.CalculationMethod);
+
+                        if (row.IsTransient)
+                        {
+                            _tierPriceRepository.Insert(tierPrice);
+                        }
+                        else
+                        {
+                            _tierPriceRepository.Update(tierPrice);
+                        }
+
+                        _tierPriceRepository.Context.SaveChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Result.AddError(ex, segmenter.CurrentSegment, "ImportTierPrices");
+                }
+            }
+        }
+
+        protected virtual void ImportAttributeValues(ImportExecuteContext context)
+        {
+        }
+
+        protected virtual void ImportAttributeCombinations(ImportExecuteContext context)
+        {
+        }
+
+        protected virtual int ProcessProducts(
 			ImportExecuteContext context,
 			IEnumerable<ImportRow<Product>> batch,
 			Dictionary<string, int> templateViewPaths,
@@ -701,7 +792,7 @@ namespace SmartStore.Services.Catalog.Importer
         protected virtual int ProcessProductTags(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
         {
             // true, cause product tags must be saved and assigned an id prior adding a mapping.
-            _productPictureRepository.AutoCommitEnabled = true;
+            _productTagRepository.AutoCommitEnabled = true;
 
             var productIds = batch.Select(x => x.Entity.Id).ToList();
             var tagsPerBatch = _productRepository.TableUntracked
@@ -746,7 +837,7 @@ namespace SmartStore.Services.Catalog.Importer
             }
 
             // Commit whole batch at once.
-            var num = _productRepository.Context.SaveChanges();
+            var num = _productTagRepository.Context.SaveChanges();
             return num;
         }
 
@@ -761,7 +852,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return (int?)null;
 		}
 
-		public static string[] SupportedKeyFields
+        public static string[] SupportedKeyFields
 		{
 			get
 			{

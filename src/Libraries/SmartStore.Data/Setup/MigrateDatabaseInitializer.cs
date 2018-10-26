@@ -5,6 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using SmartStore.Data.Migrations;
+using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
 {
@@ -16,7 +17,6 @@ namespace SmartStore.Data.Setup
 		where TContext : DbContext, new()
 		where TConfig : DbMigrationsConfiguration<TContext>, new()
 	{
-
 		#region Ctor
 
 		public MigrateDatabaseInitializer()
@@ -132,6 +132,15 @@ namespace SmartStore.Data.Setup
 			{
 				var dbContextInfo = new DbContextInfo(typeof(TContext));
 				config.TargetDatabase = new DbConnectionInfo(this.ConnectionString, dbContextInfo.ConnectionProviderName);
+			}
+
+			if (config.CommandTimeout == null)
+			{
+				var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
+				if (commandTimeout.HasValue)
+				{
+					config.CommandTimeout = commandTimeout.Value;
+				}
 			}
 
 			return config;

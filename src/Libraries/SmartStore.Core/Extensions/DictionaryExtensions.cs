@@ -100,6 +100,43 @@ namespace SmartStore
             return result;
         }
 
+
+		public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key, TValue value, bool updateIfExists = false)
+		{
+			if (source == null || key == null)
+			{
+				return false;
+			}
+
+			if (source.ContainsKey(key))
+			{
+				if (updateIfExists)
+				{
+					source[key] = value;
+					return true;
+				}
+			}
+			else
+			{
+				source.Add(key, value);
+				return true;
+			}
+
+			return false;
+		}
+
+		public static bool TryRemove<TKey, TValue>(this Dictionary<TKey, TValue> source, TKey key, out TValue value)
+		{
+			value = default(TValue);
+
+			if (source != null && key != null && source.TryGetValue(key, out value))
+			{
+				source.Remove(key);
+				return true;
+			}
+
+			return false;
+		}
     }
 
 }

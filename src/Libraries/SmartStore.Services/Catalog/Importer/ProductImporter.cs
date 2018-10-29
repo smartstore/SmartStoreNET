@@ -874,7 +874,7 @@ namespace SmartStore.Services.Catalog.Importer
 						}
 						else if (image.Url.HasValue())
 						{
-							context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+							context.Result.AddInfo($"Download failed for image {image.Url}.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
 						}
 					}
 					catch (Exception ex)

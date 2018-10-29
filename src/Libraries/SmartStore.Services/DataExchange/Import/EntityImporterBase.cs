@@ -20,7 +20,7 @@ namespace SmartStore.Services.DataExchange.Import
 {
     public abstract class EntityImporterBase : IEntityImporter
 	{
-		private const string _imageDownloadFolder = @"Content\DownloadedImages";
+		private const string IMAGE_DOWNLOAD_FOLDER = @"Content\DownloadedImages";
 
 		public DateTime UtcNow
 		{
@@ -63,7 +63,7 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			UtcNow = DateTime.UtcNow;
 			DownloadedItems = new Dictionary<string, string>();
-			ImageDownloadFolder = Path.Combine(context.ImportFolder, _imageDownloadFolder);
+			ImageDownloadFolder = Path.Combine(context.ImportFolder, IMAGE_DOWNLOAD_FOLDER);
 
 			var settings = context.DataExchangeSettings;
 

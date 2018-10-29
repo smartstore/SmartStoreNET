@@ -25,7 +25,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 			CancellationToken = cancellation;
 			CustomProperties = new Dictionary<string, object>();
-			Result = new ImportResult();
 		}
 
 		public DataImportRequest Request

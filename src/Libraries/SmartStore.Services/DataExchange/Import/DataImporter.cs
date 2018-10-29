@@ -89,35 +89,46 @@ namespace SmartStore.Services.DataExchange.Import
 			return true;
 		}
 
-		private void LogResult(DataImporterContext ctx)
+		private void LogResults(DataImporterContext ctx)
 		{
-			var result = ctx.ExecuteContext.Result;
-			var sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-			sb.AppendLine();
-			sb.AppendFormat("Started:\t\t{0}\r\n", result.StartDateUtc.ToLocalTime());
-			sb.AppendFormat("Finished:\t\t{0}\r\n", result.EndDateUtc.ToLocalTime());
-			sb.AppendFormat("Duration:\t\t{0}\r\n", (result.EndDateUtc - result.StartDateUtc).ToString("g"));
-			sb.AppendLine();
-			sb.AppendFormat("Total rows:\t\t{0}\r\n", result.TotalRecords);
-			sb.AppendFormat("Rows processed:\t\t{0}\r\n", result.AffectedRecords);
-			sb.AppendFormat("Records imported:\t{0}\r\n", result.NewRecords);
-			sb.AppendFormat("Records updated:\t{0}\r\n", result.ModifiedRecords);
-			sb.AppendLine();
-			sb.AppendFormat("Warnings:\t\t{0}\r\n", result.Warnings);
-			sb.AppendFormat("Errors:\t\t\t{0}", result.Errors);
+            foreach (var item in ctx.Results)
+            {
+                var result = item.Value;
+                var entityName = item.Key.HasValue() ? item.Key : ctx.Request.Profile.EntityType.ToString();
 
-			ctx.Log.Info(sb.ToString());
+                sb.Clear();
+                sb.AppendLine();
+                sb.AppendLine(new string('-', 40));
+                sb.AppendLine("Object:         " + entityName);
+                sb.AppendLine("Started:        " + result.StartDateUtc.ToLocalTime());
+                sb.AppendLine("Finished:       " + result.EndDateUtc.ToLocalTime());
+                sb.AppendLine("Duration:       " + (result.EndDateUtc - result.StartDateUtc).ToString("g"));
+                sb.AppendLine("Rows total:     " + result.TotalRecords);
+                sb.AppendLine("Rows processed: " + result.AffectedRecords);
+                sb.AppendLine("Rows imported:  " + result.NewRecords);
+                sb.AppendLine("Rows updated:   " + result.ModifiedRecords);
+                sb.AppendLine("Warnings:       " + result.Warnings);
+                sb.Append("Errors:         " + result.Errors);
+                ctx.Log.Info(sb.ToString());
 
-			foreach (var message in result.Messages)
-			{
-				if (message.MessageType == ImportMessageType.Error)
-					ctx.Log.Error(new Exception(message.FullMessage), message.ToString());
-				else if (message.MessageType == ImportMessageType.Warning)
-					ctx.Log.Warn(message.ToString());
-				else
-					ctx.Log.Info(message.ToString());
-			}
+                foreach (var message in result.Messages)
+                {
+                    if (message.MessageType == ImportMessageType.Error)
+                    {
+                        ctx.Log.Error(new Exception(message.FullMessage), message.ToString());
+                    }
+                    else if (message.MessageType == ImportMessageType.Warning)
+                    {
+                        ctx.Log.Warn(message.ToString());
+                    }
+                    else
+                    {
+                        ctx.Log.Info(message.ToString());
+                    }
+                }
+            }
 		}
 
 		private void SendCompletionEmail(DataImporterContext ctx)
@@ -194,23 +205,6 @@ namespace SmartStore.Services.DataExchange.Import
                 return;
             }
 
-			{
-				var logHead = new StringBuilder();
-				logHead.AppendLine();
-				logHead.AppendLine(new string('-', 40));
-				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
-				logHead.Append("Import profile:\t\t" + profile.Name);
-				logHead.AppendLine(profile.Id == 0 ? " (volatile)" : $" (Id {profile.Id})");
-
-				logHead.AppendLine("Entity:\t\t\t" + profile.EntityType.ToString());
-				logHead.AppendLine("File:\t\t\t" + Path.GetFileName(file.Path));
-
-				var customer = _services.WorkContext.CurrentCustomer;
-				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
-
-				ctx.Log.Info(logHead.ToString());
-			}
-
 			if (!File.Exists(file.Path))
 			{
 				throw new SmartException($"File does not exist {file.Path}.");
@@ -223,7 +217,7 @@ namespace SmartStore.Services.DataExchange.Import
                     : CsvConfiguration.ExcelFriendlyConfiguration;
 
                 context.DataTable = LightweightDataTable.FromFile(
-					Path.GetFileName(file.Path),
+                    file.Name,
 					stream,
 					stream.Length,
                     csvConfiguration,
@@ -234,50 +228,60 @@ namespace SmartStore.Services.DataExchange.Import
                 context.File = file;
 
                 try
-				{
-					ctx.Importer.Execute(context);
-				}
-				catch (Exception ex)
-				{
-					context.Abort = DataExchangeAbortion.Hard;
-					context.Result.AddError(ex, $"The importer failed: {ex.ToAllMessages()}.");
-				}
-
-                if (context.IsMaxFailures)
                 {
-                    context.Result.AddWarning("Import aborted. The maximum number of failures has been reached.");
+                    ctx.Importer.Execute(context);
                 }
-                if (ctx.CancellationToken.IsCancellationRequested)
+                catch (Exception ex)
                 {
-                    context.Result.AddWarning("Import aborted. A cancellation has been requested.");
+                    context.Abort = DataExchangeAbortion.Hard;
+                    context.Result.AddError(ex, $"The importer failed: {ex.ToAllMessages()}.");
+                }
+                finally
+                {
+                    context.Result.EndDateUtc = DateTime.UtcNow;
+
+                    if (context.IsMaxFailures)
+                    {
+                        context.Result.AddWarning("Import aborted. The maximum number of failures has been reached.");
+                    }
+                    if (ctx.CancellationToken.IsCancellationRequested)
+                    {
+                        context.Result.AddWarning("Import aborted. A cancellation has been requested.");
+                    }
                 }
 			}
 		}
 
 		private void ImportCoreOuter(DataImporterContext ctx)
 		{
+            var customer = _services.WorkContext.CurrentCustomer;
             var profile = ctx.Request.Profile;
-            if (profile == null || !profile.Enabled)
-            {
-                return;
-            }
-
-			var logPath = profile.GetImportLogPath();
+            var logPath = profile.GetImportLogPath();
 			FileSystemHelper.Delete(logPath);
 
 			using (var logger = new TraceLogger(logPath))
 			{
-				var scopes = new List<IDisposable>();
+                var scopes = new List<IDisposable>();
 
-				try
+                try
 				{
-					_dbCache.Enabled = false;
+                    var files = profile.GetImportFiles(profile.ImportRelatedData);
+                    var groupedFiles = files.GroupBy(x => x.RelatedType);
+
+                    if (!files.Any())
+                        throw new SmartException("No files to import.");
+
+                    if (!HasPermission(ctx))
+                        throw new SmartException("You do not have permission to perform the selected import.");
+
+                    _dbCache.Enabled = false;
 					scopes.Add(_localizedEntityService.BeginScope());
 					scopes.Add(_urlRecordService.BeginScope());
 
 					ctx.Log = logger;
+                    ctx.Importer = _importerFactory(profile.EntityType);
 
-					ctx.ExecuteContext.Request = ctx.Request;
+                    ctx.ExecuteContext.Request = ctx.Request;
 					ctx.ExecuteContext.DataExchangeSettings = _dataExchangeSettings.Value;
 					ctx.ExecuteContext.Services = _services;
 					ctx.ExecuteContext.Log = logger;
@@ -287,23 +291,32 @@ namespace SmartStore.Services.DataExchange.Import
 					ctx.ExecuteContext.ImportFolder = profile.GetImportFolder();
 					ctx.ExecuteContext.ExtraData = XmlHelper.Deserialize<ImportExtraData>(profile.ExtraData);
 
-                    var files = profile.GetImportFiles(profile.ImportRelatedData);
+                    var sb = new StringBuilder();
+                    sb.AppendLine();
+                    sb.AppendLine(new string('-', 40));
+                    sb.AppendLine("SmartStore.NET: v." + SmartStoreVersion.CurrentFullVersion);
+                    sb.AppendLine("Import profile: {0} {1}".FormatInvariant(profile.Name, profile.Id == 0 ? " (volatile)" : $" (Id {profile.Id})"));
+                    foreach (var fileGroup in groupedFiles)
+                    {
+                        var entityName = fileGroup.Key.HasValue ? fileGroup.Key.Value.ToString() : profile.EntityType.ToString();
+                        var fileNames = string.Join(", ", fileGroup.Select(x => x.Name));
+                        sb.AppendLine("{0} files: {1}".FormatInvariant(entityName, fileNames));
+                    }
+                    sb.Append("Executed by: " + customer.Email.NullEmpty() ?? customer.SystemName.NaIfEmpty());
+                    ctx.Log.Info(sb.ToString());
 
-					if (!files.Any())
-						throw new SmartException("No files to import.");
+                    _services.EventPublisher.Publish(new ImportExecutingEvent(ctx.ExecuteContext));
 
-					if (!HasPermission(ctx))
-						throw new SmartException("You do not have permission to perform the selected import.");
+                    foreach (var fileGroup in groupedFiles)
+                    {
+                        ctx.ExecuteContext.Result = ctx.Results[fileGroup.Key.HasValue ? fileGroup.Key.Value.ToString() : string.Empty] = new ImportResult();
 
-					ctx.Importer = _importerFactory(profile.EntityType);
-
-					_services.EventPublisher.Publish(new ImportExecutingEvent(ctx.ExecuteContext));
-
-					files.ForEach(x => ImportCoreInner(ctx, x));
+                        fileGroup.Each(x => ImportCoreInner(ctx, x));
+                    }
 				}
 				catch (Exception ex)
 				{
-					ctx.ExecuteContext.Result.AddError(ex);
+                    logger.ErrorsAll(ex);
 				}
 				finally
 				{
@@ -316,8 +329,8 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					catch (Exception ex)
 					{
-						ctx.ExecuteContext.Result.AddError(ex);
-					}
+                        logger.ErrorsAll(ex);
+                    }
 
 					try
 					{
@@ -329,8 +342,8 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					catch (Exception ex)
 					{
-						ctx.ExecuteContext.Result.AddError(ex);
-					}
+                        logger.ErrorsAll(ex);
+                    }
 
 					try
 					{
@@ -338,13 +351,12 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					catch (Exception ex)
 					{
-						ctx.ExecuteContext.Result.AddError(ex);
-					}
+                        logger.ErrorsAll(ex);
+                    }
 
 					try
 					{
-						ctx.ExecuteContext.Result.EndDateUtc = DateTime.UtcNow;
-						LogResult(ctx);
+						LogResults(ctx);
 					}
 					catch (Exception ex)
 					{
@@ -353,8 +365,11 @@ namespace SmartStore.Services.DataExchange.Import
 
 					try
 					{
-						profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
-						_importProfileService.UpdateImportProfile(profile);
+                        if (ctx.Results.TryGetValue(string.Empty, out var result))
+                        {
+                            profile.ResultInfo = XmlHelper.Serialize(result.Clone());
+                            _importProfileService.UpdateImportProfile(profile);
+                        }
 					}
 					catch (Exception ex)
 					{
@@ -364,7 +379,8 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						ctx.Request.CustomData.Clear();
-						ctx.Log = null;
+                        ctx.Results.Clear();
+                        ctx.Log = null;
 					}
 					catch (Exception ex)
 					{
@@ -379,11 +395,13 @@ namespace SmartStore.Services.DataExchange.Import
 			Guard.NotNull(request, nameof(request));
 			Guard.NotNull(cancellationToken, nameof(cancellationToken));
 
-			var ctx = new DataImporterContext(request, cancellationToken, T("Admin.DataExchange.Import.ProgressInfo"));
+            if (request.Profile != null && request.Profile.Enabled)
+            {
+                var ctx = new DataImporterContext(request, cancellationToken, T("Admin.DataExchange.Import.ProgressInfo"));
+                ImportCoreOuter(ctx);
+            }
 
-			ImportCoreOuter(ctx);
-
-			cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 		}
 	}
 }

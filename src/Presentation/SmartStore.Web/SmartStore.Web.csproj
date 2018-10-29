@@ -1007,6 +1007,7 @@
     <Content Include="Content\vendors\aos\scss\_animations.scss" />
     <Content Include="Content\vendors\aos\scss\_easing.scss" />
     <Content Include="Content\vendors\aos\scss\_core.scss" />
+    <Content Include="Content\bs4\scss\utilities\_shadows.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1053,7 +1054,6 @@
     <Content Include="Content\bs4\scss\mixins\_list-group.scss" />
     <Content Include="Content\bs4\scss\mixins\_lists.scss" />
     <Content Include="Content\bs4\scss\mixins\_nav-divider.scss" />
-    <Content Include="Content\bs4\scss\mixins\_navbar-align.scss" />
     <Content Include="Content\bs4\scss\mixins\_pagination.scss" />
     <Content Include="Content\bs4\scss\mixins\_reset-text.scss" />
     <Content Include="Content\bs4\scss\mixins\_resize.scss" />

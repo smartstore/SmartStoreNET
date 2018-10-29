@@ -816,7 +816,7 @@ namespace SmartStore.Services.Catalog.Importer
 				// Download images.
 				if (imageFiles.Any(x => x.Url.HasValue()))
 				{
-					// async downloading in batch processing is inefficient cause only the image processing benefits from async,
+					// Async downloading in batch processing is inefficient cause only the image processing benefits from async,
 					// not the record processing itself. a per record processing may speed up the import.
 
 					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, imageFiles.Where(x => x.Url.HasValue() && !x.Success.HasValue)));
@@ -845,14 +845,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 								if (displayOrder == -1)
 								{
-									displayOrder = (currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0);
+									displayOrder = currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0;
 								}
                                 
 								pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 								if (pictureBinary != null && pictureBinary.Length > 0)
 								{
-                                    var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false); ;
+                                    var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
 
                                     if (newPicture != null)
 									{

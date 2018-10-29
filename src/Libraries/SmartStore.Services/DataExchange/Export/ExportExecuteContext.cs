@@ -250,5 +250,10 @@ namespace SmartStore.Services.DataExchange.Export
 		/// Whether to display the file in the profile file dialog
 		/// </summary>
 		public bool DisplayInFileDialog { get; set; }
+
+        /// <summary>
+        /// Number of successful processed records.
+        /// </summary>
+        public int RecordsSucceeded { get; set; }
     }
 }

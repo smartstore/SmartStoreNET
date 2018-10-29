@@ -44,7 +44,7 @@ using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	public partial class DataExporter : IDataExporter
+    public partial class DataExporter : IDataExporter
 	{
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
@@ -577,9 +577,13 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (method == "Execute")
                 {
+                    ctx.Log.Info($"Provider reports {context.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {ctx.Request.Provider.Value.EntityType.ToString()}.");
+
                     foreach (var unit in context.ExtraDataUnits.Where(x => x.RelatedType.HasValue))
                     {
                         StreamToFile(ctx, unit.DataStream, Path.Combine(context.Folder, unit.FileName), x => unit.DataStream = null);
+
+                        ctx.Log.Info($"Provider reports {unit.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {unit.RelatedType.Value.ToString()}.");
                     }
                 }
 			}
@@ -1320,33 +1324,33 @@ namespace SmartStore.Services.DataExchange.Export
 				var logHead = new StringBuilder();
 				logHead.AppendLine();
 				logHead.AppendLine(new string('-', 40));
-				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
-				logHead.Append("Export profile:\t\t" + profile.Name);
+				logHead.AppendLine("SmartStore.NET: v." + SmartStoreVersion.CurrentFullVersion);
+				logHead.Append("Export profile: " + profile.Name);
 				logHead.AppendLine(profile.Id == 0 ? " (volatile)" : $" (Id {profile.Id})");
 
                 if (provider.Metadata.FriendlyName.HasValue())
                 {
-                    logHead.AppendLine($"Export provider:\t{provider.Metadata.FriendlyName} ({profile.ProviderSystemName})");
+                    logHead.AppendLine($"Export provider: {provider.Metadata.FriendlyName} ({profile.ProviderSystemName})");
                 }
                 else
                 {
-                    logHead.AppendLine("Export provider:\t" + profile.ProviderSystemName);
+                    logHead.AppendLine("Export provider: " + profile.ProviderSystemName);
                 }
 
 				var plugin = provider.Metadata.PluginDescriptor;
-				logHead.Append("Plugin:\t\t\t");
+				logHead.Append("Plugin: ");
 				logHead.AppendLine(plugin == null ? "".NaIfEmpty() : $"{plugin.FriendlyName} ({plugin.SystemName}) v.{plugin.Version.ToString()}");
-				logHead.AppendLine("Entity:\t\t\t" + provider.Value.EntityType.ToString());
+				logHead.AppendLine("Entity: " + provider.Value.EntityType.ToString());
 
 				try
 				{
 					var uri = new Uri(store.Url);
-					logHead.AppendLine($"Store:\t\t\t{uri.DnsSafeHost.NaIfEmpty()} (Id {store.Id})");
+					logHead.AppendLine($"Store: {uri.DnsSafeHost.NaIfEmpty()} (Id {store.Id})");
 				}
 				catch {	}
 
 				var customer = _services.WorkContext.CurrentCustomer;
-				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
+				logHead.Append("Executed by: " + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
 
 				ctx.Log.Info(logHead.ToString());
 			}
@@ -1397,8 +1401,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 					if (CallProvider(ctx, "Execute", path))
 					{
-						ctx.Log.Info($"Provider reports {context.RecordsSucceeded.ToString("N0")} successfully exported record(s).");
-
 						if (ctx.IsFileBasedExport && File.Exists(path))
 						{
 							ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
@@ -1425,20 +1427,19 @@ namespace SmartStore.Services.DataExchange.Export
 
 				if (context.Abort != DataExchangeAbortion.Hard)
 				{
-                    // Always call OnExecuted.
-                    if (context.ExtraDataUnits.Count == 0)
-                    {
-                        context.ExtraDataUnits.Add(new ExportDataUnit());
-                    }
+                    var calledExecuted = false;
 
 					context.ExtraDataUnits.ForEach(x =>
 					{
                         context.DataStreamId = x.Id;
 
+                        var success = true;
                         var path = x.FileName.HasValue() ? Path.Combine(context.Folder, x.FileName) : null;
-                        var success = !x.RelatedType.HasValue
-                            ? CallProvider(ctx, "OnExecuted", path)
-                            : true;
+                        if (!x.RelatedType.HasValue)
+                        {
+                            calledExecuted = true;
+                            success = CallProvider(ctx, "OnExecuted", path);
+                        }
 
                         if (success && ctx.IsFileBasedExport && x.DisplayInFileDialog && File.Exists(path))
                         {
@@ -1452,7 +1453,13 @@ namespace SmartStore.Services.DataExchange.Export
                             });
                         }
                     });
-				}
+
+                    if (!calledExecuted)
+                    {
+                        // Always call OnExecuted.
+                        CallProvider(ctx, "OnExecuted", null);
+                    }
+                }
 
                 context.ExtraDataUnits.Clear();
             }

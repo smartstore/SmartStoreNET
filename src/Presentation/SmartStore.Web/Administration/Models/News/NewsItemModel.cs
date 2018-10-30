@@ -1,21 +1,17 @@
-﻿using FluentValidation;
-using FluentValidation.Attributes;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Modelling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using FluentValidation;
+using FluentValidation.Attributes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.News
 {
     [Validator(typeof(NewsItemValidator))]
-    public class NewsItemModel : EntityModelBase, IStoreSelector
+    public class NewsItemModel : TabbableModel, IStoreSelector
     {
-		public NewsItemModel()
-		{
-		}
-
         [SmartResourceDisplayName("Admin.ContentManagement.News.NewsItems.Fields.Language")]
         public int LanguageId { get; set; }
 

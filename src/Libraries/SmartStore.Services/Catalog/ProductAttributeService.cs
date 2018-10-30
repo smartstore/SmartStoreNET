@@ -703,12 +703,36 @@ namespace SmartStore.Services.Catalog
 
 		public virtual ProductVariantAttributeCombination GetProductVariantAttributeCombinationBySku(string sku)
 		{
-			if (sku.IsEmpty())
-				return null;
+            if (sku.IsEmpty())
+            {
+                return null;
+            }
 
-			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && x.Product.Deleted == false && !x.Product.IsSystemProduct);
+			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && !x.Product.Deleted && !x.Product.IsSystemProduct);
 			return combination;
 		}
+
+        public virtual ProductVariantAttributeCombination GetAttributeCombinationByGtin(string gtin)
+        {
+            if (gtin.IsEmpty())
+            {
+                return null;
+            }
+
+            var combination = _pvacRepository.Table.FirstOrDefault(x => x.Gtin == gtin && !x.Product.Deleted && !x.Product.IsSystemProduct);
+            return combination;
+        }
+
+        public virtual ProductVariantAttributeCombination GetAttributeCombinationByMpn(string manufacturerPartNumber)
+        {
+            if (manufacturerPartNumber.IsEmpty())
+            {
+                return null;
+            }
+
+            var combination = _pvacRepository.Table.FirstOrDefault(x => x.ManufacturerPartNumber == manufacturerPartNumber && !x.Product.Deleted && !x.Product.IsSystemProduct);
+            return combination;
+        }
 
         public virtual void InsertProductVariantAttributeCombination(ProductVariantAttributeCombination combination)
         {

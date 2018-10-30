@@ -37,6 +37,7 @@ namespace SmartStore.Services.Catalog.Importer
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IProductTemplateService _productTemplateService;
+        private readonly IProductAttributeService _productAttributeService;
         private readonly FileDownloadManager _fileDownloadManager;
 
         private static readonly Dictionary<string, Expression<Func<Product, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Product, string>>>
@@ -65,6 +66,7 @@ namespace SmartStore.Services.Catalog.Importer
             ICategoryService categoryService,
             IProductService productService,
             IProductTemplateService productTemplateService,
+            IProductAttributeService productAttributeService,
             FileDownloadManager fileDownloadManager)
         {
             _productPictureRepository = productPictureRepository;
@@ -81,6 +83,7 @@ namespace SmartStore.Services.Catalog.Importer
             _categoryService = categoryService;
             _productService = productService;
             _productTemplateService = productTemplateService;
+            _productAttributeService = productAttributeService;
             _fileDownloadManager = fileDownloadManager;
 
             T = NullLocalizer.Instance;
@@ -310,7 +313,7 @@ namespace SmartStore.Services.Catalog.Importer
                 var batch = segmenter.GetCurrentBatch<TierPrice>();
                 var msg = processingInfo.FormatInvariant(entityName, segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
-                _tierPriceRepository.Context.DetachEntities(x => x is TierPrice);
+                _tierPriceRepository.Context.DetachEntities(x => x is TierPrice || x is Product);
 
                 context.SetProgress(msg);
 
@@ -321,7 +324,6 @@ namespace SmartStore.Services.Catalog.Importer
                     foreach (var row in batch)
                     {
                         var id = row.GetDataValue<int>("Id");
-                        var productId = row.GetDataValue<int>("ProductId");
                         var tierPrice = id > 0 ? _tierPriceRepository.GetById(id) : null;
 
                         if (tierPrice == null)
@@ -333,6 +335,7 @@ namespace SmartStore.Services.Catalog.Importer
                             }
 
                             // ProductId is required for new tier prices.
+                            var productId = row.GetDataValue<int>("ProductId");
                             if (productId == 0)
                             {
                                 ++context.Result.SkippedRecords;
@@ -340,16 +343,15 @@ namespace SmartStore.Services.Catalog.Importer
                                 continue;
                             }
 
-                            tierPrice = new TierPrice();
+                            tierPrice = new TierPrice
+                            {
+                                ProductId = productId
+                            };
                         }
 
                         row.Initialize(tierPrice, null);
 
-                        if (productId != 0)
-                        {
-                            tierPrice.ProductId = productId;
-                        }
-
+                        // Ignore ProductId field. We only update volatile property values and want to avoid accidents.
                         row.SetProperty(context.Result, (x) => x.StoreId);
                         row.SetProperty(context.Result, (x) => x.CustomerRoleId);
                         row.SetProperty(context.Result, (x) => x.Quantity);
@@ -377,6 +379,11 @@ namespace SmartStore.Services.Catalog.Importer
 
                 context.Result.NewRecords += batch.Count(x => x.IsNew);
                 context.Result.ModifiedRecords += Math.Max(0, savedEntities - context.Result.NewRecords);
+
+                // Update has tier prices property for inserted records.
+                var insertedProductIds = new HashSet<int>(batch.Where(x => x.IsNew).Select(x => x.Entity.ProductId));
+                var products = _productService.GetProductsByIds(insertedProductIds.ToArray());
+                products.Each(x => _productService.UpdateHasTierPricesProperty(x));
             }
         }
 
@@ -403,7 +410,6 @@ namespace SmartStore.Services.Catalog.Importer
                     foreach (var row in batch)
                     {
                         var id = row.GetDataValue<int>("Id");
-                        var pvaId = row.GetDataValue<int>("ProductVariantAttributeId");
                         var attributeValue = id > 0 ? _attributeValueRepository.GetById(id) : null;
 
                         if (attributeValue == null)
@@ -415,6 +421,7 @@ namespace SmartStore.Services.Catalog.Importer
                             }
 
                             // ProductVariantAttributeId is required for new attribute values.
+                            var pvaId = row.GetDataValue<int>("ProductVariantAttributeId");
                             if (pvaId == 0)
                             {
                                 ++context.Result.SkippedRecords;
@@ -422,16 +429,22 @@ namespace SmartStore.Services.Catalog.Importer
                                 continue;
                             }
 
-                            attributeValue = new ProductVariantAttributeValue();
+                            if (!row.HasDataValue("Name"))
+                            {
+                                ++context.Result.SkippedRecords;
+                                context.Result.AddError("The 'Name' field is required for new attribute values. Skipping row.", row.GetRowInfo(), "Name");
+                                continue;
+                            }
+
+                            attributeValue = new ProductVariantAttributeValue
+                            {
+                                ProductVariantAttributeId = pvaId
+                            };
                         }
 
                         row.Initialize(attributeValue, null);
 
-                        if (pvaId != 0)
-                        {
-                            attributeValue.ProductVariantAttributeId = pvaId;
-                        }
-
+                        // Ignore ProductVariantAttributeId field. We only update volatile property values and want to avoid accidents.
                         row.SetProperty(context.Result, (x) => x.Alias);
                         row.SetProperty(context.Result, (x) => x.Name);
                         row.SetProperty(context.Result, (x) => x.Color);
@@ -464,6 +477,8 @@ namespace SmartStore.Services.Catalog.Importer
 
                 context.Result.NewRecords += batch.Count(x => x.IsNew);
                 context.Result.ModifiedRecords += Math.Max(0, savedEntities - context.Result.NewRecords);
+
+                // MediaHelper.UpdatePictureTransientStateFor() not required, I guess, because there is no picture upload.
             }
         }
 
@@ -472,6 +487,7 @@ namespace SmartStore.Services.Catalog.Importer
             var segmenter = context.DataSegmenter;
             var entityName = RelatedEntityType.ProductVariantAttributeCombination.GetLocalizedEnum(context.Services.Localization, context.Services.WorkContext);
             var processingInfo = T("Admin.Common.ProcessingInfo").Text;
+            var lowestCombinationPriceProductIds = new HashSet<int>();
 
             while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
             {
@@ -479,7 +495,7 @@ namespace SmartStore.Services.Catalog.Importer
                 var batch = segmenter.GetCurrentBatch<ProductVariantAttributeCombination>();
                 var msg = processingInfo.FormatInvariant(entityName, segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
-                _attributeCombinationRepository.Context.DetachEntities(x => x is ProductVariantAttributeCombination);
+                _attributeCombinationRepository.Context.DetachEntities(x => x is ProductVariantAttributeCombination || x is Product);
 
                 context.SetProgress(msg);
 
@@ -490,24 +506,53 @@ namespace SmartStore.Services.Catalog.Importer
                     foreach (var row in batch)
                     {
                         var id = row.GetDataValue<int>("Id");
-                        var productId = row.GetDataValue<int>("ProductId");
                         var combination = id > 0 ? _attributeCombinationRepository.GetById(id) : null;
+
+                        // No Id? Try key fields.
+                        if (combination == null)
+                        {
+                            foreach (var keyName in context.KeyFieldNames)
+                            {
+                                var keyValue = row.GetDataValue<string>(keyName);
+                                if (keyValue.HasValue())
+                                {
+                                    switch (keyName)
+                                    {
+                                        case "Sku":
+                                            combination = _productAttributeService.GetProductVariantAttributeCombinationBySku(keyValue);
+                                            break;
+                                        case "Gtin":
+                                            combination = _productAttributeService.GetAttributeCombinationByGtin(keyValue);
+                                            break;
+                                        case "ManufacturerPartNumber":
+                                            combination = _productAttributeService.GetAttributeCombinationByMpn(keyValue);
+                                            break;
+                                    }
+                                }
+
+                                if (combination != null)
+                                {
+                                    break;
+                                }
+                            }
+                        }
 
                         if (combination == null)
                         {
-                            // No insert, no risk of inconsistent combination data.
+                            // We do not insert records here to avoid inconsistent attribute combination data.
                             ++context.Result.SkippedRecords;
-                            context.Result.AddError("The 'Id' field is required. Inserting attribute combinations not supported yet. Skipping row.", row.GetRowInfo(), "Id");
+                            context.Result.AddError("The 'Id' or another key field is required. Inserting attribute combinations not supported. Skipping row.", row.GetRowInfo(), "Id");
                             continue;
                         }
 
                         row.Initialize(combination, null);
 
-                        if (productId != 0)
+                        if (row.TryGetDataValue("Price", out decimal? price) && price != combination.Price)
                         {
-                            combination.ProductId = productId;
+                            lowestCombinationPriceProductIds.Add(combination.ProductId);
                         }
 
+                        // Ignore ProductId field. We only update volatile property values and want to avoid accidents.
                         row.SetProperty(context.Result, (x) => x.Sku);
                         row.SetProperty(context.Result, (x) => x.Gtin);
                         row.SetProperty(context.Result, (x) => x.ManufacturerPartNumber);
@@ -537,6 +582,10 @@ namespace SmartStore.Services.Catalog.Importer
 
                 context.Result.NewRecords += batch.Count(x => x.IsNew);
                 context.Result.ModifiedRecords += Math.Max(0, savedEntities - context.Result.NewRecords);
+
+                // Update lowest attribute combination price property.
+                var products = _productService.GetProductsByIds(lowestCombinationPriceProductIds.ToArray());
+                products.Each(x => _productService.UpdateLowestAttributeCombinationPriceProperty(x));
             }
         }
 
@@ -868,13 +917,13 @@ namespace SmartStore.Services.Catalog.Importer
 								}
 								else
 								{
-									context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+									context.Result.AddInfo($"Found equal picture in data store for {image.Url}. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
 								}
 							}
 						}
 						else if (image.Url.HasValue())
 						{
-							context.Result.AddInfo($"Download failed for image {image.Url}.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+							context.Result.AddInfo($"Download failed for picture {image.Url}.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
 						}
 					}
 					catch (Exception ex)

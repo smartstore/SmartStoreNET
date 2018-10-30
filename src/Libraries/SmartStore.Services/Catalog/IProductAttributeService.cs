@@ -283,11 +283,25 @@ namespace SmartStore.Services.Catalog
         ProductVariantAttributeCombination GetProductVariantAttributeCombinationById(int productVariantAttributeCombinationId);
 
 		/// <summary>
-		/// /// Gets a product variant attribute combination by SKU
+		/// Gets a product variant attribute combination by SKU
 		/// </summary>
 		/// <param name="sku">SKU</param>
 		/// <returns>Product variant attribute combination</returns>
 		ProductVariantAttributeCombination GetProductVariantAttributeCombinationBySku(string sku);
+
+        /// <summary>
+        /// Gets a product variant attribute combination by GTIN.
+        /// </summary>
+        /// <param name="gtin">GTIN.</param>
+        /// <returns>Product variant attribute combination.</returns>
+        ProductVariantAttributeCombination GetAttributeCombinationByGtin(string gtin);
+
+        /// <summary>
+        /// Gets a product variant attribute combination by manufacturer part number.
+        /// </summary>
+        /// <param name="manufacturerPartNumber">Manufacturer part number.</param>
+        /// <returns>Product variant attribute combination.</returns>
+        ProductVariantAttributeCombination GetAttributeCombinationByMpn(string manufacturerPartNumber);
 
         /// <summary>
         /// Inserts a product variant attribute combination

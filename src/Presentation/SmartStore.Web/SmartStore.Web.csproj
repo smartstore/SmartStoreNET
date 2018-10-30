@@ -957,6 +957,8 @@
     <Content Include="Content\vendors\pnotify\js\pnotify.buttons.js" />
     <Content Include="Content\vendors\pnotify\js\pnotify.js" />
     <Content Include="Content\vendors\pnotify\js\pnotify.mobile.js" />
+    <Content Include="Content\vendors\rellax\rellax.js" />
+    <Content Include="Content\vendors\rellax\rellax.min.js" />
     <Content Include="Content\vendors\select2\js\i18n\ar.js" />
     <Content Include="Content\vendors\select2\js\i18n\da.js" />
     <Content Include="Content\vendors\select2\js\i18n\de.js" />

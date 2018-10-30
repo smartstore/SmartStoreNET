@@ -38,6 +38,8 @@ namespace SmartStore.Data.Utilities
             if (ctx == null)
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
 
+			const string entityName = "Product";
+
 #pragma warning disable 612, 618
             // Get all products with a download 
             var productQuery = from p in ctx.Set<Product>().AsNoTracking()
@@ -51,7 +53,7 @@ namespace SmartStore.Data.Utilities
             int pageIndex = -1;
             while (true)
             {
-                var products = PagedList.Create(productQuery, ++pageIndex, 100);
+                var products = PagedList.Create(productQuery, ++pageIndex, 1000);
                 
                 foreach (var p in products)
                 {
@@ -60,7 +62,7 @@ namespace SmartStore.Data.Utilities
                         if (downloads.TryGetValue(p.DownloadId, out var download))
                         {
                             download.EntityId = p.Id;
-                            download.EntityName = "Product";
+                            download.EntityName = entityName;
                         }
                     }
                     catch { }

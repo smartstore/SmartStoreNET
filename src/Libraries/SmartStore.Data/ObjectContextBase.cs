@@ -11,6 +11,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Data.Setup;
+using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
@@ -19,7 +20,8 @@ namespace SmartStore.Data
     public abstract partial class ObjectContextBase : DbContext, IDbContext
     {
 		private static bool? _isSqlServer2012OrHigher = null;
-		
+		private static int? _commandTimeoutInSeconds = CommonHelper.GetAppSetting<int?>("sm:EfCommandTimeout");
+
 		// Instance of the internal ObjectStateManager.TransactionManager
 		// required for detecting if EF performs change detection
 		private object _transactionManager;
@@ -39,6 +41,11 @@ namespace SmartStore.Data
 			this.AutoCommitEnabled = true;
             this.Alias = null;
 			this.DbHookHandler = NullDbHookHandler.Instance;
+
+			if (_commandTimeoutInSeconds >= 0)
+			{
+				Database.CommandTimeout = _commandTimeoutInSeconds;
+			}
 		}
 
 		public bool HooksEnabled

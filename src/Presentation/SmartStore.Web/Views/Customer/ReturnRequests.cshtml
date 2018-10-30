@@ -13,7 +13,7 @@
 <div class="card-deck card-cols-sm-1 return-request-grid">
 	@foreach (var item in Model.Items)
 	{
-		<div class="card card-shadow return-request-item">
+		<div class="card shadow-sm return-request-item">
 			<div class="card-body">
 				<h4 class="card-title mb-4">@string.Format(T("Account.CustomerReturnRequests.Title").Text, item.Id, item.ReturnRequestStatus)</h4>
 				<dl class="row mb-0">

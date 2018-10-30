@@ -164,9 +164,15 @@
         }
 
         // Parallax
-        if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
-            SmartStore.parallax.init({ context: document.body, selector: '.parallax' });
+        if (typeof Rellax !== 'undefined') {
+            var rellax = new Rellax('.parallax', {
+                center: true
+            });
         }
+
+        //if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
+        //    SmartStore.parallax.init({ context: document.body, selector: '.parallax' });
+        //}
         
         applyCommonPlugins($("body"));
     });

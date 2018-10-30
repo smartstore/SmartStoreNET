@@ -230,6 +230,13 @@ $custom-control-indicator-checked-bg:           $blue;
 $custom-control-indicator-checked-disabled-bg:  rgba($blue, .5);
 
 
+// Shadows
+
+$box-shadow-sm:               0 0 .625rem 0 rgba(#000, .05);
+$box-shadow:                  0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+$box-shadow-lg:               0 1rem 3rem rgba(#000, .125);
+
+
 // Misc
 
 $card-deck-margin:              10px;

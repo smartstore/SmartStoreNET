@@ -8,34 +8,37 @@
 
     var initialized = false,
         stages = [],
-        win,
-        winHeight,
-        scrollTop,
         viewport = ResponsiveBootstrapToolkit;
 
     function update() {
-        _.each(stages, function (val, i) {
-            var el = $(val);
-
+        _.each(stages, function (item, i) {
+            var el = $(item.el);
+            var winHeight = window.innerHeight;
+            var scrollTop = window.pageYOffset;
             var top = el.offset().top;
             var height = el.outerHeight(false);
 
             // Check if totally above or totally below viewport
-            if (top + height < scrollTop || top > scrollTop + winHeight) {
+            var visible = !(top + height < scrollTop || top > scrollTop + winHeight);
+
+            if (!visible)
                 return;
-            }
 
-            if (el.data('parallax-filter')) {
-                if (!viewport.is(el.data('parallax-filter'))) {
-                    return;
-                }
-            }
+            if (item.filter && !viewport.is(item.filter))
+                return;
 
-            // set bg parallax offset
-            var offset = (el.data('parallax-offset') || 0) * -1;
-            var speedFactor = el.data('parallax-speed') || 0.5;
-            var ypos = Math.round((top - scrollTop) * speedFactor * -1) + offset;
-            el.css('background-position-y', ypos + "px");
+            if (item.type === 'bg') {
+                // set bg parallax offset
+                var ypos = Math.round((top - scrollTop) * item.ratio) + item.offset;
+                el.css('background-position-y', ypos + "px");
+            }
+            else if (item.type === 'content') {
+                var bottom = top + height,
+                    rate = 100 / (bottom + winHeight - top) * ((scrollTop + winHeight) - top),
+                    ytransform = (rate - 50) * (item.ratio * -3);
+
+                el.css(window.Prefixer.css('transform'), 'translate3d(0, ' + ytransform + 'px, 0)');
+            }
         });
     }
 
@@ -45,26 +48,20 @@
             var ctx = $(opts.context || document.body);
             var selector = opts.selector || '.parallax';
 
-            stages = ctx.find(selector).toArray();
+            stages = _.map(ctx.find(selector).toArray(), function (val, key) {
+                var el = $(val);
+                return {
+                    el: val,
+                    type: el.data('parallax-type') || 'bg',
+                    filter: el.data('parallax-filter'),
+                    offset: (el.data('parallax-offset') || 0) * -1,
+                    ratio: el.data('parallax-speed') || 0.5
+                };
+            });
 
             if (!initialized) {
-                win = $(window);
-                winHeight = win.height();
-                scrollTop = win.scrollTop();
-
-                win.on('resize', function () {
-                    winHeight = win.height();
-                    update();
-                });
-
-                win.on('scroll', function () {
-                    scrollTop = win.scrollTop();
-                    update();
-                });
-
-                win.on('scroll', update);
+                $(window).on('resize scroll', update);
                 update();
-                initialized = true;
             }
         }
     };

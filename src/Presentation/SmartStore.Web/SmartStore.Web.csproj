@@ -957,8 +957,8 @@
     <Content Include="Content\vendors\pnotify\js\pnotify.buttons.js" />
     <Content Include="Content\vendors\pnotify\js\pnotify.js" />
     <Content Include="Content\vendors\pnotify\js\pnotify.mobile.js" />
-    <Content Include="Content\vendors\rellax\rellax.js" />
-    <Content Include="Content\vendors\rellax\rellax.min.js" />
+    <Content Include="Content\vendors\rangeslider\js\rangeslider.min.js" />
+    <Content Include="Content\vendors\rangeslider\js\rangeslider.js" />
     <Content Include="Content\vendors\select2\js\i18n\ar.js" />
     <Content Include="Content\vendors\select2\js\i18n\da.js" />
     <Content Include="Content\vendors\select2\js\i18n\de.js" />
@@ -1010,6 +1010,7 @@
     <Content Include="Content\vendors\aos\scss\_easing.scss" />
     <Content Include="Content\vendors\aos\scss\_core.scss" />
     <Content Include="Content\bs4\scss\utilities\_shadows.scss" />
+    <Content Include="Content\skinning\_rangeslider.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1165,6 +1166,7 @@
     <Content Include="Scripts\smartstore.globalization.js" />
     <Content Include="Scripts\smartstore.megamenu.js" />
     <Content Include="Scripts\smartstore.responsiveNav.js" />
+    <Content Include="Scripts\smartstore.rangesliderwrapper.js" />
     <Content Include="Scripts\smartstore.touchevents.js" />
     <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="Content\vendors\underscore\underscore.min.js" />

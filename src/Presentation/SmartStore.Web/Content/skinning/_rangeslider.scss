@@ -1,0 +1,154 @@
+/// <reference path="../shared/_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// andreruffert/rangeslider.js
+// https://github.com/andreruffert/rangeslider.js
+// -------------------------------------------------------------
+
+$roundness:                 5px;
+$sliderHeight:              4px;
+$handleSize:                20px;
+$valueWidth:                90px;
+$labelMarkerHeight:         12px;
+
+.rangeslider {
+    position: relative;
+    height: $sliderHeight;
+    border-radius: $roundness;
+    width: 100%;
+    background-color: $secondary;
+    margin-top: 15px;
+  
+    &__handle {
+        transition: background-color .2s;
+        width: $handleSize;
+        height: $handleSize;
+        //border-radius: 100%;
+        //background-color: $primary;
+        touch-action: pan-y;
+        cursor: pointer;
+        display: inline-block;
+        position: absolute;
+        z-index: 3;
+        top: -($handleSize/2) + ($sliderHeight/2);
+        /*box-shadow: 0 1px 3px rgba(black, .5),
+                    inset 0 0 0 2px white;*/
+
+        width: 0; 
+        height: 0; 
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid;
+        border-bottom-color: $body-color;
+        top: calc(-100% + 15px);
+        transform: translateX(-8px);
+    
+    &__value {
+        display: none;
+        position: absolute;
+        transition: background-color .2s, 
+                    box-shadow .1s,
+                    transform .1s;
+        font-size: 0.8em;
+        width: $valueWidth;
+        width: auto;
+        text-align: center;
+        padding: 4px;
+        padding: 0.2em 0.5em;
+        background-color: $gray-300;
+        border-radius: $border-radius-sm;
+        //color: white;
+        left: 50%;
+        top: -190%;
+        transform: translate3d(-50%, 0, 0);
+        //left: -($valueWidth/2 - $handleSize/2);
+        //top: -55px;
+      
+        white-space: nowrap;
+        //border-top: 1px solid darken($primary, 10%);
+        /*box-shadow: 0 -4px 1px rgba(black, .07),
+                    0 -5px 20px rgba(black, .2);*/
+        
+      &:before {
+        transition: border-top-color .2s;
+        position: absolute;
+        bottom: -10px;
+        left: calc(50% - 10px);
+        //content: "";
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid;
+        border-top-color: $primary;
+      }
+        
+      &:after {
+        content: var(--marker-label);
+      }
+    }
+  }
+  
+  &__fill {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    height: 100%;
+    background-color: $primary;
+    border-radius: $roundness;
+  }
+  
+  &__labels {
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    
+    &__label {
+      font-size: 0.75em;
+      position: relative;
+      padding-top: 15px;
+      color: $gray-600;
+      
+      &:before {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        content: "";
+        width: 1px;
+        height: $labelMarkerHeight - 3px;
+        border-radius: 1px;
+        background-color: rgba($gray-600, .5);
+      }
+      
+      &:first-child:before,
+      &:last-child:before{ 
+        height: $labelMarkerHeight;
+        width: 2px;
+      }
+      
+      &:first-child:before { background-color: $primary }
+      &:last-child:before { background-color: $secondary }
+      
+      &:first-child { transform: translateX(-48%) }
+      &:last-child { transform: translateX(48%) }
+    }
+  }
+  
+  // active state
+  &.rangeslider--active {
+    .rangeslider__handle {
+      &, *      { background-color: lighten($primary, 10%) }
+      *:before  { border-top-color: lighten($primary, 10%) }
+    }
+    
+    .rangeslider__handle__value { 
+      transform: translateY(-5px);
+      box-shadow: 0 -3px 2px rgba(black, .04),
+                  0 -9px 25px rgba(black, .15);
+    }
+  }
+}

@@ -24,11 +24,17 @@
 	var min = (ViewData["min"].Convert<decimal?>() ?? metadataValues.Get("min").Convert<decimal?>() ?? 0m).ToString(CultureInfo.InvariantCulture);
 	var max = (ViewData["max"].Convert<decimal?>() ?? metadataValues.Get("max").Convert<decimal?>() ?? 100m).ToString(CultureInfo.InvariantCulture);
 	var step = (ViewData["step"].Convert<decimal?>() ?? metadataValues.Get("step").Convert<decimal?>() ?? 1m).ToString(CultureInfo.InvariantCulture);
+	var markers = ViewData["markers"].Convert<string>() ?? metadataValues.Get("markers").Convert<string>() ?? "";
+	var markerLabel = ViewData["markerLabel"].Convert<string>() ?? metadataValues.Get("markerLabel").Convert<string>() ?? "";
+	if (markerLabel.HasValue())
+	{
+		markerLabel = " " + markerLabel;
+	}
 
 	var invariantValue = ViewData.Model.Convert<decimal>().ToString(CultureInfo.InvariantCulture);
 }
 
-<div class="@containerCssClass" style="--slider-value: @invariantValue">
+<div class="@containerCssClass" style="--slider-value: @(invariantValue); --marker-label: '@(markerLabel)'">
 	@Html.Hidden(string.Empty, ViewData.Model)
-	<input type="range" class="@sliderCssClass" data-target="#@id" min="@min" max="@max" step="@step" value="@invariantValue" />
+	<input type="range" class="@sliderCssClass" data-target="#@id" min="@min" max="@max" step="@step" value="@invariantValue" data-markers="@markers" data-marker-label="@markerLabel" />
 </div>

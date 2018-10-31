@@ -12,7 +12,37 @@
 		// select2
 		function (ctx) {
 			ctx.find("select:not(.noskin)").selectWrapper();
-		},
+        },
+        // Range slider
+        function (ctx) {
+            return;
+            ctx.find("input[type=range]:not(.noskin)").rangeslider({
+                polyfill: false,
+                onInit: function () {
+                    $rangeEl = this.$range;
+                    // add value label to handle
+                    var $handle = $rangeEl.find('.rangeslider__handle');
+                    var handleValue = '<div class="rangeslider__handle__value">' + this.value + '</div>';
+                    $handle.append(handleValue);
+
+                    // get range index labels 
+                    var markers = this.$element.data('markers');
+                    if (markers) {
+                        markers = markers.split(',');
+
+                        // add labels
+                        $rangeEl.append('<div class="rangeslider__labels"></div>');
+                        $(markers).each(function (index, value) {
+                            $rangeEl.find('.rangeslider__labels').append('<span class="rangeslider__labels__label">' + value.trim() + '</span>');
+                        })
+                    }
+                },
+                onSlide: function (position, value) {
+                    var $handle = this.$range.find('.rangeslider__handle__value');
+                    $handle.text(this.value);
+                },
+            });
+        },
 		// tooltips
 		function (ctx) {
 			ctx.find(".cph").tooltip({
@@ -55,7 +85,7 @@
 		// ColorPicker
 		function (ctx) {
 			ctx.find(".sm-colorbox").colorpicker({ fallbackColor: false, color: false, align: SmartStore.globalization.culture.isRTL ? 'left' : 'right' });
-		},
+        }
 	];
 
 

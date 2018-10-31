@@ -163,16 +163,12 @@
             AOS.init({ once: true });
         }
 
-        // Parallax
-        if (typeof Rellax !== 'undefined') {
-            var rellax = new Rellax('.parallax', {
-                center: true
+        if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
+            SmartStore.parallax.init({
+                context: document.body,
+                selector: '.parallax'
             });
         }
-
-        //if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
-        //    SmartStore.parallax.init({ context: document.body, selector: '.parallax' });
-        //}
         
         applyCommonPlugins($("body"));
     });

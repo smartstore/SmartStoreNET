@@ -88,6 +88,7 @@
 * Fixed social media image detection
 * Fixed redirection of bots when several languages were active
 * Region cannot be selected in checkout when entering a billing or shipping address
+* Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
 
 
 ## SmartStore.NET 3.1.5

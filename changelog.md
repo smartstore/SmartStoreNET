@@ -32,8 +32,13 @@
 * **MegaSearch**:
 	* Supports searching for forum posts.
 	* #1172 Option to display related search terms on search page.
+* **Import/export of**:
+	* Product tags.
+	* Tier prices.
+	* Product attribute options.
+	* Product attribute combinations (update only).
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
-* Viveum: Supports payment via "Virtual Account Brands" like PayPal.
+* Viveum: Supports payment via "Virtual Account Brands" (e.g. PayPal).
 * Added options for alternating price display (in badges).
 * #1515 Poll: Add result tab with a list of answers and customers for a poll
 * Added export and import of product tags.

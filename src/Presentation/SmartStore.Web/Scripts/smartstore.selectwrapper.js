@@ -178,8 +178,9 @@
                     var option = $(item.element),
                         imageUrl = option.data('imageurl'),
                         color = option.data('color'),
-                        hint = option.data('hint');
-
+                        hint = option.data('hint')
+                        faIcon = option.data('fa-icon');
+                    
                     if (imageUrl) {
                         return $('<span class="choice-item"><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
                     }
@@ -188,6 +189,9 @@
                     }
                     else if (hint && isResult) {
                         return $('<span class="select2-option"><span>' + item.text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
+                    }
+                    else if (faIcon) {
+                        return $('<span class="choice-item"><i class="fa ' + faIcon + ' fa-fw mr-2" />' + item.text + '</span>');
                     }
                     else {
                         return $('<span class="select2-option">' + item.text + '</span>');

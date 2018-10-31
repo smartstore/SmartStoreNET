@@ -1780,6 +1780,7 @@
     <Content Include="Themes\Flex\Content\_accordion.scss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Shared\EditorTemplates\FontAwesomeIcon.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

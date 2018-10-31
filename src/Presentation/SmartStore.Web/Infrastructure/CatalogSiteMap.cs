@@ -101,6 +101,7 @@ namespace SmartStore.Web.Infrastructure
 											.VisibleIndividuallyOnly(true)
 											.WithCategoryIds(null, categoryIds.ToArray())
 											.HasStoreId(Services.StoreContext.CurrentStoreIdIfMultiStoreMode)
+											.BuildFacetMap(false)
 											.BuildHits(false);
 
 										node.Value.ElementsCount = _catalogSearchService.Search(context).TotalHitsCount;

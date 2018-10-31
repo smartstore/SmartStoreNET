@@ -175,13 +175,13 @@ namespace SmartStore.Services.Search
 							}
 						}
 
-						using (_services.Chronometer.Step(stepPrefix + "Hits"))
-						{
-							searchHits = searchEngine.Search();
-						}
-
 						if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 						{
+							using (_services.Chronometer.Step(stepPrefix + "Hits"))
+							{
+								searchHits = searchEngine.Search();
+							}
+
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
 								var productIds = searchHits.Select(x => x.EntityId).ToArray();

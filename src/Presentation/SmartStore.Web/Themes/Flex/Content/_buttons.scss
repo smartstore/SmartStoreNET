@@ -12,10 +12,10 @@
 		&:not(:active):not(.active):focus,
 		&:not(:active):not(.active).focus {
 			@if $color == "secondary" or $color == "light" {
-				box-shadow: 0 0 0 0.2rem rgba($primary, .15);
+				box-shadow: 0 0 0 rgba(0,0,0, 0) inset, 0 0 0 0.2rem rgba($primary, .15);
 			}
 			@else {
-				box-shadow: 0 0 0 0.2rem rgba($value, .4);
+				box-shadow: 0 0 0 rgba(0,0,0, 0) inset, 0 0 0 0.2rem rgba($value, .4);
 			}
 		}
 	}

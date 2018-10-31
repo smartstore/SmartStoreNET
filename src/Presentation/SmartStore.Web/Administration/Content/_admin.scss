@@ -242,6 +242,10 @@ body {
 
 		> * {
 			vertical-align: middle;
+            margin-right: 2px;
+            &:last-child {
+                margin-right: 0;
+            }
 		}
 
 		&.btn-toolbar {

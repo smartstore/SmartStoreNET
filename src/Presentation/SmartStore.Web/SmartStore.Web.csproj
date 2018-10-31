@@ -1166,7 +1166,6 @@
     <Content Include="Scripts\smartstore.globalization.js" />
     <Content Include="Scripts\smartstore.megamenu.js" />
     <Content Include="Scripts\smartstore.responsiveNav.js" />
-    <Content Include="Scripts\smartstore.rangesliderwrapper.js" />
     <Content Include="Scripts\smartstore.touchevents.js" />
     <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="Content\vendors\underscore\underscore.min.js" />

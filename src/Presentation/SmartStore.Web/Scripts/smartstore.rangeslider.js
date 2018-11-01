@@ -2,7 +2,7 @@
 
     var _initialized = false;
 
-    function refreshBubblePosition(e, wrapper, el, bubble) {
+    function refreshBubblePosition(e, wrapper, el, bubble, track) {
         wrapper = wrapper || $(this);
         el = el || wrapper.find('> .form-control-range[data-target]');
         bubble = bubble || wrapper.find('> .range-value');
@@ -29,7 +29,7 @@
             max = parseFloat(el.prop('max')),
             range = max - min,
             ratio = wrapper.width() / range,
-            n = Math.ceil(parseFloat(el.val()) - min) - 1;
+            n = parseFloat(el.val()) - min;
 
         bubble.css('left', (n * ratio) + 'px').attr('data-placement', n > range / 2 ? 'left' : 'right');
     }

@@ -49,9 +49,6 @@
         }
     }
 
-    .form-control-range {
-    }
-
     .range-ticks {
         position: relative;
         width: 100%;
@@ -91,7 +88,6 @@
         color: #fff;
         padding: 2px 6px;
         opacity: 0;
-        transition: transform 0.25s ease-out, left 0.1s ease-out, opacity 0.25s ease-in-out;
 
         &[data-placement=right] {
             transform: translateX($custom-range-thumb-width * 1.7);
@@ -123,12 +119,14 @@
     }
 
     &.ready {
-        &:hover .range-value {
-            opacity: 1;
+        .range-value {
+            transition: transform 0.25s ease-out, left 0.1s ease-out, opacity 0.25s ease-in-out;
         }
 
-        .form-control-range:focus + .range-value {
-            opacity: 1 !important;
+        &:hover .range-value,
+        .form-control-range:focus + .range-value,
+        .range-track {
+            opacity: 1;
         }
     }
 }

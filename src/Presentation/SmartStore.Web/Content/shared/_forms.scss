@@ -133,6 +133,19 @@ fieldset.content-group {
 }
 
 
+// Custom range
+// ------------------------------------------------------
+
+.custom-range {
+    // INFO: Autoprefixer does not run in debug mode
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    &::-webkit-slider-thumb { -webkit-appearance: none; }
+    &::-moz-range-thumb     { -moz-appearance: none; }
+}
+
+
 // Validation
 // ------------------------------------------------------
 

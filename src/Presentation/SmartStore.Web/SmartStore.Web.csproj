@@ -957,8 +957,6 @@
     <Content Include="Content\vendors\pnotify\js\pnotify.buttons.js" />
     <Content Include="Content\vendors\pnotify\js\pnotify.js" />
     <Content Include="Content\vendors\pnotify\js\pnotify.mobile.js" />
-    <Content Include="Content\vendors\rangeslider\js\rangeslider.min.js" />
-    <Content Include="Content\vendors\rangeslider\js\rangeslider.js" />
     <Content Include="Content\vendors\select2\js\i18n\ar.js" />
     <Content Include="Content\vendors\select2\js\i18n\da.js" />
     <Content Include="Content\vendors\select2\js\i18n\de.js" />
@@ -1010,7 +1008,7 @@
     <Content Include="Content\vendors\aos\scss\_easing.scss" />
     <Content Include="Content\vendors\aos\scss\_core.scss" />
     <Content Include="Content\bs4\scss\utilities\_shadows.scss" />
-    <Content Include="Content\skinning\_rangeslider.scss" />
+    <Content Include="Content\shared\_rangeslider.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1153,6 +1151,7 @@
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.js" />
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.min.js" />
     <Content Include="Content\vendors\modernizr\modernizr.js" />
+    <Content Include="Scripts\smartstore.rangeslider.js" />
     <Content Include="Scripts\smartstore.keynav.js" />
     <Content Include="Scripts\smartstore.parallax.js" />
     <Content Include="Scripts\smartstore.offcanvas.js" />

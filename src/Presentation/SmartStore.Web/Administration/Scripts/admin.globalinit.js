@@ -147,22 +147,6 @@
             }
 		});
 
-        // Range slider
-        $(document).on('input', '.range-slider > .form-control-range[data-target]', function (e) {
-            // move invariant value from slider to an associated hidden field
-            // as formatted value. Client validation will fail otherwise.
-            var el = $(this);
-
-            if (el.parent().is('.color-opacity-slider')) {
-                el.parent().css('--slider-value', el.val());
-            }
-
-            var g = SmartStore.globalization;
-            var nf = g.culture.numberFormat;
-
-            $(el.data('target')).val(el.val().replace('.', nf["."]));
-        });
-
 		// Because we restyled the grid, the filter dropdown does not position
 		// correctly anymore. We have to reposition it.
 		Hacks.Telerik.handleGridFilter();

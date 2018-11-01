@@ -144,7 +144,7 @@ $btn-focus-width:				0; //$input-btn-focus-width;
 $btn-box-shadow:				inset 0 0 0 rgba(#fff, 0.15), 0 0 0 rgba(#000, 0.075);
 $btn-focus-box-shadow:			$input-btn-focus-box-shadow;
 //$btn-active-box-shadow:         inset 0 2px 3px rgba(#000, .125);
-$btn-transition:				background-color .05s ease-in-out, border-color .05s ease-in-out, box-shadow .12s ease-in-out;
+$btn-transition:				background-color .05s ease-in-out, border-color .05s ease-in-out, box-shadow .05s ease-in-out;
 $btn-border-radius:				$input-border-radius; //.125rem;
 $btn-border-radius-lg:          $input-border-radius-lg; //.1875rem;
 $btn-border-radius-sm:          $input-border-radius-sm; //.125rem;
@@ -191,3 +191,18 @@ $custom-control-indicator-active-color:			#fff;
 $custom-control-indicator-active-bg:			lighten($warning, 35%);
 $custom-checkbox-indicator-indeterminate-bg:	$warning;
 $custom-control-indicator-focus-box-shadow:		0 0 0 1px $body-bg, 0 0 0 $input-btn-focus-width rgba($warning, .25);
+
+
+// Custom Range
+
+$custom-range-track-height:                 0.315rem;
+$custom-range-track-bg:                     rgba(#000, 0.12);
+$custom-range-track-border-radius:          0;
+$custom-range-track-box-shadow:             none;
+
+$custom-range-thumb-width:                  0.925rem;
+$custom-range-thumb-bg:                     $primary;
+$custom-range-thumb-box-shadow:             0 1px .25rem rgba($primary, .2);
+$custom-range-thumb-focus-box-shadow:       0 0 0 1px $body-bg, 0 0 0 3px $input-btn-focus-color;
+$custom-range-thumb-focus-box-shadow-width: 1px; // For focus box shadow issue in IE/Edge
+$custom-range-thumb-active-bg:              lighten($primary, 20%);

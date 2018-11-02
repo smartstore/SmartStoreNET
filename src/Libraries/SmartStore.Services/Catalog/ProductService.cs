@@ -172,7 +172,7 @@ namespace SmartStore.Services.Catalog
             var query = 
 				from p in _productRepository.Table
 				orderby p.HomePageDisplayOrder
-				where p.Published && !p.Deleted && !p.IsSystemProduct && p.ShowOnHomePage
+				where p.Published && !p.Deleted && p.ShowOnHomePage
 				select p;
 
             var products = query.ToList();

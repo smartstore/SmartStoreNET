@@ -762,6 +762,7 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
 				x => _productService.Value.GetBundleItemsByProductIds(x, showHidden),
+                x => _productService.Value.GetAssociatedProducts(x),
 				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
 				x => _productService.Value.GetProductTagsByProductIds(x),

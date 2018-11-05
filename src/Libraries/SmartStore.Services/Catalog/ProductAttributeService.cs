@@ -321,6 +321,11 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductVariantAttribute>();
+            }
+
 			var query = 
 				from pva in _productVariantAttributeRepository.TableUntracked.Expand(x => x.ProductAttribute).Expand(x => x.ProductVariantAttributeValues)
 				where productIds.Contains(pva.ProductId)
@@ -664,6 +669,11 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductVariantAttributeCombination>();
+            }
+
 			var query =
 				from pvac in _pvacRepository.TableUntracked
 				where productIds.Contains(pvac.ProductId)
@@ -708,7 +718,7 @@ namespace SmartStore.Services.Catalog
                 return null;
             }
 
-			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && !x.Product.Deleted && !x.Product.IsSystemProduct);
+			var combination = _pvacRepository.Table.FirstOrDefault(x => x.Sku == sku && !x.Product.Deleted);
 			return combination;
 		}
 
@@ -719,7 +729,7 @@ namespace SmartStore.Services.Catalog
                 return null;
             }
 
-            var combination = _pvacRepository.Table.FirstOrDefault(x => x.Gtin == gtin && !x.Product.Deleted && !x.Product.IsSystemProduct);
+            var combination = _pvacRepository.Table.FirstOrDefault(x => x.Gtin == gtin && !x.Product.Deleted);
             return combination;
         }
 
@@ -730,7 +740,7 @@ namespace SmartStore.Services.Catalog
                 return null;
             }
 
-            var combination = _pvacRepository.Table.FirstOrDefault(x => x.ManufacturerPartNumber == manufacturerPartNumber && !x.Product.Deleted && !x.Product.IsSystemProduct);
+            var combination = _pvacRepository.Table.FirstOrDefault(x => x.ManufacturerPartNumber == manufacturerPartNumber && !x.Product.Deleted);
             return combination;
         }
 

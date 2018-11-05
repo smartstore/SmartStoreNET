@@ -3,6 +3,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Search
 {
@@ -20,7 +21,6 @@ namespace SmartStore.Core.Search
 			Reason = reason;
 			Languages = new List<Language>();
 			Currencies = new List<Currency>();
-			StoreIds = new int[0];
 			StoreMappings = new Multimap<int, int>();
 			CustomerRoleIds = new int[0];
 			CustomerRoleMappings = new Multimap<int, int>();
@@ -45,15 +45,15 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		public IList<Currency> Currencies { get; set; }
 
-		/// <summary>
-		/// Array of all store identifiers
-		/// </summary>
-		public int[] StoreIds { get; set; }
+        /// <summary>
+        /// All stores
+        /// </summary>
+        public IList<Store> Stores { get; set; }
 
-		/// <summary>
-		/// Map of product to store identifiers if the product is limited to certain stores
-		/// </summary>
-		public Multimap<int, int> StoreMappings { get; set; }
+        /// <summary>
+        /// Map of product to store identifiers if the product is limited to certain stores
+        /// </summary>
+        public Multimap<int, int> StoreMappings { get; set; }
 
 		/// <summary>
 		/// Array of all customer role identifiers
@@ -65,10 +65,10 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		public Multimap<int, int> CustomerRoleMappings { get; set; }
 
-		/// <summary>
-		/// All manufacturers
-		/// </summary>
-		public Dictionary<int, Manufacturer> Manufacturers { get; set; }
+        /// <summary>
+        /// All manufacturers
+        /// </summary>
+        public Dictionary<int, Manufacturer> Manufacturers { get; set; }
 
 		/// <summary>
 		/// All categories
@@ -84,5 +84,17 @@ namespace SmartStore.Core.Search
 		/// Use this dictionary for any custom data required along indexing
 		/// </summary>
 		public Dictionary<string, object> CustomProperties { get; set; }
+
+        public void Clear()
+        {
+            Languages.Clear();
+            Currencies.Clear();
+            StoreMappings.Clear();
+            CustomerRoleMappings.Clear();
+            DeliveryTimes.Clear();
+            Manufacturers.Clear();
+            Categories.Clear();
+            CustomProperties.Clear();
+        }
 	}
 }

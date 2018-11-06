@@ -1412,7 +1412,9 @@ namespace SmartStore.Services.DataExchange.Export
                         }
 					}
 
-					ctx.EntityIdsPerSegment.Clear();
+                    ctx.EntityIdsPerSegment.Clear();
+                    DetachAllEntitiesAndClear(ctx);
+                    _localizedEntityService.Value.ClearCache();
 
                     if (context.IsMaxFailures)
                     {
@@ -1422,8 +1424,6 @@ namespace SmartStore.Services.DataExchange.Export
                     {
                         ctx.Log.Warn("Export aborted. A cancellation has been requested.");
                     }
-
-					DetachAllEntitiesAndClear(ctx);
 				}
 
 				if (context.Abort != DataExchangeAbortion.Hard)
@@ -1597,8 +1597,9 @@ namespace SmartStore.Services.DataExchange.Export
 					}
 
 					DetachAllEntitiesAndClear(ctx);
+                    _localizedEntityService.Value.ClearCache();
 
-					try
+                    try
 					{
 						ctx.NewsletterSubscriptions.Clear();
 						ctx.ProductTemplates.Clear();

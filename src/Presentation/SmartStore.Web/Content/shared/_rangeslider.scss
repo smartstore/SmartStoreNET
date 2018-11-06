@@ -13,14 +13,19 @@
     flex-flow: column;
     justify-content: center;
 
+    .form-control-range {
+        height: $custom-range-thumb-height;
+
+        &::-ms-thumb {
+            padding: 0;
+        }
+    }
+
     &.range-slider-sm {
         height: $input-height-sm;
     }
 
     &.color-opacity-slider {
-        /*border: $input-border-width solid $input-border-color;
-        border-radius: $input-border-radius;*/
-
         &:after,
         &:before {
             position: absolute;

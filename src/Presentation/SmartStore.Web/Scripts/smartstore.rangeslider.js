@@ -19,7 +19,7 @@
 
         if (!ready) {
             // calc Y position only once (when visible but not ready yet)
-            var labelTop = Math.floor((el.position().top) - (bubble.height() / 2) + 1); // rounding issues
+            var labelTop = Math.floor((el.position().top + (el.height() / 2)) - (bubble.height() / 2));
             bubble.css('top', labelTop + 'px');
             wrapper.addClass('ready');
         }

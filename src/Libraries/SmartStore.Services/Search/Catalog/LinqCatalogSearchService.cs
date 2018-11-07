@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
@@ -766,8 +767,8 @@ namespace SmartStore.Services.Search
 				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 				{
 					query = query
-						.Skip(searchQuery.PageIndex * searchQuery.Take)
-						.Take(searchQuery.Take);
+						.Skip(() => searchQuery.PageIndex * searchQuery.Take)
+						.Take(() => searchQuery.Take);
 
 					var ids = query.Select(x => x.Id).ToArray();
 					hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);

@@ -627,7 +627,7 @@ namespace SmartStore.Services.Messages
 			{
 				// Fetch a random one
 				var skip = new Random().Next(count);
-				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
+				result = query.OrderBy(x => x.Id).Skip(() => skip).FirstOrDefault();
 			}
 			else
 			{

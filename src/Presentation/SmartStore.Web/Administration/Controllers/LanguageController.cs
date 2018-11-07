@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Xml;
+using System.Data.Entity;
 using Autofac;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Localization;
@@ -574,7 +575,7 @@ namespace SmartStore.Admin.Controllers
             var gridModel = new GridModel<LanguageResourceModel>
             {
                 Data = resourceQuery
-					.Take(_adminAreaSettings.GridPageSize)
+					.Take(() => _adminAreaSettings.GridPageSize)
 					.ToList()
                     .Select(x => new LanguageResourceModel
                     {

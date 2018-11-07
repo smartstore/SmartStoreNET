@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -824,10 +825,10 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			if (skip > 0)
-				query = query.Skip(skip);
+				query = query.Skip(() => skip);
 
 			if (take != int.MaxValue)
-				query = query.Take(take);
+				query = query.Take(() => take);
 
 			return query;
 		}
@@ -912,10 +913,10 @@ namespace SmartStore.Services.DataExchange.Export
 			query = query.OrderByDescending(x => x.CreatedOnUtc);
 
 			if (skip > 0)
-				query = query.Skip(skip);
+				query = query.Skip(() => skip);
 
 			if (take != int.MaxValue)
-				query = query.Take(take);
+				query = query.Take(() => take);
 
 			return query;
 		}
@@ -945,10 +946,10 @@ namespace SmartStore.Services.DataExchange.Export
 			query = query.OrderBy(x => x.DisplayOrder);
 
 			if (skip > 0)
-				query = query.Skip(skip);
+				query = query.Skip(() => skip);
 
 			if (take != int.MaxValue)
-				query = query.Take(take);
+				query = query.Take(() => take);
 
 			return query;
 		}
@@ -975,10 +976,10 @@ namespace SmartStore.Services.DataExchange.Export
 				.ThenBy(x => x.DisplayOrder);
 
 			if (skip > 0)
-				query = query.Skip(skip);
+				query = query.Skip(() => skip);
 
 			if (take != int.MaxValue)
-				query = query.Take(take);
+				query = query.Take(() => take);
 
 			return query;
 		}
@@ -1063,10 +1064,10 @@ namespace SmartStore.Services.DataExchange.Export
 			query = query.OrderByDescending(x => x.CreatedOnUtc);
 
 			if (skip > 0)
-				query = query.Skip(skip);
+				query = query.Skip(() => skip);
 
 			if (take != int.MaxValue)
-				query = query.Take(take);
+				query = query.Take(() => take);
 
 			return query;
 		}
@@ -1127,10 +1128,10 @@ namespace SmartStore.Services.DataExchange.Export
 				.ThenBy(x => x.Email);
 
 			if (skip > 0)
-				query = query.Skip(skip);
+				query = query.Skip(() => skip);
 
 			if (take != int.MaxValue)
-				query = query.Take(take);
+				query = query.Take(() => take);
 
 			return query;
 		}

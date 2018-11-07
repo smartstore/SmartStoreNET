@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -427,7 +428,7 @@ namespace SmartStore.Web.Controllers
 
 			var reviews = query
 				.OrderByDescending(x => x.CreatedOnUtc)
-				.Take(take)
+				.Take(() => take)
 				.ToList();
 
 			foreach (var review in reviews)

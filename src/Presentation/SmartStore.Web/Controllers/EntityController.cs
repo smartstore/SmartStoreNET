@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Data.Entity;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -171,8 +172,8 @@ namespace SmartStore.Web.Controllers
 								x.MainPictureId
 							})
 							.OrderBy(x => x.Name)
-							.Skip(model.PageIndex * model.PageSize)
-							.Take(model.PageSize)
+							.Skip(() => model.PageIndex * model.PageSize)
+							.Take(() => model.PageSize)
 							.ToList();
 
 						var allPictureIds = products.Select(x => x.MainPictureId.GetValueOrDefault());

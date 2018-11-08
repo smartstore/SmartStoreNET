@@ -32,6 +32,7 @@
 * **MegaSearch**:
 	* Supports searching for forum posts.
 	* #1172 Option to display related search terms on search page.
+	* Command to continue a previously aborted search index rebuild.
 * **Import/export of**:
 	* Product tags.
 	* Tier prices.

@@ -52,7 +52,7 @@ namespace SmartStore.Core.Search
 						new XElement("error", Error),
 						new XElement("should-rebuild", ShouldRebuild ? "true" : "false"),
 						new XElement("document-count", DocumentCount),
-                        new XElement("last-added-document-id", DocumentCount),
+                        new XElement("last-added-document-id", LastAddedDocumentId),
                         new XElement("fields", string.Join(", ", Fields ?? Enumerable.Empty<string>()))
 			)).ToString();
 		}

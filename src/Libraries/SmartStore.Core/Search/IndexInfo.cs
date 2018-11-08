@@ -25,7 +25,8 @@ namespace SmartStore.Core.Search
 
 		public string Scope { get; private set; }
 		public int DocumentCount { get; set; }
-		public IEnumerable<string> Fields { get; set; }
+        public int LastAddedDocumentId { get; set; }
+        public IEnumerable<string> Fields { get; set; }
 
 		// loaded from status file
 		public DateTime? LastIndexedUtc { get; set; }
@@ -51,7 +52,8 @@ namespace SmartStore.Core.Search
 						new XElement("error", Error),
 						new XElement("should-rebuild", ShouldRebuild ? "true" : "false"),
 						new XElement("document-count", DocumentCount),
-						new XElement("fields", string.Join(", ", Fields ?? Enumerable.Empty<string>()))
+                        new XElement("last-added-document-id", DocumentCount),
+                        new XElement("fields", string.Join(", ", Fields ?? Enumerable.Empty<string>()))
 			)).ToString();
 		}
 
@@ -99,7 +101,13 @@ namespace SmartStore.Core.Search
 					info.DocumentCount = documentCount.ToInt();
 				}
 
-				var fields = doc.Descendants("fields").FirstOrDefault()?.Value;
+                var lastAddedDocumentId = doc.Descendants("last-added-document-id").FirstOrDefault()?.Value;
+                if (lastAddedDocumentId.HasValue())
+                {
+                    info.LastAddedDocumentId = lastAddedDocumentId.ToInt();
+                }
+
+                var fields = doc.Descendants("fields").FirstOrDefault()?.Value;
 				if (fields.HasValue())
 				{
 					info.Fields = fields.SplitSafe(", ");

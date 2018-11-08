@@ -61,7 +61,7 @@ namespace SmartStore.Services.Catalog
 				_productIdsAppliedDiscounts = new List<int>(products.Where(x => x.HasDiscountsApplied).Select(x => x.Id));
 				_bundledProductIds = new List<int>(products.Where(x => x.ProductType == ProductType.BundledProduct).Select(x => x.Id));
                 _groupedProductIds = new List<int>(products.Where(x => x.ProductType == ProductType.GroupedProduct).Select(x => x.Id));
-			}
+            }
 
 			_funcAttributes = attributes;
 			_funcAttributeCombinations = attributeCombinations;
@@ -87,6 +87,7 @@ namespace SmartStore.Services.Catalog
             _associatedProducts?.Clear();
 
             _bundledProductIds.Clear();
+            _groupedProductIds.Clear();
 		}
 
 		public LazyMultimap<ProductVariantAttribute> Attributes

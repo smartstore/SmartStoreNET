@@ -13,8 +13,6 @@ namespace SmartStore.Core
 		private bool _isEfQuery;
 		private bool _queryIsPagedAlready;
 		private int? _totalCount;
-		private int? _lastEntityId;
-		private int _currentPageIndex;
 
 		private List<T> _list;
 
@@ -64,18 +62,6 @@ namespace SmartStore.Core
 				else
 				{
 					_list = ApplyPaging(SourceQuery).ToList();
-				}
-
-				_currentPageIndex = PageIndex;
-
-				_lastEntityId = null;
-				if (_isEfQuery && _list.Count > 0)
-				{
-					var lastItem = _list[_list.Count - 1] as BaseEntity;
-					if (lastItem != null)
-					{
-						_lastEntityId = lastItem.Id;
-					}
 				}
 			}
 		}

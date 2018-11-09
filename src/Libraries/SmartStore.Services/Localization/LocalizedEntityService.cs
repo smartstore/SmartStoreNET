@@ -27,6 +27,8 @@ namespace SmartStore.Services.Localization
         private readonly ICacheManager _cacheManager;
 		private readonly PerformanceSettings _performanceSettings;
 
+		private readonly IDictionary<string, LocalizedPropertyCollection> _prefetchedCollections;
+
         public LocalizedEntityService(
 			ICacheManager cacheManager, 
 			IRepository<LocalizedProperty> localizedPropertyRepository,
@@ -35,6 +37,8 @@ namespace SmartStore.Services.Localization
             _cacheManager = cacheManager;
             _localizedPropertyRepository = localizedPropertyRepository;
 			_performanceSettings = performanceSettings;
+
+			_prefetchedCollections = new Dictionary<string, LocalizedPropertyCollection>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		protected override void OnClearCache()
@@ -119,6 +123,15 @@ namespace SmartStore.Services.Localization
 			if (languageId <= 0)
 				return string.Empty;
 
+			if (_prefetchedCollections.TryGetValue(localeKeyGroup, out var collection))
+			{
+				var cachedItem = collection.Find(languageId, entityId, localeKey);
+				if (cachedItem != null)
+				{
+					return cachedItem.LocaleValue;
+				}
+			}
+
 			var query = from lp in _localizedPropertyRepository.TableUntracked
 						where
 							lp.EntityId == entityId &&
@@ -144,7 +157,32 @@ namespace SmartStore.Services.Localization
             return props;
         }
 
+		public virtual void PrefetchLocalizedProperties(string localeKeyGroup, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
+		{
+			if (languageId == 0)
+				return;
+
+			var collection = GetLocalizedPropertyCollectionInternal(localeKeyGroup, languageId, entityIds, isRange, isSorted);
+			
+			if (collection.Count > 0)
+			{
+				if (_prefetchedCollections.TryGetValue(localeKeyGroup, out var existing))
+				{
+					collection.MergeWith(existing);
+				}
+				else
+				{
+					_prefetchedCollections[localeKeyGroup] = collection;
+				}
+			}
+		}
+
 		public virtual LocalizedPropertyCollection GetLocalizedPropertyCollection(string localeKeyGroup, int[] entityIds, bool isRange = false, bool isSorted = false)
+		{
+			return GetLocalizedPropertyCollectionInternal(localeKeyGroup, 0, entityIds, isRange, isSorted);
+		}
+
+		public virtual LocalizedPropertyCollection GetLocalizedPropertyCollectionInternal(string localeKeyGroup, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
 		{
 			Guard.NotEmpty(localeKeyGroup, nameof(localeKeyGroup));
 
@@ -169,7 +207,12 @@ namespace SmartStore.Services.Localization
 					}
 				}
 
-				return new LocalizedPropertyCollection(query.ToList());
+				if (languageId > 0)
+				{
+					query = query.Where(x => x.LanguageId == languageId);
+				}
+
+				return new LocalizedPropertyCollection(localeKeyGroup, query.ToList());
 			}
 		}
 

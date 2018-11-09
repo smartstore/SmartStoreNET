@@ -640,6 +640,10 @@
     <Compile Include="Migrations\201811061745204_IsSystemProductIndex.Designer.cs">
       <DependentUpon>201811061745204_IsSystemProductIndex.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201811082148279_LocalizedPropertyKeyGroupIndex.cs" />
+    <Compile Include="Migrations\201811082148279_LocalizedPropertyKeyGroupIndex.Designer.cs">
+      <DependentUpon>201811082148279_LocalizedPropertyKeyGroupIndex.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1148,6 +1152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201811061745204_IsSystemProductIndex.resx">
       <DependentUpon>201811061745204_IsSystemProductIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811082148279_LocalizedPropertyKeyGroupIndex.resx">
+      <DependentUpon>201811082148279_LocalizedPropertyKeyGroupIndex.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

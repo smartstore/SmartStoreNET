@@ -3,6 +3,8 @@
 	using System;
 	using System.Data.Entity.Migrations;
 	using Setup;
+	using SmartStore.Core.Domain.Common;
+	using SmartStore.Utilities;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -28,7 +30,8 @@
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
-
+			var name = TypeHelper.NameOf<PerformanceSettings>(y => y.CacheSegmentSize, true);
+			context.MigrateSettings(x => x.Add(name, 500));
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

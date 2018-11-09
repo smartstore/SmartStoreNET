@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Seo
@@ -22,12 +23,18 @@ namespace SmartStore.Services.Seo
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
         private readonly ICacheManager _cacheManager;
 		private readonly SeoSettings _seoSettings;
+		private readonly PerformanceSettings _performanceSettings;
 
-        public UrlRecordService(ICacheManager cacheManager, IRepository<UrlRecord> urlRecordRepository, SeoSettings seoSettings)
+		public UrlRecordService(
+			ICacheManager cacheManager, 
+			IRepository<UrlRecord> urlRecordRepository, 
+			SeoSettings seoSettings, 
+			PerformanceSettings performanceSettings)
         {
-            this._cacheManager = cacheManager;
-            this._urlRecordRepository = urlRecordRepository;
-			this._seoSettings = seoSettings;
+            _cacheManager = cacheManager;
+            _urlRecordRepository = urlRecordRepository;
+			_seoSettings = seoSettings;
+			_performanceSettings = performanceSettings;
         }
 
 		protected override void OnClearCache()
@@ -447,7 +454,7 @@ namespace SmartStore.Services.Seo
 
 		private string GetSegmentKeyPart(string entityName, int entityId, out int minId, out int maxId)
 		{
-			maxId = entityId.GetRange(500, out minId);
+			maxId = entityId.GetRange(_performanceSettings.CacheSegmentSize, out minId);
 			return (entityName + "." + maxId.ToString()).ToLowerInvariant();
 		}
 	}

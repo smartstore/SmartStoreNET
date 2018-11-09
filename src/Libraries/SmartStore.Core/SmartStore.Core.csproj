@@ -216,6 +216,7 @@
     <Compile Include="Domain\Catalog\QuantiyControlType.cs" />
     <Compile Include="Domain\Catalog\IPagingOptions.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
+    <Compile Include="Domain\Common\PerformanceSettings.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
     <Compile Include="Domain\Customers\PrivacySettings.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="Domain\Forums\ForumDateFilter.cs" />
     <Compile Include="Domain\Forums\ForumPostVote.cs" />
     <Compile Include="Domain\Forums\ForumTopicSorting.cs" />
+    <Compile Include="Domain\Localization\LocalizedPropertyCollection.cs" />
     <Compile Include="Domain\Media\MediaStorage.cs" />
     <Compile Include="Domain\Media\IHasMedia.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />

@@ -6,6 +6,7 @@ using System.Reflection;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Localization
@@ -24,13 +25,16 @@ namespace SmartStore.Services.Localization
 
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly ICacheManager _cacheManager;
+		private readonly PerformanceSettings _performanceSettings;
 
         public LocalizedEntityService(
 			ICacheManager cacheManager, 
-			IRepository<LocalizedProperty> localizedPropertyRepository)
+			IRepository<LocalizedProperty> localizedPropertyRepository,
+			PerformanceSettings performanceSettings)
         {
             _cacheManager = cacheManager;
             _localizedPropertyRepository = localizedPropertyRepository;
+			_performanceSettings = performanceSettings;
 		}
 
 		protected override void OnClearCache()
@@ -131,15 +135,43 @@ namespace SmartStore.Services.Localization
             if (localeKeyGroup.IsEmpty())
                 return new List<LocalizedProperty>();
 
-            var query = from lp in _localizedPropertyRepository.Table
-                        orderby lp.Id
-                        where lp.EntityId == entityId &&
-                              lp.LocaleKeyGroup == localeKeyGroup
-                        select lp;
+            var query = from x in _localizedPropertyRepository.Table
+                        orderby x.Id
+                        where x.EntityId == entityId && x.LocaleKeyGroup == localeKeyGroup
+                        select x;
 
             var props = query.ToList();
             return props;
         }
+
+		public virtual LocalizedPropertyCollection GetLocalizedPropertyCollection(string localeKeyGroup, int[] entityIds, bool isRange = false, bool isSorted = false)
+		{
+			Guard.NotEmpty(localeKeyGroup, nameof(localeKeyGroup));
+
+			using (var scope = new DbContextScope(ctx: _localizedPropertyRepository.Context, proxyCreation: false, lazyLoading: false))
+			{
+				var query = from x in _localizedPropertyRepository.TableUntracked
+							where x.LocaleKeyGroup == localeKeyGroup
+							select x;
+
+				if (entityIds != null && entityIds.Length > 0)
+				{
+					if (isRange)
+					{
+						var min = isSorted ? entityIds[0] : entityIds.Min();
+						var max = isSorted ? entityIds[entityIds.Length - 1] : entityIds.Max();
+
+						query = query.Where(x => x.EntityId >= min && x.EntityId <= max);
+					}
+					else
+					{
+						query = query.Where(x => entityIds.Contains(x.EntityId));
+					}
+				}
+
+				return new LocalizedPropertyCollection(query.ToList());
+			}
+		}
 
 		protected virtual LocalizedProperty GetLocalizedProperty(int languageId, int entityId, string localeKeyGroup, string localeKey)
 		{
@@ -281,7 +313,7 @@ namespace SmartStore.Services.Localization
 
 		private string GetSegmentKeyPart(string localeKeyGroup, string localeKey, int entityId, out int minId, out int maxId)
 		{
-			maxId = entityId.GetRange(500, out minId);
+			maxId = entityId.GetRange(_performanceSettings.CacheSegmentSize, out minId);
 			return (localeKeyGroup + "." + localeKey + "." + maxId.ToString()).ToLowerInvariant();
 		}
 	}

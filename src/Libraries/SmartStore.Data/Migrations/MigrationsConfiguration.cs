@@ -30,8 +30,12 @@
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
-			var name = TypeHelper.NameOf<PerformanceSettings>(y => y.CacheSegmentSize, true);
-			context.MigrateSettings(x => x.Add(name, 500));
+			context.MigrateSettings(x => 
+			{
+				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.CacheSegmentSize, true), 500);
+				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.AlwaysPrefetchTranslations, true), false);
+				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.AlwaysPrefetchUrlSlugs, true), false);
+			});
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

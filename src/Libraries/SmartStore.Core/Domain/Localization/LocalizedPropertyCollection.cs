@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Globalization;
 
 namespace SmartStore.Core.Domain.Localization
@@ -9,14 +10,20 @@ namespace SmartStore.Core.Domain.Localization
 	{
 		private readonly string _keyGroup;
 		private readonly IDictionary<string, LocalizedProperty> _dict;
+		private HashSet<int> _requestedSet;
 
-		public LocalizedPropertyCollection(string keyGroup, IEnumerable<LocalizedProperty> properties)
+		public LocalizedPropertyCollection(string keyGroup, int[] requestedSet, IEnumerable<LocalizedProperty> items)
 		{
 			Guard.NotEmpty(keyGroup, nameof(keyGroup));
-			Guard.NotNull(properties, nameof(properties));
+			Guard.NotNull(items, nameof(items));
 
 			_keyGroup = keyGroup;
-			_dict = properties.ToDictionarySafe(x => CreateKey(x.LocaleKey, x.EntityId, x.LanguageId), StringComparer.OrdinalIgnoreCase);
+			_dict = items.ToDictionarySafe(x => CreateKey(x.LocaleKey, x.EntityId, x.LanguageId), StringComparer.OrdinalIgnoreCase);
+
+			if (requestedSet != null && requestedSet.Length > 0)
+			{
+				_requestedSet = new HashSet<int>(requestedSet);
+			}
 		}
 
 		public void MergeWith(LocalizedPropertyCollection other)
@@ -28,22 +35,47 @@ namespace SmartStore.Core.Domain.Localization
 				throw new InvalidOperationException("Expected keygroup '{0}', but was '{1}'".FormatInvariant(this._keyGroup, other._keyGroup));
 			}
 
+			// Merge dictionary
 			other._dict.Merge(this._dict, true);
-		}
 
-		public LocalizedProperty Find(int languageId, int entityId, string localeKey)
-		{
-			return _dict.Get(CreateKey(localeKey, entityId, languageId));
+			// Merge requested set (entity ids)
+			if (this._requestedSet != null)
+			{
+				if (other._requestedSet == null)
+				{
+					other._requestedSet = new HashSet<int>(this._requestedSet);
+				}
+				else
+				{
+					other._requestedSet.AddRange(this._requestedSet);
+				}
+			}
 		}
 
 		public string GetValue(int languageId, int entityId, string localeKey)
 		{
-			if (_dict.TryGetValue(CreateKey(localeKey, entityId, languageId), out var prop))
+			return Find(languageId, entityId, localeKey)?.LocaleValue;
+		}
+
+		public LocalizedProperty Find(int languageId, int entityId, string localeKey)
+		{
+			var item = _dict.Get(CreateKey(localeKey, entityId, languageId));
+
+			if (item == null && (_requestedSet == null || _requestedSet.Contains(entityId)))
 			{
-				return prop.LocaleValue;
+				// Although the item does not exist in the local dictionary it has been requested
+				// from the database, which means it does not exist in the db either.
+				// Avoid the upcoming roundtrip.
+				return new LocalizedProperty
+				{
+					LocaleKeyGroup = _keyGroup,
+					EntityId = entityId,
+					LanguageId = languageId,
+					LocaleKey = localeKey
+				};
 			}
 
-			return null;
+			return item;
 		}
 
 		private string CreateKey(string localeKey, int entityId, int languageId)
@@ -52,9 +84,6 @@ namespace SmartStore.Core.Domain.Localization
 		}
 
 		public int Count => _dict.Values.Count;
-
-		public bool IsReadOnly => throw new NotImplementedException();
-
 		public IEnumerator<LocalizedProperty> GetEnumerator() => _dict.Values.GetEnumerator();
 		IEnumerator IEnumerable.GetEnumerator() => _dict.Values.GetEnumerator();
 	}

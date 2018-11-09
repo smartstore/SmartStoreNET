@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -15,8 +16,8 @@ namespace SmartStore.Services.Seo
 		/// <summary>
 		/// 0 = segment (EntityName.IdRange), 1 = language id
 		/// </summary>
-		const string URLRECORD_SEGMENT_KEY = "urlrecord:{0}-lang-{1}";
-		const string URLRECORD_SEGMENT_PATTERN = "urlrecord:{0}*";
+		const string URLRECORD_SEGMENT_KEY = "urlrecord:segment:{0}-lang-{1}";
+		const string URLRECORD_SEGMENT_PATTERN = "urlrecord:segment:{0}*";
 		const string URLRECORD_ALL_PATTERN = "urlrecord:*";
 		const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
 
@@ -24,6 +25,9 @@ namespace SmartStore.Services.Seo
         private readonly ICacheManager _cacheManager;
 		private readonly SeoSettings _seoSettings;
 		private readonly PerformanceSettings _performanceSettings;
+
+		private readonly IDictionary<string, UrlRecordCollection> _prefetchedCollections;
+		private static int _lastCacheSegmentSize = -1;
 
 		public UrlRecordService(
 			ICacheManager cacheManager, 
@@ -35,7 +39,34 @@ namespace SmartStore.Services.Seo
             _urlRecordRepository = urlRecordRepository;
 			_seoSettings = seoSettings;
 			_performanceSettings = performanceSettings;
+
+			_prefetchedCollections = new Dictionary<string, UrlRecordCollection>(StringComparer.OrdinalIgnoreCase);
+
+			ValidateCacheState();
         }
+
+		private void ValidateCacheState()
+		{
+			// Ensure that after a segment size change the cache segments are invalidated.
+			var size = _performanceSettings.CacheSegmentSize;
+			var changed = _lastCacheSegmentSize == -1;
+
+			if (size <= 0)
+			{
+				_performanceSettings.CacheSegmentSize = size = 1;
+			}
+
+			if (_lastCacheSegmentSize > 0 && _lastCacheSegmentSize != size)
+			{
+				_cacheManager.RemoveByPattern(URLRECORD_SEGMENT_PATTERN);
+				changed = true;
+			}
+
+			if (changed)
+			{
+				Interlocked.Exchange(ref _lastCacheSegmentSize, size);
+			}
+		}
 
 		protected override void OnClearCache()
 		{
@@ -153,6 +184,60 @@ namespace SmartStore.Services.Seo
 			return query.ToList();
 		}
 
+		public virtual void PrefetchUrlRecords(string entityName, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
+		{
+			var collection = GetUrlRecordCollectionInternal(entityName, languageId, entityIds, isRange, isSorted); 
+
+			if (_prefetchedCollections.TryGetValue(entityName, out var existing))
+			{
+				collection.MergeWith(existing);
+			}
+			else
+			{
+				_prefetchedCollections[entityName] = collection;
+			}
+		}
+
+		public virtual UrlRecordCollection GetUrlRecordCollection(string entityName, int[] entityIds, bool isRange = false, bool isSorted = false)
+		{
+			return GetUrlRecordCollectionInternal(entityName, 0, entityIds, isRange, isSorted);
+		}
+
+		public virtual UrlRecordCollection GetUrlRecordCollectionInternal(string entityName, int? languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
+		{
+			Guard.NotEmpty(entityName, nameof(entityName));
+
+			using (new DbContextScope(proxyCreation: false, lazyLoading: false))
+			{
+				var query = from x in _urlRecordRepository.TableUntracked
+							where x.EntityName == entityName && x.IsActive
+							select x;
+
+				if (entityIds != null && entityIds.Length > 0)
+				{
+					if (isRange)
+					{
+						var min = isSorted ? entityIds[0] : entityIds.Min();
+						var max = isSorted ? entityIds[entityIds.Length - 1] : entityIds.Max();
+
+						query = query.Where(x => x.EntityId >= min && x.EntityId <= max);
+					}
+					else
+					{
+						query = query.Where(x => entityIds.Contains(x.EntityId));
+					}
+				}
+
+				if (languageId.HasValue)
+				{
+					query = query.Where(x => x.LanguageId == languageId.Value);
+				}
+
+				// Don't sort DESC, because latter items overwrite exisiting ones (it's the same as sorting DESC and taking the first)
+				return new UrlRecordCollection(entityName, entityIds, query.OrderBy(x => x.Id).ToList());
+			}
+		}
+
 		public virtual UrlRecord GetBySlug(string slug)
 		{
 			// INFO: (mc) Caching unnecessary here. This is not a 'bottleneck' function.
@@ -169,6 +254,15 @@ namespace SmartStore.Services.Seo
 
         public virtual string GetActiveSlug(int entityId, string entityName, int languageId)
         {
+			if (_prefetchedCollections.TryGetValue(entityName, out var collection))
+			{
+				var cachedItem = collection.Find(languageId, entityId);
+				if (cachedItem != null)
+				{
+					return cachedItem.Slug.EmptyNull();
+				}
+			}
+
 			if (IsInScope)
 			{
 				return GetActiveSlugUncached(entityId, entityName, languageId);
@@ -180,17 +274,20 @@ namespace SmartStore.Services.Seo
 			{
 				var allActiveSlugs = _cacheManager.Get(URLRECORD_ALL_ACTIVESLUGS_KEY, () =>
 				{
-					var query = from x in _urlRecordRepository.TableUntracked
-								where x.IsActive
-								orderby x.Id descending
-								select x;
+					using (new DbContextScope(proxyCreation: false, lazyLoading: false))
+					{
+						var query = from x in _urlRecordRepository.TableUntracked
+									where x.IsActive
+									orderby x.Id descending
+									select x;
 
-					var result = query.ToDictionarySafe(
-						x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId),
-						x => x.Slug,
-						StringComparer.OrdinalIgnoreCase);
+						var result = query.ToDictionarySafe(
+							x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId),
+							x => x.Slug,
+							StringComparer.OrdinalIgnoreCase);
 
-					return result;
+						return result;
+					}
 				});
 
 				var key = GenerateKey(entityId, entityName, languageId);
@@ -396,26 +493,29 @@ namespace SmartStore.Services.Seo
 
 			return _cacheManager.Get(cacheKey, () =>
 			{
-				var query = from ur in _urlRecordRepository.TableUntracked
-							where 
-								ur.EntityId >= minEntityId &&
-								ur.EntityId <= maxEntityId &&
-								ur.EntityName == entityName &&
-								ur.LanguageId == languageId &&
-								ur.IsActive
-							orderby ur.Id descending
-							select ur;
-
-				var urlRecords = query.ToList();
-
-				var dict = new Dictionary<int, string>(urlRecords.Count);
-
-				foreach (var ur in urlRecords)
+				using (new DbContextScope(proxyCreation: false, lazyLoading: false))
 				{
-					dict[ur.EntityId] = ur.Slug.EmptyNull();
-				}
+					var query = from ur in _urlRecordRepository.TableUntracked
+								where
+									ur.EntityId >= minEntityId &&
+									ur.EntityId <= maxEntityId &&
+									ur.EntityName == entityName &&
+									ur.LanguageId == languageId &&
+									ur.IsActive
+								orderby ur.Id descending
+								select ur;
 
-				return dict;
+					var urlRecords = query.ToList();
+
+					var dict = new Dictionary<int, string>(urlRecords.Count);
+
+					foreach (var ur in urlRecords)
+					{
+						dict[ur.EntityId] = ur.Slug.EmptyNull();
+					}
+
+					return dict;
+				}
 			});
 		}
 

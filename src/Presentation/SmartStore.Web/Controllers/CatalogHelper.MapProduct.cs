@@ -22,6 +22,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
@@ -159,18 +160,56 @@ namespace SmartStore.Web.Controllers
 			{
 				settings = new ProductSummaryMappingSettings();
 			}
-
+			
 			using (_services.Chronometer.Step("MapProductSummaryModel"))
 			{
+				var model = new ProductSummaryModel(products)
+				{
+					ViewMode = settings.ViewMode,
+					GridColumnSpan = _catalogSettings.GridStyleListColumnSpan,
+					ShowSku = _catalogSettings.ShowProductSku,
+					ShowWeight = _catalogSettings.ShowWeight,
+					ShowDimensions = settings.MapDimensions,
+					ShowLegalInfo = settings.MapLegalInfo,
+					ShowDescription = settings.MapShortDescription,
+					ShowFullDescription = settings.MapFullDescription,
+					ShowRatings = settings.MapReviews,
+					ShowDeliveryTimes = settings.MapDeliveryTimes,
+					ShowPrice = settings.MapPrices,
+					ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists && settings.ViewMode != ProductSummaryViewMode.Mini,
+					ShowShippingSurcharge = settings.MapPrices && settings.ViewMode != ProductSummaryViewMode.Mini,
+					ShowButtons = settings.ViewMode != ProductSummaryViewMode.Mini,
+					ShowBrand = settings.MapManufacturers,
+					ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
+					CompareEnabled = _catalogSettings.CompareProductsEnabled,
+					WishlistEnabled = _permissionService.Value.Authorize(StandardPermissionProvider.EnableWishlist),
+					BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
+					ThumbSize = settings.ThumbnailSize,
+					ShowDiscountBadge = _catalogSettings.ShowDiscountSign,
+					ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue
+				};
+
+				if (products.Count == 0)
+				{
+					// No products, stop here.
+					return model;
+				}
+
 				// PERF!!
 				var store = _services.StoreContext.CurrentStore;
 				var customer = _services.WorkContext.CurrentCustomer;
 				var currency = _services.WorkContext.WorkingCurrency;
+				var language = _services.WorkContext.WorkingLanguage;
 				var allowPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
 				var sllowShoppingCart = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 				var allowWishlist = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
 				var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 				var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
+				var prefetchTranslations = settings.PrefetchTranslations == true || (settings.PrefetchTranslations == null && _performanceSettings.AlwaysPrefetchTranslations);
+				var prefetchSlugs = settings.PrefetchUrlSlugs == true || (settings.PrefetchUrlSlugs == null && _performanceSettings.AlwaysPrefetchUrlSlugs);
+				var allProductIds = prefetchSlugs || prefetchTranslations ? products.Select(x => x.Id).ToArray() : new int[0];
+
+				//var productIds = products.Select(x => x.Id).ToArray();
 
 				string taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 				var legalInfo = "";
@@ -198,6 +237,17 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
+				if (prefetchSlugs)
+				{
+					_urlRecordService.PrefetchUrlRecords(nameof(Product), language.Id, allProductIds);
+				}
+
+				if (prefetchTranslations)
+				{
+					// Prefetch all delivery time translations
+					_localizedEntityService.PrefetchLocalizedProperties(nameof(DeliveryTime), language.Id, null);
+				}
+
 				using (var scope = new DbContextScope(ctx: _services.DbContext, autoCommit: false, validateOnSave: false))
 				{
 					// Run in uncommitting scope, because pictures could be updated (IsNew property) 
@@ -212,6 +262,21 @@ namespace SmartStore.Web.Controllers
 					if (settings.MapAttributes || settings.MapColorAttributes)
 					{
 						batchContext.Attributes.LoadAll();
+
+						if (prefetchTranslations)
+						{
+							// Prefetch all product attribute translations
+							PrefetchTranslations(
+								nameof(ProductAttribute),
+								language.Id,
+								batchContext.Attributes.SelectMany(x => x.Value).Select(x => x.ProductAttribute));
+
+							// Prefetch all variant attribute value translations
+							PrefetchTranslations(
+								nameof(ProductVariantAttributeValue),
+								language.Id,
+								batchContext.Attributes.SelectMany(x => x.Value).SelectMany(x => x.ProductVariantAttributeValues));
+						}
 					}
 
 					if (settings.MapManufacturers)
@@ -222,42 +287,25 @@ namespace SmartStore.Web.Controllers
 					if (settings.MapSpecificationAttributes)
 					{
 						batchContext.SpecificationAttributes.LoadAll();
-					}
 
-					if (settings.MapPictures)
-					{
-						//var pids = products.Where(x => x.MainPictureId.HasValue).Select(x => x.MainPictureId.Value);
-						//var pis = ((Services.Media.PictureService)_pictureService).GetPictureInfos(pids, model.ThumbSize ?? 250);
-					}
+						if (prefetchTranslations)
+						{
+							// Prefetch all spec attribute option translations
+							PrefetchTranslations(
+								nameof(SpecificationAttributeOption), 
+								language.Id,
+								batchContext.SpecificationAttributes.SelectMany(x => x.Value).Select(x => x.SpecificationAttributeOption));
 
-					var model = new ProductSummaryModel(products)
-					{
-						ViewMode = settings.ViewMode,
-						GridColumnSpan = _catalogSettings.GridStyleListColumnSpan,
-						ShowSku = _catalogSettings.ShowProductSku,
-						ShowWeight = _catalogSettings.ShowWeight,
-						ShowDimensions = settings.MapDimensions,
-						ShowLegalInfo = settings.MapLegalInfo,
-						ShowDescription = settings.MapShortDescription,
-						ShowFullDescription = settings.MapFullDescription,
-						ShowRatings = settings.MapReviews,
-						ShowDeliveryTimes = settings.MapDeliveryTimes,
-						ShowPrice = settings.MapPrices,
-						ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists && settings.ViewMode != ProductSummaryViewMode.Mini,
-						ShowShippingSurcharge = settings.MapPrices && settings.ViewMode != ProductSummaryViewMode.Mini,
-						ShowButtons = settings.ViewMode != ProductSummaryViewMode.Mini,
-						ShowBrand = settings.MapManufacturers,
-						ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
-						CompareEnabled = _catalogSettings.CompareProductsEnabled,
-						WishlistEnabled = _permissionService.Value.Authorize(StandardPermissionProvider.EnableWishlist),
-						BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
-						ThumbSize = settings.ThumbnailSize,
-						ShowDiscountBadge = _catalogSettings.ShowDiscountSign,
-						ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue
-					};
+							// Prefetch all spec attribute translations
+							PrefetchTranslations(
+								nameof(SpecificationAttribute),
+								language.Id,
+								batchContext.SpecificationAttributes.SelectMany(x => x.Value).Select(x => x.SpecificationAttributeOption.SpecificationAttribute));
+						}
+					}
 
 					// If a size has been set in the view, we use it in priority
-					int thumbSize = model.ThumbSize.HasValue ? model.ThumbSize.Value : _mediaSettings.ProductThumbPictureSize;
+					int thumbSize = model.ThumbSize ?? _mediaSettings.ProductThumbPictureSize;
 
 					var mapItemContext = new MapProductSummaryItemContext
 					{
@@ -295,6 +343,14 @@ namespace SmartStore.Web.Controllers
 					return model;
 				}
 			}		
+		}
+
+		private void PrefetchTranslations(string keyGroup, int languageId, IEnumerable<BaseEntity> entities)
+		{
+			if (entities.Any())
+			{
+				_localizedEntityService.PrefetchLocalizedProperties(keyGroup, languageId, entities.Select(x => x.Id).Distinct().ToArray());
+			}	
 		}
 
 		private void MapProductSummaryItem(Product product, MapProductSummaryItemContext ctx)
@@ -787,5 +843,8 @@ namespace SmartStore.Web.Controllers
 
 		public bool ForceRedirectionAfterAddingToCart { get; set; }
 		public int? ThumbnailSize { get; set; }	
+
+		public bool? PrefetchTranslations { get; set; }
+		public bool? PrefetchUrlSlugs { get; set; }
 	}
 }

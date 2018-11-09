@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -28,6 +29,7 @@ namespace SmartStore.Services.Localization
 		private readonly PerformanceSettings _performanceSettings;
 
 		private readonly IDictionary<string, LocalizedPropertyCollection> _prefetchedCollections;
+		private static int _lastCacheSegmentSize = -1;
 
         public LocalizedEntityService(
 			ICacheManager cacheManager, 
@@ -39,6 +41,31 @@ namespace SmartStore.Services.Localization
 			_performanceSettings = performanceSettings;
 
 			_prefetchedCollections = new Dictionary<string, LocalizedPropertyCollection>(StringComparer.OrdinalIgnoreCase);
+
+			ValidateCacheState();
+		}
+
+		private void ValidateCacheState()
+		{
+			// Ensure that after a segment size change the cache segments are invalidated.
+			var size = _performanceSettings.CacheSegmentSize;
+			var changed = _lastCacheSegmentSize == -1;
+
+			if (size <= 0)
+			{
+				_performanceSettings.CacheSegmentSize = size = 1;
+			}
+			
+			if (_lastCacheSegmentSize > 0 && _lastCacheSegmentSize != size)
+			{
+				OnClearCache();
+				changed = true;
+			}
+
+			if (changed)
+			{
+				Interlocked.Exchange(ref _lastCacheSegmentSize, size);
+			}		
 		}
 
 		protected override void OnClearCache()
@@ -100,6 +127,15 @@ namespace SmartStore.Services.Localization
 
 		public virtual string GetLocalizedValue(int languageId, int entityId, string localeKeyGroup, string localeKey)
 		{
+			if (_prefetchedCollections.TryGetValue(localeKeyGroup, out var collection))
+			{
+				var cachedItem = collection.Find(languageId, entityId, localeKey);
+				if (cachedItem != null)
+				{
+					return cachedItem.LocaleValue;
+				}
+			}
+
 			if (IsInScope)
 			{
 				return GetLocalizedValueUncached(languageId, entityId, localeKeyGroup, localeKey);
@@ -122,15 +158,6 @@ namespace SmartStore.Services.Localization
 		{
 			if (languageId <= 0)
 				return string.Empty;
-
-			if (_prefetchedCollections.TryGetValue(localeKeyGroup, out var collection))
-			{
-				var cachedItem = collection.Find(languageId, entityId, localeKey);
-				if (cachedItem != null)
-				{
-					return cachedItem.LocaleValue;
-				}
-			}
 
 			var query = from lp in _localizedPropertyRepository.TableUntracked
 						where
@@ -163,17 +190,14 @@ namespace SmartStore.Services.Localization
 				return;
 
 			var collection = GetLocalizedPropertyCollectionInternal(localeKeyGroup, languageId, entityIds, isRange, isSorted);
-			
-			if (collection.Count > 0)
+
+			if (_prefetchedCollections.TryGetValue(localeKeyGroup, out var existing))
 			{
-				if (_prefetchedCollections.TryGetValue(localeKeyGroup, out var existing))
-				{
-					collection.MergeWith(existing);
-				}
-				else
-				{
-					_prefetchedCollections[localeKeyGroup] = collection;
-				}
+				collection.MergeWith(existing);
+			}
+			else
+			{
+				_prefetchedCollections[localeKeyGroup] = collection;
 			}
 		}
 
@@ -186,7 +210,7 @@ namespace SmartStore.Services.Localization
 		{
 			Guard.NotEmpty(localeKeyGroup, nameof(localeKeyGroup));
 
-			using (var scope = new DbContextScope(ctx: _localizedPropertyRepository.Context, proxyCreation: false, lazyLoading: false))
+			using (new DbContextScope(proxyCreation: false, lazyLoading: false))
 			{
 				var query = from x in _localizedPropertyRepository.TableUntracked
 							where x.LocaleKeyGroup == localeKeyGroup
@@ -212,7 +236,7 @@ namespace SmartStore.Services.Localization
 					query = query.Where(x => x.LanguageId == languageId);
 				}
 
-				return new LocalizedPropertyCollection(localeKeyGroup, query.ToList());
+				return new LocalizedPropertyCollection(localeKeyGroup, entityIds, query.ToList());
 			}
 		}
 

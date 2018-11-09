@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -42,7 +42,7 @@
 * Viveum: Supports payment via "Virtual Account Brands" (e.g. PayPal).
 * Added options for alternating price display (in badges).
 * #1515 Poll: Add result tab with a list of answers and customers for a poll
-* Added export and import of product tags.
+* BMEcat: Added export and import of product tags.
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
@@ -55,6 +55,7 @@
 * Refactored download section  
 * Enhanced EntityPicker to pick from customers, manufacturers & categories
 * #1510 Breadcrumb of an associated product should include the grouped product if it has no assigned categories.
+* OpenTrans: added customer number to parties
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
@@ -90,6 +91,7 @@
 * Fixed redirection of bots when several languages were active
 * Region cannot be selected in checkout when entering a billing or shipping address
 * Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
+* MegaMenu: Improved item rendering for third tier elements
 
 
 ## SmartStore.NET 3.1.5

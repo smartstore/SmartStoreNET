@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
@@ -12,7 +11,7 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Export.Internal
 {
-	internal class DataExporterContext
+    internal class DataExporterContext
 	{
 		public DataExporterContext(
 			DataExportRequest request,
@@ -62,7 +61,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		}
 
 		/// <summary>
-		/// All entity identifiers per export
+		/// All entity identifiers per export.
 		/// </summary>
 		public List<int> EntityIdsLoaded { get; set; }
 		public void SetLoadedEntityIds(IEnumerable<int> ids)
@@ -74,7 +73,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		}
 
 		/// <summary>
-		/// All entity identifiers per segment (to avoid exporting products multiple times)
+		/// All entity identifiers per segment (to avoid exporting products multiple times).
 		/// </summary>
 		public List<int> EntityIdsPerSegment { get; set; }
 
@@ -88,7 +87,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 		public bool Supports(ExportFeatures feature)
 		{
-			return (!IsPreview && Request.Provider.Metadata.ExportFeatures.HasFlag(feature));
+			return !IsPreview && Request.Provider.Metadata.ExportFeatures.HasFlag(feature);
 		}
 
 		public ExportFilter Filter { get; private set; }
@@ -107,7 +106,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			get { return Request.Provider == null || Request.Provider.Value == null || Request.Provider.Value.FileExtension.HasValue(); }
 		}
 
-		// data loaded once per export
+		// Data loaded once per export.
 		public Dictionary<int, DeliveryTime> DeliveryTimes { get; set; }
 		public Dictionary<int, QuantityUnit> QuantityUnits { get; set; }
 		public Dictionary<int, Store> Stores { get; set; }
@@ -117,9 +116,10 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		public Dictionary<int, string> CategoryTemplates { get; set; }
 		public HashSet<string> NewsletterSubscriptions { get; set; }
 
-		// data loaded once per page
+		// Data loaded once per page.
 		public ProductExportContext ProductExportContext { get; set; }
-		public OrderExportContext OrderExportContext { get; set; }
+        public ProductExportContext AssociatedProductContext { get; set; }
+        public OrderExportContext OrderExportContext { get; set; }
 		public ManufacturerExportContext ManufacturerExportContext { get; set; }
 		public CategoryExportContext CategoryExportContext { get; set; }
 		public CustomerExportContext CustomerExportContext { get; set; }

@@ -432,7 +432,7 @@ namespace SmartStore.Services.Catalog
 				x => _manufacturerService.GetProductManufacturersByProductIds(x),
 				x => _productService.GetAppliedDiscountsByProductIds(x),
 				x => _productService.GetBundleItemsByProductIds(x, true),
-                x => _productService.GetAssociatedProducts(x)
+                x => _productService.GetAssociatedProductsByProductIds(x)
 			);
 
 			return context;

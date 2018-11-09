@@ -624,7 +624,7 @@ namespace SmartStore.Services.Catalog
 			return map;
 		}
 
-        public virtual Multimap<int, Product> GetAssociatedProducts(int[] productIds)
+        public virtual Multimap<int, Product> GetAssociatedProductsByProductIds(int[] productIds, bool showHidden = false)
         {
             Guard.NotNull(productIds, nameof(productIds));
 
@@ -633,9 +633,11 @@ namespace SmartStore.Services.Catalog
                 return new Multimap<int, Product>();
             }
 
+            // Ignore multistore. Expect multistore setting for associated products is the same as for parent grouped product.
             var query = _productRepository.TableUntracked
-                .Where(x => productIds.Contains(x.ParentGroupedProductId) && !x.Deleted && x.Published)
-                .OrderBy(x => x.DisplayOrder);
+                .Where(x => productIds.Contains(x.ParentGroupedProductId) && !x.Deleted && (showHidden || x.Published))
+                .OrderBy(x => x.ParentGroupedProductId)
+                .ThenBy(x => x.DisplayOrder);
 
             var associatedProducts = query.ToList();
 

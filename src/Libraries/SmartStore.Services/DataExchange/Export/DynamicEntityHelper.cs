@@ -159,36 +159,61 @@ namespace SmartStore.Services.DataExchange.Export
 			ICollection<ProductVariantAttributeValue> attributeValues)
 		{
 			var price = product.Price;
-			var priceCalculationContext = ctx.ProductExportContext as PriceCalculationContext;
+			var productContext = ctx.ProductExportContext as PriceCalculationContext;
+            var associatedProductContext = ctx.AssociatedProductContext as PriceCalculationContext;
 
-			if (combination != null)
+            if (combination != null)
 			{
 				// price for attribute combination
 				var attributesTotalPriceBase = decimal.Zero;
 
 				if (attributeValues != null)
 				{
-					attributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.Value.GetProductVariantAttributeValuePriceAdjustment(x, product, ctx.ContextCustomer, priceCalculationContext));
+					attributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.Value.GetProductVariantAttributeValuePriceAdjustment(x, product, ctx.ContextCustomer, productContext));
 				}
 
-				price = _priceCalculationService.Value.GetFinalPrice(product, null, ctx.ContextCustomer, attributesTotalPriceBase, true, 1, null, priceCalculationContext);
+				price = _priceCalculationService.Value.GetFinalPrice(product, null, ctx.ContextCustomer, attributesTotalPriceBase, true, 1, null, productContext);
 			}
 			else if (ctx.Projection.PriceType.HasValue)
-			{
-				// price for product
-				if (ctx.Projection.PriceType.Value == PriceDisplayType.LowestPrice)
-				{
-					bool displayFromMessage;
-					price = _priceCalculationService.Value.GetLowestPrice(product, ctx.ContextCustomer, priceCalculationContext, out displayFromMessage);
-				}
-				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PreSelectedPrice)
-				{
-					price = _priceCalculationService.Value.GetPreselectedPrice(product, ctx.ContextCustomer, ctx.ContextCurrency, priceCalculationContext);
-				}
-				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
-				{
-					price = _priceCalculationService.Value.GetFinalPrice(product, null, ctx.ContextCustomer, decimal.Zero, false, 1, null, priceCalculationContext);
-				}
+            {
+                var priceType = ctx.Projection.PriceType.Value;
+
+                if (product.ProductType == ProductType.GroupedProduct)
+                {
+                    var associatedProducts = productContext.AssociatedProducts.GetOrLoad(product.Id);
+                    if (associatedProducts.Any())
+                    {
+                        var firstAssociatedProduct = associatedProducts.First();
+
+                        if (priceType == PriceDisplayType.PreSelectedPrice)
+                        {
+                            price = _priceCalculationService.Value.GetPreselectedPrice(firstAssociatedProduct, ctx.ContextCustomer, ctx.ContextCurrency, associatedProductContext);
+                        }
+                        else if (priceType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+                        {
+                            price = _priceCalculationService.Value.GetFinalPrice(firstAssociatedProduct, null, ctx.ContextCustomer, decimal.Zero, false, 1, null, associatedProductContext);
+                        }
+                        else if (priceType == PriceDisplayType.LowestPrice)
+                        {
+                            price = _priceCalculationService.Value.GetLowestPrice(product, ctx.ContextCustomer, associatedProductContext, associatedProducts, out _) ?? decimal.Zero;
+                        }
+                    }
+                }
+                else
+                {
+                    if (priceType == PriceDisplayType.PreSelectedPrice)
+                    {
+                        price = _priceCalculationService.Value.GetPreselectedPrice(product, ctx.ContextCustomer, ctx.ContextCurrency, productContext);
+                    }
+                    else if (priceType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+                    {
+                        price = _priceCalculationService.Value.GetFinalPrice(product, null, ctx.ContextCustomer, decimal.Zero, false, 1, null, productContext);
+                    }
+                    else if (priceType == PriceDisplayType.LowestPrice)
+                    {
+                        price = _priceCalculationService.Value.GetLowestPrice(product, ctx.ContextCustomer, productContext, out _);
+                    }
+                }
 			}
 
 			return ConvertPrice(ctx, product, price) ?? price;

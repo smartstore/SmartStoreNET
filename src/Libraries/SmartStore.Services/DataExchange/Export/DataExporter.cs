@@ -42,6 +42,7 @@ using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
+using SmartStore.Collections;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -324,6 +325,8 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.ProductExportContext.Clear();
 				}
 
+                ctx.AssociatedProductContext?.Clear();
+
 				if (ctx.OrderExportContext != null)
 				{
 					_dbContext.DetachEntities(x =>
@@ -394,9 +397,16 @@ namespace SmartStore.Services.DataExchange.Export
 						skip => GetProducts(ctx, skip),
 						entities =>
 						{
-							// load data behind navigation properties for current queue in one go
+							// Load data behind navigation properties for current queue in one go.
 							ctx.ProductExportContext = CreateProductExportContext(entities, ctx.ContextCustomer, ctx.Store.Id);
-						},
+                            ctx.AssociatedProductContext = null;
+                            if (!ctx.Projection.NoGroupedProducts && entities.Where(x => x.ProductType == ProductType.GroupedProduct).Any())
+                            {
+                                ctx.ProductExportContext.AssociatedProducts.LoadAll();
+                                var associatedProducts = ctx.ProductExportContext.AssociatedProducts.SelectMany(x => x.Value);
+                                ctx.AssociatedProductContext = CreateProductExportContext(associatedProducts, ctx.ContextCustomer, ctx.Store.Id);
+                            }
+                        },
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
 					);
@@ -763,7 +773,7 @@ namespace SmartStore.Services.DataExchange.Export
 				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
 				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
 				x => _productService.Value.GetBundleItemsByProductIds(x, showHidden),
-                x => _productService.Value.GetAssociatedProducts(x),
+                x => _productService.Value.GetAssociatedProductsByProductIds(x),
 				x => _pictureService.Value.GetPicturesByProductIds(x, maxPicturesPerProduct, true),
 				x => _productService.Value.GetProductPicturesByProductIds(x),
 				x => _productService.Value.GetProductTagsByProductIds(x),
@@ -835,11 +845,16 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Product> GetProducts(DataExporterContext ctx, int skip)
 		{
-			// we use ctx.EntityIdsPerSegment to avoid exporting products multiple times per segment\file (cause of associated products).
-
+			// We use ctx.EntityIdsPerSegment to avoid exporting products multiple times per segment\file (cause of associated products).
 			var result = new List<Product>();
-
 			var products = GetProductQuery(ctx, skip, PageSize).ToList();
+            Multimap<int, Product> associatedProducts = null;
+
+            if (ctx.Projection.NoGroupedProducts)
+            {
+                var groupedProductIds = products.Where(x => x.ProductType == ProductType.GroupedProduct).Select(x => x.Id).ToArray();
+                associatedProducts = _productService.Value.GetAssociatedProductsByProductIds(groupedProductIds, true);
+            }
 
 			foreach (var product in products)
 			{
@@ -855,27 +870,26 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					if (ctx.Projection.NoGroupedProducts)
 					{
-						var searchQuery = new CatalogSearchQuery()
-							.HasParentGroupedProduct(product.Id)
-							.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
+                        if (associatedProducts.ContainsKey(product.Id))
+                        {
+                            foreach (var associatedProduct in associatedProducts[product.Id])
+                            {
+                                if (ctx.Projection.OnlyIndividuallyVisibleAssociated && !associatedProduct.VisibleIndividually)
+                                {
+                                    continue;
+                                }
+                                if (ctx.Filter.IsPublished.HasValue && ctx.Filter.IsPublished.Value != associatedProduct.Published)
+                                {
+                                    continue;
+                                }
 
-						if (ctx.Projection.OnlyIndividuallyVisibleAssociated)
-							searchQuery = searchQuery.VisibleIndividuallyOnly(true);
-
-						if (ctx.Filter.IsPublished.HasValue)
-							searchQuery = searchQuery.PublishedOnly(ctx.Filter.IsPublished.Value);
-
-						var query = _catalogSearchService.Value.PrepareQuery(searchQuery);
-						var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
-
-						foreach (var associatedProduct in associatedProducts)
-						{
-							if (!ctx.EntityIdsPerSegment.Contains(associatedProduct.Id))
-							{
-								result.Add(associatedProduct);
-								ctx.EntityIdsPerSegment.Add(associatedProduct.Id);
-							}
-						}
+                                if (!ctx.EntityIdsPerSegment.Contains(associatedProduct.Id))
+                                {
+                                    result.Add(associatedProduct);
+                                    ctx.EntityIdsPerSegment.Add(associatedProduct.Id);
+                                }
+                            }
+                        }
 					}
 					else
 					{

@@ -132,6 +132,22 @@ fieldset.content-group {
     margin-right: 0.25rem;
 }
 
+.wkit.touchevents .form-check {
+	@if $font-size-base < 1 rem {
+        // Fix Chrome mobile check/radio alignment and padding issues:
+        // increase spacing from 1.25rem to 1.5rem
+		padding-left: 1.5rem;
+	
+		.form-check-input {
+			margin-left: -1.5rem;
+		}
+	
+		.form-check-label {
+			padding-top: 0.2rem;
+		}
+	}
+}
+
 
 // Custom range
 // ------------------------------------------------------

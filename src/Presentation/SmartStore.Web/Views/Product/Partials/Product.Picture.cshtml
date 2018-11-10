@@ -3,22 +3,22 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-    Html.AddScriptParts("~/bundles/smart-gallery");
-    var defaultPicture = Model.DefaultPictureModel;
+	Html.AddScriptParts("~/bundles/smart-gallery");
+	var defaultPicture = Model.DefaultPictureModel;
 
-    // FB OpenGraph og:image & Twitter meta
-    var oImg = Model.PictureModels?.FirstOrDefault();
-    if (oImg != null && oImg.FullSizeImageUrl.HasValue())
-    {
-        var url = WebHelper.GetAbsoluteUrl(oImg.FullSizeImageUrl, this.Request, true);
-        Html.AddCustomHeadParts("<meta property='twitter:image' content='{0}' />".FormatInvariant(url));
-        Html.AddCustomHeadParts("<meta property='og:image' content='{0}' />".FormatInvariant(url));
-        if (oImg.FullSizeImageWidth > 0 && oImg.FullSizeImageHeight > 0)
-        {
-            Html.AddCustomHeadParts("<meta property='og:image:width' content='{0}' />".FormatInvariant(oImg.FullSizeImageWidth.Value));
-            Html.AddCustomHeadParts("<meta property='og:image:height' content='{0}' />".FormatInvariant(oImg.FullSizeImageHeight.Value));
-        }
-    }
+	// FB OpenGraph og:image & Twitter meta
+	var oImg = Model.PictureModels?.FirstOrDefault();
+	if (oImg != null && oImg.FullSizeImageUrl.HasValue())
+	{
+		var url = WebHelper.GetAbsoluteUrl(oImg.FullSizeImageUrl, this.Request, true);
+		Html.AddCustomHeadParts("<meta property='twitter:image' content='{0}' />".FormatInvariant(url));
+		Html.AddCustomHeadParts("<meta property='og:image' content='{0}' />".FormatInvariant(url));
+		if (oImg.FullSizeImageWidth > 0 && oImg.FullSizeImageHeight > 0)
+		{
+			Html.AddCustomHeadParts("<meta property='og:image:width' content='{0}' />".FormatInvariant(oImg.FullSizeImageWidth.Value));
+			Html.AddCustomHeadParts("<meta property='og:image:height' content='{0}' />".FormatInvariant(oImg.FullSizeImageHeight.Value));
+		}
+	}
 }
 
 <div id="pd-gallery-container-inner">
@@ -29,19 +29,19 @@
 				<div class="gal-list">
 					<div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
 						@for (int i = 0; i < Model.PictureModels.Count; i++)
-                        {
-                            var picture = Model.PictureModels[i];
-                            var title = T("Product.ThumbTitle", picture.Title, (i + 1).ToString());
-                            var alternateText = T("Product.ThumbAlternateText", picture.AlternateText, (i + 1).ToString());
+						{
+							var picture = Model.PictureModels[i];
+							var title = T("Product.ThumbTitle", picture.Title, (i + 1).ToString());
+							var alternateText = T("Product.ThumbAlternateText", picture.AlternateText, (i + 1).ToString());
 
 							<figure class="gal-item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-								<a class="gal-item-viewport" 
-								   itemprop="contentUrl" 
-								   href="@picture.FullSizeImageUrl" 
-								   data-width="@picture.FullSizeImageWidth" 
-								   data-height="@picture.FullSizeImageHeight" 
-								   data-medium-image="@picture.ImageUrl" 
-								   title="@title" 
+								<a class="gal-item-viewport"
+								   itemprop="contentUrl"
+								   href="@picture.FullSizeImageUrl"
+								   data-width="@picture.FullSizeImageWidth"
+								   data-height="@picture.FullSizeImageHeight"
+								   data-medium-image="@picture.ImageUrl"
+								   title="@title"
 								   data-picture-id="@picture.PictureId">
 									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@alternateText" />
 								</a>

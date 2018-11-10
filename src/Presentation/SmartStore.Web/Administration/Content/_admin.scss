@@ -145,7 +145,7 @@ body {
     grid-column: 1 / -1;
     grid-row: 2 / -1;
     z-index: 9;
-    overflow-x: hidden;
+    //overflow-x: hidden; // observe and maybe uncomment later
 
     .popup & {
 	    margin: 0;
@@ -265,10 +265,8 @@ body {
 		z-index: 600;
 		left: var(--content-padding-x);
 		right: var(--content-padding-x);
-        padding-left: var(--content-padding-x);
-		padding-right: var(--content-padding-x);
+        padding: calc(var(--content-padding-y) / 2)  var(--content-padding-x);
 		background: #fff;
-		//border-bottom: 1px solid rgba(0,0,0, 0.08); 
         box-shadow: 0 8px 16px 0 rgba(#32325d, .1), 0 2px 7px 0 rgba(#000, .07);
 
 		.modal-open & {

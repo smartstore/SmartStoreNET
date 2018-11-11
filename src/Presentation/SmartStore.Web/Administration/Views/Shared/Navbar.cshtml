@@ -1,6 +1,7 @@
 ﻿@using SmartStore.Core.Domain.Stores;
 @using SmartStore.Services.Customers;
 @using SmartStore.Services.Stores;
+@using SmartStore.Core;
 
 @{
     var currentCustomer = this.WorkContext.CurrentCustomer;
@@ -11,7 +12,7 @@
 	string communityUrl = (currentLanguageCode == "de" ? 
 		"http://community.smartstore.com" :
         "http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
-    string docsUrl = "http://docs.smartstore.com/display/SMNET25/SmartStore.NET+Documentation+Home";
+    string docsUrl = GenerateHelpUrl("");
 	var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
 }
 
@@ -33,7 +34,7 @@
 			<div class="btn-group pull-right">
 				<a id="current-user" class="btn navbar-tool dropdown-toggle" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
 					<em class="fa-stack fa-lg">
-						<i class="fa fa-circle fa-stack-2x" style="x-color: #afbfff"></i>
+						<i class="fa fa-circle fa-stack-2x"></i>
 						<i class="fa fa-user fa-stack-1x fa-inverse" style="color: #3b50ce"></i>
 					</em>
 				</a>

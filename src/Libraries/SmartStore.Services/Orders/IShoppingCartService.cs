@@ -58,18 +58,25 @@ namespace SmartStore.Services.Orders
 			Product product, string selectedAttributes,
             decimal customerEnteredPrice, int quantity);
 
-        /// <summary>
-        /// Validates shopping cart item attributes
-        /// </summary>
+		/// <summary>
+		/// Validates shopping cart item attributes
+		/// </summary>
 		/// <param name="customer">The customer</param>
-        /// <param name="shoppingCartType">Shopping cart type</param>
+		/// <param name="shoppingCartType">Shopping cart type</param>
 		/// <param name="product">Product</param>
-        /// <param name="selectedAttributes">Selected attributes</param>
+		/// <param name="selectedAttributes">Selected attributes</param>
+		/// <param name="combination">The product variant attribute combination instance (reduces database roundtrips)</param>
 		/// <param name="quantity">Quantity</param>
 		/// <param name="bundleItem">Product bundle item</param>
-        /// <returns>Warnings</returns>
-		IList<string> GetShoppingCartItemAttributeWarnings(Customer customer, ShoppingCartType shoppingCartType,
-			Product product, string selectedAttributes, int quantity = 1, ProductBundleItem bundleItem = null);
+		/// <returns>Warnings</returns>
+		IList<string> GetShoppingCartItemAttributeWarnings(
+			Customer customer, 
+			ShoppingCartType shoppingCartType,
+			Product product, 
+			string selectedAttributes, 
+			int quantity = 1, 
+			ProductBundleItem bundleItem = null,
+			ProductVariantAttributeCombination combination = null);
 
         /// <summary>
         /// Validates shopping cart item (gift card)

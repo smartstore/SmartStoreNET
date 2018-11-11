@@ -44,14 +44,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public Address GetBillingAddress(int key)
+		[WebApiQueryable]
+		public SingleResult<Address> GetBillingAddress(int key)
 		{
-			return GetExpandedProperty<Address>(key, x => x.BillingAddress);
+			return GetRelatedEntity(key, x => x.BillingAddress);
 		}
 
-		public Address GetShippingAddress(int key)
+		[WebApiQueryable]
+		public SingleResult<Address> GetShippingAddress(int key)
 		{
-			return GetExpandedProperty<Address>(key, x => x.ShippingAddress);
+			return GetRelatedEntity(key, x => x.ShippingAddress);
 		}
 
 		//public Language GetLanguage(int key)
@@ -67,25 +69,19 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IQueryable<Order> GetOrders(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Order>>(key, x => x.Orders);
-
-			return entity.Orders.AsQueryable();
+			return GetRelatedCollection(key, x => x.Orders);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ReturnRequest> GetReturnRequests(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ReturnRequest>>(key, x => x.ReturnRequests);
-
-			return entity.ReturnRequests.AsQueryable();
+			return GetRelatedCollection(key, x => x.ReturnRequests);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<Address> GetAddresses(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Address>>(key, x => x.Addresses);
-
-			return entity.Addresses.AsQueryable();
+			return GetRelatedCollection(key, x => x.Addresses);
 		}
 
 		// actions

@@ -34,10 +34,25 @@
         toggleShipping();
         toggleTax();
         
-    	// show/hide homepage display order
+    	// toggle homepage display order
     	$('#ShowOnHomePage').change(function () {
     		$('#pnlHomePageDisplayOrder').toggle($(this).is(':checked'));
-        }).trigger('change');
+    	}).trigger('change');
+
+    	// add required products
+    	$(document).on('click', '#SearchRequiredProductsButton', function () {
+    		$('#@(Html.FieldIdFor(x => x.RequiredProductIds))').entityPicker('loadDialog', {
+    			url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+    			caption: '@T("Admin.Catalog.Products.Fields.RequireOtherProducts")',
+    			returnValueDelimiter: ',',
+    			onLoadDialogBefore: function () {
+    				$('#SearchRequiredProductsButton').button('loading').prop('disabled', true);
+    			},
+    			onLoadDialogComplete: function () {
+    				$('#SearchRequiredProductsButton').prop('disabled', false).button('reset');
+    			}
+    		});
+    	});
     });
 
     function toggleProductType() {
@@ -191,14 +206,14 @@
 
 <div style="margin-bottom: 30px; overflow: hidden;">
 	<table class="adminContent">
-		@if (Model.Id > 0)
+		@if (Model.Id != 0)
 		{
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.Id)
 				</td>
 				<td class="adminData">
-					@Model.Id.ToString()
+					@Html.DisplayFor(model => model.Id)
 					@Html.ValidationMessageFor(model => model.Id)
 				</td>
 			</tr>
@@ -465,6 +480,11 @@
 			</td>
 			<td class="adminData">
 				@Html.EditorFor(model => model.RequiredProductIds)
+
+				<button type="button" class="btn" id="SearchRequiredProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
+					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+				</button>
+
 				@Html.ValidationMessageFor(model => model.RequiredProductIds)
 			</td>
 		</tr>
@@ -579,7 +599,7 @@
 				@Html.SmartLabelFor(model => model.UserAgreementText)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.UserAgreementText)
+				@Html.EditorFor(model => model.UserAgreementText, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.UserAgreementText)
 			</td>
 		</tr>
@@ -598,7 +618,7 @@
 			</td>
 			<td class="adminData">
 				@Html.EditorFor(model => model.SampleDownloadId)
-				@*@Html.ValidationMessageFor(model => model.SampleDownloadId)*@
+				@Html.ValidationMessageFor(model => model.SampleDownloadId)
 			</td>
 		</tr>
 	</table>

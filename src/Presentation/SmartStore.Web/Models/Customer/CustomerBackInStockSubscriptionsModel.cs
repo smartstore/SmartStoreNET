@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core;
-using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Customer
 {

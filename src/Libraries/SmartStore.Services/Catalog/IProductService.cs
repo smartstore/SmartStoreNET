@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog
 {
@@ -109,7 +108,21 @@ namespace SmartStore.Services.Catalog
 		/// <param name="gtin">GTIN</param>
         /// <returns>Product</returns>
 		Product GetProductByGtin(string gtin);
-        
+
+		/// <summary>
+		/// Gets a product by manufacturer part number (MPN)
+		/// </summary>
+		/// <param name="manufacturerPartNumber">Manufacturer part number</param>
+		/// <returns>Product</returns>
+		Product GetProductByManufacturerPartNumber(string manufacturerPartNumber);
+
+		/// <summary>
+		/// Gets a product by name
+		/// </summary>
+		/// <param name="name">Product name</param>
+		/// <returns>Product</returns>
+		Product GetProductByName(string name);
+
 		/// <summary>
 		/// Adjusts inventory
 		/// </summary>
@@ -156,11 +169,25 @@ namespace SmartStore.Services.Catalog
         void UpdateHasDiscountsApplied(Product product);
 
 		/// <summary>
-		/// Creates a RSS feed with recently added products
+		/// Get product tags by product identifiers
 		/// </summary>
-		/// <param name="urlHelper">UrlHelper to generate URLs</param>
-		/// <returns>SmartSyndicationFeed object</returns>
-		SmartSyndicationFeed CreateRecentlyAddedProductsRssFeed(UrlHelper urlHelper);
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Map of product tags</returns>
+		Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds);
+
+		/// <summary>
+		/// Get applied discounts by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Map of applied discounts</returns>
+		Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds);
+
+		/// <summary>
+		/// Get product specification attributes by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Map of product specification attributes</returns>
+		Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds);
 
         #endregion
 
@@ -282,7 +309,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="customer">Filter tier prices by customer</param>
 		/// <param name="storeId">Filter tier prices by store</param>
 		/// <returns>Map of tier prices</returns>
-		Multimap<int, TierPrice> GetTierPrices(int[] productIds, Customer customer = null, int storeId = 0);
+		Multimap<int, TierPrice> GetTierPricesByProductIds(int[] productIds, Customer customer = null, int storeId = 0);
 
         /// <summary>
         /// Inserts a tier price
@@ -312,6 +339,14 @@ namespace SmartStore.Services.Catalog
         /// <param name="productId">The product identifier</param>
         /// <returns>Product pictures</returns>
         IList<ProductPicture> GetProductPicturesByProductId(int productId);
+
+		/// <summary>
+		/// Get product pictures by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <param name="onlyFirstPicture">Whether to only load the first picture for each product</param>
+		/// <returns>Product pictures</returns>
+		Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false);
 
         /// <summary>
         /// Gets a product picture
@@ -368,6 +403,14 @@ namespace SmartStore.Services.Catalog
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <returns>List of bundle items</returns>
 		IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false);
+
+		/// <summary>
+		/// Get bundle items by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Map of bundle items</returns>
+		Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false);
 
 		#endregion
 

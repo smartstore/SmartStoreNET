@@ -1,59 +1,59 @@
 ﻿@model BestCustomersReportModel
-
 @using Telerik.Web.Mvc.UI
 
-    <table width="100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StartDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.OrderStatusId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PaymentStatusId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShippingStatusId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("ShippingStatusId", Model.AvailableShippingStatuses)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <button type="submit" id="search-best-customers-numberoforders-grid" class="btn"><i class="fa fa-list"></i>&nbsp;@T("Admin.Customers.Reports.RunReport")</button>
-            </td>
-        </tr>
-    </table>
-    <p>
-    </p>
+ <table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.StartDate)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.StartDate)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EndDate)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => Model.EndDate)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.OrderStatusId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses, T("Admin.Common.All"))
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PaymentStatusId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses, T("Admin.Common.All"))
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.ShippingStatusId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("ShippingStatusId", Model.AvailableShippingStatuses, T("Admin.Common.All"))
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
+			<button type="submit" id="search-best-customers-numberoforders-grid" class="btn"><i class="fa fa-list"></i>&nbsp;@T("Admin.Customers.Reports.RunReport")</button>
+		</td>
+	</tr>
+</table>
+
+<p></p>
+
     <table class="adminContent">
         <tr>
             <td>

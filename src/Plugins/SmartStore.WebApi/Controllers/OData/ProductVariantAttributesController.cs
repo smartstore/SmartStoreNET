@@ -33,17 +33,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public ProductAttribute GetProductAttribute(int key)
+		[WebApiQueryable]
+		public SingleResult<ProductAttribute> GetProductAttribute(int key)
 		{
-			return GetExpandedProperty<ProductAttribute>(key, x => x.ProductAttribute);
+			return GetRelatedEntity(key, x => x.ProductAttribute);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductVariantAttributeValue> GetProductVariantAttributeValues(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductVariantAttributeValue>>(key, x => x.ProductVariantAttributeValues);
-
-			return entity.ProductVariantAttributeValues.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductVariantAttributeValues);
 		}
 	}
 }

@@ -1,0 +1,297 @@
+﻿@using SmartStore.Core.Domain.DataExchange
+@using SmartStore.Services.DataExchange.Export
+@using SmartStore.Admin.Models.DataExchange
+@model ExportProfileModel
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.FolderName)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.FolderName, new { @class = "input-large" })
+			@Html.ValidationMessageFor(x => x.FolderName)
+		</td>
+	</tr>
+	@if (Model.Provider.IsFileBasedExport)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FileNamePattern)
+			</td>
+			<td class="adminData">
+				<div>
+					@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
+					@Html.ValidationMessageFor(x => x.FileNamePattern)
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<div>
+					<a id="FileNamePatternDescriptionLink" href="javascript:void(0)">@T("Admin.Common.Show")&hellip;</a>
+					<div id="FileNamePatternDescription" class="btn-below hide">
+						@FileNamePatternDescription()
+					</div>
+				</div>
+
+				<div class="clear"></div>
+				<div id="FileNamePatternExample" class="btn-below">
+					<button type="button" class="btn btn-small pull-left">
+						<i class="fa fa-refresh"></i>&nbsp;@T("Common.Example")
+					</button>
+					<span class="pull-left">&nbsp;&nbsp;</span>
+					<div class="pull-left" style="padding-top: 4px;">@Model.FileNamePatternExample</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CreateZipArchive)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.CreateZipArchive)
+				@Html.ValidationMessageFor(x => x.CreateZipArchive)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.EmailAccountId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.EmailAccountId)
+			</td>
+		</tr>
+		<tr id="CompletedEmailAddressesContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
+			</td>
+			<td class="adminData">
+				@Html.HiddenFor(model => model.CompletedEmailAddresses)
+				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Cleanup)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Cleanup)
+				@Html.ValidationMessageFor(x => x.Cleanup)
+			</td>
+		</tr>
+	}
+</table>
+
+<p>&nbsp;</p>
+
+@if (Model.Provider.IsFileBasedExport)
+{
+	<div class="admin-config-group">
+		<div class="head">@T("Admin.DataExchange.Export.Deployment.ProfilesTitle")</div>
+	</div>
+
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
+	</div>
+
+	if (!Model.Deployments.Any())
+	{
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+			@T("Admin.DataExchange.Export.Deployment.NoProfiles")
+		</div>
+	}
+
+	if (Model.Deployments.Count > 0)
+	{
+		<div>
+			<table id="export-deployment-list" class="table admin-table profile-list">
+				<thead>
+					<tr>
+						<th>@T("Admin.DataExchange.Export.Deployment.Name")</th>
+						<th>@T("Admin.DataExchange.Export.Deployment.PublishingTarget")</th>
+						<th class="ac">@T("Common.Enabled")</th>
+						<th class="ac">@T("Admin.DataExchange.Export.ExportFiles")</th>
+						<th>@T("Admin.Common.LastRun")</th>
+						<th>@T("Admin.Common.Actions")</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var deployment in Model.Deployments)
+					{
+						var result = deployment.LastResult;
+						<tr class="@(deployment.Enabled ? "" : "disabled")" data-deployment-id="@deployment.Id">
+							<td>
+								<div>
+									<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
+								</div>
+								<div class="muted">
+									<i class="fa @(deployment.DeploymentType.GetIconClass())"></i>&nbsp;@deployment.DeploymentTypeName
+								</div>
+							</td>
+							<td>
+								@if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
+								{
+									@deployment.FileSystemPath.NaIfEmpty()
+								}
+								else if (deployment.DeploymentType == ExportDeploymentType.Email)
+								{
+									@deployment.EmailAddresses.NaIfEmpty()
+								}
+								else if (deployment.DeploymentType == ExportDeploymentType.Http || deployment.DeploymentType == ExportDeploymentType.Ftp)
+								{
+									@deployment.Url.NaIfEmpty()
+								}
+								else if (deployment.DeploymentType == ExportDeploymentType.PublicFolder)
+								{
+									@deployment.PublicFolderUrl.NaIfEmpty()
+								}
+							</td>
+							<td class="ac">
+								@Html.SymbolForBool(deployment.Enabled)
+							</td>
+							<td class="ac">
+								@Html.Partial("ProfileFileCount", deployment.FileCount)
+							</td>
+							<td>
+								@if (result == null)
+								{
+									<div class="muted">@T("Common.Never")</div>
+								}
+								else if (result.Succeeded)
+								{
+									<div><span>@(T("Admin.Common.SuccessfulOn")): </span><span>@result.Execution.ToString("g")</span></div>
+									<div class="muted">@result.ExecutionPretty</div>
+								}
+								else
+								{
+									<div>@result.Execution.ToString("g")</div>
+									<div class="text-error"><strong>@T("Common.Error"): </strong> <span>@result.Error</span></div>
+								}
+							</td>
+							<td>
+								<button type="button" data-url="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-small btn-danger delete-depoyment">
+									@T("Common.Delete")
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+
+	<a href="@Url.Action("CreateDeployment", new { id = Model.Id })" class="btn btn-warning">
+		<i class="fa fa-plus"></i>&nbsp;&nbsp;@T("Admin.DataExchange.AddNewProfile")
+	</a>
+}
+else
+{
+	<div class="alert alert-info">
+		@Html.Raw(T("Admin.DataExchange.Export.NonFileBasedExport.Note"))
+	</div>
+}
+
+<div id="deployment-file-dialog" class="modal modal-xlarge hide fade" tabindex="-1">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
+		<h4 class="caption">@T("Admin.DataExchange.Export.ExportFiles")</h4>
+	</div>
+	<div class="modal-body"></div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+	</div>
+</div>
+
+@helper FileNamePatternDescription()
+{
+	<table class="table admin-table" style="width: 560px;">
+		<thead>
+			<tr>
+				<th>@T("Admin.Common.Placeholder")</th>
+				<th>@T("Common.Description")</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>%Profile.Id%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(0)</td>
+			</tr>
+			<tr>
+				<td>%Profile.FolderName%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(1)</td>
+			</tr>
+			<tr>
+				<td>%Profile.SeoName%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(2)</td>
+			</tr>
+			<tr>
+				<td>%Store.Id%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(3)</td>
+			</tr>
+			<tr>
+				<td>%Store.SeoName%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(4)</td>
+			</tr>
+			<tr>
+				<td>%File.Index%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(5)</td>
+			</tr>
+			<tr>
+				<td>%Random.Number%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(6)</td>
+			</tr>
+			<tr>
+				<td>%Timestamp%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(7)</td>
+			</tr>
+		</tbody>
+	</table>
+}
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		// show/hide file name pattern descriptions
+		$('#FileNamePatternDescriptionLink').click(function () {
+			var descriptions = $('#FileNamePatternDescription');
+			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.Common.Show")' : '@T("Admin.Common.Hide")') + '…');
+			descriptions.toggle();
+		});
+
+		// delete deployment
+		$('#export-deployment-list').find('.delete-depoyment').click(function () {
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
+		});
+
+		// show deployment file dialog
+		$(document).on('click', '.export-file-count', function (e) {
+			e.preventDefault();
+			var fileDialog = $('#deployment-file-dialog'),
+				id = $(this).closest('tr').attr('data-deployment-id');
+
+			fileDialog.find('.modal-body').empty();
+
+			$({}).doAjax({
+				type: 'GET',
+				url: '@Url.Action("ProfileFileDetails")?profileId=0&deploymentId=' + id,
+				smallIcon: fileDialog.find('.modal-body'),
+				callbackSuccess: function (response) {
+					fileDialog.find('.modal-body').html(response);
+				}
+			});
+
+			fileDialog.modal('show');
+			return false;
+		});
+
+	});
+</script>

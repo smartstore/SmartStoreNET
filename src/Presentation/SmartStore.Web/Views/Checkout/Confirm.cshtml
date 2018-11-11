@@ -8,8 +8,8 @@
     //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 
-    string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal' href='javascript:void(0)'>";
-    string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal' href='javascript:void(0)'>";
+    string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+    string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
     string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
 }
 @section orderProgress{
@@ -27,18 +27,22 @@
                 @Html.Raw(@T("Checkout.ConfirmHint"))
             </div>
 
-            <input id="customercommenthidden" type="hidden" name="customercommenthidden" />
+            <input type="hidden" id="customercommenthidden" name="customercommenthidden" />
+			<input type="hidden" id="SubscribeToNewsLetterHidden" name="SubscribeToNewsLetterHidden" />
+			<input type="hidden" id="AcceptThirdPartyEmailHandOverHidden" name="AcceptThirdPartyEmailHandOverHidden" />
 
-            if (Model.TermsOfServiceEnabled)
-            {
+			if (Model.TermsOfServiceEnabled)
+			{
             <div class="terms-of-service alert alert-info">
                 <script type="text/javascript">
                     $(document).ready(function () {
-                        $("#terms-of-service-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
+                        $("#terms-of-service-trigger").click(function (event) {
+                            event.preventDefault();
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" class="modal-flex-fill-area" />');
                         });
-                        $("#disclaimer-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
+                        $("#disclaimer-trigger").click(function (event) {
+                            event.preventDefault();
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" class="modal-flex-fill-area" />');
                         });
                     });
                 </script>
@@ -48,8 +52,8 @@
                 </label>
 
                 <!-- Terms of service -->
-                <div id="terms-of-service-modal" class="modal hide fade" tabindex="-1" style="width: 650px">
-                    <div class="modal-body" style="min-height: 300px;overflow:hidden"></div>
+                <div id="terms-of-service-modal" class="modal modal-flex hide fade" tabindex="-1" style="width: 650px">
+                    <div class="modal-body"></div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
                     </div>
@@ -74,7 +78,7 @@
 							<ul>
 								@for (int i = 0; i < Model.Warnings.Count; i++)
 								{
-									<li>@Model.Warnings[i]</li>
+									<li>@Html.Raw(Model.Warnings[i])</li>
 								}
 							</ul>
 						</div>
@@ -90,11 +94,11 @@
         </div>
 
         @if (Model.ShowConfirmOrderLegalHint) 
-            { 
-                <div class="confirm-order-legal-hint alert alert-info">
-                    @T("OrderSummary.ConfirmOrderLegalHint")
-                </div>
-            }
+        { 
+            <div class="confirm-order-legal-hint alert alert-info">
+                @T("OrderSummary.ConfirmOrderLegalHint")
+            </div>
+        }
 
         <div class="confirm-order">
             
@@ -109,26 +113,59 @@
                         $(function () {
                             var checkoutButton = $(".confirm-order-next-step-button");
                             checkoutButton.click(function () {
+                            	var termOfServiceOk = true,
+                            		userAgreementsOk = true,
+                            		esdRevocationWaiverOk = true;
 
-                                $("#customercommenthidden").val($("#CustomerComment").val());
+                            	$("#customercommenthidden").val($("#CustomerComment").val());
+                            	$('#SubscribeToNewsLetterHidden').val($('input[name=SubscribeToNewsLetter]').is(':checked'));
+                            	$('#AcceptThirdPartyEmailHandOverHidden').val($('input[name=AcceptThirdPartyEmailHandOver]').is(':checked'));
 
-                                //terms of services
-                                var termOfServiceOk = true;
+								// terms of services
                                 @if (Model.TermsOfServiceEnabled)
                                 {
-                                        <text>
+									<text>
                                     if (!$('#termsofservice').is(':checked')) {
-                                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
+                                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString('"', false)', "error");
                                         termOfServiceOk = false;
                                         $.scrollTo($('#termsofservice'), 800, { offset: -70 });
                                     }
                                     else {
                                         termOfServiceOk = true;
                                     }
-                                        </text>
+									</text>
                                 }
+
+                            	// agree user agreement for downloadable products
+                            	$('table.table-order-products').find('input[name^=AgreeUserAgreement]').each(function () {
+                            		if (!$(this).is(':checked')) {
+                            			userAgreementsOk = false;
+                            			displayNotification('@T("Checkout.DownloadUserAgreement.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
+                            			if (termOfServiceOk) {
+                            				$.scrollTo($('table.table-order-products'), 800, { offset: -20 });
+                            			}
+                            			return false;
+                            		}
+                            	});
+
+                            	// agree esd revocation waiver
+								@if(Model.ShowEsdRevocationWaiverBox)
+								{
+									<text>
+                            		$('table.table-order-products').find('input[name^=AgreeEsdRevocationWaiver]').each(function () {
+                            			if (!$(this).is(':checked')) {
+                            				esdRevocationWaiverOk = false;
+                            				displayNotification('@T("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
+                            				if (termOfServiceOk) {
+                            					$.scrollTo($('table.table-order-products'), 800, { offset: -20 });
+                            				}
+                            				return false;
+                            			}
+                            		});
+                            		</text>
+								}
 								
-                            	if (termOfServiceOk) {
+                            	if (termOfServiceOk && userAgreementsOk && esdRevocationWaiverOk) {
                             		var submitOrderEvent = jQuery.Event('submitOrder');
                             		submitOrderEvent.isOrderValid = true;
                             		submitOrderEvent.isMobile = false;

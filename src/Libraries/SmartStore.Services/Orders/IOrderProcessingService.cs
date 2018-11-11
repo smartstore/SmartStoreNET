@@ -266,5 +266,14 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Shopping cart</param>
         /// <returns>true - OK; false - minimum order total amount is not reached</returns>
 		bool ValidateMinOrderTotalAmount(IList<OrganizedShoppingCartItem> cart);
+
+		/// <summary>
+		/// Adds a shipment to an order
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <param name="trackingNumber">Tracking number</param>
+		/// <param name="quantities">Quantities by order item identifiers. <c>null</c> to use the remaining total number of products for each order item.</param>
+		/// <returns>New shipment, <c>null</c> if no shipment was added</returns>
+		Shipment AddShipment(Order order, string trackingNumber, Dictionary<int, int> quantities);
     }
 }

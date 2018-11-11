@@ -74,13 +74,23 @@ namespace SmartStore.Services.Catalog
 			if (product.HasDiscountsApplied)
             {
                 //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
-				foreach (var discount in product.AppliedDiscounts)
-                {
-					if (discount.DiscountType == DiscountType.AssignedToSkus && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+				IEnumerable<Discount> appliedDiscounts = null;
+
+				if (context == null)
+					appliedDiscounts = product.AppliedDiscounts;
+				else
+					appliedDiscounts = context.AppliedDiscounts.Load(product.Id);
+
+				if (appliedDiscounts != null)
+				{
+					foreach (var discount in appliedDiscounts)
 					{
-						result.Add(discount);
+						if (discount.DiscountType == DiscountType.AssignedToSkus && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+						{
+							result.Add(discount);
+						}
 					}
-                }
+				}
             }
 
             //performance optimization. load all category discounts just to ensure that we have at least one
@@ -144,7 +154,8 @@ namespace SmartStore.Services.Catalog
 			}
 			else
 			{
-				tierPrices = context.TierPrices.Load(product.Id);
+				tierPrices = context.TierPrices.Load(product.Id)
+					.RemoveDuplicatedQuantities();
 			}
 
 			if (tierPrices == null)
@@ -230,16 +241,22 @@ namespace SmartStore.Services.Catalog
 			// 2. find attribute combination for selected attributes and merge it
 			if (!isBundle && selectedAttributes.Count > 0)
 			{
-				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
+				var attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
 					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
 
 				var combinations = context.AttributeCombinations.Load(product.Id);
 
-				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml, attributes));
+				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
 				if (selectedCombination != null && selectedCombination.IsActive && selectedCombination.Price.HasValue)
 				{
 					product.MergedDataValues = new Dictionary<string, object> { { "Price", selectedCombination.Price.Value } };
+
+					if (selectedCombination.BasePriceAmount.HasValue)
+						product.MergedDataValues.Add("BasePriceAmount", selectedCombination.BasePriceAmount.Value);
+
+					if (selectedCombination.BasePriceBaseAmount.HasValue)
+						product.MergedDataValues.Add("BasePriceBaseAmount", selectedCombination.BasePriceBaseAmount.Value);
 				}
 			}
 
@@ -269,8 +286,9 @@ namespace SmartStore.Services.Catalog
 			var context = new PriceCalculationContext(products,
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
-				x => _productService.GetTierPrices(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
-				x => _categoryService.GetProductCategoriesByProductIds(x, true)
+				x => _productService.GetTierPricesByProductIds(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
+				x => _categoryService.GetProductCategoriesByProductIds(x, true),
+				x => _productService.GetAppliedDiscountsByProductIds(x)
 			);
 
 			return context;
@@ -469,7 +487,8 @@ namespace SmartStore.Services.Catalog
 
 			if (!displayFromMessage && product.HasTierPrices && !isBundlePerItemPricing)
 			{
-				var tierPrices = context.TierPrices.Load(product.Id);
+				var tierPrices = context.TierPrices.Load(product.Id)
+					.RemoveDuplicatedQuantities();
 
 				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
 			}
@@ -575,6 +594,7 @@ namespace SmartStore.Services.Catalog
 			_productAttributeParser
 				.ParseProductVariantAttributeValues(attributesXml)
 				.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+				.ToList()
 				.Each(x =>
 				{
 					var linkedProduct = _productService.GetProductById(x.LinkedProductId);
@@ -730,7 +750,7 @@ namespace SmartStore.Services.Catalog
 					{
 						foreach (var bundleItem in shoppingCartItem.ChildItems)
 						{
-							bundleItem.Item.Product.MergeWithCombination(bundleItem.Item.AttributesXml);
+							bundleItem.Item.Product.MergeWithCombination(bundleItem.Item.AttributesXml, _productAttributeParser);
 						}
 
 						var bundleItems = shoppingCartItem.ChildItems.Where(x => x.BundleItemData.IsValid()).Select(x => x.BundleItemData).ToList();
@@ -742,13 +762,18 @@ namespace SmartStore.Services.Catalog
                 {
 					product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, _productAttributeParser);
 
-					decimal attributesTotalPrice = decimal.Zero;
-					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
+					var attributesTotalPrice = decimal.Zero;
 
-					if (pvaValues != null)
+					var pvaValuesEnum = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
+
+					if (pvaValuesEnum != null)
 					{
+						var pvaValues = pvaValuesEnum.ToList();
+
 						foreach (var pvaValue in pvaValues)
+						{
 							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+						}
 					}
 
 					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
@@ -790,7 +815,7 @@ namespace SmartStore.Services.Catalog
             {
                 decimal attributesTotalPrice = decimal.Zero;
 
-                var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
+                var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml).ToList();
                 foreach (var pvaValue in pvaValues)
                 {
                     attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);

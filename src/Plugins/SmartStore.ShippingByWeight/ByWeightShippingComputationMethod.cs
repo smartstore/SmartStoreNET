@@ -3,15 +3,16 @@ using System.Data.Entity.Migrations;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
-using SmartStore.ShippingByWeight.Data;
-using SmartStore.ShippingByWeight.Data.Migrations;
-using SmartStore.ShippingByWeight.Services;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
+using SmartStore.ShippingByWeight.Data;
+using SmartStore.ShippingByWeight.Data.Migrations;
+using SmartStore.ShippingByWeight.Services;
 
 namespace SmartStore.ShippingByWeight
 {
@@ -32,6 +33,7 @@ namespace SmartStore.ShippingByWeight
         #endregion
 
         #region Ctor
+
         public ByWeightShippingComputationMethod(IShippingService shippingService,
 			IStoreContext storeContext,
             IShippingByWeightService shippingByWeightService,
@@ -51,12 +53,17 @@ namespace SmartStore.ShippingByWeight
             this._localizationService = localizationService;
             this._priceFormatter = priceFormatter;
             this._services = services;
-        }
-        #endregion
 
-        #region Utilities
+			T = NullLocalizer.Instance;
+		}
 
-        private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int storeId, int countryId, string zip)
+		public Localizer T { get; set; }
+
+		#endregion
+
+		#region Utilities
+
+		private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int storeId, int countryId, string zip)
         {
             decimal? shippingTotal = null;
 
@@ -109,41 +116,41 @@ namespace SmartStore.ShippingByWeight
         /// <summary>
         ///  Gets available shipping options
         /// </summary>
-        /// <param name="getShippingOptionRequest">A request for getting shipping options</param>
+        /// <param name="request">A request for getting shipping options</param>
         /// <returns>Represents a response of getting shipping rate options</returns>
-        public GetShippingOptionResponse GetShippingOptions(GetShippingOptionRequest getShippingOptionRequest)
+        public GetShippingOptionResponse GetShippingOptions(GetShippingOptionRequest request)
         {
-            if (getShippingOptionRequest == null)
+            if (request == null)
                 throw new ArgumentNullException("getShippingOptionRequest");
 
             var response = new GetShippingOptionResponse();
 
-            if (getShippingOptionRequest.Items == null || getShippingOptionRequest.Items.Count == 0)
+            if (request.Items == null || request.Items.Count == 0)
             {
-                response.AddError("No shipment items");
+                response.AddError(T("Admin.System.Warnings.NoShipmentItems"));
                 return response;
             }
-
-			int storeId = _storeContext.CurrentStore.Id;
+			
+			int storeId = request.StoreId > 0 ? request.StoreId : _storeContext.CurrentStore.Id;
 			decimal subTotal = decimal.Zero;
             int countryId = 0;
             string zip = null;
 
-			if (getShippingOptionRequest.ShippingAddress != null)
+			if (request.ShippingAddress != null)
 			{
-				countryId = getShippingOptionRequest.ShippingAddress.CountryId ?? 0;
-                zip = getShippingOptionRequest.ShippingAddress.ZipPostalCode;
+				countryId = request.ShippingAddress.CountryId ?? 0;
+                zip = request.ShippingAddress.ZipPostalCode;
 			}
             
-            foreach (var shoppingCartItem in getShippingOptionRequest.Items)
+            foreach (var shoppingCartItem in request.Items)
             {
                 if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
                     continue;
                 subTotal += _priceCalculationService.GetSubTotal(shoppingCartItem, true);
             }
-            decimal weight = _shippingService.GetShoppingCartTotalWeight(getShippingOptionRequest.Items);
+            decimal weight = _shippingService.GetShoppingCartTotalWeight(request.Items);
 
-            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest.Customer);
+            var shippingMethods = _shippingService.GetAllShippingMethods(request);
             foreach (var shippingMethod in shippingMethods)
             {
                 var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight, zip);

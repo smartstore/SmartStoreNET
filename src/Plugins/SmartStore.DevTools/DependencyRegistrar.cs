@@ -1,12 +1,5 @@
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Web.Mvc;
-using System.Reflection;
 using Autofac;
-using Autofac.Core;
 using Autofac.Integration.Mvc;
-using SmartStore.Core.Plugins;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
@@ -16,13 +9,13 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.DevTools
 {
-    public class DependencyRegistrar : IDependencyRegistrar
+	public class DependencyRegistrar : IDependencyRegistrar
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			builder.RegisterType<ProfilerService>().As<IProfilerService>().InstancePerRequest();
 
-			if (isActiveModule)
+			if (isActiveModule && DataSettings.DatabaseIsInstalled())
 			{
 				// intercept ALL public store controller actions
 				builder.RegisterType<ProfilerFilter>().AsActionFilterFor<SmartController>();

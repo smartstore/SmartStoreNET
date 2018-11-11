@@ -1,8 +1,8 @@
 ﻿﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
-using Telerik.Web.Mvc;
+﻿using SmartStore.Web.Framework.Modelling;
+﻿using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -51,9 +51,7 @@ namespace SmartStore.Admin.Models.Catalog
         public string GoDirectlyToSku { get; set; }
 
         public bool DisplayProductPictures { get; set; }
-        public bool DisplayPdfExport { get; set; }
 		public int GridPageSize { get; set; }
-		public int StoreCount { get; set; }
 
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }

@@ -258,7 +258,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("ReturnRequestStatusChanged.CustomerNotification", x =>
                 {
                     x.Subject = "%Store.Name%. Rücksendung - Status-Änderung";
-                    x.Body = templateHeader + "<p><a href=\"%Store.URL%\">%Store.Name%</a>&nbsp;<br /><br />Hallo %Customer.FullName%,</p> <p>der Status Ihrer R&uuml;cksendung&nbsp;#%ReturnRequest.ID% wurde aktualisiert.</p> <p></p> <p>Mit freundlichen Gr&uuml;&szlig;en,</p> <p></p> <p>Ihr&nbsp;%Store.Name% - Team</p>" + templateFooter;
+                    x.Body = templateHeader + "<p><a href=\"%Store.URL%\">%Store.Name%</a>&nbsp;<br /><br />Hallo %Customer.FullName%,</p> <p>der Status Ihrer R&uuml;cksendung&nbsp;#%ReturnRequest.ID% wurde aktualisiert: %ReturnRequest.Status%</p> <p></p> <p>Mit freundlichen Gr&uuml;&szlig;en,</p> <p></p> <p>Ihr&nbsp;%Store.Name% - Team</p>" + templateFooter;
                 })
                 .Alter("Service.EmailAFriend", x =>
                 {

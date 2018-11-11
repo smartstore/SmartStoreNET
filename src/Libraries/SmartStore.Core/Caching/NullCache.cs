@@ -7,8 +7,7 @@ namespace SmartStore.Core.Caching
     /// </summary>
     public partial class NullCache : ICacheManager
     {
-
-		private readonly static ICacheManager s_instance = new NullCache();
+		private static readonly ICacheManager s_instance = new NullCache();
 
 		public static ICacheManager Instance
 		{

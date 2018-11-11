@@ -1,8 +1,8 @@
-﻿@{
-    Layout = "";
-}
+﻿@using SmartStore.Web.Framework;
 @model SmartStore.Clickatell.Models.SmsClickatellModel
-@using SmartStore.Web.Framework;
+@{
+	Layout = "";
+}
 
 <div class="alert alert-info">
 	<button class="close" data-dismiss="alert">×</button>
@@ -69,8 +69,8 @@
         </tr>
         <tr>
             <td colspan="2">
-				<div class="caption-container">
-					<h3 class="bordered">@T("Plugins.Sms.Clickatell.SendTest.Hint")</h3>
+				<div class="admin-config-group">
+					<div class="title">@T("Plugins.Sms.Clickatell.SendTest.Hint")</div>
 				</div>
             </td>
         </tr>

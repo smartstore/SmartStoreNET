@@ -22,8 +22,8 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -255,8 +255,8 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
                 return AccessDeniedView();
 
-            //restart application
-			_services.WebHelper.RestartAppDomain();
+            // restart application
+			_services.WebHelper.RestartAppDomain(aggressive: true);
 
             return RedirectToAction("List");
         }
@@ -561,8 +561,7 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var pluginDescriptor = _pluginFinder.GetPluginDescriptors()
-				.Where(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
-				.FirstOrDefault();
+				.FirstOrDefault(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase));
 
 			if (pluginDescriptor == null)
 			{
@@ -575,12 +574,7 @@ namespace SmartStore.Admin.Controllers
 				NotifySuccess(T("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			}
 
-			if (returnUrl.IsEmpty())
-			{
-				return RedirectToAction("List");
-			}
-
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
 		}
 
 		public ActionResult UpdateAllStringResources()

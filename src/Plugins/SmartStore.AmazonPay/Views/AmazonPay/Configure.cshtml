@@ -9,21 +9,19 @@
 	Html.AddScriptParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Scripts/smartstore.amazonpay.js"));
 }
 
-<table class="plugin-intro-table">
-	<tr>
-		<td>
-			<div class="alert alert-info">
-				<button class="close" data-dismiss="alert">×</button>
-				@Html.Raw(@T("Plugins.Payments.AmazonPay.AdminInstruction"))
-			</div>
-		</td>
-		<td>
-			<a href="https://sellercentral-europe.amazon.com" target="_blank">
-				<img src="@Url.Content("~/Plugins/SmartStore.AmazonPay/Content/images/logo.gif")" alt="amazon payments" class="config-logo" />
-			</a>
-		</td>
-	</tr>
-</table>
+<div class="plugin-configuration">
+	<div>
+		<div class="alert alert-info">
+			<button class="close" data-dismiss="alert">×</button>
+			@Html.Raw(@T("Plugins.Payments.AmazonPay.AdminInstruction"))
+		</div>
+	</div>
+	<div>
+		<a href="https://sellercentral-europe.amazon.com" target="_blank">
+			<img src="@Url.Content("~/Plugins/SmartStore.AmazonPay/Content/images/logo.gif")" alt="amazon payments" class="config-logo" />
+		</a>
+	</div>
+</div>
 
 @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 

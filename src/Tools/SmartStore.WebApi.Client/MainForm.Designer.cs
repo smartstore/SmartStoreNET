@@ -64,10 +64,10 @@
 			this.txtUrl = new System.Windows.Forms.TextBox();
 			this.btnFileOpen = new System.Windows.Forms.Button();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			this.txtProductId = new System.Windows.Forms.TextBox();
-			this.lblProductId = new System.Windows.Forms.Label();
-			this.txtProductSku = new System.Windows.Forms.TextBox();
-			this.lblProductSku = new System.Windows.Forms.Label();
+			this.txtIdentfier1 = new System.Windows.Forms.TextBox();
+			this.lblIdentifier1 = new System.Windows.Forms.Label();
+			this.txtIdentfier2 = new System.Windows.Forms.TextBox();
+			this.lblIdentfier2 = new System.Windows.Forms.Label();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
@@ -433,47 +433,47 @@
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
-			// txtProductId
+			// txtIdentfier1
 			// 
-			this.txtProductId.Location = new System.Drawing.Point(633, 122);
-			this.txtProductId.Name = "txtProductId";
-			this.txtProductId.Size = new System.Drawing.Size(61, 21);
-			this.txtProductId.TabIndex = 36;
+			this.txtIdentfier1.Location = new System.Drawing.Point(595, 122);
+			this.txtIdentfier1.Name = "txtIdentfier1";
+			this.txtIdentfier1.Size = new System.Drawing.Size(61, 21);
+			this.txtIdentfier1.TabIndex = 36;
 			// 
-			// lblProductId
+			// lblIdentifier1
 			// 
-			this.lblProductId.AutoSize = true;
-			this.lblProductId.Location = new System.Drawing.Point(571, 125);
-			this.lblProductId.Name = "lblProductId";
-			this.lblProductId.Size = new System.Drawing.Size(58, 13);
-			this.lblProductId.TabIndex = 37;
-			this.lblProductId.Text = "Product ID";
+			this.lblIdentifier1.AutoSize = true;
+			this.lblIdentifier1.Location = new System.Drawing.Point(571, 125);
+			this.lblIdentifier1.Name = "lblIdentifier1";
+			this.lblIdentifier1.Size = new System.Drawing.Size(18, 13);
+			this.lblIdentifier1.TabIndex = 37;
+			this.lblIdentifier1.Text = "ID";
 			// 
-			// txtProductSku
+			// txtIdentfier2
 			// 
-			this.txtProductSku.Location = new System.Drawing.Point(781, 123);
-			this.txtProductSku.Name = "txtProductSku";
-			this.txtProductSku.Size = new System.Drawing.Size(113, 21);
-			this.txtProductSku.TabIndex = 38;
+			this.txtIdentfier2.Location = new System.Drawing.Point(751, 123);
+			this.txtIdentfier2.Name = "txtIdentfier2";
+			this.txtIdentfier2.Size = new System.Drawing.Size(200, 21);
+			this.txtIdentfier2.TabIndex = 38;
 			// 
-			// lblProductSku
+			// lblIdentfier2
 			// 
-			this.lblProductSku.AutoSize = true;
-			this.lblProductSku.Location = new System.Drawing.Point(714, 126);
-			this.lblProductSku.Name = "lblProductSku";
-			this.lblProductSku.Size = new System.Drawing.Size(66, 13);
-			this.lblProductSku.TabIndex = 39;
-			this.lblProductSku.Text = "Product SKU";
+			this.lblIdentfier2.AutoSize = true;
+			this.lblIdentfier2.Location = new System.Drawing.Point(668, 126);
+			this.lblIdentfier2.Name = "lblIdentfier2";
+			this.lblIdentfier2.Size = new System.Drawing.Size(82, 13);
+			this.lblIdentfier2.TabIndex = 39;
+			this.lblIdentfier2.Text = "SKU, Name etc.";
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1154, 812);
-			this.Controls.Add(this.txtProductSku);
-			this.Controls.Add(this.lblProductSku);
-			this.Controls.Add(this.txtProductId);
-			this.Controls.Add(this.lblProductId);
+			this.Controls.Add(this.txtIdentfier2);
+			this.Controls.Add(this.lblIdentfier2);
+			this.Controls.Add(this.txtIdentfier1);
+			this.Controls.Add(this.lblIdentifier1);
 			this.Controls.Add(this.btnFileOpen);
 			this.Controls.Add(this.txtFile);
 			this.Controls.Add(this.lblFile);
@@ -560,10 +560,10 @@
 		private System.Windows.Forms.Label lblFile;
 		private System.Windows.Forms.Button btnFileOpen;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
-		private System.Windows.Forms.TextBox txtProductId;
-		private System.Windows.Forms.Label lblProductId;
-		private System.Windows.Forms.TextBox txtProductSku;
-		private System.Windows.Forms.Label lblProductSku;
+		private System.Windows.Forms.TextBox txtIdentfier1;
+		private System.Windows.Forms.Label lblIdentifier1;
+		private System.Windows.Forms.TextBox txtIdentfier2;
+		private System.Windows.Forms.Label lblIdentfier2;
 	}
 }
 

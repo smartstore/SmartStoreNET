@@ -13,7 +13,6 @@ using SmartStore.Services;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.Plugins
 {

@@ -4,83 +4,93 @@
 
 @if (Model.Id > 0)
 {
-    <div style="margin: 10px 0px 10px 0px;" class="alert alert-info">
+    <div class="alert alert-info">
         <div>
             @T("Admin.Catalog.Products.AssociatedProducts.Note1")
             @T("Admin.Catalog.Products.AssociatedProducts.Note2")
         </div>
     </div>
-    
-    <div style="margin: 10px 0">    
-        <table class="adminContent">
-            <tr>
-                <td>
-                    @(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
-                        .Name("associatedproducts-grid")
-                        .DataKeys(keys =>
-                        {
-                            keys.Add(x => x.Id);
-                        })
-                        .DataBinding(dataBinding =>
-                        {
-                            dataBinding.Ajax()
-                                .Select("AssociatedProductList", "Product", new { productId = Model.Id })
-                                .Update("AssociatedProductUpdate", "Product")
-                                .Delete("AssociatedProductDelete", "Product");
-                        })
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.ProductName)
-                                .ReadOnly()
-								.Template(x => @Html.LabeledProductName(x.Id, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-								.ClientTemplate(@Html.LabeledProductName("Id", "ProductName"));
-                            columns.Bound(x => x.Sku)
-                                .ReadOnly();
-                            columns.Bound(x => x.Published)
-                                .ReadOnly()
-                                .Width(100)
-                                .Template(item => @Html.SymbolForBool(item.Published))
-                                .ClientTemplate(@Html.SymbolForBool("Published"))
-                                .Centered();
-                            columns.Bound(x => x.DisplayOrder)
-                                .Width(100)
-                                .Centered();
-                            columns.Command(commands =>
-                            {
-                                commands.Edit().Localize(T);
-                                commands.Delete().Localize(T);
-                            })
-                            .Width(180);
-                        })
-                        .EnableCustomBinding(true))
-                </td>
-            </tr>
-            <tr>
-                <td width="100%">
-                    <button type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" class="btn btn-warning" style="margin-top:3px;"
-                            onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
-                        <i class="fa fa-plus"></i>
-                        @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
-                    </button>
 
-                    <input type="submit" id="btnRefreshAssociatedProducts" name="btnRefreshAssociatedProducts" style="display: none" />
+	<p></p>   
 
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $('#btnRefreshAssociatedProducts').click(function () {
-                                //refresh grid
-                                var optionsGrid = $("#associatedproducts-grid");
-                                optionsGrid.data('tGrid').ajaxRequest();
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
+                    .Name("associatedproducts-grid")
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(x => x.Id);
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax()
+                            .Select("AssociatedProductList", "Product", new { productId = Model.Id })
+                            .Update("AssociatedProductUpdate", "Product")
+                            .Delete("AssociatedProductDelete", "Product");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.ProductName)
+                            .ReadOnly()
+							.Width(520)
+							.ClientTemplate(@Html.LabeledProductName("Id", "ProductName"));
+                        columns.Bound(x => x.Sku)
+                            .ReadOnly();
+                        columns.Bound(x => x.Published)
+                            .ReadOnly()
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Centered();
+                        columns.Command(commands =>
+                        {
+                            commands.Edit().Localize(T);
+                            commands.Delete().Localize(T);
+                        }).Width(220);
+                    })
+                    .EnableCustomBinding(true))
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" id="AddNewAssociatedProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
+                    <i class="fa fa-plus"></i>
+                    @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
+                </button>
 
-                                //return false to don't reload a page
-                                return false;
+                <script type="text/javascript">
+                    $(document).ready(function () {
+
+                    	$(document).on('click', '#AddNewAssociatedProductButton', function () {
+                        	$({}).entityPicker('loadDialog', {
+                            	url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+                        		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
+                        		onLoadDialogBefore: function () {
+                        			$('#AddNewAssociatedProductButton').button('loading').prop('disabled', true);
+                        		},
+                        		onLoadDialogComplete: function () {
+                        			$('#AddNewAssociatedProductButton').prop('disabled', false).button('reset');
+                        		},
+                            	onOkClicked: function (ids) {
+                            		$({}).doAjax({
+                            			type: 'POST',
+                            			url: '@Url.Action("AssociatedProductAdd")',
+                            			data: { "productId": @Model.Id, "selectedProductIds": ids },
+                            			callbackSuccess: function () {
+                            				$('#associatedproducts-grid').data('tGrid').ajaxRequest();
+                            			}
+                            		});
+                            		return true;
+                            	}
                             });
-                        });
-                    </script>
-                </td>
-            </tr>
-        </table>
-    </div>
+                    	});
+
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
 }
 else
 {

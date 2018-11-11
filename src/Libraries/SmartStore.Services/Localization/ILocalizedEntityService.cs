@@ -62,12 +62,14 @@ namespace SmartStore.Services.Localization
         /// <param name="keySelector">Key selector</param>
         /// <param name="localeValue">Locale value</param>
         /// <param name="languageId">Language ID</param>
-        void SaveLocalizedValue<T>(T entity,
+        void SaveLocalizedValue<T>(
+			T entity,
             Expression<Func<T, string>> keySelector,
             string localeValue,
             int languageId) where T : BaseEntity, ILocalizedEntity;
 
-        void SaveLocalizedValue<T, TPropType>(T entity,
+        void SaveLocalizedValue<T, TPropType>(
+		   T entity,
            Expression<Func<T, TPropType>> keySelector,
            TPropType localeValue,
            int languageId) where T : BaseEntity, ILocalizedEntity;

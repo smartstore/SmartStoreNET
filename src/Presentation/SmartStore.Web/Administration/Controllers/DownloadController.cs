@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -72,7 +73,7 @@ namespace SmartStore.Admin.Controllers
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
 			{
-				throw new ArgumentException("No file uploaded");
+				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
             var download = new Download

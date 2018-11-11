@@ -53,7 +53,8 @@ namespace SmartStore.Services.Tasks
 		/// Executes a single task immediately
 		/// </summary>
 		/// <param name="scheduleTaskId"></param>
-        void RunSingleTask(int scheduleTaskId);
+		/// <param name="taskParameters">Optional task parameters</param>
+        void RunSingleTask(int scheduleTaskId, IDictionary<string, string> taskParameters = null);
 
 		/// <summary>
 		/// Verifies the authentication token which is generated right before the HTTP endpoint gets called.

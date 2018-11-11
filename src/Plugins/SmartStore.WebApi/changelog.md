@@ -1,5 +1,20 @@
 ﻿#Release Notes
 
+##Web Api 2.5.0.1
+###New Features
+* Option to allow authentification without MD5 content hash
+
+##Web Api 2.2.0.5
+###New Features
+* Bridge to import framework: uploading import files to import profile directory
+
+##Web Api 2.2.0.4
+###New Features
+* Added OData endpoint for shipment items
+* Added OData action to add a shipment to an order and to set it as shipped
+###Improvements
+* OData actions should return SingleResult<TEntity> (instead of entity instance) to let expand option be recognized
+
 ##Web Api 2.2.0.3
 ###New Features
 * Added OData endpoint for payment method

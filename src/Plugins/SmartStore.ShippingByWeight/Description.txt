@@ -1,8 +1,8 @@
 ﻿FriendlyName: Shipping by weight
 SystemName: SmartStore.ShippingByWeight
 Group: Shipping
-Version: 2.2.0.1
-MinAppVersion: 2.2.0
+Version: 2.6.0
+MinAppVersion: 2.5.0
 DisplayOrder: 1
 FileName: SmartStore.ShippingByWeight.dll
 ResourceRootKey: Plugins.Shipping.ByWeight

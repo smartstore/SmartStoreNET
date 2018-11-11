@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Caching;
-using System.Text;
 using System.Threading;
 
 namespace SmartStore.Core.Async
@@ -11,7 +8,7 @@ namespace SmartStore.Core.Async
 
 	public class AsyncState
 	{
-		private readonly static AsyncState s_instance = new AsyncState();
+		private static readonly AsyncState s_instance = new AsyncState();
 		private readonly MemoryCache _cache = new MemoryCache("SmartStore.AsyncState");
 
 		private AsyncState()
@@ -45,7 +42,7 @@ namespace SmartStore.Core.Async
 					var value = kvp.Value as StateInfo;
 					if (value != null && value.Progress != null)
 					{
-						yield return (T)(value.Progress);
+						yield return (T)value.Progress;
 					}
 				}
 			}
@@ -68,7 +65,7 @@ namespace SmartStore.Core.Async
 			if (value != null)
 			{
 				cancelTokenSource = value.CancellationTokenSource;
-				return (T)(value.Progress);
+				return (T)value.Progress;
 			}
 
 			return default(T);
@@ -77,7 +74,7 @@ namespace SmartStore.Core.Async
 		public void Set<T>(T state, string name = null, bool neverExpires = false)
 		{
 			Guard.ArgumentNotNull(() => state);
-			this.Set(state, null, name, neverExpires);
+			Set(state, null, name, neverExpires);
 		}
 
 		public void Update<T>(Action<T> update, string name = null)
@@ -101,7 +98,7 @@ namespace SmartStore.Core.Async
 		{
 			Guard.ArgumentNotNull(() => cancelTokenSource);
 
-			this.Set<T>(default(T), cancelTokenSource, name);
+			Set<T>(default(T), cancelTokenSource, name);
 		}
 
 		private void Set<T>(T state, CancellationTokenSource cancelTokenSource, string name = null, bool neverExpires = false)
@@ -129,8 +126,6 @@ namespace SmartStore.Core.Async
 				key, 
 				value ?? new StateInfo { Progress = state, CancellationTokenSource = cancelTokenSource }, 
 				policy);
-
-			var xx = _cache.Get(key);
 		}
 
 		public bool Remove<T>(string name = null)

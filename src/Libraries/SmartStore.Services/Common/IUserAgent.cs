@@ -67,6 +67,13 @@ namespace SmartStore.Services.Common
 
 	public sealed class UserAgentInfo
 	{
+		private static readonly HashSet<string> s_Bots = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+		{
+			"BingPreview"
+		};
+
+		private bool? _isBot;
+
 		public UserAgentInfo(string family, string major, string minor, string patch)
 		{
 			this.Family = family;
@@ -83,6 +90,17 @@ namespace SmartStore.Services.Common
 		public string Major { get; private set; }
 		public string Minor { get; private set; }
 		public string Patch { get; private set; }
+		public bool IsBot
+		{
+			get
+			{
+				if (!_isBot.HasValue)
+				{
+					_isBot = s_Bots.Contains(Family);
+				}
+				return _isBot.Value;
+			}
+		}
 	}
 
 	internal static class VersionString

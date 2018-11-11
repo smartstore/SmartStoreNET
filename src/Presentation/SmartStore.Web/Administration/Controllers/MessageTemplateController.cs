@@ -10,6 +10,8 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -147,11 +149,9 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new MessageTemplateListModel();
 
-			//stores
-			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in _storeService.GetAllStores())
 			{
-				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
 			}
 
 			return View(model);
@@ -160,15 +160,22 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command, MessageTemplateListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
-                return AccessDeniedView();
+			var gridModel = new GridModel<MessageTemplateModel>();
 
-			var messageTemplates = _messageTemplateService.GetAllMessageTemplates(model.SearchStoreId);
-			var gridModel = new GridModel<MessageTemplateModel>
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
 			{
-				Data = messageTemplates.Select(x => x.ToModel()),
-				Total = messageTemplates.Count
-			};
+				var messageTemplates = _messageTemplateService.GetAllMessageTemplates(model.SearchStoreId);
+
+				gridModel.Data = messageTemplates.Select(x => x.ToModel());
+				gridModel.Total = messageTemplates.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<MessageTemplateModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -214,7 +221,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
         public ActionResult Edit(MessageTemplateModel model, bool continueEditing)
         {

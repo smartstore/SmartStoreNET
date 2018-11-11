@@ -55,67 +55,66 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public Customer GetCustomer(int key)
+		[WebApiQueryable]
+		public SingleResult<Customer> GetCustomer(int key)
 		{
-			return GetExpandedProperty<Customer>(key, x => x.Customer);
+			return GetRelatedEntity(key, x => x.Customer);
 		}
 
-		public Address GetBillingAddress(int key)
+		[WebApiQueryable]
+		public SingleResult<Address> GetBillingAddress(int key)
 		{
-			return GetExpandedProperty<Address>(key, x => x.BillingAddress);
+			return GetRelatedEntity(key, x => x.BillingAddress);
 		}
 
-		public Address GetShippingAddress(int key)
+		[WebApiQueryable]
+		public SingleResult<Address> GetShippingAddress(int key)
 		{
-			return GetExpandedProperty<Address>(key, x => x.ShippingAddress);
+			return GetRelatedEntity(key, x => x.ShippingAddress);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<OrderNote> GetOrderNotes(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<OrderNote>>(key, x => x.OrderNotes);
 			//var entity = GetEntityByKeyNotNull(key);	// if ProxyCreationEnabled = true
-
-			return entity.OrderNotes.AsQueryable();
+			return GetRelatedCollection(key, x => x.OrderNotes);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<Shipment> GetShipments(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Shipment>>(key, x => x.Shipments);
-
-			return entity.Shipments.AsQueryable();
+			return GetRelatedCollection(key, x => x.Shipments);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<OrderItem> GetOrderItems(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<OrderItem>>(key, x => x.OrderItems);
-
-			return entity.OrderItems.AsQueryable();
+			return GetRelatedCollection(key, x => x.OrderItems);
 		}
 
 		// actions
 
 		[HttpPost]
-		public Order PaymentPending(int key)
+		public SingleResult<Order> PaymentPending(int key)
 		{
-			var entity = GetEntityByKeyNotNull(key);
+			var result = GetSingleResult(key);
+			var order = GetExpandedEntity(key, result, null);
 
 			this.ProcessEntity(() =>
 			{
-				entity.PaymentStatus = PaymentStatus.Pending;
-				Service.UpdateOrder(entity);
+				order.PaymentStatus = PaymentStatus.Pending;
+				Service.UpdateOrder(order);
 				return null;
 			});
 
-			return entity;
+			return result;
 		}
 
 		[HttpPost]
-		public Order PaymentPaid(int key, ODataActionParameters parameters)
+		public SingleResult<Order> PaymentPaid(int key, ODataActionParameters parameters)
 		{
-			var entity = GetEntityByKeyNotNull(key);
+			var result = GetSingleResult(key);
+			var order = GetExpandedEntity(key, result, null);
 
 			this.ProcessEntity(() =>
 			{
@@ -123,20 +122,23 @@ namespace SmartStore.WebApi.Controllers.OData
 
 				if (paymentMethodName != null)
 				{
-					entity.PaymentMethodSystemName = paymentMethodName;
-					Service.UpdateOrder(entity);
+					order.PaymentMethodSystemName = paymentMethodName;
+					Service.UpdateOrder(order);
 				}
 
-				_orderProcessingService.Value.MarkOrderAsPaid(entity);
+				_orderProcessingService.Value.MarkOrderAsPaid(order);
+
 				return null;
 			});
-			return entity;
+
+			return result;
 		}
 
 		[HttpPost]
-		public Order PaymentRefund(int key, ODataActionParameters parameters)
+		public SingleResult<Order> PaymentRefund(int key, ODataActionParameters parameters)
 		{
-			var entity = GetEntityByKeyNotNull(key);
+			var result = GetSingleResult(key);
+			var order = GetExpandedEntity(key, result, null);
 
 			this.ProcessEntity(() =>
 			{
@@ -144,32 +146,61 @@ namespace SmartStore.WebApi.Controllers.OData
 				
 				if (online)
 				{
-					var errors = _orderProcessingService.Value.Refund(entity);
+					var errors = _orderProcessingService.Value.Refund(order);
 
 					if (errors.Count > 0)
 						return errors[0];
 				}
 				else
 				{
-					_orderProcessingService.Value.RefundOffline(entity);
+					_orderProcessingService.Value.RefundOffline(order);
 				}
 				return null;
 			});
-			return entity;
+
+			return result;
 		}
 
 		[HttpPost]
-		public Order Cancel(int key)
+		public SingleResult<Order> Cancel(int key)
 		{
-			var entity = GetEntityByKeyNotNull(key);
+			var result = GetSingleResult(key);
+			var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product");
 
 			this.ProcessEntity(() =>
 			{
-				_orderProcessingService.Value.CancelOrder(entity, true);
+				_orderProcessingService.Value.CancelOrder(order, true);
 
 				return null;
 			});
-			return entity;
+
+			return result;
+		}
+
+		[HttpPost]
+		public SingleResult<Order> AddShipment(int key, ODataActionParameters parameters)
+		{
+			var result = GetSingleResult(key);
+			var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product, Shipments, Shipments.ShipmentItems");
+
+			this.ProcessEntity(() =>
+			{
+				if (order.HasItemsToAddToShipment())
+				{
+					var trackingNumber = parameters.GetValue<string, string>("TrackingNumber");
+
+					var shipment = _orderProcessingService.Value.AddShipment(order, trackingNumber, null);
+
+					if (shipment != null)
+					{
+						if (parameters.ContainsKey("SetAsShipped") && parameters.GetValue<string, bool>("SetAsShipped"))
+							_orderProcessingService.Value.Ship(shipment, true);
+					}
+				}
+				return null;
+			});
+
+			return result;
 		}
 	}
 }

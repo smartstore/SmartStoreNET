@@ -2,7 +2,7 @@
 using System.Linq;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Collections;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Plugins
 {

@@ -2,30 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
-using Microsoft.SqlServer;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
-using System.Data.Entity.Core.Objects;
 
 namespace SmartStore.Data
 {
-    /// <summary>
-    /// Object context
-    /// </summary>
+	/// <summary>
+	/// Object context
+	/// </summary>
 	[DbConfigurationType(typeof(SmartDbConfiguration))]
     public abstract class ObjectContextBase : DbContext, IDbContext
     {
@@ -195,7 +191,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntity(result[i]);
+						result[i] = Attach(result[i]);
 					}
 				}
 			}
@@ -228,7 +224,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntity(result[i]);
+						result[i] = Attach(result[i]);
 					}
 				}
 				// close up the reader, we're done saving results
@@ -336,12 +332,19 @@ namespace SmartStore.Data
 			var props = new Dictionary<string, object>();
 
 			var entry = this.Entry(entity);
-			var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
-										where entry.Property(p).IsModified
-										select p;
-			foreach (var name in modifiedPropertyNames)
+
+			// be aware of the entity state. you cannot get modified properties for detached entities.
+			if (entry.State != System.Data.Entity.EntityState.Detached)
 			{
-				props.Add(name, entry.Property(name).OriginalValue);
+				var modifiedProperties = from p in entry.CurrentValues.PropertyNames
+										 let prop = entry.Property(p)
+										 where prop.IsModified
+										 select prop;
+
+				foreach (var prop in modifiedProperties)
+				{
+					props.Add(prop.Name, prop.OriginalValue);
+				}
 			}
 
 			return props;
@@ -384,7 +387,7 @@ namespace SmartStore.Data
 			return result;
 		}
 
-        // codehint: sm-add (required for UoW implementation)
+        // required for UoW implementation
         public string Alias { get; internal set; }
 
         // performance on bulk inserts
@@ -424,6 +427,18 @@ namespace SmartStore.Data
                 this.Configuration.ProxyCreationEnabled = value;
             }
         }
+
+		public bool LazyLoadingEnabled
+		{
+			get
+			{
+				return this.Configuration.LazyLoadingEnabled;
+			}
+			set
+			{
+				this.Configuration.LazyLoadingEnabled = value;
+			}
+		}
 
 		public bool ForceNoTracking { get; set; }
 
@@ -481,32 +496,21 @@ namespace SmartStore.Data
 			return s_isSqlServer2012OrHigher.Value;
 		}
 
-        /// <summary>
-        /// Attach an entity to the context or return an already attached entity (if it was already attached)
-        /// </summary>
-        /// <typeparam name="TEntity">TEntity</typeparam>
-        /// <param name="entity">Entity</param>
-        /// <returns>Attached entity</returns>
-        protected virtual TEntity AttachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+		public TEntity Attach<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-			// little hack here until Entity Framework really supports stored procedures
-			// otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
 			var dbSet = Set<TEntity>();
-			var alreadyAttached = dbSet.Local.Where(x => x.Id == entity.Id).FirstOrDefault();
+			var alreadyAttached = dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
+
 			if (alreadyAttached == null)
 			{
-				// attach new entity
 				dbSet.Attach(entity);
 				return entity;
 			}
-			else
-			{
-				// entity is already loaded.
-				return alreadyAttached;
-			}
-        }
 
-        public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity
+			return alreadyAttached;
+		}
+
+		public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
 			if (entity != null)
 			{
@@ -546,6 +550,7 @@ namespace SmartStore.Data
 
 		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity
 		{
+			Console.WriteLine("ChangeState ORIGINAL");
 			this.Entry(entity).State = newState;
 		}
 
@@ -554,7 +559,7 @@ namespace SmartStore.Data
 			this.Entry(entity).Reload();
 		}
 
-        private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
+		private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {
             var sb = new StringBuilder();
             sb.Append("Entity validation failed" + Environment.NewLine);

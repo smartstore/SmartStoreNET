@@ -13,7 +13,7 @@
 				<div class="bundle-item-name">
 					@if (item.VisibleIndividually)
 					{
-						<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+						<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 					}
 					else
 					{
@@ -75,13 +75,13 @@
         using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new Dictionary<string, Object> { { "data-ajax", "false" }, { "enctype", "multipart/form-data" } }))
         {
         <div class="cart">
-            <ul data-role="listview" data-inset="true" data-filter="false">
+            <ul data-role="listview" data-inset="true" data-filter="false" class="list-order-products">
                 @foreach (var item in Model.Items)
                 {
                     <li>
                         <div class="cart-item-row">
                             <div class="product">
-                                <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+								<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
                                 @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                 {
                                     <div class="attributes">
@@ -155,6 +155,24 @@
                                     </div>
                                 }
                             </div>
+							@if (!Model.IsEditable && item.IsDownload && item.HasUserAgreement)
+							{
+								<div class="download-agreement">
+									<label>
+										<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)">
+										@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
+									</label>
+								</div>
+							}
+							@if (!Model.IsEditable && Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
+							{
+								<div class="esd-revocation-waiver">
+									<label>
+										<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)">
+										@T("Checkout.EsdRevocationWaiverConfirmation")
+									</label>
+								</div>
+							}
                             @if (Model.IsEditable)
                             {
                                 <div class="updateitem">
@@ -274,5 +292,41 @@
     {
         @T("ShoppingCart.CartIsEmpty")
     }
+
+	@if (!Model.IsEditable)
+	{
+		<div class="order-options">
+			@if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+			{
+				<label>
+					<input type="checkbox" name="SubscribeToNewsLetter" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+					@T("Checkout.SubscribeToNewsLetter")
+				</label>
+			}
+			@if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+			{
+				<label>
+					<input type="checkbox" name="AcceptThirdPartyEmailHandOver" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+					@Model.ThirdPartyEmailHandOverLabel
+				</label>
+			}
+		</div>
+	}
+
     @Html.Widget("mobile_order_summary_content_after")
 </div>
+
+@if (!Model.IsEditable && Model.Items.Any(x => x.IsDownload && x.HasUserAgreement))
+{
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('a.download-user-agreement').click(function () {
+				var url = '@(Url.Action("GetUserAgreement", "Download"))?asPlainText=true&productId=' + $(this).attr('data-id');
+				$.get(url, function (text) {
+					alert(text);
+				});
+				return false;
+			});
+		});
+	</script>
+}

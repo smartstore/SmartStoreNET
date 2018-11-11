@@ -21,6 +21,7 @@ namespace SmartStore.Services.Tasks
 		{
 			this._componentContext = componentContext;
 			this._originalTask = originalTask;
+			this.Parameters = new Dictionary<string, string>();
 		}
 
 		public T Resolve<T>(object key = null) where T : class
@@ -45,8 +46,32 @@ namespace SmartStore.Services.Tasks
 
         public ScheduleTask ScheduleTask { get; set; }
 
+		public IDictionary<string, string> Parameters { get; set; }
+
 		/// <summary>
-		/// Persists a task's progress information information to the database
+		/// Persists a task's progress information to the database
+		/// </summary>
+		/// <param name="value">Progress value (numerator)</param>
+		/// <param name="maximum">Progress maximum (denominator)</param>
+		/// <param name="message">Progress message. Can be <c>null</c>.</param>
+		/// <param name="immediately">if <c>true</c>, saves the updated task entity immediately, or lazily with the next database commit otherwise.</param>
+		public void SetProgress(int value, int maximum, string message, bool immediately = false)
+		{
+			if (value == 0 && maximum == 0)
+			{
+				SetProgress(null, message, immediately);
+			}
+			else
+			{
+				float fraction = (float)value / (float)Math.Max(maximum, 1f);
+				int percentage = (int)Math.Round(fraction * 100f, 0);
+
+				SetProgress(Math.Min(Math.Max(percentage, 0), 100), message, immediately);
+			}
+		}
+
+		/// <summary>
+		/// Persists a task's progress information to the database
 		/// </summary>
 		/// <param name="progress">Percentual progress. Can be <c>null</c> or a value between 0 and 100.</param>
 		/// <param name="message">Progress message. Can be <c>null</c>.</param>

@@ -3,7 +3,6 @@
 @using SmartStore.Core.Domain.Customers;
 @using SmartStore.Core.Domain.Security;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.CustomerUser").Text;
 }
 @using (Html.BeginForm())
@@ -44,6 +43,10 @@
 
             toggleAvatar();
             toggleUsername();
+
+        	$('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberMethod)').change(function () {
+        		$('#pnlCustomerNumberVisibility').toggle($(this).val() !== '@((int)CustomerNumberMethod.Disabled)');
+            }).trigger('change');
         });
 
         function toggleAvatar() {
@@ -77,29 +80,6 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
         </tr>
-
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
-            </td>
-            <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberMethod)
-                @Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberMethod, Model.CustomerSettings.AvailableCustomerNumberMethods)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
-            </td>
-        </tr>
-
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
-            </td>
-            <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberVisibility)
-                @Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberVisibility, Model.CustomerSettings.AvailableCustomerNumberVisibilities)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
-            </td>
-        </tr>
-
         <tr id="pnlAllowUsersToChangeUsernames">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
@@ -118,6 +98,47 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CheckUsernameAvailabilityEnabled)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormat)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
+				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNameFormat, ((CustomerNameFormat)Model.CustomerSettings.CustomerNameFormat).ToSelectList())
+				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormat)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+			</td>
+		</tr>
+
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberMethod)
+				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberMethod, Model.CustomerSettings.AvailableCustomerNumberMethods)
+				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
+			</td>
+		</tr>
+		<tr id="pnlCustomerNumberVisibility">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberVisibility)
+				@Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberVisibility, Model.CustomerSettings.AvailableCustomerNumberVisibilities)
+				@Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
+			</td>
+		</tr>
+
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.UserRegistrationType)
@@ -128,6 +149,26 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UserRegistrationType)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSettings.DefaultPasswordFormat)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.CustomerSettings.DefaultPasswordFormat, ((PasswordFormat)Model.CustomerSettings.DefaultPasswordFormat).ToSelectList())
+				@Html.ValidationMessageFor(model => model.CustomerSettings.DefaultPasswordFormat)
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.RegisterCustomerRoleId)
+            </td>
+            <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.RegisterCustomerRoleId)
+                @Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified"))
+                @Html.ValidationMessageFor(model => model.CustomerSettings.RegisterCustomerRoleId)
+            </td>
+        </tr>
+
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)
@@ -202,25 +243,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormat)
-            </td>
-            <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
-                @Html.DropDownListFor(model => model.CustomerSettings.CustomerNameFormat, ((CustomerNameFormat)Model.CustomerSettings.CustomerNameFormat).ToSelectList())
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormat)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.HideNewsletterBlock)
             </td>
             <td class="adminData">
@@ -237,15 +259,15 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastVisitedPage)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.CustomerSettings.DefaultPasswordFormat)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.CustomerSettings.DefaultPasswordFormat, ((PasswordFormat)Model.CustomerSettings.DefaultPasswordFormat).ToSelectList())
-				@Html.ValidationMessageFor(model => model.CustomerSettings.DefaultPasswordFormat)
-			</td>
-		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+            </td>
+        </tr>
     </table>
 }
 @helper TabCustomerFormFields()

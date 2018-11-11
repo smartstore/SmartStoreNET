@@ -1,18 +1,16 @@
 ﻿using System;
 using System.ServiceModel;
 using System.Web.Routing;
-using SmartStore.Core;
-using SmartStore.Core.Plugins;
 using SmartStore.Clickatell.Clickatell;
-using SmartStore.Services.Common; 
-using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Clickatell
 {
-    /// <summary>
-    /// Represents the Clickatell SMS provider
-    /// </summary>
+	/// <summary>
+	/// Represents the Clickatell SMS provider
+	/// </summary>
 	public class ClickatellSmsProvider : BasePlugin, IConfigurable
     {
         private readonly ILogger _logger;
@@ -84,7 +82,6 @@ namespace SmartStore.Clickatell
         /// </summary>
         public override void Install()
         {
-            //locales
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
             base.Install();
@@ -95,9 +92,7 @@ namespace SmartStore.Clickatell
         /// </summary>
         public override void Uninstall()
         {
-            //locales
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
-            _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Mobile.SMS.Clickatell", false);
 
             base.Uninstall();
         }

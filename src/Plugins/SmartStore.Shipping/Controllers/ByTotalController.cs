@@ -7,6 +7,7 @@ using SmartStore.Shipping.Domain;
 using SmartStore.Shipping.Models;
 using SmartStore.Shipping.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Shipping.Controllers
@@ -42,7 +43,7 @@ namespace SmartStore.Shipping.Controllers
             var shippingMethods = _shippingService.GetAllShippingMethods();
             if (shippingMethods.Count == 0)
             {
-                return Content("No shipping methods can be loaded");
+                return Content(T("Admin.Configuration.Shipping.Methods.NoMethodsLoaded"));
             }
 
             var model = new ByTotalListModel();
@@ -99,10 +100,11 @@ namespace SmartStore.Shipping.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return new JsonResult { Data = "error" };
+                return new JsonResult { Data = T("Admin.Common.UnknownError").Text };
             }
 
             var shippingByTotalRecord = _shippingByTotalService.GetShippingByTotalRecordById(model.Id);
+
             shippingByTotalRecord.Zip = model.Zip == "*" ? null : model.Zip;
             shippingByTotalRecord.From = model.From;
             shippingByTotalRecord.To = model.To;
@@ -111,6 +113,7 @@ namespace SmartStore.Shipping.Controllers
             shippingByTotalRecord.ShippingChargePercentage = model.ShippingChargePercentage;
             shippingByTotalRecord.BaseCharge = model.BaseCharge;
             shippingByTotalRecord.MaxCharge = model.MaxCharge;
+
             _shippingByTotalService.UpdateShippingByTotalRecord(shippingByTotalRecord);
 
             return RatesList(command);

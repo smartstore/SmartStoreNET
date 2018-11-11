@@ -5,7 +5,7 @@ using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Discounts;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Discounts
 {

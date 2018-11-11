@@ -11,12 +11,12 @@ namespace SmartStore
 {   
     public static class MiscExtensions
     {
-		public static void Dump(this Exception exc) 
+		public static void Dump(this Exception exception) 
 		{
 			try 
 			{
-				exc.StackTrace.Dump();
-				exc.Message.Dump();
+				exception.StackTrace.Dump();
+				exception.Message.Dump();
 			}
 			catch { }
 		}
@@ -24,7 +24,7 @@ namespace SmartStore
 		public static string ToAllMessages(this Exception exception)
 		{
 			var sb = new StringBuilder();
-
+			
 			while (exception != null)
 			{
 				if (!sb.ToString().EmptyNull().Contains(exception.Message))
@@ -44,52 +44,6 @@ namespace SmartStore
 		public static string ToElapsedSeconds(this Stopwatch watch) 
         {
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalSeconds);
-		}
-
-		public static bool HasColumn(this DataView dv, string columnName) 
-        {
-			dv.RowFilter = "ColumnName='" + columnName + "'";
-			return dv.Count > 0;
-		}
-
-		public static string GetDataType(this DataTable dt, string columnName) 
-        {
-			dt.DefaultView.RowFilter = "ColumnName='" + columnName + "'";
-			return dt.Rows[0]["DataType"].ToString();
-		}
-
-		public static int CountExecute(this OleDbConnection conn, string sqlCount) 
-        {
-			using (OleDbCommand cmd = new OleDbCommand(sqlCount, conn)) 
-            {
-				return (int)cmd.ExecuteScalar();
-			}
-		}
-
-		public static object SafeConvert(this TypeConverter converter, string value) 
-        {
-			try 
-            {
-				if (converter != null && value.HasValue() && converter.CanConvertFrom(typeof(string))) 
-                {
-					return converter.ConvertFromString(value);
-				}
-			}
-			catch (Exception exc) 
-            {
-				exc.Dump();
-			}
-			return null;
-		}
-
-		public static bool IsEqual(this TypeConverter converter, string value, object compareWith) 
-        {
-			object convertedObject = converter.SafeConvert(value);
-
-			if (convertedObject != null && compareWith != null)
-				return convertedObject.Equals(compareWith);
-
-			return false;
 		}
 
         public static bool IsNullOrDefault<T>(this T? value) where T : struct
@@ -117,27 +71,15 @@ namespace SmartStore
 
 		public static T GetMergedDataValue<T>(this IMergedData mergedData, string key, T defaultValue)
 		{
-			try
+			if (mergedData.MergedDataValues != null && !mergedData.MergedDataIgnore)
 			{
-				if (mergedData.MergedDataValues != null && !mergedData.MergedDataIgnore)
-				{
-					object value;
+				object value;
 
-					if (mergedData.MergedDataValues.TryGetValue(key, out value))
-						return (T)value;
-				}
+				if (mergedData.MergedDataValues.TryGetValue(key, out value))
+					return (T)value;
 			}
-			catch (Exception) { }
 
 			return defaultValue;
-		}
-
-		public static bool IsRouteEqual(this RouteData routeData, string controller, string action)
-		{
-			if (routeData == null)
-				return false;
-
-			return routeData.GetRequiredString("controller").IsCaseInsensitiveEqual(controller) && routeData.GetRequiredString("action").IsCaseInsensitiveEqual(action);
 		}
 
 		/// <summary>

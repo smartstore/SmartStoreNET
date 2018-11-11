@@ -4,34 +4,33 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Fakes;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Customers
 {
-    /// <summary>
-    /// Customer service
-    /// </summary>
-    public partial class CustomerService : ICustomerService
+	/// <summary>
+	/// Customer service
+	/// </summary>
+	public partial class CustomerService : ICustomerService
     {
-        #region Constants
+		#region Constants
 
-        private const string CUSTOMERROLES_ALL_KEY = "SmartStore.customerrole.all-{0}";
+		private const string CUSTOMERROLES_ALL_KEY = "SmartStore.customerrole.all-{0}";
         private const string CUSTOMERROLES_BY_SYSTEMNAME_KEY = "SmartStore.customerrole.systemname-{0}";
         private const string CUSTOMERROLES_PATTERN_KEY = "SmartStore.customerrole.";
 
@@ -42,30 +41,40 @@ namespace SmartStore.Services.Customers
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<CustomerRole> _customerRoleRepository;
         private readonly IRepository<GenericAttribute> _gaRepository;
+		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly ICacheManager _cacheManager;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
+		private readonly ICacheManager _cache;
 		private readonly RewardPointsSettings _rewardPointsSettings;
+		private readonly HttpContextBase _httpContext;
+		private readonly IUserAgent _userAgent;
 
-        #endregion
+		#endregion
 
-        #region Ctor
+		#region Ctor
 
-        public CustomerService(ICacheManager cacheManager,
+		public CustomerService(
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<GenericAttribute> gaRepository,
+			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
             IGenericAttributeService genericAttributeService,
-            IEventPublisher eventPublisher,
-			RewardPointsSettings rewardPointsSettings)
+			ICommonServices services,
+			ICacheManager cache,
+			RewardPointsSettings rewardPointsSettings,
+			HttpContextBase httpContext,
+			IUserAgent userAgent)
         {
-            this._cacheManager = cacheManager;
             this._customerRepository = customerRepository;
             this._customerRoleRepository = customerRoleRepository;
             this._gaRepository = gaRepository;
+			this._rewardPointsHistoryRepository = rewardPointsHistoryRepository;
             this._genericAttributeService = genericAttributeService;
-            this._eventPublisher = eventPublisher;
+			this._services = services;
+			this._cache = cache;
 			this._rewardPointsSettings = rewardPointsSettings;
+			this._httpContext = httpContext;
+			this._userAgent = userAgent;
 
 			T = NullLocalizer.Instance;
         }
@@ -291,6 +300,11 @@ namespace SmartStore.Services.Customers
             return sortedCustomers;
         }
 
+		public virtual IList<Customer> GetSystemAccountCustomers()
+		{
+			return _customerRepository.Table.Where(x => x.IsSystemAccount).ToList();
+		}
+
         public virtual Customer GetCustomerByGuid(Guid customerGuid)
         {
             if (customerGuid == Guid.Empty)
@@ -327,6 +341,7 @@ namespace SmartStore.Services.Customers
 						where c.SystemName == systemName
 						select c;
 			var customer = query.FirstOrDefault();
+
 			return customer;
         }
 
@@ -344,26 +359,62 @@ namespace SmartStore.Services.Customers
             return customer;
         }
 
-        public virtual Customer InsertGuestCustomer()
+		public virtual Customer InsertGuestCustomer(Guid? customerGuid = null)
         {
-            var customer = new Customer
+			var customer = new Customer
             {
-                CustomerGuid = Guid.NewGuid(),
+                CustomerGuid = customerGuid ?? Guid.NewGuid(),
                 Active = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 LastActivityDateUtc = DateTime.UtcNow,
             };
 
-            //add to 'Guests' role
+            // add to 'Guests' role
             var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
             if (guestRole == null)
                 throw new SmartException("'Guests' role could not be loaded");
+
             customer.CustomerRoles.Add(guestRole);
 
-            _customerRepository.Insert(customer);
+			_customerRepository.Insert(customer);
+
+			var clientIdent = _services.WebHelper.GetClientIdent();
+			if (clientIdent.HasValue())
+			{
+				//_genericAttributeService.SaveAttribute(customer, "ClientIdent", clientIdent);
+			}
 
             return customer;
         }
+
+		public virtual Customer FindGuestCustomerByClientIdent(string clientIdent = null, int maxAgeSeconds = 60)
+		{
+			if (_httpContext.IsFakeContext() || _userAgent.IsBot || _userAgent.IsPdfConverter)
+			{
+				return null;
+			}
+
+			clientIdent = clientIdent.NullEmpty() ?? _services.WebHelper.GetClientIdent();
+			if (clientIdent.IsEmpty())
+			{
+				return null;
+			}
+			
+			var dateFrom = DateTime.UtcNow.AddSeconds(maxAgeSeconds * -1);
+
+			var query = from a in _gaRepository.TableUntracked
+						join c in _customerRepository.Table on a.EntityId equals c.Id into Customers
+						from c in Customers.DefaultIfEmpty()
+						where c.LastActivityDateUtc >= dateFrom 
+							&& c.Username == null 
+							&& c.Email == null
+							&& a.KeyGroup == "Customer" 
+							&& a.Key == "ClientIdent" 
+							&& a.Value == clientIdent
+						select c;
+
+			return query.FirstOrDefault();
+		}
         
         public virtual void InsertCustomer(Customer customer)
         {
@@ -372,8 +423,7 @@ namespace SmartStore.Services.Customers
 
             _customerRepository.Insert(customer);
 
-            //event notification
-            _eventPublisher.EntityInserted(customer);
+            _services.EventPublisher.EntityInserted(customer);
         }
         
         public virtual void UpdateCustomer(Customer customer)
@@ -383,8 +433,7 @@ namespace SmartStore.Services.Customers
 
             _customerRepository.Update(customer);
 
-            //event notification
-            _eventPublisher.EntityUpdated(customer);
+			_services.EventPublisher.EntityUpdated(customer);
         }
 
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
@@ -563,10 +612,9 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Delete(customerRole);
 
-            _cacheManager.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
+			_cache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityDeleted(customerRole);
+			_services.EventPublisher.EntityDeleted(customerRole);
         }
 
         public virtual CustomerRole GetCustomerRoleById(int customerRoleId)
@@ -583,7 +631,7 @@ namespace SmartStore.Services.Customers
                 return null;
 
             string key = string.Format(CUSTOMERROLES_BY_SYSTEMNAME_KEY, systemName);
-            return _cacheManager.Get(key, () =>
+            return _cache.Get(key, () =>
             {
                 var query = from cr in _customerRoleRepository.Table
                             orderby cr.Id
@@ -597,7 +645,7 @@ namespace SmartStore.Services.Customers
         public virtual IList<CustomerRole> GetAllCustomerRoles(bool showHidden = false)
         {
             string key = string.Format(CUSTOMERROLES_ALL_KEY, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _cache.Get(key, () =>
             {
                 var query = from cr in _customerRoleRepository.Table
                             orderby cr.Name
@@ -615,10 +663,9 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Insert(customerRole);
 
-            _cacheManager.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
+			_cache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityInserted(customerRole);
+			_services.EventPublisher.EntityInserted(customerRole);
         }
 
         public virtual void UpdateCustomerRole(CustomerRole customerRole)
@@ -628,10 +675,9 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Update(customerRole);
 
-            _cacheManager.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
+			_cache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
-            //event notification
-            _eventPublisher.EntityUpdated(customerRole);
+			_services.EventPublisher.EntityUpdated(customerRole);
         }
 
         #endregion
@@ -648,6 +694,25 @@ namespace SmartStore.Services.Customers
 
 				UpdateCustomer(customer);
 			}
+		}
+
+		public virtual Multimap<int, RewardPointsHistory> GetRewardPointsHistoriesByCustomerIds(int[] customerIds)
+		{
+			Guard.ArgumentNotNull(() => customerIds);
+
+			var query =
+				from x in _rewardPointsHistoryRepository.TableUntracked
+				where customerIds.Contains(x.CustomerId)
+				select x;
+
+			var map = query
+				.OrderBy(x => x.CustomerId)
+				.ThenByDescending(x => x.CreatedOnUtc)
+				.ThenByDescending(x => x.Id)
+				.ToList()
+				.ToMultimap(x => x.CustomerId, x => x);
+
+			return map;
 		}
 
 		#endregion Reward points

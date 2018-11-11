@@ -67,9 +67,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IQueryable<Discount> GetAppliedDiscounts(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Discount>>(key, x => x.AppliedDiscounts);
-
-			return entity.AppliedDiscounts.AsQueryable();
+			return GetRelatedCollection(key, x => x.AppliedDiscounts);
 		}
 	}
 }

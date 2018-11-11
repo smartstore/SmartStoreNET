@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -33,7 +32,9 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
@@ -91,12 +92,15 @@ namespace SmartStore.Web.Controllers
         private readonly AddressSettings _addressSettings;
 		private readonly PluginMediator _pluginMediator;
         private readonly IQuantityUnitService _quantityUnitService;
+		private readonly Lazy<ITopicService> _topicService;
+        private readonly IMeasureService _measureService;
+        private readonly MeasureSettings _measureSettings;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public ShoppingCartController(IProductService productService,
+		public ShoppingCartController(IProductService productService,
 			IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, IPictureService pictureService,
             ILocalizationService localizationService, 
@@ -121,7 +125,9 @@ namespace SmartStore.Web.Controllers
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
 			HttpContextBase httpContext, PluginMediator pluginMediator,
-            IQuantityUnitService quantityUnitService)
+            IQuantityUnitService quantityUnitService,
+			Lazy<ITopicService> topicService,
+            IMeasureService measureService, MeasureSettings measureSettings)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -167,6 +173,9 @@ namespace SmartStore.Web.Controllers
             this._addressSettings = addressSettings;
 			this._pluginMediator = pluginMediator;
             this._quantityUnitService = quantityUnitService;
+			this._topicService = topicService;
+            this._measureService = measureService;
+            this._measureSettings = measureSettings;
         }
 
         #endregion
@@ -174,7 +183,7 @@ namespace SmartStore.Web.Controllers
         #region Utilities
 
         [NonAction]
-        protected PictureModel PrepareCartItemPictureModel(Product product, int pictureSize, bool showDefaultPicture, string productName, string attributesXml)
+        protected PictureModel PrepareCartItemPictureModel(Product product, int pictureSize, string productName, string attributesXml)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -205,10 +214,10 @@ namespace SmartStore.Web.Controllers
 					picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
 				}
 
-                return new PictureModel()
+                return new PictureModel
                 {
                     PictureId = picture != null ? picture.Id : 0,
-                    ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, showDefaultPicture),
+                    ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
                     Title = string.Format(_localizationService.GetResource("Media.Product.ImageLinkTitleFormat"), productName),
                     AlternateText = string.Format(_localizationService.GetResource("Media.Product.ImageAlternateTextFormat"), productName),
                 };
@@ -223,7 +232,7 @@ namespace SmartStore.Web.Controllers
 			
 			product.MergeWithCombination(item.AttributesXml);
 
-			var model = new ShoppingCartModel.ShoppingCartItemModel()
+			var model = new ShoppingCartModel.ShoppingCartItemModel
 			{
 				Id = item.Id,
 				Sku = product.Sku,
@@ -235,9 +244,14 @@ namespace SmartStore.Web.Controllers
 				IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter),
-                Weight = product.Weight
+				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
+				Weight = product.Weight,
+				IsDownload = product.IsDownload,
+				HasUserAgreement = product.HasUserAgreement,
+				IsEsd = product.IsEsd
 			};
+
+			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
 
 			if (item.BundleItem != null)
 			{
@@ -245,7 +259,7 @@ namespace SmartStore.Web.Controllers
 				model.BundlePerItemShoppingCart = item.BundleItem.BundleProduct.BundlePerItemShoppingCart;
 
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, _workContext.CurrentCustomer,
-					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: false);
+					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: true);
 
 				string bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
 				if (bundleItemName.HasValue())
@@ -368,24 +382,32 @@ namespace SmartStore.Web.Controllers
 					model.Discount = _priceFormatter.FormatPrice(shoppingCartItemDiscount);
 				}
 
-                model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, (product.Price - shoppingCartItemSubTotalWithDiscount) * (-1));
+                model.BasePrice = product.GetBasePriceInfo(
+                    _localizationService, 
+                    _priceFormatter,
+                    _currencyService,
+                    _taxService,
+                    _priceCalculationService,
+                    _workContext.WorkingCurrency,
+                    (product.Price - _priceCalculationService.GetUnitPrice(sci, true)) * (-1)
+                );
 			}
 
 			//picture
 			if (item.BundleItem != null)
 			{
 				if (_shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, model.ProductName, item.AttributesXml);
 			}
 			else
 			{
 				if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, model.ProductName, item.AttributesXml);
 			}
 
 			//item warnings
 			var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer, item.ShoppingCartType, product, item.StoreId,
-				item.AttributesXml, item.CustomerEnteredPrice, item.Quantity, false, childItems: sci.ChildItems);
+				item.AttributesXml, item.CustomerEnteredPrice, item.Quantity, false, bundleItem: item.BundleItem, childItems: sci.ChildItems);
 
 			foreach (var warning in itemWarnings)
 			{
@@ -404,6 +426,7 @@ namespace SmartStore.Web.Controllers
 
 			return model;
 		}
+		
 		private WishlistModel.ShoppingCartItemModel PrepareWishlistCartItemModel(OrganizedShoppingCartItem sci)
 		{
 			var item = sci.Item;
@@ -411,7 +434,7 @@ namespace SmartStore.Web.Controllers
 
 			product.MergeWithCombination(item.AttributesXml);
 
-			var model = new WishlistModel.ShoppingCartItemModel()
+			var model = new WishlistModel.ShoppingCartItemModel
 			{
 				Id = item.Id,
 				Sku = product.Sku,
@@ -423,6 +446,8 @@ namespace SmartStore.Web.Controllers
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually
 			};
+
+			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
 
 			if (item.BundleItem != null)
 			{
@@ -461,7 +486,7 @@ namespace SmartStore.Web.Controllers
 			var allowedQuantities = product.ParseAllowedQuatities();
 			foreach (var qty in allowedQuantities)
 			{
-				model.AllowedQuantities.Add(new SelectListItem()
+				model.AllowedQuantities.Add(new SelectListItem
 				{
 					Text = qty.ToString(),
 					Value = qty.ToString(),
@@ -520,12 +545,12 @@ namespace SmartStore.Web.Controllers
 			if (item.BundleItem != null)
 			{
 				if (_shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, model.ProductName, item.AttributesXml);
 			}
 			else
 			{
 				if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, model.ProductName, item.AttributesXml);
 			}
 
 			//item warnings
@@ -618,12 +643,21 @@ namespace SmartStore.Web.Controllers
 			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
 			model.ShowSku = _catalogSettings.ShowProductSku;
+
+            var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
+            if(measure != null) 
+            {
+                model.MeasureUnitName = measure.Name;
+            }
+            
+
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
 			));
 			//model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer);
 			//model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer, "", false);
+
 			bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 			if (!minOrderSubtotalAmountOk)
 			{
@@ -636,23 +670,37 @@ namespace SmartStore.Web.Controllers
 			model.DiscountBox.Display = _shoppingCartSettings.ShowDiscountBox;
 			var discountCouponCode = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode);
 			var discount = _discountService.GetDiscountByCouponCode(discountCouponCode);
-			if (discount != null &&
-				discount.RequiresCouponCode &&
-				_discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
+			if (discount != null && discount.RequiresCouponCode && _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
+			{
 				model.DiscountBox.CurrentCode = discount.CouponCode;
+			}
+
 			model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
+			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
+			model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
+			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
+
+			if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+			{
+				model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage.Id, true, false);
+
+				if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
+					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
+			}
 
 			//cart warnings
 			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
 			foreach (var warning in cartWarnings)
+			{
 				model.Warnings.Add(warning);
+			}
 
 			#endregion
 
 			#region Checkout attributes
 
-			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 			if (!cart.RequiresShipping())
 			{
 				//remove attributes which require shippable products
@@ -902,7 +950,7 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected MiniShoppingCartModel PrepareMiniShoppingCartModel()
         {
-            var model = new MiniShoppingCartModel()
+            var model = new MiniShoppingCartModel
             {
                 ShowProductImages = _shoppingCartSettings.ShowProductImagesInMiniShoppingCart,
                 ThumbSize = _mediaSettings.MiniCartThumbPictureSize,
@@ -937,7 +985,7 @@ namespace SmartStore.Web.Controllers
                 //1. "terms of services" are enabled (OBSOLETE now)
                 //2. we have at least one checkout attribute
                 //3. min order sub-total is OK
-                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!cart.RequiresShipping())
                 {
                     //remove attributes which require shippable products
@@ -948,20 +996,22 @@ namespace SmartStore.Web.Controllers
 
                 //products. sort descending (recently added products)
                 foreach (var sci in cart
-                    .OrderByDescending(x => x.Item.Id)
                     .Take(_shoppingCartSettings.MiniShoppingCartProductNumber)
                     .ToList())
                 {
-                    var cartItemModel = new MiniShoppingCartModel.ShoppingCartItemModel()
+					var item = sci.Item;
+					var product = sci.Item.Product;
+
+                    var cartItemModel = new MiniShoppingCartModel.ShoppingCartItemModel
                     {
-                        Id = sci.Item.Id,
-                        ProductId = sci.Item.Product.Id,
-						ProductName = sci.Item.Product.GetLocalized(x => x.Name),
-                        ProductSeName = sci.Item.Product.GetSeName(),
-                        Quantity = sci.Item.Quantity,
+                        Id = item.Id,
+                        ProductId = product.Id,
+						ProductName = product.GetLocalized(x => x.Name),
+                        ProductSeName = product.GetSeName(),
+                        Quantity = item.Quantity,
                         AttributeInfo = _productAttributeFormatter.FormatAttributes(
-                            sci.Item.Product, 
-                            sci.Item.AttributesXml, 
+                            product, 
+                            item.AttributesXml, 
                             null,
                             serapator: ", ", 
                             renderPrices: false, 
@@ -969,35 +1019,40 @@ namespace SmartStore.Web.Controllers
                             allowHyperlinks: false)
                     };
 
-                    if (sci.Item.Product.ProductType == ProductType.BundledProduct)
-                    {                        
-                        var bundleItems = _productService.GetBundleItems(sci.Item.Product.Id);
-                        foreach (var bundleItem in bundleItems)
-                        {
-                            var bundleItemModel = new MiniShoppingCartModel.ShoppingCartItemBundleItem();
-                            bundleItemModel.ProductName = bundleItem.Item.Product.GetLocalized(x => x.Name);
-                            var bundlePic = _pictureService.GetPicturesByProductId(bundleItem.Item.ProductId).FirstOrDefault();
-                            if(bundlePic != null)
-                                bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(bundlePic.Id, 32);
+					cartItemModel.ProductUrl = GetProductUrlWithAttributes(sci, cartItemModel.ProductSeName);
 
-                            bundleItemModel.ProductSeName = bundleItem.Item.Product.GetSeName();
+					if (sci.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
+					{
+						foreach (var childItem in sci.ChildItems.Where(x => x.Item.Id != item.Id && x.Item.BundleItem != null && !x.Item.BundleItem.HideThumbnail))
+						{
+							var bundleItemModel = new MiniShoppingCartModel.ShoppingCartItemBundleItem
+							{
+								ProductName = childItem.Item.Product.GetLocalized(x => x.Name),
+								ProductSeName = childItem.Item.Product.GetSeName(),
+							};
 
-                            if (!bundleItem.Item.HideThumbnail) 
-                                cartItemModel.BundleItems.Add(bundleItemModel);
-                        }
-                    }
+							bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(
+								childItem.Item.AttributesXml, childItem.Item.ProductId, bundleItemModel.ProductSeName);
+
+							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
+							if (itemPicture != null)
+								bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(itemPicture.Id, 32);
+
+							cartItemModel.BundleItems.Add(bundleItemModel);
+						}
+					}
 
                     //unit prices
-                    if (sci.Item.Product.CallForPrice)
+                    if (product.CallForPrice)
                     {
                         cartItemModel.UnitPrice = _localizationService.GetResource("Products.CallForPrice");
                     }
                     else
                     {
-						sci.Item.Product.MergeWithCombination(sci.Item.AttributesXml);
+						product.MergeWithCombination(item.AttributesXml);
 
                         decimal taxRate = decimal.Zero;
-                        decimal shoppingCartUnitPriceWithDiscountBase = _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
+                        decimal shoppingCartUnitPriceWithDiscountBase = _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
                         decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, _workContext.WorkingCurrency);
 
                         cartItemModel.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
@@ -1006,8 +1061,7 @@ namespace SmartStore.Web.Controllers
                     //picture
                     if (_shoppingCartSettings.ShowProductImagesInMiniShoppingCart)
                     {
-                        cartItemModel.Picture = PrepareCartItemPictureModel(sci.Item.Product,
-                            _mediaSettings.MiniCartThumbPictureSize, true, cartItemModel.ProductName, sci.Item.AttributesXml);
+                        cartItemModel.Picture = PrepareCartItemPictureModel(product, _mediaSettings.MiniCartThumbPictureSize, cartItemModel.ProductName, item.AttributesXml);
                     }
 
                     model.Items.Add(cartItemModel);
@@ -1021,15 +1075,18 @@ namespace SmartStore.Web.Controllers
         protected void ParseAndSaveCheckoutAttributes(List<OrganizedShoppingCartItem> cart, FormCollection form)
         {
             string selectedAttributes = "";
-            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
+
             if (!cart.RequiresShipping())
             {
                 //remove attributes which require shippable products
                 checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
             }
+
             foreach (var attribute in checkoutAttributes)
             {
                 string controlId = string.Format("checkout_attribute_{0}", attribute.Id);
+
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
@@ -1039,13 +1096,13 @@ namespace SmartStore.Web.Controllers
                             var rblAttributes = form[controlId];
                             if (!String.IsNullOrEmpty(rblAttributes))
                             {
-                                int selectedAttributeId = int.Parse(rblAttributes);
+                                var selectedAttributeId = rblAttributes.SplitSafe(",").SafeGet(0).ToInt();
                                 if (selectedAttributeId > 0)
-                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                        attribute, selectedAttributeId.ToString());
+                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
                             }
                         }
                         break;
+
                     case AttributeControlType.Checkboxes:
                         {
                             var cblAttributes = form[controlId];
@@ -1053,14 +1110,14 @@ namespace SmartStore.Web.Controllers
                             {
                                 foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                                 {
-                                    int selectedAttributeId = int.Parse(item);
-                                    if (selectedAttributeId > 0)
-                                        selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                            attribute, selectedAttributeId.ToString());
+                                    var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
+									if (selectedAttributeId > 0)
+                                        selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
                                 }
                             }
                         }
                         break;
+
                     case AttributeControlType.TextBox:    
                     case AttributeControlType.MultilineTextbox:
                         {
@@ -1068,29 +1125,31 @@ namespace SmartStore.Web.Controllers
                             if (!String.IsNullOrEmpty(txtAttribute))
                             {
                                 string enteredText = txtAttribute.Trim();
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                    attribute, enteredText);
+                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, enteredText);
                             }
                         }
                         break;
+
                     case AttributeControlType.Datepicker:
                         {
                             var date = form[controlId + "_day"];
                             var month = form[controlId + "_month"];
                             var year = form[controlId + "_year"];
                             DateTime? selectedDate = null;
+
                             try
                             {
                                 selectedDate = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(date));
                             }
                             catch { }
+
                             if (selectedDate.HasValue)
                             {
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                    attribute, selectedDate.Value.ToString("D"));
+                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedDate.Value.ToString("D"));
                             }
                         }
                         break;
+
                     case AttributeControlType.FileUpload:
                         {
                             var postedFile = this.Request.Files[controlId].ToPostedFileResult();
@@ -1123,6 +1182,7 @@ namespace SmartStore.Web.Controllers
                             }
                         }
                         break;
+
                     default:
                         break;
                 }
@@ -1131,6 +1191,27 @@ namespace SmartStore.Web.Controllers
             //save checkout attributes
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.CheckoutAttributes, selectedAttributes);
         }
+
+		private string GetProductUrlWithAttributes(OrganizedShoppingCartItem cartItem, string productSeName)
+		{
+			var attributeQueryData = new List<List<int>>();
+			var product = cartItem.Item.Product;
+
+			if (product.ProductType != ProductType.BundledProduct)
+			{
+				_productAttributeParser.DeserializeQueryData(attributeQueryData, cartItem.Item.AttributesXml, product.Id);
+			}
+			else if (cartItem.ChildItems != null && product.BundlePerItemPricing)
+			{
+				foreach (var childItem in cartItem.ChildItems.Where(x => x.Item.Id != cartItem.Item.Id))
+				{
+					_productAttributeParser.DeserializeQueryData(attributeQueryData, childItem.Item.AttributesXml, childItem.Item.ProductId, childItem.BundleItemData.Item.Id);
+				}
+			}
+
+			var url = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, productSeName);
+			return url;
+		}
 
         #endregion
 
@@ -1150,7 +1231,7 @@ namespace SmartStore.Web.Controllers
 				return Json(new
 				{
 					success = false,
-					message = "No product found with the specified ID"
+					message = T("Products.NotFound", productId)
 				});
 			}
 
@@ -1398,7 +1479,7 @@ namespace SmartStore.Web.Controllers
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
 			{
-				throw new ArgumentException("No file uploaded");
+				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
             int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
@@ -1667,14 +1748,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ContinueShopping()
         {
 			string returnUrl = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.LastContinueShoppingPage, _storeContext.CurrentStore.Id);
-            if (!String.IsNullOrEmpty(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToRoute("HomePage");
-            }
+			return RedirectToReferrer(returnUrl);
         }
 
         [ValidateInput(false)]
@@ -1792,7 +1866,8 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("estimateshipping")]
         public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, FormCollection form)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			var store = _storeContext.CurrentStore;
+			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
             //parse and save checkout attributes
             ParseAndSaveCheckoutAttributes(cart, form);
@@ -1801,11 +1876,17 @@ namespace SmartStore.Web.Controllers
             model.EstimateShipping.CountryId = shippingModel.CountryId;
             model.EstimateShipping.StateProvinceId = shippingModel.StateProvinceId;
             model.EstimateShipping.ZipPostalCode = shippingModel.ZipPostalCode;
+
             PrepareShoppingCartModel(model, cart, setEstimateShippingDefaultAddress: false);
 
             if (cart.RequiresShipping())
             {
-                var address = new Address()
+				if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) != null)
+				{
+					model.EstimateShipping.ShippingInfoUrl = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
+				}
+
+                var address = new Address
                 {
                     CountryId = shippingModel.CountryId,
                     Country = shippingModel.CountryId.HasValue ? _countryService.GetCountryById(shippingModel.CountryId.Value) : null,
@@ -1813,12 +1894,15 @@ namespace SmartStore.Web.Controllers
                     StateProvince = shippingModel.StateProvinceId.HasValue ? _stateProvinceService.GetStateProvinceById(shippingModel.StateProvinceId.Value) : null,
                     ZipPostalCode = shippingModel.ZipPostalCode,
                 };
-				GetShippingOptionResponse getShippingOptionResponse = _shippingService
-					 .GetShippingOptions(cart, address, "", _storeContext.CurrentStore.Id);
+
+				var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, address, "", store.Id);
+
                 if (!getShippingOptionResponse.Success)
                 {
-                    foreach (var error in getShippingOptionResponse.Errors)
-                        model.EstimateShipping.Warnings.Add(error);
+					foreach (var error in getShippingOptionResponse.Errors)
+					{
+						model.EstimateShipping.Warnings.Add(error);
+					}
                 }
                 else
                 {
@@ -1828,13 +1912,13 @@ namespace SmartStore.Web.Controllers
 
                         foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
                         {
-                            var soModel = new EstimateShippingModel.ShippingOptionModel()
+                            var soModel = new EstimateShippingModel.ShippingOptionModel
                             {
 								ShippingMethodId = shippingOption.ShippingMethodId,
                                 Name = shippingOption.Name,
-                                Description = shippingOption.Description,
-
+                                Description = shippingOption.Description
                             };
+
                             //calculate discounted and taxed rate
                             Discount appliedDiscount = null;
                             decimal shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
@@ -1843,12 +1927,13 @@ namespace SmartStore.Web.Controllers
                             decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
                             decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
                             soModel.Price = _priceFormatter.FormatShippingPrice(rate, false /*true*/);
+
                             model.EstimateShipping.ShippingOptions.Add(soModel);
                         }
                     }
                     else
                     {
-                       model.EstimateShipping.Warnings.Add(_localizationService.GetResource("Checkout.ShippingIsNotAllowed"));
+                       model.EstimateShipping.Warnings.Add(T("Checkout.ShippingIsNotAllowed"));
                     }
                 }
             }
@@ -2547,7 +2632,7 @@ namespace SmartStore.Web.Controllers
         {
             Customer customer = _workContext.CurrentCustomer;
 
-            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id, true);
+            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
 			var model = new WishlistModel();
 
             PrepareWishlistModel(model, cart, true);

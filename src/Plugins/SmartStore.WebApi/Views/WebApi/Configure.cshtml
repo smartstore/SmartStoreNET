@@ -107,6 +107,15 @@
 				@Html.ValidationMessageFor(model => model.NoRequestTimestampValidation)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AllowEmptyMd5Hash)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AllowEmptyMd5Hash)
+				@Html.ValidationMessageFor(model => model.AllowEmptyMd5Hash)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LogUnauthorized)

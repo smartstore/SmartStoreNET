@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SmartStore.Core.Domain.Logging;
-using SmartStore.Core.Domain.Customers;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Logging;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Logging
@@ -12,6 +12,7 @@ namespace SmartStore.Core.Logging
 	public class TraceLogger : DisposableObject, ILogger
 	{
 		private readonly TraceSource _traceSource;
+		private readonly StreamWriter _streamWriter;
 
 		public TraceLogger() : this(CommonHelper.MapPath("~/App_Data/SmartStore.log"))
 		{
@@ -24,23 +25,37 @@ namespace SmartStore.Core.Logging
 			_traceSource = new TraceSource("SmartStore");
 			_traceSource.Switch = new SourceSwitch("LogSwitch", "Error");
 			_traceSource.Listeners.Remove("Default");
-			
+
 			var console = new ConsoleTraceListener(false);
 			console.Filter = new EventTypeFilter(SourceLevels.All);
 			console.Name = "console";
+
+			_traceSource.Listeners.Add(console);
 
 			var textListener = new TextWriterTraceListener(fileName);
 			textListener.Filter = new EventTypeFilter(SourceLevels.All);
 			textListener.TraceOutputOptions = TraceOptions.DateTime;
 
-			_traceSource.Listeners.Add(console);
-			_traceSource.Listeners.Add(textListener);
-			
-			// Allow the trace source to send messages to  
-			// listeners for all event types. Currently only  
+			try
+			{
+				// force UTF-8 encoding (even if the text just contains ANSI characters)
+				var append = File.Exists(fileName);
+				_streamWriter = new StreamWriter(fileName, append, Encoding.UTF8);
+
+				textListener.Writer = _streamWriter;
+
+				_traceSource.Listeners.Add(textListener);
+			}
+			catch (IOException)
+			{
+				// file is locked by another process
+			}
+
+			// Allow the trace source to send messages to
+			// listeners for all event types. Currently only
 			// error messages or higher go to the listeners. 
-			// Messages must get past the source switch to  
-			// get to the listeners, regardless of the settings  
+			// Messages must get past the source switch to
+			// get to the listeners, regardless of the settings
 			// for the listeners.
 			_traceSource.Switch.Level = SourceLevels.All;
 		}
@@ -86,12 +101,12 @@ namespace SmartStore.Core.Logging
 		public void InsertLog(LogContext context)
 		{
 			var type = LogLevelToEventType(context.LogLevel);
-			var msg = context.ShortMessage;
-			if (context.FullMessage.HasValue())
+			var msg = context.ShortMessage.Grow(context.FullMessage, Environment.NewLine);
+
+			if (msg.HasValue())
 			{
-				msg += "{0}{1}".FormatCurrent(Environment.NewLine, context.FullMessage);
+				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
 			}
-			_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
 		}
 
 		public void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
@@ -133,6 +148,12 @@ namespace SmartStore.Core.Logging
 		{
 			_traceSource.Flush();
 			_traceSource.Close();
+
+			if (_streamWriter != null)
+			{
+				_streamWriter.Close();
+				_streamWriter.Dispose();
+			}
 		}
 	}
 }

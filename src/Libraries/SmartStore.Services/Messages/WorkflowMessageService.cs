@@ -8,12 +8,14 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -71,13 +73,17 @@ namespace SmartStore.Services.Messages
             this._workContext = workContext;
             this._httpRequest = httpRequest;
 			this._downloadServioce = downloadServioce;
-        }
 
-        #endregion
+			T = NullLocalizer.Instance;
+		}
 
-        #region Utilities
+		public Localizer T { get; set; }
 
-        protected int SendNotification(
+		#endregion
+
+		#region Utilities
+
+		protected int SendNotification(
 			MessageTemplate messageTemplate,
             EmailAccount emailAccount, 
 			int languageId, 
@@ -232,7 +238,7 @@ namespace SmartStore.Services.Messages
             return name ?? customer.Username.EmptyNull();
         }
 
-		protected int EnsureLanguageIsActive(int languageId, int storeId)
+		protected Language EnsureLanguageIsActive(int languageId, int storeId)
         {
 			//load language by specified ID
             var language = _languageService.GetLanguageById(languageId);
@@ -249,8 +255,9 @@ namespace SmartStore.Services.Messages
 			}
 
 			if (language == null)
-				throw new Exception("No active language could be loaded");
-            return language.Id;
+				throw new SmartException(T("Common.Error.NoActiveLanguage"));
+
+            return language;
         }
 
         #endregion
@@ -271,7 +278,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("NewCustomer.Notification", store.Id);
             if (messageTemplate == null)
@@ -285,17 +292,14 @@ namespace SmartStore.Services.Messages
             //event notification
 			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(customer);
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName,
-				replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -310,7 +314,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Customer.WelcomeMessage", store.Id);
             if (messageTemplate == null)
@@ -324,12 +328,11 @@ namespace SmartStore.Services.Messages
             //event notification
 			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -344,7 +347,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Customer.EmailValidationMessage", store.Id);
 			if (messageTemplate == null)
@@ -358,12 +361,11 @@ namespace SmartStore.Services.Messages
             //event notification
 			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -378,7 +380,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Customer.PasswordRecovery", store.Id);
 			if (messageTemplate == null)
@@ -392,12 +394,11 @@ namespace SmartStore.Services.Messages
             //event notification
 			_eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         #endregion
@@ -416,7 +417,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("OrderPlaced.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
@@ -425,13 +426,13 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
@@ -443,10 +444,7 @@ namespace SmartStore.Services.Messages
 				replyToName += ", " + order.BillingAddress.Company;
             }
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName,
-				replyToEmail, replyToName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyToEmail, replyToName);
         }
 
         /// <summary>
@@ -461,7 +459,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("OrderPlaced.CustomerNotification", store.Id);
 			if (messageTemplate == null)
@@ -470,7 +468,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             _messageTokenProvider.AddCompanyTokens(tokens);
@@ -480,12 +478,11 @@ namespace SmartStore.Services.Messages
             // event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -501,10 +498,10 @@ namespace SmartStore.Services.Messages
 
             var order = shipment.Order;
             if (order == null)
-                throw new Exception("Order cannot be loaded");
+                throw new SmartException(T("Order.NotFound", shipment.OrderId));
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("ShipmentSent.CustomerNotification", store.Id);
             if (messageTemplate == null)
@@ -513,19 +510,18 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddShipmentTokens(tokens, shipment, languageId);
-			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, languageId);
+			_messageTokenProvider.AddShipmentTokens(tokens, shipment, language);
+			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -541,10 +537,10 @@ namespace SmartStore.Services.Messages
 
             var order = shipment.Order;
             if (order == null)
-                throw new Exception("Order cannot be loaded");
+                throw new SmartException(T("Order.NotFound", shipment.OrderId));
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("ShipmentDelivered.CustomerNotification", store.Id);
             if (messageTemplate == null)
@@ -553,19 +549,18 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddShipmentTokens(tokens, shipment, languageId);
-			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, languageId);
+			_messageTokenProvider.AddShipmentTokens(tokens, shipment, language);
+			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -580,7 +575,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("OrderCompleted.CustomerNotification", store.Id);
 			if (messageTemplate == null)
@@ -589,7 +584,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             _messageTokenProvider.AddCompanyTokens(tokens);
@@ -599,12 +594,11 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -619,7 +613,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("order");
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("OrderCancelled.CustomerNotification", store.Id);
 			if (messageTemplate == null)
@@ -628,18 +622,17 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -656,7 +649,7 @@ namespace SmartStore.Services.Messages
             var order = orderNote.Order;
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Customer.NewOrderNote", store.Id);
 			if (messageTemplate == null)
@@ -666,18 +659,17 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderNoteTokens(tokens, orderNote);
-			_messageTokenProvider.AddOrderTokens(tokens, orderNote.Order, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, orderNote.Order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, orderNote.Order.Customer);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = order.BillingAddress.Email;
             var toName = string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName);
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -692,7 +684,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("recurringPayment");
 
 			var store = _storeService.GetStoreById(recurringPayment.InitialOrder.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("RecurringPaymentCancelled.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
@@ -701,20 +693,18 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, languageId);
+			_messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, recurringPayment.InitialOrder.Customer);
 			_messageTokenProvider.AddRecurringPaymentTokens(tokens, recurringPayment);
             
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         #endregion
@@ -727,14 +717,13 @@ namespace SmartStore.Services.Messages
         /// <param name="subscription">Newsletter subscription</param>
         /// <param name="languageId">Language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendNewsLetterSubscriptionActivationMessage(NewsLetterSubscription subscription,
-            int languageId)
+        public virtual int SendNewsLetterSubscriptionActivationMessage(NewsLetterSubscription subscription, int languageId)
         {
             if (subscription == null)
                 throw new ArgumentNullException("subscription");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("NewsLetterSubscription.ActivationMessage", store.Id);
 			if (messageTemplate == null)
@@ -748,12 +737,11 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = subscription.Email;
             var toName = "";
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -762,14 +750,13 @@ namespace SmartStore.Services.Messages
         /// <param name="subscription">Newsletter subscription</param>
         /// <param name="languageId">Language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendNewsLetterSubscriptionDeactivationMessage(NewsLetterSubscription subscription,
-            int languageId)
+        public virtual int SendNewsLetterSubscriptionDeactivationMessage(NewsLetterSubscription subscription, int languageId)
         {
             if (subscription == null)
                 throw new ArgumentNullException("subscription");
 
 			var store = _storeContext.CurrentStore;
-			languageId = EnsureLanguageIsActive(languageId, store.Id);
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 			
             var messageTemplate = GetActiveMessageTemplate("NewsLetterSubscription.DeactivationMessage", store.Id);
             if (messageTemplate == null)
@@ -782,12 +769,11 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = subscription.Email;
             var toName = "";
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         #endregion
@@ -814,7 +800,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("product");
 
 			var store = _storeContext.CurrentStore;
-			languageId = EnsureLanguageIsActive(languageId, store.Id);
+			var language = EnsureLanguageIsActive(languageId, store.Id);
             
 			var messageTemplate = GetActiveMessageTemplate("Service.EmailAFriend", store.Id);
 			if (messageTemplate == null)
@@ -824,19 +810,19 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
-			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
+			_messageTokenProvider.AddProductTokens(tokens, product, language);
+
 			tokens.Add(new Token("EmailAFriend.PersonalMessage", personalMessage, true));
 			tokens.Add(new Token("EmailAFriend.Email", customerEmail));
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = friendsEmail;
             var toName = "";
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         public virtual int SendProductQuestionMessage(Customer customer, int languageId, Product product, 
@@ -852,7 +838,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("product");
 			
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 			
             var messageTemplate = GetActiveMessageTemplate("Product.AskQuestion", store.Id);
             if (messageTemplate == null)
@@ -861,7 +847,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddCustomerTokens(tokens, customer);
-			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
+			_messageTokenProvider.AddProductTokens(tokens, product, language);
 
 			tokens.Add(new Token("ProductQuestion.Message", question, true));
             tokens.Add(new Token("ProductQuestion.SenderEmail", senderEmail));
@@ -871,11 +857,11 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
-            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName, senderEmail, senderName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, senderEmail, senderName);
         }
 
         /// <summary>
@@ -894,7 +880,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("customer");
 
             var store = _storeContext.CurrentStore;
-			languageId = EnsureLanguageIsActive(languageId, store.Id);
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Wishlist.EmailAFriend", store.Id);
 			if (messageTemplate == null)
@@ -910,12 +896,11 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = friendsEmail;
             var toName = "";
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         #endregion
@@ -935,7 +920,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("returnRequest");
 
 			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
-			languageId = EnsureLanguageIsActive(languageId, store.Id);
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
@@ -950,17 +935,14 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(returnRequest.Customer);
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName,
-				replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -976,7 +958,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("returnRequest");
 
 			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
-			languageId = EnsureLanguageIsActive(languageId, store.Id);
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", store.Id);
 			if (messageTemplate == null)
@@ -991,14 +973,14 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = returnRequest.Customer.FindEmail();
             var toName = returnRequest.Customer.GetFullName();
 
 			if (toEmail.IsEmpty())
 				return 0;
 
-            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         #endregion
@@ -1013,8 +995,7 @@ namespace SmartStore.Services.Messages
         /// <param name="forum">Forum</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public int SendNewForumTopicMessage(Customer customer,
-            ForumTopic forumTopic, Forum forum, int languageId)
+        public int SendNewForumTopicMessage(Customer customer, ForumTopic forumTopic, Forum forum, int languageId)
         {
             if (customer == null)
             {
@@ -1022,6 +1003,7 @@ namespace SmartStore.Services.Messages
             }
 
 			var store = _storeContext.CurrentStore;
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Forums.NewForumTopic", store.Id);
 			if (messageTemplate == null)
@@ -1034,16 +1016,16 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddStoreTokens(tokens, store);
             _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumTopic);
-			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum, languageId);
+			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum, language);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
 
-            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -1056,9 +1038,7 @@ namespace SmartStore.Services.Messages
         /// <param name="friendlyForumTopicPageIndex">Friendly (starts with 1) forum topic page to use for URL generation</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public int SendNewForumPostMessage(Customer customer,
-            ForumPost forumPost, ForumTopic forumTopic,
-            Forum forum, int friendlyForumTopicPageIndex, int languageId)
+        public int SendNewForumPostMessage(Customer customer, ForumPost forumPost, ForumTopic forumTopic, Forum forum, int friendlyForumTopicPageIndex, int languageId)
         {
             if (customer == null)
             {
@@ -1066,6 +1046,7 @@ namespace SmartStore.Services.Messages
             }
 
 			var store = _storeContext.CurrentStore;
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Forums.NewForumPost", store.Id);
             if (messageTemplate == null)
@@ -1079,16 +1060,16 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddForumPostTokens(tokens, forumPost);
             _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic, friendlyForumTopicPageIndex, forumPost.Id);
-			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum, languageId);
+			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum, language);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
 
-            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -1163,7 +1144,8 @@ namespace SmartStore.Services.Messages
             _messageTokenProvider.AddCustomerTokens(ctx.Tokens, ctx.Customer);
             _messageTokenProvider.AddStoreTokens(ctx.Tokens, _storeService.GetStoreById(ctx.StoreId.Value));
 
-            ctx.LanguageId = EnsureLanguageIsActive(ctx.LanguageId.Value, ctx.StoreId.Value);
+			var language = EnsureLanguageIsActive(ctx.LanguageId.Value, ctx.StoreId.Value);
+			ctx.LanguageId = language.Id;
 
             var messageTemplate = GetActiveMessageTemplate(messageTemplateName, ctx.StoreId.Value);
             if (messageTemplate == null)
@@ -1204,7 +1186,7 @@ namespace SmartStore.Services.Messages
 			if (store == null)
 				store = _storeContext.CurrentStore;
 
-			languageId = EnsureLanguageIsActive(languageId, store.Id);
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("GiftCard.Notification", store.Id);
 			if (messageTemplate == null)
@@ -1217,12 +1199,11 @@ namespace SmartStore.Services.Messages
             
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = giftCard.RecipientEmail;
             var toName = giftCard.RecipientName;
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -1231,14 +1212,13 @@ namespace SmartStore.Services.Messages
         /// <param name="productReview">Product review</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendProductReviewNotificationMessage(ProductReview productReview,
-            int languageId)
+        public virtual int SendProductReviewNotificationMessage(ProductReview productReview, int languageId)
         {
             if (productReview == null)
                 throw new ArgumentNullException("productReview");
 
 			var store = _storeContext.CurrentStore;
-			languageId = EnsureLanguageIsActive(languageId, store.Id);
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Product.ProductReview", store.Id);
 			if (messageTemplate == null)
@@ -1252,17 +1232,14 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(productReview.Customer);
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName,
-				replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1277,7 +1254,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("product");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("QuantityBelow.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
@@ -1285,17 +1262,16 @@ namespace SmartStore.Services.Messages
 
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddProductTokens(tokens, product, languageId);
+			_messageTokenProvider.AddProductTokens(tokens, product, language);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -1306,14 +1282,13 @@ namespace SmartStore.Services.Messages
         /// <param name="vatAddress">Received VAT address</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public virtual int SendNewVatSubmittedStoreOwnerNotification(Customer customer,
-            string vatName, string vatAddress, int languageId)
+        public virtual int SendNewVatSubmittedStoreOwnerNotification(Customer customer, string vatName, string vatAddress, int languageId)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("NewVATSubmitted.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
@@ -1329,17 +1304,14 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(customer);
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName,
-				replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1354,7 +1326,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("blogComment");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Blog.BlogComment", store.Id);
 			if (messageTemplate == null)
@@ -1368,17 +1340,14 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
             // use customer email as reply address
 			var replyTo = GetReplyToEmail(blogComment.Customer);
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName,
-				replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1393,7 +1362,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("newsComment");
 
 			var store = _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 			
 			var messageTemplate = GetActiveMessageTemplate("News.NewsComment", store.Id);
 			if (messageTemplate == null)
@@ -1407,17 +1376,14 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = emailAccount.Email;
             var toName = emailAccount.DisplayName;
 
             // use customer email as sender/reply address
 			var replyTo = GetReplyToEmail(newsComment.Customer);
 
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName,
-				replyTo.Item1, replyTo.Item2);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName, replyTo.Item1, replyTo.Item2);
         }
 
         /// <summary>
@@ -1432,7 +1398,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("subscription");
 
 			var store = _storeService.GetStoreById(subscription.StoreId) ?? _storeContext.CurrentStore;
-            languageId = EnsureLanguageIsActive(languageId, store.Id);
+            var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Customer.BackInStock", store.Id);
 			if (messageTemplate == null)
@@ -1447,13 +1413,12 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var customer = subscription.Customer;
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         #endregion

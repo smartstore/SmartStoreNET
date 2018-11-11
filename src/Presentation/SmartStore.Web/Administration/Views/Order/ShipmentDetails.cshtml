@@ -3,12 +3,10 @@
 @using SmartStore.Core.Domain.Tax;
 @using SmartStore.Core.Domain.Catalog;
 @{    
-    //page title
     ViewBag.Title = T("Admin.Orders.Shipments.ViewDetails").Text;
 }
 @using (Html.BeginForm())
 {
-
     <div class="section-header">
         <div class="title">
             @T("Admin.Orders.Shipments.ViewDetails") - @Model.Id @Html.ActionLink("(" + T("Admin.Orders.Shipments.BackToOrder") + ")", "Edit", new { id = Model.OrderId })
@@ -23,8 +21,10 @@
             }
             <button type="submit" id="shipment-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
         </div>
-    </div>    
+    </div>
+	
     @Html.ValidationSummary(false)
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -82,54 +82,51 @@
 	
     <table class="adminContent">
         <tr>
-            <td class="adminData">
+			<td class="adminData" style="padding: 0;">
 
-                <div class="t-widget t-grid">
-
-                <table class="table table-hover">
-                    <thead>
-                        <tr class="t-grid-header">
-                            <th class="t-header">
-                                @T("Admin.Orders.Shipments.Products.ProductName")
-                            </th>
-                            <th class="t-header">
-                                @T("Admin.Orders.Shipments.Products.SKU")
-                            </th>
-                            <th class="t-header">
-                                @T("Admin.Orders.Shipments.Products.QtyShipped")
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Items)
-                        {
-                            <tr>
-                                <td style="width: 70%;">
-                                    <div>
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>
+								@T("Admin.Orders.Shipments.Products.ProductName")
+							</th>
+							<th>
+								@T("Admin.Orders.Shipments.Products.SKU")
+							</th>
+							<th>
+								@T("Admin.Orders.Shipments.Products.QtyShipped")
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model.Items)
+						{
+							<tr>
+								<td style="width: 70%;">
+									<div>
 										@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
-										
-                                        @if (!String.IsNullOrEmpty(item.AttributeInfo))
-                                        {
-                                            <br />
-                                            @Html.Raw(item.AttributeInfo)
-                                        }
-                                    </div>
-                                </td>
-                                <td style="width: 15%;">
-                                    <div>
-                                        @item.Sku
-                                    </div>
-                                </td>
-                                <td align="center" style="width: 15%;">
-                                    @item.QuantityInThisShipment
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                
-                </div>
-            </td>
+
+										@if (!String.IsNullOrEmpty(item.AttributeInfo))
+										{
+											<br />
+											@Html.Raw(item.AttributeInfo)
+										}
+									</div>
+								</td>
+								<td style="width: 15%;">
+									<div>
+										@item.Sku
+									</div>
+								</td>
+								<td align="center" style="width: 15%;">
+									@item.QuantityInThisShipment
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+
+			</td>
         </tr>
     </table>
 }

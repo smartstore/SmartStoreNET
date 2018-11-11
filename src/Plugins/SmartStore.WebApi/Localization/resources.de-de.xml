@@ -1,5 +1,5 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
-  <LocaleResource Name="Plugins.FriendlyName.Api.WebApi" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.WebApi" AppendRootKey="false">
     <Value>Web-API</Value>
   </LocaleResource>
 	<LocaleResource Name="AdminInstruction">
@@ -30,16 +30,22 @@
     <Value>Aus Sicherheitsgründen darf die Zeit, zu der die Anfrage an die API gesendet wurde, nicht zu weit von der aktuellen Server-Zeit abweichen. Mit dieser Einstellung legen Sie dieses Zeitfenster in Minuten fest.</Value>
   </LocaleResource>	
   <LocaleResource Name="LogUnauthorized">
-    <Value>Unauthorisierte Zugriffe speichern</Value>
+    <Value>Unautorisierte Zugriffe speichern</Value>
   </LocaleResource>
   <LocaleResource Name="LogUnauthorized.Hint">
-    <Value>Jeder unauthorisierte Zugriff wird in der Ereignisliste gespeichert.</Value>
+    <Value>Jeder unautorisierte Zugriff wird in der Ereignisliste gespeichert.</Value>
   </LocaleResource>
   <LocaleResource Name="NoRequestTimestampValidation">
     <Value>Keine Zeitstempelprüfung</Value>
   </LocaleResource>
   <LocaleResource Name="NoRequestTimestampValidation.Hint">
     <Value>Legt fest, ob geprüft werden soll, ob der Zeitstempel der letzten Anfrage kleiner gleich der der aktuellen ist. Verhindert das Auftreten von HmacResult.TimestampOlderThanLastRequest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AllowEmptyMd5Hash">
+    <Value>Authentifizierung ohne MD5-Hash erlauben</Value>
+  </LocaleResource>
+  <LocaleResource Name="AllowEmptyMd5Hash.Hint">
+    <Value>Legt fest, ob Authentifizierungen ohne MD5 Inhalts-Hash erlaubt sind.</Value>
   </LocaleResource>
   <LocaleResource Name="PublicKey">
     <Value>Öffentlicher Schlüssel</Value>

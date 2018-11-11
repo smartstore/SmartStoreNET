@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
+using Autofac;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Infrastructure;
+using SmartStore.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 
@@ -75,7 +78,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (entity == null)
 				return Request.CreateErrorResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
 
-			PropertyInfo pi = null;
+			FastProperty prop = null;
 			string propertyName = null;
 			var lastSegment = odataPath.Segments.Last();
 			var propertySegment = (lastSegment as PropertyAccessPathSegment);
@@ -86,14 +89,14 @@ namespace SmartStore.Web.Framework.WebApi
 				propertyName = propertySegment.PropertyName;
 
 			if (propertyName.HasValue())
-				pi = entity.GetType().GetProperty(propertyName);
+				prop = FastProperty.GetProperty(entity.GetType(), propertyName);
 
-			if (pi == null)
+			if (prop == null)
 				return UnmappedGetProperty(entity, propertyName ?? "");
 
-			var propertyValue = pi.GetValue(entity, null);
+			var propertyValue = prop.GetValue(entity);
 
-			return Request.CreateResponse(HttpStatusCode.OK, pi.PropertyType, propertyValue);
+			return Request.CreateResponse(HttpStatusCode.OK, prop.Property.PropertyType, propertyValue);
 		}
 
 		protected virtual internal HttpResponseMessage UnmappedGetProperty(TEntity entity, string propertyName)
@@ -134,16 +137,6 @@ namespace SmartStore.Web.Framework.WebApi
 			return base.HandleUnmappedRequest(odataPath);
 		}
 
-		//protected virtual IRepository<TEntity> CreateRepository()
-		//{
-		//	var repository = EngineContext.Current.Resolve<IRepository<TEntity>>();
-
-		//	// false means not resolving navigation properties (related entities)
-		//	repository.Context.ProxyCreationEnabled = false;
-
-		//	return repository;
-		//}
-
 		/// <summary>
 		/// Auto injected by Autofac
 		/// </summary>
@@ -162,11 +155,20 @@ namespace SmartStore.Web.Framework.WebApi
 			set;
 		}
 
+		/// <summary>
+		/// Auto injected by Autofac
+		/// </summary>
+		public virtual ICommonServices Services
+		{
+			get;
+			set;
+		}
+
 		public override IQueryable<TEntity> Get()
 		{
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
-
+			
 			return this.GetEntitySet();
 		}
 
@@ -256,6 +258,23 @@ namespace SmartStore.Web.Framework.WebApi
 			return entity;
 		}
 
+		protected internal virtual TEntity GetExpandedEntity(int key, SingleResult<TEntity> result, string path)
+		{
+			var query = result.Queryable;
+
+			foreach (var property in path.SplitSafe(","))
+			{
+				query = query.Expand(property.Trim());
+			}
+
+			var entity = query.FirstOrDefault(x => x.Id == key);
+
+			if (entity == null)
+				throw ExceptionEntityNotFound(key);
+
+			return entity;
+		}
+
 		protected internal virtual TProperty GetExpandedProperty<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
 		{
 			var entity = GetExpandedEntity<TProperty>(key, path);
@@ -269,9 +288,70 @@ namespace SmartStore.Web.Framework.WebApi
 			return property;
 		}
 
+		protected internal virtual IQueryable<TCollection> GetRelatedCollection<TCollection>(
+			int key, 
+			Expression<Func<TEntity, IEnumerable<TCollection>>> navigationProperty)
+		{
+			Guard.ArgumentNotNull(() => navigationProperty);
+
+			var query = GetEntitySet().Where(x => x.Id.Equals(key));
+			return query.SelectMany(navigationProperty);
+		}
+
+		protected internal virtual IQueryable<TCollection> GetRelatedCollection<TCollection>(
+			int key,
+			string navigationProperty)
+		{
+			Guard.ArgumentNotEmpty(() => navigationProperty);
+
+			var ctx = (DbContext)Repository.Context;
+			var product = GetEntityByKey(key);
+			var entry = ctx.Entry(product);
+			var query = entry.Collection(navigationProperty).Query();
+
+			return query.Cast<TCollection>();
+		}
+
+		protected internal virtual SingleResult<TElement> GetRelatedEntity<TElement>(
+			int key,
+			Expression<Func<TEntity, TElement>> navigationProperty)
+		{
+			Guard.ArgumentNotNull(() => navigationProperty);
+
+			var query = GetEntitySet().Where(x => x.Id.Equals(key)).Select(navigationProperty);
+			return SingleResult.Create(query);
+		}
+
+		protected internal virtual SingleResult<TElement> GetRelatedEntity<TElement>(
+			int key,
+			string navigationProperty)
+		{
+			Guard.ArgumentNotEmpty(() => navigationProperty);
+
+			var ctx = (DbContext)Repository.Context;
+			var product = GetEntityByKey(key);
+			var entry = ctx.Entry(product);
+			var query = entry.Reference(navigationProperty).Query().Cast<TElement>();
+
+			return SingleResult.Create(query);
+		}
+
 		public override HttpResponseMessage Post(TEntity entity)
 		{
-			return Request.CreateResponse(HttpStatusCode.OK, CreateEntity(entity));
+			var response = Request.CreateResponse(HttpStatusCode.OK, CreateEntity(entity));
+
+			try
+			{
+				var entityUrl = Url.ODataLink(
+					new EntitySetPathSegment(entity.GetType().Name.EnsureEndsWith("s")),
+					new KeyValuePathSegment(entity.Id.ToString())
+				);
+
+				response.Headers.Location = new Uri(entityUrl);
+			}
+			catch { }
+
+			return response;
 		}
 
 		protected override TEntity CreateEntity(TEntity entity)
@@ -360,22 +440,25 @@ namespace SmartStore.Web.Framework.WebApi
 
 		protected internal virtual object FulfillPropertyOn(TEntity entity, string propertyName, string queryValue)
 		{
+			var container = Services.Container;
+
 			if (propertyName.IsCaseInsensitiveEqual("Country"))
 			{
-				return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoOrThreeLetterIsoCode(queryValue);
+				return container.Resolve<ICountryService>().GetCountryByTwoOrThreeLetterIsoCode(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("StateProvince"))
 			{
-				return EngineContext.Current.Resolve<IStateProvinceService>().GetStateProvinceByAbbreviation(queryValue);
+				return container.Resolve<IStateProvinceService>().GetStateProvinceByAbbreviation(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("Language"))
 			{
-				return EngineContext.Current.Resolve<ILanguageService>().GetLanguageByCulture(queryValue);
+				return container.Resolve<ILanguageService>().GetLanguageByCulture(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("Currency"))
 			{
-				return EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyByCode(queryValue);
+				return container.Resolve<ICurrencyService>().GetCurrencyByCode(queryValue);
 			}
+
 			return null;
 		}
 
@@ -398,27 +481,29 @@ namespace SmartStore.Web.Framework.WebApi
 
 					if (propertyName.HasValue() && queryValue.HasValue())
 					{
-						var pi = entity.GetType().GetProperty(propertyName);
-						if (pi != null)
+						var prop = FastProperty.GetProperty(entity.GetType(), propertyName);
+						if (prop != null)
 						{
-							var propertyValue = pi.GetValue(entity, null);
+							var propertyValue = prop.GetValue(entity);
 							if (propertyValue == null)
 							{
 								object value = FulfillPropertyOn(entity, propertyName, queryValue);
 
-								if (value != null)		// there's no requirement to set a property value of null
+								// there's no requirement to set a property value of null
+								if (value != null) 
 								{
-									pi.SetValue(entity, value);
+									prop.SetValue(entity, value);
 								}
 							}
 						}
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				throw this.ExceptionUnprocessableEntity(exc.Message);
+				throw this.ExceptionUnprocessableEntity(ex.Message);
 			}
+
 			return entity;
 		}
 	}

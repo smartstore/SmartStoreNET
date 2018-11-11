@@ -209,5 +209,10 @@ namespace SmartStore.Services.Payments
         /// <returns>Masked credit card number</returns>
         string GetMaskedCreditCardNumber(string creditCardNumber);
 
+		/// <summary>
+		/// Gets all payment filters
+		/// </summary>
+		/// <returns>List of payment filters</returns>
+		IList<IPaymentMethodFilter> GetAllPaymentMethodFilters();
     }
 }

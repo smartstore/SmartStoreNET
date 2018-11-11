@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
 
 namespace SmartStore.OfflinePayment.Settings
@@ -27,6 +25,7 @@ namespace SmartStore.OfflinePayment.Settings
 	public class ManualPaymentSettings : PaymentSettingsBase, ISettings
 	{
 		public TransactMode TransactMode { get; set; }
+		public string ExcludedCreditCards { get; set; }
 	}
 
     public class PurchaseOrderNumberPaymentSettings : PaymentSettingsBase, ISettings
@@ -45,19 +44,21 @@ namespace SmartStore.OfflinePayment.Settings
 	/// <summary>
 	/// Represents manual payment processor transaction mode
 	/// </summary>
-	public enum TransactMode : int
+	public enum TransactMode
 	{
 		/// <summary>
 		/// Pending
 		/// </summary>
 		Pending = 0,
+
 		/// <summary>
 		/// Authorize
 		/// </summary>
 		Authorize = 1,
+
 		/// <summary>
-		/// Authorize and capture
+		/// Paid
 		/// </summary>
-		AuthorizeAndCapture = 2
+		Paid = 2
 	}
 }

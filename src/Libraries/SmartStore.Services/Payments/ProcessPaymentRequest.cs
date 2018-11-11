@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Payments
 {
@@ -12,7 +13,9 @@ namespace SmartStore.Services.Payments
     {
 		public ProcessPaymentRequest()
 		{
-			this.CustomProperties = new Dictionary<string, CustomPaymentRequestValue>();
+			CustomProperties = new Dictionary<string, CustomPaymentRequestValue>();
+            IsMultiOrder = false;
+            ShoppingCartItems  = new List<OrganizedShoppingCartItem>();
 		}
 
 		/// <summary>
@@ -44,6 +47,11 @@ namespace SmartStore.Services.Payments
         /// Gets or sets a payment method identifier
         /// </summary>
         public string PaymentMethodSystemName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a payment method identifier
+        /// </summary>
+        public bool IsMultiOrder { get; set; }
 
 		/// <summary>
 		/// Use that dictionary for any payment method or checkout flow specific data
@@ -143,6 +151,8 @@ namespace SmartStore.Services.Payments
         /// Gets or sets the total cycles
         /// </summary>
         public int RecurringTotalCycles { get; set; }
+
+        public IList<OrganizedShoppingCartItem> ShoppingCartItems { get; set; }
 
         #endregion
     }

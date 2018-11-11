@@ -8,11 +8,17 @@
         <i class="fa fa-users"></i>
         @T("Admin.ContentManagement.Forums.Manage")
     </div>
+	<div class="options">
+		@Html.Widget("admin_button_toolbar_before")
+
+		@Html.Widget("admin_button_toolbar_after")
+	</div>
 </div>
+
 <table class="adminContent">
     <tr>
         <td>
-            @{ Html.Telerik().Grid(Model)
+            @{Html.Telerik().Grid(Model)
                 .Name("forumgroup-grid")
                 .ToolBar(commands =>
                 {

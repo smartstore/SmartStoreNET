@@ -2,19 +2,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using DotNetOpenAuth.AspNet;
 using DotNetOpenAuth.AspNet.Clients;
+using Newtonsoft.Json.Linq;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
 
 namespace SmartStore.FacebookAuth.Core
 {
-    public class FacebookProviderAuthorizer : IOAuthProviderFacebookAuthorizer
+	public class FacebookProviderAuthorizer : IOAuthProviderFacebookAuthorizer
 	{
 		#region Fields
 		
@@ -24,7 +27,7 @@ namespace SmartStore.FacebookAuth.Core
         private readonly HttpContextBase _httpContext;
 		private readonly ICommonServices _services;
 
-		private FacebookClient _facebookApplication;
+		private FacebookOAuth2Client _facebookApplication;
 
 		#endregion
 
@@ -47,7 +50,7 @@ namespace SmartStore.FacebookAuth.Core
 
 		#region Utilities
 
-		private FacebookClient FacebookApplication
+		private FacebookOAuth2Client FacebookApplication
         {
 			get
 			{
@@ -55,7 +58,7 @@ namespace SmartStore.FacebookAuth.Core
 				{
 					var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(_services.StoreContext.CurrentStore.Id);
 
-					_facebookApplication = new FacebookClient(settings.ClientKeyIdentifier, settings.ClientSecret);
+					_facebookApplication = new FacebookOAuth2Client(settings.ClientKeyIdentifier, settings.ClientSecret);
 				}
 
 				return _facebookApplication;
@@ -90,18 +93,47 @@ namespace SmartStore.FacebookAuth.Core
 			}
 
 			var state = new AuthorizeState(returnUrl, OpenAuthenticationStatus.Error);
-			var error = authResult.Error != null ? authResult.Error.Message : "Unknown error";
-			state.AddError(error);
-            return state;
+
+			state.AddError(authResult.Error != null
+				? authResult.Error.Message
+				: _services.Localization.GetResource("Admin.Common.UnknownError"));
+
+			return state;
         }
+
+		private string GetEmailFromFacebook(string accessToken)
+		{
+			var result = "";
+			var webRequest = WebRequest.Create("https://graph.facebook.com/me?fields=email&access_token=" + EscapeUriDataStringRfc3986(accessToken));
+
+			using (var webResponse = webRequest.GetResponse())
+			using (var stream = webResponse.GetResponseStream())
+			using (var reader = new StreamReader(stream))
+			{
+				var strResponse = reader.ReadToEnd();
+				var info = JObject.Parse(strResponse);
+
+				if (info["email"] != null)
+				{
+					result = info["email"].ToString();
+				}
+			}
+			return result;
+		}
 
 		private void ParseClaims(AuthenticationResult authenticationResult, OAuthAuthenticationParameters parameters)
         {
 			var claims = new UserClaims();
 			claims.Contact = new ContactClaims();
-			
+
 			if (authenticationResult.ExtraData.ContainsKey("username"))
+			{
 				claims.Contact.Email = authenticationResult.ExtraData["username"];
+			}
+			else
+			{
+				claims.Contact.Email = GetEmailFromFacebook(authenticationResult.ExtraData["accesstoken"]);
+			}
 
 			claims.Name = new NameClaims();
 

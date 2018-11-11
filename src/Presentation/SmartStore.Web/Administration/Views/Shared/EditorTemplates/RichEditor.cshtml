@@ -29,7 +29,7 @@
 
 <script type="text/javascript">
     $(function () {
-        var roxyFileman = '@Url.Content("~/Content/filemanager/index.html")';
+    	var roxyFileman = '@Url.Content("~/Administration/Content/filemanager/index.html")';
         var fullPage = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)').data("fullpage");
         CKEDITOR.replace('@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)', {
 			language: '@lang',
@@ -38,7 +38,14 @@
             filebrowserImageBrowseUrl: roxyFileman + '?type=image',
             removeDialogTabs: 'link:upload;image:upload',
             fullPage: (fullPage === true) ? true : false,
-            removePlugins: 'divarea'
+			entities: false,
+			removePlugins: 'divarea',
+			on: {
+				instanceReady: function (evt) {
+					// Fix native context menu
+					evt.editor.container.getPrivate().events.contextmenu.listeners.splice(0, 1);
+				}
+			}
         });
     });
 </script>

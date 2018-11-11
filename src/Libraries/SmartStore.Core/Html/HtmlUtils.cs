@@ -44,9 +44,9 @@ namespace SmartStore.Core.Html
         private static bool IsValidTag(string tag, string tags)
         {
             string[] allowedTags = tags.Split(',');
-            if (tag.IndexOf("javascript") >= 0) return false;
-            if (tag.IndexOf("vbscript") >= 0) return false;
-            if (tag.IndexOf("onclick") >= 0) return false;
+            if (tag.IndexOf("javascript", StringComparison.OrdinalIgnoreCase) >= 0) return false;
+            if (tag.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) >= 0) return false;
+            if (tag.IndexOf("onclick", StringComparison.OrdinalIgnoreCase) >= 0) return false;
 
             var endchars = new char[] { ' ', '>', '/', '\t' };
 
@@ -54,12 +54,7 @@ namespace SmartStore.Core.Html
             if (pos > 0) tag = tag.Substring(0, pos);
             if (tag[0] == '/') tag = tag.Substring(1);
 
-            foreach (string aTag in allowedTags)
-            {
-                if (tag == aTag) return true;
-            }
-
-            return false;
+	        return allowedTags.Any(aTag => tag == aTag);
         }
         #endregion
 
@@ -87,12 +82,12 @@ namespace SmartStore.Core.Html
             {
                 if (stripTags)
                 {
-                    text = HtmlUtils.StripTags(text);
+                    text = StripTags(text);
                 }
 
                 if (allowHtml)
                 {
-                    text = HtmlUtils.EnsureOnlyAllowedHtml(text);
+                    text = EnsureOnlyAllowedHtml(text);
                 }
                 else
                 {
@@ -101,7 +96,7 @@ namespace SmartStore.Core.Html
 
                 if (convertPlainTextToHtml)
                 {
-                    text = HtmlUtils.ConvertPlainTextToHtml(text);
+                    text = ConvertPlainTextToHtml(text);
                 }
 
                 if (allowBBCode)
@@ -208,7 +203,6 @@ namespace SmartStore.Core.Html
         /// Converts an attribute string spec to a html table putting each new line in a TR and each attr name/value in a TD.
         /// </summary>
         /// <param name="text">The text to convert</param>
-        /// <param name="htmlEncode">A value indicating whether to encode (HTML) values</param>
         /// <returns>The formatted (html) string</returns>
         public static string ConvertPlainTextToTable(string text, string tableCssClass = null)
         {

@@ -13,34 +13,41 @@
         @T("Admin.ContentManagement.News.NewsItems")
     </div>
     <div class="options">
+		@Html.Widget("admin_button_toolbar_before")
+
 		<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
 			<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
 		</button>
 
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+
+		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
 
-<table width="100%">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SearchStoreId)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("SearchStoreId", Model.AvailableStores)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-			&nbsp;
-		</td>
-		<td class="adminData">
-			<button type="button" id="search-newsitem" class="btn">
-				<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-			</button>
-        </td>
-    </tr>
-</table>
+@if (Model.AvailableStores.Count > 1)
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<button type="button" id="search-newsitem" class="btn">
+					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+				</button>
+			</td>
+		</tr>
+	</table>
+}
 
 <p></p>
 
@@ -77,6 +84,7 @@
 						columns.Bound(x => x.LimitedToStores)
 							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Hidden(Model.AvailableStores.Count <= 1)
 							.Centered();
                         columns.Bound(x => x.CreatedOn);
                     })

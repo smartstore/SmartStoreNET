@@ -40,13 +40,6 @@
                         @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "comment-text" })
                         @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
                     </div>
-                    string result = TempData["sm.news.addcomment.result"] as string;
-                    if (!String.IsNullOrEmpty(result))
-                    {
-                    <div class="result">
-                        @result
-                    </div>
-                    }
                     <div class="message-error">
                         @Html.ValidationSummary(true)
                     </div>
@@ -59,7 +52,6 @@
                     <div class="buttons">
                         <input type="submit" name="add-comment" value="@T("News.Comments.SubmitButton")" />
                     </div>
-                       
                 }
             </div>
             if (Model.Comments.Count > 0)

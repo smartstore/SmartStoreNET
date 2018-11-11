@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -27,13 +27,16 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ProductThumbPictureSizeOnProductDetailsPage")]
         public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.MessageProductThumbPictureSize")]
+		public int MessageProductThumbPictureSize { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.AssociatedProductPictureSize")]
         public int AssociatedProductPictureSize { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.BundledProductPictureSize")]
 		public int BundledProductPictureSize { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Media.CategoryThumbPictureSize")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Media.CategoryThumbPictureSize")]
         public int CategoryThumbPictureSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.ManufacturerThumbPictureSize")]

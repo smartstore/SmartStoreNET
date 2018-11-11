@@ -21,6 +21,7 @@
         }
     }
 </script>
+
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -115,6 +116,15 @@
 			}		
         </td>
     </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.UsedMemorySize)
+		</td>
+		<td class="adminData">
+			@Model.UsedMemorySizeString.NaIfEmpty()
+			<a href='@Url.Action("GarbageCollect")' style="margin-left: 10px">@T("Admin.System.SystemInfo.GarbageCollect")</a>
+		</td>
+	</tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.LoadedAssemblies)

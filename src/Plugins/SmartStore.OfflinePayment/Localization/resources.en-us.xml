@@ -115,10 +115,16 @@
         </Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode">
-        <Value>After checkout mark payment as</Value>
+        <Value>Payment status after order completion</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode.Hint">
-        <Value>Specify transaction mode.</Value>
+        <Value>Specifies the payment status after order completion.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ExcludedCreditCards">
+        <Value>Excluded credit cards</Value>
+      </LocaleResource>
+      <LocaleResource Name="ExcludedCreditCards.Hint">
+        <Value>Credit cards that customers may not pay with.</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>
@@ -208,7 +214,7 @@
   </LocaleResource>
 
   <!-- PuchaseOrderNumber -->
-  <LocaleResource Name="Plugins.FriendlyName.Payments.PuchaseOrder" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.PurchaseOrderNumber" AppendRootKey="false">
     <Value>Purchase order</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payments.PuchaseOrder" AppendRootKey="false">

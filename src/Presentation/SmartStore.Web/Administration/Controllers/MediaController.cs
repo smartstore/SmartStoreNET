@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Controllers
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
 			{
-				return new UploadFileResult { Message = "No file uploaded" };
+				return new UploadFileResult { Message = T("Common.NoFileUploaded") };
 			}
 
 			if (postedFile.FileName.IsEmpty())

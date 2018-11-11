@@ -53,7 +53,7 @@ namespace SmartStore.Services.Customers
         }
 
         /// <summary>
-        /// Gets a value indicating whether customer a search engine
+        /// Gets a value indicating whether customer is a search engine
         /// </summary>
         /// <param name="customer">Customer</param>
         /// <returns>Result</returns>
@@ -84,13 +84,13 @@ namespace SmartStore.Services.Customers
 			return result;
 		}
 
-        /// <summary>
-        /// Gets a value indicating whether customer is administrator
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
-        /// <returns>Result</returns>
-        public static bool IsAdmin(this Customer customer, bool onlyActiveCustomerRoles = true)
+		/// <summary>
+		/// Gets a value indicating whether customer is administrator
+		/// </summary>
+		/// <param name="customer">Customer</param>
+		/// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
+		/// <returns>Result</returns>
+		public static bool IsAdmin(this Customer customer, bool onlyActiveCustomerRoles = true)
         {
             return IsInCustomerRole(customer, SystemCustomerRoleNames.Administrators, onlyActiveCustomerRoles);
         }
@@ -287,14 +287,15 @@ namespace SmartStore.Services.Customers
 
 			return count;
 		}
-		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null, bool orderById = false)
+
+		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null)
 		{
 			var rawItems = customer.ShoppingCartItems.Filter(cartType, storeId);
 
-			if (orderById)
-				rawItems = rawItems.OrderByDescending(x => x.Id);
-
-			var organizedItems = rawItems.ToList().Organize();
+			var organizedItems = rawItems
+				.OrderByDescending(x => x.Id)
+				.ToList()
+				.Organize();
 
 			return organizedItems.ToList();
 		}

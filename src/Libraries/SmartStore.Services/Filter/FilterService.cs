@@ -5,12 +5,12 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Text;
 using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Filter
 {
@@ -53,6 +53,7 @@ namespace SmartStore.Services.Filter
 		{
 			if (value.HasValue() && !value.IsCaseInsensitiveEqual("null"))
 				return value;
+
 			return alternativeValue;
 		}
 
@@ -78,16 +79,16 @@ namespace SmartStore.Services.Filter
 			//if (curlyBracketFormatting)
 			//	return value.FormatWith("\"{0}\"", value.Replace("\"", "\"\""));
 
-			Type t = Type.GetType("System.{0}".FormatWith(ValidateValue(type, _defaultType)));
+			Type t = Type.GetType("System.{0}".FormatInvariant(ValidateValue(type, _defaultType)));
 
-			var result = CommonHelper.GetTypeConverter(t).ConvertFromString(null, CultureInfo.InvariantCulture, value);
+			var result = TypeConverterFactory.GetConverter(t).ConvertFrom(CultureInfo.InvariantCulture, value);
 
 			return result;
 		}
 
 		private bool IsShortcut(FilterSql context, FilterCriteria itm, ref int index)
 		{
-			if (itm.Entity == ShortcutPrice)
+			if (itm.Entity.IsCaseInsensitiveEqual(ShortcutPrice))
 			{
 				// TODO: where clause of special price not correct. product can appear in price and in special price range.
 
@@ -118,7 +119,7 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(DateTime.UtcNow);
 				}
 			}
-			else if (itm.Entity == ShortcutSpecAttribute)
+			else if (itm.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute))
 			{
 				context.WhereClause.AppendFormat("SpecificationAttributeOptionId {0} {1}", itm.Operator == null ? "=" : itm.Operator.ToString(), FormatParameterIndex(ref index));
 
@@ -163,8 +164,9 @@ namespace SmartStore.Services.Filter
 		{
 			if (_products == null)
 			{
-				var searchContext = new ProductSearchContext()
+				var searchContext = new ProductSearchContext
 				{
+					Query = _productRepository.TableUntracked,
 					FeaturedProducts = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false),
 					StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
 					VisibleIndividuallyOnly = true
@@ -191,17 +193,6 @@ namespace SmartStore.Services.Filter
 
 					_products = _productService.PrepareProductSearchQuery(searchContext);
 				}
-
-				//string.Join(", ", distinctIds.ToList()).Dump();
-
-				//_products
-				//	.Select(x => new { x.Id, x.Name })
-				//	.ToList()
-				//	.ForEach(x => {
-				//		"{0} {1}".FormatWith(x.Id, x.Name).Dump();
-				//	});
-
-				//_products.ToString().Dump(true);
 			}
 			return _products;
 		}
@@ -262,19 +253,28 @@ namespace SmartStore.Services.Filter
 
 			var grouped =
 				from m in manus
-				orderby m.DisplayOrder
 				group m by m.Id into grp
 				orderby grp.Key
 				select new FilterCriteria
 				{
 					MatchCount = grp.Count(),
-					Value = grp.FirstOrDefault().Name
+					Value = grp.FirstOrDefault().Name,
+					DisplayOrder = grp.FirstOrDefault().DisplayOrder
 				};
 
-			grouped = grouped.OrderByDescending(m => m.MatchCount);
+			if (_catalogSettings.SortFilterResultsByMatches)
+			{
+				grouped = grouped.OrderByDescending(m => m.MatchCount);
+			}
+			else
+			{
+				grouped = grouped.OrderBy(m => m.DisplayOrder);
+			}
 
 			if (!getAll)
+			{
 				grouped = grouped.Take(_catalogSettings.MaxFilterItemsToDisplay);
+			}
 
 			var lst = grouped.ToList();
 
@@ -290,17 +290,20 @@ namespace SmartStore.Services.Filter
 
 		private List<FilterCriteria> ProductFilterableSpecAttributes(FilterProductContext context, string attributeName = null)
 		{
+			List<FilterCriteria> criterias = null;
+			var languageId = _services.WorkContext.WorkingLanguage.Id;
 			var query = ProductFilter(context);
 
 			var attributes =
 				from p in query
 				from sa in p.ProductSpecificationAttributes
 				where sa.AllowFiltering
-				orderby sa.DisplayOrder
 				select sa.SpecificationAttributeOption;
 
 			if (attributeName.HasValue())
+			{
 				attributes = attributes.Where(a => a.SpecificationAttribute.Name == attributeName);
+			}
 
 			var grouped =
 				from a in attributes
@@ -310,27 +313,55 @@ namespace SmartStore.Services.Filter
 					Name = g.FirstOrDefault().SpecificationAttribute.Name,
 					Value = g.FirstOrDefault().Name,
 					ID = g.Key.Id,
-					ParentId = g.FirstOrDefault().SpecificationAttribute.Id,
-					MatchCount = g.Count()
+					PId = g.FirstOrDefault().SpecificationAttribute.Id,
+					MatchCount = g.Count(),
+					DisplayOrder = g.FirstOrDefault().SpecificationAttribute.DisplayOrder,
+					DisplayOrderValues = g.FirstOrDefault().DisplayOrder
 				};
 
+			if (_catalogSettings.SortFilterResultsByMatches)
+			{
+				criterias = grouped
+					.OrderBy(a => a.DisplayOrder)
+					.ThenByDescending(a => a.MatchCount)
+					.ThenBy(a => a.DisplayOrderValues)
+					.ToList();
+			}
+			else
+			{
+				criterias = grouped
+					.OrderBy(a => a.DisplayOrder)
+					.ThenBy(a => a.DisplayOrderValues)
+					.ToList();
+			}
 
-			var lst = grouped.OrderByDescending(a => a.MatchCount).ToList();
-			int languageId = _services.WorkContext.WorkingLanguage.Id;
-
-			lst.ForEach(c =>
+			criterias.ForEach(c =>
 			{
 				c.Entity = ShortcutSpecAttribute;
 				c.IsInactive = true;
 
-				if (c.ParentId != 0)
-					c.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ParentId, "SpecificationAttribute", "Name");
+				if (c.PId.HasValue)
+					c.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.PId.Value, "SpecificationAttribute", "Name");
 
 				if (c.ID.HasValue)
 					c.ValueLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ID.Value, "SpecificationAttributeOption", "Name");
 			});
 
-			return lst;
+			return criterias;
+		}
+
+		private void AddChildCategoryIds(List<int> result, int categoryId)
+		{
+			var ids = _categoryService.GetAllCategoriesByParentCategoryId(categoryId).Select(x => x.Id);
+
+			foreach (var id in ids)
+			{
+				if (!result.Contains(id))
+				{
+					result.Add(id);
+					AddChildCategoryIds(result, id);
+				}
+			}
 		}
 
 		public virtual List<FilterCriteria> Deserialize(string jsonData)
@@ -352,12 +383,13 @@ namespace SmartStore.Services.Filter
 			//criteria.FindAll(c => c.Type.IsNullOrEmpty()).ForEach(c => c.Type = _defaultType);
 			if (criteria != null && criteria.Count > 0)
 				return JsonConvert.SerializeObject(criteria);
+
 			return "";
 		}
 
 		public virtual FilterProductContext CreateFilterProductContext(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode)
 		{
-			var context = new FilterProductContext()
+			var context = new FilterProductContext
 			{
 				Filter = filter,
 				ParentCategoryID = categoryID,
@@ -371,9 +403,18 @@ namespace SmartStore.Services.Filter
 
 			if (_catalogSettings.ShowProductsFromSubcategories)
 			{
-				context.CategoryIds.AddRange(
-					_categoryService.GetAllCategoriesByParentCategoryId(categoryID).Select(x => x.Id)
-				);
+				AddChildCategoryIds(context.CategoryIds, categoryID);
+			}
+
+			int languageId = _services.WorkContext.WorkingLanguage.Id;
+
+			foreach (var criteria in context.Criteria.Where(x => x.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute)))
+			{
+				if (criteria.PId.HasValue)
+					criteria.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, criteria.PId.Value, "SpecificationAttribute", "Name");
+
+				if (criteria.ID.HasValue)
+					criteria.ValueLocalized = _localizedEntityService.GetLocalizedValue(languageId, criteria.ID.Value, "SpecificationAttributeOption", "Name");
 			}
 
 			return context;
@@ -458,6 +499,7 @@ namespace SmartStore.Services.Filter
 				context.Criteria.Clear();	// !
 
 			context.Criteria = findIn.FindAll(match);
+
 			return ToWhereClause(context);
 		}
 
@@ -467,13 +509,13 @@ namespace SmartStore.Services.Filter
 			var query = AllProducts(context.CategoryIds);
 
 			// prices
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == ShortcutPrice))
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity.IsCaseInsensitiveEqual(ShortcutPrice)))
 			{
 				query = query.Where(sql.WhereClause.ToString(), sql.Values.ToArray());
 			}
 
 			// manufacturer
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity.IsCaseInsensitiveEqual("Manufacturer")))
 			{
 				var pmq =
 					from p in query
@@ -487,7 +529,7 @@ namespace SmartStore.Services.Filter
 			}
 
 			// specification attribute
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "SpecificationAttributeOption" || c.Entity == ShortcutSpecAttribute)))
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity.IsCaseInsensitiveEqual("SpecificationAttributeOption") || c.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute))))
 			{
 				//var saq = (
 				//	from p in query
@@ -497,7 +539,7 @@ namespace SmartStore.Services.Filter
 				//query = saq.Select(sa => sa.Product);
 
 				int countSameNameAttributes = sql.Criteria
-					.Where(c => c.Entity == ShortcutSpecAttribute)
+					.Where(c => c.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute))
 					.GroupBy(c => c.Name)
 					.Count();
 
@@ -552,10 +594,10 @@ namespace SmartStore.Services.Filter
 
 		public virtual void ProductFilterable(FilterProductContext context)
 		{
-			if (context.Criteria.FirstOrDefault(c => c.Entity == FilterService.ShortcutPrice) == null)
+			if (context.Criteria.FirstOrDefault(c => c.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice)) == null)
 				context.Criteria.AddRange(ProductFilterablePrices(context));
 
-			if (context.Criteria.FirstOrDefault(c => c.Name == "Name" && c.Entity == "Manufacturer") == null)
+			if (context.Criteria.FirstOrDefault(c => c.Name.IsCaseInsensitiveEqual("Name") && c.Entity.IsCaseInsensitiveEqual("Manufacturer")) == null)
 				context.Criteria.AddRange(ProductFilterableManufacturer(context));
 
 			context.Criteria.AddRange(ProductFilterableSpecAttributes(context));
@@ -568,18 +610,18 @@ namespace SmartStore.Services.Filter
 
 			if (criteriaMultiSelect != null)
 			{
-				context.Criteria.RemoveAll(c => c.Name == criteriaMultiSelect.Name && c.Entity == criteriaMultiSelect.Entity);
+				context.Criteria.RemoveAll(c => c.Name.IsCaseInsensitiveEqual(criteriaMultiSelect.Name) && c.Entity.IsCaseInsensitiveEqual(criteriaMultiSelect.Entity));
 
-				if (criteriaMultiSelect.Name == "Name" && criteriaMultiSelect.Entity == "Manufacturer")
+				if (criteriaMultiSelect.Name.IsCaseInsensitiveEqual("Name") && criteriaMultiSelect.Entity.IsCaseInsensitiveEqual("Manufacturer"))
 					inactive = ProductFilterableManufacturer(context, true);
-				else if (criteriaMultiSelect.Entity == FilterService.ShortcutPrice)
+				else if (criteriaMultiSelect.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice))
 					inactive = ProductFilterablePrices(context);
-				else if (criteriaMultiSelect.Entity == FilterService.ShortcutSpecAttribute)
+				else if (criteriaMultiSelect.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutSpecAttribute))
 					inactive = ProductFilterableSpecAttributes(context, criteriaMultiSelect.Name);
 			}
 
 			// filters WITHOUT the multiple selectable filters
-			string excludedFilter = Serialize(context.Criteria);
+			var excludedFilter = Serialize(context.Criteria);
 
 			// filters WITH the multiple selectable filters (required for highlighting selected values)
 			context.Criteria = Deserialize(context.Filter);

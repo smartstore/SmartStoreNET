@@ -7,8 +7,15 @@
     <div class="block-body listbox">
         <ul>
             @Html.Widget("infoblock_before")
-            <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a> </li>
-            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "aboutus" })">@T("AboutUs")</a></li>
+
+			@if (Model.TopicPageUrls.ContainsKey("contactus"))
+			{
+				<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+			}
+			@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+			{
+				<li><a href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
+			}
             @if (Model.BlogEnabled)
             {
                 <li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
@@ -33,9 +40,19 @@
             {
                 <li><a href="@Url.RouteUrl("Sitemap")">@T("Sitemap")</a></li>
             }
-            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "shippinginfo" })">@T("ShippingReturns")</a></li>
-            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })">@T("PrivacyNotice")</a></li>
-            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "conditionsofuse" })">@T("ConditionsOfUse")</a></li>
+			@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+			{
+				<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
+			}
+			@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
+			{
+				<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
+			}
+			@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
+			{
+				<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
+			}
+
             @Html.Widget("infoblock_after")
         </ul>
     </div>

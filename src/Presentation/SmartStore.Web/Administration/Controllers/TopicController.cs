@@ -9,7 +9,9 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -122,11 +124,9 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new TopicListModel();
 
-			// stores
-			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in _storeService.GetAllStores())
 			{
-				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
 			}
 
 			return View(model);
@@ -135,20 +135,29 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command, TopicListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
-                return AccessDeniedView();
+			var gridModel = new GridModel<TopicModel>();
 
-            var topics = _topicService.GetAllTopics(model.SearchStoreId);
-            var gridModel = new GridModel<TopicModel>
-            {
-				Data = topics.Select(x => { 
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+			{
+				var topics = _topicService.GetAllTopics(model.SearchStoreId);
+
+				gridModel.Data = topics.Select(x =>
+				{
 					var item = x.ToModel();
 					// otherwise maxJsonLength could be exceeded
 					item.Body = "";
 					return item;
-				}),
-                Total = topics.Count
-            };
+				});
+
+				gridModel.Total = topics.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<TopicModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
 			{
 				MaxJsonLength = int.MaxValue,
@@ -176,7 +185,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(TopicModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
@@ -232,7 +241,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
         public ActionResult Edit(TopicModel model, bool continueEditing, FormCollection form)
         {

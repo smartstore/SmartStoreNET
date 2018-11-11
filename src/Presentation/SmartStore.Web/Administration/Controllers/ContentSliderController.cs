@@ -2,20 +2,22 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.ContentSlider;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Cms;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
-using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Media;
-using SmartStore.Core.Domain.Localization;
+using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Core;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class ContentSliderController :  AdminControllerBase
     {
         #region Fields
@@ -65,12 +67,9 @@ namespace SmartStore.Admin.Controllers
 			var allStores = _storeService.GetAllStores();
 			var model = _contentSliderSettings.ToModel();
 
-			model.StoreCount = allStores.Count;
-
-			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in allStores)
 			{
-				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
 			}
 
 			foreach (var slide in model.Slides)
@@ -204,7 +203,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult EditSlide(ContentSliderSlideModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageContentSlider))
@@ -235,16 +234,11 @@ namespace SmartStore.Admin.Controllers
                     model.LanguageName = lang.Name;
                 }
 
-                model.PictureUrl = _pictureService.GetPictureUrl(model.PictureId);            
+                model.PictureUrl = _pictureService.GetPictureUrl(model.PictureId);
 
-                //delete an old picture (if deleted or updated)
-                int prevPictureId = _contentSliderSettings.Slides[index].PictureId;
-                if (prevPictureId > 0 && prevPictureId != model.PictureId)
-                {
-                    var prevPicture = _pictureService.GetPictureById(prevPictureId);
-                    if (prevPicture != null)
-                        _pictureService.DeletePicture(prevPicture);
-                }
+				// delete an old picture (if deleted or updated)
+				int prevPictureId = _contentSliderSettings.Slides[index].PictureId;
+				MediaHelper.UpdatePictureTransientState(prevPictureId, model.PictureId, true);
 
                 _contentSliderSettings.Slides[index] = model.ToEntity();
                 _settingService.SaveSetting(_contentSliderSettings);

@@ -5,10 +5,10 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-    /// <summary>
-    /// Picture service interface
-    /// </summary>
-    public partial interface IPictureService
+	/// <summary>
+	/// Picture service interface
+	/// </summary>
+	public partial interface IPictureService
     {
         /// <summary>
         /// Validates input picture dimensions and prevents that the image size exceeds global max size
@@ -22,20 +22,19 @@ namespace SmartStore.Services.Media
 		/// Finds an equal picture by comparing the binary buffer
 		/// </summary>
 		/// <param name="path">The picture to find a duplicate for</param>
-		/// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
+		/// <param name="pictures">The sequence of pictures to seek within for duplicates</param>
 		/// <param name="equalPictureId">Id of equal picture if any</param>
 		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-		byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures, out int equalPictureId);
+		byte[] FindEqualPicture(string path, IEnumerable<Picture> pictures, out int equalPictureId);
 
 		/// <summary>
 		/// Finds an equal picture by comparing the binary buffer
 		/// </summary>
 		/// <param name="pictureBinary">Binary picture data</param>
-		/// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
+		/// <param name="pictures">The sequence of pictures to seek within for duplicates</param>
 		/// <param name="equalPictureId">Id of equal picture if any</param>
 		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-		byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> productPictures, out int equalPictureId);
-
+		byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId);
         
         /// <summary>
         /// Gets the loaded picture binary depending on picture storage settings
@@ -136,6 +135,13 @@ namespace SmartStore.Services.Media
         /// <param name="recordsToReturn">Number of records to return. 0 if you want to get all items</param>
         /// <returns>Pictures</returns>
         IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
+
+		/// <summary>
+		/// Gets pictures by picture identifier
+		/// </summary>
+		/// <param name="pictureIds">Picture identifier</param>
+		/// <returns>Pictures</returns>
+		IList<Picture> GetPicturesByIds(int[] pictureIds);
 
 		/// <summary>
 		/// Inserts a picture

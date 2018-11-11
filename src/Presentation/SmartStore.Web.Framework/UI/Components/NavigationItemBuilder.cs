@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using System.Web.Routing;
 using System.Web.WebPages;
 using SmartStore.Core;
@@ -99,7 +100,7 @@ namespace SmartStore.Web.Framework.UI
 
         public TBuilder HtmlAttributes(object attributes)
         {
-            return this.HtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public TBuilder HtmlAttributes(IDictionary<string, object> attributes)
@@ -111,7 +112,7 @@ namespace SmartStore.Web.Framework.UI
 
         public TBuilder LinkHtmlAttributes(object attributes)
         {
-            return this.LinkHtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.LinkHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public TBuilder LinkHtmlAttributes(IDictionary<string, object> attributes)
@@ -185,9 +186,18 @@ namespace SmartStore.Web.Framework.UI
         where TBuilder : NavigationItemtWithContentBuilder<TItem, TBuilder>
     {
 
-        public NavigationItemtWithContentBuilder(TItem item)
+        public NavigationItemtWithContentBuilder(TItem item, HtmlHelper htmlHelper)
             : base(item)
         {
+            Guard.ArgumentNotNull(() => htmlHelper);
+
+            HtmlHelper = htmlHelper;
+        }
+
+        protected HtmlHelper HtmlHelper
+        {
+            get;
+            private set;
         }
 
 		/// <summary>
@@ -226,9 +236,37 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
+        /// <summary>
+        /// Renders child action as content
+        /// </summary>
+        /// <param name="action">Action name</param>
+        /// <param name="controller">Controller name</param>
+        /// <param name="routeValues">Route values</param>
+        /// <returns>builder instance</returns>
+        public TBuilder Content(string action, string controller, object routeValues)
+        {
+            return Content(action, controller, new RouteValueDictionary(routeValues));       
+        }
+
+        /// <summary>
+        /// Renders child action as content
+        /// </summary>
+        /// <param name="action">Action name</param>
+        /// <param name="controller">Controller name</param>
+        /// <param name="routeValues">Route values</param>
+        /// <returns>builder instance</returns>
+        public TBuilder Content(string action, string controller, RouteValueDictionary routeValues)
+        {
+            return this.Content(x => new HelperResult(writer => 
+            {
+                var value = this.HtmlHelper.Action(action, controller, routeValues);
+                writer.Write(value);
+            }));
+        }
+
         public TBuilder ContentHtmlAttributes(object attributes)
         {
-            return this.ContentHtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.ContentHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public TBuilder ContentHtmlAttributes(IDictionary<string, object> attributes)

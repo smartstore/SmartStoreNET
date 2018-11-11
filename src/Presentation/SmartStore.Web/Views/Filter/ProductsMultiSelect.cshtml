@@ -14,7 +14,8 @@
 		<input type="hidden" name="filter" value="@Model.Context.Filter" />
 	</form>
 
-	@foreach (var itm in Model.Context.Criteria.Where(c => c.IsInactive).OrderBy(c => c.Value)) {
+	@foreach (var itm in Model.Context.Criteria.Where(c => c.IsInactive).OrderBy(c => c.Value))
+	{
 		<div class="checkbox-container">
 			<label class="checkbox inline ellipsis@(Model.Context.IsActive(itm) ? " highlight" : "")" title="@itm.ToDescription()">
 				<input type="checkbox" name="checkFilter@(Model.Context.Criteria.IndexOf(itm))" value="@itm.ToString()"@(Model.Context.IsActive(itm) ? " checked=\"checked\"" : "") />

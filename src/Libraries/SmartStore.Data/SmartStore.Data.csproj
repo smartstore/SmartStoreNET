@@ -62,8 +62,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EFCache">
       <HintPath>..\..\packages\EntityFramework.Cache.1.0.0\lib\net45\EFCache.dll</HintPath>
@@ -92,9 +93,9 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.SqlServer.Scripting.11.0.2100.61\lib\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -120,8 +121,11 @@
     </Compile>
     <Compile Include="Caching\EfCacheImpl.cs" />
     <Compile Include="Caching\EfCachingPolicy.cs" />
+    <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
+    <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
+    <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
@@ -344,6 +348,68 @@
     <Compile Include="Migrations\201508142203054_CronExpressions.Designer.cs">
       <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509031112324_Merge3.cs" />
+    <Compile Include="Migrations\201509031112324_Merge3.Designer.cs">
+      <DependentUpon>201509031112324_Merge3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508091512101_ExportFramework.cs" />
+    <Compile Include="Migrations\201508091512101_ExportFramework.Designer.cs">
+      <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508211346171_Merge1.cs" />
+    <Compile Include="Migrations\201508211346171_Merge1.Designer.cs">
+      <DependentUpon>201508211346171_Merge1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509021536425_ExportFramework1.cs" />
+    <Compile Include="Migrations\201509021536425_ExportFramework1.Designer.cs">
+      <DependentUpon>201509021536425_ExportFramework1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509150931528_ExportFramework2.cs" />
+    <Compile Include="Migrations\201509150931528_ExportFramework2.Designer.cs">
+      <DependentUpon>201509150931528_ExportFramework2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511271019577_ExportFramework3.cs" />
+    <Compile Include="Migrations\201511271019577_ExportFramework3.Designer.cs">
+      <DependentUpon>201511271019577_ExportFramework3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512151526290_ImportFramework.cs" />
+    <Compile Include="Migrations\201512151526290_ImportFramework.Designer.cs">
+      <DependentUpon>201512151526290_ImportFramework.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601262000441_ImportFramework1.cs" />
+    <Compile Include="Migrations\201601262000441_ImportFramework1.Designer.cs">
+      <DependentUpon>201601262000441_ImportFramework1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603121451066_ThirdPartyEmailHandOver.cs" />
+    <Compile Include="Migrations\201603121451066_ThirdPartyEmailHandOver.Designer.cs">
+      <DependentUpon>201603121451066_ThirdPartyEmailHandOver.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605020640016_GtinMpnIndex.cs" />
+    <Compile Include="Migrations\201605020640016_GtinMpnIndex.Designer.cs">
+      <DependentUpon>201605020640016_GtinMpnIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605061916117_SwapColumnMappingValues.cs" />
+    <Compile Include="Migrations\201605061916117_SwapColumnMappingValues.Designer.cs">
+      <DependentUpon>201605061916117_SwapColumnMappingValues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605111140288_ImportExtraData.cs" />
+    <Compile Include="Migrations\201605111140288_ImportExtraData.Designer.cs">
+      <DependentUpon>201605111140288_ImportExtraData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605191216116_CheckoutAttributeMultiStore.cs" />
+    <Compile Include="Migrations\201605191216116_CheckoutAttributeMultiStore.Designer.cs">
+      <DependentUpon>201605191216116_CheckoutAttributeMultiStore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605201911421_ExportRevision.cs" />
+    <Compile Include="Migrations\201605201911421_ExportRevision.Designer.cs">
+      <DependentUpon>201605201911421_ExportRevision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607111548571_FixExportDeploymentIsPublic.cs" />
+    <Compile Include="Migrations\201607111548571_FixExportDeploymentIsPublic.Designer.cs">
+      <DependentUpon>201607111548571_FixExportDeploymentIsPublic.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
+    <Compile Include="Setup\Builder\PermissionMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -352,7 +418,6 @@
     <Compile Include="Extensions\DataReaderExtensions.cs" />
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
-    <Compile Include="Extensions\SqlDataReaderExtensions.cs" />
     <Compile Include="Setup\DbMigrationException.cs" />
     <Compile Include="Setup\DbSeedingMigrator.cs" />
     <Compile Include="Setup\IDbMigrationExtensions.cs" />
@@ -648,6 +713,51 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508142203054_CronExpressions.resx">
       <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509031112324_Merge3.resx">
+      <DependentUpon>201509031112324_Merge3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508091512101_ExportFramework.resx">
+      <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508211346171_Merge1.resx">
+      <DependentUpon>201508211346171_Merge1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509021536425_ExportFramework1.resx">
+      <DependentUpon>201509021536425_ExportFramework1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509150931528_ExportFramework2.resx">
+      <DependentUpon>201509150931528_ExportFramework2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511271019577_ExportFramework3.resx">
+      <DependentUpon>201511271019577_ExportFramework3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512151526290_ImportFramework.resx">
+      <DependentUpon>201512151526290_ImportFramework.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601262000441_ImportFramework1.resx">
+      <DependentUpon>201601262000441_ImportFramework1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603121451066_ThirdPartyEmailHandOver.resx">
+      <DependentUpon>201603121451066_ThirdPartyEmailHandOver.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605020640016_GtinMpnIndex.resx">
+      <DependentUpon>201605020640016_GtinMpnIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605061916117_SwapColumnMappingValues.resx">
+      <DependentUpon>201605061916117_SwapColumnMappingValues.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605111140288_ImportExtraData.resx">
+      <DependentUpon>201605111140288_ImportExtraData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605191216116_CheckoutAttributeMultiStore.resx">
+      <DependentUpon>201605191216116_CheckoutAttributeMultiStore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605201911421_ExportRevision.resx">
+      <DependentUpon>201605201911421_ExportRevision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607111548571_FixExportDeploymentIsPublic.resx">
+      <DependentUpon>201607111548571_FixExportDeploymentIsPublic.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

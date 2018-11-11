@@ -177,7 +177,7 @@ namespace SmartStore.Services.Orders
 					{
 						child.Product.MergeWithCombination(child.AttributesXml);
 
-						var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml);
+						var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml).ToList();
 						if (attributeValues != null)
 						{
 							childItem.BundleItemData.AdditionalCharge = decimal.Zero;

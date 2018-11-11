@@ -1,20 +1,18 @@
-﻿@model CompareProductsModel
+﻿@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Catalog;
+@model CompareProductsModel
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.CompareProducts").Text);
 }
-@using SmartStore.Core;
-@using SmartStore.Core.Infrastructure;
-@using SmartStore.Web.Models.Catalog;
 @{
     string columnWidth = "";
     if (Model.Products.Count > 0)
     {
         columnWidth = Math.Round((decimal)(90M / Model.Products.Count), 0).ToString() + "%";
     }
-
 
     var specificationAttributes = new List<ProductSpecificationModel>();
     foreach (var product in Model.Products)
@@ -52,9 +50,14 @@
                         {
                             <td style="width: @columnWidth; vertical-align: bottom;" class="ac">
                                 <div>
-                                    <p>
-                                        <img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" />
-                                    </p>
+									@if (product.DefaultPictureModel.ImageUrl.HasValue())
+									{
+										<p>
+											<a href="@Url.RouteUrl("Product", new { SeName = product.SeName })">
+												<img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" />
+											</a>
+										</p>
+									}
                                     <p>
                                         <a class="btn btn-mini btn-danger remove-button" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
                                             @T("Common.Remove")
@@ -84,7 +87,15 @@
                         @foreach (var product in Model.Products)
                         {
                             <td style="width: @columnWidth;" class="a-center">
-                                @product.ProductPrice.Price
+								<div>
+									@product.ProductPrice.Price
+								</div>
+								@if (product.BasePriceInfo.HasValue())
+								{
+									<div class="base-price muted">
+										@product.BasePriceInfo
+									</div>
+								}
                             </td>
                         }
                     </tr>

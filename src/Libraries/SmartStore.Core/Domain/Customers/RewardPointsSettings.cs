@@ -24,10 +24,15 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public decimal ExchangeRate { get; set; }
 
-        /// <summary>
-        /// Gets or sets a number of points awarded for registration
-        /// </summary>
-        public int PointsForRegistration { get; set; }
+		/// <summary>
+		/// Gets or sets a value whether to round down reward points
+		/// </summary>
+		public bool RoundDownRewardPoints { get; set; }
+
+		/// <summary>
+		/// Gets or sets a number of points awarded for registration
+		/// </summary>
+		public int PointsForRegistration { get; set; }
 
 		/// <summary>
 		/// Gets or sets a number of points awarded for a product review

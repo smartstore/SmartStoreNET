@@ -17,7 +17,7 @@ namespace SmartStore.Web.Framework.UI
         void AddCssFileParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);
 		void AddLinkPart(string rel, string href, RouteValueDictionary htmlAttributes);
 
-        string GenerateTitle(bool addDefaultTitle);
+		string GenerateTitle(bool addDefaultTitle);
         string GenerateMetaDescription();
         string GenerateMetaKeywords();
         string GenerateCanonicalUrls();
@@ -26,7 +26,8 @@ namespace SmartStore.Web.Framework.UI
         string GenerateScripts(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null);
         string GenerateCssFiles(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null);
 		string GenerateLinkRels();
-    }
+		string GenerateMetaRobots();
+	}
 
     public static class PageAssetsBuilderExtensions
     {

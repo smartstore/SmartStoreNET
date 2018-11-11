@@ -26,56 +26,38 @@
                     {
                         columns.Bound(x => x.Product2Name)
                             .ReadOnly()
-							.Template(x => @Html.LabeledProductName(x.ProductId2, x.Product2Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.Width(520)
 							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
                         columns.Bound(x => x.Product2Sku)
                             .ReadOnly();
                         columns.Bound(x => x.Product2Published)
                             .ReadOnly()
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Product2Published))
                             .ClientTemplate(@Html.SymbolForBool("Product2Published"))
                             .Centered();
                         columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
                             .Centered();
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);
                             commands.Delete().Localize(T);
-                        })
-                        .Width(180);
+                        }).Width(220);
                     })
                     .EnableCustomBinding(true))
 
                 </td>
             </tr>
             <tr>
-                <td width="100%">
-                    <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn btn-warning btn-below"
-                            onclick="javascript:OpenWindow('@(Url.Action("RelatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshRelatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
+                <td>
+                    <button type="button" id="AddRelatedProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
                         <i class="fa fa-plus"></i>
                         @T("Admin.Catalog.Products.RelatedProducts.AddNew")
                     </button>
+
 					<button type="button" id="btnCreateMutuallyRelatedProducts" class="btn btn-below" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
 							data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
 						<i class="fa fa-random"></i>
 						@T("Admin.Common.CreateMutuallyAssociations")
 					</button>
-
-                    <input type="submit" id="btnRefreshRelatedProducts" name="btnRefreshRelatedProducts" style="display: none" />
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $('#btnRefreshRelatedProducts').click(function () {
-                                //refresh grid
-                                var optionsGrid = $("#relatedproducts-grid");
-                                optionsGrid.data('tGrid').ajaxRequest();
-
-                                //return false to don't reload a page
-                                return false;
-                            });
-                        });
-                    </script>
                 </td>
             </tr>
         </table>
@@ -88,7 +70,9 @@
     }
 </div>
 
-<div style="margin-top:30px;">
+<p>&nbsp;</p>
+
+<div>
     <h3>@T("Admin.Catalog.Products.CrossSells")</h3>
 
     @if (Model.Id > 0)
@@ -112,49 +96,32 @@
                     {
                         columns.Bound(x => x.Product2Name)
                             .ReadOnly()
-							.Template(x => @Html.LabeledProductName(x.ProductId2, x.Product2Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.Width(520)
 							.ClientTemplate(@Html.LabeledProductName("ProductId2", "Product2Name"));
                         columns.Bound(x => x.Product2Sku);
                         columns.Bound(x => x.Product2Published)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Product2Published))
                             .ClientTemplate(@Html.SymbolForBool("Product2Published"))
                             .Centered();
                         columns.Command(commands =>
                         {
                             commands.Delete().Localize(T);
-                        })
-                        .Width(90);
+                        }).Width(220);
                     })
                     .EnableCustomBinding(true))
                 </td>
             </tr>
             <tr>
-                <td width="100%">
-                    <button type="submit" id="btnAddNewCrossSellProduct" name="btnAddNewCrossSellProduct" class="btn btn-warning btn-below"
-                            onclick="javascript:OpenWindow('@(Url.Action("CrossSellProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshCrossSellProducts", formId = "product-form" }))', 1000, 700, true); return false;">
-                        <i class="fa fa-plus"></i>
-                        @T("Admin.Catalog.Products.CrossSells.AddNew")
-                    </button>
+                <td>
+					<button type="button" id="AddCrossSellProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
+						<i class="fa fa-plus"></i>
+						@T("Admin.Catalog.Products.CrossSells.AddNew")
+					</button>
+
 					<button type="button" id="btnCreateMutuallyCrossSellProducts" class="btn btn-below" data-url="@Url.Action("CreateAllMutuallyCrossSellProducts", new { productId = Model.Id })"
 							data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
 						<i class="fa fa-random"></i>
 						@T("Admin.Common.CreateMutuallyAssociations")
 					</button>
-
-                    <input type="submit" id="btnRefreshCrossSellProducts" name="btnRefreshCrossSellProducts" style="display: none" />
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $('#btnRefreshCrossSellProducts').click(function () {
-                                //refresh grid
-                                var optionsGrid = $("#crosssellproducts-grid");
-                                optionsGrid.data('tGrid').ajaxRequest();
-
-                                //return false to don't reload a page
-                                return false;
-                            });
-                        });
-                    </script>
                 </td>
             </tr>
         </table>
@@ -169,6 +136,7 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		// mutually create related or cross sell products
 		$('#btnCreateMutuallyRelatedProducts, #btnCreateMutuallyCrossSellProducts').click(function () {
 			$(this).doAjax({
 				callbackSuccess: function (resp) {
@@ -176,5 +144,56 @@
 				}
 			});
 		});
+
+		// add related products
+		$(document).on('click', '#AddRelatedProductButton', function () {
+			$({}).entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Admin.Catalog.Products.RelatedProducts.AddNew")',
+				onLoadDialogBefore: function () {
+					$('#AddRelatedProductButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#AddRelatedProductButton').prop('disabled', false).button('reset');
+				},
+				onOkClicked: function (ids) {
+					$({}).doAjax({
+						type: 'POST',
+						url: '@Url.Action("RelatedProductAdd")',
+						data: { "productId": @Model.Id, "selectedProductIds": ids },
+						callbackSuccess: function () {
+							$('#relatedproducts-grid').data('tGrid').ajaxRequest();
+						}
+					});
+					return true;
+				}
+			});
+		});
+
+		// add cross sell products
+		$(document).on('click', '#AddCrossSellProductButton', function () {
+			$({}).entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Admin.Catalog.Products.CrossSells.AddNew")',
+				onLoadDialogBefore: function () {
+					$('#AddCrossSellProductButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#AddCrossSellProductButton').prop('disabled', false).button('reset');
+				},
+				onOkClicked: function (ids) {
+					$({}).doAjax({
+						type: 'POST',
+						url: '@Url.Action("CrossSellProductAdd")',
+						data: { "productId": @Model.Id, "selectedProductIds": ids },
+						callbackSuccess: function () {
+							$('#crosssellproducts-grid').data('tGrid').ajaxRequest();
+						}
+					});
+					return true;
+				}
+			});
+		});
+
 	});
 </script>

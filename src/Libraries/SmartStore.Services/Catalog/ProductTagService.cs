@@ -11,10 +11,10 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Product tag service
-    /// </summary>
-    public partial class ProductTagService : IProductTagService
+	/// <summary>
+	/// Product tag service
+	/// </summary>
+	public partial class ProductTagService : IProductTagService
     {
 		#region Constants
 
@@ -36,6 +36,7 @@ namespace SmartStore.Services.Catalog
         #region Fields
 
         private readonly IRepository<ProductTag> _productTagRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IDataProvider _dataProvider;
 		private readonly IDbContext _dbContext;
 		private readonly CommonSettings _commonSettings;
@@ -55,7 +56,9 @@ namespace SmartStore.Services.Catalog
 		/// <param name="commonSettings">Common settings</param>
 		/// <param name="cacheManager">Cache manager</param>
         /// <param name="eventPublisher">Event published</param>
-        public ProductTagService(IRepository<ProductTag> productTagRepository,
+        public ProductTagService(
+			IRepository<ProductTag> productTagRepository,
+			IRepository<StoreMapping> storeMappingRepository,
 			IDataProvider dataProvider,
 			IDbContext dbContext,
 			CommonSettings commonSettings,
@@ -63,14 +66,19 @@ namespace SmartStore.Services.Catalog
             IEventPublisher eventPublisher)
         {
             _productTagRepository = productTagRepository;
+			_storeMappingRepository = storeMappingRepository;
 			_dataProvider = dataProvider;
 			_dbContext = dbContext;
 			_commonSettings = commonSettings;
 			_cacheManager = cacheManager;
             _eventPublisher = eventPublisher;
-        }
 
-        #endregion
+			QuerySettings = DbQuerySettings.Default;
+		}
+
+		public DbQuerySettings QuerySettings { get; set; }
+
+		#endregion
 
 		#region Nested classes
 
@@ -94,55 +102,38 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTTAG_COUNT_KEY, storeId);
 			return _cacheManager.Get(key, () =>
 			{
+				IEnumerable<ProductTagWithCount> tagCount = null;
 
 				if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
 				{
-					//stored procedures are enabled and supported by the database. 
-					//It's much faster than the LINQ implementation below 
+					//stored procedures are enabled and supported by the database. It's much faster than the LINQ implementation below 
 
-					#region Use stored procedure
-
-					//prepare parameters
 					var pStoreId = _dataProvider.GetParameter();
 					pStoreId.ParameterName = "StoreId";
 					pStoreId.Value = storeId;
 					pStoreId.DbType = DbType.Int32;
 
-
-					//invoke stored procedure
-					var result = _dbContext.SqlQuery<ProductTagWithCount>(
-						"Exec ProductTagCountLoadAll @StoreId",
-						pStoreId);
-
-					var dictionary = new Dictionary<int, int>();
-					foreach (var item in result)
-						dictionary.Add(item.ProductTagId, item.ProductCount);
-					return dictionary;
-
-					#endregion
+					tagCount = _dbContext.SqlQuery<ProductTagWithCount>("Exec ProductTagCountLoadAll @StoreId", pStoreId);
 				}
 				else
 				{
 					//stored procedures aren't supported. Use LINQ
-					#region Search products
-					var query = from pt in _productTagRepository.Table
-								select new
-								{
-									Id = pt.Id,
-									ProductCount = pt.Products
-										//published and not deleted product/variants
-										.Count(p => !p.Deleted && p.Published)
-									//UNDOEN filter by store identifier if specified ( > 0 )
-								};
 
-					var dictionary = new Dictionary<int, int>();
-					foreach (var item in query)
-						dictionary.Add(item.Id, item.ProductCount);
-					return dictionary;
-
-					#endregion
-
+					tagCount = _productTagRepository.Table
+						.Select(pt => new ProductTagWithCount
+						{
+							ProductTagId = pt.Id,
+							ProductCount = (storeId > 0 && !QuerySettings.IgnoreMultiStore) ?
+								(from p in pt.Products
+								join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
+								from sm in psm.DefaultIfEmpty()
+								where (!p.LimitedToStores || storeId == sm.StoreId) && !p.Deleted && p.Published
+								select p).Count() :
+								pt.Products.Count(p => !p.Deleted && p.Published)
+						});
 				}
+
+				return tagCount.ToDictionary(x => x.ProductTagId, x => x.ProductCount);
 			});
 		}
 
@@ -265,10 +256,11 @@ namespace SmartStore.Services.Catalog
 		public virtual int GetProductCount(int productTagId, int storeId)
 		{
 			var dictionary = GetProductCount(storeId);
+			
 			if (dictionary.ContainsKey(productTagId))
 				return dictionary[productTagId];
-			else
-				return 0;
+
+			return 0;
 		}
         
         #endregion

@@ -1,17 +1,18 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
-  <LocaleResource Name="Plugins.FriendlyName.Widgets.GoogleAnalytics" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.GoogleAnalytics" AppendRootKey="false">
     <Value>Google Analytics</Value>
   </LocaleResource>
   <LocaleResource Name="AdminInstruction">
     <Value>
       <![CDATA[
-        <p>Google Analytics ist ein kostenloser Statistikdienst von Google. Der Dienst erfasst Statistiken über Besucher und Ecommerce-Konversion auf Ihrer Webseite</p>
+        <p>Google Analytics ist ein kostenloser Statistikdienst von Google. Der Dienst erfasst Statistiken über Besucher und Ecommerce-Konversion auf Ihrer Webseite.</p>
         <p>Führen Sie die folgenden Schritte aus um Google Analytics auf Ihrer Webseite einzubinden:</p>
         <ul>
-            <li><a href="http://www.google.com/analytics/" target="_blank">erstellen Sie hier einen "Google Analytics"-Account</a> und folgen Sie dem Wizard um Ihre Webseite zuzufügen</li>
-            <li>Kopieren Sie die "Google Analytics"-ID in das entspechende Feld in folgendem Formular</li>
-            <li>Kopieren Sie den Tracking-Code in die "Tracking-Code"-Box in folgendem Formular</li>
-            <li>KLicken Sie den "Speichern"-Button und Google Analytics wird in Ihre Webseite integriert</li>
+            <li><a href="http://www.google.com/analytics/" target="_blank">Erstellen Sie hier einen Google-Analytics-Account</a> und folgen Sie dem Wizard um Ihre Webseite zuzufügen.</li>
+            <li>Kopieren Sie die Google-Analytics-ID in das entspechende Feld in folgendem Formular.</li>
+            <li>Kopieren Sie den Tracking-Code in die Tracking-Code-Box in folgendem Formular.</li>
+            <li>Klicken Sie den Speichern-Button.</li>
+            <li>Aktivieren Sie das Google Analytics Widget unter <b>CMS > Widgets</b> und Google Analytics wird in Ihre Webseite integriert.</li>
         </ul>
       ]]>
     </Value>

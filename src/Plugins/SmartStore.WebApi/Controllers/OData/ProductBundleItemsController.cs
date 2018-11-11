@@ -27,18 +27,20 @@ namespace SmartStore.WebApi.Controllers.OData
 		public SingleResult<ProductBundleItem> GetProductBundleItem(int key)
 		{
 			return GetSingleResult(key);
-		}		
+		}
 
 		// navigation properties
 
-		public Product GetProduct(int key)
+		[WebApiQueryable]
+		public SingleResult<Product> GetProduct(int key)
 		{
-			return GetExpandedProperty<Product>(key, x => x.Product);
+			return GetRelatedEntity(key, x => x.Product);
 		}
 
-		public Product GetBundleProduct(int key)
+		[WebApiQueryable]
+		public SingleResult<Product> GetBundleProduct(int key)
 		{
-			return GetExpandedProperty<Product>(key, x => x.BundleProduct);
+			return GetRelatedEntity(key, x => x.BundleProduct);
 		}
 	}
 }

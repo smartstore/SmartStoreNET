@@ -140,10 +140,8 @@
 		@bg: ~'top, @{c1} 0%, @{c2} @{stop1}, @{c3} @{stop}, @{c4} 100%';
 		background-color: mix(@c2, @c3, 50%);
 		background-image: -webkit-linear-gradient(@bg);
-		background-image:      -o-linear-gradient(@bg);
 		background-image:         linear-gradient(@bg);
 		background-repeat: repeat-x;
-		filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",argb(@c1),argb(@c4)));
 	}
 	
 }
@@ -152,13 +150,11 @@
 // Drop shadow extras
 
 .box-shadow(@shadow1, @shadow2) {
-	-webkit-box-shadow: @shadow1, @shadow2;
-	        box-shadow: @shadow1, @shadow2;
+    box-shadow: @shadow1, @shadow2;
 }
 
 .box-shadow(@shadow1, @shadow2, @shadow3) {
-	-webkit-box-shadow: @shadow1, @shadow2, @shadow3;
-	        box-shadow: @shadow1, @shadow2, @shadow3;
+    box-shadow: @shadow1, @shadow2, @shadow3;
 }
 
 
@@ -171,13 +167,11 @@
 
 .transition(@transition1, @transition2) {
 	-webkit-transition: @transition1, @transition2;
-	     -o-transition: @transition1, @transition2;
 	        transition: @transition1, @transition2;
 }
 
 .transition(@transition1, @transition2, @transition3) {
 	-webkit-transition: @transition1, @transition2, @transition3;
-	     -o-transition: @transition1, @transition2, @transition3;
 	        transition: @transition1, @transition2, @transition3;
 }
 
@@ -186,7 +180,6 @@
 
 .animation(@animation) {
 	-webkit-animation: @animation;
-	     -o-animation: @animation;
 	        animation: @animation;
 }
 
@@ -194,7 +187,27 @@
 
 .transform(@expr) {
   -webkit-transform: @expr;
-     -moz-transform: @expr;
-      -ms-transform: @expr;
           transform: @expr;
+}
+
+
+/* Flexbox Extras
+----------------------------------------*/
+
+.display-flex() {
+    display: -webkit-flex;
+    display: -webkit-box; 
+    display: -ms-flexbox; 
+    display: flex;
+}
+
+.flex-center() {
+    -webkit-align-items:       center; 
+    -webkit-box-align:         center; 
+    -ms-flex-align:            center; 
+    align-items:               center;
+    -webkit-box-pack:          center; 
+    -webkit-justify-content:   center;
+    -ms-flex-pack:             center; 
+    justify-content:           center;
 }

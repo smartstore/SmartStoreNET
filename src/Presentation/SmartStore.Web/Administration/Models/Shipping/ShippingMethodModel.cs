@@ -2,20 +2,22 @@
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Shipping;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Shipping
 {
-    [Validator(typeof(ShippingMethodValidator))]
-    public class ShippingMethodModel : EntityModelBase, ILocalizedModel<ShippingMethodLocalizedModel>
+	[Validator(typeof(ShippingMethodValidator))]
+    public class ShippingMethodModel : TabbableModel, ILocalizedModel<ShippingMethodLocalizedModel>
     {
         public ShippingMethodModel()
         {
             Locales = new List<ShippingMethodLocalizedModel>();
+			FilterConfigurationUrls = new List<string>();
         }
+
+		public IList<string> FilterConfigurationUrls { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.Name")]
         [AllowHtml]
@@ -32,18 +34,6 @@ namespace SmartStore.Admin.Models.Shipping
 		public bool IgnoreCharges { get; set; }
 
         public IList<ShippingMethodLocalizedModel> Locales { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.ExcludedCustomerRole")]
-		public string[] ExcludedCustomerRoleIds { get; set; }
-		public List<SelectListItem> AvailableCustomerRoles { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.ExcludedCountry")]
-		public string[] ExcludedCountryIds { get; set; }
-		public List<SelectListItem> AvailableCountries { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Restrictions.CountryExclusionContext")]
-		public CountryRestrictionContextType CountryExclusionContext { get; set; }
-		public List<SelectListItem> AvailableCountryExclusionContextTypes { get; set; }
     }
 
     public class ShippingMethodLocalizedModel : ILocalizedModelLocal

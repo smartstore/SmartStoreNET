@@ -1,6 +1,5 @@
 ﻿@model ManufacturerModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Catalog.Manufacturers.EditManufacturerDetails").Text;
 }
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "manufacturer-form" }))
@@ -11,6 +10,8 @@
 			<a href='@Url.Action("List")'>(@T("Admin.Catalog.Manufacturers.BackToList"))</a>
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
             <button type="button" onclick="OpenWindow('@Url.RouteUrl("Manufacturer", new { SeName = Model.SeName })', 800, 600, true); return false;" class="btn">
 				<i class="fa fa-eye"></i>
 				@T("Admin.Common.Preview")
@@ -26,6 +27,8 @@
                 <i class="fa fa-trash-o"></i>
                 @T("Admin.Common.Delete")
             </button>
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)

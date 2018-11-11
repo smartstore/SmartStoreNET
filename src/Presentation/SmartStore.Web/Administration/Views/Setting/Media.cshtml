@@ -1,7 +1,6 @@
 ﻿@model MediaSettingsModel
 @using Telerik.Web.Mvc.UI;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.Media").Text;
 }
 @using (Html.BeginForm())
@@ -62,6 +61,15 @@
                 @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MessageProductThumbPictureSize)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.MessageProductThumbPictureSize)
+				@Html.ValidationMessageFor(model => model.MessageProductThumbPictureSize)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductDetailsPictureSize)
@@ -162,38 +170,31 @@
                 @Html.ValidationMessageFor(model => model.MaximumImageSize)
             </td>
         </tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase")</div>
+				</div>
+				<div class="alert alert-warning">
+					@T("Admin.Configuration.Settings.Media.MovePicturesNote")
+				</div>
+				<strong style="text-transform: capitalize">
+					@T(Model.PicturesStoredIntoDatabase ? "Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database" : "Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem")
+				</strong>
+
+				<button type="submit" name="change-picture-storage" value="change-picture-storage" class="btn btn-right">
+					@if (Model.PicturesStoredIntoDatabase)
+					{
+						<i class="fa fa-fw fa-hdd-o"></i>
+						@T("Admin.Configuration.Settings.Media.MoveToFs")
+					}
+					else
+					{
+						<i class="fa fa-fw fa-database"></i>
+						@T("Admin.Configuration.Settings.Media.MoveToDb")
+					}
+				</button>
+			</td>
+		</tr>
     </table>
-
-	<fieldset style="margin-top: 20px">
-		<legend>@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase")</legend>
-		<div>
-			<div class="alert alert-warning">
-				@T("Admin.Configuration.Settings.Media.MovePicturesNote")
-			</div>
-
-			<strong style="text-transform: capitalize">
-				@if (Model.PicturesStoredIntoDatabase)
-				{
-					@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database")
-				}
-				else
-				{
-					@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem")
-				}
-			</strong>
-
-			<button type="submit" name="change-picture-storage" value="change-picture-storage" class="btn" style="margin-left: 10px">
-				@if (Model.PicturesStoredIntoDatabase)
-				{
-					<i class="fa fa-fw fa-hdd-o"></i>
-					@T("Admin.Configuration.Settings.Media.MoveToFs")
-				}
-				else
-				{
-					<i class="fa fa-fw fa-database"></i>
-					@T("Admin.Configuration.Settings.Media.MoveToDb")
-				}
-			</button>
-		</div>
-	</fieldset>
 }

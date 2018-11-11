@@ -9,35 +9,49 @@ namespace SmartStore.Core.Logging
         
 		public static void Debug(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
-            FilteredLog(logger, LogLevel.Debug, message, exception, customer);
+            FilteredLog(logger, LogLevel.Debug, message, null, exception, customer);
         }
 
         public static void Information(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
-            FilteredLog(logger, LogLevel.Information, message, exception, customer);
+            FilteredLog(logger, LogLevel.Information, message, null, exception, customer);
         }
 
         public static void Warning(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
-            FilteredLog(logger, LogLevel.Warning, message, exception, customer);
+            FilteredLog(logger, LogLevel.Warning, message, null, exception, customer);
         }
 
         public static void Error(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
-            FilteredLog(logger, LogLevel.Error, message, exception, customer);
+            FilteredLog(logger, LogLevel.Error, message, null, exception, customer);
         }
 
-        public static void Fatal(this ILogger logger, string message, Exception exception = null, Customer customer = null)
+		public static void Error(this ILogger logger, string message, string fullMessage, Exception exception = null, Customer customer = null)
+		{
+			FilteredLog(logger, LogLevel.Error, message, fullMessage, exception, customer);
+		}
+
+		public static void Fatal(this ILogger logger, string message, Exception exception = null, Customer customer = null)
         {
-            FilteredLog(logger, LogLevel.Fatal, message, exception, customer);
+            FilteredLog(logger, LogLevel.Fatal, message, null, exception, customer);
         }
 
 		public static void Error(this ILogger logger, Exception exception, Customer customer = null)
 		{
-			FilteredLog(logger, LogLevel.Error, exception.Message, exception, customer);
+			FilteredLog(logger, LogLevel.Error, exception.ToAllMessages(), null, exception, customer);
 		}
 
-        private static void FilteredLog(ILogger logger, LogLevel level, string message, Exception exception = null, Customer customer = null)
+		public static void ErrorsAll(this ILogger logger, Exception exception, Customer customer = null)
+		{
+			while (exception != null)
+			{
+				FilteredLog(logger, LogLevel.Error, exception.Message, exception.StackTrace, exception, customer);
+				exception = exception.InnerException;
+			}
+		}
+
+		private static void FilteredLog(ILogger logger, LogLevel level, string message, string fullMessage, Exception exception = null, Customer customer = null)
         {
             // don't log thread abort exception
             if ((exception != null) && (exception is System.Threading.ThreadAbortException))
@@ -45,7 +59,11 @@ namespace SmartStore.Core.Logging
 
             if (logger.IsEnabled(level))
             {
-                string fullMessage = exception == null ? string.Empty : exception.ToString();
+				if (exception != null && fullMessage.IsEmpty())
+				{
+					fullMessage = "{0}\n{1}\n{2}".FormatCurrent(exception.Message, new String('-', 20), exception.StackTrace);
+				}
+
                 logger.InsertLog(level, message, fullMessage, customer);
             }
         }

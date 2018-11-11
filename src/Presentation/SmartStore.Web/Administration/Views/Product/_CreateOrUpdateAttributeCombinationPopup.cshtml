@@ -29,12 +29,13 @@
 
 @if (!ViewBag.IsEdit)
 {
-	<div id="CombinationExistenceNote" style="margin:0; height:50px;">
+	<div id="CombinationExistenceNote">
 		@if (Model.Warnings.Count > 0)
 		{
-			<div class="alert alert-warning fade in" style="margin:0;">
-				@foreach (var warning in Model.Warnings) {
-				<p><i class="fa fa-exclamation-triangle"></i>&nbsp;@warning</p>
+			<div class="alert alert-warning fade in">
+				@foreach (var warning in Model.Warnings)
+				{
+					<p><i class="fa fa-exclamation-triangle"></i>&nbsp;@warning</p>
 				}
 			</div>
 		}

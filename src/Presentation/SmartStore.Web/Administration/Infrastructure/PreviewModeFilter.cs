@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Services;
 using SmartStore.Services.Security;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Infrastructure

@@ -37,9 +37,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IQueryable<Country> GetRestrictedCountries(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Country>>(key, x => x.RestrictedCountries);
-
-			return entity.RestrictedCountries.AsQueryable();
+			return GetRelatedCollection(key, x => x.RestrictedCountries);
 		}
 	}
 }

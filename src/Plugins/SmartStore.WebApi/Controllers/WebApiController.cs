@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.WebApi.Models;
@@ -95,7 +97,7 @@ namespace SmartStore.WebApi.Controllers
 		public ActionResult GridUserData(GridCommand command)
 		{
 			if (!HasPermission())
-				return new JsonResult { Data = new GridModel<WebApiUserModel> { Data = new List<WebApiUserModel>() }};
+				return new JsonResult { Data = new GridModel<WebApiUserModel> { Data = new List<WebApiUserModel>() } };
 
 			var model = _webApiPluginService.GetGridModel(command.Page - 1, command.PageSize);
 

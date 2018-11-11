@@ -2,8 +2,8 @@
 Description: Contains common discount requirement rule providers like "Billing country is", "Customer role is", "Had spent amount" etc.
 Group: Marketing
 SystemName: SmartStore.DiscountRules
-Version: 2.2.0
-MinAppVersion: 2.2.0
+Version: 2.6.0
+MinAppVersion: 2.5.0
 DisplayOrder: 0
 FileName: SmartStore.DiscountRules.dll
 ResourceRootKey: Plugins.SmartStore.DiscountRules

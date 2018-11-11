@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Models.Customer;
 
@@ -7,7 +8,7 @@ namespace SmartStore.Web.Validators.Customer
 {
     public class RegisterValidator : AbstractValidator<RegisterModel>
     {
-        public RegisterValidator(ILocalizationService localizationService, CustomerSettings customerSettings)
+        public RegisterValidator(ILocalizationService localizationService, CustomerSettings customerSettings, TaxSettings taxSettings)
         {
             RuleFor(x => x.Email).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.Email.Required"));
             RuleFor(x => x.Email).EmailAddress().WithMessage(localizationService.GetResource("Common.WrongEmail"));
@@ -49,6 +50,11 @@ namespace SmartStore.Web.Validators.Customer
             if (customerSettings.FaxRequired && customerSettings.FaxEnabled)
             {
                 RuleFor(x => x.Fax).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.Fax.Required"));
+            }
+
+            if (taxSettings.EuVatEnabled && taxSettings.VatRequired)
+            { 
+                RuleFor(x => x.VatNumber).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.Vat.Required"));
             }
         }
     }

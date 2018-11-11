@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Media;
 

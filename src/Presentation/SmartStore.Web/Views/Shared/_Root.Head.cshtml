@@ -5,83 +5,85 @@
 @using SmartStore.Core.Domain.Localization;
 
 @{
-    var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
-    
-    var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
-    
-    // add css assets
-    Html.AppendCssFileParts(
+	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
+	var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+
+	// add css assets
+	Html.AppendCssFileParts(
 		"~/Content/font-awesome.css",
-        "~/Content/jquery.pnotify.default.css",
-        "~/Content/jquery.pnotify.default.icons.css");
+		"~/Content/jquery.pnotify.default.css",
+		"~/Content/jquery.pnotify.default.icons.css",
+		"~/Content/smartstore.entitypicker.css");
 
-    Html.AppendScriptParts(ResourceLocation.Head,
-        "~/Scripts/modernizr-2.7.2.js",
-        "~/Scripts/jquery-2.1.1.js",
+	Html.AppendScriptParts(ResourceLocation.Head,
+		"~/Scripts/modernizr-2.7.2.js",
+		"~/Scripts/jquery-2.1.1.js",
 		"~/Scripts/jquery-migrate-1.2.1.js",
-        "~/Scripts/globalize/globalize.js");
+		"~/Scripts/globalize/globalize.js");
 
-    Html.AddScriptParts(ResourceLocation.Head, true,
-        "~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
+	Html.AddScriptParts(ResourceLocation.Head, true,
+		"~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
 
-    var bootstrapJsRoot = "~/Content/bootstrap/js/";
-    Html.AppendScriptParts(ResourceLocation.Foot,
+	var bootstrapJsRoot = "~/Content/bootstrap/js/";
+	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
 		"~/Scripts/jquery-ui/effect.js",
 		"~/Scripts/jquery-ui/effect-transfer.js",
 		"~/Scripts/jquery-ui/effect-shake.js",
 		"~/Scripts/jquery-ui/position.js",
-        // jQuery Validation
-        "~/Scripts/jquery.unobtrusive-ajax.js",
-        "~/Scripts/jquery.validate.js",
-        "~/Scripts/jquery.validate.unobtrusive.js",
-        // SmartStore system
-        "~/Scripts/smartstore.system.js",
-        "~/Scripts/underscore.js",
-        "~/Scripts/underscore.string.js",
-        "~/Scripts/underscore.mixins.js",
-        "~/Scripts/smartstore.jquery.utils.js",
-        "~/Scripts/jquery.ba-outside-events.js",
-        "~/Scripts/jquery.preload.js",
-        "~/Scripts/jquery.transit.js",
-        "~/Scripts/jquery.menu-aim.js",
-        "~/Scripts/smartstore.doAjax.js",
-        "~/Scripts/jquery.addeasing.js",
-        "~/Scripts/smartstore.eventbroker.js",
-        "~/Scripts/smartstore.hacks.js",
+		// jQuery Validation
+		"~/Scripts/jquery.unobtrusive-ajax.js",
+		"~/Scripts/jquery.validate.js",
+		"~/Scripts/jquery.validate.unobtrusive.js",
+		// SmartStore system
+		"~/Scripts/smartstore.system.js",
+		"~/Scripts/underscore.js",
+		"~/Scripts/underscore.string.js",
+		"~/Scripts/underscore.mixins.js",
+		"~/Scripts/smartstore.jquery.utils.js",
+		"~/Scripts/jquery.ba-outside-events.js",
+		"~/Scripts/jquery.preload.js",
+		"~/Scripts/jquery.transit.js",
+		"~/Scripts/jquery.menu-aim.js",
+		"~/Scripts/smartstore.doAjax.js",
+		"~/Scripts/smartstore.entityPicker.js",
+		"~/Scripts/jquery.addeasing.js",
+		"~/Scripts/smartstore.eventbroker.js",
+		"~/Scripts/smartstore.hacks.js",
 		"~/Scripts/smartstore.common.js",
-        // Bootstrap
-        bootstrapJsRoot + "bootstrap-transition.js",
-        bootstrapJsRoot + "bootstrap-alert.js",
-        bootstrapJsRoot + "bootstrap-button.js",
-        bootstrapJsRoot + "bootstrap-collapse.js",
-        bootstrapJsRoot + "bootstrap-dropdown.js",
-        bootstrapJsRoot + "bootstrap-modal.js",
-        bootstrapJsRoot + "bootstrap-tooltip.js",
-        bootstrapJsRoot + "bootstrap-popover.js",
-        bootstrapJsRoot + "bootstrap-tab.js",
+		// Bootstrap
+		bootstrapJsRoot + "bootstrap-transition.js",
+		bootstrapJsRoot + "bootstrap-alert.js",
+		bootstrapJsRoot + "bootstrap-button.js",
+		bootstrapJsRoot + "bootstrap-collapse.js",
+		bootstrapJsRoot + "bootstrap-dropdown.js",
+		bootstrapJsRoot + "bootstrap-modal.js",
+		bootstrapJsRoot + "bootstrap-tooltip.js",
+		bootstrapJsRoot + "bootstrap-popover.js",
+		bootstrapJsRoot + "bootstrap-tab.js",
 		bootstrapJsRoot + "bootstrap-typeahead.js",
-        // Bootstrap custom
-        bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
-        // Shared UI
-        "~/Scripts/smartstore.placeholder.js",
-        "~/Scripts/select2.js",
-        "~/Scripts/smartstore.selectwrapper.js",
-        "~/Scripts/smartstore.throbber.js",
-        "~/Scripts/smartstore.navbar.js",
-        "~/Scripts/smartstore.thumbzoomer.js",
-        "~/Scripts/smartstore.column-equalizer.js",
-        "~/Scripts/smartstore.shrinkmenu.js",
-        "~/Scripts/smartstore.scrollbutton.js",
-        "~/Scripts/jquery.pnotify.js",
-        "~/Scripts/jquery.scrollTo.js",
-        "~/Scripts/jquery.serialScroll.js",
+		// Bootstrap custom
+		bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
+		// Shared UI
+		"~/Scripts/smartstore.placeholder.js",
+		"~/Scripts/select2.js",
+		"~/Scripts/smartstore.selectwrapper.js",
+		"~/Scripts/smartstore.throbber.js",
+		"~/Scripts/smartstore.navbar.js",
+		"~/Scripts/smartstore.thumbzoomer.js",
+		"~/Scripts/smartstore.column-equalizer.js",
+		"~/Scripts/smartstore.shrinkmenu.js",
+		"~/Scripts/smartstore.scrollbutton.js",
+		"~/Scripts/jquery.pnotify.js",
+		"~/Scripts/jquery.scrollTo.js",
+		"~/Scripts/jquery.serialScroll.js",
 		"~/Scripts/smartstore.globalize.adapter.js",
-        // Shop
-        "~/Scripts/public.common.js",
-        "~/Scripts/public.ajaxcart.js",
-        "~/Scripts/public.shopbar.js",
-        "~/Scripts/public.product-list-scroller.js",
+		// Shop
+		"~/Scripts/public.common.js",
+		"~/Scripts/public.ajaxcart.js",
+		"~/Scripts/public.shopbar.js",
+		"~/Scripts/public.product-list-scroller.js",
 		"~/Scripts/public.product-filter.js");
 }
 <!DOCTYPE html>
@@ -97,6 +99,7 @@
     @*This is used so that themes can inject content into the header*@
     @Html.Partial("Head")
 
+	@Html.SmartMetaRobots()
 	@Html.MetaAcceptLanguage()
     @Html.Partial("_ClientRes")
 

@@ -28,6 +28,12 @@ namespace SmartStore.Web.Framework.UI
             set;
         }
 
+        protected internal HtmlHelper HtmlHelper
+        {
+            get;
+            internal set;
+        }
+
         protected internal ViewContext ViewContext
         {
             get;

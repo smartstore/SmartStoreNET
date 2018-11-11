@@ -9,7 +9,7 @@ using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Security;
 using SmartStore.Services;
-
+using SmartStore.Collections;
 
 namespace SmartStore.Web.Controllers
 {
@@ -44,14 +44,14 @@ namespace SmartStore.Web.Controllers
 			var prevTaskStart = DateTime.UtcNow;
 			var count = 0;
 
-            foreach (var task in pendingTasks)
+            for (var i = 0; i < pendingTasks.Count; i++)
             {
-				var elapsedSincePrevTask = DateTime.UtcNow - prevTaskStart;
-				if (elapsedSincePrevTask >= TimeSpan.FromMinutes(_taskScheduler.SweepIntervalMinutes))
+				var task = pendingTasks[i];
+
+				if (i > 0)
 				{
-					// the previous Task execution in this loop took longer
-					// than the scheduler's sweep interval. Most likely a subsequent
-					// Sweep call executed it already in another HTTP request. 
+					// Maybe a subsequent Sweep call or another machine in a webfarm executed 
+					// successive tasks already.
 					// To be able to determine this, we need to reload the entity from the database.
 					// The TaskExecutor will exit when the task should be in running state then.
 					_services.DbContext.ReloadEntity(task);
@@ -65,7 +65,7 @@ namespace SmartStore.Web.Controllers
 				}
             }
             
-            return Content("{0} tasks executed".FormatInvariant(count));
+            return Content("{0} of {1} pending tasks executed".FormatInvariant(count, pendingTasks.Count));
         }
 
         [HttpPost]
@@ -77,11 +77,16 @@ namespace SmartStore.Web.Controllers
             var task = _scheduledTaskService.GetTaskById(id);
             if (task == null)
                 return HttpNotFound();
-
-            _taskExecutor.Execute(task);
+	
+            _taskExecutor.Execute(task, QueryString.Current.ToDictionary());
 
             return Content("Task '{0}' executed".FormatCurrent(task.Name));
         }
 
-    }
+		public ContentResult Noop()
+		{
+			return Content("noop");
+		}
+
+	}
 }

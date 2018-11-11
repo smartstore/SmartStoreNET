@@ -145,8 +145,11 @@
                         //reload grid
                         var grid = $('#productreviews-grid').data('tGrid');
                         grid.ajaxRequest();
+                    	//clear selected checkboxes
+                        $('.checkboxGroups').attr('checked', false).change();
+                        selectedIds = [];
                     },
-                    error:function (xhr, ajaxOptions, thrownError){
+                    error:function (xhr, ajaxOptions, thrownError) {
                         alert(thrownError);
                     },
                     traditional: true

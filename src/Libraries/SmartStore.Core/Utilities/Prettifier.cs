@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -7,11 +8,10 @@ using System.Xml;
 
 namespace SmartStore.Utilities
 {
-
     public static class Prettifier
     {
-
-        public static string BytesToString(long bytes)
+	    [SuppressMessage("ReSharper", "RedundantAssignment")]
+	    public static string BytesToString(long bytes)
         {
             double result = bytes;
             double dsize = bytes;

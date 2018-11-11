@@ -12,6 +12,8 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -119,28 +121,31 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var gridModel = new GridModel<SpecificationAttributeModel>();
 
-			var optionsText = _localizationService.GetResource("Admin.Catalog.Attributes.SpecificationAttributes.Options");
-
-			var data = _specificationAttributeService.GetSpecificationAttributes()
-				.Expand(x => x.SpecificationAttributeOptions)
-				.ForCommand(command)
-				.Select(x =>
-				{
-					var model = x.ToModel();
-					model.OptionCount = x.SpecificationAttributeOptions.Count;
-
-					return model;
-				})
-				.ToList();
-
-			var gridModel = new GridModel<SpecificationAttributeModel>
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				Data = data.PagedForCommand(command),
-				Total = data.Count
-			};
+				var data = _specificationAttributeService.GetSpecificationAttributes()
+					.Expand(x => x.SpecificationAttributeOptions)
+					.ForCommand(command)
+					.Select(x =>
+					{
+						var model = x.ToModel();
+						model.OptionCount = x.SpecificationAttributeOptions.Count;
+
+						return model;
+					})
+					.ToList();
+
+				gridModel.Data = data.PagedForCommand(command);
+				gridModel.Total = data.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<SpecificationAttributeModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -148,7 +153,6 @@ namespace SmartStore.Admin.Controllers
             };
         }
         
-        //create
         public ActionResult Create()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -160,7 +164,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(SpecificationAttributeModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -183,7 +187,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //edit
         public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -203,7 +206,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(SpecificationAttributeModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -231,7 +234,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -287,35 +289,31 @@ namespace SmartStore.Admin.Controllers
 
         #region Specification attribute options
 
-        //list
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult OptionList(int specificationAttributeId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var gridModel = new GridModel<SpecificationAttributeOptionModel>();
 
-            var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttributeId);
-            var gridModel = new GridModel<SpecificationAttributeOptionModel>
-            {
-                Data = options.Select(x => 
-                    {
-                        var model = x.ToModel();
-                        //locales
-                        //AddLocales(_languageService, model.Locales, (locale, languageId) =>
-                        //{
-                        //    locale.Name = x.GetLocalized(y => y.Name, languageId, false, false);
-                        //});
-                        return model;
-                    }),
-                Total = options.Count()
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttributeId);
+
+				gridModel.Data = options.Select(x => x.ToModel());
+				gridModel.Total = options.Count();
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<SpecificationAttributeOptionModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
             };
         }
 
-        //create
         public ActionResult OptionCreatePopup(int specificationAttributeId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -365,7 +363,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //edit
         public ActionResult OptionEditPopup(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -412,22 +409,18 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //delete
         [GridAction(EnableCustomBinding = true)]
         public ActionResult OptionDelete(int optionId, int specificationAttributeId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var sao = _specificationAttributeService.GetSpecificationAttributeOptionById(optionId);
 
-            var sao = _specificationAttributeService.GetSpecificationAttributeOptionById(optionId);
-            if (sao == null)
-                throw new ArgumentException("No specification attribute option found with the specified id");
-
-            _specificationAttributeService.DeleteSpecificationAttributeOption(sao);
+				_specificationAttributeService.DeleteSpecificationAttributeOption(sao);
+			}
 
             return OptionList(specificationAttributeId, command);
         }
-
 
         //ajax
         [AcceptVerbs(HttpVerbs.Get)]
@@ -465,7 +458,6 @@ namespace SmartStore.Admin.Controllers
                 return new HttpStatusCodeResult(501, ex.Message);
             }
         }
-
 
         #endregion
     }

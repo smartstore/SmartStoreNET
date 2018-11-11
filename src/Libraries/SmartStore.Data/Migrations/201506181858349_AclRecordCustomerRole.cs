@@ -40,12 +40,10 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint",
                 @"This function assigns the ACL configuration of this category to all subcategories and products included in this category.<br />
-                    Please keep in mind you have to save changes in the ACL configuration <br/> 
-                    before you can assign them to all subcategories and products. <br/>
-                    <b>Attention:</b> Please keep in mind that <b>existing ACL records will be deleted</b>",
+                    Please keep in mind you have to save changes in the ACL configuration before you can assign them to all subcategories and products. <br/>
+                    <b>Attention:</b> Please keep in mind that <b>existing ACL records will be deleted</b>.",
                 @"Diese Funktion übernimmt die Zugriffsrecht-Konfiguration dieser Warengruppe für alle Unterwarengruppen und Produkte.<br/>
-                    Bitte beachten Sie, dass die Änderungen der Zugriffsrechte zunächst gespeichert werden müssen, <br />
-                    bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
+                    Bitte beachten Sie, dass die Änderungen der Zugriffsrechte zunächst gespeichert werden müssen, bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
                     <b>Vorsicht:</b> Bitte beachten Sie, <b>dass vorhandene Zugriffsrechte überschrieben bzw. gelöscht werden</b>.");
 
             builder.AddOrUpdate("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts",
@@ -54,12 +52,10 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint",
                 @"This function assigns the store configuration of this category to all subcategories and products included in this category.<br />
-                    Please keep in mind you have to save changes in the store configuration <br/> 
-                    before you can assign them to all subcategories and products. <br/>
-                    <b>Attention:</b> Please keep in mind that <b>existing store mappings will be deleted</b>",
+                    Please keep in mind you have to save changes in the store configuration before you can assign them to all subcategories and products. <br/>
+                    <b>Attention:</b> Please keep in mind that <b>existing store mappings will be deleted</b>.",
                 @"Diese Funktion übernimmt die Shop-Konfiguration dieser Warengruppe für alle Unterwarengruppen und Produkte.<br/>
-                    Bitte beachten Sie, dass die Änderungen an der Store-Konfiguration zunächst gespeichert werden müssen, <br />
-                    bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
+                    Bitte beachten Sie, dass die Änderungen an der Store-Konfiguration zunächst gespeichert werden müssen, bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
                     <b>Vorsicht:</b> Bitte beachten Sie, <b>dass vorhandene Store-Konfiguration überschrieben bzw. gelöscht werden</b>.");
 
             builder.AddOrUpdate("Admin.Configuration.Acl.NoRolesDefined",
@@ -123,26 +119,35 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage",
                 "Show manufacturers on homepage",
                 "Zeige Hersteller auf der Homepage",
-                "Specifies whether manufacturers will be displayed on the homepage.",
-                "Bestimmt ob Hersteller auf der Homepage angezeigt werden.");
+                "Specifies whether manufacturers are displayed on the homepage.",
+                "Legt fest, ob Hersteller auf der Homepage angezeigt werden.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures",
                 "Show manufacturer pictures on homepage",
                 "Zeige Herstellerbilder auf der Homepage",
-                "Specifies whether manufacturers will be displayed as images or textual links on the homepage.",
-                "Bestimmt ob Hersteller auf der Homepage als Bilder oder textuelle Links angezeigt werden.");
+                "Specifies whether manufacturers are displayed as images or textual links on the homepage.",
+				"Legt fest, ob Hersteller auf der Homepage als Bilder oder textuelle Links angezeigt werden.");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled",
                 "Customers can enter a customer number",
                 "Kunden können Kundennummer hinterlegen",
                 "Specifies whether customers can enter a customer number.",
-                "Bestimmt ob Kunden eine Kundennummer hinterlegen können.");
+				"Legt fest, ob Kunden eine Kundennummer hinterlegen können.");
 
             builder.AddOrUpdate("Account.Fields.CustomerNumber",
                 "Customer number",
                 "Kundennummer");
-            
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.Tax.VatRequired",
+                "Customers must enter a VATIN",
+                "Kunden müssen eine Steuernummer angeben",
+                "Specifies whether customers must enter a VAT identification number.",
+				"Legt fest, ob Kunden bei der Registrierung eine Steuernummer angeben müssen.");
+
+            builder.AddOrUpdate("Account.Fields.Vat.Required",
+                "Please enter your VATIN",
+                "Bitte geben Sie Ihre Steuernummer an");
+            
         }
     }
 }

@@ -5,7 +5,6 @@
 @using SmartStore.Core.Themes;
 
 @{
-	//page title
 	ViewBag.Title = T("Admin.Configuration.Themes").Text;
 }
 
@@ -17,6 +16,8 @@
             @T("Admin.Configuration.Themes")
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
             <button type="submit" name="save" value="save" class="btn btn-primary">
                 <i class="fa fa-check"></i>
                 @T("Admin.Common.Save")
@@ -29,6 +30,8 @@
 				<i class="fa fa-upload"></i>
 				@T("Admin.Packaging.UploadTheme")
 			</a>
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
 	
@@ -227,7 +230,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" class="adminSeparator">
                 <hr />
             </td>
         </tr>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -10,12 +9,18 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
+using Autofac;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services
-{
-	
+{	
 	public interface ICommonServices
 	{
+		IComponentContext Container
+		{
+			get;
+		}
+
 		ICacheManager Cache 
 		{ 
 			get;
@@ -75,6 +80,43 @@ namespace SmartStore.Services
 		{
 			get;
 		}
+
+		IDateTimeHelper DateTimeHelper
+		{
+			get;
+		}
 	}
 
+	public static class ICommonServicesExtensions
+	{
+		public static TService Resolve<TService>(this ICommonServices services)
+		{
+			return services.Container.Resolve<TService>();
+		}
+
+		public static TService Resolve<TService>(this ICommonServices services, object serviceKey)
+		{
+			return services.Container.ResolveKeyed<TService>(serviceKey);
+		}
+
+		public static TService ResolveNamed<TService>(this ICommonServices services, string serviceName)
+		{
+			return services.Container.ResolveNamed<TService>(serviceName);
+		}
+
+		public static object Resolve(this ICommonServices services, Type serviceType)
+		{
+			return services.Resolve(null, serviceType);
+		}
+
+		public static object Resolve(this ICommonServices services, object serviceKey, Type serviceType)
+		{
+			return services.Container.ResolveKeyed(serviceKey, serviceType);
+		}
+
+		public static object ResolveNamed(this ICommonServices services, string serviceName, Type serviceType)
+		{
+			return services.Container.ResolveNamed(serviceName, serviceType);
+		}
+	}
 }

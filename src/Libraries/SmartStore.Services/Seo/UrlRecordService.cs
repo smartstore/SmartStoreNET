@@ -63,6 +63,18 @@ namespace SmartStore.Services.Seo
             return urlRecord;
         }
 
+		public virtual IList<UrlRecord> GetUrlRecordsByIds(int[] urlRecordIds)
+		{
+			if (urlRecordIds == null || urlRecordIds.Length == 0)
+				return new List<UrlRecord>();
+
+			var urlRecords = _urlRecordRepository.Table
+				.Where(x => urlRecordIds.Contains(x.Id))
+				.ToList();
+
+			return urlRecords;
+		}
+
         public virtual void InsertUrlRecord(UrlRecord urlRecord)
         {
             if (urlRecord == null)
@@ -85,15 +97,29 @@ namespace SmartStore.Services.Seo
             _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
         }
 
-        public virtual IPagedList<UrlRecord> GetAllUrlRecords(string slug, int pageIndex, int pageSize)
+        public virtual IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive)
         {
             var query = _urlRecordRepository.Table;
-            if (!String.IsNullOrWhiteSpace(slug))
-                query = query.Where(ur => ur.Slug.Contains(slug));
-                query = query.OrderBy(ur => ur.Slug);
 
-                var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
-                return urlRecords;
+			if (slug.HasValue())
+				query = query.Where(x => x.Slug.Contains(slug));
+
+			if (entityName.HasValue())
+				query = query.Where(x => x.EntityName == entityName);
+
+			if (entityId.HasValue)
+				query = query.Where(x => x.EntityId == entityId.Value);
+
+			if (isActive.HasValue)
+				query = query.Where(x => x.IsActive == isActive.Value);
+
+			if (languageId.HasValue)
+				query = query.Where(x => x.LanguageId == languageId);
+
+			query = query.OrderBy(x => x.Slug);
+
+			var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
+			return urlRecords;
         }
 
 		public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)
@@ -139,9 +165,9 @@ namespace SmartStore.Services.Seo
 								orderby x.Id descending
 								select x;
 
-					var result = query.ToDictionary(
-						x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId), // Key
-						x => x.Slug, // Value
+					var result = query.ToDictionarySafe(
+						x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId),
+						x => x.Slug,
 						StringComparer.OrdinalIgnoreCase);
 
 					return result;
@@ -302,6 +328,36 @@ namespace SmartStore.Services.Seo
 		private string GenerateKey(int entityId, string entityName, int languageId)
 		{
 			return "{0}.{1}.{2}".FormatInvariant(entityId, entityName, languageId);
+		}
+
+		public virtual Dictionary<int, int> CountSlugsPerEntity(int[] urlRecordIds)
+		{
+			if (urlRecordIds == null || urlRecordIds.Length == 0)
+				return new Dictionary<int, int>();
+
+			var query =
+				from x in _urlRecordRepository.TableUntracked
+				where urlRecordIds.Contains(x.Id)
+				select new
+				{
+					Id = x.Id,
+					Count = _urlRecordRepository.TableUntracked.Where(y => y.EntityName == x.EntityName && y.EntityId == x.EntityId).Count()
+				};
+
+			var result = query
+				.ToList()
+				.ToDictionary(x => x.Id, x => x.Count);
+
+			return result;
+		}
+
+		public virtual int CountSlugsPerEntity(string entityName, int entityId)
+		{
+			var count = _urlRecordRepository.Table
+				.Where(x => x.EntityName == entityName && x.EntityId == entityId)
+				.Count();
+
+			return count;
 		}
 
         #endregion

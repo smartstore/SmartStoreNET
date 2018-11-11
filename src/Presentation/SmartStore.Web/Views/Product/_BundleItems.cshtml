@@ -34,9 +34,10 @@
 
 			@if (!String.IsNullOrWhiteSpace(item.ShortDescription))
 			{
-                <div class="bundle-item-description" title="@(item.ShortDescription.Length < 170 ? "" : item.ShortDescription)">
-                    @Html.Raw(item.ShortDescription.Truncate(170, "..."))
-                    @if (item.ShortDescription.Length > 170) { <text>...</text> }
+				var strippedShortDesc = item.ShortDescription.RemoveHtml();
+
+                <div class="bundle-item-description" title="@(item.ShortDescription.Length < 170 ? "" : strippedShortDesc)">
+                    @Html.Raw(strippedShortDesc.Truncate(170, "..."))
                 </div>
 			}
 

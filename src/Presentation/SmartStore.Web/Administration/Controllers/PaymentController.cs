@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Payments;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
@@ -12,10 +11,11 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -69,44 +69,16 @@ namespace SmartStore.Admin.Controllers
 
 		private void PreparePaymentMethodEditModel(PaymentMethodEditModel model, PaymentMethod paymentMethod)
 		{
-			var customerRoles = _customerService.GetAllCustomerRoles(true);
-			var shippingMethods = _shippingService.GetAllShippingMethods();
-			var countries = _countryService.GetAllCountries(true);
+			var allFilters = _paymentService.GetAllPaymentMethodFilters();
 
-			model.AvailableCustomerRoles = new List<SelectListItem>();
-			model.AvailableShippingMethods = new List<SelectListItem>();
-			model.AvailableCountries = new List<SelectListItem>();
-
-			model.AvailableCountryExclusionContextTypes = CountryRestrictionContextType.BillingAddress.ToSelectList(false).ToList();
-			model.AvailableAmountRestrictionContextTypes = AmountRestrictionContextType.SubtotalAmount.ToSelectList(false).ToList();
-
-			foreach (var role in customerRoles.OrderBy(x => x.Name))
-			{
-				model.AvailableCustomerRoles.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
-			}
-
-			foreach (var shippingMethod in shippingMethods.OrderBy(x => x.Name))
-			{
-				model.AvailableShippingMethods.Add(new SelectListItem { Text = shippingMethod.GetLocalized(x => x.Name), Value = shippingMethod.Id.ToString() });
-			}
-
-			foreach (var country in countries.OrderBy(x => x.Name))
-			{
-				model.AvailableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
-			}
+			model.FilterConfigurationUrls = allFilters
+				.Select(x => "'" + x.GetConfigurationUrl(model.SystemName) + "'")
+				.OrderBy(x => x)
+				.ToList();
 
 			if (paymentMethod != null)
 			{
-				model.ExcludedCustomerRoleIds = paymentMethod.ExcludedCustomerRoleIds.SplitSafe(",");
-				model.ExcludedShippingMethodIds = paymentMethod.ExcludedShippingMethodIds.SplitSafe(",");
-				model.ExcludedCountryIds = paymentMethod.ExcludedCountryIds.SplitSafe(",");
-
-				model.MinimumOrderAmount = paymentMethod.MinimumOrderAmount;
-				model.MaximumOrderAmount = paymentMethod.MaximumOrderAmount;
-
-				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
-				model.AmountRestrictionContext = paymentMethod.AmountRestrictionContext;
-
+				model.Id = paymentMethod.Id;
 				model.FullDescription = paymentMethod.FullDescription;
 			}
 		}
@@ -195,8 +167,8 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model)
+		[HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model, FormCollection form)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
 				return AccessDeniedView();
@@ -213,16 +185,6 @@ namespace SmartStore.Admin.Controllers
 			if (paymentMethod == null)
 				paymentMethod = new PaymentMethod { PaymentMethodSystemName = systemName };
 
-			paymentMethod.ExcludedCustomerRoleIds = Request.Form["ExcludedCustomerRoleIds"];
-			paymentMethod.ExcludedShippingMethodIds = Request.Form["ExcludedShippingMethodIds"];
-			paymentMethod.ExcludedCountryIds = Request.Form["ExcludedCountryIds"];
-
-			paymentMethod.MinimumOrderAmount = model.MinimumOrderAmount;
-			paymentMethod.MaximumOrderAmount = model.MaximumOrderAmount;
-
-			paymentMethod.CountryExclusionContext = model.CountryExclusionContext;
-			paymentMethod.AmountRestrictionContext = model.AmountRestrictionContext;
-
 			paymentMethod.FullDescription = model.FullDescription;
 
 			if (paymentMethod.Id == 0)
@@ -238,7 +200,9 @@ namespace SmartStore.Admin.Controllers
 				_localizedEntityService.SaveLocalizedValue(paymentMethod, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
 			}
 
-			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataEditSuccess"));
+			_services.EventPublisher.Publish(new ModelBoundEvent(model, paymentMethod, form));
+
+			NotifySuccess(T("Admin.Common.DataEditSuccess"));
 
 			return (continueEditing ?
 				RedirectToAction("Edit", "Payment", new { systemName = systemName }) :

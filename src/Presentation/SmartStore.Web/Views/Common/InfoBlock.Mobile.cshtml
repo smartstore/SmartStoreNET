@@ -1,44 +1,76 @@
 ﻿@model InfoBlockModel
 @using SmartStore.Web.Models.Common;
 @Html.Widget("mobile_infoblock_before")
-<div data-role="navbar">
-    <ul>
-        <li><a href="@Url.RouteUrl("ContactUs")" data-role="button">@T("ContactUs")</a></li>
-        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "aboutus" })" data-role="button">@T("AboutUs")</a></li>
-        @if (Model.BlogEnabled)
-        {
-            <li><a href="@Url.RouteUrl("Blog")" data-role="button">@T("Blog")</a></li>
-        }
-        @if (Model.ForumEnabled)
-        {
-            <li><a href="@Url.RouteUrl("Boards")" data-role="button">@T("Forum.Forums")</a></li>
-        }
-    </ul>
-</div>
-<div data-role="navbar">
-    <ul>
-        @if (Model.CompareProductsEnabled)
-        {
-            <li><a href="@Url.RouteUrl("CompareProducts")" data-role="button">@T("Products.Compare.List")</a></li>
-        }
-        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "shippinginfo" })" data-role="button">@T("ShippingReturns")</a></li>
-    </ul>
-</div>
-<div data-role="navbar">
-    <ul>
-        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })" data-role="button">@T("PrivacyNotice")</a></li>
-        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "conditionsofuse" })" data-role="button">@T("ConditionsOfUse")</a></li>
-    </ul>
-</div>
-<div data-role="navbar">
-    <ul>
-        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "imprint" })">@T("Imprint")</a></li>
-        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "disclaimer" })">@T("Disclaimer")</a></li>
-    </ul>
-</div>
+@if (Model.TopicPageUrls.ContainsKey("contactus") || Model.TopicPageUrls.ContainsKey("aboutus") || Model.BlogEnabled || Model.ForumEnabled)
+{
+	<div data-role="navbar">
+		<ul>
+			@if (Model.TopicPageUrls.ContainsKey("contactus"))
+			{
+				<li><a href="@Model.TopicPageUrls["contactus"]" data-role="button">@T("ContactUs")</a></li>
+			}
+			@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+			{
+				<li><a href="@Model.TopicPageUrls["aboutus"]" data-role="button">@T("AboutUs")</a></li>
+			}
+			@if (Model.BlogEnabled)
+			{
+				<li><a href="@Url.RouteUrl("Blog")" data-role="button">@T("Blog")</a></li>
+			}
+			@if (Model.ForumEnabled)
+			{
+				<li><a href="@Url.RouteUrl("Boards")" data-role="button">@T("Forum.Forums")</a></li>
+			}
+		</ul>
+	</div>
+}
+@if (Model.TopicPageUrls.ContainsKey("paymentinfo") || Model.TopicPageUrls.ContainsKey("shippinginfo"))
+{
+	<div data-role="navbar">
+		<ul>
+			@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
+			{
+				<li><a href="@Url.RouteUrl("Topic", new { SystemName = "paymentinfo" })" data-role="button">@T("Paymentinfo")</a></li>
+			}
+			@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+			{
+				<li><a href="@Model.TopicPageUrls["shippinginfo"]" data-role="button">@T("ShippingReturns")</a></li>
+			}
+		</ul>
+	</div>
+}
+@if (Model.TopicPageUrls.ContainsKey("privacyinfo") || Model.TopicPageUrls.ContainsKey("conditionsofuse"))
+{
+	<div data-role="navbar">
+		<ul>
+			@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
+			{
+				<li><a href="@Model.TopicPageUrls["privacyinfo"]" data-role="button">@T("PrivacyNotice")</a></li>
+			}
+			@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
+			{
+				<li><a href="@Model.TopicPageUrls["conditionsofuse"]" data-role="button">@T("ConditionsOfUse")</a></li>
+			}
+		</ul>
+	</div>
+}
+@if (Model.TopicPageUrls.ContainsKey("imprint") || Model.TopicPageUrls.ContainsKey("disclaimer"))
+{
+	<div data-role="navbar">
+		<ul>
+			@if (Model.TopicPageUrls.ContainsKey("imprint"))
+			{
+				<li><a href="@Model.TopicPageUrls["imprint"]" data-role="button">@T("Imprint")</a></li>
+			}
+			@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
+			{
+				<li><a href="@Model.TopicPageUrls["disclaimer"]" data-role="button">@T("Disclaimer")</a></li>
+			}
+		</ul>
+	</div>
+}
 @if (Model.AllowPrivateMessages)
 {
-
     <div data-role="navbar">
         <ul>
             <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" data-role="button" rel="nofollow">@T("PrivateMessages.Inbox")</a></li>

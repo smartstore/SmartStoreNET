@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -16,13 +15,13 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -36,9 +35,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -63,7 +63,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IProductService _productService;
-        private readonly IExportManager _exportManager;
         private readonly IPermissionService _permissionService;
 	    private readonly IWorkflowMessageService _workflowMessageService;
 	    private readonly ICategoryService _categoryService;
@@ -82,15 +81,17 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
+		private readonly ICustomerActivityService _customerActivityService;
 
-        private readonly CatalogSettings _catalogSettings;
+		private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
         private readonly TaxSettings _taxSettings;
         private readonly MeasureSettings _measureSettings;
         private readonly PdfSettings _pdfSettings;
         private readonly AddressSettings _addressSettings;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
-        private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
+		private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
         private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
         private readonly Lazy<IPictureService> _pictureService;
@@ -107,7 +108,7 @@ namespace SmartStore.Admin.Controllers
             IMeasureService measureService,
             IAddressService addressService, ICountryService countryService,
             IStateProvinceService stateProvinceService, IProductService productService,
-            IExportManager exportManager, IPermissionService permissionService,
+            IPermissionService permissionService,
             IWorkflowMessageService workflowMessageService,
             ICategoryService categoryService, IManufacturerService manufacturerService,
             IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser,
@@ -121,9 +122,11 @@ namespace SmartStore.Admin.Controllers
 			ICustomerService customerService,
 			PluginMediator pluginMediator,
 			IAffiliateService affiliateService,
-            CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
+			ICustomerActivityService customerActivityService,
+			CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings,
-            IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
+			AdminAreaSettings adminAreaSettings,
+			IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
 		{
             this._orderService = orderService;
             this._orderReportService = orderReportService;
@@ -140,7 +143,6 @@ namespace SmartStore.Admin.Controllers
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;
             this._productService = productService;
-            this._exportManager = exportManager;
             this._permissionService = permissionService;
             this._workflowMessageService = workflowMessageService;
             this._categoryService = categoryService;
@@ -159,13 +161,15 @@ namespace SmartStore.Admin.Controllers
 			this._customerService = customerService;
 			this._pluginMediator = pluginMediator;
 			this._affiliateService = affiliateService;
+			this._customerActivityService = customerActivityService;
 
-            this._catalogSettings = catalogSettings;
+			this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
             this._taxSettings = taxSettings;
             this._measureSettings = measureSettings;
             this._pdfSettings = pdfSettings;
             this._addressSettings = addressSettings;
+			this._adminAreaSettings = adminAreaSettings;
 
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
             _pdfConverter = pdfConverter;
@@ -206,6 +210,7 @@ namespace SmartStore.Admin.Controllers
             model.AffiliateId = order.AffiliateId;
             model.CustomerComment = order.CustomerOrderComment;
 			model.HasNewPaymentNotification = order.HasNewPaymentNotification;
+			model.AcceptThirdPartyEmailHandOver = order.AcceptThirdPartyEmailHandOver;
 
 			if (order.AffiliateId != 0)
 			{
@@ -580,7 +585,7 @@ namespace SmartStore.Admin.Controllers
         {
             var product = _productService.GetProductById(productId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", productId));
 
 			var customer = _workContext.CurrentCustomer;	// TODO: we need a customer representing entity instance for backend work
 			var order = _orderService.GetOrderById(orderId);
@@ -786,70 +791,83 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
+			var allStores = _storeService.GetAllStores();
+
+			model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
             model.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 
-			//stores
-			model.AvailableStores.AddRange(_storeService.GetAllStores().ToList().ToSelectListItems());
-			model.AvailableStores.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores = allStores
+				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+				.ToList();
 
-            return View(model);
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+
+			return View(model);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
 		public ActionResult OrderList(GridCommand command, OrderListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var gridModel = new GridModel<OrderModel>();
 
-            DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
-            DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+				DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-			var orderStatusIds = model.OrderStatusIds.ToIntArray();
-			var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
-			var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
+				var orderStatusIds = model.OrderStatusIds.ToIntArray();
+				var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
+				var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
 
-			var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
-                model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
+				var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
+					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
 
-            var gridModel = new GridModel<OrderModel>
-            {
-                Data = orders.Select(x =>
-                {
+				gridModel.Data = orders.Select(x =>
+				{
 					var store = _storeService.GetStoreById(x.StoreId);
-                    return new OrderModel
-                    {
-                        Id = x.Id,
-                        OrderNumber = x.GetOrderNumber(),
-						StoreName = store != null ? store.Name : "Unknown",
-                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                        OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        CustomerEmail = x.BillingAddress.Email,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+					return new OrderModel
+					{
+						Id = x.Id,
+						OrderNumber = x.GetOrderNumber(),
+						StoreName = (store != null ? store.Name : "".NaIfEmpty()),
+						OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+						OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+						PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
+						ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
+						CustomerName = x.BillingAddress.GetFullName(),
+						CustomerEmail = x.BillingAddress.Email,
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
 						HasNewPaymentNotification = x.HasNewPaymentNotification
-                    };
-                }),
-                Total = orders.TotalCount
-            };
+					};
+				});
 
-            //summary report
-            //implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
-			var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
-				paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+				gridModel.Total = orders.TotalCount;
 
-			var profit = _orderReportService.ProfitReport(model.StoreId, orderStatusIds,
-				paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+				//summary report
+				//implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
+				var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
+					paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
 
-		    var aggregator = new OrderModel()
-		    {
-                aggregatorprofit = _priceFormatter.FormatPrice(profit, true, false),
-                aggregatortax = _priceFormatter.FormatPrice(reportSummary.SumTax, true, false),
-		        aggregatortotal = _priceFormatter.FormatPrice(reportSummary.SumOrders, true, false)
-		    };
-		    gridModel.Aggregates = aggregator;
+				var profit = _orderReportService.ProfitReport(model.StoreId, orderStatusIds,
+					paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+
+				var aggregator = new OrderModel
+				{
+					aggregatorprofit = _priceFormatter.FormatPrice(profit, true, false),
+					aggregatortax = _priceFormatter.FormatPrice(reportSummary.SumTax, true, false),
+					aggregatortotal = _priceFormatter.FormatPrice(reportSummary.SumOrders, true, false)
+				};
+
+				gridModel.Aggregates = aggregator;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<OrderModel>();
+
+				NotifyAccessDenied();
+			}
+
 			return new JsonResult
 			{
 				Data = gridModel
@@ -870,100 +888,11 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List", "Order");
         }
 
-        #endregion
+		#endregion
 
-        #region Export / Import
+		#region Export / Import
 
-        public ActionResult ExportXmlAll()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
-
-            try
-            {
-				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, null, 0, int.MaxValue);
-
-                var xml = _exportManager.ExportOrdersToXml(orders);
-                return new XmlDownloadResult(xml, "orders.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
-        }
-
-		[HttpPost]
-        public ActionResult ExportXmlSelected(string selectedIds)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
-
-            var orders = new List<Order>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                orders.AddRange(_orderService.GetOrdersByIds(ids));
-            }
-
-            var xml = _exportManager.ExportOrdersToXml(orders);
-            return new XmlDownloadResult(xml, "orders.xml");
-        }
-
-	    public ActionResult ExportExcelAll()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
-
-            try
-            {
-				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, null, 0, int.MaxValue);
-                
-                byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _exportManager.ExportOrdersToXlsx(stream, orders);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "text/xls", "orders.xlsx");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
-        }
-
-		[HttpPost]
-        public ActionResult ExportExcelSelected(string selectedIds)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
-
-            var orders = new List<Order>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                orders.AddRange(_orderService.GetOrdersByIds(ids));
-            }
-
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _exportManager.ExportOrdersToXlsx(stream, orders);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "text/xls", "orders.xlsx");
-        }
-
+		[HttpPost, Compress]
 		public ActionResult ExportPdf(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -972,6 +901,7 @@ namespace SmartStore.Admin.Controllers
 			if (!all && selectedIds.IsEmpty())
 			{
 				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+
 				return RedirectToAction("List");
 			}
 
@@ -1321,7 +1251,14 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             _orderProcessingService.DeleteOrder(order);
-            return RedirectToAction("List");
+
+			var msg = T("ActivityLog.DeleteOrder", order.GetOrderNumber());
+
+			_customerActivityService.InsertActivity("DeleteOrder", msg);
+
+			NotifySuccess(msg);
+
+			return RedirectToAction("List");
         }
 
         public ActionResult Print(int orderId, bool pdf = false)
@@ -1723,7 +1660,6 @@ namespace SmartStore.Admin.Controllers
             var model = new OrderModel.AddOrderProductModel();
             model.OrderId = orderId;
 
-            //categories
             var allCategories = _categoryService.GetAllCategories(showHidden: true);
             var mappedCategories = allCategories.ToDictionary(x => x.Id);
             foreach (var c in allCategories)
@@ -1731,15 +1667,12 @@ namespace SmartStore.Admin.Controllers
                 model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
             }
 
-            //manufacturers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
             {
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
             }
 
-			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             return View(model);
         }
@@ -1747,36 +1680,46 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult AddProductToOrder(GridCommand command, OrderModel.AddOrderProductModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var gridModel = new GridModel<OrderModel.AddOrderProductModel.ProductModel>();
 
-            var gridModel = new GridModel();
-			var searchContext = new ProductSearchContext()
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 			{
-				CategoryIds = new List<int>() { model.SearchCategoryId },
-				ManufacturerId = model.SearchManufacturerId,
-				Keywords = model.SearchProductName,
-				PageIndex = command.Page - 1,
-				PageSize = command.PageSize,
-				ShowHidden = true,
-				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
-			};
+				var searchContext = new ProductSearchContext
+				{
+					CategoryIds = new List<int> { model.SearchCategoryId },
+					ManufacturerId = model.SearchManufacturerId,
+					Keywords = model.SearchProductName,
+					PageIndex = command.Page - 1,
+					PageSize = command.PageSize,
+					ShowHidden = true,
+					ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
+				};
 
-            var products = _productService.SearchProducts(searchContext);
-            gridModel.Data = products.Select(x =>
-            {
-                var productModel = new OrderModel.AddOrderProductModel.ProductModel
-                {
-                    Id = x.Id,
-                    Name =  x.Name,
-                    Sku = x.Sku,
-					ProductTypeName = x.GetProductTypeLabel(_localizationService),
-					ProductTypeLabelHint = x.ProductTypeLabelHint
-                };
+				var products = _productService.SearchProducts(searchContext);
 
-                return productModel;
-            });
-            gridModel.Total = products.TotalCount;
+				gridModel.Data = products.Select(x =>
+				{
+					var productModel = new OrderModel.AddOrderProductModel.ProductModel
+					{
+						Id = x.Id,
+						Name = x.Name,
+						Sku = x.Sku,
+						ProductTypeName = x.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = x.ProductTypeLabelHint
+					};
+
+					return productModel;
+				});
+
+				gridModel.Total = products.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<OrderModel.AddOrderProductModel.ProductModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -2054,23 +1997,29 @@ namespace SmartStore.Admin.Controllers
 		[GridAction(EnableCustomBinding = true)]
         public ActionResult ShipmentListSelect(GridCommand command, ShipmentListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var gridModel = new GridModel<ShipmentModel>();
 
-            DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				DateTime? startDateValue = (model.StartDate == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
-            DateTime? endDateValue = (model.EndDate == null) ? null 
-                            :(DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				DateTime? endDateValue = (model.EndDate == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            //load shipments
-			var shipments = _shipmentService.GetAllShipments(model.TrackingNumber, startDateValue, endDateValue, 
-                command.Page - 1, command.PageSize);
-            var gridModel = new GridModel<ShipmentModel>
-            {
-                Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false, false)),
-                Total = shipments.TotalCount
-            };
+				//load shipments
+				var shipments = _shipmentService.GetAllShipments(model.TrackingNumber, startDateValue, endDateValue, command.Page - 1, command.PageSize);
+
+				gridModel.Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false, false));
+				gridModel.Total = shipments.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<ShipmentModel>();
+
+				NotifyAccessDenied();
+			}
+
 			return new JsonResult
 			{
 				Data = gridModel
@@ -2080,24 +2029,29 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult ShipmentsSelect(int orderId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var model = new GridModel<ShipmentModel>();
 
-            var order = _orderService.GetOrderById(orderId);
-            if (order == null)
-                throw new ArgumentException("No order found with the specified id");
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				var order = _orderService.GetOrderById(orderId);
 
-            //shipments
-            var shipmentModels = new List<ShipmentModel>();
-            var shipments = order.Shipments.OrderBy(s => s.CreatedOnUtc).ToList();
-            foreach (var shipment in shipments)
-                shipmentModels.Add(PrepareShipmentModel(shipment, false, false));
+				var shipmentModels = new List<ShipmentModel>();
+				var shipments = order.Shipments.OrderBy(s => s.CreatedOnUtc).ToList();
 
-            var model = new GridModel<ShipmentModel>
-            {
-                Data = shipmentModels,
-                Total = shipmentModels.Count
-            };
+				foreach (var shipment in shipments)
+				{
+					shipmentModels.Add(PrepareShipmentModel(shipment, false, false));
+				}
+
+				model.Data = shipmentModels;
+				model.Total = shipmentModels.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<ShipmentModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -2167,7 +2121,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult AddShipment(int orderId, FormCollection form, bool continueEditing)
         {
@@ -2176,84 +2130,39 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(orderId);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
-            Shipment shipment = null;
+			var quantities = new Dictionary<int, int>();
+			var trackingNumber = form["TrackingNumber"];
 
-            decimal? totalWeight = null;
-            foreach (var orderItem in order.OrderItems)
-            {
-                //is shippable
-                if (!orderItem.Product.IsShipEnabled)
-                    continue;
+			foreach (var orderItem in order.OrderItems)
+			{
+				foreach (string formKey in form.AllKeys)
+				{
+					if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
+					{
+						quantities.Add(orderItem.Id, form[formKey].ToInt());
+						break;
+					}
+				}
+			}
 
-                //ensure that this product can be shipped (have at least one item to ship)
-                var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
-                if (maxQtyToAdd <= 0)
-                    continue;
+			var shipment = _orderProcessingService.AddShipment(order, trackingNumber, quantities);
 
-                int qtyToAdd = 0; //parse quantity
-                foreach (string formKey in form.AllKeys)
-                    if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        int.TryParse(form[formKey], out qtyToAdd);
-                        break;
-                    }
+			if (shipment != null)
+			{
+				NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
 
-                //validate quantity
-                if (qtyToAdd <= 0)
-                    continue;
-                if (qtyToAdd > maxQtyToAdd)
-                    qtyToAdd = maxQtyToAdd;
-
-                //ok. we have at least one item. let's create a shipment (if it does not exist)
-
-                var orderItemTotalWeight = orderItem.ItemWeight.HasValue ? orderItem.ItemWeight * qtyToAdd : null;
-                if (orderItemTotalWeight.HasValue)
-                {
-                    if (!totalWeight.HasValue)
-                        totalWeight = 0;
-                    totalWeight += orderItemTotalWeight.Value;
-                }
-
-                if (shipment == null)
-                {
-                    shipment = new Shipment()
-                    {
-                        OrderId = order.Id,
-                        TrackingNumber = form["TrackingNumber"],
-                        TotalWeight = null,
-                        ShippedDateUtc = null,
-                        DeliveryDateUtc = null,
-                        CreatedOnUtc = DateTime.UtcNow,
-                    };
-                }
-                //create a shipment item
-                var shipmentItem = new ShipmentItem()
-                {
-                    OrderItemId = orderItem.Id,
-                    Quantity = qtyToAdd,
-                };
-                shipment.ShipmentItems.Add(shipmentItem);
-            }
-
-            //if we have at least one item in the shipment, then save it
-            if (shipment != null && shipment.ShipmentItems.Count > 0)
-            {
-                shipment.TotalWeight = totalWeight;
-                _shipmentService.InsertShipment(shipment);
-
-                NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
-                return continueEditing
-                           ? RedirectToAction("ShipmentDetails", new {id = shipment.Id})
-                           : RedirectToAction("Edit", new { id = orderId });
-            }
-            else
-            {
+				return continueEditing
+				   ? RedirectToAction("ShipmentDetails", new { id = shipment.Id })
+				   : RedirectToAction("Edit", new { id = orderId });
+			}
+			else
+			{
 				NotifyError(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
+
 				return RedirectToAction("AddShipment", new { orderId = orderId });
-            }
+			}
         }
 
         public ActionResult ShipmentDetails(int id)
@@ -2427,37 +2336,40 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult OrderNotesSelect(int orderId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var model = new GridModel<OrderModel.OrderNote>();
 
-            var order = _orderService.GetOrderById(orderId);
-            if (order == null)
-                throw new ArgumentException("No order found with the specified id");
-
-            var orderNoteModels = new List<OrderModel.OrderNote>();
-
-            foreach (var orderNote in order.OrderNotes.OrderByDescending(on => on.CreatedOnUtc))
-            {
-                orderNoteModels.Add(new OrderModel.OrderNote
-                {
-                    Id = orderNote.Id,
-                    OrderId = orderNote.OrderId,
-                    DisplayToCustomer = orderNote.DisplayToCustomer,
-                    Note = orderNote.FormatOrderNoteText(),
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc)
-                });
-            }
-
-            var model = new GridModel<OrderModel.OrderNote>
-            {
-                Data = orderNoteModels,
-                Total = orderNoteModels.Count
-            };
-
-			if (order.HasNewPaymentNotification)
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 			{
-				order.HasNewPaymentNotification = false;
-				_orderService.UpdateOrder(order);
+				var order = _orderService.GetOrderById(orderId);
+
+				var orderNoteModels = new List<OrderModel.OrderNote>();
+
+				foreach (var orderNote in order.OrderNotes.OrderByDescending(on => on.CreatedOnUtc))
+				{
+					orderNoteModels.Add(new OrderModel.OrderNote
+					{
+						Id = orderNote.Id,
+						OrderId = orderNote.OrderId,
+						DisplayToCustomer = orderNote.DisplayToCustomer,
+						Note = orderNote.FormatOrderNoteText(),
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc)
+					});
+				}
+
+				model.Data = orderNoteModels;
+				model.Total = orderNoteModels.Count;
+
+				if (order.HasNewPaymentNotification)
+				{
+					order.HasNewPaymentNotification = false;
+					_orderService.UpdateOrder(order);
+				}
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<OrderModel.OrderNote>();
+
+				NotifyAccessDenied();
 			}
 
             return new JsonResult
@@ -2501,17 +2413,13 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult OrderNoteDelete(int orderId, int orderNoteId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				var order = _orderService.GetOrderById(orderId);
+				var orderNote = order.OrderNotes.Where(on => on.Id == orderNoteId).FirstOrDefault();
 
-            var order = _orderService.GetOrderById(orderId);
-            if (order == null)
-                throw new ArgumentException("No order found with the specified id");
-
-            var orderNote = order.OrderNotes.Where(on => on.Id == orderNoteId).FirstOrDefault();
-            if (orderNote == null)
-                throw new ArgumentException("No order note found with the specified id");
-            _orderService.DeleteOrderNote(orderNote);
+				_orderService.DeleteOrderNote(orderNote);
+			}
 
             return OrderNotesSelect(orderId, command);
         }
@@ -2549,12 +2457,14 @@ namespace SmartStore.Admin.Controllers
 
             return model;
         }
-        public ActionResult BestsellersBriefReportByQuantity()
+
+		public ActionResult BestsellersBriefReportByQuantity()
         {
             var model = GetBestsellersBriefReportModel(5, 1);
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult BestsellersBriefReportByQuantityList(GridCommand command)
         {
             var model = GetBestsellersBriefReportModel(5, 1);
@@ -2568,12 +2478,14 @@ namespace SmartStore.Admin.Controllers
                 Data = gridModel
             };
         }
-        public ActionResult BestsellersBriefReportByAmount()
+
+		public ActionResult BestsellersBriefReportByAmount()
         {
             var model = GetBestsellersBriefReportModel(5, 2);
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult BestsellersBriefReportByAmountList(GridCommand command)
         {
             var model = GetBestsellersBriefReportModel(5, 2);
@@ -2588,51 +2500,46 @@ namespace SmartStore.Admin.Controllers
             };
         }
 
-
-
-
         public ActionResult BestsellersReport()
         {
             var model = new BestsellersReportModel();
 
-            //order statuses
             model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.AvailableOrderStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
-            //payment statuses
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.AvailablePaymentStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
-            //billing countries
             foreach (var c in _countryService.GetAllCountriesForBilling())
             {
-                model.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString() });
+                model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
             }
-            model.AvailableCountries.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+
+            model.AvailableCountries.Insert(0, new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
 
             return View(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult BestsellersReportList(GridCommand command, BestsellersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
             DateTime? endDateValue = (model.EndDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
             OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
 
 			var items = _orderReportService.BestSellersReport(0, startDateValue, endDateValue,
                 orderStatus, paymentStatus, null, model.BillingCountryId, 100, 2, true);
+
             var gridModel = new GridModel<BestsellersReportLineModel>
             {
                 Data = items.Select(x =>
                 {
 					var product = _productService.GetProductById(x.ProductId);
 
-                    var m = new BestsellersReportLineModel()
+                    var m = new BestsellersReportLineModel
                     {
                         ProductId = x.ProductId,
                         TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
@@ -2649,6 +2556,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = items.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -2662,17 +2570,18 @@ namespace SmartStore.Admin.Controllers
             var model = new NeverSoldReportModel();
             return View(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult NeverSoldReportList(GridCommand command, NeverSoldReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
             DateTime? endDateValue = (model.EndDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
             
-            var items = _orderReportService.ProductsNeverSold(startDateValue, endDateValue,
-                command.Page - 1, command.PageSize, true);
+            var items = _orderReportService.ProductsNeverSold(startDateValue, endDateValue, command.Page - 1, command.PageSize, true);
+
 			var gridModel = new GridModel<NeverSoldReportLineModel>
 			{
 				Data = items.Select(x =>
@@ -2688,6 +2597,7 @@ namespace SmartStore.Admin.Controllers
 				}),
 				Total = items.TotalCount
 			};
+
             return new JsonResult
             {
                 Data = gridModel
@@ -2796,13 +2706,15 @@ namespace SmartStore.Admin.Controllers
 
             return model;
         }
-        [ChildActionOnly]
+
+		[ChildActionOnly]
         public ActionResult OrderIncompleteReport()
         {
             var model = GetOrderIncompleteReportModel();
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult OrderIncompleteReportList(GridCommand command)
         {
             var model = GetOrderIncompleteReportModel();

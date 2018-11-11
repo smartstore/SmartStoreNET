@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -58,9 +59,16 @@ namespace SmartStore.Admin.Models.Settings
         public IList<SelectListItem> GiftCards_Deactivated_OrderStatuses { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
+		public int StoreCount { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderIdent")]
         public int? OrderIdent { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.DisplayOrdersOfAllStores")]
+		public bool DisplayOrdersOfAllStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderListPageSize")]
+		public int OrderListPageSize { get; set; }
 
 		public IList<OrderSettingsLocalizedModel> Locales { get; set; }
     }

@@ -3,7 +3,7 @@ namespace SmartStore.Core.Domain.Customers
     /// <summary>
     /// Represents the customer name fortatting enumeration
     /// </summary>
-    public enum CustomerNameFormat : int
+    public enum CustomerNameFormat
     {
         /// <summary>
         /// Show emails

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -26,6 +27,7 @@ namespace SmartStore.Core.Packaging
 
 		#region Package update
 
+		[SuppressMessage("ReSharper", "RedundantAssignment")]
 		public bool InstallablePackageExists()
 		{
 			string packagePath = null;
@@ -112,15 +114,13 @@ namespace SmartStore.Core.Packaging
 			var files = Directory.GetFiles(dir, "SmartStore.*.nupkg", SearchOption.TopDirectoryOnly);
 
 			// TODO: allow more than one package in folder and return newest
-			if (files == null || files.Length == 0 || files.Length > 1)
+			if (files.Length == 0 || files.Length > 1)
 				return null;
-
-			IPackage package = null;
 
 			try
 			{
 				path = files[0];
-				package = new ZipPackage(files[0]);
+				IPackage package = new ZipPackage(files[0]);
 				if (createLogger)
 				{
 					_logger = CreateLogger(package);

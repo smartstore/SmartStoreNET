@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
@@ -14,12 +15,19 @@ namespace SmartStore.Services.Directory
         /// <param name="stateProvince">The state/province</param>
         void DeleteStateProvince(StateProvince stateProvince);
 
-        /// <summary>
-        /// Gets a state/province
-        /// </summary>
-        /// <param name="stateProvinceId">The state/province identifier</param>
-        /// <returns>State/province</returns>
-        StateProvince GetStateProvinceById(int stateProvinceId);
+		/// <summary>
+		/// Get all states/provinces
+		/// </summary>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns></returns>
+		IQueryable<StateProvince> GetAllStateProvinces(bool showHidden = false);
+
+		/// <summary>
+		/// Gets a state/province
+		/// </summary>
+		/// <param name="stateProvinceId">The state/province identifier</param>
+		/// <returns>State/province</returns>
+		StateProvince GetStateProvinceById(int stateProvinceId);
 
         /// <summary>
         /// Gets a state/province 

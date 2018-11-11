@@ -30,6 +30,8 @@
     <script src='~/Scripts/modernizr-2.7.2.js' type='text/javascript'></script>
     <script src='~/Scripts/jquery-2.1.1.min.js' type='text/javascript'></script>
 	<script src='~/Scripts/jquery-migrate-1.2.1.min.js' type='text/javascript'></script>
+    <script src='~/Content/bootstrap/js/bootstrap-button.js' type='text/javascript'></script>
+    <script src='~/Content/bootstrap/js/bootstrap-dropdown.js' type='text/javascript'></script>
     <script src='~/Scripts/smartstore.common.js' type='text/javascript'></script>
 </head>
 <body class="container-main">
@@ -113,20 +115,57 @@
 
         </script>
         
-        <div class="container">
-            
-            <div class="install-head clearfix">
-                <div class="logo pull-left">
-                    <img src="~/Content/images/smartstore.net-200-black.png" alt="SmartStore.NET" />
+        <div class="bg-top">
+            &nbsp;
+        </div>
+
+        <div class="container" style="position: relative">
+            <div class="install-head">
+                <img src="~/Content/images/smartstore.net-200-white.png" alt="SmartStore.NET" />
+                <span class="install-title">@ILS.GetResource("Title")</span>
+            </div>
+
+            <div id="navbar-tools" class="pull-right">
+                <div class="btn-group">
+                    <button class="btn dropdown-toggle navbar-tool" title="Deutsch" data-toggle="dropdown">
+                        <i class="fa fa-language"></i>
+                        <span style="text-transform: uppercase">@Model.AvailableLanguages.First(x => x.Selected).Text</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @foreach (var lang in Model.AvailableLanguages)
+                        {
+                            <li>
+                                <a href="@lang.Value">
+                                    @if (lang.Selected)
+                                    {
+                                        <i class="fa fa-fw fa-check"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa fa-fw"></i>
+                                    }
+                                    @lang.Text
+                                </a>
+                            </li>
+                        }
+                    </ul>
                 </div>
-                <h1 class="install-title pull-right">@ILS.GetResource("Title")</h1>
+                <div class="btn-group">
+                    <a class="btn navbar-tool" href="@Url.Action("RestartInstall", "Install")" title="@ILS.GetResource("RestartInstallation")" rel="nofollow">
+                        <i class="fa fa-fw fa-repeat"></i>
+                    </a>
+                </div>
             </div>
 
             <div class="install-panel">
-
                 <div class="install-content">
-                    <p>@ILS.GetResource("Tooltip1")</p>
-                    <p>@ILS.GetResource("Tooltip2")</p>
+                    <p class="install-intro">
+                        @ILS.GetResource("Tooltip1").
+                        <br/>
+                        <br /> 
+                        @ILS.GetResource("Tooltip2")
+                    </p>
+                    <p class="install-intro hide">@ILS.GetResource("Tooltip2")</p>
 
                     <div id="messages" class="alert alert-error fade hide">
                         <button type="button" class="close" data-dismiss="alert">×</button>
@@ -135,7 +174,7 @@
 
                     <fieldset>
                         <legend>
-                            <i class="install-icon fa fa-shopping-cart"></i>
+                            <i class="fa fa-user fa-fw"></i>
                             @ILS.GetResource("StoreInformation")
                         </legend>
                         <div class="control-group">
@@ -159,36 +198,11 @@
                                 @Html.ValidationMessageFor(x => x.ConfirmPassword)
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label class="control-label" for="PrimaryLanguage">@ILS.GetResource("PrimaryLanguage")</label>
-                            <div class="controls">
-                                @Html.DropDownListFor(x => x.PrimaryLanguage, Model.AvailableAppLanguages)
-                                @Html.ValidationMessageFor(x => x.PrimaryLanguage)
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="MediaStorage">@ILS.GetResource("MediaStorage.Label")</label>
-                            <div class="controls">
-                                @Html.DropDownListFor(x => x.MediaStorage, Model.AvailableMediaStorages)
-                                @Html.ValidationMessageFor(x => x.MediaStorage)
-								<span class="help-block muted" style="margin-top: 4px">
-									@ILS.GetResource("MediaStorage.Hint"):
-								</span>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <div class="controls">
-                                <label class="checkbox">
-                                    @Html.CheckBoxFor(x => x.InstallSampleData)
-                                    @ILS.GetResource("CreateSampleData")
-                                </label>
-                            </div>
-                        </div>
                     </fieldset>
 
                     <fieldset>
                         <legend>
-                            <i class="install-icon fa fa-cogs"></i>
+                            <i class="fa fa-database fa-fw"></i>
                             @ILS.GetResource("DatabaseInformation")
                         </legend>
                         <div class="control-group">
@@ -262,7 +276,7 @@
                                     <label class="control-label" for="DatabaseConnectionString">@ILS.GetResource("ConnectionString")</label>
                                     <div class="controls">
                                         @Html.TextBoxFor(x => x.DatabaseConnectionString, new { style = "width:90%;" })
-                                        <span class="help-block muted" style="margin-top: 4px">
+                                        <span class="help-block">
                                             @ILS.GetResource("Example"):
                                             Data Source=sqlServerName;Initial Catalog=dbName;Persist Security Info=True;User
                                             ID=userName;Password=password
@@ -294,30 +308,48 @@
 
                             </div>
                         </div>
+                    </fieldset>
 
-                        <div style="text-align: center; margin-top: 20px">
-                            <button type="submit" id="install-button" class="btn btn-warning btn-large">
-                                <i class="fa fa-cogs" style="margin-right: 4px;"></i>
-                                <strong>@ILS.GetResource("Install")</strong>
-                            </button>
+                    <fieldset>
+                        <legend>
+                            <i class="fa fa-sliders fa-fw"></i>
+                            @ILS.GetResource("InstallOptions")
+                        </legend>
+                        <div class="control-group">
+                            <label class="control-label" for="PrimaryLanguage">@ILS.GetResource("PrimaryLanguage")</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(x => x.PrimaryLanguage, Model.AvailableAppLanguages)
+                                @Html.ValidationMessageFor(x => x.PrimaryLanguage)
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="MediaStorage">@ILS.GetResource("MediaStorage.Label")</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(x => x.MediaStorage, Model.AvailableMediaStorages)
+                                @Html.ValidationMessageFor(x => x.MediaStorage)
+                                <span class="help-block">
+                                    @ILS.GetResource("MediaStorage.Hint")
+                                </span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <label class="checkbox">
+                                    @Html.CheckBoxFor(x => x.InstallSampleData)
+                                    @ILS.GetResource("CreateSampleData")
+                                </label>
+                            </div>
                         </div>
                     </fieldset>
 
-                </div>
-
-            </div>
-
-            <div class="container-footer clearfix">
-                <div class="pull-left">
-                    <a class="btn" href="@Url.Action("RestartInstall", "Install")" title="@ILS.GetResource("RestartInstallationTooltip")" rel="nofollow">
-                        @ILS.GetResource("RestartInstallation")
-                    </a>
-                </div>
-                <div class="pull-right">
-                    @Html.DropDownList("language", Model.AvailableLanguages, new { @class = "noskin", onchange = "window.location.href = this.value;" })
+                    <div class="buttonbar">
+                        <button type="submit" id="install-button" class="btn btn-success btn-install btn-large">
+                            <i class="fa fa-download" style="margin-right: 0.3em;"></i>
+                            @ILS.GetResource("Install")
+                        </button>
+                    </div>
                 </div>
             </div>
-
         </div>
     }
 
@@ -407,7 +439,8 @@
                 onStart: function (context) {
 
                     $.throbber.show({
-                        message: '<span id="install-message">@ILS.GetResource("Installing")</span>' + '<br /><span id="install-progress" style="font-size: 16px"></span>'
+                        //message: '<span id="install-message">@ILS.GetResource("Installing")</span>' + '<br /><span id="install-progress" style="font-size: 16px"></span>',
+                        message: '<div id="install-message">@ILS.GetResource("Installing")</div><div id="install-progress" style="font-size: 16px; font-weight: 400; margin: 10px 0 30px 0"></div>',
                     });
 
                     // start the checkprogress interval

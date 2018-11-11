@@ -6,28 +6,28 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Controllers
 {
@@ -48,6 +48,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly ILanguageService _languageService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly BlogSettings _blogSettings;
@@ -71,6 +72,7 @@ namespace SmartStore.Web.Controllers
             ICacheManager cacheManager,
 			ICustomerActivityService customerActivityService,
 			IStoreMappingService storeMappingService,
+			ILanguageService languageService,
             MediaSettings mediaSettings,
 			BlogSettings blogSettings,
             LocalizationSettings localizationSettings,
@@ -89,6 +91,7 @@ namespace SmartStore.Web.Controllers
             this._cacheManager = cacheManager;
             this._customerActivityService = customerActivityService;
 			this._storeMappingService = storeMappingService;
+			this._languageService = languageService;
 
             this._mediaSettings = mediaSettings;
             this._blogSettings = blogSettings;
@@ -118,7 +121,7 @@ namespace SmartStore.Web.Controllers
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
             model.AllowComments = blogPost.AllowComments;
-            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; // codehint: sm-add
+            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; 
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
             model.Tags = blogPost.ParseTags().ToList();
             model.NumberOfComments = blogPost.ApprovedCommentCount;
@@ -232,7 +235,38 @@ namespace SmartStore.Web.Controllers
 		[Compress]
         public ActionResult ListRss(int languageId)
         {
-			var feed = _blogService.CreateRssFeed(Url, languageId);
+			DateTime? maxAge = null;
+			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = Url.RouteUrl("BlogRSS", new { languageId = languageId }, protocol);
+			var blogLink = Url.RouteUrl("Blog", null, protocol);
+
+			var title = "{0} - Blog".FormatInvariant(_storeContext.CurrentStore.Name);
+
+			if (_blogSettings.MaxAgeInDays > 0)
+				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
+
+			var language = _languageService.GetLanguageById(languageId);
+			var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
+
+			feed.AddNamespaces(false);
+			feed.Init(selfLink, language);
+
+			if (!_blogSettings.Enabled)
+				return new RssActionResult { Feed = feed };
+
+			var items = new List<SyndicationItem>();
+			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge);
+
+			foreach (var blogPost in blogPosts)
+			{
+				var blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+
+				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
+
+				items.Add(item);
+			}
+
+			feed.Items = items;
 
 			return new RssActionResult { Feed = feed };
         }
@@ -305,12 +339,9 @@ namespace SmartStore.Web.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddBlogComment", _localizationService.GetResource("ActivityLog.PublicStore.AddBlogComment"));
 
-                //The text boxes should be cleared after a comment has been posted
-                //That' why we reload the page
-                TempData["sm.blog.addcomment.result"] = _localizationService.GetResource("Blog.Comments.SuccessfullyAdded");
+				NotifySuccess(T("Blog.Comments.SuccessfullyAdded"));
 
-                // codehint: sm-add (MC) > append url fragment to route url
-                string url = UrlHelper.GenerateUrl(
+                var url = UrlHelper.GenerateUrl(
                     routeName: "BlogPost",
                     actionName: null,
                     controllerName: null,
@@ -322,6 +353,7 @@ namespace SmartStore.Web.Controllers
                     requestContext: this.ControllerContext.RequestContext,
                     includeImplicitMvcValues: true /*helps fill in the nulls above*/
                 );
+
                 return Redirect(url);
             }
 

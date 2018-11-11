@@ -1,29 +1,29 @@
 ﻿using System;
-using System.Web;
-using System.Threading;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
+using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using System.Web.Mvc.Html;
+using System.Web.Routing;
 using System.Web.WebPages;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
-using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.Settings;
 using SmartStore.Utilities;
-using SmartStore.Core.Domain.Catalog;
+using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Settings;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework
 {
 
-    public enum InputEditorType
+	public enum InputEditorType
     {   TextBox,
         Password,
         Hidden,
@@ -230,21 +230,6 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result.ToString());
 		}
 
-        public static MvcHtmlString RequiredHint(this HtmlHelper helper, string additionalText = null)
-        {
-            // Create tag builder
-            var builder = new TagBuilder("span");
-            builder.AddCssClass("required");
-            var innerText = "*";
-            //add additinal text if specified
-            if (!String.IsNullOrEmpty(additionalText))
-                innerText += " " + additionalText;
-            builder.SetInnerText(innerText);
-            // Render tag
-            return MvcHtmlString.Create(builder.ToString());
-        }
-
-
         public static string FieldNameFor<T, TResult>(this HtmlHelper<T> html, Expression<Func<T, TResult>> expression)
         {
             return html.ViewData.TemplateInfo.GetFullHtmlFieldName(ExpressionHelper.GetExpressionText(expression));
@@ -326,13 +311,13 @@ namespace SmartStore.Web.Framework
                 yearLocale = "Year";
             }
 
-            days.AppendFormat("<option>{0}</option>", dayLocale);
+            days.AppendFormat("<option value=''>{0}</option>", dayLocale);
             for (int i = 1; i <= 31; i++)
                 days.AppendFormat("<option value='{0}'{1}>{0}</option>", i,
                     (selectedDay.HasValue && selectedDay.Value == i) ? " selected=\"selected\"" : null);
 
 
-            months.AppendFormat("<option>{0}</option>", monthLocale);
+            months.AppendFormat("<option value=''>{0}</option>", monthLocale);
             for (int i = 1; i <= 12; i++)
             {
                 months.AppendFormat("<option value='{0}'{1}>{2}</option>",
@@ -342,7 +327,7 @@ namespace SmartStore.Web.Framework
             }
 
 
-            years.AppendFormat("<option>{0}</option>", yearLocale);
+            years.AppendFormat("<option value=''>{0}</option>", yearLocale);
 
             if (beginYear == null)
                 beginYear = DateTime.UtcNow.Year - 90;
@@ -382,7 +367,7 @@ namespace SmartStore.Web.Framework
             IDictionary<string, object> attrs = null;
             if (htmlAttributes != null)
             {
-                attrs = CollectionHelper.ObjectToDictionary(htmlAttributes);
+                attrs = CommonHelper.ObjectToDictionary(htmlAttributes);
             }
 
             return htmlHelper.DropDownListForEnum(expression, attrs, optionLabel);
@@ -462,8 +447,12 @@ namespace SmartStore.Web.Framework
             {
                 return html.HiddenFor(expression);
             }
-            
-            var sb = new StringBuilder("<div class='control-group'>");
+
+			string inputHtml = "";
+			var htmlAttributes = new RouteValueDictionary();
+			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
+
+			var sb = new StringBuilder("<div class='control-group'>");
 
             if (editorType != InputEditorType.Checkbox)
             {
@@ -473,14 +462,23 @@ namespace SmartStore.Web.Framework
             }
 
             sb.AppendLine("<div class='controls'>");
-            string inputHtml = "";
-            object attrs = null;
+
             if (!required && (editorType == InputEditorType.TextBox || editorType == InputEditorType.Password))
             {
-                attrs = new { placeholder = "Optional" /* TODO: Loc */  };
+				htmlAttributes.Add("placeholder", EngineContext.Current.Resolve<ILocalizationService>().GetResource("Common.Optional"));
             }
-            //var x = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DisplayName;
-            switch (editorType)
+
+			switch (dataTypeName)
+			{
+				case "EmailAddress":
+					htmlAttributes.Add("type", "email");
+					break;
+				case "PhoneNumber":
+					htmlAttributes.Add("type", "tel");
+					break;
+			}
+
+			switch (editorType)
             {
                 case InputEditorType.Checkbox:
                     inputHtml = string.Format("<label class='checkbox'>{0} {1}</label>",
@@ -488,12 +486,13 @@ namespace SmartStore.Web.Framework
                         ModelMetadata.FromLambdaExpression(expression, html.ViewData).DisplayName); // TBD: ist das OK so?
                     break;
                 case InputEditorType.Password:
-                    inputHtml = html.PasswordFor(expression, attrs).ToString();
+                    inputHtml = html.PasswordFor(expression, htmlAttributes).ToString();
                     break;
                 default:
-                    inputHtml = html.TextBoxFor(expression, attrs).ToString();
+                    inputHtml = html.TextBoxFor(expression, htmlAttributes).ToString();
                     break;
             }
+
             sb.AppendLine(inputHtml);
             sb.AppendLine(html.ValidationMessageFor(expression).ToString());
             if (helpHint.HasValue())
@@ -626,6 +625,126 @@ namespace SmartStore.Web.Framework
 
 			return MvcHtmlString.Create(result);
 		}
-    }
+
+		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderLabel = false)
+		{
+			return IconForFileExtension(helper, fileExtension, null, renderLabel);
+		}
+
+		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, string extraCssClasses = null, bool renderLabel = false)
+		{
+			Guard.ArgumentNotNull(() => helper);
+			Guard.ArgumentNotEmpty(() => fileExtension);
+
+			var icon = "file-o";
+			var ext = fileExtension;
+
+			if (ext != null && ext.StartsWith("."))
+			{
+				ext = ext.Substring(1);
+			}
+
+			if (ext.HasValue())
+			{
+				switch (ext.ToLowerInvariant())
+				{
+					case "pdf":
+						icon = "file-pdf-o";
+						break;
+					case "doc":
+					case "docx":
+					case "docm":
+					case "odt":
+					case "dot":
+					case "dotx":
+					case "dotm":
+						icon = "file-word-o";
+						break;
+					case "xls":
+					case "xlsx":
+					case "xlsm":
+					case "xlsb":
+					case "ods":
+						icon = "file-excel-o";
+						break;
+					case "csv":
+					case "tab":
+						icon = "table";
+						break;
+					case "ppt":
+					case "pptx":
+					case "pptm":
+					case "ppsx":
+					case "odp":
+					case "potx":
+					case "pot":
+					case "potm":
+					case "pps":
+					case "ppsm":
+						icon = "file-powerpoint-o";
+						break;
+					case "zip":
+					case "rar":
+					case "7z":
+						icon = "file-archive-o";
+						break;
+					case "png":
+					case "jpg":
+					case "jpeg":
+					case "bmp":
+					case "psd":
+						icon = "file-image-o";
+						break;
+					case "mp3":
+					case "wav":
+					case "ogg":
+					case "wma":
+						icon = "file-audio-o";
+						break;
+					case "mp4":
+					case "mkv":
+					case "wmv":
+					case "avi":
+					case "asf":
+					case "mpg":
+					case "mpeg":
+						icon = "file-video-o";
+						break;
+					case "txt":
+						icon = "file-text-o";
+						break;
+					case "exe":
+						icon = "gear";
+						break;
+					case "xml":
+					case "html":
+					case "htm":
+						icon = "file-code-o";
+						break;
+				}
+			}
+
+			var label = ext.NaIfEmpty().ToUpper();
+
+			var result = "<i class='fa fa-fw fa-{0}{1}' title='{2}'></i>".FormatInvariant(
+				icon, 
+				extraCssClasses.HasValue() ? " " + extraCssClasses : "",
+				label);
+
+			if (renderLabel)
+			{
+				if (ext.IsEmpty())
+				{
+					result = "<span class='muted'>{0}</span>".FormatInvariant("".NaIfEmpty());
+				}
+				else
+				{
+					result = result + "<span class='ml4'>{0}</span>".FormatInvariant(label);
+				}	
+			}
+
+			return MvcHtmlString.Create(result);
+		}
+	}
 }
 

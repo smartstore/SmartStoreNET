@@ -36,9 +36,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IQueryable<StateProvince> GetStateProvinces(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<StateProvince>>(key, x => x.StateProvinces);
-
-			return entity.StateProvinces.AsQueryable();
+			return GetRelatedCollection(key, x => x.StateProvinces);
 		}
 	}
 }

@@ -1,0 +1,9 @@
+﻿@model int
+@if (Model > 0)
+{
+	<a href="javascript:void(0)" class="export-file-count"><strong>@Model</strong></a>
+}
+else
+{
+	<span title="@T("Common.NoFilesAvailable")">0</span>
+}

@@ -31,10 +31,10 @@ namespace SmartStore.Web.Controllers
 
         #region Methods
 
-        public RedirectResult RemoveParameterAssociation(string returnUrl)
+        public ActionResult RemoveParameterAssociation(string returnUrl)
         {
             ExternalAuthorizerHelper.RemoveParameters();
-            return Redirect(returnUrl);
+            return RedirectToReferrer(returnUrl);
         }
 
         [ChildActionOnly]

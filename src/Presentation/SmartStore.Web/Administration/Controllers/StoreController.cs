@@ -10,6 +10,8 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -79,27 +81,32 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+			var gridModel = new GridModel<StoreModel>();
 
-			var storeModels = _storeService.GetAllStores()
-				.Select(x => 
-				{
-					var model = x.ToModel();
-
-					PrepareStoreModel(model, x);
-
-					model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
-
-					return model;
-				})
-				.ToList();
-
-			var gridModel = new GridModel<StoreModel>
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 			{
-				Data = storeModels,
-				Total = storeModels.Count()
-			};
+				var storeModels = _storeService.GetAllStores()
+					.Select(x =>
+					{
+						var model = x.ToModel();
+
+						PrepareStoreModel(model, x);
+
+						model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
+
+						return model;
+					})
+					.ToList();
+
+				gridModel.Data = storeModels;
+				gridModel.Total = storeModels.Count();
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<StoreModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{
@@ -118,7 +125,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Create(StoreModel model, bool continueEditing)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
@@ -156,7 +163,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult Edit(StoreModel model, bool continueEditing)
 		{

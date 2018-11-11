@@ -33,10 +33,10 @@ namespace SmartStore.Web
 
 		public static Picture GetAssignedPicture(this ProductDetailsModel model, IPictureService pictureService, IList<Picture> pictures, int productId = 0)
 		{
-			if (model != null && model.CombinationSelected != null)
+			if (model != null && model.SelectedCombination != null)
 			{
 				Picture picture = null;
-				var combiAssignedImages = model.CombinationSelected.GetAssignedPictureIds();
+				var combiAssignedImages = model.SelectedCombination.GetAssignedPictureIds();
 
 				if (combiAssignedImages.Length > 0)
 				{

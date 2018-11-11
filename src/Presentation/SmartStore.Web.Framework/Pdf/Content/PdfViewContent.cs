@@ -29,20 +29,15 @@ namespace SmartStore.Web.Framework.Pdf
 
 			try
 			{
-				if (isPartial)
-				{
-					html = context.Controller.RenderPartialViewToString(viewName, model);
-				}
-				else
-				{
-					html = context.Controller.RenderViewToString(viewName, masterName, model);
-				}
+				html = isPartial 
+					? context.Controller.RenderPartialViewToString(viewName, model) 
+					: context.Controller.RenderViewToString(viewName, masterName, model);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				if (throwOnError)
 				{
-					throw ex;
+					throw;
 				}
 				else
 				{

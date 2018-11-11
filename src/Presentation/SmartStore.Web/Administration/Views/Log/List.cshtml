@@ -21,7 +21,8 @@
             </button>
         </div>
     </div>
-    <table style="width: 100%">
+
+    <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CreatedOnFrom)
@@ -51,7 +52,7 @@
                 @Html.SmartLabelFor(model => model.LogLevelId)
             </td>
             <td class="adminData">
-                @Html.DropDownList("LogLevelId", Model.AvailableLogLevels)
+                @Html.DropDownList("LogLevelId", Model.AvailableLogLevels, T("Admin.Common.All"))
             </td>
         </tr>
         <tr>

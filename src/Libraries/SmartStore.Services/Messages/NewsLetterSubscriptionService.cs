@@ -1,148 +1,25 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Data;
 using SmartStore.Core.Events;
-using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
 {
-
-    public class NewsLetterSubscriptionService : INewsLetterSubscriptionService
+	public class NewsLetterSubscriptionService : INewsLetterSubscriptionService
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly IDbContext _context;
         private readonly IRepository<NewsLetterSubscription> _subscriptionRepository;
-		private readonly IStoreService _storeService;
 
         public NewsLetterSubscriptionService(IDbContext context,
 			IRepository<NewsLetterSubscription> subscriptionRepository,
-			IEventPublisher eventPublisher,
-			IStoreService storeService)
+			IEventPublisher eventPublisher)
         {
             _context = context;
             _subscriptionRepository = subscriptionRepository;
             _eventPublisher = eventPublisher;
-			_storeService = storeService;
-        }
-
-        public ImportResult ImportSubscribers(Stream stream)
-        {
-            Guard.ArgumentNotNull(() => stream);
-
-            var result = new ImportResult();
-            var toAdd = new List<NewsLetterSubscription>();
-            var toUpdate = new List<NewsLetterSubscription>();
-
-			using (var scope = new DbContextScope(ctx: _context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
-			{
-				using (var reader = new StreamReader(stream))
-				{
-					while (!reader.EndOfStream)
-					{
-						string line = reader.ReadLine();
-						if (line.IsEmpty())
-						{
-							continue;
-						}
-						string[] tmp = line.Split(',');
-
-						var email = "";
-						bool isActive = true;
-						int storeId = 0;
-
-						// parse
-						if (tmp.Length == 1)
-						{
-							// "email" only
-							email = tmp[0].Trim();
-						}
-						else if (tmp.Length == 2)
-						{
-							// "email" and "active" fields specified
-							email = tmp[0].Trim();
-							isActive = Boolean.Parse(tmp[1].Trim());
-						}
-						else if (tmp.Length == 3)
-						{
-							email = tmp[0].Trim();
-							isActive = Boolean.Parse(tmp[1].Trim());
-							storeId = int.Parse(tmp[2].Trim());
-						}
-						else
-						{
-							throw new SmartException("Wrong file format (expected comma separated entries 'Email' and optionally 'IsActive')");
-						}
-
-						result.TotalRecords++;
-
-						if (email.Length > 255)
-						{
-							result.AddWarning("The emal address '{0}' exceeds the maximun allowed length of 255.".FormatInvariant(email));
-							continue;
-						}
-
-						if (!email.IsEmail())
-						{
-							result.AddWarning("'{0}' is not a valid email address.".FormatInvariant(email));
-							continue;
-						}
-
-						if (storeId == 0)
-						{
-							storeId = _storeService.GetAllStores().First().Id;
-						}
-
-						// import
-						var subscription = (from nls in _subscriptionRepository.Table
-											where nls.Email == email && nls.StoreId == storeId
-											orderby nls.Id
-											select nls).FirstOrDefault();
-
-						if (subscription != null)
-						{
-							subscription.Active = isActive;
-
-							toUpdate.Add(subscription);
-							result.ModifiedRecords++;
-						}
-						else
-						{
-							subscription = new NewsLetterSubscription
-							{
-								Active = isActive,
-								CreatedOnUtc = DateTime.UtcNow,
-								Email = email,
-								NewsLetterSubscriptionGuid = Guid.NewGuid(),
-								StoreId = storeId
-							};
-
-							toAdd.Add(subscription);
-							result.NewRecords++;
-						}
-					}
-				}
-
-				// insert new subscribers
-				_subscriptionRepository.AutoCommitEnabled = true;
-				_subscriptionRepository.InsertRange(toAdd, 500);
-				toAdd.Clear();
-
-				// update modified subscribers
-				_subscriptionRepository.AutoCommitEnabled = null;
-				toUpdate.Each(x =>
-				{
-					_subscriptionRepository.Update(x);
-				});
-				_subscriptionRepository.Context.SaveChanges();
-				toUpdate.Clear();
-			}
-
-            return result;
         }
 
         /// <summary>
@@ -236,7 +113,8 @@ namespace SmartStore.Services.Messages
         /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public virtual void DeleteNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-            if (newsLetterSubscription == null) throw new ArgumentNullException("newsLetterSubscription");
+            if (newsLetterSubscription == null)
+				throw new ArgumentNullException("newsLetterSubscription");
 
             _subscriptionRepository.Delete(newsLetterSubscription);
 
@@ -247,12 +125,52 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityDeleted(newsLetterSubscription);
         }
 
-        /// <summary>
-        /// Gets a newsletter subscription by newsletter subscription identifier
-        /// </summary>
-        /// <param name="newsLetterSubscriptionId">The newsletter subscription identifier</param>
-        /// <returns>NewsLetter subscription</returns>
-        public virtual NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId)
+		public virtual bool? AddNewsLetterSubscriptionFor(bool add, string email, int storeId)
+		{
+			bool? result = null;
+
+			if (email.IsEmail())
+			{
+				var newsletter = GetNewsLetterSubscriptionByEmail(email, storeId);
+				if (newsletter != null)
+				{
+					if (add)
+					{
+						newsletter.Active = true;
+						UpdateNewsLetterSubscription(newsletter);
+						result = true;
+					}
+					else
+					{
+						DeleteNewsLetterSubscription(newsletter);
+						result = false;
+					}
+				}
+				else
+				{
+					if (add)
+					{
+						InsertNewsLetterSubscription(new NewsLetterSubscription
+						{
+							NewsLetterSubscriptionGuid = Guid.NewGuid(),
+							Email = email,
+							Active = true,
+							CreatedOnUtc = DateTime.UtcNow,
+							StoreId = storeId
+						});
+						result = true;
+					}
+				}
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Gets a newsletter subscription by newsletter subscription identifier
+		/// </summary>
+		/// <param name="newsLetterSubscriptionId">The newsletter subscription identifier</param>
+		/// <returns>NewsLetter subscription</returns>
+		public virtual NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId)
         {
             if (newsLetterSubscriptionId == 0) return null;
 

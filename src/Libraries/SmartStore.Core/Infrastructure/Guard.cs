@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -113,7 +114,7 @@ namespace SmartStore
         {
 			if (arg().IsEmpty())
 			{
-				string argName = GetParamName(arg);
+				var argName = GetParamName(arg);
 				throw Error.Argument(argName, "String parameter '{0}' cannot be null or all whitespace.", argName);
 			}
         }
@@ -303,7 +304,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static void PagingArgsValid(int indexArg, int sizeArg, string indexArgName, string sizeArgName)
         {
-            ArgumentNotNegative<int>(indexArg, indexArgName, "PageIndex cannot be below 0");
+            ArgumentNotNegative(indexArg, indexArgName, "PageIndex cannot be below 0");
             if (indexArg > 0)
             {
                 // if pageIndex is specified (> 0), PageSize CANNOT be 0 
@@ -317,9 +318,10 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
         private static string GetParamName<T>(Expression<Func<T>> expression)
         {
-            string name = string.Empty;
+            var name = string.Empty;
             MemberExpression body = expression.Body as MemberExpression;
 
             if (body != null)

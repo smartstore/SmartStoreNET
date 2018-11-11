@@ -21,16 +21,6 @@ namespace SmartStore
 			}
 		}
 
-		public static void WriteNode(this XmlWriter writer, string name, Action content) 
-        {
-			if (name.HasValue() && content != null) 
-            {
-				writer.WriteStartElement(name);
-				content();
-				writer.WriteEndElement();
-			}
-		}
-
 		/// <summary>
 		/// Created a simple or CData node element
 		/// </summary>

@@ -122,15 +122,16 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityUpdated<Store>>,
         IConsumer<EntityDeleted<Store>>
     {
-        /// <summary>
-        /// Key for ManufacturerNavigationModel caching
-        /// </summary>
-        /// <remarks>
-        /// {0} : current manufacturer id
-        /// {1} : language id
-		/// {2} : current store ID
-        /// </remarks>
-        public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}-{2}";
+		/// <summary>
+		/// Key for ManufacturerNavigationModel caching
+		/// </summary>
+		/// <remarks>
+		/// {0} : current manufacturer id
+		/// {1} : value indicating whether a default picture is displayed in case if no real picture exists
+		/// {2} : language id
+		/// {3} : current store ID
+		/// </remarks>
+		public const string MANUFACTURER_NAVIGATION_MODEL_KEY = "sm.pres.manufacturer.navigation-{0}-{1}-{2}-{3}";
         public const string MANUFACTURER_NAVIGATION_PATTERN_KEY = "sm.pres.manufacturer.navigation";
 
 		/// <summary>
@@ -199,15 +200,16 @@ namespace SmartStore.Web.Infrastructure.Cache
         public const string PRODUCTTAG_POPULAR_MODEL_KEY = "sm.pres.producttag.popular-{0}-{1}";
         public const string PRODUCTTAG_POPULAR_PATTERN_KEY = "sm.pres.producttag.popular";
 
-        /// <summary>
-        /// Key for ProductManufacturers model caching
-        /// </summary>
-        /// <remarks>
-        /// {0} : product id
-        /// {1} : language id
-		/// {2} : current store ID
-        /// </remarks>
-        public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "sm.pres.product.manufacturers-{0}-{1}-{2}";
+		/// <summary>
+		/// Key for ProductManufacturers model caching
+		/// </summary>
+		/// <remarks>
+		/// {0} : product id
+		/// {1} : value indicating whether a default picture is displayed in case if no real picture exists
+		/// {2} : language id
+		/// {3} : current store ID
+		/// </remarks>
+		public const string PRODUCT_MANUFACTURERS_MODEL_KEY = "sm.pres.product.manufacturers-{0}-{1}-{2}-{3}";
         public const string PRODUCT_MANUFACTURERS_PATTERN_KEY = "sm.pres.product.manufacturers";
 
         /// <summary>

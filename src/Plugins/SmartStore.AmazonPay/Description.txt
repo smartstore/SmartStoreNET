@@ -1,10 +1,10 @@
 ﻿FriendlyName: Pay with Amazon
 SystemName: SmartStore.AmazonPay
-Version: 2.2.0.2
+Version: 2.6.0
 Group: Payment
-MinAppVersion: 2.2.0
+MinAppVersion: 2.5.0
 Author: SmartStore AG
 DisplayOrder: 1
 FileName: SmartStore.AmazonPay.dll
 ResourceRootKey: Plugins.Payments.AmazonPay
-Url: http://community.smartstore.com/index.php?/files/file/11-amazon-payments-plugin/
+Url: http://community.smartstore.com/marketplace/file/11-amazon-payments-plugin/

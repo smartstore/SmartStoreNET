@@ -5,7 +5,7 @@
 
 @{
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
-    //title
+
     Html.AddTitleParts(T("PageTitle.ShipmentDetails").Text);
 }
 <div class="page shipment-details">
@@ -141,7 +141,7 @@
                                         </td>
                                     }
                                     <td class="a-left">
-                                        <em><a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a></em>
+                                        <em><a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a></em>
                                         @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                         {
                                             <div class="attributes">

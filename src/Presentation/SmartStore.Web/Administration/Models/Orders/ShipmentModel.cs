@@ -2,7 +2,7 @@
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
 
@@ -29,11 +30,18 @@ namespace SmartStore.Services.Shipping
             int pageIndex, int pageSize);
         
         /// <summary>
-        /// Get shipment by identifiers
+        /// Get shipments by identifiers
         /// </summary>
         /// <param name="shipmentIds">Shipment identifiers</param>
         /// <returns>Shipments</returns>
         IList<Shipment> GetShipmentsByIds(int[] shipmentIds);
+
+		/// <summary>
+		/// Get shipments by order identifiers
+		/// </summary>
+		/// <param name="orderIds">Order identifiers</param>
+		/// <returns>Shipments</returns>
+		Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds);
 
         /// <summary>
         /// Gets a shipment

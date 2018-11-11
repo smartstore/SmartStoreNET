@@ -27,7 +27,7 @@ namespace SmartStore.Packager
 			_vpp = new RootedVirtualPathProvider(rootPath);
 			var wsf = new WebSiteFolder(_vpp);
 
-			_packageBuilder = new PackageBuilder(wsf, _vpp);
+			_packageBuilder = new PackageBuilder(wsf);
 		}
 
 		public FileInfo CreatePluginPackage(string path)

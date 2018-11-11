@@ -211,6 +211,9 @@ span.field-validation-error {
 .btn-below {
 	margin-top: 5px !important;
 }
+.btn-right {
+	margin-left: 10px !important;
+}
 
 
 // FORMS (GENERAL)
@@ -386,7 +389,8 @@ th label {
 	vertical-align: text-top;
 }
 
-.label-smnet {
+.label-smnet,
+.label-inline {
 	margin-right: 5px;
 }
 .label-smnet-hide {
@@ -486,10 +490,81 @@ th label {
 
 .modal-backdrop, 
 .modal-backdrop.fade.in {
-	.opacity(60);
+	opacity: 0.6;
 }
 
 .modal-header .close {
 	font-size: 30px;
 	text-shadow: none;
+}
+
+.modal-large {
+	width: 800px !important;
+	margin: -250px 0 0 -400px !important;
+}
+
+
+// XLARGE MODAL
+// ------------------------------
+
+.modal-xlarge {
+	width: 960px !important;
+	margin: -250px 0 0 -480px !important;
+}
+
+
+// FLEX MODAL
+// ------------------------------
+
+.modal-flex {
+    top: 3% !important;
+    bottom: 3% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+
+    &.fade.in {
+        display: -webkit-box !important;
+        display: -webkit-flex !important;
+        display: -ms-flexbox !important;
+        display: flex !important;
+    }
+
+    .modal-body {
+        max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        .display-flex();
+        -webkit-flex-direction: row;
+            -ms-flex-direction: row;
+                flex-direction: row;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+            -ms-flex: 1;
+                flex: 1;
+        -webkit-box-pack: start;
+        -webkit-justify-content: flex-start;
+            -ms-flex-pack: start;
+                justify-content: flex-start;
+        -webkit-box-align: stretch;
+        -webkit-align-items: stretch;
+            -ms-flex-align: stretch;
+                align-items: stretch;
+        -webkit-align-content: stretch;
+            -ms-flex-line-pack: stretch;
+                align-content: stretch;
+    }
+
+    .modal-flex-fill-area {
+        //overflow: hidden;
+        min-height: 100%;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+            -ms-flex: 1;
+                flex: 1;
+    }
 }

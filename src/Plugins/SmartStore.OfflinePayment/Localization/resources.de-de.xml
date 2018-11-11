@@ -25,7 +25,7 @@
   <LocaleResource Name="AdditionalFeePercentage.Hint">
     <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Ein fester Wert wird verwendet, falls diese Option nicht aktiviert ist.</Value>
   </LocaleResource>
-  
+
   <!-- CashOnDelivery -->
   <LocaleResource Name="Plugins.FriendlyName.Payments.CashOnDelivery" AppendRootKey="false">
     <Value>Nachnahme</Value>
@@ -122,10 +122,16 @@
         </Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode">
-        <Value>Markiere die Zahlung nach dem Abschluß der Bestellung als</Value>
+        <Value>Zahlungsstatus nach Bestellabschluss</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode.Hint">
-        <Value>Bestimmen Sie den Transaktionsmodus.</Value>
+        <Value>Legt den Zahlungsstatus nach Bestellabschluss fest.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ExcludedCreditCards">
+        <Value>Auszuschließende Kreditkarten</Value>
+      </LocaleResource>
+      <LocaleResource Name="ExcludedCreditCards.Hint">
+        <Value>Kreditkarten mit denen Kunden nicht zahlen dürfen.</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>
@@ -212,7 +218,7 @@
   </LocaleResource>
 
   <!-- PuchaseOrderNumber -->
-  <LocaleResource Name="Plugins.FriendlyName.Payments.PuchaseOrder" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.PurchaseOrderNumber" AppendRootKey="false">
     <Value>Bestellnummer</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payments.PuchaseOrder" AppendRootKey="false">

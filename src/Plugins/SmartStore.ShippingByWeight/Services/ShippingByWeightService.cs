@@ -48,7 +48,7 @@ namespace SmartStore.ShippingByWeight.Services
 		{
 			var query = 
 				from x in _sbwRepository.Table
-				orderby x.StoreId, x.CountryId, x.ShippingMethodId, x.From, x.Zip
+				orderby x.StoreId, x.CountryId, x.ShippingMethodId, x.From
 				select x;
 
 			return query;
@@ -83,7 +83,7 @@ namespace SmartStore.ShippingByWeight.Services
 				var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
 				var country = _countryService.GetCountryById(x.CountryId);
 
-				var model = new ShippingByWeightModel()
+				var model = new ShippingByWeightModel
 				{
 					Id = x.Id,
 					StoreId = x.StoreId,

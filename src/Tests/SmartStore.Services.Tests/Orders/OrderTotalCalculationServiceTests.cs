@@ -4,7 +4,6 @@ using System.Web;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -15,6 +14,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -22,17 +22,15 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-    [TestFixture]
+	[TestFixture]
     public class OrderTotalCalculationServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -54,7 +52,6 @@ namespace SmartStore.Services.Tests.Orders
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
         ShippingSettings _shippingSettings;
-        ILocalizationService _localizationService;
         ILogger _logger;
         IRepository<ShippingMethod> _shippingMethodRepository;
         ShoppingCartSettings _shoppingCartSettings;
@@ -66,6 +63,7 @@ namespace SmartStore.Services.Tests.Orders
 		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
+		ITypeFinder _typeFinder;
 
         [SetUp]
         public new void SetUp()
@@ -77,7 +75,6 @@ namespace SmartStore.Services.Tests.Orders
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 			
             var pluginFinder = new PluginFinder();
-            var cacheManager = new NullCache();
 
 			_shoppingCartSettings = new ShoppingCartSettings();
 			_catalogSettings = new CatalogSettings();
@@ -92,8 +89,8 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
-			_localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
+			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -101,18 +98,20 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
             _logger = new NullLogger();
-            _shippingService = new ShippingService(cacheManager,
+
+            _shippingService = new ShippingService(
                 _shippingMethodRepository,
                 _logger,
                 _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
-                _localizationService,
-                _shippingSettings, pluginFinder,
-                _eventPublisher, _shoppingCartSettings,
+                _shippingSettings,
+                _eventPublisher,
+				_shoppingCartSettings,
 				_settingService,
-				this.ProviderManager);
+				this.ProviderManager,
+				_typeFinder);
 
 			_providerManager = MockRepository.GenerateMock<IProviderManager>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
@@ -133,7 +132,7 @@ namespace SmartStore.Services.Tests.Orders
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService, _geoCountryLookup, this.ProviderManager);
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _geoCountryLookup, this.ProviderManager);
 
             _rewardPointsSettings = new RewardPointsSettings();
 

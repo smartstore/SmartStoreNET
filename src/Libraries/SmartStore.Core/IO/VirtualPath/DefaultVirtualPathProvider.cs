@@ -92,7 +92,7 @@ namespace SmartStore.Core.IO.VirtualPath
             if (string.IsNullOrEmpty(virtualPath))
                 return true;
 
-            if (virtualPath.IndexOf("..") >= 0)
+            if (virtualPath.IndexOf("..", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 virtualPath = virtualPath.Replace(Path.DirectorySeparatorChar, '/');
                 string rootPrefix = virtualPath.StartsWith("~/") ? "~/" : virtualPath.StartsWith("/") ? "/" : "";

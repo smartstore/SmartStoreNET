@@ -18,7 +18,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     [DataContract]
 	public partial class Product : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
-    {
+	{
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
         private ICollection<ProductPicture> _productPictures;
@@ -191,6 +191,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the manufacturer part number
 		/// </summary>
 		[DataMember]
+		[Index]
 		public string ManufacturerPartNumber
 		{
 			[DebuggerStepThrough]
@@ -208,6 +209,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the Global Trade Item Number (GTIN). These identifiers include UPC (in North America), EAN (in Europe), JAN (in Japan), and ISBN (for books).
 		/// </summary>
 		[DataMember]
+		[Index]
 		public string Gtin
 		{
 			[DebuggerStepThrough]
@@ -393,7 +395,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<int>("StockQuantity", _stockQuantity);
+				return this.GetMergedDataValue("StockQuantity", _stockQuantity);
 			}
 			set
 			{
@@ -1046,5 +1048,5 @@ namespace SmartStore.Core.Domain.Catalog
 			get { return _productBundleItems ?? (_productBundleItems = new HashSet<ProductBundleItem>()); }
 			protected set { _productBundleItems = value; }
 		}
-    }
+	}
 }

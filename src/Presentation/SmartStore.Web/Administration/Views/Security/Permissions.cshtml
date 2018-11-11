@@ -1,6 +1,6 @@
-﻿@model PermissionMappingModel
+﻿@using SmartStore.Utilities;
+@model PermissionMappingModel
 @{               
-    //page title
     ViewBag.Title = T("Admin.Configuration.ACL").Text;
 }
 @using (Html.BeginForm())
@@ -11,7 +11,9 @@
             @T("Admin.Configuration.ACL")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+			</button>
         </div>
     </div>
     
@@ -19,12 +21,16 @@
         <tr>
             <td>
                 @if (Model.AvailablePermissions.Count == 0)
-                {
-                    <text>No permissions defined</text>
-                }
-                else if (Model.AvailableCustomerRoles.Count == 0)
-                {
-                    <text>No customer roles available</text>
+				{
+					<div class="alert alert-warning">
+						@T("Admin.System.Warnings.NoPermissionsDefined")
+					</div>
+				}
+				else if (Model.AvailableCustomerRoles.Count == 0)
+				{
+					<div class="alert alert-warning">
+						@T("Admin.System.Warnings.NoCustomerRolesDefined")
+					</div>
                 }
                 else
                 {
@@ -48,6 +54,7 @@
                                 {
                                     <tr>
                                         <td>
+											<span class="label label-smnet @pr.CategoryLabel">@Inflector.Titleize(pr.Category).NaIfEmpty()</span>
                                             <span>@pr.Name</span>
                                         </td>
                                         @foreach (var cr in Model.AvailableCustomerRoles)
@@ -66,5 +73,4 @@
             </td>
         </tr>
     </table>
-
 }

@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -19,10 +20,10 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.Orders
 {
-    /// <summary>
-    /// Order service
-    /// </summary>
-    public partial class OrderTotalCalculationService : IOrderTotalCalculationService
+	/// <summary>
+	/// Order service
+	/// </summary>
+	public partial class OrderTotalCalculationService : IOrderTotalCalculationService
     {
         #region Fields
 
@@ -98,20 +99,24 @@ namespace SmartStore.Services.Orders
             this._shippingSettings = shippingSettings;
             this._shoppingCartSettings = shoppingCartSettings;
             this._catalogSettings = catalogSettings;
-        }
 
-        #endregion
+			T = NullLocalizer.Instance;
+		}
 
-        #region Methods
+		public Localizer T { get; set; }
 
-        /// <summary>
-        /// Gets shopping cart subtotal
-        /// </summary>
-        /// <param name="cart">Cart</param>
-        /// <param name="discountAmount">Applied discount amount</param>
-        /// <param name="appliedDiscount">Applied discount</param>
-        /// <param name="subTotalWithoutDiscount">Sub total (without discount)</param>
-        /// <param name="subTotalWithDiscount">Sub total (with discount)</param>
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Gets shopping cart subtotal
+		/// </summary>
+		/// <param name="cart">Cart</param>
+		/// <param name="discountAmount">Applied discount amount</param>
+		/// <param name="appliedDiscount">Applied discount</param>
+		/// <param name="subTotalWithoutDiscount">Sub total (without discount)</param>
+		/// <param name="subTotalWithDiscount">Sub total (with discount)</param>
 		public virtual void GetShoppingCartSubTotal(IList<OrganizedShoppingCartItem> cart,
             out decimal discountAmount, out Discount appliedDiscount,
             out decimal subTotalWithoutDiscount, out decimal subTotalWithDiscount)
@@ -613,11 +618,11 @@ namespace SmartStore.Services.Orders
 
 				var shippingRateComputationMethods = _shippingService.LoadActiveShippingRateComputationMethods(_storeContext.CurrentStore.Id);
                 if (!shippingRateComputationMethods.Any())
-                    throw new SmartException("Shipping rate computation method could not be loaded");
+                    throw new SmartException(T("Shipping.CouldNotLoadMethod"));
 
                 if (shippingRateComputationMethods.Count() == 1)
                 {
-                    var getShippingOptionRequest = _shippingService.CreateShippingOptionRequest(cart, shippingAddress);
+					var getShippingOptionRequest = _shippingService.CreateShippingOptionRequest(cart, shippingAddress, _storeContext.CurrentStore.Id);
 
                     var shippingRateComputationMethod = shippingRateComputationMethods.First();
                     decimal? fixedRate = shippingRateComputationMethod.Value.GetFixedRate(getShippingOptionRequest);
@@ -805,7 +810,12 @@ namespace SmartStore.Services.Orders
                 decimal taxRate = decimal.Zero;
 				
 				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
-				decimal paymentMethodAdditionalFee = provider.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
+				var paymentMethodAdditionalFee = (provider != null ? provider.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
+
+				if (_shoppingCartSettings.RoundPricesDuringCalculation)
+				{
+					paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+				}
 
                 decimal paymentMethodAdditionalFeeExclTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer, out taxRate);
                 decimal paymentMethodAdditionalFeeInclTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, true, customer, out taxRate);
@@ -859,9 +869,9 @@ namespace SmartStore.Services.Orders
             int redeemedRewardPoints = 0;
             decimal redeemedRewardPointsAmount = decimal.Zero;
             List<AppliedGiftCard> appliedGiftCards = null;
+
             return GetShoppingCartTotal(cart, out discountAmount, out appliedDiscount,
-                out appliedGiftCards,
-                out redeemedRewardPoints, out redeemedRewardPointsAmount, ignoreRewardPonts, usePaymentMethodAdditionalFee);
+                out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount, ignoreRewardPonts, usePaymentMethodAdditionalFee);
         }
 
         /// <summary>
@@ -899,9 +909,7 @@ namespace SmartStore.Services.Orders
             decimal subTotalWithoutDiscountBase = decimal.Zero;
             decimal subTotalWithDiscountBase = decimal.Zero;
 
-            GetShoppingCartSubTotal(cart, false,
-                out orderSubTotalDiscountAmount, out orderSubTotalAppliedDiscount,
-                out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
+            GetShoppingCartSubTotal(cart, false, out orderSubTotalDiscountAmount, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
 
             //subtotal with discount
             subtotalBase = subTotalWithDiscountBase;
@@ -914,9 +922,14 @@ namespace SmartStore.Services.Orders
             if (usePaymentMethodAdditionalFee && !String.IsNullOrEmpty(paymentMethodSystemName))
             {
 				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
-				decimal paymentMethodAdditionalFee = provider.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
+				var paymentMethodAdditionalFee = (provider != null ? provider.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
-                paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
+				if (_shoppingCartSettings.RoundPricesDuringCalculation)
+				{
+					paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+				}
+
+				paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
             }
 
             //tax
@@ -1124,8 +1137,14 @@ namespace SmartStore.Services.Orders
             if (amount <= 0)
                 return 0;
 
-            if (_rewardPointsSettings.ExchangeRate > 0)
-                result = (int)Math.Ceiling(amount / _rewardPointsSettings.ExchangeRate);
+			if (_rewardPointsSettings.ExchangeRate > 0)
+			{
+				if (_rewardPointsSettings.RoundDownRewardPoints)
+					result = (int)Math.Floor(amount / _rewardPointsSettings.ExchangeRate);
+				else
+					result = (int)Math.Ceiling(amount / _rewardPointsSettings.ExchangeRate);
+			}
+
             return result;
         }
 

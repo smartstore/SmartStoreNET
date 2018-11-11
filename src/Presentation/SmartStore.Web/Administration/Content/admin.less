@@ -42,6 +42,11 @@ a:hover {
 	background-color: @dropdownLinkBackgroundHover;
 }
 
+.alert {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
 /* Page
 -------------------------------------------------------------- */
 
@@ -266,16 +271,6 @@ header {
 /* SM additions
 -------------------------------------------------------------- */
 
-.ajax-loader-small {
-    display: inline-block;
-    position: relative;
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    margin: 0;
-    background: transparent url('images/ajax_loader_small.gif') 50% 50% no-repeat;
-}
-
 #ajax-busy {
 	position: fixed;
 	opacity: 0;
@@ -393,21 +388,35 @@ td.adminData > input[type="checkbox"] {
 	margin-top: -1px;
 }
 
-.admin-config-group .title,
-.admin-config-group .small-title {
-    font-family: @headingsFontFamily;
-    font-weight: @headingsFontWeight;
-    color: inherit; 
-	border-bottom: 1px solid #ddd;
-}
-.admin-config-group .title {
-    font-size: @fontSizeLarge;
-	margin: 12px 0;
-	padding: 8px 0;
-}
-.admin-config-group .small-title {
-	margin: 2px 0;
-	padding: 2px 0;
+.admin-config-group {
+	.title,
+	.small-title,
+	.head {
+		font-family: @headingsFontFamily;
+		font-weight: @headingsFontWeight;
+		color: inherit; 
+		border-bottom: 1px solid #ddd;
+	}
+	.sub-title {
+		font-family: @baseFontFamily;
+		font-size: @baseFontSize;
+		font-weight: normal;
+	}
+	.title,
+	.head {
+		font-size: @fontSizeLarge;
+		padding: 12px 0;
+	}
+	.head {
+		margin-bottom: 12px;
+	}
+	.title {
+		margin: 12px 0;
+	}
+	.small-title {
+		margin: 2px 0;
+		padding: 2px 0;
+	}
 }
 
 
@@ -416,6 +425,60 @@ td.adminData > input[type="checkbox"] {
 
 .select2-container:not(.autowidth) {
     min-width: 314px; /* ensures more clean look & feel */
+}
+
+.select2-image-item {
+	img {
+		margin-bottom: 3px;
+	}
+	span:not(.select2-icon) {
+		padding-left: 5px;
+	}
+	.icon-container {
+		float: left;
+		display: inline-block;
+		width: 16px;
+		min-width: 16px;
+		max-width: 16px;
+	}
+}
+
+/* select2 with large, templated items
+-------------------------------------------------------------- */
+.large-select2 {
+	.select2-choice {
+		height: 42px;
+		min-height: 42px;
+		padding-top: 4px;
+
+		> div > b {
+			padding-top: 10px;
+		}
+	}
+}
+
+.large-select2-item {
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	height: 38px;
+
+	img {
+		margin-right: 12px;
+		vertical-align: middle;
+		text-align: center;
+		max-height: 100%;
+	}
+	> div {
+		margin-right: 0px !important;
+		display: inline-block;
+		vertical-align: top;
+		line-height: normal;
+	}
+	> div > span {
+		display: block;
+		padding-bottom: 1px;
+	}
 }
 
 
@@ -536,11 +599,6 @@ body .t-content.t-state-active {
 	padding: 5px;
 }
 
-.modal-large {
-	width: 800px !important;
-	margin: -250px 0 0 -400px !important;
-}
-
 
 
 /* HTML editor (tiny mce)
@@ -612,6 +670,7 @@ label.forcheckbox {
 		img {
 		    max-height: 32px;
 			max-width: 120px;
+			margin-right: 5px;
 		    vertical-align: top;
 		}
 		
@@ -738,7 +797,6 @@ td.adminTitle > .ctl-label {
 	label {
 		display: inline-block;
 		padding-right: 20px;
-		margin-top: 1px;
 		margin-bottom: 0;
 	}
 
@@ -761,6 +819,16 @@ td.adminTitle > .ctl-label {
 		.fa { 
 			font-size: 16px;
 		}
+	}
+}
+tr.adminGroup {
+	> td {
+		padding-top: 18px;
+	}
+
+	label {
+		padding-bottom: 3px;
+		text-decoration: underline;
 	}
 }
 
@@ -804,31 +872,54 @@ td.adminData .t-combobox {
     width: 306px;
 }
 
-tr.adminSeparator hr {
-    background-color: #D3D3D3;
-    border: medium none;
-    color: #D3D3D3;
+tr.adminSeparator hr,
+td.adminSeparator hr {
+	border: medium none;
+    background-color: #ddd;
+    color: #ddd;
     height: 1px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
     padding: 0;
 }
 
-.plugin-intro-table {
+.plugin-configuration {
+	display: table;
 	width: 100%;
 	clear: both;
 
-	td {
+	> div {
+		display: table-cell;
 		vertical-align: top;
 	}
-
-	td:first-child {
+	> div:first-child {
 		width: 80%;
 	}
-
-	td:last-child {
+	> div:last-child {
 		float: right;
-		padding-left: 14px;
+		padding-left: 50px;
+	}
+}
+
+.admin-table {
+    thead th {
+        text-transform: uppercase;
+    }
+    th, td {
+        padding: 12px;
+    }
+	.disabled {
+		.muted();
+	}
+	.progress-info {
+		min-width: 260px;
+	}
+	select, input {
+		margin-bottom: 0;
+	}
+	.control-large {
+		width: 500px;
+		min-width: 500px;
 	}
 }
 
@@ -848,6 +939,7 @@ label {
 }
 
 .mr8 { margin-right: 8px; }
+.ml4 { margin-left: 4px; }
 
 /* MASTER HEADER */
 .header-menu,
@@ -1449,20 +1541,6 @@ table.payment-method-features td {
     text-decoration: none;
 }
 
-#product-edit h3,
-.caption-container h3 {
-    font-family: @headingsFontFamily;
-    font-weight: @headingsFontWeight;
-    font-size: 18px;
-    line-height: 36px;
-    color: #333;
-}
-#product-edit h3.bordered,
-.caption-container h3.bordered {
-    border: 0;
-    border-bottom: 1px solid #e5e5e5;
-}
-
 
 /* Download editor
 -------------------------------------------------------------- */
@@ -1499,4 +1577,91 @@ table.payment-method-features td {
 .minimal-task-widget .btn-actions {
 	display: inline-block; 
 	margin-left: 10px;
+}
+
+
+
+
+/* Data exchange
+-------------------------------------------------------------- */
+.profile-list {
+	margin-bottom: 10px;
+	border-bottom: 1px solid #ddd;
+}
+
+.info-profile td {
+    padding-top: 20px;
+}
+
+/* Import column mapping
+-------------------------------------------------------------- */
+@media (max-width: 1280px) {
+	#ImportColumnMappings .right-label,
+	.column-mapping .mapping-button-label,
+	.mapping-list-item .right-label {
+		display: none;
+	}
+}
+
+.column-mapping .right-label,
+.mapping-list-item .right-label {
+	float: right;
+	font-size: 0.9em;
+}
+.mapping-list-item {
+	.ellipsis();
+}
+
+.column-mapping {
+	.column-one, .column-two {
+		width: 42%;
+	}
+
+	.select-column, .select-property, .input-default {
+		width: 98%;
+	}
+
+	th, td, .mapping-delete, .mapping-add, .mapping-apply, .mapping-cancel {
+		white-space: nowrap;
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+
+	.select2-container .select2-choice span {
+		margin-right: 12px;
+		white-space: nowrap;
+	}
+
+	.mapping-edit {
+		white-space: nowrap;
+
+		.select-column, .select-property {
+			width: 84%;
+		}
+		.select2-container {
+			float: left;
+			display: inline-block;
+			min-width: 220px;
+			margin-right: 4px;
+		}
+	}
+
+	.mapping-item {
+		.item-inner {
+			white-space: nowrap;
+			cursor: pointer;
+			padding: 7px 0;
+
+			.property-icon {
+				display: inline-block;
+				margin-right: 0;
+			}
+			.left-label {
+				display: inline-block;
+			}
+			.right-label {
+				margin-right: 20px;
+			}
+		}
+	}
 }

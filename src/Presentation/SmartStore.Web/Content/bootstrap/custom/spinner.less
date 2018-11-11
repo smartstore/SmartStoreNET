@@ -1,0 +1,116 @@
+﻿/*
+SmartStore Circular Spinner
+---------------------------
+    Version:    1, 
+    Timestamp:  10.02.2016
+    Author:     Murat Cakir
+*/
+
+.spinner-container {
+    // for centering the spinner
+    position: relative;
+    display: none;
+    .flex-center();
+}
+
+.spinner {
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    display: none;
+}
+
+.spinner-container.active > .spinner,
+.spinner.active {
+    background-color: transparent;
+    border: none;
+    display: inline-block;
+}
+
+.spinner.spinner-boxed {
+    border-radius: 50%;
+    padding: 0.2em;
+    background-color: #fff !important;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 
+                0px 2px 2px 0px rgba(0, 0, 0, 0.14), 
+                0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+}
+
+.spinner-container.active {
+    .display-flex();
+}
+
+.spinner svg {
+    -webkit-transform-origin: 50% 50% 0;
+	        transform-origin: 50% 50% 0;
+
+    -webkit-animation: spinner-rotate 1.333s linear infinite;
+            animation: spinner-rotate 1.333s linear infinite;
+            
+     html.ie & {
+         animation: spinner-rotate-ie 2.5s linear infinite;
+     } 
+}
+
+.spinner circle {
+	fill: transparent;
+	stroke: #ff9800;
+	stroke-linecap: round;
+	stroke-dasharray: 200.96;
+    stroke-dashoffset: 58px;
+	
+     html.ie & {
+         stroke-dashoffset: 80px;
+     } 
+
+    -webkit-animation: spinner-dash 1.333s linear infinite, spinner-colors 10.644s linear infinite;
+            animation: spinner-dash 1.333s linear infinite, spinner-colors 10.644s linear infinite;
+}
+
+@keyframes spinner-dash {
+	0%      { stroke-dashoffset: 58px; } 
+    50%     { stroke-dashoffset: 200.96px; } 
+    100%    { stroke-dashoffset: 58px; }
+}
+@-webkit-keyframes spinner-dash {
+	0%      { stroke-dashoffset: 58px; } 
+    50%     { stroke-dashoffset: 200.96px; } 
+    100%    { stroke-dashoffset: 58px; }
+}
+
+@keyframes spinner-rotate {
+    50%     { transform: rotate(600deg); } 
+    100%    { transform: rotate(720deg); }
+}
+@-webkit-keyframes spinner-rotate {
+    50%     { transform: rotate(600deg); } 
+    100%    { transform: rotate(720deg); }
+}
+@keyframes spinner-rotate-ie {
+    50%     { transform: rotate(360deg); } 
+    100%    { transform: rotate(720deg); }
+}
+
+@keyframes spinner-colors {
+    0%      { stroke: #3F51B5; }
+    20%     { stroke: #09b7bf; }
+    40%     { stroke: #90d36b; }
+    60%     { stroke: #F44336; }
+    80%     { stroke: #f90; }
+    100%    { stroke: #3F51B5; }
+}
+@-webkit-keyframes spinner-colors {
+    0%      { stroke: #3F51B5; }
+    20%     { stroke: #09b7bf; }
+    40%     { stroke: #90d36b; }
+    60%     { stroke: #F44336; }
+    80%     { stroke: #f90; }
+    100%    { stroke: #3F51B5; }
+}
+
+.spinner.white circle {
+    stroke: #fff;
+    -webkit-animation-name: spinner-dash, spinner-rotate;
+            animation-name: spinner-dash, spinner-rotate;
+}
+

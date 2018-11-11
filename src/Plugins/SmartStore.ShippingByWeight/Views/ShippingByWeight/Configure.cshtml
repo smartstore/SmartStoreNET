@@ -1,11 +1,10 @@
-﻿@{
-    Layout = "";
-}
-@model ShippingByWeightListModel
-@using SmartStore.ShippingByWeight.Models;
+﻿@using SmartStore.ShippingByWeight.Models;
 @using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
-@using System.Linq;
+@model ShippingByWeightListModel
+@{
+	Layout = "";
+}
 
 <table class="adminContent">
     <tr>
@@ -62,13 +61,11 @@
 <p></p>
 
 @using (Html.BeginForm())
-{
-    
+{    
     <script type="text/javascript">
         $(document).ready(function () {
 
             $("#@Html.FieldIdFor(model => model.AddUsePercentage)").click(toggleAddUsePercentage);
-
             toggleAddUsePercentage();
         });
 
@@ -84,9 +81,14 @@
         }
     </script>
 	
-	<fieldset>
-        <legend>@T("Plugins.Shipping.ByWeight.AddNewRecordTitle")</legend>
-		<table class="adminContent">
+	<table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Plugins.Shipping.ByWeight.AddNewRecordTitle")</div>
+				</div>
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AddStoreId)
@@ -96,143 +98,146 @@
 				@Html.ValidationMessageFor(model => model.AddStoreId)
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddCountryId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries)
-                @Html.ValidationMessageFor(model => model.AddCountryId)
-            </td>
-        </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.AddZip)
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.AddZip)
-                    @Html.ValidationMessageFor(model => model.AddZip)
-                </td>
-            </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddShippingMethodId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
-                @Html.ValidationMessageFor(model => model.AddShippingMethodId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddFrom)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddFrom) [@Model.BaseWeightIn]
-                @Html.ValidationMessageFor(model => model.AddFrom)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddTo)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddTo) [@Model.BaseWeightIn]
-                @Html.ValidationMessageFor(model => model.AddTo)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddUsePercentage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddUsePercentage)
-                @Html.ValidationMessageFor(model => model.AddUsePercentage)
-            </td>
-        </tr>
-        <tr id="pnlAddShippingChargePercentage">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddShippingChargePercentage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddShippingChargePercentage)
-                @Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
-            </td>
-        </tr>
-        <tr id="pnlAddShippingChargeAmount">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AddShippingChargeAmount)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AddShippingChargeAmount) [@Model.PrimaryStoreCurrencyCode]
-                @Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddCountryId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.AddCountryId, Model.AvailableCountries)
+				@Html.ValidationMessageFor(model => model.AddCountryId)
+			</td>
+		</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AddZip)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.AddZip)
+					@Html.ValidationMessageFor(model => model.AddZip)
+				</td>
+			</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddShippingMethodId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.AddShippingMethodId, Model.AvailableShippingMethods)
+				@Html.ValidationMessageFor(model => model.AddShippingMethodId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddFrom)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AddFrom) [@Model.BaseWeightIn]
+				@Html.ValidationMessageFor(model => model.AddFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AddTo) [@Model.BaseWeightIn]
+				@Html.ValidationMessageFor(model => model.AddTo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddUsePercentage)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AddUsePercentage)
+				@Html.ValidationMessageFor(model => model.AddUsePercentage)
+			</td>
+		</tr>
+		<tr id="pnlAddShippingChargePercentage">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddShippingChargePercentage)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AddShippingChargePercentage)
+				@Html.ValidationMessageFor(model => model.AddShippingChargePercentage)
+			</td>
+		</tr>
+		<tr id="pnlAddShippingChargeAmount">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AddShippingChargeAmount)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AddShippingChargeAmount) [@Model.PrimaryStoreCurrencyCode]
+				@Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
+			</td>
+		</tr>
 
-        <tr id="pnlSmallQuantitySurcharge">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SmallQuantitySurcharge) [@Model.PrimaryStoreCurrencyCode]
-                @Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
-            </td>
-        </tr>
-        <tr id="pnlSmallQuantityThreshold">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SmallQuantityThreshold)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SmallQuantityThreshold)
-                @Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
-            </td>
-        </tr>
+		<tr id="pnlSmallQuantitySurcharge">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SmallQuantitySurcharge) [@Model.PrimaryStoreCurrencyCode]
+				@Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
+			</td>
+		</tr>
+		<tr id="pnlSmallQuantityThreshold">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SmallQuantityThreshold)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SmallQuantityThreshold)
+				@Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
+			</td>
+		</tr>
 
-        <tr>
+		<tr>
 			<td class="adminTitle">
 				&nbsp;
 			</td>
 			<td class="adminData">
-                <button type="submit" name="addshippingbyweightrecord" value="addshippingbyweightrecord" class="btn btn-primary">
-                    <i class="fa fa-plus"></i>
-                    @T("Common.AddNew")
-                </button>
-            </td>
-        </tr>
-		</table>
-	</fieldset>
-    
-	<fieldset style="margin-top: 16px">
-        <legend>@T("Plugins.Shipping.ByWeight.SettingsTitle")</legend>
-		<table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CalculatePerWeightUnit)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CalculatePerWeightUnit)
-                @Html.ValidationMessageFor(model => model.CalculatePerWeightUnit)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LimitMethodsToCreated)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LimitMethodsToCreated)
-                @Html.ValidationMessageFor(model => model.LimitMethodsToCreated)
-            </td>
-        </tr>
-        <tr>
+				<button type="submit" name="addshippingbyweightrecord" value="addshippingbyweightrecord" class="btn btn-primary">
+					<i class="fa fa-plus"></i>
+					@T("Common.AddNew")
+				</button>
+			</td>
+		</tr>
+	</table>
+
+	<table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Plugins.Shipping.ByWeight.SettingsTitle")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CalculatePerWeightUnit)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CalculatePerWeightUnit)
+				@Html.ValidationMessageFor(model => model.CalculatePerWeightUnit)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LimitMethodsToCreated)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.LimitMethodsToCreated)
+				@Html.ValidationMessageFor(model => model.LimitMethodsToCreated)
+			</td>
+		</tr>
+		<tr>
 			<td class="adminTitle">
 				&nbsp;
 			</td>
 			<td class="adminData">
-                <button type="submit" name="savegeneralsettings" value="savegeneralsettings" class="btn btn-primary">
-                    <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-                </button>
-            </td>
-        </tr>
-		</table>
-	</fieldset>
+				<button type="submit" name="savegeneralsettings" value="savegeneralsettings" class="btn btn-primary">
+					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+				</button>
+			</td>
+		</tr>
+	</table>
 }

@@ -1,9 +1,10 @@
 ﻿using SmartStore.Core.Configuration;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Orders
 {
-    public class ShoppingCartSettings : ISettings
-    {
+    public class ShoppingCartSettings : BaseEntity, ISettings, ILocalizedEntity
+	{
 		public ShoppingCartSettings()
 		{
 			MaximumShoppingCartItems = 1000;
@@ -17,6 +18,7 @@ namespace SmartStore.Core.Domain.Orders
 			ShowDiscountBox = true;
 			ShowGiftCardBox = true;
             ShowCommentBox = true;
+			ShowEsdRevocationWaiverBox = true;
 			CrossSellsNumber = 8;
 			EmailWishlistEnabled = true;
 			MiniShoppingCartEnabled = true;
@@ -97,11 +99,31 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to show a comment box on shopping cart page
         /// </summary>
         public bool ShowCommentBox { get; set; }
-        
-        /// <summary>
-        /// Gets or sets a number of "Cross-sells" on shopping cart page
-        /// </summary>
-        public int CrossSellsNumber { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show a revocation waiver checkbox box for ESD products
+		/// </summary>
+		public bool ShowEsdRevocationWaiverBox { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show a checkbox to subscribe to newsletters
+		/// </summary>
+		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show a checkbox to let the customer accept to hand over email address to third party
+		/// </summary>
+		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
+
+		/// <summary>
+		/// Gets or sets the label to accept to hand over the email to third party
+		/// </summary>
+		public string ThirdPartyEmailHandOverLabel { get; set; }
+
+		/// <summary>
+		/// Gets or sets a number of "Cross-sells" on shopping cart page
+		/// </summary>
+		public int CrossSellsNumber { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether "email a wishlist" feature is enabled

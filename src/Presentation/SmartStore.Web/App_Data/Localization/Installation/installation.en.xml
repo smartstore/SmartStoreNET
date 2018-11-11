@@ -183,5 +183,9 @@
   <LocaleResource Name="Progress.CreatingSampleData">
     <Value>Creating sample data</Value>
   </LocaleResource>
-  
+
+  <LocaleResource Name="InstallOptions">
+    <Value>Options</Value>
+  </LocaleResource>
+
 </Language>

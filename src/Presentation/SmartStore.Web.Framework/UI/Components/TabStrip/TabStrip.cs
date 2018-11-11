@@ -30,7 +30,7 @@ namespace SmartStore.Web.Framework.UI
             this.SmartTabSelection = true;
         }
 
-        public IList<Tab> Items
+        public List<Tab> Items
         {
             get;
             private set;

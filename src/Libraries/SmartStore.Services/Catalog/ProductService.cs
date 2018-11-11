@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.ServiceModel.Syndication;
-using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -12,18 +11,15 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Seo;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog
 {
@@ -62,9 +58,6 @@ namespace SmartStore.Services.Catalog
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
 		private readonly ICommonServices _services;
-		private readonly CatalogSettings _catalogSettings;
-		private readonly MediaSettings _mediaSettings;
-		private readonly IPictureService _pictureService;
 
         #endregion
 
@@ -115,10 +108,7 @@ namespace SmartStore.Services.Catalog
 			ICacheManager cacheManager,
             LocalizationSettings localizationSettings,
 			CommonSettings commonSettings,
-			ICommonServices services,
-			CatalogSettings catalogSettings,
-			MediaSettings mediaSettings,
-			IPictureService pictureService)
+			ICommonServices services)
         {
             this._productRepository = productRepository;
             this._relatedProductRepository = relatedProductRepository;
@@ -141,9 +131,6 @@ namespace SmartStore.Services.Catalog
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
 			this._services = services;
-			this._catalogSettings = catalogSettings;
-			this._mediaSettings = mediaSettings;
-			this._pictureService = pictureService;
 
 			this.QuerySettings = DbQuerySettings.Default;
         }
@@ -249,6 +236,17 @@ namespace SmartStore.Services.Catalog
 			product.QuantityUnitId = null;
 
             UpdateProduct(product);
+
+			if (product.ProductType == ProductType.GroupedProduct)
+			{
+				var associatedProducts = _productRepository.Table
+					.Where(x => x.ParentGroupedProductId == product.Id)
+					.ToList();
+
+				associatedProducts.ForEach(x => x.ParentGroupedProductId = 0);
+
+				_dbContext.SaveChanges();
+			}
         }
 
         /// <summary>
@@ -587,6 +585,37 @@ namespace SmartStore.Services.Catalog
 				pHomePageProducts.Value = (ctx.HomePageProducts.HasValue ? (object)ctx.HomePageProducts.Value : DBNull.Value);
 				pHomePageProducts.DbType = DbType.Boolean;
 
+				var pIdMin = _dataProvider.GetParameter();
+				pIdMin.ParameterName = "IdMin";
+				pIdMin.Value = ctx.IdMin;
+				pIdMin.DbType = DbType.Int32;
+
+				var pIdMax = _dataProvider.GetParameter();
+				pIdMax.ParameterName = "IdMax";
+				pIdMax.Value = ctx.IdMin;
+				pIdMax.DbType = DbType.Int32;
+
+				var pAvailabilityMin = _dataProvider.GetParameter();
+				pAvailabilityMin.ParameterName = "AvailabilityMin";
+				pAvailabilityMin.Value = ctx.AvailabilityMinimum.HasValue ? (object)ctx.AvailabilityMinimum.Value : DBNull.Value;
+				pAvailabilityMin.DbType = DbType.Int32;
+
+				var pAvailabilityMax = _dataProvider.GetParameter();
+				pAvailabilityMax.ParameterName = "AvailabilityMax";
+				pAvailabilityMax.Value = ctx.AvailabilityMaximum.HasValue ? (object)ctx.AvailabilityMaximum.Value : DBNull.Value;
+				pAvailabilityMax.DbType = DbType.Int32;
+
+				var pCreatedFromUtc = _dataProvider.GetParameter();
+				pCreatedFromUtc.ParameterName = "CreatedFromUtc";
+				pCreatedFromUtc.Value = ctx.CreatedFromUtc.HasValue ? (object)ctx.CreatedFromUtc.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) : DBNull.Value;
+				pCreatedFromUtc.DbType = DbType.String;
+
+				var pCreatedToUtc = _dataProvider.GetParameter();
+				pCreatedToUtc.ParameterName = "CreatedToUtc";
+				pCreatedToUtc.Value = ctx.CreatedToUtc.HasValue ? (object)ctx.CreatedToUtc.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) : DBNull.Value;
+				pCreatedToUtc.DbType = DbType.String;
+
+
                 var pFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
                 pFilterableSpecificationAttributeOptionIds.ParameterName = "FilterableSpecificationAttributeOptionIds";
                 pFilterableSpecificationAttributeOptionIds.Direction = ParameterDirection.Output;
@@ -629,6 +658,12 @@ namespace SmartStore.Services.Catalog
 					pWithoutManufacturers,
 					pIsPublished,
 					pHomePageProducts,
+					pIdMin,
+					pIdMax,
+					pAvailabilityMin,
+					pAvailabilityMax,
+					pCreatedFromUtc,
+					pCreatedToUtc,
                     pFilterableSpecificationAttributeOptionIds,
                     pTotalRecords);
 
@@ -802,6 +837,34 @@ namespace SmartStore.Services.Catalog
 			if (ctx.ProductIds != null && ctx.ProductIds.Count > 0)
 			{
 				query = query.Where(x => ctx.ProductIds.Contains(x.Id));
+			}
+			else
+			{
+				if (ctx.IdMin != 0)
+					query = query.Where(x => x.Id >= ctx.IdMin);
+
+				if (ctx.IdMax != 0)
+					query = query.Where(x => x.Id <= ctx.IdMax);
+			}
+
+			if (ctx.AvailabilityMinimum.HasValue)
+			{
+				query = query.Where(x => x.StockQuantity >= ctx.AvailabilityMinimum.Value);
+			}
+
+			if (ctx.AvailabilityMaximum.HasValue)
+			{
+				query = query.Where(x => x.StockQuantity <= ctx.AvailabilityMaximum.Value);
+			}
+
+			if (ctx.CreatedFromUtc.HasValue)
+			{
+				query = query.Where(x => x.CreatedOnUtc >= ctx.CreatedFromUtc.Value);
+			}
+
+			if (ctx.CreatedToUtc.HasValue)
+			{
+				query = query.Where(x => x.CreatedOnUtc <= ctx.CreatedToUtc.Value);
 			}
 
 			//The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
@@ -1015,24 +1078,25 @@ namespace SmartStore.Services.Catalog
         /// <returns>Result</returns>
         public virtual IList<Product> GetLowStockProducts()
         {
-			//Track inventory for product
+			// Track inventory for product
 			var query1 = from p in _productRepository.Table
 						 orderby p.MinStockQuantity
 						 where !p.Deleted &&
-						 p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
-						 p.MinStockQuantity >= p.StockQuantity
+							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
+							p.MinStockQuantity >= p.StockQuantity
 						 select p;
 			var products1 = query1.ToList();
 
-			//Track inventory for product by product attributes
+			// Track inventory for product by product attributes
 			var query2 = from p in _productRepository.Table
 						 from pvac in p.ProductVariantAttributeCombinations
 						 where !p.Deleted &&
-						 p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
-						 pvac.StockQuantity <= 0
+							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
+							pvac.StockQuantity <= 0
 						 select p;
-			//only distinct products (group by ID)
-			//if we use standard Distinct() method, then all fields will be compared (low performance)
+
+			// only distinct products (group by ID)
+			// if we use standard Distinct() method, then all fields will be compared (low performance)
 			query2 = from p in query2
 					 group p by p.Id into pGroup
 					 orderby pGroup.Key
@@ -1084,6 +1148,36 @@ namespace SmartStore.Services.Catalog
             var product = query.FirstOrDefault();
             return product;
         }
+
+		public virtual Product GetProductByManufacturerPartNumber(string manufacturerPartNumber)
+		{
+			if (manufacturerPartNumber.IsEmpty())
+				return null;
+
+			manufacturerPartNumber = manufacturerPartNumber.Trim();
+
+			var product = _productRepository.Table
+				.Where(x => !x.Deleted && x.ManufacturerPartNumber == manufacturerPartNumber)
+				.OrderBy(x => x.Id)
+				.FirstOrDefault();
+
+			return product;
+		}
+
+		public virtual Product GetProductByName(string name)
+		{
+			if (name.IsEmpty())
+				return null;
+
+			name = name.Trim();
+
+			var product = _productRepository.Table
+				.Where(x => !x.Deleted && x.Name == name)
+				.OrderBy(x => x.Id)
+				.FirstOrDefault();
+
+			return product;
+		}
 
 		/// <summary>
 		/// Adjusts inventory
@@ -1210,7 +1304,7 @@ namespace SmartStore.Services.Catalog
                     break;
                 case ManageInventoryMethod.ManageStockByAttributes:
                     {
-                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, attributesXml);
+                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
                         if (combination != null)
                         {
 							result.StockQuantityOld = combination.StockQuantity;
@@ -1290,74 +1384,69 @@ namespace SmartStore.Services.Catalog
 				UpdateProduct(product);
         }
 
-		/// <summary>
-		/// Creates a RSS feed with recently added products
-		/// </summary>
-		/// <param name="urlHelper">UrlHelper to generate URLs</param>
-		/// <returns>SmartSyndicationFeed object</returns>
-		public virtual SmartSyndicationFeed CreateRecentlyAddedProductsRssFeed(UrlHelper urlHelper)
+		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
 		{
-			if (urlHelper == null)
-				throw new ArgumentNullException("urlHelper");
+			Guard.ArgumentNotNull(() => productIds);
 
-			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
-			var selfLink = urlHelper.RouteUrl("RecentlyAddedProductsRSS", null, protocol);
-			var recentProductsLink = urlHelper.RouteUrl("RecentlyAddedProducts", null, protocol);
-
-			var title = "{0} - {1}".FormatInvariant(_services.StoreContext.CurrentStore.Name, _services.Localization.GetResource("RSS.RecentlyAddedProducts"));
-
-			var feed = new SmartSyndicationFeed(new Uri(recentProductsLink), title, _services.Localization.GetResource("RSS.InformationAboutProducts"));
-
-			feed.AddNamespaces(true);
-			feed.Init(selfLink, _services.WorkContext.WorkingLanguage);
-
-			if (!_catalogSettings.RecentlyAddedProductsEnabled)
-				return feed;
-
-			var items = new List<SyndicationItem>();
-			var searchContext = new ProductSearchContext
-			{
-				LanguageId = _services.WorkContext.WorkingLanguage.Id,
-				OrderBy = ProductSortingEnum.CreatedOn,
-				PageSize = _catalogSettings.RecentlyAddedProductsNumber,
-				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
-				VisibleIndividuallyOnly = true
-			};
-
-			var products = SearchProducts(searchContext);
-			var storeUrl = _services.StoreContext.CurrentStore.Url;
-
-			foreach (var product in products)
-			{
-				string productUrl = urlHelper.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
-				if (productUrl.HasValue())
+			var query = _productRepository.TableUntracked
+				.Expand(x => x.ProductTags)
+				.Where(x => productIds.Contains(x.Id))
+				.Select(x => new
 				{
-					var item = feed.CreateItem(
-						product.GetLocalized(x => x.Name),
-						product.GetLocalized(x => x.ShortDescription),
-						productUrl,
-						product.CreatedOnUtc,
-						product.FullDescription);
+					ProductId = x.Id,
+					Tags = x.ProductTags
+				});
 
-					try
-					{
-						// we add only the first picture
-						var picture = product.ProductPictures.OrderBy(x => x.DisplayOrder).Select(x => x.Picture).FirstOrDefault();
+			var map = new Multimap<int, ProductTag>();
 
-						if (picture != null)
-						{
-							feed.AddEnclosue(item, picture, _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeUrl));
-						}
-					}
-					catch { }
-
-					items.Add(item);
-				}
+			foreach (var item in query.ToList())
+			{
+				foreach (var tag in item.Tags)
+					map.Add(item.ProductId, tag);
 			}
 
-			feed.Items = items;
+			return map;
+		}
 
-			return feed;
+		public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query = _productRepository.TableUntracked
+				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
+				.Where(x => productIds.Contains(x.Id))
+				.Select(x => new
+				{
+					ProductId = x.Id,
+					Discounts = x.AppliedDiscounts
+				});
+
+			var map = new Multimap<int, Discount>();
+
+			foreach (var item in query.ToList())
+			{
+				foreach (var discount in item.Discounts)
+					map.Add(item.ProductId, discount);
+			}
+
+			return map;
+		}
+
+		public virtual Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query = _productSpecificationAttributeRepository.TableUntracked
+				.Expand(x => x.SpecificationAttributeOption)
+				.Expand(x => x.SpecificationAttributeOption.SpecificationAttribute)
+				.Where(x => productIds.Contains(x.ProductId));
+
+			var map = query
+				.OrderBy(x => x.DisplayOrder)
+				.ToList()
+				.ToMultimap(x => x.ProductId, x => x);
+
+			return map;
 		}
 
         #endregion
@@ -1641,7 +1730,7 @@ namespace SmartStore.Services.Catalog
             return tierPrice;
         }
 
-		public virtual Multimap<int, TierPrice> GetTierPrices(int[] productIds, Customer customer = null, int storeId = 0)
+		public virtual Multimap<int, TierPrice> GetTierPricesByProductIds(int[] productIds, Customer customer = null, int storeId = 0)
 		{
 			Guard.ArgumentNotNull(() => productIds);
 
@@ -1661,7 +1750,6 @@ namespace SmartStore.Services.Catalog
 				list = list.FilterForCustomer(customer).ToList();
 
 			var map = list
-				.RemoveDuplicatedQuantities()
 				.ToMultimap(x => x.ProductId, x => x);
 
 			return map;
@@ -1766,6 +1854,33 @@ namespace SmartStore.Services.Catalog
             var productPictures = query.ToList();
             return productPictures;
         }
+
+		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false)
+		{
+			var query = 
+				from pp in _productPictureRepository.TableUntracked.Expand(x => x.Picture)
+				where productIds.Contains(pp.ProductId)
+				orderby pp.ProductId, pp.DisplayOrder
+				select pp;
+
+			if (onlyFirstPicture)
+			{
+				var map = query.GroupBy(x => x.ProductId, x => x)
+					.Select(x => x.FirstOrDefault())
+					.ToList()
+					.ToMultimap(x => x.ProductId, x => x);
+
+				return map;
+			}
+			else
+			{
+				var map = query
+					.ToList()
+					.ToMultimap(x => x.ProductId, x => x);
+
+				return map;
+			}
+		}
 
         /// <summary>
         /// Gets a product picture
@@ -1904,6 +2019,24 @@ namespace SmartStore.Services.Catalog
 			query.ToList().Each(x => bundleItemData.Add(new ProductBundleItemData(x)));
 
 			return bundleItemData;
+		}
+
+		public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query =
+				from pbi in _productBundleItemRepository.TableUntracked
+				join p in _productRepository.TableUntracked on pbi.ProductId equals p.Id
+				where productIds.Contains(pbi.BundleProductId) && !p.Deleted && (showHidden || (pbi.Published && p.Published))
+				orderby pbi.DisplayOrder
+				select pbi;
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.BundleProductId, x => x);
+
+			return map;
 		}
 
 		#endregion

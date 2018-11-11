@@ -3,12 +3,11 @@
 
     //title
     Html.AddTitleParts(T("PageTitle.StoreClosed").Text);
+	Html.AddBodyCssClass("store-closed");
 }
 <div class="page store-closed-page">
     <div class="page-title">
         <h1>@T("StoreClosed")</h1>
-    </div>
-    <div class="clear">
     </div>
     <div class="page-body">
         @T("StoreClosed.Hint")

@@ -5,7 +5,6 @@ using System.Web.Routing;
 
 namespace SmartStore
 {
-	
 	public class RouteInfo
 	{
 		public RouteInfo(RouteInfo cloneFrom)
@@ -14,22 +13,35 @@ namespace SmartStore
 			Guard.ArgumentNotNull(() => cloneFrom);
 		}
 
-		public RouteInfo(string action, string controller, object routeValues) 
+        public RouteInfo(string action, object routeValues)
+            : this(action, null, routeValues)
+        {
+        }
+
+        public RouteInfo(string action, string controller, object routeValues) 
+			: this(action, controller, new RouteValueDictionary(routeValues))
+		{
+		}
+
+        public RouteInfo(string action, IDictionary<string, object> routeValues)
+            : this(action, null, routeValues)
+        {
+        }
+
+        public RouteInfo(string action, string controller, IDictionary<string, object> routeValues)
 			: this(action, controller, new RouteValueDictionary(routeValues))
 		{
 			Guard.ArgumentNotNull(() => routeValues);
 		}
 
-		public RouteInfo(string action, string controller, IDictionary<string, object> routeValues)
-			: this(action, controller, new RouteValueDictionary(routeValues))
-		{
-			Guard.ArgumentNotNull(() => routeValues);
-		}
+        public RouteInfo(string action, RouteValueDictionary routeValues)
+            : this(action, null, routeValues)
+        {
+        }
 
-		public RouteInfo(string action, string controller, RouteValueDictionary routeValues)
+        public RouteInfo(string action, string controller, RouteValueDictionary routeValues)
 		{
 			Guard.ArgumentNotEmpty(() => action);
-			Guard.ArgumentNotEmpty(() => controller);
 			Guard.ArgumentNotNull(() => routeValues);
 
 			this.Action = action;
@@ -56,5 +68,4 @@ namespace SmartStore
 		}
 
 	}
-
 }

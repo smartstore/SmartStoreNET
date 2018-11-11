@@ -1,0 +1,398 @@
+﻿@model ExportProfileModel
+@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+@{
+	var title = string.Concat(T("Common.Profile"), " - ", T("Admin.Common.Edit"));
+	ViewBag.Title = title;
+}
+
+@using (Html.BeginForm())
+{
+	<fieldset>
+		@Html.HiddenFor(model => model.Id)
+
+		<div class="section-header">
+			<div class="title">
+				<img src="@Model.Provider.ThumbnailUrl" />
+				@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
+			</div>
+			<div class="options">
+				@if (Model.HasActiveProvider)
+				{
+					if (Model.Id != 0)
+					{
+						<button type="button" id="ProfileExportButton" class="btn btn-default" data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })">
+							<i class="fa fa-gears"></i>&nbsp;@T("Common.Export")
+						</button>
+					}
+
+					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
+						<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
+					</a>
+				}
+				@if (Model.LogFileExists)
+				{
+					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
+						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+					</a>
+				}
+				<button type="submit" name="save" value="save" class="btn btn-primary">
+					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+				</button>
+				<button type="submit" name="save" value="save-continue" class="btn">
+					@T("Admin.Common.SaveContinue")
+				</button>
+				@if (!Model.IsSystemProfile)
+				{
+					<button type="submit" name="export-profile-delete" id="export-profile-delete" value="export-profile-delete" class="btn btn-danger">
+						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+					</button>
+				}
+			</div>
+		</div>
+
+		@Html.ValidationSummary(false)
+
+		@Html.SmartStore().TabStrip().Name("export-profile-edit").Items(x =>
+		{
+			x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
+
+			if (Model.HasActiveProvider)
+			{
+				x.Add().Text(T("Common.Partition").Text).Content(TabPartition());
+				x.Add().Text(T("Common.Filter").Text).Content(TabFilter());
+				x.Add().Text(T("Common.Projection").Text).Content(TabProjection());
+				x.Add().Text(T("Admin.Configuration").Text).Content(TabConfiguration());
+				x.Add().Text(T("Common.Deployment").Text).Content(TabDeployment());
+			}
+
+			EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "export-profile-edit", this.Html, this.Model));
+		})
+	</fieldset>
+}
+
+@helper TabGeneral()
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Name)
+				@Html.ValidationMessageFor(x => x.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.SystemName)
+			</td>
+			<td class="adminData">
+				<div class="muted">@(Model.SystemName.NaIfEmpty())</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.IsSystemProfile)
+			</td>
+			<td class="adminData">
+				@T(Model.IsSystemProfile ? "Admin.Common.Yes" : "Admin.Common.No")
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Enabled)
+				@Html.ValidationMessageFor(x => x.Enabled)
+			</td>
+		</tr>
+		@if (Model.ScheduleTaskId > 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ScheduleTaskId)
+				</td>
+				<td class="adminData">
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
+				</td>
+			</tr>
+		}
+	</table>
+	
+	<p>&nbsp;</p>
+
+	if (Model.HasActiveProvider)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.FriendlyName)
+				</td>
+				<td class="adminData">
+					<div>@Model.Provider.FriendlyName.NaIfEmpty()</div>
+					<div class="muted">@(Model.ProviderSystemName.NaIfEmpty())</div>
+				</td>
+			</tr>
+			@if (Model.Provider.Description.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Description)
+					</td>
+					<td class="adminData">
+						@Html.Raw(Model.Provider.Description)
+					</td>
+				</tr>
+			}
+			@if (Model.Provider.Url.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Url)
+					</td>
+					<td class="adminData">
+						<a href="@Model.Provider.Url" target="PluginWebsiteWnd">@Model.Provider.Url</a>
+					</td>
+				</tr>
+			}
+			@if (Model.Provider.Author.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Author)
+					</td>
+					<td class="adminData">
+						@Html.DisplayFor(x => x.Provider.Author)
+					</td>
+				</tr>
+			}
+			@if (Model.Provider.Version.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Version)
+					</td>
+					<td class="adminData">
+						@Html.DisplayFor(x => x.Provider.Version)
+					</td>
+				</tr>
+			}
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.EntityTypeName)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(x => x.Provider.EntityTypeName)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.FileExtension)
+				</td>
+				<td class="adminData">
+					@Html.IconForFileExtension(Model.Provider.FileExtension, true)
+				</td>
+			</tr>
+		</table>
+	}
+	else
+	{
+		<div class="alert alert-warning">
+			@T("Admin.Common.ProviderNotLoaded", Model.ProviderSystemName)
+		</div>
+	}
+}
+
+@helper TabPartition()
+{
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(T("Admin.DataExchange.Export.Partition.Note"))
+	</div>
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Offset)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Offset)
+				@Html.ValidationMessageFor(x => x.Offset)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Limit)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Limit)
+				@Html.ValidationMessageFor(x => x.Limit)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.BatchSize)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.BatchSize)
+				@Html.ValidationMessageFor(x => x.BatchSize)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.PerStore)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.PerStore)
+				@Html.ValidationMessageFor(x => x.PerStore)
+			</td>
+		</tr>
+	</table>
+}
+
+@helper TabFilter()
+{
+	if (Model.Provider.EntityType == ExportEntityType.Product ||
+		Model.Provider.EntityType == ExportEntityType.Customer ||
+		Model.Provider.EntityType == ExportEntityType.Order || 
+		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
+	{
+		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))</div>
+		@Html.Partial("_Tab.Filter", Model)
+	}
+	else
+	{
+		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoFiltering")</div>
+	}
+}
+
+@helper TabProjection()
+{
+	if (Model.Provider.EntityType == ExportEntityType.Product || Model.Provider.EntityType == ExportEntityType.Order)
+	{
+		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))</div>
+		@Html.Partial("_Tab.Projection", Model)
+	}
+	else
+	{
+		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoProjection")</div>
+	}
+}
+
+@helper TabConfiguration()
+{
+	<div id="ProviderConfigurationContainer">
+		<fieldset>
+			@if (Model.Provider.ConfigPartialViewName.HasValue())
+			{
+				<div class="alert alert-info">
+					<button type="button" class="close" data-dismiss="alert">&#215;</button>
+					@Html.Raw(T("Admin.DataExchange.Export.Configuration.Note"))
+				</div>
+				
+				var viewData = new ViewDataDictionary();
+				viewData.TemplateInfo.HtmlFieldPrefix = "CustomProperties[ProviderConfigData]";
+				viewData.ModelState.Merge(ViewData.ModelState);
+				@Html.Hidden("CustomProperties[ProviderConfigData].__Type__", Model.Provider.ConfigDataType.AssemblyQualifiedName)
+
+				try
+				{
+					@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+				}
+				catch (Exception exception)
+				{
+					<div class="alert alert-error">
+						@T("Admin.Configuration.Plugins.UnknownError")
+					</div>
+					<pre>@exception.ToString()</pre>
+				}
+			}
+			else
+			{
+				<div class="alert alert-info">
+					@Html.Raw(T("Admin.DataExchange.Export.Configuration.NotRequired", Model.Provider.FriendlyName ?? Model.ProviderSystemName))
+				</div>
+			}
+		</fieldset>
+	</div>
+}
+
+@helper TabDeployment()
+{
+	@Html.Partial("_Tab.Deployment", Model)
+}
+
+@Html.DeleteConfirmation("export-profile-delete")
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		$('#@(Html.FieldIdFor(x => x.CompletedEmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedCompletedEmailAddresses))] });
+
+		// show/hide store projection
+		$('#@(Html.FieldIdFor(x => x.PerStore))').change(function () {
+			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));
+		}).trigger('change');
+
+		// show/hide attribute combination note
+		$('#@(Html.FieldIdFor(x => x.Projection.AttributeCombinationAsProduct))').change(function () {
+			$('#AttributeCombinationAsProductNote').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		// show/hide no grouped products note
+		$('#@(Html.FieldIdFor(x => x.Projection.NoGroupedProducts))').change(function () {
+			$('#NoGroupedProductsNote').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		$('#@(Html.FieldIdFor(x => x.Projection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedAppendDescriptionText))] });
+		$('#@(Html.FieldIdFor(x => x.Projection.CriticalCharacters))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedCriticalCharacters))] });
+
+		// show/hide attribute combination value appending
+		$('#@(Html.FieldIdFor(x => x.Projection.AttributeCombinationAsProduct))').change(function () {
+			$('#AttributeCombinationAddValuesToNameContainer').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		// show/hide critical characters
+		$('#@(Html.FieldIdFor(x => x.Projection.RemoveCriticalCharacters))').change(function () {
+			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		// show/hide product category filter
+		$('#@(Html.FieldIdFor(x => x.Filter.WithoutCategories))').change(function () {
+			$('#FilterCategoryIdsContainer').toggle(_.isEmpty($(this).val()));
+		}).trigger('change');
+
+		// show/hide product manufacturer filter
+		$('#@(Html.FieldIdFor(x => x.Filter.WithoutManufacturers))').change(function () {
+			$('#FilterManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
+		}).trigger('change');
+
+		// show/hide completion email addresses
+		$('#@(Html.FieldIdFor(x => x.EmailAccountId))').change(function () {
+			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
+		}).trigger('change');
+
+		// resolve file name pattern example
+		$('#FileNamePatternExample').find('button:first').click(function () {
+			var pattern = $('#@(Html.FieldIdFor(x => x.FileNamePattern))').val();
+			$(this).doAjax({
+				type: 'GET',
+				url: '@Url.Action("ResolveFileNamePatternExample", new { id = Model.Id })' + '?pattern=' + encodeURIComponent(pattern),
+				callbackSuccess: function (resp) {
+					$('#FileNamePatternExample').find('div:first').text(resp);
+				}
+			});
+		});
+
+		// execute export
+		$('#ProfileExportButton').click(function (e) {
+			e.preventDefault();
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
+			return false;
+		});
+	});
+</script>

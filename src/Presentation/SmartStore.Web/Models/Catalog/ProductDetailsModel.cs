@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Media;
 
@@ -21,7 +20,6 @@ namespace SmartStore.Web.Models.Catalog
 			ProductPrice = new ProductPriceModel();
 			AddToCart = new AddToCartModel();
 			ProductVariantAttributes = new List<ProductVariantAttributeModel>();
-			Combinations = new List<ProductVariantAttributeCombination>();
 			AssociatedProducts = new List<ProductDetailsModel>();
 			BundledItems = new List<ProductDetailsModel>();
 			BundleItem = new ProductBundleItemModel();
@@ -100,8 +98,7 @@ namespace SmartStore.Web.Models.Catalog
 		public bool BundlePerItemPricing { get; set; }
 		public bool BundlePerItemShoppingCart { get; set; }
 
-		public IList<ProductVariantAttributeCombination> Combinations { get; set; }
-		public ProductVariantAttributeCombination CombinationSelected { get; set; }
+		public ProductVariantAttributeCombination SelectedCombination { get; set; }
 
         public IList<ManufacturerOverviewModel> Manufacturers { get; set; }
         public int ReviewCount { get; set; }

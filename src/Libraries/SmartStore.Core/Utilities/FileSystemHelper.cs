@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SmartStore.Utilities
@@ -12,7 +14,7 @@ namespace SmartStore.Utilities
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDir(string subDirectory = null)
 		{
-			string path = CommonHelper.GetAppSetting<string>("sm:TempDirectory", "~/App_Data/_temp");
+			string path = CommonHelper.GetAppSetting("sm:TempDirectory", "~/App_Data/_temp");
 			path = CommonHelper.MapPath(path);
 
 			if (!Directory.Exists(path))
@@ -30,32 +32,53 @@ namespace SmartStore.Utilities
 		}
 
 		/// <summary>
+		/// Ensures that path is a valid root path
+		/// </summary>
+		/// <param name="path">Relative path</param>
+		/// <returns>Valid root path</returns>
+		public static string ValidateRootPath(string path)
+		{
+			if (path.HasValue())
+			{
+				path = path.Replace('\\', '/');
+
+				if (!path.StartsWith("~/"))
+				{
+					if (path.StartsWith("~"))
+						path = path.Substring(1);
+
+					path = (path.StartsWith("/") ? "~" : "~/") + path;
+				}
+			}
+			return path;
+		}
+
+		/// <summary>
 		/// Safe way to cleanup the temp directory. Should be called via scheduled task.
 		/// </summary>
 		public static void TempCleanup()
 		{
 			try
 			{
-				string dir = FileSystemHelper.TempDir();
+				var dir = TempDir();
 
 				if (Directory.Exists(dir))
 				{
-					FileInfo fi;
 					var oldestDate = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
 					var files = Directory.EnumerateFiles(dir);
 
 					foreach (string file in files)
 					{
-						fi = new FileInfo(file);
+						var fi = new FileInfo(file);
 
-						if (fi != null && fi.LastWriteTime < oldestDate)
-							FileSystemHelper.Delete(file);
+						if (fi.LastWriteTime < oldestDate)
+							Delete(file);
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				exc.Dump();
+				ex.Dump();
 			}
 		}
 
@@ -82,6 +105,7 @@ namespace SmartStore.Utilities
 				result = false;
 				exc.Dump();
 			}
+
 			return result;
 		}
 
@@ -112,8 +136,10 @@ namespace SmartStore.Utilities
 		/// <param name="source">Source directory</param>
 		/// <param name="target">Target directory</param>
 		/// <param name="overwrite">Whether to override existing files</param>
-		public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
+		public static bool CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
 		{
+			var result = true;
+
 			foreach (FileInfo fi in source.GetFiles())
 			{
 				try
@@ -122,6 +148,7 @@ namespace SmartStore.Utilities
 				}
 				catch (Exception exc)
 				{
+					result = false;
 					exc.Dump();
 				}
 			}
@@ -135,16 +162,21 @@ namespace SmartStore.Utilities
 				}
 				catch (Exception exc)
 				{
+					result = false;
 					exc.Dump();
 				}
 			}
+
+			return result;
 		}
 
 		/// <summary>
 		/// Safe way to delete all directory content
 		/// </summary>
 		/// <param name="directoryPath">A directory path</param>
-		public static void ClearDirectory(string directoryPath, bool selfToo)
+		/// <param name="selfToo">Delete directoryPath too</param>
+		/// <param name="exceptFileNames">Name of files not to be deleted</param>
+		public static void ClearDirectory(string directoryPath, bool selfToo, List<string> exceptFileNames = null)
 		{
 			if (directoryPath.IsEmpty())
 				return;
@@ -155,6 +187,9 @@ namespace SmartStore.Utilities
 
 				foreach (var fi in dir.GetFiles())
 				{
+					if (exceptFileNames != null && exceptFileNames.Any(x => x.IsCaseInsensitiveEqual(fi.Name)))
+						continue;
+
 					try
 					{
 						fi.IsReadOnly = false;
@@ -200,6 +235,30 @@ namespace SmartStore.Utilities
 				}
 				catch (Exception) { }
 			}
+		}
+
+		/// <summary>
+		/// Creates a non existing directory name
+		/// </summary>
+		/// <param name="directoryPath">Path of a directory</param>
+		/// <param name="defaultName">Default name for directory. <c>null</c> to use a guid.</param>
+		/// <returns>Non existing directory name</returns>
+		public static string CreateNonExistingDirectoryName(string directoryPath, string defaultName)
+		{
+			if (defaultName.IsEmpty())
+				defaultName = Guid.NewGuid().ToString();
+
+			if (directoryPath.IsEmpty() || !Directory.Exists(directoryPath))
+				return defaultName;
+
+			var newName = defaultName;
+
+			for (int i = 1; i < 999999 && Directory.Exists(Path.Combine(directoryPath, newName)); ++i)
+			{
+				newName = defaultName + i.ToString();
+			}
+
+			return newName;
 		}
 
 		/// <summary>

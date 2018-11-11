@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.MVC.Tests.Framework.Controllers
 {

@@ -1,7 +1,6 @@
 ﻿@model Telerik.Web.Mvc.GridModel<LanguageModel>
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Languages").Text;
 }
 <div class="section-header">
@@ -24,7 +23,7 @@
                         columns.Bound(x => x.Name)
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }));
                         columns.Bound(x => x.LanguageCulture)
-                            .Width(150)
+                            .Width(200)
                             .Centered();
                         columns.Template(
                                 @<div>
@@ -34,10 +33,10 @@
                             .Centered()
                             .Title(T("Admin.Configuration.Languages.Resources.View").Text);
                         columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
+                            .Width(200)
                             .Centered();
                         columns.Bound(x => x.Published)
-                            .Width(100)
+                            .Width(200)
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))
                             .Centered();

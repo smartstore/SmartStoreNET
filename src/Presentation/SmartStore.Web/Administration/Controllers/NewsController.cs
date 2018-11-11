@@ -14,6 +14,8 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -102,10 +104,11 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var model = new NewsItemListModel();
-			//stores
-			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
 			foreach (var s in _storeService.GetAllStores())
-				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			{
+				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
+			}
 
 			return View(model);
         }
@@ -113,26 +116,38 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command, NewsItemListModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
-				return AccessDeniedView();
+			var gridModel = new GridModel<NewsItemModel>();
 
-			var news = _newsService.GetAllNews(0, model.SearchStoreId, command.Page - 1, command.PageSize, true);
-            var gridModel = new GridModel<NewsItemModel>
-            {
-                Data = news.Select(x =>
-                {
-                    var m = x.ToModel();
-                    if (x.StartDateUtc.HasValue)
-                        m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
-                    if (x.EndDateUtc.HasValue)
-                        m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    m.LanguageName = x.Language.Name;
-                    m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
-                    return m;
-                }),
-                Total = news.TotalCount
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+			{
+				var news = _newsService.GetAllNews(0, model.SearchStoreId, command.Page - 1, command.PageSize, true);
+
+				gridModel.Data = news.Select(x =>
+				{
+					var m = x.ToModel();
+
+					if (x.StartDateUtc.HasValue)
+						m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
+
+					if (x.EndDateUtc.HasValue)
+						m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
+
+					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+					m.LanguageName = x.Language.Name;
+					m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
+
+					return m;
+				});
+
+				gridModel.Total = news.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<NewsItemModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -154,7 +169,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(NewsItemModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
@@ -209,7 +224,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(NewsItemModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
@@ -295,47 +310,54 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult Comments(int? filterByNewsItemId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
-                return AccessDeniedView();
+			var gridModel = new GridModel<NewsCommentModel>();
 
-            IList<NewsComment> comments;
-            if (filterByNewsItemId.HasValue)
-            {
-                //filter comments by news item
-                var newsItem = _newsService.GetNewsById(filterByNewsItemId.Value);
-                comments = newsItem.NewsComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
-            }
-            else
-            {
-                //load all news comments
-                comments = _customerContentService.GetAllCustomerContent<NewsComment>(0, null);
-            }
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+			{
+				IList<NewsComment> comments;
+				if (filterByNewsItemId.HasValue)
+				{
+					//filter comments by news item
+					var newsItem = _newsService.GetNewsById(filterByNewsItemId.Value);
+					comments = newsItem.NewsComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
+				}
+				else
+				{
+					//load all news comments
+					comments = _customerContentService.GetAllCustomerContent<NewsComment>(0, null);
+				}
 
-            var gridModel = new GridModel<NewsCommentModel>
-            {
-                Data = comments.PagedForCommand(command).Select(newsComment =>
-                {
-                    var commentModel = new NewsCommentModel();
+				gridModel.Data = comments.PagedForCommand(command).Select(newsComment =>
+				{
+					var commentModel = new NewsCommentModel();
 					var customer = _customerService.GetCustomerById(newsComment.CustomerId);
 
-                    commentModel.Id = newsComment.Id;
-                    commentModel.NewsItemId = newsComment.NewsItemId;
-                    commentModel.NewsItemTitle = newsComment.NewsItem.Title;
-                    commentModel.CustomerId = newsComment.CustomerId;
-                    commentModel.IpAddress = newsComment.IpAddress;
-                    commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsComment.CreatedOnUtc, DateTimeKind.Utc);
-                    commentModel.CommentTitle = newsComment.CommentTitle;
-                    commentModel.CommentText = Core.Html.HtmlUtils.FormatText(newsComment.CommentText, false, true, false, false, false, false);
+					commentModel.Id = newsComment.Id;
+					commentModel.NewsItemId = newsComment.NewsItemId;
+					commentModel.NewsItemTitle = newsComment.NewsItem.Title;
+					commentModel.CustomerId = newsComment.CustomerId;
+					commentModel.IpAddress = newsComment.IpAddress;
+					commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsComment.CreatedOnUtc, DateTimeKind.Utc);
+					commentModel.CommentTitle = newsComment.CommentTitle;
+					commentModel.CommentText = Core.Html.HtmlUtils.FormatText(newsComment.CommentText, false, true, false, false, false, false);
 
 					if (customer == null)
 						commentModel.CustomerName = "".NaIfEmpty();
 					else
 						commentModel.CustomerName = customer.GetFullName();
 
-                    return commentModel;
-                }),
-                Total = comments.Count,
-            };
+					return commentModel;
+				});
+
+				gridModel.Total = comments.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<NewsCommentModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -345,17 +367,16 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult CommentDelete(int? filterByNewsItemId, int id, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+			{
+				var comment = _customerContentService.GetCustomerContentById(id) as NewsComment;
 
-            var comment = _customerContentService.GetCustomerContentById(id) as NewsComment;
-            if (comment == null)
-                throw new ArgumentException("No comment found with the specified id");
-
-            var newsItem = comment.NewsItem;
-            _customerContentService.DeleteCustomerContent(comment);
-            //update totals
-            _newsService.UpdateCommentTotals(newsItem);
+				var newsItem = comment.NewsItem;
+				_customerContentService.DeleteCustomerContent(comment);
+			
+				//update totals
+				_newsService.UpdateCommentTotals(newsItem);
+			}
 
             return Comments(filterByNewsItemId, command);
         }

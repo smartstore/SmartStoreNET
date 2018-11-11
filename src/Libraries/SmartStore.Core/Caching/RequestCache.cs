@@ -9,7 +9,7 @@ namespace SmartStore.Core.Caching
     
     public partial class RequestCache : ICache
     {
-        private const string REGION_NAME = "$$SmartStoreNET$$";
+        private const string RegionName = "$$SmartStoreNET$$";
         private readonly HttpContextBase _context;
 
         public RequestCache(HttpContextBase context)
@@ -39,9 +39,9 @@ namespace SmartStore.Core.Caching
                     string key = enumerator.Key as string;
                     if (key == null)
                         continue;
-                    if (key.StartsWith(REGION_NAME))
+                    if (key.StartsWith(RegionName))
                     {
-                        yield return new KeyValuePair<string, object>(key.Substring(REGION_NAME.Length), enumerator.Value);
+                        yield return new KeyValuePair<string, object>(key.Substring(RegionName.Length), enumerator.Value);
                     }
                 }
             }
@@ -64,13 +64,10 @@ namespace SmartStore.Core.Caching
 
 			key = BuildKey(key);
 
-			if (value != null)
-			{
-				if (items.Contains(key))
-					items[key] = value;
-				else
-					items.Add(key, value);
-			}
+			if (items.Contains(key))
+				items[key] = value;
+			else
+				items.Add(key, value);
 		}
 
         public bool Contains(string key)
@@ -93,7 +90,7 @@ namespace SmartStore.Core.Caching
 
         private string BuildKey(string key)
         {
-            return key.HasValue() ? REGION_NAME + key : null;
+            return key.HasValue() ? RegionName + key : null;
         }
 
 		public bool IsSingleton

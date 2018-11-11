@@ -1,7 +1,6 @@
 ﻿@model ContentSliderSlideModel
 @using SmartStore.Admin.Models.ContentSlider
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.ContentSlider.EditSlide").Text;
 }
 @using (Html.BeginForm())
@@ -11,9 +10,13 @@
             @T("Admin.Configuration.ContentSlider.EditSlide") - @Model.Title @Html.ActionLink("(" + @T("Admin.Configuration.ContentSlider.BackToList") + ")", "Index")
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" id="slide-delete" name="slide-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)

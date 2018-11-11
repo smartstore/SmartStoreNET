@@ -1,7 +1,6 @@
 ﻿@model TaxSettingsModel
 @using Telerik.Web.Mvc.UI;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.Tax").Text;
 }
 @using (Html.BeginForm())
@@ -59,12 +58,14 @@
             $('#pnlEuVatAllowVATExemption').show();
             $('#pnlEuVatUseWebService').show();
             $('#pnlEuVatEmailAdminWhenNewVATSubmitted').show();
+            $('#pnlVatRequired').show();
         }
         else {
             $('#pnlEuVatShopCountry').hide();
             $('#pnlEuVatAllowVATExemption').hide();
             $('#pnlEuVatUseWebService').hide();
             $('#pnlEuVatEmailAdminWhenNewVATSubmitted').hide();
+            $('#pnlVatRequired').hide();
         }
     }
 </script>
@@ -148,11 +149,6 @@
                 @Html.ValidationMessageFor(model => model.HideTaxInOrderSummary)
             </td>
         </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
-                <hr />
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowLegalHintsInProductList)
@@ -180,8 +176,8 @@
                 @Html.ValidationMessageFor(model => model.ShowLegalHintsInFooter)
             </td>
         </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
+        <tr>
+            <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>
@@ -195,21 +191,21 @@
                 @Html.ValidationMessageFor(model => model.TaxBasedOn)
             </td>
         </tr>
-        <tr>
+        <tr class="adminGroup">
             <td class="adminTitle">
-                @Html.LabelFor(model => model.DefaultTaxAddress, new { style="font-weight: bold" })
+                @Html.SmartLabelFor(model => model.DefaultTaxAddress)
             </td>
 			<td class="adminData">
 				@Html.SettingOverrideCheckbox(model => Model.DefaultTaxAddress, "#pnlDefaultTaxAddress")
 			</td>
         </tr>
         <tr>
-            <td colspan="2" id="pnlDefaultTaxAddress">
+            <td id="pnlDefaultTaxAddress" colspan="2">
                 @Html.EditorFor(x => x.DefaultTaxAddress, "Address")
             </td>
         </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
+        <tr>
+            <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>
@@ -241,8 +237,8 @@
                 @Html.ValidationMessageFor(model => model.ShippingTaxClassId)
             </td>
         </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
+        <tr>
+            <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>
@@ -274,8 +270,8 @@
                 @Html.ValidationMessageFor(model => model.PaymentMethodAdditionalFeeTaxClassId)
             </td>
         </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
+        <tr>
+            <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>
@@ -323,6 +319,15 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
                 @Html.ValidationMessageFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
+            </td>
+        </tr>
+        <tr id="pnlVatRequired">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.VatRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.VatRequired)
+                @Html.ValidationMessageFor(model => model.VatRequired)
             </td>
         </tr>
     </table>

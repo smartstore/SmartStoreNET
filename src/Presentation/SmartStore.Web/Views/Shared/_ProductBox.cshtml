@@ -30,7 +30,7 @@
 			   data-form-selector="#product-details-form"
 			   data-type="wishlist"
 			   data-action="add">
-				<i class="fa fa-gift"></i>
+				<i class="fa fa-heart"></i>
 				@T("Categories.Wishlist")
 			</a>
 		}
@@ -42,7 +42,7 @@
 			   rel="nofollow"
 			   data-type="compare"
 			   data-action="add">
-				<i class="fa fa-retweet"></i>
+				<i class="fa fa-file-text"></i>
 				@T("Categories.Compare")
 			</a>
 		}
@@ -50,9 +50,12 @@
 }
 
 <figure class="picture" data-equalized-part="picture" data-equalized-valign="true">
-    <a href="@productDetailLink" title="@Model.DefaultPictureModel.Title">
-        <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
-    </a>
+	@if (Model.DefaultPictureModel.ImageUrl.HasValue())
+	{
+		<a href="@productDetailLink" title="@Model.DefaultPictureModel.Title">
+			<img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
+		</a>
+	}
     @if (Model.ColorAttributes.Any())
     {
         <div class="colors">
@@ -66,7 +69,8 @@
 
 <div class="data">
 
-    @if (Model.ShowReviews) {
+    @if (Model.ShowReviews)
+	{
         int ratingPercent = 0;
         if (Model.TotalReviews != 0)
         {
@@ -103,13 +107,15 @@
         </a>
     </h3>
     @{
-        string desc = null, descTitle = null;
-        if (Model.ShortDescription.HasValue()) {
-            desc = Model.ShortDescription.Truncate(50, "...");
-            if (Model.ShortDescription.Length > desc.Length) {
-                descTitle = Model.ShortDescription;
-            }
-        }
+		string desc = null, descTitle = null;
+		if (Model.ShortDescription.HasValue())
+		{
+			desc = Model.ShortDescription.Truncate(50, "...");
+			if (Model.ShortDescription.Length > desc.Length)
+			{
+				descTitle = Model.ShortDescription;
+			}
+		}
     }
     <p class="description" title="@descTitle" data-equalized-part="description">
         @Html.Raw(desc)
@@ -176,7 +182,7 @@
                     rel="tooltip nofollow"
                     data-type="cart"
                     data-action="add">
-                    <i class="fa fa-shopping-cart"></i>      
+                    <i class="fa fa-lg fa-cart-arrow-down"></i>      
                 </a>
 			}
 			else

@@ -1,15 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Discounts;
-using SmartStore.Services.Customers;
-using SmartStore.Services.Orders;
-using SmartStore.Services.Catalog;
-using SmartStore.Services.Tax;
-using SmartStore.Core.Localization;
-using SmartStore.DiscountRules.Settings;
 using Newtonsoft.Json;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
+using SmartStore.DiscountRules.Settings;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
+using SmartStore.Services.Discounts;
+using SmartStore.Services.Orders;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.DiscountRules
 {
@@ -21,15 +22,18 @@ namespace SmartStore.DiscountRules
 		private readonly IOrderService _orderService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly ITaxService _taxService;
+		private readonly ILogger _logger;
 
 		public HadSpentAmountRule(
             IOrderService orderService,
             IPriceCalculationService priceCalculationService,
-            ITaxService taxService)
+            ITaxService taxService,
+			ILogger logger)
         {
-			this._orderService = orderService;
-            this._priceCalculationService = priceCalculationService;
-            this._taxService = taxService;
+			_orderService = orderService;
+            _priceCalculationService = priceCalculationService;
+            _taxService = taxService;
+			_logger = logger;
         }
 
 		public override bool CheckRequirement(CheckDiscountRequirementRequest request)
@@ -88,14 +92,34 @@ namespace SmartStore.DiscountRules
 
 		private bool CheckCurrentSubTotalRequirement(CheckDiscountRequirementRequest request)
 		{
-			var cartItems = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
+			var spentAmount = decimal.Zero;
 
-			decimal spentAmount = decimal.Zero;
-			decimal taxRate = decimal.Zero;
-			foreach (var sci in cartItems)
+			try
 			{
-				// includeDiscounts == true produces a stack overflow!
-				spentAmount += sci.Item.Quantity * _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate);
+				var taxRate = decimal.Zero;
+				var cartItems = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
+
+				foreach (var cartItem in cartItems)
+				{
+					var product = cartItem.Item.Product;
+					Dictionary<string, object> mergedValuesClone = null;
+
+					// we must reapply merged values because CheckCurrentSubTotalRequirement uses price calculation and is called by it itself.
+					// this can cause wrong discount calculation if the cart contains a product several times.
+					if (product.MergedDataValues != null)
+						mergedValuesClone = new Dictionary<string, object>(product.MergedDataValues);
+
+					// includeDiscounts == true produces a stack overflow!
+					spentAmount += cartItem.Item.Quantity * _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(cartItem, false), out taxRate);
+
+					if (mergedValuesClone != null)
+						product.MergedDataValues = new Dictionary<string, object>(mergedValuesClone);
+				}
+			}
+			catch (Exception exception)
+			{
+				_logger.Error(exception);
+				return false;
 			}
 
 			return spentAmount >= request.DiscountRequirement.SpentAmount;

@@ -21,25 +21,16 @@ namespace SmartStore.Core.Infrastructure
 
 		private static object s_lock = new object();
 
-		private string _assemblySkipLoadingPattern = @"^System|^mscorlib|^Microsoft|^CppCodeProvider|^VJSharpCodeProvider|^WebDev|^Nuget|^Castle|^Iesi|^log4net|^Autofac|^AutoMapper|^EntityFramework|^EPPlus|^Fasterflect|^nunit|^TestDriven|^MbUnit|^Rhino|^QuickGraph|^TestFu|^Telerik|^Antlr3|^Recaptcha|^FluentValidation|^ImageResizer|^itextsharp|^MiniProfiler|^Newtonsoft|^Pandora|^WebGrease|^Noesis|^DotNetOpenAuth|^Facebook|^LinqToTwitter|^PerceptiveMCAPI|^CookComputing|^GCheckout|^Mono\.Math|^Org\.Mentalis|^App_Web|^BundleTransformer|^ClearScript|^JavaScriptEngineSwitcher|^MsieJavaScriptEngine|^Glimpse|^Ionic|^App_GlobalResources|^AjaxMin|^MaxMind|^NReco|^OffAmazonPayments|^UAParser";
+		private string _assemblySkipLoadingPattern = @"^System|^mscorlib|^Microsoft|^CppCodeProvider|^VJSharpCodeProvider|^WebDev|^Nuget|^Castle|^Iesi|^log4net|^Autofac|^AutoMapper|^EntityFramework|^EPPlus|^nunit|^TestDriven|^MbUnit|^Rhino|^QuickGraph|^TestFu|^Telerik|^Antlr3|^Recaptcha|^FluentValidation|^ImageResizer|^itextsharp|^MiniProfiler|^Newtonsoft|^Pandora|^WebGrease|^Noesis|^DotNetOpenAuth|^Facebook|^LinqToTwitter|^PerceptiveMCAPI|^CookComputing|^GCheckout|^Mono\.Math|^Org\.Mentalis|^App_Web|^BundleTransformer|^ClearScript|^JavaScriptEngineSwitcher|^MsieJavaScriptEngine|^Glimpse|^Ionic|^App_GlobalResources|^AjaxMin|^MaxMind|^NReco|^OffAmazonPayments|^UAParser";
 		private string _assemblyRestrictToLoadingPattern = ".*";
 		private readonly IDictionary<string, bool> _assemblyMatchTable = new Dictionary<string, bool>();
 
-		private Regex _assemblySkipLoadingRegex = null;
-		private Regex _assemblyRestrictToLoadingRegex = null;
+		private Regex _assemblySkipLoadingRegex;
+		private Regex _assemblyRestrictToLoadingRegex;
 
 		private bool _ignoreReflectionErrors = true;
 		private bool _loadAppDomainAssemblies = true;
         private IList<string> _customAssemblyNames = new List<string>();
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>Creates a new instance of the AppDomainTypeFinder.</summary>
-        public AppDomainTypeFinder()
-        {
-        }
 
         #endregion
 
@@ -98,16 +89,6 @@ namespace SmartStore.Core.Infrastructure
 				_assemblyRestrictToLoadingRegex = null;
 				_assemblyMatchTable.Clear();
 			}
-        }
-
-        #endregion
-
-        #region Internal Attributed Assembly class
-
-        private class AttributedAssembly
-        {
-            internal Assembly Assembly { get; set; }
-            internal Type PluginAttributeType { get; set; }
         }
 
         #endregion
@@ -173,16 +154,6 @@ namespace SmartStore.Core.Infrastructure
             }
             return result;
         }
-
-        /// <summary>
-        /// Caches attributed assembly information so they don't have to be re-read
-        /// </summary>
-        private readonly List<AttributedAssembly> _attributedAssemblies = new List<AttributedAssembly>();
-
-        /// <summary>
-        /// Caches the assembly attributes that have been searched for
-        /// </summary>
-        private readonly List<Type> _assemblyAttributesSearched = new List<Type>();
 
         /// <summary>
 		/// Gets the assemblies related to the current implementation.

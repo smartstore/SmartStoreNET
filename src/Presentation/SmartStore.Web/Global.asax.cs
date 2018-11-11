@@ -1,33 +1,34 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Web.Security;
 using System.Web.WebPages;
 using FluentValidation.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Tasks;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
-using SmartStore.Web.Framework.Mvc.Bundles;
-using SmartStore.Web.Framework.Mvc.Routes;
+using SmartStore.Web.Framework.Bundling;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Routing;
+using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Validators;
-
 
 namespace SmartStore.Web
 {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
     // visit http://go.microsoft.com/?LinkId=9394801
-
     public class MvcApplication : System.Web.HttpApplication
     {
-
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
@@ -115,7 +116,7 @@ namespace SmartStore.Web
 					HostingEnvironment.RegisterVirtualPathProvider(new PluginDebugViewVirtualPathProvider());
 				}
 
-                // Install filter
+                // "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
                 GlobalFilters.Filters.Add(new InitializeSchedulerFilter());
 			}
 			else
@@ -160,6 +161,19 @@ namespace SmartStore.Web
             return base.GetVaryByCustomString(context, custom);
         }
 
-    }
-
+		public void AnonymousIdentification_Creating(object sender, AnonymousIdentificationEventArgs args)
+		{
+			try
+			{
+				var customerService = EngineContext.Current.Resolve<ICustomerService>();
+				var customer = customerService.FindGuestCustomerByClientIdent(maxAgeSeconds: 180);
+				if (customer != null)
+				{
+					// We found our anonymous visitor: don't let ASP.NET create a new id.
+					args.AnonymousID = customer.CustomerGuid.ToString();
+				}
+			}
+			catch { }
+		}
+	}
 }

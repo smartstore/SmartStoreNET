@@ -94,7 +94,7 @@
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
-            <div>
+            <div class="clearfix" style="margin-bottom: 15px">
                 <button class="btn btn-warning btn-above add-new-combination">
                     <i class="fa fa-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
@@ -154,59 +154,60 @@
 				</script>
 				
 				@(Html.Telerik().Grid<ProductVariantAttributeCombinationModel>()
-                    .Name("attributecombinations-grid")
-                    .DataKeys(keys =>
-                    {
-                        keys.Add(x => x.Id);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-                            .Select("ProductVariantAttributeCombinationList", "Product", new { productId = Model.Id })
-                            .Delete("ProductVariantAttributeCombinationDelete", "Product");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.AttributesXml)
-                            .ClientTemplate("<a href=\"#\" onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\"><#= AttributesXml #></a><br /><span style=\"color: red\"><#= Warnings #></span>")
-                            .Width(460)
-                            .Encoded(false)
-                            .ReadOnly();
-                        columns.Bound(x => x.IsActive)
-                            .Width(80)
-                            .Template(item => @Html.SymbolForBool(item.IsActive))
-                            .ClientTemplate(@Html.SymbolForBool("IsActive"))
-                            .Centered();
-                        columns.Bound(x => x.ProductUrl)
-                            .Width(120)
-                            .Centered()
-                            .ClientTemplate("<a href=\"<#= ProductUrl #>\" target=\"_blank\"><#= ProductUrlTitle #></a>");
-                        columns.Bound(x => x.Sku);
+					.Name("attributecombinations-grid")
+					.DataKeys(keys =>
+					{
+						keys.Add(x => x.Id);
+					})
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.AttributesXml)
+							.ClientTemplate("<a href=\"#\" onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\"><#= AttributesXml #></a><br /><span style=\"color: red\"><#= Warnings #></span>")
+							.Width(460)
+							.Encoded(false)
+							.ReadOnly();
+						columns.Bound(x => x.IsActive)
+							.Width(80)
+							.Template(item => @Html.SymbolForBool(item.IsActive))
+							.ClientTemplate(@Html.SymbolForBool("IsActive"))
+							.Centered();
+						columns.Bound(x => x.ProductUrl)
+							.Width(120)
+							.Centered()
+							.ClientTemplate("<a href=\"<#= ProductUrl #>\" target=\"_blank\"><#= ProductUrlTitle #></a>");
+						columns.Bound(x => x.Sku);
 						columns.Bound(x => x.Price)
 							.Format("{0:0.00}")
 							.RightAlign();
-                        columns.Bound(x => x.StockQuantity)
-                            .Width(160)
-                            .Centered();
-                        columns.Bound(x => x.AllowOutOfStockOrders)
-                            .Width(60)
-                            .HeaderTemplate("<i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i>")
-                            .Template(item => @Html.SymbolForBool(item.AllowOutOfStockOrders))
-                            .ClientTemplate(@Html.SymbolForBool("AllowOutOfStockOrders"))
-                            .Centered();
-                        //columns.Bound(x => x.Id)
-                        //    .Width(90)
-                        //    .Centered()
-                        //    .ClientTemplate("<button onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
-                        //    .Title("");
-                        columns.Command(commands =>
-                        {
-                            commands.Delete().Localize(T);
-                        })
-                        .Width(90);
-                    })
-                    .ClientEvents(events => events.OnRowDataBound("onRowDataBound_Combinations"))
-                    .EnableCustomBinding(true))
+						columns.Bound(x => x.StockQuantity)
+							.Width(160)
+							.Centered();
+						columns.Bound(x => x.AllowOutOfStockOrders)
+							.Width(60)
+							.HeaderTemplate("<i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i>")
+							.Template(item => @Html.SymbolForBool(item.AllowOutOfStockOrders))
+							.ClientTemplate(@Html.SymbolForBool("AllowOutOfStockOrders"))
+							.Centered();
+						//columns.Bound(x => x.Id)
+						//    .Width(90)
+						//    .Centered()
+						//    .ClientTemplate("<button onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
+						//    .Title("");
+						columns.Command(commands =>
+						{
+							commands.Delete().Localize(T);
+						})
+						.Width(90);
+					})
+					.Pageable(settings => settings.PageSize(100).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax()
+							.Select("ProductVariantAttributeCombinationList", "Product", new { productId = Model.Id })
+							.Delete("ProductVariantAttributeCombinationDelete", "Product");
+					})
+					.ClientEvents(events => events.OnRowDataBound("onRowDataBound_Combinations"))
+					.EnableCustomBinding(true))
             </div>
 
             <div>

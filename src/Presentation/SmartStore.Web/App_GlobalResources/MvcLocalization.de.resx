@@ -118,15 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FieldMustBeDate" xml:space="preserve">
-    <value>Das Feld {0} muss ein Datum sein.</value>
+    <value>Das Feld '{0}' muss ein Datum sein.</value>
   </data>
   <data name="FieldMustBeNumeric" xml:space="preserve">
-    <value>Das Feld {0} muss numerisch sein.</value>
+    <value>Das Feld '{0}' muss numerisch sein.</value>
   </data>
   <data name="PropertyValueInvalid" xml:space="preserve">
-    <value>Der Wert '{0}' für {1} ist ungültig.</value>
+    <value>Der Wert '{0}' für '{1}' ist ungültig.</value>
   </data>
   <data name="PropertyValueRequired" xml:space="preserve">
     <value>Ein Wert ist zwingend erforderlich.</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Das Feld '{0}' ist erforderlich.</value>
   </data>
 </root>

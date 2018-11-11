@@ -15,7 +15,6 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Configuration;
 using SmartStore.Utilities;
-using SmartStore.Data;
 
 namespace SmartStore.Services.Media
 {   
@@ -155,17 +154,21 @@ namespace SmartStore.Services.Media
             }
         }
 
-		public byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures, out int equalPictureId)
+		#endregion
+
+		#region Methods
+
+		public byte[] FindEqualPicture(string path, IEnumerable<Picture> pictures, out int equalPictureId)
 		{
-			return FindEqualPicture(File.ReadAllBytes(path), productPictures, out equalPictureId);
+			return FindEqualPicture(File.ReadAllBytes(path), pictures, out equalPictureId);
 		}
 
-		public byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> productPictures, out int equalPictureId)
+		public byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId)
 		{
 			equalPictureId = 0;
 			try
 			{
-				foreach (var picture in productPictures)
+				foreach (var picture in pictures)
 				{
 					var otherPictureBinary = LoadPictureBinary(picture);
 
@@ -188,11 +191,7 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-        #endregion
-
-        #region Methods
-
-        public virtual string GetPictureSeName(string name)
+		public virtual string GetPictureSeName(string name)
         {
             return SeoHelper.GetSeName(name, true, false);
         }
@@ -551,6 +550,16 @@ namespace SmartStore.Services.Media
             var pics = query.ToList();
             return pics;
         }
+
+		public virtual IList<Picture> GetPicturesByIds(int[] pictureIds)
+		{
+			Guard.ArgumentNotNull(() => pictureIds);
+
+			var query = _pictureRepository.Table
+				.Where(x => pictureIds.Contains(x.Id));
+
+			return query.ToList();
+		}
 
         public virtual Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true)
         {

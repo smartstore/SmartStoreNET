@@ -1,4 +1,5 @@
-﻿
+﻿using SmartStore.Core.Domain.Media;
+
 namespace SmartStore.Core.Domain.Messages
 {
 	public enum EmailAttachmentStorageLocation

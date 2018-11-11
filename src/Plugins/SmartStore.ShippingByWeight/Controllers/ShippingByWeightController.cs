@@ -8,6 +8,8 @@ using SmartStore.ShippingByWeight.Domain;
 using SmartStore.ShippingByWeight.Models;
 using SmartStore.ShippingByWeight.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.ShippingByWeight.Controllers
@@ -48,8 +50,10 @@ namespace SmartStore.ShippingByWeight.Controllers
         public ActionResult Configure()
         {
             var shippingMethods = _shippingService.GetAllShippingMethods();
-            if (shippingMethods.Count == 0)
-                return Content("No shipping methods can be loaded");
+			if (shippingMethods.Count == 0)
+			{
+				return Content(T("Admin.Configuration.Shipping.Methods.NoMethodsLoaded"));
+			}
 
             var model = new ShippingByWeightListModel();
 			var countries = _countryService.GetAllCountries(true);

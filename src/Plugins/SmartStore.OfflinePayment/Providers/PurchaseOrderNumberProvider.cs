@@ -39,7 +39,7 @@ namespace SmartStore.OfflinePayment
                 case TransactMode.Authorize:
                     result.NewPaymentStatus = PaymentStatus.Authorized;
                     break;
-                case TransactMode.AuthorizeAndCapture:
+                case TransactMode.Paid:
                     result.NewPaymentStatus = PaymentStatus.Paid;
                     break;
                 default:

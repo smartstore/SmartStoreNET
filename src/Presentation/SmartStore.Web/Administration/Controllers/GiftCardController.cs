@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
@@ -13,6 +14,8 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -30,19 +33,21 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly ICommonServices _services;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public GiftCardController(IGiftCardService giftCardService,
+		public GiftCardController(IGiftCardService giftCardService,
             IPriceFormatter priceFormatter,
 			IWorkflowMessageService workflowMessageService,
             IDateTimeHelper dateTimeHelper,
 			LocalizationSettings localizationSettings,
             ILanguageService languageService,
             ICustomerActivityService customerActivityService,
-			ICommonServices services)
+			ICommonServices services,
+			AdminAreaSettings adminAreaSettings)
         {
             this._giftCardService = giftCardService;
             this._priceFormatter = priceFormatter;
@@ -52,6 +57,7 @@ namespace SmartStore.Admin.Controllers
             this._languageService = languageService;
             this._customerActivityService = customerActivityService;
 			this._services = services;
+			this._adminAreaSettings = adminAreaSettings;
         }
 
         #endregion
@@ -69,50 +75,60 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
-            var model = new GiftCardListModel();
-            model.ActivatedList.Add(new SelectListItem()
-                {
-                    Value = "0",
-                    Selected = true,
-                    Text = _services.Localization.GetResource("Common.All", logIfNotFound: false, defaultValue: "All")
-                });
-            model.ActivatedList.Add(new SelectListItem()
+			var model = new GiftCardListModel
+			{
+				GridPageSize = _adminAreaSettings.GridPageSize
+			};
+
+			model.ActivatedList.Add(new SelectListItem
             {
                 Value = "1",
                 Text = _services.Localization.GetResource("Common.Activated", logIfNotFound: false, defaultValue: "Activated")
             });
-            model.ActivatedList.Add(new SelectListItem()
+
+            model.ActivatedList.Add(new SelectListItem
             {
                 Value = "2",
                 Text = _services.Localization.GetResource("Common.Deactivated", logIfNotFound: false, defaultValue: "Deactivated")
             });
+
             return View(model);
         }
 
         [GridAction(EnableCustomBinding = true)]
         public ActionResult GiftCardList(GridCommand command, GiftCardListModel model)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
-                return AccessDeniedView();
+			var gridModel = new GridModel<GiftCardModel>();
 
-            bool? isGiftCardActivated = null;
-            if (model.ActivatedId == 1)
-                isGiftCardActivated = true;
-            else if (model.ActivatedId == 2)
-                isGiftCardActivated = false;
-            var giftCards = _giftCardService.GetAllGiftCards(null, null, null, isGiftCardActivated, model.CouponCode);
-            var gridModel = new GridModel<GiftCardModel>
-            {
-                Data = giftCards.PagedForCommand(command).Select(x =>
-                {
-                    var m = x.ToModel();
-                    m.RemainingAmountStr = _priceFormatter.FormatPrice(x.GetGiftCardRemainingAmount(), true, false);
-                    m.AmountStr = _priceFormatter.FormatPrice(x.Amount, true, false);
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    return m;
-                }),
-                Total = giftCards.Count()
-            };
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
+			{
+				bool? isGiftCardActivated = null;
+
+				if (model.ActivatedId == 1)
+					isGiftCardActivated = true;
+				else if (model.ActivatedId == 2)
+					isGiftCardActivated = false;
+
+				var giftCards = _giftCardService.GetAllGiftCards(null, null, null, isGiftCardActivated, model.CouponCode);
+
+				gridModel.Data = giftCards.PagedForCommand(command).Select(x =>
+				{
+					var m = x.ToModel();
+					m.RemainingAmountStr = _priceFormatter.FormatPrice(x.GetGiftCardRemainingAmount(), true, false);
+					m.AmountStr = _priceFormatter.FormatPrice(x.Amount, true, false);
+					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+					return m;
+				});
+
+				gridModel.Total = giftCards.Count();
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<GiftCardModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -130,7 +146,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(GiftCardModel model, bool continueEditing)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
@@ -175,7 +191,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(GiftCardModel model, bool continueEditing)
         {
@@ -254,6 +270,8 @@ namespace SmartStore.Admin.Controllers
                 {
                     giftCard.IsRecipientNotified = true;
                     _giftCardService.UpdateGiftCard(giftCard);
+
+					NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
                 }
             }
             catch (Exception exc)
@@ -272,46 +290,48 @@ namespace SmartStore.Admin.Controllers
 
             var giftCard = _giftCardService.GetGiftCardById(id);
             if (giftCard == null)
-                //No gift card found with the specified id
                 return RedirectToAction("List");
 
             _giftCardService.DeleteGiftCard(giftCard);
 
-            //activity log
             _customerActivityService.InsertActivity("DeleteGiftCard", _services.Localization.GetResource("ActivityLog.DeleteGiftCard"), giftCard.GiftCardCouponCode);
 
             NotifySuccess(_services.Localization.GetResource("Admin.GiftCards.Deleted"));
             return RedirectToAction("List");
         }
         
-        //Gif card usage history
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult UsageHistoryList(int giftCardId, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
-                return AccessDeniedView();
+			var model = new GridModel<GiftCardModel.GiftCardUsageHistoryModel>();
 
-            var giftCard = _giftCardService.GetGiftCardById(giftCardId);
-            if (giftCard == null)
-                throw new ArgumentException("No gift card found with the specified id");
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
+			{
+				var giftCard = _giftCardService.GetGiftCardById(giftCardId);
 
-            var usageHistoryModel = giftCard.GiftCardUsageHistory.OrderByDescending(gcuh => gcuh.CreatedOnUtc)
-                .Select(x =>
-                {
-                    return new GiftCardModel.GiftCardUsageHistoryModel()
-                    {
-                        Id = x.Id,
-                        OrderId = x.UsedWithOrderId,
-                        UsedValue = _priceFormatter.FormatPrice(x.UsedValue, true, false),
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
-                    };
-                })
-                .ToList();
-            var model = new GridModel<GiftCardModel.GiftCardUsageHistoryModel>
-            {
-                Data = usageHistoryModel.PagedForCommand(command),
-                Total = usageHistoryModel.Count
-            };
+				var usageHistoryModel = giftCard.GiftCardUsageHistory
+					.OrderByDescending(gcuh => gcuh.CreatedOnUtc)
+					.Select(x =>
+					{
+						return new GiftCardModel.GiftCardUsageHistoryModel()
+						{
+							Id = x.Id,
+							OrderId = x.UsedWithOrderId,
+							UsedValue = _priceFormatter.FormatPrice(x.UsedValue, true, false),
+							CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
+						};
+					})
+					.ToList();
+
+				model.Data = usageHistoryModel.PagedForCommand(command);
+				model.Total = usageHistoryModel.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<GiftCardModel.GiftCardUsageHistoryModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {

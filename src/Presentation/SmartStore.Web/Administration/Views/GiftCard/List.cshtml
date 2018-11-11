@@ -1,9 +1,6 @@
 ﻿@model GiftCardListModel
 @using Telerik.Web.Mvc.UI
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-
-    //page title
     ViewBag.Title = T("Admin.GiftCards").Text;
 }
 @using (Html.BeginForm())
@@ -20,34 +17,36 @@
             </a>
         </div>
     </div>
-    <table width="100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ActivatedId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(model => model.ActivatedId, Model.ActivatedList)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CouponCode)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CouponCode)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ActivatedId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.ActivatedId, Model.ActivatedList, T("Admin.Common.All"))
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CouponCode)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CouponCode)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				&nbsp;
 			</td>
 			<td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-            </td>
-        </tr>
-    </table>
-    <p>
-    </p>
+				<button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+			</td>
+		</tr>
+	</table>
+
+	<p></p>
+
     <table class="adminContent">
         <tr>
             <td>
@@ -75,7 +74,7 @@
                                 .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.Edit").Text))
                                 .Filterable(false);
                         })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("GiftCardList", "GiftCard", Model))
 						.PreserveGridState()
                         .EnableCustomBinding(true))

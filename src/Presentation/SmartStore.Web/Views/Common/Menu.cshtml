@@ -41,14 +41,16 @@
     <li>
         <a href="@Url.RouteUrl("ProductSearch")">@T("Search")</a>
     </li>
-    <li>
-        <a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
-    </li>
-
+	@if (Model.HasContactUsPage)
+	{
+		<li>
+			<a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
+		</li>
+	}
     @Html.Widget("header_menu_after")
 </ul>
 
-@if (Model.NewsEnabled || Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayAdminLink)
+@if (Model.NewsEnabled || Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayLoginLink)
 {
     <ul class="pull-left special">
 		@if (Model.NewsEnabled)
@@ -87,6 +89,15 @@
                 </a>
             </li>
         }
+		else if (Model.DisplayLoginLink)
+		{
+			<li>
+				<a href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
+					<i class="fa fa-sign-in"></i>
+					@T("Account.Login")
+				</a>
+			</li>
+		}
     </ul>
 }
 

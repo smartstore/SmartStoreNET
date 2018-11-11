@@ -60,7 +60,7 @@
 	}
 }
 
-<div class="page product-details-page update-container">
+<div class="page product-details-page update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
     <div class="page-body">
         @Html.Widget("mobile_productdetails_top")
         @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@

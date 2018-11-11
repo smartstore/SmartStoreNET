@@ -12,6 +12,8 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework;
 using Telerik.Web.Mvc;
 using System.Collections.Generic;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -100,18 +102,25 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
-                return AccessDeniedView();
-            
-            var customerRoles = _customerService.GetAllCustomerRoles(true);
-            var gridModel = new GridModel<CustomerRoleModel>
+			var model = new GridModel<CustomerRoleModel>();
+
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
 			{
-                Data = customerRoles.Select(x => x.ToModel()),
-                Total = customerRoles.Count()
-			};
+				var customerRoles = _customerService.GetAllCustomerRoles(true);
+
+				model.Data = customerRoles.Select(x => x.ToModel());
+				model.Total = customerRoles.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<CustomerRoleModel>();
+
+				NotifyAccessDenied();
+			}
+
 			return new JsonResult
 			{
-				Data = gridModel
+				Data = model
 			};
 		}
 
@@ -127,7 +136,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(CustomerRoleModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))
@@ -165,7 +174,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
 		}
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(CustomerRoleModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles))

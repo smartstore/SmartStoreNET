@@ -4,25 +4,96 @@
     <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsarten PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten PayPal Standard, PayPal Direct, PayPal Express und PayPal PLUS zur Verfügung.</Value>
   </LocaleResource>
 
+  <LocaleResource Name="ConfigGroups">
+    <Value>API Zugang;Datenaustausch;Sonstiges</Value>
+  </LocaleResource>
+  <LocaleResource Name="OrderNoteStrings">
+    <Value><![CDATA[Statusmeldung von PayPal:<br />{0}]]></Value>
+  </LocaleResource>
+  <LocaleResource Name="MessageStrings">
+    <Value>Mitteilung;Ereignis;Ereignis-ID;Status;Betrag;Zahlungs-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="Other">
+    <Value>Sonstiges</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayUponInvoiceLegalNote">
+    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ManualBankTransferNote">
+    <Value>Bitte überweisen Sie den fälligen Betrag auf folgendes Konto.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentInstructionStrings">
+    <Value>Referenz;Bankleitzahl;Bank;BIC;IBAN;Kontoinhaber;Kontonummer;Betrag;Zahlung fällig am;Details</Value>
+  </LocaleResource>
+  <LocaleResource Name="FoundOrderForPayment">
+    <Value>Mitteilung wurde ignoriert, da {0} Aufträge mit der Payment-ID {1} gefunden wurden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CurrencyNotEqual">
+    <Value>Währung {0} entspricht nicht der Leitwährung des Shops {1}.</Value>
+  </LocaleResource>
+  <LocaleResource Name="NoApprovalUrlReturned">
+    <Value>Keine Weiterleitungs-URL von PayPal erhalten.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ClientId">
+    <Value>Client-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientId.Hint">
+    <Value>Legt die API Client-ID fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret">
+    <Value>Secret</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret.Hint">
+    <Value>Legt die API Secret fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ValidateClientIdAndSecret">
+    <Value>Bitte geben Sie Ihre API Zugangsdaten ein.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience Profil-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId.Hint">
+    <Value>Legt die Experience Profil-ID fest. Das Profil beinhaltet globale Daten wie z.B. Shop-Name und -Logo. Ein Profil braucht nur einmalig angelegt werden. Über den Button können Sie ein neues Profil erstellen oder ein vorhandenes aktualisieren.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience Profil-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookId">
+    <Value>Webhook-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookId.Hint">
+    <Value>Legt die Webhook-ID fest. Über einen Webhook sendet PayPal Statusänderungen von Zahlungen an Ihren Shop, wodurch der Zahlungsstatus Ihrer Aufträge automatisch aktualisert werden kann.</Value>
+  </LocaleResource>
+  
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>
-      <LocaleResource Name="ConfigSaveNote">
-        <Value>Ihre Einstellungen wurden erfolgreich gespeichert.</Value>
-      </LocaleResource>
       <LocaleResource Name="UseSandbox">
         <Value>Sandbox benutzen</Value>
       </LocaleResource>
       <LocaleResource Name="UseSandbox.Hint">
         <Value>Aktiviert die Nutzung der PayPal Sandbox (Testumgebung).</Value>
       </LocaleResource>
+      <LocaleResource Name="IpnChangesPaymentStatus">
+        <Value>Zahlungsstatus über IPN ändern</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnChangesPaymentStatus.Hint">
+        <Value>Legt fest, ob durch eingehende IPNs der Zahlunsgstatus eines Auftrags angepasst werden soll.</Value>
+      </LocaleResource>
       <LocaleResource Name="TransactMode">
         <Value>Transaktionsmodus</Value>
       </LocaleResource>
       <LocaleResource Name="TransactMode.Hint">
         <Value>Bestimmen Sie den Transaktionsmodus.</Value>
+      </LocaleResource>
+      <LocaleResource Name="SecurityProtocol">
+        <Value>Sicherheitsprotokoll</Value>
+      </LocaleResource>
+      <LocaleResource Name="SecurityProtocol.Hint">
+        <Value>Legt das mit der PayPal-API zu verwendende Sicherheitsprotokoll fest.</Value>
       </LocaleResource>
       <LocaleResource Name="ApiAccountName">
         <Value>API Benutzername</Value>
@@ -54,11 +125,34 @@
       <LocaleResource Name="AdditionalFeePercentage.Hint">
         <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
       </LocaleResource>
+      <LocaleResource Name="NoModuleLoading">
+        <Value>Das Zahlungsmodul Modul konnte nicht geladen werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnLogInfo">
+        <Value>PayPal IPN. Wiederkehrende Zahlung.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnOrderNotFound">
+        <Value>PayPal IPN. Bestellung konnte nicht gefunden werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnFailed">
+        <Value>PayPal IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="PartialRefundMemo">
+        <Value>Teilerstattung von {0}</Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentMethodFee">
+        <Value>Zahlartgebühren</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThreadrockDiscount">
+        <Value>Rabatt</Value>
+      </LocaleResource>
+      <LocaleResource Name="GiftcardApplied">
+        <Value>Angewendeter Geschenkgutschein</Value>
+      </LocaleResource>
     </Children>
   </LocaleResource>
-  
-  
-	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
+
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
 		<Value>PayPal Express</Value>
 	</LocaleResource>
   <LocaleResource Name="Plugins.Payments.PayPalExpress" AppendRootKey="false">
@@ -78,29 +172,14 @@
             <ol>
             <li>In Ihr Premier- oder Business-Konto einloggen.</li>
             <li>Auf den Register <b>Mein Profil</b> klicken.</li>
+            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
             <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
             <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/PayPalExpress/IPNHandler</b>) eingeben.</li>
+            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
             <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
             </ol>]]>
 		    </Value>
-	    </LocaleResource>
-  
-	    <LocaleResource Name="NoModuleLoading">
-		    <Value>PayPal-Express-Modul konnte nicht geladen werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="NewPaymentStatus">
-		    <Value>Neuer Zahlungsstatus</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnLogInfo">
-		    <Value>PayPal Express IPN. Wiederkehrende Information.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnOrderNotFound">
-		    <Value>PayPal Express IPN. Bestellung konnte nicht gefunden werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnFailed">
-		    <Value>PayPal Express IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
-	    </LocaleResource>
+	    </LocaleResource>  
 	    <LocaleResource Name="RecurringPayment">
 		    <Value>Wiederkehrende Zahlung</Value>
 	    </LocaleResource>
@@ -113,28 +192,26 @@
 	    <LocaleResource Name="ModeAuth">
 		    <Value>Autorisierung sofort, Abbuchung später</Value>
 	    </LocaleResource>
-
       <LocaleResource Name="SelectionText">
         <Value>oder</Value>
       </LocaleResource>
-
-      <LocaleResource Name="Fields.DisplayCheckoutButton">
-        <Value>Checkout-Button auf der Warenkorbseite aktivieren</Value>
+      <LocaleResource Name="Fields.ShowButtonInMiniShoppingCart">
+        <Value>Button im Miniwarenkorb anzeigen</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.DisplayCheckoutButton.Hint">
-        <Value>Aktiviert den Checkout-Button auf der Warenkorbseite.</Value>
+      <LocaleResource Name="Fields.ShowButtonInMiniShoppingCart.Hint">
+        <Value>Legt fest, ob der Checkout-Button im Miniwarenkorb angezeigt werden soll.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.ConfirmedShipment">
-        <Value>Bestätigte Emailadresse</Value>
+        <Value>Bestätigte E-Mail-Adresse</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.ConfirmedShipment.Hint">
-        <Value>Wählen Sie ob sich bei der verwendetet Emailadresse, um eine von PayPal bestätigte Emailadresse handeln muss.</Value>
+        <Value>Legt fest, ob es sich bei der verwendeten E-Mail-Adresse, um eine von PayPal bestätigte Adresse handeln muss.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.NoShipmentAddress">
         <Value>Anzeige der Lieferadresse unterdrücken</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.NoShipmentAddress.Hint">
-        <Value>Bestimmen Sie ob auf der PayPal Seite die Lieferadresse angezeigt werden soll.</Value>
+        <Value>Legt fest, ob auf der PayPal Seite die Lieferadresse angezeigt werden soll.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.CallbackTimeout">
         <Value>Zeitlimit für API-Callback</Value>
@@ -155,7 +232,6 @@
   <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalDirect" AppendRootKey="false">
 		<Value>PayPal Direct</Value>
 	</LocaleResource>
-
   <LocaleResource Name="Plugins.Payments.PayPalDirect" AppendRootKey="false">
     <Children>  
       <LocaleResource Name="AdminInstruction">
@@ -173,27 +249,13 @@
           <ol>
           <li>In Ihr Premier- oder Business-Konto einloggen.</li>
           <li>Auf den Register <b>Mein Profil</b> klicken.</li>
+          <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
           <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
           <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/PaymentPayPalDirect/IPNHandler</b>) eingeben.</li>
+          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
           <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
           </ol>]]>
 		    </Value>
-	    </LocaleResource>
-	    <LocaleResource Name="NoModuleLoading">
-		    <Value>PayPal-Direct-Modul konnte nicht geladen werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="NewPaymentStatus">
-		    <Value>Neuer Zahlungsstatus</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnLogInfo">
-		    <Value>PayPal Direct IPN. Wiederkehrende Information.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnOrderNotFound">
-		    <Value>PayPal Direct IPN. Bestellung konnte nicht gefunden werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnFailed">
-		    <Value>PayPal Direct IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="RecurringPayment">
 		    <Value>Wiederkehrende Zahlung</Value>
@@ -213,12 +275,11 @@
   <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalStandard" AppendRootKey="false">
     <Value>PayPal Standard</Value>
   </LocaleResource>
-
   <LocaleResource Name="Plugins.Payments.PayPalStandard" AppendRootKey="false">
     <Children>
       <LocaleResource Name="AdminInstruction">
         <Value>
-          <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt, falls Sie dieses Gateway benutzen!</p>
+          <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt, falls Sie dieses Gateway benutzen.</p>
           <p>Sie müssen PDT (Payment Data Transfer) und die automatische Rückleitung in Ihrem PayPal-Profil aktivieren, um PDT nutzen zu können.
           Ferner benötigen Sie einen PDT-Identitäts-Token, der für jede PDT-Kommunikation mit PayPal erforderlich ist.
           Folgen Sie den Schritten, um Ihr Konto für PDT zu konfigurieren:</p>
@@ -227,7 +288,7 @@
           <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
           <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
           <li>Aktivieren Sie <b>Automatische Rückleitung</b>.</li>
-          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/PDTHandler</b>).</li>
+          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
           <li>Aktivieren Sie <b>Übertragung der Zahlungsdaten</b>.</li>
           <li>Klicken Sie auf <b>Speichern</b>.</li>
           <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
@@ -241,9 +302,10 @@
 	          <ol>
 	          <li>In Ihr Premier- oder Business-Konto einloggen.</li>
 	          <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-	          <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
+            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+	          <li>Zurück zu <b>Mein Profil</b> und auf <b>Sofortige Zahlungsbestätigung</b> klicken.</li>
 	          <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/IPNHandler</b>) eingeben.</li>
+	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>
 	          <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
 	          </ol>
           </li>
@@ -271,23 +333,17 @@
       <LocaleResource Name="Fields.PDTValidateOrderTotal.Hint">
         <Value>Aktivieren Sie diese Option, falls der durch PayPal übermittelte Gesamtbetrag überprüft werden soll.</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFee">
-        <Value>Zusätzliche Gebühren</Value>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn">
+        <Value>Nur warnen</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFee.Hint">
-        <Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFeePercentage">
-        <Value>Zusätzliche Gebühren (prozentual)</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
-        <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn.Hint">
+        <Value>Legt fest, ob im Falle einer Nichtübereinstimmung des Gesamtbetrags lediglich eine Auftragsnotiz angelegt werden soll. Ansonsten wird ein Fehler erzeugt und der Zahlungsstatus wird nicht aktualisiert.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals">
-        <Value>Produktbezeichnung und Gesamtbetrag an PayPal übermitteln</Value>
+        <Value>Produktbezeichnungen und Einzelpreise übermitteln</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals.Hint">
-        <Value>Aktivieren Sie diese Option, falls die Produktbezeichnung und der Gesamtbetrag an PayPal übermitteln werden sollen.</Value>
+        <Value>Aktivieren Sie diese Option, falls Produktbezeichnungen und Einzelpreise an PayPal übermittelt werden sollen.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn">
         <Value>IPN aktivieren</Value>
@@ -304,29 +360,14 @@
       <LocaleResource Name="Fields.IpnUrl.Hint">
         <Value>URL zum IPN-Handler festlegen.</Value>
       </LocaleResource>
-      <LocaleResource Name="NoModuleLoading">
-        <Value>PayPal Standard Modul konnte nicht geladen werden.</Value>
-      </LocaleResource>
       <LocaleResource Name="FailedGetGross">
         <Value>PayPal Standard PDT. Fehler beim Abruf von mc_gross.</Value>
       </LocaleResource>
       <LocaleResource Name="UnequalTotalOrder">
-        <Value>PayPal Standard PDT. Der übermittelte Gesamtbetrag {0} entspricht nicht dem des Shops {1}.</Value>
+        <Value>PayPal Standard PDT. Der übermittelte Gesamtbetrag {0} entspricht nicht dem des Shops {1} (ungerundet {2}). Die Differenz beträgt {3}.</Value>
       </LocaleResource>
       <LocaleResource Name="PdtFailed">
         <Value>PayPal Standard PDT ist fehlgeschlagen.</Value>
-      </LocaleResource>
-      <LocaleResource Name="NewPaymentStatus">
-        <Value>Neuer Zahlungsstatus</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnLogInfo">
-        <Value>PayPal Standard IPN. Wiederkehrende Information.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnOrderNotFound">
-        <Value>PayPal Standard IPN. Bestellung konnte nicht gefunden werden.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnFailed">
-        <Value>PayPal Standard IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
       </LocaleResource>
       <LocaleResource Name="InvalidCredentials">
         <Value>Unvollständige Zugangsdaten für die PayPal API. Bitte geben Sie die erforderlichen Zugangsdaten im Konfigurationsbereich ein.</Value>
@@ -334,28 +375,79 @@
       <LocaleResource Name="ShippingFee">
         <Value>Versandgebühren</Value>
       </LocaleResource>
-      <LocaleResource Name="PaymentMethodFee">
-        <Value>Zahlungsgebühren</Value>
-      </LocaleResource>
       <LocaleResource Name="SalesTax">
         <Value>Umsatzsteuer</Value>
       </LocaleResource>
       <LocaleResource Name="PaymentNote">
         <Value>
           <![CDATA[PayPal PDT:
-          Total: {0}
-          Währung: {1}
-          Zahlenderstatus: {2}
-          Zahlungsstatus: {3}
-          Ausstehend (Grund): {4}
-          Transaktions-ID: {5}
-          Zahlungstyp: {6}
-          Zahlender-ID: {7}
-          Empfänger-ID: {8}
-          Rechnung: {9}
-          Zahlungsgebühr: {10}]]>
+Total: {0}
+Währung: {1}
+Zahlenderstatus: {2}
+Zahlungsstatus: {3}
+Ausstehend (Grund): {4}
+Transaktions-ID: {5}
+Zahlungstyp: {6}
+Zahlender-ID: {7}
+Empfänger-ID: {8}
+Rechnung: {9}
+Zahlungsgebühr: {10}]]>
         </Value>
       </LocaleResource>
     </Children>
-  </LocaleResource>  
+  </LocaleResource>
+
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalPlus" AppendRootKey="false">
+    <Value>PayPal PLUS</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.PayPalPlus" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[<p>PayPal PLUS bietet die Möglichkeit per PayPal, Kreditkarte, Lastschriftverfahren und per Rechnung zu bezahlen.
+Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS unterstützt nur den Transaktionstyp der sofortigen Buchung und ist derzeit nur in Deutschland verfügbar.</p>
+<p>PayPal PLUS ersetzt die Zahlartenliste im Kassenbereich durch die PayPal Payment Wall. Sie können der Payment Wall jedoch bis zu 5 weitere Offline- bzw. Weiterleitungszahlarten hinzufügen.</p>
+<p>So richten Sie PayPal PLUS ein:
+<ol>
+<li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a> eine neue REST API Anwendung an.
+Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
+<li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b>Client-ID</b> und <b>Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
+<li>Optional: Klicken Sie unten bei <b>Experience Profil-ID</b> auf <b>Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
+<li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
+</ol></p>]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="MethodUnavailable">
+        <Value>Wir können Ihnen leider keine PayPal PLUS Zahlungsart anbieten. Bitte versuchen Sie er später erneut.</Value>
+      </LocaleResource>
+      <LocaleResource Name="SorryFailure">
+        <Value>Entschuldigung, das hat gerade nicht funktioniert. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.</Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentFeeMessage">
+        <Value><![CDATA[Die Zahlungsgebühr beträgt <span id="PayPalPlusFeeAmount"></span>.]]></Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods">
+        <Value>Weitere Zahlarten</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods.Hint">
+        <Value>Sie können bis zu 5 weitere Zahlarten festlegen. Diese werden zusammen mit den PayPal PLUS Zahlarten im Kassenbereich angeboten.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ValidateThirdPartyPaymentMethods">
+        <Value>Es können maximal 5 weitere Zahlarten festgelegt werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo">
+        <Value>Logo der Zahlarten anzeigen</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo.Hint">
+        <Value>Legt fest, ob für die weiteren Zahlarten deren Logo angezeigt werden soll. SSL erforderlich.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription">
+        <Value>Beschreibung der Zahlarten anzeigen</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription.Hint">
+        <Value>Legt fest, ob für die weiteren Zahlarten deren Beschreibung angezeigt werden soll.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
 </Language>

@@ -21,8 +21,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -203,7 +205,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
@@ -303,8 +305,7 @@ namespace SmartStore.Admin.Controllers
 				storeId,
 				manifest.ThemeName);
 
-			HttpWebRequest request = WebRequest.CreateHttp(url);
-			request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+			var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(url));
 			WebResponse response = null;
 
 			try
@@ -539,7 +540,7 @@ namespace SmartStore.Admin.Controllers
 				_services.StoreContext.SetPreviewStore(storeId);
 			}
 
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl);
 		}
 
 		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Exit")]
@@ -554,12 +555,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var returnUrl = (string)TempData["PreviewModeReturnUrl"];
-			if (returnUrl.IsEmpty())
-			{
-				returnUrl = Url.Action("Index", "Home", new { area = (string)null });
-			}
-
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl);
 		}
 
 		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Apply")]

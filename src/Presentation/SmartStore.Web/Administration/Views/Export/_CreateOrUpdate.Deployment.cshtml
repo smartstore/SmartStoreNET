@@ -1,0 +1,203 @@
+﻿@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Services.DataExchange.Export
+@using SmartStore.Admin.Models.DataExchange
+@model ExportDeploymentModel
+
+@Html.ValidationSummary(false)
+
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.ProfileId)
+
+@if (!Model.CreateZip)
+{
+	<div id="ZipUsageNote" class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(T("Admin.DataExchange.Export.Deployment.ZipUsageNote"))
+	</div>
+}
+
+<table id="DeploymentTable" class="adminContent">
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.DeploymentType)
+		</td>
+		<td class="adminData">
+			<select name="@Html.FieldNameFor(x => x.DeploymentType)" id="@Html.FieldIdFor(x => x.DeploymentType)">
+				@foreach (var item in Model.AvailableDeploymentTypes)
+				{
+					var type = (ExportDeploymentType)item.Value.ToInt();
+					<option value="@item.Value" data-icon="@(type.GetIconClass())" @Html.Attr("selected", "selected", Model.DeploymentType == type)>@item.Text</option>
+				}
+			</select>
+			@Html.ValidationMessageFor(x => x.DeploymentType)
+		</td>
+	</tr>
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Name)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Name)
+			@Html.ValidationMessageFor(x => x.Name)
+		</td>
+	</tr>
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Enabled)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Enabled)
+			@Html.ValidationMessageFor(x => x.Enabled)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.FileSystem)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.FileSystemPath)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.FileSystemPath)
+			@Html.ValidationMessageFor(x => x.FileSystemPath)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.PublicFolder)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.SubFolder)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.SubFolder)
+			@Html.ValidationMessageFor(x => x.SubFolder)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Email)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EmailAccountId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts)
+			@Html.ValidationMessageFor(x => x.EmailAccountId)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Email)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EmailAddresses)
+		</td>
+		<td class="adminData">
+			@Html.HiddenFor(x => x.EmailAddresses)
+			@Html.ValidationMessageFor(x => x.EmailAddresses)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Email)">
+		<td class=" adminTitle">
+			@Html.SmartLabelFor(x => x.EmailSubject)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.EmailSubject)
+			@Html.ValidationMessageFor(x => x.EmailSubject)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Http) deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Url)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Url)
+			@Html.ValidationMessageFor(x => x.Url)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Http)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.HttpTransmissionType)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.HttpTransmissionType, Model.AvailableHttpTransmissionTypes)
+			@Html.ValidationMessageFor(x => x.HttpTransmissionType)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Http) deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Username)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.Username, new { autocomplete = "off", @class = "text-box single-line" })
+			@Html.ValidationMessageFor(x => x.Username)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Http) deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Password)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.Password, new { autocomplete = "off", type = "password", @class = "text-box single-line password" })
+			@Html.ValidationMessageFor(x => x.Password)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.PassiveMode)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.PassiveMode)
+			@Html.ValidationMessageFor(x => x.PassiveMode)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.UseSsl)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.UseSsl)
+			@Html.ValidationMessageFor(x => x.UseSsl)
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({
+			tags: [@(Html.Raw(Model.SerializedEmailAddresses))]
+		});
+
+		$('#@(Html.FieldIdFor(x => x.DeploymentType))').select2({
+			minimumResultsForSearch: 16,
+			formatResult: selectDeploymentType,
+			formatSelection: selectDeploymentType
+		}).change(function () {
+			var table = $('#DeploymentTable'),
+				val = $(this).val();
+
+			table.find('tr:not(.deployment-all)').hide();
+			table.find('.deployment-' + val).show();
+
+			$('#ZipUsageNote').toggle(val === '@((int)ExportDeploymentType.Email)' || val === '@((int)ExportDeploymentType.Http)' || val === '@((int)ExportDeploymentType.Ftp)');
+		}).trigger('change');
+
+
+		function selectDeploymentType(item) {
+			try {
+				if (item.id.length > 0) {
+					var option = $(item.element),
+						html = '<div>';
+
+					if (option.length === 0) {
+						option = $('select[name="@(Html.FieldNameFor(x => x.DeploymentType))"]').find('option[value="' + item.id + '"]');
+					}
+
+					html += '<i class="fa ' + option.attr('data-icon') + '"></i> ';
+					html += item.text;
+
+					html += '</div>';
+					return html;
+				}
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+
+	});
+</script>

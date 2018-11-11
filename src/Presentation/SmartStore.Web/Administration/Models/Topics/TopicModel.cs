@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
@@ -7,11 +6,11 @@ using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Topics
 {
-    [Validator(typeof(TopicValidator))]
+	[Validator(typeof(TopicValidator))]
     public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>
     {
         #region widget zone names
@@ -47,9 +46,9 @@ namespace SmartStore.Admin.Models.Topics
             AvailableTitleTags.Add(new SelectListItem { Text = "span", Value = "span" });
         }
 
-        //Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
+
 		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }

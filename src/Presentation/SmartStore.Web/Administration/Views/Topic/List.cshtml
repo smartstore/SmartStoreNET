@@ -1,7 +1,6 @@
 ﻿@model TopicListModel
 @using Telerik.Web.Mvc.UI
 @{    
-    //page title
     ViewBag.Title = T("Admin.ContentManagement.Topics").Text;
 }
 <div class="section-header">
@@ -16,68 +15,69 @@
 		</a>
     </div>
 </div>
-<table width="100%">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.SearchStoreId)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("SearchStoreId", Model.AvailableStores)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-			&nbsp;
-		</td>
-		<td class="adminData">
-			<button type="button" id="search-topics" class="btn">
-				<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-			</button>
-        </td>
-    </tr>
-</table>
-<p>
-</p>
+
+@if (Model.AvailableStores.Count > 1)
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<button type="button" id="search-topics" class="btn">
+					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+				</button>
+			</td>
+		</tr>
+	</table>
+}
+
+<p></p>
+
 <table class="adminContent">
     <tr>
         <td>
             @(Html.Telerik().Grid<TopicModel>()
-                    .Name("topics-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.SystemName)
-                            .Width(200)
-                            .Template(x => Html.ActionLink(x.SystemName, "Edit", new { id = x.Id }))
+					.Name("topics-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.SystemName)
+							.Width(280)
+							.Template(x => Html.ActionLink(x.SystemName, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href='Edit/<#= Id #>'><#= SystemName #></a>");
 						columns.Bound(x => x.Title);
-                        columns.Bound(x => x.IsPasswordProtected)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.IsPasswordProtected))
-                            .ClientTemplate(@Html.SymbolForBool("IsPasswordProtected"))
-                            .Centered();
-                        columns.Bound(x => x.IncludeInSitemap)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.IncludeInSitemap))
-                            .ClientTemplate(@Html.SymbolForBool("IncludeInSitemap"))
-                            .Centered();
-                        columns.Bound(x => x.RenderAsWidget)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.RenderAsWidget))
-                            .ClientTemplate(@Html.SymbolForBool("RenderAsWidget"))
-                            .Centered();
-                        columns.Bound(x => x.WidgetZone);
-                        columns.Bound(x => x.Priority)
+						columns.Bound(x => x.IsPasswordProtected)
+							.Template(item => @Html.SymbolForBool(item.IsPasswordProtected))
+							.ClientTemplate(@Html.SymbolForBool("IsPasswordProtected"))
 							.Centered();
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Topic"))
+						columns.Bound(x => x.IncludeInSitemap)
+							.Template(item => @Html.SymbolForBool(item.IncludeInSitemap))
+							.ClientTemplate(@Html.SymbolForBool("IncludeInSitemap"))
+							.Centered();
+						columns.Bound(x => x.RenderAsWidget)
+							.Template(item => @Html.SymbolForBool(item.RenderAsWidget))
+							.ClientTemplate(@Html.SymbolForBool("RenderAsWidget"))
+							.Centered();
+						columns.Bound(x => x.WidgetZone);
+						columns.Bound(x => x.LimitedToStores)
+							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Hidden(Model.AvailableStores.Count <= 1)
+							.Centered();
+						columns.Bound(x => x.Priority)
+							.Centered();
+					})
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Topic"))
 					.ClientEvents(events => events.OnDataBinding("onDataBinding"))
-                    .EnableCustomBinding(true))
+					.EnableCustomBinding(true))
         </td>
     </tr>
 </table>

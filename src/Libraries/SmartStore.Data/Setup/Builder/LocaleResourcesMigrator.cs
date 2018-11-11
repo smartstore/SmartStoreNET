@@ -35,7 +35,7 @@ namespace SmartStore.Data.Setup
 
 			using (var scope = new DbContextScope(_ctx, autoDetectChanges: false))
 			{
-				var langMap = _languages.ToDictionary(x => x.UniqueSeoCode.EmptyNull().ToLower());
+				var langMap = _languages.ToDictionarySafe(x => x.UniqueSeoCode.EmptyNull().ToLower());
 
 				var toDelete = new List<LocaleStringResource>();
 				var toUpdate = new List<LocaleStringResource>();

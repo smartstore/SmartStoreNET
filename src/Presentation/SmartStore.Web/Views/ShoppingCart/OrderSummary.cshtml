@@ -21,11 +21,14 @@
 		@if (Model.ShowProductImages)
 		{
 			<td class="productpicture nobr">
-				<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" style="max-width:@(Model.MediaDimensions)px;max-height:@(Model.MediaDimensions)px"/>
+				@if (item.Picture.ImageUrl.HasValue())
+				{
+					<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" style="max-width:@(Model.MediaDimensions)px;max-height:@(Model.MediaDimensions)px"/>
+				}
 			</td>
 		}
 		<td class="product">
-			<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
 			@if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
 			{
@@ -41,15 +44,12 @@
                 </div>
             }
 
-			@if (Model.DisplayDeliveryTime)
+			@if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
 			{
 				<div class="delivery-time">
-					@if ((!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)) && item.IsShipEnabled)
-					{
-						<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
-						<span class="delivery-time-color" style="background-color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName"></span>
-						<span class="delivery-time-value">@item.DeliveryTimeName</span>
-					}
+					<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+					<span class="delivery-time-color" style="background-color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName"></span>
+					<span class="delivery-time-value">@item.DeliveryTimeName</span>
 				</div>
 			}
 
@@ -63,6 +63,28 @@
 			{
 				<div class="recurring-info">
 					@Html.Raw(item.RecurringInfo)
+				</div>
+			}
+			@if (!Model.IsEditable && item.IsDownload && item.HasUserAgreement)
+			{
+				<div class="download-agreement">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" />
+							@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
+						</label>
+					</div>
+				</div>
+			}
+			@if (!Model.IsEditable && Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
+			{
+				<div class="esd-revocation-waiver">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" />
+							@T("Checkout.EsdRevocationWaiverConfirmation")
+						</label>
+					</div>
 				</div>
 			}
 			@if (item.Warnings.Count > 0)
@@ -79,7 +101,7 @@
         @if (Model.DisplayWeight)
 		{
         <td class="weight nobr">
-            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) kg</span>
+            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) @Model.MeasureUnitName</span>
         </td>
         }
 		<td class="unit-price nobr">
@@ -123,8 +145,7 @@
 @helper BundleProducts(ShoppingCartModel.ShoppingCartItemModel parentItem)
 {
 	if (parentItem.ChildItems != null)
-	{	
-        
+	{   
         <tr class="product-bundle-row">
             <td colspan="2">&nbsp;</td>
             <td colspan="5" class="bundle-headline">
@@ -151,8 +172,8 @@
 					<div class="bundle-item">
 						@if (Model.ShowProductBundleImages)
 						{
-							<div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatWith(Model.BundleThumbSize + 10))">
-								@if (!item.BundleItem.HideThumbnail)
+							<div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatInvariant(Model.BundleThumbSize + 10))">
+								@if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 								{
 									<img class="img-polaroid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
 								}
@@ -162,7 +183,7 @@
 							<div class="bundle-item-name">
 								@if (item.VisibleIndividually)
 								{
-									<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 								}
 								else
 								{
@@ -205,6 +226,14 @@
 						</div>
 					</div>
 				</td>
+
+                @if (Model.DisplayWeight)
+                {
+                    <td class="weight nobr">
+                        <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) @Model.MeasureUnitName</span>
+                    </td>
+                }
+
 				<td class="unit-price nobr">
 					@if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
 					{
@@ -236,6 +265,35 @@
     {
         @Html.Partial("_CommentBox", Model)
     }
+
+	@if (!Model.IsEditable && (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None || Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None))
+	{
+		<div class="block block-bordered newsletter-subscription">
+			<div class="block-title">
+				@T("Common.Options")
+			</div>
+			<div class="block-body">
+				@if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+				{
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="SubscribeToNewsLetter" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+							@T("Checkout.SubscribeToNewsLetter")
+						</label>
+					</div>
+				}
+				@if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+				{
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="AcceptThirdPartyEmailHandOver" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+							@Model.ThirdPartyEmailHandOverLabel
+						</label>
+					</div>
+				}
+			</div>
+		</div>
+	}
 
     @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
     {
@@ -410,3 +468,33 @@
 		</div>
 	}
 </div>
+
+@if (!Model.IsEditable && Model.Items.Any(x => x.IsDownload && x.HasUserAgreement))
+{
+	<div id="user-agreement-modal" class="modal modal-large hide fade" tabindex="-1">
+		<div class="modal-header">
+			<h4 class="caption">@T("DownloadableProducts.UserAgreement")</h4>
+		</div>
+		<div class="modal-body"></div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal">@T("Common.OK")</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('a.download-user-agreement').click(function () {
+				var url = '@(Url.Action("GetUserAgreement", "Download"))?productId=' + $(this).attr('data-id'),
+					dialog = $('#user-agreement-modal');
+
+				dialog.find('.modal-body').empty();
+
+				$.get(url, function (html) {
+					dialog.find('.modal-body').html(html);
+				});
+
+				dialog.modal('show');
+				return false;
+			});
+		});
+	</script>
+}

@@ -7,11 +7,11 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace SmartStore
 {
-
     public static class StringExtensions
     {
         public const string CarriageReturnLineFeed = "\r\n";
@@ -112,37 +112,37 @@ namespace SmartStore
             return (string.IsNullOrEmpty(value)) ? null : value;
         }
 
-        /// <summary>
-        /// Formats a string to an invariant culture
-        /// </summary>
-        /// <param name="formatString">The format string.</param>
-        /// <param name="objects">The objects.</param>
-        /// <returns></returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Formats a string to an invariant culture
+		/// </summary>
+		/// <param name="format">The format string.</param>
+		/// <param name="objects">The objects.</param>
+		/// <returns></returns>
+		[DebuggerStepThrough]
         public static string FormatInvariant(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.InvariantCulture, format, objects);
         }
 
-        /// <summary>
-        /// Formats a string to the current culture.
-        /// </summary>
-        /// <param name="formatString">The format string.</param>
-        /// <param name="objects">The objects.</param>
-        /// <returns></returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Formats a string to the current culture.
+		/// </summary>
+		/// <param name="format">The format string.</param>
+		/// <param name="objects">The objects.</param>
+		/// <returns></returns>
+		[DebuggerStepThrough]
         public static string FormatCurrent(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.CurrentCulture, format, objects);
         }
 
-        /// <summary>
-        /// Formats a string to the current UI culture.
-        /// </summary>
-        /// <param name="formatString">The format string.</param>
-        /// <param name="objects">The objects.</param>
-        /// <returns></returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Formats a string to the current UI culture.
+		/// </summary>
+		/// <param name="format">The format string.</param>
+		/// <param name="objects">The objects.</param>
+		/// <returns></returns>
+		[DebuggerStepThrough]
         public static string FormatCurrentUI(this string format, params object[] objects)
         {
             return string.Format(CultureInfo.CurrentUICulture, format, objects);
@@ -160,29 +160,29 @@ namespace SmartStore
             return string.Format(provider, format, args);
         }
 
-        /// <summary>
-        /// Determines whether this instance and another specified System.String object have the same value.
-        /// </summary>
-        /// <param name="instance">The string to check equality.</param>
-        /// <param name="comparing">The comparing with string.</param>
-        /// <returns>
-        /// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
-        /// </returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Determines whether this instance and another specified System.String object have the same value.
+		/// </summary>
+		/// <param name="value">The string to check equality.</param>
+		/// <param name="comparing">The comparing with string.</param>
+		/// <returns>
+		/// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
+		/// </returns>
+		[DebuggerStepThrough]
         public static bool IsCaseSensitiveEqual(this string value, string comparing)
         {
             return string.CompareOrdinal(value, comparing) == 0;
         }
 
-        /// <summary>
-        /// Determines whether this instance and another specified System.String object have the same value.
-        /// </summary>
-        /// <param name="instance">The string to check equality.</param>
-        /// <param name="comparing">The comparing with string.</param>
-        /// <returns>
-        /// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
-        /// </returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Determines whether this instance and another specified System.String object have the same value.
+		/// </summary>
+		/// <param name="value">The string to check equality.</param>
+		/// <param name="comparing">The comparing with string.</param>
+		/// <returns>
+		/// <c>true</c> if the value of the comparing parameter is the same as this string; otherwise, <c>false</c>.
+		/// </returns>
+		[DebuggerStepThrough]
         public static bool IsCaseInsensitiveEqual(this string value, string comparing)
         {
             return string.Compare(value, comparing, StringComparison.OrdinalIgnoreCase) == 0;
@@ -197,14 +197,14 @@ namespace SmartStore
 			return string.IsNullOrWhiteSpace(value);
         }
 
-        /// <summary>
-        /// Determines whether the string is all white space. Empty string will return false.
-        /// </summary>
-        /// <param name="s">The string to test whether it is all white space.</param>
-        /// <returns>
-        /// 	<c>true</c> if the string is all white space; otherwise, <c>false</c>.
-        /// </returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Determines whether the string is all white space. Empty string will return false.
+		/// </summary>
+		/// <param name="value">The string to test whether it is all white space.</param>
+		/// <returns>
+		/// 	<c>true</c> if the string is all white space; otherwise, <c>false</c>.
+		/// </returns>
+		[DebuggerStepThrough]
         public static bool IsWhiteSpace(this string value)
         {
             Guard.ArgumentNotNull(value, "value");
@@ -340,26 +340,6 @@ namespace SmartStore
             }
         }
 
-        /// <summary>
-        /// Determines whether the string contains white space.
-        /// </summary>
-        /// <param name="s">The string to test for white space.</param>
-        /// <returns>
-        /// 	<c>true</c> if the string contains white space; otherwise, <c>false</c>.
-        /// </returns>
-        [DebuggerStepThrough]
-        public static bool ContainsWhiteSpace(this string value)
-        {
-            Guard.ArgumentNotNull(value, "value");
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (char.IsWhiteSpace(value[i]))
-                    return true;
-            }
-            return false;
-        }
-
 		/// <summary>
 		/// Ensure that a string starts with a string.
 		/// </summary>
@@ -375,13 +355,13 @@ namespace SmartStore
 			return value.StartsWith(startsWith) ? value : (startsWith + value);
 		}
 
-        /// <summary>
-        /// Ensures the target string ends with the specified string.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>The target string with the value string at the end.</returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Ensures the target string ends with the specified string.
+		/// </summary>
+		/// <param name="endWith">The target.</param>
+		/// <param name="value">The value.</param>
+		/// <returns>The target string with the value string at the end.</returns>
+		[DebuggerStepThrough]
         public static string EnsureEndsWith(this string value, string endWith)
         {
             Guard.ArgumentNotNull(value, "value");
@@ -399,15 +379,6 @@ namespace SmartStore
             }
 
             return value + endWith;
-        }
-
-        [DebuggerStepThrough]
-        public static int? GetLength(this string value)
-        {
-            if (value == null)
-                return null;
-            else
-                return value.Length;
         }
 
         [DebuggerStepThrough]
@@ -477,13 +448,13 @@ namespace SmartStore
             });
         }
 
-        /// <summary>
-        /// Replaces pascal casing with spaces. For example "CustomerId" would become "Customer Id".
-        /// Strings that already contain spaces are ignored.
-        /// </summary>
-        /// <param name="input">String to split</param>
-        /// <returns>The string after being split</returns>
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Replaces pascal casing with spaces. For example "CustomerId" would become "Customer Id".
+		/// Strings that already contain spaces are ignored.
+		/// </summary>
+		/// <param name="value">String to split</param>
+		/// <returns>The string after being split</returns>
+		[DebuggerStepThrough]
         public static string SplitPascalCase(this string value)
         {
             //return Regex.Replace(input, "([A-Z][a-z])", " $1", RegexOptions.Compiled).Trim();
@@ -518,110 +489,22 @@ namespace SmartStore
 		/// <summary>Splits a string into two strings</summary>
 		/// <returns>true: success, false: failure</returns>
         [DebuggerStepThrough]
-		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter) {
+        [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
+		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter)
+		{
 			int idx = -1;
-			if (value.IsEmpty() || delimiter.IsEmpty() || (idx = value.IndexOf(delimiter)) == -1)
+			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter) || (idx = value.IndexOf(delimiter)) == -1)
 			{
 				strLeft = value;
 				strRight = "";
 				return false;
 			}
+
 			strLeft = value.Substring(0, idx);
 			strRight = value.Substring(idx + delimiter.Length);
+
 			return true;
 		}
-
-        [DebuggerStepThrough]
-        public static string ToCamelCase(this string instance)
-        {
-            char ch = instance[0];
-            return (ch.ToString().ToLowerInvariant() + instance.Substring(1));
-        }
-
-        [DebuggerStepThrough]
-        public static string ReplaceNewLines(this string value, string replacement)
-        {
-            StringReader sr = new StringReader(value);
-            StringBuilder sb = new StringBuilder();
-
-            bool first = true;
-
-            string line;
-            while ((line = sr.ReadLine()) != null)
-            {
-                if (first)
-                    first = false;
-                else
-                    sb.Append(replacement);
-
-                sb.Append(line);
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Indents the specified string.
-        /// </summary>
-        /// <param name="s">The string to indent.</param>
-        /// <param name="indentation">The number of characters to indent by.</param>
-        /// <returns></returns>
-        [DebuggerStepThrough]
-        public static string Indent(this string value, int indentation)
-        {
-            return Indent(value, indentation, ' ');
-        }
-
-        /// <summary>
-        /// Indents the specified string.
-        /// </summary>
-        /// <param name="s">The string to indent.</param>
-        /// <param name="indentation">The number of characters to indent by.</param>
-        /// <param name="indentChar">The indent character.</param>
-        /// <returns></returns>
-        [DebuggerStepThrough]
-        public static string Indent(this string value, int indentation, char indentChar)
-        {
-            Guard.ArgumentNotNull(value, "value");
-            Guard.ArgumentIsPositive(indentation, "indentation");
-
-            StringReader sr = new StringReader(value);
-            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-
-            ActionTextReaderLine(sr, sw, delegate(TextWriter tw, string line)
-            {
-                tw.Write(new string(indentChar, indentation));
-                tw.Write(line);
-            });
-
-            return sw.ToString();
-        }
-
-        /// <summary>
-        /// Numbers the lines.
-        /// </summary>
-        /// <param name="s">The string to number.</param>
-        /// <returns></returns>
-        public static string NumberLines(this string value)
-        {
-            Guard.ArgumentNotNull(value, "value");
-
-            StringReader sr = new StringReader(value);
-            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-
-            int lineNumber = 1;
-
-            ActionTextReaderLine(sr, sw, delegate(TextWriter tw, string line)
-            {
-                tw.Write(lineNumber.ToString(CultureInfo.InvariantCulture).PadLeft(4));
-                tw.Write(". ");
-                tw.Write(line);
-
-                lineNumber++;
-            });
-
-            return sw.ToString();
-        }
 
         [DebuggerStepThrough]
         public static string EncodeJsString(this string value)
@@ -632,7 +515,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string EncodeJsString(this string value, char delimiter, bool appendDelimiters)
         {
-            StringBuilder sb = new StringBuilder(value.GetLength() ?? 16);
+            StringBuilder sb = new StringBuilder(value != null ? value.Length : 16);
             using (StringWriter w = new StringWriter(sb, CultureInfo.InvariantCulture))
             {
                 EncodeJsString(w, value, delimiter, appendDelimiters);
@@ -720,9 +603,12 @@ namespace SmartStore
 			Debug.WriteLine(value);
 			Debug.WriteLineIf(appendMarks, "------------------------------------------------");
 		}
-		
-		/// <summary>Smart way to create a HTML attribute with a leading space.</summary>
-		/// <param name="name">Name of the attribute.</param>
+
+	    /// <summary>Smart way to create a HTML attribute with a leading space.</summary>
+	    /// <param name="value">Name of the attribute.</param>
+	    /// <param name="name"></param>
+	    /// <param name="htmlEncode"></param>
+	    [SuppressMessage("ReSharper", "StringCompareIsCultureSpecific.3")]
 		public static string ToAttribute(this string value, string name, bool htmlEncode = true) 
         {
 			if (name.IsEmpty())
@@ -778,7 +664,31 @@ namespace SmartStore
 			return value;
 		}
 
-        [DebuggerStepThrough]
+		[DebuggerStepThrough]
+		public static string Replace(this string value, string oldValue, string newValue, StringComparison comparisonType)
+		{
+			try
+			{
+				int startIndex = 0;
+				while (true)
+				{
+					startIndex = value.IndexOf(oldValue, startIndex, comparisonType);
+					if (startIndex == -1)
+						break;
+
+					value = value.Substring(0, startIndex) + newValue + value.Substring(startIndex + oldValue.Length);
+
+					startIndex += newValue.Length;
+				}
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+			}
+			return value;
+		}
+
+		[DebuggerStepThrough]
 		public static string TrimSafe(this string value) 
         {
 			return (value.HasValue() ? value.Trim() : value);
@@ -963,14 +873,15 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string ReplaceCsvChars(this string s)
 		{
-			if (s.HasValue())
+			if (s.IsEmpty())
 			{
-				s = s.Replace(';', ',');
-				s = s.Replace('\r', ' ');
-				s = s.Replace('\n', ' ');
-				return s.Replace("'", "");
+				return "";
 			}
-			return "";
+
+			s = s.Replace(';', ',');
+			s = s.Replace('\r', ' ');
+			s = s.Replace('\n', ' ');
+			return s.Replace("'", "");
 		}
 
 		#endregion
@@ -1038,22 +949,6 @@ namespace SmartStore
             // trailing delimiter
             if (appendDelimiters)
                 writer.Write(delimiter);
-        }
-
-
-        private static void ActionTextReaderLine(TextReader textReader, TextWriter textWriter, ActionLine lineAction)
-        {
-            string line;
-            bool firstLine = true;
-            while ((line = textReader.ReadLine()) != null)
-            {
-                if (!firstLine)
-                    textWriter.WriteLine();
-                else
-                    firstLine = false;
-
-                lineAction(textWriter, line);
-            }
         }
 
         #endregion

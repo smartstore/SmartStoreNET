@@ -9,12 +9,15 @@
         @T("Admin.Catalog.Categories.Manage") @Html.ActionLink("(" + T("Admin.Catalog.Categories.SwitchToTreeView") + ")", "Tree")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a> <a href="@Url.Action("ExportXml")" class="btn">
-			<i class="fa fa-arrow-circle-o-down"></i> @T("Admin.Common.ExportToXml")
-		</a>
+		@Html.Widget("admin_button_toolbar_before")
+
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+
+		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
-<table>
+
+<table class="adminContent">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.SearchCategoryName)
@@ -31,14 +34,17 @@
             @Html.EditorFor(model => Model.SearchAlias)
         </td>
     </tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.SearchStoreId)
-		</td>
-		<td class="adminData">
-			@Html.DropDownList("SearchStoreId", Model.AvailableStores)
-		</td>
-	</tr>
+	@if (Model.AvailableStores.Count > 1)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+			</td>
+		</tr>
+	}
     <tr>
 		<td class="adminTitle">
 			&nbsp;
@@ -48,63 +54,125 @@
         </td>
     </tr>
 </table>
+
 <p></p>
+
 <table class="adminContent">
     <tr>
         <td>
             @(Html.Telerik().Grid<CategoryModel>()
-                    .Name("categories-grid")
-                    .ClientEvents(events => events
-                        .OnDataBinding("onDataBinding"))
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Breadcrumb)
+					.Name("categories-grid")
+					.ClientEvents(events => events
+						.OnDataBinding("onDataBinding")
+						.OnDataBound("onDataBound"))
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
+						columns.Bound(x => x.Breadcrumb)
 							.Title(T("Admin.Catalog.Products.Categories.Fields.Category").Text)
-                            .Template(x => Html.ActionLink(x.Breadcrumb, "Edit", new { id = x.Id }))
+							.Template(x => Html.ActionLink(x.Breadcrumb, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Breadcrumb #></a>");
 						columns.Bound(x => x.FullName);
 						columns.Bound(x => x.Alias);
-                        columns.Bound(x => x.Published)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                        columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
-                            .Centered();
-                    })
-                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Category"))
+						columns.Bound(x => x.Published)
+							.Width(160)
+							.Template(item => @Html.SymbolForBool(item.Published))
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered();
+						columns.Bound(x => x.DisplayOrder)
+							.Width(160)
+							.Centered();
+						columns.Bound(x => x.LimitedToStores)
+							.Width(160)
+							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Hidden(Model.AvailableStores.Count <= 1)
+							.Centered();
+					})
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Category"))
 					.PreserveGridState()
-                    .EnableCustomBinding(true))
+					.EnableCustomBinding(true))
         </td>
     </tr>
 </table>
+
 <script type="text/javascript">
-    $(document).ready(function () {
-        //search button
-        $('#btnSearch').click(function () {
-            //search
-            var grid = $('#categories-grid').data('tGrid');
-            grid.currentPage = 1; //new search. Set page size to 1
-            grid.ajaxRequest();
-            return false;
-        });
+	@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
+	var selectedIds = [];
 
-        $("#@Html.FieldIdFor(model => model.SearchCategoryName), #@Html.FieldIdFor(model => model.SearchAlias)").keydown(function (event) {
-            if (event.keyCode == 13) {
-                $("#btnSearch").click();
-                return false;
-            }
-        });
-    });
+	$(document).ready(function () {
+		//search button
+		$('#btnSearch').click(function () {
+			//search
+			var grid = $('#categories-grid').data('tGrid');
+			grid.currentPage = 1; //new search. Set page size to 1
+			grid.ajaxRequest();
+			$('.checkboxGroups').attr('checked', false).change();
+			selectedIds = [];
+			return false;
+		});
 
-    function onDataBinding(e) {
-        var searchModel = {
-        	SearchCategoryName: $('#@Html.FieldIdFor(model => model.SearchCategoryName)').val(),
-        	SearchAlias: $('#@Html.FieldIdFor(model => model.SearchAlias)').val(),
-        	SearchStoreId: $('#SearchStoreId').val()
-        };
-        e.data = searchModel;
-    }
+		$("#@Html.FieldIdFor(model => model.SearchCategoryName), #@Html.FieldIdFor(model => model.SearchAlias)").keydown(function (event) {
+			if (event.keyCode == 13) {
+				$("#btnSearch").click();
+				return false;
+			}
+		});
+
+		$('#mastercheckbox').click(function () {
+			$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+		});
+
+		//wire up checkboxes.
+		$(document).on('change', '#categories-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+			var $check = $(this);
+			if ($check.is(":checked") == true) {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked == -1) {
+					selectedIds.push($check.val());
+				}
+			}
+			else {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked > -1) {
+					selectedIds = $.grep(selectedIds, function (item, index) {
+						return item != $check.val();
+					});
+				}
+			}
+			updateMasterCheckbox();
+		});
+	});
+
+	function onDataBinding(e) {
+		var searchModel = {
+			SearchCategoryName: $('#@Html.FieldIdFor(model => model.SearchCategoryName)').val(),
+			SearchAlias: $('#@Html.FieldIdFor(model => model.SearchAlias)').val(),
+			SearchStoreId: $('#SearchStoreId').val()
+		};
+		e.data = searchModel;
+	}
+
+	function onDataBound(e) {
+		$('#categories-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+			var currentId = $(this).val();
+			var checked = jQuery.inArray(currentId, selectedIds);
+			$(this).attr('checked', checked > -1);
+		});
+
+		updateMasterCheckbox();
+	}
+
+	function updateMasterCheckbox() {
+		var numChkBoxes = $('#categories-grid input[type=checkbox][id!=mastercheckbox]').length;
+		var numChkBoxesChecked = $('#categories-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+		$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+	}
+
 </script>

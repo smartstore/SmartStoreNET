@@ -14,8 +14,25 @@
 	//generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
 })
-@helper TabInfo() {
-        
+@helper TabInfo()
+{
+	if (Model.Id != 0)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Id)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.Id)
+					@Html.ValidationMessageFor(model => model.Id)
+				</td>
+			</tr>
+		</table>
+
+		<p></p>
+	}
+
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-info-localized",
 				@<table class="adminContent">
                     <tr>
@@ -36,7 +53,7 @@
 				 			@Html.ValidationMessageFor(model => model.Locales[item].FullName)
 						</td>
 					</tr>
-                    <tr>
+                    <tr class="description-container">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Locales[item].Description)
                         </td>
@@ -45,13 +62,23 @@
                             @Html.ValidationMessageFor(model => model.Locales[item].Description)
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="description-container hide">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Locales[item].BottomDescription)
                         </td>
                         <td class="adminData">
                             @Html.EditorFor(model => model.Locales[item].BottomDescription, Html.RichEditorFlavor())
                             @Html.ValidationMessageFor(model => model.Locales[item].BottomDescription)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adminTitle">
+							&nbsp;
+                        </td>
+                        <td class="adminData">
+							<button type="button" class="btn description-toggle-button">
+								<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
+							</button>
                         </td>
                     </tr>
                     <tr>
@@ -80,7 +107,7 @@
                             @Html.ValidationMessageFor(model => model.FullName)
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="description-container">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Description)
                         </td>
@@ -89,7 +116,7 @@
                             @Html.ValidationMessageFor(model => model.Description)
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="description-container hide">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.BottomDescription)
                         </td>
@@ -98,8 +125,19 @@
                             @Html.ValidationMessageFor(model => model.BottomDescription)
                         </td>
                     </tr>
+					<tr>
+						<td class="adminTitle">
+							&nbsp;
+						</td>
+						<td class="adminData">
+							<button type="button" class="btn description-toggle-button">
+								<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
+							</button>
+						</td>
+					</tr>
                 </table>
-			))
+	))
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -214,7 +252,9 @@
 		}
     </table>
 }
-@helper TabSeo() {
+
+@helper TabSeo()
+{
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-seo-localized",
 			   @<table class="adminContent">
                    <tr>
@@ -294,6 +334,10 @@
                        </td>
                        <td class="adminData">
                            @Html.TextAreaFor(x => x.SeName, new { @class = "input-large" })
+							@if (Model.Id != 0)
+							{
+								@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Category", entityId = @Model.Id })
+							}
                            @Html.ValidationMessageFor(model => model.SeName)
                        </td>
                    </tr>
@@ -328,18 +372,22 @@
         </tr>
     </table>
 }
-@helper TabProducts() {
-		if (Model.Id > 0) {
-			var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-            <table class="adminContent">
-                <tr>
-                    <td>
-            @(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
-				.Name("products-grid")
-					.DataKeys(keys => {
+
+@helper TabProducts()
+{
+	if (Model.Id > 0)
+	{
+        <table class="adminContent">
+            <tr>
+                <td>
+				@(Html.Telerik().Grid<CategoryModel.CategoryProductModel>()
+					.Name("products-grid")
+					.DataKeys(keys =>
+					{
 						keys.Add(x => x.Id);
 					})
-					.DataBinding(dataBinding => {
+					.DataBinding(dataBinding =>
+					{
 						dataBinding.Ajax()
 							.Select("ProductList", "Category", new { categoryId = Model.Id })
 							.Update("ProductUpdate", "Category")
@@ -348,102 +396,74 @@
 					.Columns(columns =>
 					{
 						columns.Bound(x => x.ProductName)
-                            .ReadOnly()
-							.Template(x => @Html.LabeledProductName(x.Id, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ReadOnly()
+							.Width(520)
 							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
 						columns.Bound(x => x.Sku)
 							.ReadOnly();
 						columns.Bound(x => x.Published)
 							.ReadOnly()
-							.Width(100)
-							.Template(item => @Html.SymbolForBool(item.Published))
 							.ClientTemplate(@Html.SymbolForBool("Published"))
 							.Centered();
 						columns.Bound(x => x.IsFeaturedProduct)
-							.Width(100)
-							.Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
 							.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
 							.Centered();
 						columns.Bound(x => x.DisplayOrder1)
-							.Width(100)
 							.Centered();
 						columns.Command(commands =>
 						{
 							commands.Edit().Localize(T);
 							commands.Delete().Localize(T);
 						})
-						.Width(180);
+						.Width(220);
 					})
-					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 					.PreserveGridState()
 					.EnableCustomBinding(true))
-                    </td>
-                </tr>
-                <tr>
-                    <td width="100%">
-						<button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" class="btn" style="margin-top:3px;"
-								onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Category", new { categoryId = Model.Id, btnId = "btnRefreshProducts", formId = "category-form" }))', 1000, 700, true); return false;">
-							<i class="fa fa-plus"></i>
-							@T("Admin.Catalog.Categories.Products.AddNew")
-						</button>
-                        <input type="submit" id="btnRefreshProducts" name="btnRefreshProducts" style="display: none" />
-                        <script type="text/javascript">
-                            $(document).ready(function () {
-                                $('#btnRefreshProducts').click(function () {
-                                    //refresh grid
-                                    var optionsGrid = $("#products-grid");
-                                    optionsGrid.data('tGrid').ajaxRequest();
-
-                                    //return false to don't reload a page
-                                    return false;
-                                });
-                            });
-                        </script>
-                    </td>
-                </tr>
-            </table>
-		}
-		else {
-            @T("Admin.Catalog.Categories.Products.SaveBeforeEdit")
-		}
+                </td>
+            </tr>
+            <tr>
+                <td>
+					<button type="button" id="AddNewProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
+						<i class="fa fa-plus"></i>
+						@T("Admin.Catalog.Categories.Products.AddNew")
+					</button>
+                </td>
+            </tr>
+        </table>
+	}
+	else
+	{
+        @T("Admin.Catalog.Categories.Products.SaveBeforeEdit")
+	}
 }
 
-@helper TabDiscounts() {
-	if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Count > 0) {
-		foreach (var discount in Model.AvailableDiscounts) {
+@helper TabDiscounts()
+{
+	if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Count > 0)
+	{
+		foreach (var discount in Model.AvailableDiscounts)
+		{
             <label class="checkbox">
                 <input type="checkbox" name="SelectedDiscountIds" value="@discount.Id"
-                @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) {
+                @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id))
+				{
                     <text>checked="checked"</text>
 				}
                 />@discount.Name
             </label>	
 		}
 	}
-	else {
-        @T("Admin.Catalog.Categories.Discounts.NoDiscounts")
+	else
+	{
+		<div class="alert alert-info">
+			@T("Admin.Catalog.Categories.Discounts.NoDiscounts")
+		</div>
 	}
 }
 
-@helper TabAcl() {
-    
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#@Html.FieldIdFor(model => model.SubjectToAcl)").click(toggleAcl);
-            toggleAcl();
-        });
-
-
-        function toggleAcl() {
-            if ($('#@Html.FieldIdFor(model => model.SubjectToAcl)').is(':checked')) {
-                $('.pnl-acl').show();
-            }
-            else {
-                $('.pnl-acl').hide();
-            }
-        }
-
-    </script>
+@helper TabAcl()
+{    
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -459,13 +479,15 @@
                 @Html.SmartLabelFor(model => model.AvailableCustomerRoles)
             </td>
             <td class="adminData">
-                @if (Model.AvailableCustomerRoles != null && Model.AvailableCustomerRoles.Count > 0) {
-					foreach (var customerRole in Model.AvailableCustomerRoles) {
-                    <div>
-                        <label class="checkbox">
-                            <input type="checkbox" name="SelectedCustomerRoleIds" value="@customerRole.Id" checked="@(Model.SelectedCustomerRoleIds != null && Model.SelectedCustomerRoleIds.Contains(customerRole.Id))" />@customerRole.Name
-                        </label>
-                    </div>
+                @if (Model.AvailableCustomerRoles != null && Model.AvailableCustomerRoles.Count > 0)
+				{
+					foreach (var customerRole in Model.AvailableCustomerRoles)
+					{
+						<div>
+							<label class="checkbox">
+								<input type="checkbox" name="SelectedCustomerRoleIds" value="@customerRole.Id" checked="@(Model.SelectedCustomerRoleIds != null && Model.SelectedCustomerRoleIds.Contains(customerRole.Id))" />@customerRole.Name
+							</label>
+						</div>
                     }
                 }
                 else
@@ -476,13 +498,12 @@
                 }
             </td>
         </tr>
-        <tr class="pnl"><td colspan="2"><hr /></td></tr>
-        <tr class="pnl">
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <div class="alert alert-danger"  >
+        <tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+        <tr>
+            <td colspan="2">
+                <div class="alert alert-danger">
                     @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
                 </div>
                 <a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
@@ -496,25 +517,6 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-    	$(document).ready(function () {
-
-    		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-        
-        	toggleStoreMapping();
-        });
-
-
-        function toggleStoreMapping() {
-        	if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-        		$('.pnl-available-stores').show();
-        	}
-        	else {
-        		$('.pnl-available-stores').hide();
-        	}
-        }
-
-    </script>
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -534,10 +536,10 @@
                 {
                     foreach (var store in Model.AvailableStores)
                     {
-					<label class="checkbox">
-						<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
-						<span>@store.Name</span>
-					</label>
+						<label class="checkbox">
+							<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
+							<span>@store.Name</span>
+						</label>
                     }
                 }
                 else
@@ -546,13 +548,11 @@
                 }
             </td>
         </tr>
-
-        <tr class="pnl"><td colspan="2"><hr /></td></tr>
-        <tr class="pnl">
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
+        <tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+        <tr>
+            <td colspan="2">
                 <div class="alert alert-danger">
                     @T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint")
                 </div>
@@ -566,18 +566,54 @@
 }
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").click(togglePageSize);
-        togglePageSize();
-    });
+	$(document).ready(function () {
 
-    function togglePageSize() {
-        if ($('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').is(':checked')) {
-            $('#pnlPageSize').hide();
-            $('#pnlPageSizeOptions').show();
-        } else {
-            $('#pnlPageSize').show();
-            $('#pnlPageSizeOptions').hide();
-        }
-    }
+		// toggle page size
+		$("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(function () {
+			var customerSelectPageSize = $('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').is(':checked');
+			$('#pnlPageSize').toggle(!customerSelectPageSize);
+			$('#pnlPageSizeOptions').toggle(customerSelectPageSize);
+		}).trigger('change');
+
+		// toggle acl customer roles
+		$("#@Html.FieldIdFor(model => model.SubjectToAcl)").change(function() {
+			$('.pnl-acl').toggle($('#@Html.FieldIdFor(model => model.SubjectToAcl)').is(':checked'));
+		}).trigger('change');
+
+		// toggle limited to stores
+		$("#@Html.FieldIdFor(model => model.LimitedToStores)").change(function () {
+			$('.pnl-available-stores').toggle($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked'));
+		}).trigger('change');
+
+		// toggle top\bottom description
+		$('button.description-toggle-button').click(function() {
+			$('table').find('.description-container').toggle();
+		});
+
+		// add new product
+		$(document).on('click', '#AddNewProductButton', function () {
+			$({}).entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Admin.Catalog.Categories.Products.AddNew")',
+				onLoadDialogBefore: function () {
+					$('#AddNewProductButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#AddNewProductButton').prop('disabled', false).button('reset');
+				},
+				onOkClicked: function (ids) {
+					$({}).doAjax({
+						type: 'POST',
+						url: '@Url.Action("ProductAdd")',
+						data: { "categoryId": @Model.Id, "selectedProductIds": ids },
+						callbackSuccess: function () {
+							$('#products-grid').data('tGrid').ajaxRequest();
+						}
+					});
+					return true;
+				}
+			});
+		});
+
+	});
 </script>

@@ -3,7 +3,6 @@
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.ReturnItems").Text);
 }
 <div class="page return-request-page">
@@ -31,7 +30,7 @@
                     <li>
                         <div class="products-box">
                             <div class="product">
-                                <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+								<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
                                 @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                 {
                                     <div class="attributes">

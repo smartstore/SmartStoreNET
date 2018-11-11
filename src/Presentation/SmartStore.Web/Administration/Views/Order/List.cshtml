@@ -1,12 +1,10 @@
 ﻿@model OrderListModel
-           
 @using Telerik.Web.Mvc.UI
-
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    var hideProfitReport = false;
-    
-    ViewBag.Title = T("Admin.Orders").Text;
+	var hideProfitReport = false;
+	var allString = T("Admin.Common.All").Text;
+
+	ViewBag.Title = T("Admin.Orders").Text;
 }
 
 @using (Html.BeginForm())
@@ -17,88 +15,64 @@
             @T("Admin.Orders")
         </div>
         <div class="options">
-			<div class="btn-group pull-right">
+			@Html.Widget("admin_button_toolbar_before")
+
+			<div class="btn-group">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					@T("Common.Export")
+					@T("Admin.Common.Export.PDF")
 					<span class="fa fa-caret-down"></span>
 				</a>
-				<ul class="dropdown-menu">
-					@Html.Widget("admin_menu_exportorders_top")
+				<ul class="dropdown-menu pull-right">
 					<li>
-						<a href="@Url.Action("ExportXmlAll")">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.All")
+						<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = false })">
+							<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
 						</a>
 					</li>
 					<li>
-						<a href="@Url.Action("ExportExcelAll")">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.All")
+						<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = true })">
+							<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
 						</a>
 					</li>
-					<li>
-						<a href="@Url.Action("ExportPdf", new { all = true })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>
-							@T("Admin.Common.ExportToPdf.All")
-						</a>
-					</li>
-					<li class="divider"></li>
-					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected", "Order")">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.Selected")
-						</a>
-					</li>				
-					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected", "Order")">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.Selected")
-						</a>
-					</li>					
-					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", "Order", new { all = false })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>
-							@T("Admin.Common.ExportToPdf.Selected")
-						</a>
-					</li>
-					@Html.Widget("admin_menu_exportorders_bottom")
 				</ul>
 			</div>
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-    <table style="width: 100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StartDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.CustomerName)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerEmail)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.CustomerEmail)
-            </td>
-        </tr>
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StartDate)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.StartDate)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.EndDate)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.EndDate)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.CustomerName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerEmail)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.CustomerEmail)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.OrderStatusIds)
@@ -107,69 +81,72 @@
 				@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple" })
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PaymentStatusIds)
-            </td>
-            <td class="adminData">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PaymentStatusIds)
+			</td>
+			<td class="adminData">
 				@Html.DropDownList("PaymentStatusIds", Model.AvailablePaymentStatuses, null, new { multiple = "multiple" })
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShippingStatusIds)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("ShippingStatusIds", Model.AvailableShippingStatuses, null, new { multiple = "multiple" })
-            </td>
-        </tr>
-       <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StoreId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("StoreId", Model.AvailableStores)
-            </td>
-        </tr>
+			</td>
+		</tr>
 		<tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.OrderGuid)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.OrderGuid)
-            </td>
-        </tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShippingStatusIds)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("ShippingStatusIds", Model.AvailableShippingStatuses, null, new { multiple = "multiple" })
+			</td>
+		</tr>
+		@if (Model.AvailableStores.Count > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.StoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, allString)
+				</td>
+			</tr>
+		}
 		<tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.OrderNumber)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.OrderNumber)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.GoDirectlyToNumber)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.GoDirectlyToNumber)
-                <button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderGuid)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.OrderGuid)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderNumber)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.OrderNumber)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.GoDirectlyToNumber)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.GoDirectlyToNumber)
+				<button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
 					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn">
-                    <i class="fa fa-search"></i>
-                    @T("Admin.Common.Search")
-                </button>
-            </td>
-        </tr>
-    </table>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<button type="submit" id="btnSearch" class="btn">
+					<i class="fa fa-search"></i>
+					@T("Admin.Common.Search")
+				</button>
+			</td>
+		</tr>
+	</table>
 
 	<p></p>
 
@@ -177,29 +154,31 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<OrderModel>()
-                        .Name("orders-grid")
-                        .ClientEvents(events => events
-                            .OnDataBinding("onDataBinding")
-                            .OnDataBound("onDataBound")
-                            .OnComplete("onComplete"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.Id)
-                                .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                                .Title("<input id='mastercheckbox' type='checkbox'/>")
-                                .Width(50)
-                                .HtmlAttributes(new { style = "text-align:center" })
-                                .HeaderHtmlAttributes(new { style = "text-align:center" });
+						.Name("orders-grid")
+						.ClientEvents(events => events
+							.OnDataBinding("onDataBinding")
+							.OnDataBound("onDataBound")
+							.OnComplete("onComplete"))
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.Id)
+								.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+								.Title("<input id='mastercheckbox' type='checkbox'/>")
+								.Width(50)
+								.HtmlAttributes(new { style = "text-align:center" })
+								.HeaderHtmlAttributes(new { style = "text-align:center" });
 
-                            columns.Bound(x => x.OrderNumber)
+							columns.Bound(x => x.OrderNumber)
 								.ClientTemplate(@Html.LabeledOrderNumber());
-                            columns.Bound(x => x.OrderStatus);
-                            columns.Bound(x => x.PaymentStatus);
-                            columns.Bound(x => x.ShippingStatus);
-                            columns.Bound(x => x.CustomerEmail);
-							columns.Bound(x => x.StoreName);
-                            columns.Bound(x => x.CreatedOn);
-                            columns.Bound(x => x.OrderTotal)
+							columns.Bound(x => x.OrderStatus);
+							columns.Bound(x => x.PaymentStatus);
+							columns.Bound(x => x.ShippingStatus);
+							columns.Bound(x => x.CustomerName);
+							columns.Bound(x => x.CustomerEmail);
+							columns.Bound(x => x.StoreName)
+								.Hidden(Model.AvailableStores.Count <= 1);
+							columns.Bound(x => x.CreatedOn);
+							columns.Bound(x => x.OrderTotal)
 								.Width(180)
 								.RightAlign()
 								.FooterTemplate(
@@ -211,139 +190,135 @@
 									(hideProfitReport ? "" : @T("Admin.Orders.Report.Profit").Text),
 									@T("Admin.Orders.Report.Tax").Text,
 									@T("Admin.Orders.Report.Total").Text));
-                            columns.Bound(x => x.Id)
-                                .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", new { id = x.Id }))
-                                .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .Title(T("Admin.Common.View").Text);
-                        })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
+						})
+						.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+						.DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
 						.PreserveGridState()
-                        .EnableCustomBinding(true))
+						.EnableCustomBinding(true))
             </td>
         </tr>
     </table>
     
     <script type="text/javascript">
+		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
+		var selectedIds = [];
+		var reportAggregates = "";
 
-        var selectedIds = [];
-        var reportAggregates = "";
+		$(document).ready(function () {
 
-        $(document).ready(function () {
+			//search button
+			$('#btnSearch').click(function () {
+				//search
+				var grid = $('#orders-grid').data('tGrid');
+				grid.currentPage = 1; //new search. Set page size to 1
+				grid.ajaxRequest();
+				//clear selected checkboxes
+				$('.checkboxGroups').attr('checked', false).change();
+				selectedIds = [];
+				return false;
+			});
 
-            //search button
-            $('#btnSearch').click(function () {
-                //search
-                var grid = $('#orders-grid').data('tGrid');
-                grid.currentPage = 1; //new search. Set page size to 1
-                grid.ajaxRequest();
-                //clear selected checkboxes
-                $('.checkboxGroups').attr('checked', false).change();
-                selectedIds = [];
-                return false;
-            });
+			// export products to pdf
+			$('a.pdf-export-button').click(function (e) {
+				e.preventDefault();
 
-			// export selected to pdf, xml, xls...
-        	$('a.export-form-post').click(function (e) {
-        		e.preventDefault();
-        		var form = $('#OrderExportForm');
-        		form.find('[name=selectedIds]').val(selectedIds.join(','));
-        		form.attr('action', $(this).attr('data-url'));
-        		form.submit();
-        		return false;
-        	});
-            
-            $('#mastercheckbox').click(function () {
-                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
-            });
+				if (confirm('@T("Admin.Common.AskToProceed")')) {
+					var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
+					form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+					form += '</form>';
 
-            //wire up checkboxes. 
-            $(document).on('change', '#orders-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
-                var $check = $(this);
-                if ($check.is(":checked") == true) {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked == -1) {
-                        //add id to selectedIds.  
-                        selectedIds.push($check.val());
-                    }
-                }
-                else {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked > -1) {
-                        //remove id from selectedIds.  
-                        selectedIds = $.grep(selectedIds, function (item, index) {
-                            return item != $check.val();
-                        });
-                    }
-                }
-                updateMasterCheckbox();
-            });
-        });
+					$('body').append(form);
+					$('#PdfExportForm').submit();
+				}
 
-        function onDataBinding(e) {
-            var searchModel = {
+				return false;
+			});
+
+			$('#mastercheckbox').click(function () {
+				$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+			});
+
+			//wire up checkboxes.
+			$(document).on('change', '#orders-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+				var $check = $(this);
+				if ($check.is(":checked") == true) {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked == -1) {
+						//add id to selectedIds.
+						selectedIds.push($check.val());
+					}
+				}
+				else {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked > -1) {
+						//remove id from selectedIds.
+						selectedIds = $.grep(selectedIds, function (item, index) {
+							return item != $check.val();
+						});
+					}
+				}
+				updateMasterCheckbox();
+			});
+		});
+
+		function onDataBinding(e) {
+			var searchModel = {
 				StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
 				EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
 				CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
-            	CustomerName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
-            	OrderStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.OrderStatusIds)').val()).join(),
-            	PaymentStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentStatusIds)').val()).join(),
-            	ShippingStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.ShippingStatusIds)').val()).join(),
+				CustomerName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
+				OrderStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.OrderStatusIds)').val()).join(),
+				PaymentStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentStatusIds)').val()).join(),
+				ShippingStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.ShippingStatusIds)').val()).join(),
 				StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
 				OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val(),
 				OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val()
-            };
-            e.data = searchModel;
-        }
-    
-        function onDataBound(e) {
+			};
+			e.data = searchModel;
+		}
 
-            $('#orders-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-                var currentId = $(this).val();
-                var checked = jQuery.inArray(currentId, selectedIds);
-                //set checked based on if current checkbox's value is in selectedIds.  
-                $(this).attr('checked', checked > -1);
-            });
+		function onDataBound(e) {
 
-            updateMasterCheckbox();
+			$('#orders-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+				var currentId = $(this).val();
+				var checked = jQuery.inArray(currentId, selectedIds);
+				//set checked based on if current checkbox's value is in selectedIds.
+				$(this).attr('checked', checked > -1);
+			});
 
-            reportLoaded(e);
-        }
+			updateMasterCheckbox();
 
-        function onComplete(e) {
-            var result = e.response;
-            if (result) {
-                reportAggregates = e.response["aggregates"];
-            }
-        }
+			reportLoaded(e);
+		}
 
-        function reportLoaded(e) {
-            if (reportAggregates != "") {
-                updateAggregates(reportAggregates);
-            }
-        }
-        function updateAggregates(aggs) {
-            for (var key in aggs) {
+		function onComplete(e) {
+			var result = e.response;
+			if (result) {
+				reportAggregates = e.response["aggregates"];
+			}
+		}
 
-                @if (!hideProfitReport)
+		function reportLoaded(e) {
+			if (reportAggregates != "") {
+				updateAggregates(reportAggregates);
+			}
+		}
+		function updateAggregates(aggs) {
+			for (var key in aggs) {
+
+				@if (!hideProfitReport)
                 {
                 <text>$('#aggregator-profit-block').text(aggs['aggregatorprofit']);</text>
                 }
-                $('#aggregator-tax-block').text(aggs['aggregatortax']);
-                $('#aggregator-total-block').text(aggs['aggregatortotal']);
-            }
-        }
+				$('#aggregator-tax-block').text(aggs['aggregatortax']);
+				$('#aggregator-total-block').text(aggs['aggregatortotal']);
+			}
+		}
 
-        function updateMasterCheckbox() {
-            var numChkBoxes = $('#orders-grid input[type=checkbox][id!=mastercheckbox]').length;
-            var numChkBoxesChecked = $('#orders-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-        }
+		function updateMasterCheckbox() {
+			var numChkBoxes = $('#orders-grid input[type=checkbox][id!=mastercheckbox]').length;
+			var numChkBoxesChecked = $('#orders-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+		}
    </script>   
 }
-
-<form id="OrderExportForm" method="POST" action="#">
-	<input type="hidden" id="selectedIds" name="selectedIds" value="" />
-</form>

@@ -1,5 +1,5 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
-	<LocaleResource Name="Plugins.FriendlyName.Api.WebApi" AppendRootKey="false">
+	<LocaleResource Name="Plugins.FriendlyName.SmartStore.WebApi" AppendRootKey="false">
 		<Value>Web-API</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdminInstruction">
@@ -40,6 +40,12 @@
   </LocaleResource>
   <LocaleResource Name="NoRequestTimestampValidation.Hint">
     <Value>Specifies whether to validate that the timestamp of the previous request is less or equal than the one of the current. Prevents the occurrence of HmacResult.TimestampOlderThanLastRequest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AllowEmptyMd5Hash">
+    <Value>Allow authentification without MD5 hash</Value>
+  </LocaleResource>
+  <LocaleResource Name="AllowEmptyMd5Hash.Hint">
+    <Value>Specifies whether to allow authentifications without MD5 content hash.</Value>
   </LocaleResource>
 	<LocaleResource Name="PublicKey">
 		<Value>Public key</Value>

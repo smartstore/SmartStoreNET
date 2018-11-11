@@ -4,6 +4,7 @@
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Seo;
 @using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Domain.Media;
 @using SmartStore.Core.Infrastructure;
 @using SmartStore.Core.Events;
 @using SmartStore.Web.Models.Catalog;
@@ -12,21 +13,23 @@
 @using SmartStore.Web;
 
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    //title, meta
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+	//title, meta
+	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-    Html.AddScriptParts("~/Scripts/public.product-detail.js");
-    
-    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-    if (canonicalUrlsEnabled)
-    {
-        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-        Html.AddCanonicalUrlParts(productUrl);
-    }
+	Html.AddScriptParts("~/Scripts/public.product-detail.js");
+
+	int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
+
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled)
+	{
+		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(productUrl);
+	}
 }
 
 <div class="page product-details-page">
@@ -52,22 +55,17 @@
                         </div>
                         @Html.Widget("productdetails_after_pictures")
 
-                        @if (Model.Manufacturers.Any(x => x.PictureModel != null))
-                        {
-                            <div class="manufacturer-pics">
-
-                            @foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null))
-                            {
-                                <div class="manufacturer-item">
-                                    <div class="picture">
-                                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
-                                            <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
-                                    </div>
-                                </div>
-                            }
-
-                            </div>
-                        }
+                        <div class="manufacturer-pics manufacturer-pics-container">
+							@foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null && x.PictureModel.ImageUrl.HasValue()))
+							{
+								<div class="manufacturer-item">
+									<div class="picture">
+										<a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
+											<img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
+									</div>
+								</div>
+							}
+                        </div>
 
                         <!-- attributes -->
                         <table id="ProductAttributes" class="attributes">
@@ -254,7 +252,7 @@
                         {
                         <div>
                             <a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
-                                <i class="fa fa-fw fa-arrow-circle-o-down"></i>
+                                <i class="fa fa-download"></i>
                                 @T("Products.DownloadSample")
                             </a>
                         </div>
@@ -272,7 +270,7 @@
                                 data-form-selector="#product-details-form"
                                 data-type="wishlist"
                                 data-action="add">
-                                <i class="fa fa-fw fa-gift"></i>
+                                <i class="fa fa-fw fa-heart"></i>
                                 @T("ShoppingCart.AddToWishlist")
                             </a>
                         </div>
@@ -349,7 +347,7 @@
 <script type="text/javascript">
     $(function () {
         var settings = {
-            galleryHeight: 300,
+            galleryHeight: @pictureSize,
             galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
             showImageDescription: false,
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),

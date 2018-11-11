@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using Rhino.Mocks;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -7,24 +9,24 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
-using SmartStore.Core.Events;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
-using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace SmartStore.Services.Tests.Orders
 {
-    [TestFixture]
+	[TestFixture]
     public class CheckoutAttributeParserAndFormatterTests : ServiceTest
     {
         IRepository<CheckoutAttribute> _checkoutAttributeRepo;
         IRepository<CheckoutAttributeValue> _checkoutAttributeValueRepo;
-        IEventPublisher _eventPublisher;
+		IRepository<StoreMapping> _storeMappingRepo;
+		IEventPublisher _eventPublisher;
         ICheckoutAttributeService _checkoutAttributeService;
         ICheckoutAttributeParser _checkoutAttributeParser;
 
@@ -129,6 +131,8 @@ namespace SmartStore.Services.Tests.Orders
             _checkoutAttributeValueRepo.Expect(x => x.GetById(cav2_1.Id)).Return(cav2_1);
             _checkoutAttributeValueRepo.Expect(x => x.GetById(cav2_2.Id)).Return(cav2_2);
 
+			_storeMappingRepo = MockRepository.GenerateMock<IRepository<StoreMapping>>();
+
             var cacheManager = new NullCache();
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
@@ -137,6 +141,7 @@ namespace SmartStore.Services.Tests.Orders
             _checkoutAttributeService = new CheckoutAttributeService(cacheManager,
                 _checkoutAttributeRepo,
                 _checkoutAttributeValueRepo,
+				_storeMappingRepo,
                 _eventPublisher);
 
             _checkoutAttributeParser = new CheckoutAttributeParser(_checkoutAttributeService);

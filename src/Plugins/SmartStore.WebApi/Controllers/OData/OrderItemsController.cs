@@ -41,14 +41,16 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public Order GetOrder(int key)
+		[WebApiQueryable]
+		public SingleResult<Order> GetOrder(int key)
 		{
-			return GetExpandedProperty<Order>(key, x => x.Order);
+			return GetRelatedEntity(key, x => x.Order);
 		}
 
-		public Product GetProduct(int key)
+		[WebApiQueryable]
+		public SingleResult<Product> GetProduct(int key)
 		{
-			return GetExpandedProperty<Product>(key, x => x.Product);
+			return GetRelatedEntity(key, x => x.Product);
 		}
 	}
 }

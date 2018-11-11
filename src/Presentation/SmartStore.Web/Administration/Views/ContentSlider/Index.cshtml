@@ -13,10 +13,14 @@
 			@T("Admin.Configuration.ContentSlider")
 		</div>
 		<div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
 			<button type="submit" name="save" value="save" class="btn btn-primary">
 				<i class="fa fa-check"></i>
 				@T("Admin.Common.Save")
 			</button>
+
+			@Html.Widget("admin_button_toolbar_after")
 		</div>
 	</div>
 
@@ -116,24 +120,27 @@
 		</div>
 	</div>
 
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchStoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("SearchStoreId", Model.AvailableStores)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" id="search-slides" value="search-slides" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-			</td>
-		</tr>
-	</table>
+	if (Model.AvailableStores.Count > 1)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SearchStoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					&nbsp;
+				</td>
+				<td class="adminData">
+					<button type="submit" id="search-slides" value="search-slides" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+				</td>
+			</tr>
+		</table>
+	}
 
 	<div class="pull-right">
 		<a href="@Url.Action("CreateSlide")" class="btn btn-primary btn-above">
@@ -160,7 +167,7 @@
 							.Width(100)
 							.Template(x => @Html.SymbolForBool(x.LimitedToStores))
 							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden(Model.StoreCount <= 1)
+							.Hidden(Model.AvailableStores.Count <= 1)
 							.Centered();
 						columns.Bound(x => x.Published)
 							.Width(100)

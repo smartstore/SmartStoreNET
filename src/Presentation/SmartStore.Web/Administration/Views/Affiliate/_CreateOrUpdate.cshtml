@@ -13,7 +13,7 @@
         x.Add().Text(T("Admin.Affiliates.Orders").Text).Content(TabOrders());
     }
     
-    //generate an event
+    // generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "affiliate-edit", this.Html, this.Model));
 })
 

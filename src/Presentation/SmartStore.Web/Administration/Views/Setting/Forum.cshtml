@@ -1,7 +1,6 @@
 ﻿@model ForumSettingsModel
 @using Telerik.Web.Mvc.UI;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.Forums").Text;
 }
 @using (Html.BeginForm())
@@ -136,8 +135,8 @@
                 @Html.ValidationMessageFor(model => model.SignaturesEnabled)
             </td>
         </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
+        <tr>
+            <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>
@@ -169,8 +168,8 @@
                 @Html.ValidationMessageFor(model => model.NotifyAboutPrivateMessages)
             </td>
         </tr>
-        <tr class="adminSeparator">
-            <td colspan="2">
+        <tr>
+            <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>

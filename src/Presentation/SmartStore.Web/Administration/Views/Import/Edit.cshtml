@@ -1,0 +1,43 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@model ImportProfileModel
+@{
+	var title = string.Concat(T("Common.Profile"), " - ", T("Admin.Common.Edit"));
+	ViewBag.Title = title;
+}
+
+@using (Html.BeginForm())
+{
+	<fieldset>
+		<div class="section-header">
+			<div class="title">
+				<i class="fa fa-download"></i>
+				@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
+			</div>
+			<div class="options">
+				@if (Model.Id != 0)
+				{
+					<button type="button" id="ProfileImportButton" data-url="@Url.Action("Execute", "Import", new { area = "Admin", id = Model.Id })" class="btn btn-default">
+						<i class="fa fa-gears"></i>&nbsp;@T("Common.Import")
+					</button>
+				}
+				@if (Model.LogFileExists)
+				{
+					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
+						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+					</a>
+				}
+				<button type="submit" name="save" value="save" class="btn btn-primary">
+					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+				</button>
+				<button type="submit" name="save" value="save-continue" class="btn">
+					@T("Admin.Common.SaveContinue")
+				</button>
+				<button type="submit" name="import-profile-delete" id="import-profile-delete" value="import-profile-delete" class="btn btn-danger">
+					<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+				</button>
+			</div>
+		</div>
+		@Html.Partial("_Update", Model)
+	</fieldset>
+}
+@Html.DeleteConfirmation("import-profile-delete")

@@ -1,6 +1,5 @@
 ﻿@model ShoppingCartSettingsModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.ShoppingCart").Text;
 }
 @using (Html.BeginForm())
@@ -22,6 +21,12 @@
 
             toggleMiniShoppingCartEnabled();
             toggleEmailWishlistEnabled();
+
+        	// toggle third party email hand over label text
+        	$('#@Html.FieldIdFor(model => model.ThirdPartyEmailHandOver)').change(function () {
+        		$('#ThirdPartyEmailHandOverTextLocalized').toggle($(this).val() !== '0');
+        	}).trigger('change');
+
         });
 
         function toggleMiniShoppingCartEnabled() {
@@ -52,8 +57,8 @@
     @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>
 	{
 		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.CartSettings").Text).Content(@TabCartSettings()).Selected(true);
-		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
         x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.Checkout").Text).Content(@TabCheckoutSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
     }))
 }
 
@@ -142,8 +147,8 @@
             </td>
         </tr>
 
-        <tr class="adminSeparator">
-            <td colspan="2">
+        <tr>
+            <td class="adminSeparator" colspan="2">
                 <hr />
             </td>
         </tr>
@@ -176,10 +181,10 @@
             </td>
         </tr>
 
-        <tr class="adminSeparator">
-            <td colspan="2">
-                <hr />
-            </td>
+        <tr>
+			<td class="adminSeparator" colspan="2">
+				<hr />
+			</td>
         </tr>
 
         <tr>
@@ -293,6 +298,32 @@
 @helper TabCheckoutSettings()
 {
     <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="head">@T("Admin.Configuration.Settings.ShoppingCart.OrderConfirmationPage")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowCommentBox)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowCommentBox)
+				@Html.ValidationMessageFor(model => model.ShowCommentBox)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.NewsLetterSubscription)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.NewsLetterSubscription)
+				@Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions)
+				@Html.ValidationMessageFor(model => model.NewsLetterSubscription)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowConfirmOrderLegalHint)
@@ -302,14 +333,59 @@
                 @Html.ValidationMessageFor(model => model.ShowConfirmOrderLegalHint)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowCommentBox)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowCommentBox)
-                @Html.ValidationMessageFor(model => model.ShowCommentBox)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowEsdRevocationWaiverBox)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowEsdRevocationWaiverBox)
+				@Html.ValidationMessageFor(model => model.ShowEsdRevocationWaiverBox)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOver)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.ThirdPartyEmailHandOver)
+				@Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver)
+				@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOver)
+			</td>
+		</tr>
     </table>
+
+	<div id="ThirdPartyEmailHandOverTextLocalized">
+		<p></p>
+
+		@(Html.LocalizedEditor<ShoppingCartSettingsModel, ShoppingCartSettingsLocalizedModel>("setting-shopping-cart-localized",
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
+				</td>
+				<td class="adminData">
+					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
+					@Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+				</td>
+			</tr>
+		</table>
+			,
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOverLabel)
+				</td>
+				<td class="adminData">
+					@Html.TextAreaFor(model => model.ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
+					@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOverLabel)
+				</td>
+			</tr>
+		</table>
+		))
+	</div>
 }

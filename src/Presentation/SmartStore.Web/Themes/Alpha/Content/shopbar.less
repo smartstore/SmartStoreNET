@@ -27,16 +27,7 @@
     @bg: top, @shopBarBackgroundColor, @shopBarBackgroundColor 40%, darken(@shopBarBackgroundColor, 7%) 100%;
     background-color: @shopBarBackgroundColor;
     background-image: -webkit-linear-gradient(@bg);
-    background-image:      -o-linear-gradient(@bg);
     background-image:         linear-gradient(@bg);
-}
-
-.no-cssgradients #shopbar {
-	// fix the ie9 "gradient dropdown transparent" bug
-	background-color: @shopBarBackgroundColor;
-	background-image: url('images/shopbar-bg.png');
-	background-position: 0 100%;
-	background-repeat: repeat-x;
 }
 
 #shopbar.sticky {
@@ -66,7 +57,7 @@
 	position: absolute;
 	right: 45px;
 	top: 50%;
-	margin-top: -8px;
+	margin-top: -10px;
 	z-index: 10;
 }
 
@@ -139,7 +130,7 @@
     width: 1px;
     background-color: rgba(0,0,0, .15);
     margin: 8px;
-	padding: none;
+	padding: 0;
 	
     border-right: 1px solid @shopBarBackgroundColor;
 	.no-rgba & { 
@@ -172,8 +163,6 @@
 	position: relative;
 	display: inline-block;
 	margin: 2px 4px 0 0;
-	width: 24px;
-	height: 24px;
 	
 	span.label {
 		position: absolute; 
@@ -185,19 +174,18 @@
 	}
 }
 
-.shopbar-tool [class^="sm-icon-"] {
+.shopbar-button-icon .fa {
 	display: inline-block;
-	width: 24px;
-	height: 24px;
-	font-size: 24px;
+	font-size: 24px !important;
 	font-style: normal;
-	margin-top: 5px;
+	line-height: 28px;
+	vertical-align: middle;
 	
 	color: @shopBarIconColor;
 	.transition(color .1s linear);
 }
 
-.shopbar-button:hover [class^="sm-icon-"] {
+.shopbar-button:hover .shopbar-button-icon .fa {
 	color: darken(@shopBarIconColor, 22%);
 }
 
@@ -272,10 +260,18 @@
 	.box-shadow(0 2px 8px rgba(0,0,0,.2));
 	
 	.shopbar-tool.loading & {
-		background-image: url('images/loading.gif');
+		//background-image: url('images/loading.gif');
 	}
 	
-	.shopbar-tool.loading & > * {
+    .spinner-container {
+        height: 100%;
+	}
+
+    .shopbar-tool:not(.loading) & > .spinner-container {
+		display: none;
+	}
+
+	.shopbar-tool.loading & > .shopbar-flyout-inner {
 		display: none;
 	}
 	

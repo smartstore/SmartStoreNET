@@ -56,27 +56,13 @@
                 @using (Html.BeginForm())
                 {
                     <div>
-                        @if (!ViewData.ModelState.IsValid) 
-                        {
-                            @Html.ValidationSummary(true)
-                        }
-                        @{
-                            string result = TempData["sm.blog.addcomment.result"] as string;
-                        }
-                        @if (!String.IsNullOrEmpty(result))
-                        {
-                            <div class="alert alert-info">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                @result
-                            </div>
-                        }
+						@Html.ValidationSummary()
                         <div class="forms-box">
                             <div class="inputs">
                                 @Html.LabelFor(model => model.AddNewComment.CommentText)
                                 <div class="input-box">
                                     @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "comment-text" })
                                 </div>
-                                @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
                             </div>
                             @if (Model.AddNewComment.DisplayCaptcha)
                             {

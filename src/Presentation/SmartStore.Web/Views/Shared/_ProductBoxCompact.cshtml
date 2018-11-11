@@ -3,8 +3,11 @@
 @using SmartStore.Web.Models.Catalog;
 
 <figure class="picture" data-equalized-part="picture" data-equalized-valign="true">
-    <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })" title="@Model.DefaultPictureModel.Title">
-        <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" /></a>
+	@if (Model.DefaultPictureModel.ImageUrl.HasValue())
+	{
+		<a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })" title="@Model.DefaultPictureModel.Title">
+			<img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" /></a>
+	}
 </figure>
 <div class="data">
     @{

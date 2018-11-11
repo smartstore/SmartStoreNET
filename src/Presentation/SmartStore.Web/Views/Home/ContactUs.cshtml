@@ -24,11 +24,6 @@
             {
             <fieldset>
 
-                @if (!ViewData.ModelState.IsValid) 
-                {
-                    @Html.ValidationSummary(true)
-                }
-
                 <legend>@T("PageTitle.ContactUs")</legend>
 
                 <div class="control-group">
@@ -42,7 +37,7 @@
                 <div class="control-group">
                     @Html.LabelFor(model => model.Email, new { @class="control-label required" , @for="Email" } )
                     <div class="controls">
-                        @Html.TextBoxFor(model => model.Email, new { @class = "email", placeholder = T("ContactUs.Email.Hint") })
+                        @Html.TextBoxFor(model => model.Email, new { @class = "email", @type = "email", placeholder = T("ContactUs.Email.Hint") })
                         @Html.ValidationMessageFor(model => model.Email)
                     </div>
                 </div>
@@ -55,6 +50,28 @@
                     </div>
                 </div>
                 
+                @if(Model.DisplayPrivacyAgreement)
+                { 
+                    @Html.HiddenFor(model => model.DisplayPrivacyAgreement)
+                    
+                    <div class="control-group">
+                        @Html.LabelFor(model => model.PrivacyAgreement, new { @class = "control-label required", @for = "PrivacyAgreement" })
+                        <div class="controls">
+                            <div>
+                                <label class="checkbox">
+                                    @Html.CheckBoxFor(model => model.PrivacyAgreement)
+                                    @Html.Raw(T("ContactUs.PrivacyAgreement.DetailText").Text.FormatWith(
+                                        Url.RouteUrl("Topic", new { SystemName = "PrivacyInfo" })
+                                    ))
+                                </label>
+                            </div>
+                            <div>
+                                @Html.ValidationMessageFor(model => model.PrivacyAgreement)
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 @if (Model.DisplayCaptcha)
                 {
                     <div class="control-group">

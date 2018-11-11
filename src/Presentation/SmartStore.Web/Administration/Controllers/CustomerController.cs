@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web.ModelBinding;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
@@ -26,7 +24,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -37,13 +34,15 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class CustomerController : AdminControllerBase
     {
         #region Fields
@@ -67,7 +66,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreContext _storeContext;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IOrderService _orderService;
-        private readonly IExportManager _exportManager;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IPermissionService _permissionService;
@@ -84,11 +82,11 @@ namespace SmartStore.Admin.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public CustomerController(ICustomerService customerService,
+		public CustomerController(ICustomerService customerService,
 			INewsLetterSubscriptionService newsLetterSubscriptionService,
             IGenericAttributeService genericAttributeService,
             ICustomerRegistrationService customerRegistrationService,
@@ -101,7 +99,6 @@ namespace SmartStore.Admin.Controllers
 			IWorkContext workContext, IStoreContext storeContext, 
 			IPriceFormatter priceFormatter,
             IOrderService orderService,
-			IExportManager exportManager,
             ICustomerActivityService customerActivityService,
             IPriceCalculationService priceCalculationService,
             IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
@@ -112,7 +109,7 @@ namespace SmartStore.Admin.Controllers
 			IEventPublisher eventPublisher,
 			PluginMediator pluginMediator,
 			IAffiliateService affiliateService)
-        {
+		{
             this._customerService = customerService;
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._genericAttributeService = genericAttributeService;
@@ -132,7 +129,6 @@ namespace SmartStore.Admin.Controllers
 			this._storeContext = storeContext;
             this._priceFormatter = priceFormatter;
             this._orderService = orderService;
-            this._exportManager = exportManager;
             this._customerActivityService = customerActivityService;
             this._priceCalculationService = priceCalculationService;
             this._permissionService = permissionService;
@@ -148,7 +144,7 @@ namespace SmartStore.Admin.Controllers
 			this._eventPublisher = eventPublisher;
 			this._pluginMediator = pluginMediator;
 			this._affiliateService = affiliateService;
-        }
+		}
 
         #endregion
 
@@ -254,11 +250,10 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
 			{
-				model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == timeZoneId) });
+				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == timeZoneId) });
 			}
 
 			model.DisplayVatNumber = false;
-			//customer roles
 			model.AvailableCustomerRoles = _customerService
 				.GetAllCustomerRoles(true)
 				.Select(cr => cr.ToModel())
@@ -286,11 +281,11 @@ namespace SmartStore.Admin.Controllers
             
 			if (_customerSettings.CountryEnabled)
 			{
-				model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+				model.AvailableCountries.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
 
 				foreach (var c in _countryService.GetAllCountries())
 				{
-					model.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == model.CountryId) });
+					model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == model.CountryId) });
 				}
 
 				if (_customerSettings.StateProvinceEnabled)
@@ -301,12 +296,12 @@ namespace SmartStore.Admin.Controllers
 					{
 						foreach (var s in states)
 						{
-							model.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
 						}
 					}
 					else
 					{
-						model.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+						model.AvailableStates.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
 					}
 				}
 			}
@@ -401,28 +396,37 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult CustomerList(GridCommand command, CustomerListModel model, [ModelBinderAttribute(typeof(CommaSeparatedModelBinder))] int[] searchCustomerRoleIds)
         {
-            //we use own own binder for searchCustomerRoleIds property 
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
+			// we use own own binder for searchCustomerRoleIds property 
+			var gridModel = new GridModel<CustomerModel>();
 
-            var searchDayOfBirth = 0;
-            int searchMonthOfBirth = 0;
-            if (!String.IsNullOrWhiteSpace(model.SearchDayOfBirth))
-                searchDayOfBirth = Convert.ToInt32(model.SearchDayOfBirth);
-            if (!String.IsNullOrWhiteSpace(model.SearchMonthOfBirth))
-                searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+			{
+				var searchDayOfBirth = 0;
+				var searchMonthOfBirth = 0;
 
-            var customers = _customerService.GetAllCustomers(null, null,
-                searchCustomerRoleIds, model.SearchEmail, model.SearchUsername,
-                model.SearchFirstName, model.SearchLastName,
-                searchDayOfBirth, searchMonthOfBirth,
-                model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,
-                false, null, command.Page - 1, command.PageSize);
-            var gridModel = new GridModel<CustomerModel>
-            {
-                Data = customers.Select(PrepareCustomerModelForList),
-                Total = customers.TotalCount
-            };
+				if (!String.IsNullOrWhiteSpace(model.SearchDayOfBirth))
+					searchDayOfBirth = Convert.ToInt32(model.SearchDayOfBirth);
+
+				if (!String.IsNullOrWhiteSpace(model.SearchMonthOfBirth))
+					searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
+
+				var customers = _customerService.GetAllCustomers(null, null,
+					searchCustomerRoleIds, model.SearchEmail, model.SearchUsername,
+					model.SearchFirstName, model.SearchLastName,
+					searchDayOfBirth, searchMonthOfBirth,
+					model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,
+					false, null, command.Page - 1, command.PageSize);
+
+				gridModel.Data = customers.Select(PrepareCustomerModelForList);
+				gridModel.Total = customers.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<CustomerModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -444,7 +448,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
 		[ValidateInput(false)]
         public ActionResult Create(CustomerModel model, bool continueEditing, FormCollection form)
@@ -589,7 +593,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(id);
             if (customer == null || customer.Deleted)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var model = new CustomerModel();
@@ -603,12 +606,18 @@ namespace SmartStore.Admin.Controllers
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
-            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-				model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+			
+			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+			{
+				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+			}
+
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
 			model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
+			
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
 				.GetLocalizedEnum(_localizationService, _workContext);
+
 			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
             model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = customer.LastIpAddress;
@@ -654,10 +663,10 @@ namespace SmartStore.Admin.Controllers
             //countries and states
             if (_customerSettings.CountryEnabled)
             {
-                model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+                model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
                 foreach (var c in _countryService.GetAllCountries())
                 {
-                    model.AvailableCountries.Add(new SelectListItem()
+                    model.AvailableCountries.Add(new SelectListItem
                     {
                         Text = c.Name,
                         Value = c.Id.ToString(),
@@ -669,14 +678,17 @@ namespace SmartStore.Admin.Controllers
                 {
                     //states
                     var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
-                    if (states.Count > 0)
-                    {
-                        foreach (var s in states)
-                            model.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
-                    }
-                    else
-                        model.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
-
+					if (states.Count > 0)
+					{
+						foreach (var s in states)
+						{
+							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+						}
+					}
+					else
+					{
+						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+					}
                 }
             }
 
@@ -685,19 +697,21 @@ namespace SmartStore.Admin.Controllers
                 .GetAllCustomerRoles(true)
                 .Select(cr => cr.ToModel())
                 .ToList();
+
             model.SelectedCustomerRoleIds = customer.CustomerRoles.Select(cr => cr.Id).ToArray();
             model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+
             //reward points gistory
             model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
             model.AddRewardPointsValue = 0;
-            model.AddRewardPointsMessage = "Some comment here...";
+
             //external authentication records
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
 
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
 		[ValidateInput(false)]
         public ActionResult Edit(CustomerModel model, bool continueEditing, FormCollection form)
@@ -707,19 +721,26 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null || customer.Deleted)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             //validate customer roles
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            var newCustomerRoles = new List<CustomerRole>();
-            foreach (var customerRole in allCustomerRoles)
-                if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-                    newCustomerRoles.Add(customerRole);
-            var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
-            if (!String.IsNullOrEmpty(customerRolesError))
-                ModelState.AddModelError("", customerRolesError);
-            bool allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+			var allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+
+			if (allowManagingCustomerRoles)
+			{
+				var newCustomerRoles = new List<CustomerRole>();
+
+				foreach (var customerRole in allCustomerRoles)
+				{
+					if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
+						newCustomerRoles.Add(customerRole);
+				}
+
+				var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
+				if (customerRolesError.HasValue())
+					ModelState.AddModelError("", customerRolesError);
+			}
             
             if (ModelState.IsValid)
             {
@@ -728,6 +749,7 @@ namespace SmartStore.Admin.Controllers
                     customer.AdminComment = model.AdminComment;
                     customer.IsTaxExempt = model.IsTaxExempt;
                     customer.Active = model.Active;
+
                     //email
                     if (!String.IsNullOrWhiteSpace(model.Email))
                     {
@@ -782,8 +804,10 @@ namespace SmartStore.Admin.Controllers
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
+
                     if (_customerSettings.DateOfBirthEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DateOfBirth, model.DateOfBirth);
                     if (_customerSettings.CompanyEnabled)
@@ -848,6 +872,7 @@ namespace SmartStore.Admin.Controllers
                     _customerActivityService.InsertActivity("EditCustomer", _localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id);
 
                     NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Updated"));
+
                     return continueEditing ? RedirectToAction("Edit", customer.Id) : RedirectToAction("List");
                 }
                 catch (Exception exc)
@@ -861,15 +886,21 @@ namespace SmartStore.Admin.Controllers
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
-            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-                model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+
+			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+			{
+				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+			}
+
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
 				 .GetLocalizedEnum(_localizationService, _workContext);
+
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
             model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = model.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
+
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
@@ -883,13 +914,14 @@ namespace SmartStore.Admin.Controllers
             model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
             model.PhoneEnabled = _customerSettings.PhoneEnabled;
             model.FaxEnabled = _customerSettings.FaxEnabled;
+
             //countries and states
             if (_customerSettings.CountryEnabled)
             {
-                model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+                model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
                 foreach (var c in _countryService.GetAllCountries())
                 {
-                    model.AvailableCountries.Add(new SelectListItem()
+                    model.AvailableCountries.Add(new SelectListItem
                     {
                         Text = c.Name,
                         Value = c.Id.ToString(),
@@ -901,28 +933,35 @@ namespace SmartStore.Admin.Controllers
                 {
                     //states
                     var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
-                    if (states.Count > 0)
-                    {
-                        foreach (var s in states)
-                            model.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
-                    }
-                    else
-                        model.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
-
+					if (states.Count > 0)
+					{
+						foreach (var s in states)
+						{
+							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+						}
+					}
+					else
+					{
+						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+					}
                 }
             }
+
             //customer roles
             model.AvailableCustomerRoles = _customerService
                 .GetAllCustomerRoles(true)
                 .Select(cr => cr.ToModel())
                 .ToList();
+
             model.AllowManagingCustomerRoles = allowManagingCustomerRoles;
-            //reward points gistory
+            
+			//reward points gistory
             model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
             model.AddRewardPointsValue = 0;
-            model.AddRewardPointsMessage = "Some comment here...";
-            //external authentication records
+            
+			//external authentication records
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
+
             return View(model);
         }
         
@@ -935,19 +974,22 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
-                var changePassRequest = new ChangePasswordRequest(model.Email,
-                    false, _customerSettings.DefaultPasswordFormat, model.Password);
+                var changePassRequest = new ChangePasswordRequest(model.Email, false, _customerSettings.DefaultPasswordFormat, model.Password);
                 var changePassResult = _customerRegistrationService.ChangePassword(changePassRequest);
-                if (changePassResult.Success)
-                    NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
-                else
-                    foreach (var error in changePassResult.Errors)
+
+				if (changePassResult.Success)
+				{
+					NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
+				}
+				else
+				{
+					foreach (var error in changePassResult.Errors)
 						NotifyError(error);
+				}
             }
 
             return RedirectToAction("Edit", customer.Id);
@@ -962,7 +1004,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
 			_genericAttributeService.SaveAttribute(customer,
@@ -981,7 +1022,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
 			_genericAttributeService.SaveAttribute(customer,
@@ -999,30 +1039,33 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 _customerService.DeleteCustomer(customer);
 
-				//remove newsletter subscriptions (if exists)
-				var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(customer.Email, 0, int.MaxValue, true);
-
-				foreach (var subscription in subscriptions)
+				if (customer.Email.HasValue())
 				{
-					_newsLetterSubscriptionService.DeleteNewsLetterSubscription(subscription);
+					foreach (var store in _storeService.GetAllStores())
+					{
+						var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, store.Id);
+						if (subscription != null)
+						{
+							_newsLetterSubscriptionService.DeleteNewsLetterSubscription(subscription);
+						}
+					}
 				}
 
-                //activity log
-                _customerActivityService.InsertActivity("DeleteCustomer", _localizationService.GetResource("ActivityLog.DeleteCustomer"), customer.Id);
+                _customerActivityService.InsertActivity("DeleteCustomer", T("ActivityLog.DeleteCustomer", customer.Id));
 
-                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Deleted"));
+                NotifySuccess(T("Admin.Customers.Customers.Deleted"));
+
                 return RedirectToAction("List");
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-				NotifyError(exc.Message);
+				NotifyError(exception.Message);
                 return RedirectToAction("Edit", new { id = customer.Id });
             }
         }
@@ -1036,7 +1079,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
 			// ensure that a non-admin user cannot impersonate as an administrator
@@ -1060,7 +1102,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1076,7 +1117,7 @@ namespace SmartStore.Admin.Controllers
 
 				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
-                    throw new SmartException("Email account can't be loaded");
+                    throw new SmartException(T("Common.Error.NoEmailAccount"));
 
                 var email = new QueuedEmail
                 {
@@ -1089,8 +1130,10 @@ namespace SmartStore.Admin.Controllers
                     Body = model.SendEmail.Body,
                     CreatedOnUtc = DateTime.UtcNow,
                 };
-                _queuedEmailService.InsertQueuedEmail(email);
-                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.SendEmail.Queued"));
+
+				_queuedEmailService.InsertQueuedEmail(email);
+
+                NotifySuccess(T("Admin.Customers.Customers.SendEmail.Queued"));
             }
             catch (Exception exc)
             {
@@ -1107,19 +1150,18 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 if (!_forumSettings.AllowPrivateMessages)
-                    throw new SmartException("Private messages are disabled");
+                    throw new SmartException(T("PrivateMessages.Disabled"));
                 if (customer.IsGuest())
-                    throw new SmartException("Customer should be registered");
+                    throw new SmartException(T("Common.MethodNotSupportedForGuests"));
                 if (String.IsNullOrWhiteSpace(model.SendPm.Subject))
-                    throw new SmartException("PM subject is empty");
+                    throw new SmartException(T("Admin.Customers.Customers.SendPM.Subject.Hint"));
                 if (String.IsNullOrWhiteSpace(model.SendPm.Message))
-                    throw new SmartException("PM message is empty");
+                    throw new SmartException(T("Admin.Customers.Customers.SendPM.Message.Hint"));
 
 
                 var privateMessage = new PrivateMessage
@@ -1271,7 +1313,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(customerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var model = new CustomerAddressModel();
@@ -1316,7 +1357,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.CustomerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -1365,12 +1405,10 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(customerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var address = _addressService.GetAddressById(addressId);
             if (address == null)
-                //No address found with the specified id
                 return RedirectToAction("Edit", new { id = customer.Id });
 
             var model = new CustomerAddressModel();
@@ -1423,12 +1461,10 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.CustomerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var address = _addressService.GetAddressById(model.Address.Id);
             if (address == null)
-                //No address found with the specified id
                 return RedirectToAction("Edit", new { id = customer.Id });
 
             if (ModelState.IsValid)
@@ -1489,17 +1525,15 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult OrderList(int customerId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
+			var model = new GridModel<CustomerModel.OrderModel>();
 
-			var orders = _orderService.SearchOrders(0, customerId,
-				null, null, null, null, null, null, null, null, 0, int.MaxValue);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+			{
+				var orders = _orderService.SearchOrders(0, customerId, null, null, null, null, null, null, null, null, 0, int.MaxValue);
 
-            var model = new GridModel<CustomerModel.OrderModel>
-            {
-				Data = orders.PagedForCommand(command)
-                    .Select(order =>
-                    {
+				model.Data = orders.PagedForCommand(command)
+					.Select(order =>
+					{
 						var store = _storeService.GetStoreById(order.StoreId);
 						var orderModel = new CustomerModel.OrderModel()
 						{
@@ -1508,13 +1542,20 @@ namespace SmartStore.Admin.Controllers
 							PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
 							ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
 							OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false),
-							StoreName = store != null ? store.Name : "Unknown",
+							StoreName = store != null ? store.Name : "".NaIfEmpty(),
 							CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
 						};
-                        return orderModel;
-                    }),
-                Total = orders.Count
-            };
+						return orderModel;
+					});
+
+				model.Total = orders.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<CustomerModel.OrderModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -1532,23 +1573,18 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new CustomerReportsModel();
+
             //customers by number of orders
             model.BestCustomersByNumberOfOrders = new BestCustomersReportModel();
             model.BestCustomersByNumberOfOrders.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByNumberOfOrders.AvailableOrderStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
             model.BestCustomersByNumberOfOrders.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByNumberOfOrders.AvailablePaymentStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
             model.BestCustomersByNumberOfOrders.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
-            model.BestCustomersByNumberOfOrders.AvailableShippingStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             //customers by order total
             model.BestCustomersByOrderTotal = new BestCustomersReportModel();
             model.BestCustomersByOrderTotal.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByOrderTotal.AvailableOrderStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
             model.BestCustomersByOrderTotal.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-            model.BestCustomersByOrderTotal.AvailablePaymentStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
             model.BestCustomersByOrderTotal.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
-            model.BestCustomersByOrderTotal.AvailableShippingStatuses.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
             
             return View(model);
         }
@@ -1566,9 +1602,8 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
+            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1);
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue,
-                orderStatus, paymentStatus, shippingStatus, 1);
             var gridModel = new GridModel<BestCustomerReportLineModel>
             {
                 Data = items.Select(x =>
@@ -1579,23 +1614,25 @@ namespace SmartStore.Admin.Controllers
                         OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                         OrderCount = x.OrderCount,
                     };
+
                     var customer = _customerService.GetCustomerById(x.CustomerId);
                     if (customer != null)
                     {
-                        m.CustomerName = customer.IsGuest()
-                                             ? _localizationService.GetResource("Admin.Customers.Guest")
-                                             : customer.Email;
+                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
                     }
+
                     return m;
                 }),
                 Total = items.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
             };
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult ReportBestCustomersByNumberOfOrdersList(GridCommand command, BestCustomersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
@@ -1608,26 +1645,25 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
+            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2);
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue,
-                orderStatus, paymentStatus, shippingStatus, 2);
             var gridModel = new GridModel<BestCustomerReportLineModel>
             {
                 Data = items.Select(x =>
                 {
-                    var m = new BestCustomerReportLineModel()
+                    var m = new BestCustomerReportLineModel
                     {
                         CustomerId = x.CustomerId,
                         OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                         OrderCount = x.OrderCount,
                     };
+
                     var customer = _customerService.GetCustomerById(x.CustomerId);
                     if (customer != null)
                     {
-                        m.CustomerName = customer.IsGuest()
-                                             ? _localizationService.GetResource("Admin.Customers.Guest")
-                                             : customer.Email;
+                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
                     }
+
                     return m;
                 }),
                 Total = items.Count
@@ -1644,15 +1680,18 @@ namespace SmartStore.Admin.Controllers
             var model = GetReportRegisteredCustomersModel();
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult ReportRegisteredCustomersList(GridCommand command)
         {
             var model = GetReportRegisteredCustomersModel();
-            var gridModel = new GridModel<RegisteredCustomerReportLineModel>
+
+			var gridModel = new GridModel<RegisteredCustomerReportLineModel>
             {
                 Data = model,
                 Total = model.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -1669,16 +1708,17 @@ namespace SmartStore.Admin.Controllers
             var customer = _customerService.GetCustomerById(customerId);
             var cart = customer.GetCartItems((ShoppingCartType)cartTypeId);
 
-            var gridModel = new GridModel<ShoppingCartItemModel>()
+            var gridModel = new GridModel<ShoppingCartItemModel>
             {
                 Data = cart.Select(sci =>
                 {
                     decimal taxRate;
 					var store = _storeService.GetStoreById(sci.Item.StoreId); 
-                    var sciModel = new ShoppingCartItemModel()
+
+                    var sciModel = new ShoppingCartItemModel
                     {
                         Id = sci.Item.Id,
-						Store = store != null ? store.Name : "Unknown",
+						Store = store != null ? store.Name : "".NaIfEmpty(),
 						ProductId = sci.Item.ProductId,
                         Quantity = sci.Item.Quantity,
 						ProductName = sci.Item.Product.Name,
@@ -1692,6 +1732,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = cart.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -1706,11 +1747,12 @@ namespace SmartStore.Admin.Controllers
         public JsonResult ListActivityLog(GridCommand command, int customerId)
         {
             var activityLog = _customerActivityService.GetAllActivities(null, null, customerId, 0, command.Page - 1, command.PageSize);
+
             var gridModel = new GridModel<CustomerModel.ActivityLogModel>
             {
                 Data = activityLog.Select(x =>
                 {
-                    var m = new CustomerModel.ActivityLogModel()
+                    var m = new CustomerModel.ActivityLogModel
                     {
                         Id = x.Id,
                         ActivityLogTypeName = x.ActivityLogType.Name,
@@ -1718,107 +1760,13 @@ namespace SmartStore.Admin.Controllers
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
                     };
                     return m;
-
                 }),
                 Total = activityLog.TotalCount
             };
-            return new JsonResult { Data = gridModel }; ;
+
+            return new JsonResult { Data = gridModel };
         }
 
-        #endregion
-
-        #region Export / Import
-
-        public ActionResult ExportExcelAll()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-            try
-            {
-                var customers = _customerService.GetAllCustomers(null, null, null, null,
-                    null, null, null, 0, 0, null, null, null, 
-                    false, null, 0, int.MaxValue);
-
-                byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _exportManager.ExportCustomersToXlsx(stream, customers);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "text/xls", "customers.xlsx");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
-        }
-
-        public ActionResult ExportExcelSelected(string selectedIds)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-            var customers = new List<Customer>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                customers.AddRange(_customerService.GetCustomersByIds(ids));
-            }
-
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _exportManager.ExportCustomersToXlsx(stream, customers);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "text/xls", "customers.xlsx");
-        }
-
-        public ActionResult ExportXmlAll()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-            try
-            {
-                var customers = _customerService.GetAllCustomers(null, null, null, null,
-                    null, null, null, 0, 0, null, null, null, 
-                    false, null, 0, int.MaxValue);
-                
-                var xml = _exportManager.ExportCustomersToXml(customers);
-                return new XmlDownloadResult(xml, "customers.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
-        }
-
-        public ActionResult ExportXmlSelected(string selectedIds)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-            var customers = new List<Customer>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                customers.AddRange(_customerService.GetCustomersByIds(ids));
-            }
-
-            var xml = _exportManager.ExportCustomersToXml(customers);
-            return new XmlDownloadResult(xml, "customers.xml");
-        }
-
-        #endregion
+		#endregion
     }
 }

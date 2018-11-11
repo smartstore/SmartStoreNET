@@ -8,7 +8,7 @@ using NuGet;
 
 namespace SmartStore.Core.Packaging
 {
-	internal class FileBasedProjectSystem : PhysicalFileSystem, IProjectSystem, IFileSystem
+	internal class FileBasedProjectSystem : PhysicalFileSystem, IProjectSystem
 	{
 
 		public FileBasedProjectSystem(string root)

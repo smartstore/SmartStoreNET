@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Routing;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {

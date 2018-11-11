@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -87,12 +88,18 @@ namespace SmartStore.Services.Customers
         /// <returns>Customers</returns>
         IList<Customer> GetCustomersByIds(int[] customerIds);
 
-        /// <summary>
-        /// Gets a customer by GUID
-        /// </summary>
-        /// <param name="customerGuid">Customer GUID</param>
-        /// <returns>A customer</returns>
-        Customer GetCustomerByGuid(Guid customerGuid);
+		/// <summary>
+		/// Get system account customers
+		/// </summary>
+		/// <returns>System account customers</returns>
+		IList<Customer> GetSystemAccountCustomers();
+
+		/// <summary>
+		/// Gets a customer by GUID
+		/// </summary>
+		/// <param name="customerGuid">Customer GUID</param>
+		/// <returns>A customer</returns>
+		Customer GetCustomerByGuid(Guid customerGuid);
 
         /// <summary>
         /// Get customer by email
@@ -118,14 +125,26 @@ namespace SmartStore.Services.Customers
         /// <summary>
         /// Insert a guest customer
         /// </summary>
+		/// <param name="customerGuid">The customer GUID. Pass <c>null</c> to create a random one.</param>
         /// <returns>Customer</returns>
-        Customer InsertGuestCustomer();
+        Customer InsertGuestCustomer(Guid? customerGuid = null);
 
-        /// <summary>
-        /// Insert a customer
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        void InsertCustomer(Customer customer);
+		/// <summary>
+		/// Tries to find a guest/anonymous customer record by client ident. This method should be called when an
+		/// anonymous visitor rejects cookies and therefore cannot be identified automatically.
+		/// </summary>
+		/// <param name="clientIdent">
+		/// The client ident string, which is a hashed combination of client IP address and user agent. 
+		/// Call <see cref="IWebHelper.GetClientIdent()"/> to obtain an ident string, or pass <c>null</c> to let this method obtain it automatically.</param>
+		/// <param name="maxAgeSeconds">The max age of the newly created guest customer record. The shorter, the better (default is 1 min.)</param>
+		/// <returns>The identified customer or <c>null</c></returns>
+		Customer FindGuestCustomerByClientIdent(string clientIdent = null, int maxAgeSeconds = 60);
+
+		/// <summary>
+		/// Insert a customer
+		/// </summary>
+		/// <param name="customer">Customer</param>
+		void InsertCustomer(Customer customer);
 
         /// <summary>
         /// Updates the customer
@@ -211,6 +230,13 @@ namespace SmartStore.Services.Customers
 		/// <param name="product">The product</param>
 		/// <param name="add">Whether to add or remove points</param>
 		void RewardPointsForProductReview(Customer customer, Product product, bool add);
+
+		/// <summary>
+		/// Gets reward points histories
+		/// </summary>
+		/// <param name="customerIds">Customer identifiers</param>
+		/// <returns>Reward points histories</returns>
+		Multimap<int, RewardPointsHistory> GetRewardPointsHistoriesByCustomerIds(int[] customerIds);
 
 		#endregion Reward points
 	}

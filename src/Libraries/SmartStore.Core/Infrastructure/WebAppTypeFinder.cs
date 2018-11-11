@@ -15,8 +15,8 @@ namespace SmartStore.Core.Infrastructure
     {
         #region Fields
 
-        private bool _ensureBinFolderAssembliesLoaded = true;
-        private bool _binFolderAssembliesLoaded = false;
+        private bool _ensureBinFolderAssembliesLoaded;
+        private bool _binFolderAssembliesLoaded;
 
         #endregion
 

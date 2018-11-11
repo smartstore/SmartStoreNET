@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using SmartStore.Web.Framework.Mvc;
-using SmartStore.Services.Filter;
+﻿using SmartStore.Services.Filter;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Filter
 {

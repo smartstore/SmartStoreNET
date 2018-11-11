@@ -24,6 +24,7 @@ namespace SmartStore.Core.Domain.Customers
 			NewsletterEnabled = true;
 			OnlineCustomerMinutes = 20;
 			StoreLastVisitedPage = true;
+            DisplayPrivacyAgreementOnContactUs = false;
 		}
 		
 		/// <summary>
@@ -151,7 +152,11 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
 
-
+        /// <summary>
+        /// Gets or sets a value indicating whether to display a checkbox to the customer where he can agree to privacy terms
+        /// </summary>
+        public bool DisplayPrivacyAgreementOnContactUs { get; set; }
+        
         #region Form fields
 
         /// <summary>
@@ -246,8 +251,12 @@ namespace SmartStore.Core.Domain.Customers
 
         #endregion
 
-        // codehint: sm-add (no ui, only db edit)
         public string PrefillLoginUsername { get; set; }
         public string PrefillLoginPwd { get; set; }
-    }
+
+		/// <summary>
+		/// Identifier of a customer role that new registered customers will be assigned to
+		/// </summary>
+		public int RegisterCustomerRoleId { get; set; }
+	}
 }

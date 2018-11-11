@@ -1,0 +1,256 @@
+﻿@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+@model ImportProfileListModel
+@{
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
+
+	ViewBag.Title = T("Common.Import").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+		<i class="fa fa-download"></i>
+        @T("Common.Import")
+    </div>
+    <div class="options">
+        <a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-primary import-profile-button">
+			<i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
+		</a>
+    </div>
+</div>
+
+@if(Model.Profiles.Any())
+{
+	<table id="import-profile-list" class="table xtable-bordered xtable-striped admin-table">
+		<thead>
+			<tr>
+				<th>@T("Admin.DataExchange.Import.Name")</th>
+				<th>@T("Admin.Common.Entity")</th>
+				<th>@T("Admin.Common.ImportFiles")</th>
+				<th>@T("Admin.DataExchange.Import.LastImportResult")</th>
+				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+				<th>@T("Admin.Common.Actions")</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var profile in Model.Profiles)
+			{
+				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
+					<td>
+						<a href="@Url.Action("Edit", new { id = profile.Id })"><strong>@profile.Name</strong></a>
+					</td>
+					<td>
+						@profile.EntityTypeName
+					</td>
+					<td>
+						@foreach (var fileName in profile.ExistingFileNames)
+						{
+							<ul class="fa-ul">
+								<li>
+									@Html.IconForFileExtension(Path.GetExtension(fileName), "fa-li", false)
+									<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = fileName })" download>@fileName</a>
+								</li>
+							</ul>
+						}
+					</td>
+					<td id="ProfileImportResult@(profile.Id)">
+						@if (profile.ImportResult != null)
+						{
+							@Html.Partial("ProfileImportResult", profile.ImportResult)
+						}
+						else
+						{
+							<span class="muted">@("".NaIfEmpty())</span>
+						}
+					</td>
+					<td>
+						<div class="last-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+						</div>
+					</td>
+					<td class="progress-info">
+						<div class="next-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+						</div>
+						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
+					</td>
+					<td style="width: 200px;">
+						<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
+							data-url="@Url.Action("Execute", "Import", new { area = "Admin", id = @profile.Id })" data-task-id="@profile.ScheduleTaskId">
+							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
+						</button>
+
+						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+							@T("Common.Cancel")
+						</a>
+
+						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
+						   class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@T("Admin.DataExchange.Import.NoProfiles")
+	</div>
+}
+
+<form method="POST" action="@Url.Action("Create", "Import", new { area = "Admin" })">
+	<div id="import-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
+		<input type="hidden" name="TempFileName" />
+
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
+			<h4 class="caption">@T("Common.Profile") - @T("Admin.Common.AddNew")</h4>
+		</div>
+		<div class="modal-body">
+			<div class="alert alert-info">
+				<button type="button" class="close" data-dismiss="alert">&#215;</button>
+				@T("Admin.DataExchange.Import.ProfileCreationNote")
+			</div>
+			<div>
+				<table class="adminContent">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(x => x.EntityType)
+						</td>
+						<td class="adminData">
+							@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
+						</td>
+					</tr>
+					<tr id="ImportFileUploadContainer">
+						<td class="adminTitle">
+							&nbsp;
+						</td>
+						<td class="adminData">
+
+							<div id="ImportFileUploader" class="fileupload">
+								<span class="btn btn-primary fileinput-button">
+									<i class="fa fa-upload"></i>
+									<span>@T("Admin.DataExchange.Import.FileUpload")</span>
+									<input id="ImportFileUpload" type="file" name="importfile" />
+								</span>
+
+								<button class="btn btn-warning cancel">
+									<i class="fa fa-times"></i>
+									<span>@T("Common.Fileuploader.Cancel")</span>
+								</button>
+
+								<div class="span5 fileupload-progress fade">
+									<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+										<div class="bar" style="width:0%;"></div>
+									</div>
+									<div class="progress-extended">&nbsp;</div>
+								</div>
+							</div>
+
+						</td>
+					</tr>
+					<tr id="ImportFileListContainer">
+						<td class="adminTitle">
+							&nbsp;
+						</td>
+						<td id="ImportFileList" class="adminData">
+							&nbsp;
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>&nbsp;</p>
+		</div>
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
+			<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+		</div>
+	</div>
+</form>
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// show profile dialog
+		$(document).on('click', '.import-profile-button', function (e) {
+			e.preventDefault();
+			$('#import-profile-dialog').modal('show');
+			return false;
+		});
+
+		// upload import file
+		$('#ImportFileUploader').fileupload({
+			url: '@Url.Action("FileUpload", new { id = Model.Id })',
+			dataType: 'json',
+			acceptFileTypes: /(\.|\/)(csv|xlsx|txt|tab)$/i,
+			done: function (e, data) {
+				if (data.result.success) {
+					if (!_.isEmpty(data.result.tempFile)) {
+						$('#import-profile-dialog').find('input[name=TempFileName]').val(data.result.tempFile);
+						$('#ImportFileList').html(data.result.tempFile);
+						$('#ImportFileListContainer').show();
+						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
+						$('#import-profile-dialog').find('.btn-primary').prop('disabled', false);
+					}
+					else if (!_.isEmpty(data.result.error)) {
+						alert(data.result.error);
+					}
+				}
+			}
+		});
+
+		// start task
+		$(document).on('click', '.btn-run-task', function (e) {
+			e.preventDefault();
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
+			return false;
+		});
+
+		Admin.TaskWatcher.startWatching({
+			context: $('#import-profile-list'),
+			elementsSelector: '.task-progress',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
+			onTaskStarted: function (task, el) {
+				var tr = el.closest('tr');
+				tr.find('.btn-run-task').addClass('hide');
+				tr.find('.btn-cancel-task').removeClass('hide');
+				tr.find('.btn-log').addClass('hide');
+				tr.find('.next-run-info').addClass('hide');
+			},
+			onTaskCompleted: function (taskId, el) {
+				var tr = el.closest('tr'),
+					profileId = tr.attr('data-profile-id');
+
+				tr.find('.btn-run-task').removeClass('hide');
+				tr.find('.btn-cancel-task').addClass('hide');
+				tr.find('.btn-log').removeClass('hide');
+
+				$.ajax({
+					cache: false,
+					global: false,
+					type: 'POST',
+					url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
+					data: { id: taskId },
+					success: function (data) {
+						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						tr.find('.last-run-info').html(data.lastRunHtml);
+					}
+				});
+
+				$.get('@Url.Action("ProfileListDetails")?profileId=' + profileId, function (response) {
+					$('#ProfileImportResult' + profileId).html(response.importResult || '');
+				});
+			}
+		});
+	});
+</script>

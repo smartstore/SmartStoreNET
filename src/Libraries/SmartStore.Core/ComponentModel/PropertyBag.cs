@@ -181,7 +181,7 @@ namespace SmartStore.ComponentModel
                 writer.WriteStartElement("item");
 
                 writer.WriteStartElement("key");
-                writer.WriteString(key as string);
+                writer.WriteString(key);
                 writer.WriteEndElement();
 
                 writer.WriteStartElement("value");
@@ -306,8 +306,7 @@ namespace SmartStore.ComponentModel
             if (string.IsNullOrEmpty(xml))
                 return true;
 
-            var result = SerializationUtils.DeSerializeObject(xml,
-                                                 this.GetType()) as PropertyBag<TValue>;
+            var result = SerializationUtils.DeSerializeObject(xml, this.GetType()) as PropertyBag<TValue>;
             if (result != null)
             {
                 foreach (var item in result)

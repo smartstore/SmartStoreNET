@@ -31,9 +31,10 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public Country GetCountry(int key)
+		[WebApiQueryable]
+		public SingleResult<Country> GetCountry(int key)
 		{
-			return GetExpandedProperty<Country>(key, x => x.Country);
+			return GetRelatedEntity(key, x => x.Country);
 		}
 	}
 }

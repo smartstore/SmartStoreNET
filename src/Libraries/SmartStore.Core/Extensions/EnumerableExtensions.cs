@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -7,28 +6,30 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SmartStore.Collections;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SmartStore
 {
-
-    public static class EnumerableExtensions
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	public static class EnumerableExtensions
 	{
-
 		#region Nested classes
 
 		private static class DefaultReadOnlyCollection<T>
 		{
 			private static ReadOnlyCollection<T> defaultCollection;
 
+			[SuppressMessage("ReSharper", "ConvertIfStatementToNullCoalescingExpression")]
 			internal static ReadOnlyCollection<T> Empty
 			{
 				get
 				{
-					if (EnumerableExtensions.DefaultReadOnlyCollection<T>.defaultCollection == null)
+					if (defaultCollection == null)
 					{
-						EnumerableExtensions.DefaultReadOnlyCollection<T>.defaultCollection = new ReadOnlyCollection<T>(new T[0]);
+						defaultCollection = new ReadOnlyCollection<T>(new T[0]);
 					}
-					return EnumerableExtensions.DefaultReadOnlyCollection<T>.defaultCollection;
+					return defaultCollection;
 				}
 			}
 		}
@@ -75,15 +76,15 @@ namespace SmartStore
         }
 
 
-        /// <summary>
-        /// Performs an action on each item while iterating through a list. 
-        /// This is a handy shortcut for <c>foreach(item in list) { ... }</c>
-        /// </summary>
-        /// <typeparam name="T">The type of the items.</typeparam>
-        /// <param name="source">The list, which holds the objects.</param>
-        /// <param name="action">The action delegate which is called on each item while iterating.</param>
-		//[DebuggerStepThrough]
-        public static void Each<T>(this IEnumerable<T> source, Action<T> action)
+		/// <summary>
+		/// Performs an action on each item while iterating through a list. 
+		/// This is a handy shortcut for <c>foreach(item in list) { ... }</c>
+		/// </summary>
+		/// <typeparam name="T">The type of the items.</typeparam>
+		/// <param name="source">The list, which holds the objects.</param>
+		/// <param name="action">The action delegate which is called on each item while iterating.</param>
+		[DebuggerStepThrough]
+		public static void Each<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach (T t in source)
             {
@@ -98,7 +99,7 @@ namespace SmartStore
 		/// <typeparam name="T">The type of the items.</typeparam>
 		/// <param name="source">The list, which holds the objects.</param>
 		/// <param name="action">The action delegate which is called on each item while iterating.</param>
-		//[DebuggerStepThrough]
+		[DebuggerStepThrough]
 		public static void Each<T>(this IEnumerable<T> source, Action<T, int> action)
 		{
 			int i = 0;
@@ -107,11 +108,6 @@ namespace SmartStore
 				action(t, i++);
 			}
 		}
-
-        public static IEnumerable<T> CastValid<T>(this IEnumerable source)
-        {
-            return source.Cast<object>().Where(o => o is T).Cast<T>();
-        }
 
         public static ReadOnlyCollection<T> AsReadOnly<T>(this IEnumerable<T> source)
         {
@@ -133,20 +129,76 @@ namespace SmartStore
 			return new ReadOnlyCollection<T>(source.ToArray());
         }
 
-        public static IEnumerable<T> OrderByOrdinal<T>(this IEnumerable<T> source)
-            where T : IOrdered
-        {
-            return source.OrderByOrdinal(false);
-        }
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector)
+		{
+			return source.ToDictionarySafe(keySelector, new Func<TSource, TSource>(src => src), null);
+		}
 
-        public static IEnumerable<T> OrderByOrdinal<T>(this IEnumerable<T> source, bool descending)
-            where T : IOrdered
-        {
-            if (!descending)
-                return source.OrderBy(x => x.Ordinal);
-            else
-                return source.OrderByDescending(x => x.Ordinal);
-        }
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <param name="comparer">comparer</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector,
+			 IEqualityComparer<TKey> comparer)
+		{
+			return source.ToDictionarySafe(keySelector, new Func<TSource, TSource>(src => src), comparer);
+		}
+
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <param name="elementSelector">elementSelector</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TElement> ToDictionarySafe<TSource, TKey, TElement>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector,
+			 Func<TSource, TElement> elementSelector)
+		{
+			return source.ToDictionarySafe(keySelector, elementSelector, null);
+		}
+
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <param name="elementSelector">elementSelector</param>
+		/// <param name="comparer">comparer</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TElement> ToDictionarySafe<TSource, TKey, TElement>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector,
+			 Func<TSource, TElement> elementSelector,
+			 IEqualityComparer<TKey> comparer)
+		{
+			Guard.ArgumentNotNull(() => source);
+			Guard.ArgumentNotNull(() => keySelector);
+			Guard.ArgumentNotNull(() => elementSelector);
+
+			var dictionary = new Dictionary<TKey, TElement>(comparer);
+
+			foreach (var local in source)
+			{
+				dictionary[keySelector(local)] = elementSelector(local);
+			}
+
+			return dictionary;
+		}
 
         #endregion
 
@@ -178,6 +230,7 @@ namespace SmartStore
         public static void AddRange(this NameValueCollection initial, NameValueCollection other)
         {
             Guard.ArgumentNotNull(initial, "initial");
+
             if (other == null)
                 return;
 
@@ -190,7 +243,7 @@ namespace SmartStore
 		/// <summary>
 		/// Builds an URL query string
 		/// </summary>
-		/// <param name="nvc">Namer value collection</param>
+		/// <param name="nvc">Name value collection</param>
 		/// <param name="encoding">Encoding type. Can be null.</param>
 		/// <param name="encode">Whether to encode keys and values</param>
 		/// <returns>The query string without leading a question mark</returns>
@@ -198,88 +251,34 @@ namespace SmartStore
 		{
 			var sb = new StringBuilder();
 
-			foreach (string str in nvc)
+			if (nvc != null)
 			{
-				if (sb.Length > 0)
-					sb.Append('&');
+				foreach (string str in nvc)
+				{
+					if (sb.Length > 0)
+						sb.Append('&');
 
-				if (!encode)
-					sb.Append(str);
-				else if (encoding == null)
-					sb.Append(HttpUtility.UrlEncode(str));
-				else
-					sb.Append(HttpUtility.UrlEncode(str, encoding));
+					if (!encode)
+						sb.Append(str);
+					else if (encoding == null)
+						sb.Append(HttpUtility.UrlEncode(str));
+					else
+						sb.Append(HttpUtility.UrlEncode(str, encoding));
 
-				sb.Append('=');
+					sb.Append('=');
 
-				if (!encode)
-					sb.Append(nvc[str]);
-				else if (encoding == null)
-					sb.Append(HttpUtility.UrlEncode(nvc[str]));
-				else
-					sb.Append(HttpUtility.UrlEncode(nvc[str], encoding));
+					if (!encode)
+						sb.Append(nvc[str]);
+					else if (encoding == null)
+						sb.Append(HttpUtility.UrlEncode(nvc[str]));
+					else
+						sb.Append(HttpUtility.UrlEncode(nvc[str], encoding));
+				}
 			}
 
 			return sb.ToString();
 		}
 
         #endregion
-
-        #region AsSerializable
-
-        /// <summary>
-        /// Convenience API to allow an IEnumerable[T] (such as returned by Linq2Sql, NHibernate, EF etc.) 
-        /// to be serialized by DataContractSerializer.
-        /// </summary>
-        /// <typeparam name="T">The type of item.</typeparam>
-        /// <param name="source">The original collection.</param>
-        /// <returns>A serializable enumerable wrapper.</returns>
-        public static IEnumerable<T> AsSerializable<T>(this IEnumerable<T> source) where T : class
-        {
-            return new IEnumerableWrapper<T>(source);
-        }
-
-        /// <summary>
-        /// This wrapper allows IEnumerable<T> to be serialized by DataContractSerializer.
-        /// It implements the minimal amount of surface needed for serialization.
-        /// </summary>
-        /// <typeparam name="T">Type of item.</typeparam>
-        class IEnumerableWrapper<T> : IEnumerable<T>
-            where T : class
-        {
-            IEnumerable<T> _collection;
-
-            // The DataContractSerilizer needs a default constructor to ensure the object can be
-            // deserialized. We have a dummy one since we don't actually need deserialization.
-            public IEnumerableWrapper()
-            {
-                throw new NotImplementedException();
-            }
-
-            internal IEnumerableWrapper(IEnumerable<T> collection)
-            {
-                this._collection = collection;
-            }
-
-            // The DataContractSerilizer needs an Add method to ensure the object can be
-            // deserialized. We have a dummy one since we don't actually need deserialization.
-            public void Add(T item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IEnumerator<T> GetEnumerator()
-            {
-                return this._collection.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable)this._collection).GetEnumerator();
-            }
-        }
-
-        #endregion
     }
-
 }

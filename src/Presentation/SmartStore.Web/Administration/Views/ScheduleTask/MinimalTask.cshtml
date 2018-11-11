@@ -5,6 +5,7 @@
 	var returnUrl = (string)ViewBag.ReturnUrl;
 	var hasPermission = ViewBag.HasPermission == true;
 	var cancellable = ViewBag.Cancellable == true;
+	var reloadPage = ViewBag.ReloadPage == true;
 }
 <div id="@widgetId" class="minimal-task-widget clearfix">
 	<div class="task-info@(Model.IsRunning ? " hide" : "")">
@@ -33,16 +34,25 @@
 			onTaskCompleted: function (taskId, el) {
 				el.prev().removeClass('hide'); // .task-info
 				el.next().addClass('hide'); // .btn-cancel-task
-				$.ajax({
-					cache: false,
-					global: false,
-					type: 'POST',
-					url: '@Url.Action("GetMinimalTaskWidget")',
-					data: { taskId: taskId, returnUrl: '@returnUrl' },
-					success: function (data) {
-						el.prev().html(data);
-					}
-				});
+
+				@if (reloadPage)
+				{
+					<text>location.href = '@returnUrl';</text>
+				}
+				else
+				{
+					<text>$.ajax({
+						cache: false,
+						global: false,
+						type: 'POST',
+						url: '@Url.Action("GetMinimalTaskWidget")',
+						data: { taskId: taskId, returnUrl: '@returnUrl' },
+						success: function (data) {
+							el.prev().html(data);
+						}
+					});</text>
+				}
+
 			}
 		});
 	});

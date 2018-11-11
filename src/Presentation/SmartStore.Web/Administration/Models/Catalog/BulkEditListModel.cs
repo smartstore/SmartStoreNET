@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -33,7 +33,6 @@ namespace SmartStore.Admin.Models.Catalog
 		public IList<SelectListItem> AvailableProductTypes { get; set; }
 
 		public int GridPageSize { get; set; }
-		public int StoreCount { get; set; }
         
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -24,9 +25,7 @@ namespace SmartStore.Web.Framework
     /// </summary>
     public partial class WebWorkContext : IWorkContext
     {
-        private const string CustomerCookieName = "smartstore.customer";
-
-        private readonly HttpContextBase _httpContext;
+		private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
 		private readonly IStoreContext _storeContext;
         private readonly IAuthenticationService _authenticationService;
@@ -76,44 +75,6 @@ namespace SmartStore.Web.Framework
 			this._userAgent = userAgent;
         }
 
-        protected HttpCookie GetCustomerCookie()
-        {
-            if (_httpContext == null || _httpContext.Request == null)
-                return null;
-
-            return _httpContext.Request.Cookies[CustomerCookieName];
-        }
-
-        protected void SetCustomerCookie(Guid customerGuid)
-        {
-            if (_httpContext != null && _httpContext.Response != null)
-            {
-                var cookie = new HttpCookie(CustomerCookieName);
-                cookie.HttpOnly = true;
-                cookie.Value = customerGuid.ToString();
-                if (customerGuid == Guid.Empty)
-                {
-                    cookie.Expires = DateTime.Now.AddMonths(-1);
-                }
-                else
-                {
-                    int cookieExpires = 24 * 365; //TODO make configurable
-                    cookie.Expires = DateTime.Now.AddHours(cookieExpires);
-                }
-
-				try
-				{
-					if (_httpContext.Response.Cookies[CustomerCookieName] != null)
-						_httpContext.Response.Cookies.Remove(CustomerCookieName);
-				}
-				catch (Exception) { }
-
-                _httpContext.Response.Cookies.Add(cookie);
-            }
-        }
-
-        //public Lazy<ITaxService> TaxService { get; set; }
-
         /// <summary>
         /// Gets or sets the current customer
         /// </summary>
@@ -126,38 +87,16 @@ namespace SmartStore.Web.Framework
 
                 Customer customer = null;
 
-				// check whether request is made by a background task
-				// in this case return built-in customer record for background task
-                if (_httpContext == null || _httpContext.IsFakeContext())
-                {
-                    customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
-                }
-
-                // check whether request is made by a search engine
-                // in this case return built-in customer record for search engines 
-                if (customer == null || customer.Deleted || !customer.Active)
-                {
-					if (_userAgent.IsBot)
-					{
-						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
-					}
-                }
-
-				// check whether request is made by the PDF converter
-				// in this case return built-in customer record for the converter
-				if (customer == null || customer.Deleted || !customer.Active)
+				// Is system account?
+				if (TryGetSystemAccount(out customer))
 				{
-					if (_userAgent.IsPdfConverter)
-					{
-						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.PdfConverter);
-					}
+					// Get out quickly. Bots tend to overstress the shop.
+					_cachedCustomer = customer;
+					return customer;
 				}
 
-                // registered user?
-                if (customer == null || customer.Deleted || !customer.Active)
-                {
-                    customer = _authenticationService.GetAuthenticatedCustomer();
-                }
+				// registered user?
+                customer = _authenticationService.GetAuthenticatedCustomer();
 
                 // impersonate user if required (currently used for 'phone order' support)
                 if (customer != null && !customer.Deleted && customer.Active)
@@ -168,63 +107,93 @@ namespace SmartStore.Web.Framework
                         var impersonatedCustomer = _customerService.GetCustomerById(impersonatedCustomerId.Value);
                         if (impersonatedCustomer != null && !impersonatedCustomer.Deleted && impersonatedCustomer.Active)
                         {
-                            //set impersonated customer
+                            // set impersonated customer
                             _originalCustomerIfImpersonated = customer;
                             customer = impersonatedCustomer;
                         }
                     }
                 }
 
-                // load guest customer
+                // Load guest customer
                 if (customer == null || customer.Deleted || !customer.Active)
                 {
-                    var customerCookie = GetCustomerCookie();
-                    if (customerCookie != null && !String.IsNullOrEmpty(customerCookie.Value))
-                    {
-                        Guid customerGuid;
-                        if (Guid.TryParse(customerCookie.Value, out customerGuid))
-                        {
-                            var customerByCookie = _customerService.GetCustomerByGuid(customerGuid);
-                            if (customerByCookie != null &&
-                                //this customer (from cookie) should not be registered
-                                !customerByCookie.IsRegistered() &&
-								//it should not be a built-in 'search engine' customer account
-								!customerByCookie.IsSearchEngineAccount())
-                                customer = customerByCookie;
-                        }
-                    }
+					customer = GetGuestCustomer();
                 }
 
-                // create guest if not exists
-                if (customer == null || customer.Deleted || !customer.Active)
-                {
-                    customer = _customerService.InsertGuestCustomer();
-                }
-
-
-                // validation
-                if (!customer.Deleted && customer.Active)
-                {
-                    SetCustomerCookie(customer.CustomerGuid);
-                    _cachedCustomer = customer;
-                }
-
-                return _cachedCustomer;
+				_cachedCustomer = customer;
+				return _cachedCustomer;
             }
             set
             {
-				if (!value.IsSystemAccount)
-				{
-					SetCustomerCookie(value.CustomerGuid);
-				}
                 _cachedCustomer = value;
             }
         }
 
-        /// <summary>
-        /// Gets or sets the original customer (in case the current one is impersonated)
-        /// </summary>
-        public Customer OriginalCustomerIfImpersonated
+		protected bool TryGetSystemAccount(out Customer customer)
+		{
+			// Never check whether customer is deleted/inactive in this method.
+			// System accounts should neither be deletable nor activatable, they are mandatory.
+
+			customer = null;
+
+			// check whether request is made by a background task
+			// in this case return built-in customer record for background task
+			if (_httpContext == null || _httpContext.IsFakeContext())
+			{
+				customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
+			}
+
+			// check whether request is made by a search engine
+			// in this case return built-in customer record for search engines 
+			if (customer == null && _userAgent.IsBot)
+			{
+				customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
+			}
+
+			// check whether request is made by the PDF converter
+			// in this case return built-in customer record for the converter
+			if (customer == null && _userAgent.IsPdfConverter)
+			{
+				customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.PdfConverter);
+			}
+
+			return customer != null;
+		}
+
+		protected virtual Customer GetGuestCustomer()
+		{
+			Customer customer = null;
+			Guid customerGuid = Guid.Empty;
+
+			var anonymousId = _httpContext.Request.AnonymousID;
+
+			if (anonymousId != null && anonymousId.HasValue())
+			{
+				Guid.TryParse(anonymousId, out customerGuid);
+			}
+
+			if (customerGuid == Guid.Empty)
+			{
+				_httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+				_httpContext.Response.End();
+			}
+
+			// Try to load an existing record...
+			customer = _customerService.GetCustomerByGuid(customerGuid);
+
+			if (customer == null || customer.Deleted || !customer.Active || customer.IsRegistered())
+			{
+				// ...but no record yet. Create one.
+				customer = _customerService.InsertGuestCustomer(customerGuid);
+			}
+
+			return customer;
+		}
+
+		/// <summary>
+		/// Gets or sets the original customer (in case the current one is impersonated)
+		/// </summary>
+		public Customer OriginalCustomerIfImpersonated
         {
             get
             {
@@ -247,11 +216,8 @@ namespace SmartStore.Web.Framework
 
                 if (this.CurrentCustomer != null)
                 {
-                    customerLangId = this.CurrentCustomer.GetAttribute<int>(
-                        SystemCustomerAttributeNames.LanguageId, 
-                        _attrService, 
-                        _storeContext.CurrentStore.Id);
-                }
+					customerLangId = this.CurrentCustomer.GetAttribute<int>(SystemCustomerAttributeNames.LanguageId, _attrService, storeId);
+				}
 
                 #region Get language from URL (if possible)
 
@@ -335,12 +301,8 @@ namespace SmartStore.Web.Framework
 
         private void SetCustomerLanguage(int languageId, int storeId)
         {
-            _attrService.SaveAttribute(
-                this.CurrentCustomer,
-                SystemCustomerAttributeNames.LanguageId,
-                languageId,
-                storeId);
-        }
+			_attrService.SaveAttribute(this.CurrentCustomer, SystemCustomerAttributeNames.LanguageId, languageId, storeId);
+		}
 
         /// <summary>
         /// Get or set current user working currency
@@ -369,8 +331,8 @@ namespace SmartStore.Web.Framework
                     if (customer != null && !customer.IsSearchEngineAccount())
                     {
                         // search engines should always crawl by primary store currency
-                        var customerCurrencyId = customer.GetAttribute<int?>(SystemCustomerAttributeNames.CurrencyId, _attrService, _storeContext.CurrentStore.Id);
-                        if (customerCurrencyId.GetValueOrDefault() > 0)
+						var customerCurrencyId = customer.GetAttribute<int?>(SystemCustomerAttributeNames.CurrencyId, _attrService, _storeContext.CurrentStore.Id);
+						if (customerCurrencyId.GetValueOrDefault() > 0)
                         {
 							if (storeCurrenciesMap.TryGetValue(customerCurrencyId.Value, out currency))
 							{
@@ -432,7 +394,7 @@ namespace SmartStore.Web.Framework
             {
                 int? id = value != null ? value.Id : (int?)null;
 				_attrService.SaveAttribute<int?>(this.CurrentCustomer, SystemCustomerAttributeNames.CurrencyId, id, _storeContext.CurrentStore.Id);
-                _cachedCurrency = null;
+				_cachedCurrency = null;
 			}
         }
 
@@ -459,10 +421,8 @@ namespace SmartStore.Web.Framework
                 if (!_taxSettings.AllowCustomersToSelectTaxDisplayType)
                     return;
 
-				_attrService.SaveAttribute(this.CurrentCustomer,
-					 SystemCustomerAttributeNames.TaxDisplayTypeId,
-					 (int)value, _storeContext.CurrentStore.Id);
-            }
+				_attrService.SaveAttribute<int>(this.CurrentCustomer, SystemCustomerAttributeNames.TaxDisplayTypeId, (int)value, _storeContext.CurrentStore.Id);
+			}
         }
 
         public TaxDisplayType GetTaxDisplayTypeFor(Customer customer, int storeId)
@@ -476,8 +436,9 @@ namespace SmartStore.Web.Framework
 
             if (_taxSettings.AllowCustomersToSelectTaxDisplayType && customer != null)
             {
-		        taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, storeId);
-            }
+				taxDisplayType = customer.GetAttribute<int?>(SystemCustomerAttributeNames.TaxDisplayTypeId, _attrService, storeId);
+
+			}
 
             if (!taxDisplayType.HasValue && _taxSettings.EuVatEnabled)
             {
@@ -542,6 +503,5 @@ namespace SmartStore.Web.Framework
         {
 			return _languageService.GetDefaultLanguageSeoCode(storeId);
         }
-
     }
 }

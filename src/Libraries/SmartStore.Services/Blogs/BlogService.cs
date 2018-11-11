@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
-using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Seo;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Blogs
 {
@@ -259,53 +255,6 @@ namespace SmartStore.Services.Blogs
             blogPost.NotApprovedCommentCount = notApprovedCommentCount;
             UpdateBlogPost(blogPost);
         }
-
-		/// <summary>
-		/// Creates a RSS feed with blog posts
-		/// </summary>
-		/// <param name="urlHelper">UrlHelper to generate URLs</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <returns>SmartSyndicationFeed object</returns>
-		public virtual SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId)
-		{
-			if (urlHelper == null)
-				throw new ArgumentNullException("urlHelper");
-
-			DateTime? maxAge = null;
-			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
-			var selfLink = urlHelper.RouteUrl("BlogRSS", new { languageId = languageId }, protocol);
-			var blogLink = urlHelper.RouteUrl("Blog", null, protocol);
-
-			var title = "{0} - Blog".FormatInvariant(_services.StoreContext.CurrentStore.Name);
-
-			if (_blogSettings.MaxAgeInDays > 0)
-				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
-
-			var language = _languageService.GetLanguageById(languageId);
-			var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
-
-			feed.AddNamespaces(false);
-			feed.Init(selfLink, language);
-
-			if (!_blogSettings.Enabled)
-				return feed;
-
-			var items = new List<SyndicationItem>();
-			var blogPosts = GetAllBlogPosts(_services.StoreContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge);
-
-			foreach (var blogPost in blogPosts)
-			{
-				var blogPostUrl = urlHelper.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
-
-				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
-
-				items.Add(item);
-			}
-
-			feed.Items = items;
-
-			return feed;
-		}
 
         #endregion
     }

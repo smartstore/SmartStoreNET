@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 
@@ -50,10 +51,20 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public bool DisplayCommentBox { get; set; }
         public string CustomerComment { get; set; }
+        public string MeasureUnitName { get; set; }
+
+		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+		public bool? SubscribeToNewsLetter { get; set; }
+
+		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
+		public string ThirdPartyEmailHandOverLabel { get; set; }
+		public bool? AcceptThirdPartyEmailHandOver { get; set; }
+
+		public bool DisplayEsdRevocationWaiverBox { get; set; }
 
 		#region Nested Classes
 
-        public partial class ShoppingCartItemModel : EntityModelBase
+		public partial class ShoppingCartItemModel : EntityModelBase
         {
             public ShoppingCartItemModel()
             {
@@ -72,6 +83,8 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ProductName { get; set; }
 
             public string ProductSeName { get; set; }
+
+			public string ProductUrl { get; set; }
 
 			public bool VisibleIndividually { get; set; }
 
@@ -105,6 +118,11 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ShortDesc { get; set; }
             
             public string BasePrice { get; set; }
+
+			public bool IsDownload { get; set; }
+			public bool HasUserAgreement { get; set; }
+
+			public bool IsEsd { get; set; }
 
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }

@@ -40,6 +40,7 @@ namespace SmartStore.Web.Framework.UI
 			
 			return "<# if({0} && {0}.length > 0) {{ #>{1}<# }} #>".FormatInvariant(name, result);
 		}
+
 		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
 		{
 			if (id == 0 && name.IsEmpty())

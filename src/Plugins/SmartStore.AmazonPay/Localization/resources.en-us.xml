@@ -8,15 +8,14 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Register now at <a href="https://payments.amazon.de/preregistration/lpa">Amazon Payments</a>.</p>
+			<![CDATA[<p>Register now at <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
 <p>How to set up "Pay with Amazon":</p><ul>
 <li>Enter your Amazon credentials in the fields provided below. You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account.</li>
-<li>You can find the Merchant ID in Seller Central at Settings - Integration Settings.</li>
-<li>You can find both access keys in Seller Central at Integration - MWS Access Key.</li>
-<li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under Settings - Integration Settings - Instant Notification Settings - Merchant URL.</li>
+<li>You can find the Merchant ID in Seller Central at <b>Settings > Integration Settings</b>.</li>
+<li>You can find both access keys in Seller Central at <b>Integration > MWS Access Key</b>.</li>
+<li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under <b>Settings > Integration Settings > Instant Notification Settings > Merchant URL</b>.</li>
 </ul>
-<p>Note! You get the billing address of the customer after the payment has been authorised by Amazon, so usually shortly after the order confirmation E-mail has been sent to the customer. To avoid misunderstandings, it is therefore advisable to remove the placeholder for the billing address from the message template for order confirmations.</p>
-<p>Please add information about "Pay with Amazon" on your payment page (see CMS - Topics). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
+<p>Please add information about "Pay with Amazon" on your payment page (see <b>CMS > Topics</b>). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
 Text suggestions:<ul>
 <li>Option 1: Pay with Amazon: Pay now with the payment and shipping information from your Amazon account.</li>
 <li>Option 2: Already Amazon customer? Pay now with the payment and shipping information from your Amazon account.</li>
@@ -24,6 +23,9 @@ Text suggestions:<ul>
 </ul></p>]]>
 		</Value>
 	</LocaleResource>
+  <LocaleResource Name="BillingAddressMessageNote">
+    <Value>Please note that this billing address is possibly not the valid billing address for this order!</Value>
+  </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
 		<Value>There was no order reference ID transmitted by Amazon!</Value>
 	</LocaleResource>
@@ -129,7 +131,7 @@ Text suggestions:<ul>
 		<Value>Updating the payment status</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Hint">
-		<Value>Determines the method used to update the payment status.</Value>
+		<Value>Specifies the method used to update the payment status.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DataFetching.Warning">
 		<Value>IPN (instant payment notification) requires valid SSL certificate to be installed on this server. Pay attention that the SSL certificate must be issued by a trusted Certificate Authority, self-signed certificates are not permittted.</Value>
@@ -150,7 +152,7 @@ Text suggestions:<ul>
 		<Value>Payment action</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Hint">
-		<Value>Determines when to debit the customer account.</Value>
+		<Value>Specifies when to debit the customer account.</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.AuthAndCapture">
 		<Value>Immediately debit</Value>
@@ -165,7 +167,7 @@ Text suggestions:<ul>
 		<Value>Apply customer data</Value>
 	</LocaleResource>
 	<LocaleResource Name="SaveEmailAndPhone.Hint">
-		<Value>Determines whether and when the Amazon email address and telephone number of the customer should be saved.</Value>
+		<Value>Specifies whether and when the Amazon email address and telephone number of the customer should be saved.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AmazonPaySaveDataType.OnlyIfEmpty">
 		<Value>Only if empty</Value>
@@ -177,7 +179,7 @@ Text suggestions:<ul>
 		<Value>Show button in mini shopping cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
-		<Value>Determines to show the "Pay with Amazon" button in the mini shopping cart too.</Value>
+		<Value>Specifies to show the "Pay with Amazon" button in the mini shopping cart too.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddressWidgetWidth">
 		<Value>Width of address widget</Value>
@@ -216,36 +218,36 @@ Text suggestions:<ul>
 		<Value>Additional fee percentage</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdditionalFeePercentage.Hint">
-		<Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+		<Value>Specifies whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddOrderNotes">
 		<Value>Create order notes</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddOrderNotes.Hint">
-		<Value>Determines that order notes should be created in context of the data exchange with Amazon Payments.</Value>
+		<Value>Specifies that order notes should be created in context of the data exchange with Amazon Payments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingTaskMinutes">
 		<Value>Frequency (in minutes)</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingTaskMinutes.Hint">
-		<Value>Determines how often status of the different object shall be polled from Amazon Payments servers.</Value>
+		<Value>Specifies how often status of the different object shall be polled from Amazon Payments servers.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays">
 		<Value>Maximal order age (in days)</Value>
 	</LocaleResource>
 	<LocaleResource Name="PollingMaxOrderCreationDays.Hint">
-		<Value>Determines that only orders which are not older than x days to be included in payment data updates.</Value>
+		<Value>Specifies that only orders which are not older than x days to be included in payment data updates.</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAboutErrors">
 		<Value>Inform about a refusal of an authorization</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAboutErrors.Hint">
-		<Value>Determines to create order notes in case of a declination of an Amazon payment, which are visible for customers too. In addition the customer is informed by email about the case.</Value>
+		<Value>Specifies to create order notes in case of a declination of an Amazon payment, which are visible for customers too. In addition the customer is informed by email about the case.</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAddErrors">
 		<Value>Append error message</Value>
 	</LocaleResource>
 	<LocaleResource Name="InformCustomerAddErrors.Hint">
-		<Value>Determines to append the error message to the order note and email.</Value>
+		<Value>Specifies to append the error message to the order note and email.</Value>
 	</LocaleResource>
 </Language>

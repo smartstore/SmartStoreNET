@@ -9,8 +9,11 @@
 		@if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
 		{
 			<div class="variant-picture dynamic-image equalized-column" data-equalized-column-name="pd">
-				<img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
-					 title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
+				@if (Model.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue())
+				{
+					<img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
+						 title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
+				}
 			</div>
 		}
 
@@ -165,7 +168,7 @@
 					<div>
 						<a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
 							@T("Products.DownloadSample")
-							<i class="fa fa-arrow-circle-o-down"></i>
+							<i class="fa fa-download"></i>
 						</a>
 					</div>
 				}

@@ -10,10 +10,10 @@ using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Security
 {
-    /// <summary>
-    /// Permission service
-    /// </summary>
-    public partial class PermissionService : IPermissionService
+	/// <summary>
+	/// Permission service
+	/// </summary>
+	public partial class PermissionService : IPermissionService
     {
         #region Constants
         /// <summary>
@@ -141,9 +141,11 @@ namespace SmartStore.Services.Security
         /// <returns>Permissions</returns>
         public virtual IList<PermissionRecord> GetAllPermissionRecords()
         {
-            var query = from pr in _permissionRecordRepository.Table
-                        orderby pr.Name
-                        select pr;
+            var query = 
+				from pr in _permissionRecordRepository.Table
+				orderby pr.Category, pr.Name
+				select pr;
+
             var permissions = query.ToList();
             return permissions;
         }
@@ -207,7 +209,7 @@ namespace SmartStore.Services.Security
 							if (customerRole == null)
 							{
 								//new role (save it)
-								customerRole = new CustomerRole()
+								customerRole = new CustomerRole
 								{
 									Name = defaultPermission.CustomerRoleSystemName,
 									Active = true,

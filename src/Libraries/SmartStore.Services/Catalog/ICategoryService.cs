@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -42,6 +43,22 @@ namespace SmartStore.Services.Catalog
         /// <param name="category">Category</param>
 		/// <param name="deleteChilds">Whether to delete child categories or to set them to no parent.</param>
 		void DeleteCategory(Category category, bool deleteChilds = false);
+
+		/// <summary>
+		/// Gets categories
+		/// </summary>
+		/// <param name="categoryName">Category name</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="alias">Alias to be filtered</param>
+		/// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
+		/// <param name="storeId">Store identifier; 0 to load all records</param>
+		/// <returns>Category query</returns>
+		IQueryable<Category> GetCategories(
+			string categoryName = "",
+			bool showHidden = false,
+			string alias = null,
+			bool applyNavigationFilters = true,
+			int storeId = 0);
 
         /// <summary>
         /// Gets all categories
@@ -131,6 +148,13 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Map with product category mappings</returns>
 		Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false);
 
+		/// <summary>
+		/// Gets product category mappings
+		/// </summary>
+		/// <param name="categoryIds">Category identifiers</param>
+		/// <returns>Map with product category mappings</returns>
+		Multimap<int, ProductCategory> GetProductCategoriesByCategoryIds(int[] categoryIds);
+
         /// <summary>
         /// Gets a product category mapping 
         /// </summary>
@@ -158,8 +182,10 @@ namespace SmartStore.Services.Catalog
 		/// <param name="pathLookup">A delegate for fast (cached) path lookup</param>
 		/// <param name="addPathToCache">A callback that saves the resolved path to a cache (when <c>pathLookup</c> returned null)</param>
 		/// <param name="categoryLookup">A delegate for fast (cached) category lookup</param>
+		/// <param name="prodCategory">First product category of product</param>
 		/// <returns>Category breadcrumb for product</returns>
-		string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup);
+		string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup,
+			ProductCategory prodCategory = null);
     }
 
 	public static class ICategoryServiceExtensions

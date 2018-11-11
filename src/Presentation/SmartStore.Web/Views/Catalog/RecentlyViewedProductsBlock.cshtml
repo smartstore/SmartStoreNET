@@ -26,8 +26,11 @@
                     
                     <li class="clearfix @cssClass">
                         <figure class="picture pull-left">
-                            <a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" title="@product.DefaultPictureModel.Title">
-                                <img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" /></a>
+							@if (product.DefaultPictureModel.ImageUrl.HasValue())
+							{
+								<a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" title="@product.DefaultPictureModel.Title">
+									<img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" /></a>
+							}
                         </figure>
                         
                         <a  class="product-name" href="@Url.RouteUrl("Product", new { SeName = product.SeName })" >@product.Name</a>

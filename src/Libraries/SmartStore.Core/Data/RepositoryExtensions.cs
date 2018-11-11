@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -9,22 +10,6 @@ namespace SmartStore.Core.Data
     
     public static class RepositoryExtensions
     {
-
-        public static IEnumerable<T> LoadAll<T>(this IRepository<T> rs) where T : BaseEntity
-        {
-            return rs.Table.AsEnumerable();
-        }
-
-        public static IEnumerable<T> Where<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
-        {
-            return rs.Table.Where(predicate);
-        }
-
-        public static T GetSingle<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
-        {
-            return rs.Table.SingleOrDefault(predicate);
-        }
-
         public static T GetFirst<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
         {
             return rs.Table.FirstOrDefault(predicate);
@@ -51,7 +36,9 @@ namespace SmartStore.Core.Data
 			entity.Id = id;
 
 			rs.Attach(entity);
-			rs.Context.ChangeState(entity, System.Data.Entity.EntityState.Deleted);
+
+			// must downcast 'cause of Rhino mocks stub  
+			rs.Context.ChangeState((BaseEntity)entity, System.Data.Entity.EntityState.Deleted);
         }
 
 		public static void DeleteRange<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
@@ -75,6 +62,7 @@ namespace SmartStore.Core.Data
 		/// <remarks>
 		/// This method turns off auto detection, validation and hooking.
 		/// </remarks>
+		[SuppressMessage("ReSharper", "UnusedVariable")]
 		public static int DeleteAll<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null, bool cascade = false) where T : BaseEntity
 		{
 			var count = 0;

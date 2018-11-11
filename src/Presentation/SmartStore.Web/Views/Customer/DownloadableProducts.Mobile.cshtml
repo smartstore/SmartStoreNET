@@ -3,7 +3,6 @@
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Account").Text);
 }
 <div class="page account-page downloadable-products-page">
@@ -25,7 +24,7 @@
                                 @T("Common.CreatedOn"): @item.CreatedOn.ToString("d")
                             </div>
                             <div>
-                                @T("DownloadableProducts.Fields.Product"): <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+                                @T("DownloadableProducts.Fields.Product"): <a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
                                 @if (!String.IsNullOrEmpty(item.ProductAttributes))
                                 {
                                     <div class="attributes">

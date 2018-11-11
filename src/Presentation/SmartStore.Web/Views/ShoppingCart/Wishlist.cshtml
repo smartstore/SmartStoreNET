@@ -6,7 +6,6 @@
 @{
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Wishlist").Text);
 }
 
@@ -34,11 +33,14 @@
 		@if (Model.ShowProductImages)
 		{
 			<td class="productpicture nobr">
-				<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+				@if (item.Picture.ImageUrl.HasValue())
+				{
+					<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+				}
 			</td>
 		}
 		<td class="product">
-			<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
 			@if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
 			{
@@ -134,7 +136,7 @@
 						@if (Model.ShowProductBundleImages)
 						{
 							<div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatWith(Model.BundleThumbSize + 10))">
-								@if (!item.BundleItem.HideThumbnail)
+								@if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 								{
 									<img class="img-polaroid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
 								}
@@ -144,7 +146,7 @@
 							<div class="bundle-item-name">
 								@if (item.VisibleIndividually)
 								{
-									<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 								}
 								else
 								{
@@ -314,7 +316,7 @@
                         @if (Model.DisplayAddToCart)
                         {
                             <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary pull-right wishlist-add-to-cart-button">
-                                <i class="fa fa-shopping-cart"></i>
+                                <i class="fa fa-cart-arrow-down"></i>
                                 @T("ShoppingCart.AddToCart")
                             </button>
                         }						

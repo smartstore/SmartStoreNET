@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -165,6 +166,20 @@ namespace SmartStore.Services.Common
             });
         }
 
+		public virtual Multimap<int, GenericAttribute> GetAttributesForEntity(int[] entityIds, string keyGroup)
+		{
+			Guard.ArgumentNotNull(() => entityIds);
+
+			var query = _genericAttributeRepository.TableUntracked
+				.Where(x => entityIds.Contains(x.EntityId) && x.KeyGroup == keyGroup);
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.EntityId, x => x);
+
+			return map;
+		}
+
 		/// <summary>
 		/// Get queryable attributes
 		/// </summary>
@@ -194,49 +209,54 @@ namespace SmartStore.Services.Common
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
-            string keyGroup = entity.GetUnproxiedEntityType().Name;
+			SaveAttribute(entity.Id, key, entity.GetUnproxiedEntityType().Name, value, storeId);
+        }
 
-			var props = GetAttributesForEntity(entity.Id, keyGroup)
+		public virtual void SaveAttribute<TPropType>(int entityId, string key, string keyGroup, TPropType value, int storeId = 0)
+		{
+			Guard.ArgumentNotZero(entityId, "entityId");
+
+			var props = GetAttributesForEntity(entityId, keyGroup)
 				 .Where(x => x.StoreId == storeId)
 				 .ToList();
 
-            var prop = props.FirstOrDefault(ga =>
-                ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); // should be culture invariant
+			var prop = props.FirstOrDefault(ga =>
+				ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); // should be culture invariant
 
-            string valueStr = value.Convert<string>();
+			string valueStr = value.Convert<string>();
 
-            if (prop != null)
-            {
-                if (string.IsNullOrWhiteSpace(valueStr))
-                {
-                    //delete
-                    DeleteAttribute(prop);
-                }
-                else
-                {
-                    //update
-                    prop.Value = valueStr;
-                    UpdateAttribute(prop);
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(valueStr))
-                {
-                    //insert
-                    prop = new GenericAttribute()
-                    {
-                        EntityId = entity.Id,
-                        Key = key,
-                        KeyGroup = keyGroup,
-                        Value = valueStr,
+			if (prop != null)
+			{
+				if (string.IsNullOrWhiteSpace(valueStr))
+				{
+					// delete
+					DeleteAttribute(prop);
+				}
+				else
+				{
+					// update
+					prop.Value = valueStr;
+					UpdateAttribute(prop);
+				}
+			}
+			else
+			{
+				if (!string.IsNullOrWhiteSpace(valueStr))
+				{
+					// insert
+					prop = new GenericAttribute
+					{
+						EntityId = entityId,
+						Key = key,
+						KeyGroup = keyGroup,
+						Value = valueStr,
 						StoreId = storeId
-                    };
-                    InsertAttribute(prop);
-                }
-            }
-        }
+					};
+					InsertAttribute(prop);
+				}
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -62,12 +62,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,10 +78,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -88,9 +85,9 @@
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Core, Version=2.8.50126.400, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -153,34 +150,57 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
-    <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\ProductBundleDataConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\ShippingOptionConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TimeSpanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\DateTimeConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\ITypeConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TypeConverterAdapter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
+    <Compile Include="Domain\DataExchange\DataExchangeEnums.cs" />
+    <Compile Include="Domain\DataExchange\ImportEnums.cs" />
+    <Compile Include="Domain\DataExchange\ImportProfile.cs" />
     <Compile Include="Domain\DataExchange\SyncMapping.cs" />
+    <Compile Include="Domain\DataExchange\DataExchangeSettings.cs" />
+    <Compile Include="Domain\DataExchange\ExportDeployment.cs" />
+    <Compile Include="Domain\DataExchange\ExportProjection.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
-    <Compile Include="Domain\Common\RestrictionContextTypes.cs" />
+    <Compile Include="Domain\DataExchange\ExportEnums.cs" />
+    <Compile Include="Domain\DataExchange\ExportFilter.cs" />
+    <Compile Include="Domain\DataExchange\ExportProfile.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
+    <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
     <Compile Include="Extensions\XPathExtensions.cs" />
+    <Compile Include="Fakes\FakeController.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="Infrastructure\ContextState.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
     <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
     <Compile Include="ITransient.cs" />
-    <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
+    <Compile Include="Collections\MostRecentlyUsedList.cs" />
+    <Compile Include="Localization\LocalizationHelper.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
+    <Compile Include="Plugins\Providers\IsHiddenAttribute.cs" />
     <Compile Include="Plugins\Providers\IUserEditable.cs" />
     <Compile Include="Plugins\Providers\IProvider.cs" />
     <Compile Include="Plugins\Providers\IProviderManager.cs" />
@@ -207,10 +227,6 @@
     <Compile Include="Data\Hooks\PreInsertHook.cs" />
     <Compile Include="Data\Hooks\PreUpdateHook.cs" />
     <Compile Include="Data\IDbContext.cs" />
-    <Compile Include="Data\Impex\ImportModeFlags.cs" />
-    <Compile Include="Data\Impex\ImportMessage.cs" />
-    <Compile Include="Data\Impex\ImportProgressInfo.cs" />
-    <Compile Include="Data\Impex\ImportResult.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
     <Compile Include="Data\SqlFileTokenizer.cs" />
     <Compile Include="Domain\Catalog\ProductBundleData.cs" />
@@ -295,7 +311,7 @@
     <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
     <Compile Include="Collections\TreeNode.cs" />
-    <Compile Include="ComponentModel\Expando.cs" />
+    <Compile Include="ComponentModel\HybridExpando.cs" />
     <Compile Include="ComponentModel\PropertyBag.cs" />
     <Compile Include="ComponentModel\SerializationUtils.cs" />
     <Compile Include="Domain\Catalog\BackInStockSubscription.cs" />
@@ -339,14 +355,12 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\HtmlTextWriterExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Extensions\XmlNodeExtensions.cs" />
     <Compile Include="Fakes\Extensions.cs" />
@@ -365,7 +379,6 @@
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
-    <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />
     <Compile Include="Domain\Blogs\BlogSettings.cs" />
@@ -427,23 +440,17 @@
     <Compile Include="Domain\Security\SecuritySettings.cs" />
     <Compile Include="Domain\Shipping\ShippingStatus.cs" />
     <Compile Include="Domain\StoreInformationSettings.cs" />
-    <Compile Include="Financial\Currency.cs" />
-    <Compile Include="Financial\Money.cs" />
     <Compile Include="GenericComparer.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="IHideObjectMembers.cs" />
     <Compile Include="Infrastructure\ComparableObject.cs" />
-    <Compile Include="Infrastructure\DateRange.cs" />
     <Compile Include="Infrastructure\DisposableObject.cs" />
-    <Compile Include="Infrastructure\EnumFriendlyNameAttribute.cs" />
     <Compile Include="Infrastructure\Error.cs" />
     <Compile Include="Infrastructure\Guard.cs" />
     <Compile Include="Infrastructure\ICloneable.cs" />
     <Compile Include="Infrastructure\IOrdered.cs" />
     <Compile Include="Infrastructure\IStartupTask.cs" />
-    <Compile Include="Infrastructure\Misc.cs" />
     <Compile Include="Infrastructure\RegularExpressions.cs" />
-    <Compile Include="Infrastructure\ValueObject.cs" />
     <Compile Include="IWebHelper.cs" />
     <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
     <Compile Include="Domain\Security\PermissionRecord.cs" />
@@ -558,18 +565,19 @@
     <Compile Include="Themes\ThemeVariableInfo.cs" />
     <Compile Include="Themes\ThemeVariableType.cs" />
     <Compile Include="Utilities\ActionDisposable.cs" />
-    <Compile Include="Utilities\CollectionHelper.cs" />
-    <Compile Include="Utilities\DateTimeConvert.cs" />
     <Compile Include="Utilities\DictionaryConverter.cs" />
     <Compile Include="Utilities\FileDownloadManager.cs" />
     <Compile Include="Utilities\FileSystemHelper.cs" />
+    <Compile Include="Utilities\HashCodeCombiner.cs" />
     <Compile Include="Utilities\Inflector.cs" />
-    <Compile Include="Extensions\JsonExtensions.cs" />
+    <Compile Include="Utilities\ObjectDumper.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
+    <Compile Include="ComponentModel\FastActivator.cs" />
     <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
+    <Compile Include="ComponentModel\FastProperty.cs" />
     <Compile Include="Utilities\Threading\LockExtensions.cs" />
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />
@@ -590,6 +598,7 @@
     <Compile Include="Packaging\Updater\AppUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -598,6 +607,7 @@
   <ItemGroup>
     <Compile Include="Infrastructure\ObjectSignatureAttribute.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

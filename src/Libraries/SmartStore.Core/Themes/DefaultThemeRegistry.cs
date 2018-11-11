@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -35,7 +36,7 @@ namespace SmartStore.Core.Themes
 
 		public DefaultThemeRegistry(IEventPublisher eventPublisher, bool? enableMonitoring, string themesBasePath, bool autoLoadThemes)
         {
-			this._enableMonitoring = enableMonitoring ?? CommonHelper.GetAppSetting<bool>("sm:MonitorThemesFolder", true);
+			this._enableMonitoring = enableMonitoring ?? CommonHelper.GetAppSetting("sm:MonitorThemesFolder", true);
 			this._themesBasePath = themesBasePath.NullEmpty() ?? CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 			this._eventPublisher = eventPublisher;
 
@@ -102,10 +103,9 @@ namespace SmartStore.Core.Themes
 		{
 			Guard.ArgumentNotNull(() => manifest);
 
-			bool removed = false;
 			if (!isInit)
 			{
-				removed = TryRemoveManifest(manifest.ThemeName);
+				TryRemoveManifest(manifest.ThemeName);
 			}
 
 			ThemeManifest baseManifest = null;
@@ -131,7 +131,8 @@ namespace SmartStore.Core.Themes
 			}
 		}
 
-		private bool TryRemoveManifest(string themeName)
+	    [SuppressMessage("ReSharper", "AssignmentInConditionalExpression")]
+	    private bool TryRemoveManifest(string themeName)
 		{
 			bool result;
 			ThemeManifest existing;

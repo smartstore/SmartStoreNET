@@ -50,13 +50,6 @@
                         @Html.TextAreaFor(model => model.AddNewComment.CommentText)
                         @Html.ValidationMessageFor(model => model.AddNewComment.CommentText)
                     </div>
-                    string result = TempData["sm.blog.addcomment.result"] as string;
-                    if (!String.IsNullOrEmpty(result))
-                    {
-                    <div class="result">
-                        @result
-                    </div>
-                    }
                     <div class="message-error">
                         @Html.ValidationSummary(true)
                     </div>

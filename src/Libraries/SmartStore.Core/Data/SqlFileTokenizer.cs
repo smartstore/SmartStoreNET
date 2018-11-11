@@ -49,10 +49,10 @@ namespace SmartStore.Core.Data
 			
 			using (var reader = ReadSqlFile())
 			{
-				var statement = string.Empty;
+				string statement;
 				while ((statement = ReadNextSqlStatement(reader)) != null)
 				{
-					yield return statement;
+					yield return statement.EmptyNull();
 				}
 			}
 		}

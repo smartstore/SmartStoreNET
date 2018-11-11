@@ -117,8 +117,8 @@ var ShopBar = (function($) {
         var tool = tools[data.type];
         var items = $(data.src).closest(".items");
         if (items.length) {
-            // deletion occuured within the dropdown itself, so reload html!
-            items.throbber({ white: true, small: true });
+            // deletion occured within the dropdown itself, so reload html!
+            items.throbber({ white: true, small: true, message: '' });
             ShopBar.loadHtml(tool, true, function () {
                 //items.data("throbber").hide();
             });
@@ -179,19 +179,28 @@ var ShopBar = (function($) {
             var tool = _.isString(type) ? tools[type] : type;
             if (!tool) return;
 
+            var cnt = tool.find('.shopbar-flyout');
+            var spinner = cnt.find('.spinner-container');
+            if (spinner.length === 0) {
+                spinner = $('<div class="spinner-container"></div>').appendTo(cnt).append(createCircularSpinner(32));
+            }
+
             if (!keepOpen) {
                 tool.removeClass("loaded").addClass("loading");
+                spinner.addClass("active");
             }
-            var cnt = tool.find('.shopbar-flyout');
+            
             $.ajax({
                 cache: false,
                 type: "POST",
                 url: cnt.data("href"),
                 success: function (data) {
-                    cnt.empty().html(data);
+                    cnt.find('.shopbar-flyout-inner').remove();
+                    cnt.append(data);
                 },
                 complete: function (jqXHR, textStatus) {
                     tool.removeClass("loading").addClass("loaded");
+                    spinner.removeClass("active");
                     if (_.isFunction(fn)) {
                         fn.apply(this);
                     }

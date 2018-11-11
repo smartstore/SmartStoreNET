@@ -5,65 +5,57 @@ Version: 1, Timestamp: 18.08.2012
 
 .throbber {
     display: none;
-	.opacity(0);
-    
-    & .throbber-overlay {
-        position: absolute;
-        left: 0;
-        top: 0;
-		right: 0;
-		bottom: 0;
-        background-color: #000;
-        .opacity(70);
-        z-index: 2147483640;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 2147483640;
+    background-color: rgba(0,0,0, 0.7);
+
+    &.white {
+        background-color: rgba(255,255,255, 0.85);
     }
-    
-    &.white .throbber-overlay {
-        background-color: #fff;
-    }
-    
-    & .throbber-content {
-        position: absolute;
-        z-index: 2147483640; 
-        color: #fff;
-        text-shadow: 1px 1px 0 #666;
-        background: url('images/throbber-progress-white-32.gif') 4px 6px no-repeat;
-    }
-    
-    &.large .throbber-content {
-        min-height: 38px;
-        line-height: 32px;
-        max-width: 400px;
-        font-size: 24px;
-        font-family: 'Segoe UI Light', 'Segoe UI', Tahoma, 'Helvetica Neue', Helvetica, Arial, 'sans-serif';
-        font-weight: 100;
-        padding-left: 44px;
-    }
-    &.small .throbber-content {
-        .text-overflow();
-        height: 16px;
-		font-size: @baseFontSize;
-        line-height: @baseLineHeight;
-        vertical-align: middle;
-        padding-left: 24px;
-        background: url('images/throbber-progress-white-32.gif') 0 6px no-repeat;
-    }
-    &.white .throbber-content {
-        color: #000;
-        text-shadow: none;
-    }
-    
-    &.large .throbber-content         { background-image: url('images/throbber-progress-white-32.gif'); }
-    &.small .throbber-content         { background-image: url('images/throbber-progress-white-16.gif'); background-position: 0 0; }
-    &.white.large .throbber-content   { background-image: url('images/throbber-progress-black-32.gif'); }
-    &.white.small .throbber-content   { background-image: url('images/throbber-progress-black-16.gif'); background-position: 0 0; }
-    
-    &.global .throbber-overlay {
+
+    body > & {
         position: fixed;
+    }
+
+    .throbber-flex {
         width: 100%;
         height: 100%;
+        position: absolute;
+        .display-flex();
+        .flex-center();
+
+        > * {
+            text-align: center;
+        }
     }
-    &.global .throbber-content {
-        position: fixed;
+
+    .throbber-content {
+        display: block;
+        overflow: hidden;
+        line-height: 1.3;
+
+        &:not(:empty) {
+            margin-bottom: 30px;
+        }
+    }
+
+    &.large .throbber-content {
+        font-size: 32px;
+        font-weight: 100;
+    }
+
+    &.small .throbber-content {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &:not(.white) .throbber-content {
+        color: #fff;
     }
 }

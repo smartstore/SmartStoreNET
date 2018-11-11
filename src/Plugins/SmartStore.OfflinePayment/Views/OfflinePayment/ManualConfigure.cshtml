@@ -1,6 +1,5 @@
 ﻿@model SmartStore.OfflinePayment.Models.ManualConfigurationModel
 @using SmartStore.Web.Framework;
-
 @{
 	Layout = "";
 }
@@ -16,9 +15,19 @@
             </td>
             <td class="adminData">
 				@Html.SettingOverrideCheckbox(model => model.TransactMode)
-                @Html.DropDownList("TransactMode", Model.TransactModeValues)
+                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ExcludedCreditCards)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.ExcludedCreditCards)
+				@Html.ListBoxFor(x => x.ExcludedCreditCards, new MultiSelectList(Model.AvailableCreditCards, "Value", "Text"), new { multiple = "multiple" })
+				@Html.ValidationMessageFor(model => model.ExcludedCreditCards)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AdditionalFee)

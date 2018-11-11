@@ -46,7 +46,7 @@ namespace SmartStore.Services.Stores
 		IQueryable<StoreMapping> GetStoreMappingsFor(string entityName, int entityId);
 
 		/// <summary>
-		/// Save the store napping for an entity
+		/// Save the store mapping for an entity
 		/// </summary>
 		/// <typeparam name="T">Entity type</typeparam>
 		/// <param name="entity">The entity</param>

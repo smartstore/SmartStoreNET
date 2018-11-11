@@ -36,19 +36,44 @@
 			}
 		}).trigger('change');
 
-		$('#remove-product-linkage').click(function () {
+		$('#RemoveProductLinkageButton').click(function () {
 			$('#linked-product-name').empty();
 			$('#@Html.FieldIdFor(model => model.LinkedProductId)').val('0');
 			toggleLinkageButtons();
 		});
 
 		toggleLinkageButtons();
+
+		// add product linkage
+		$(document).on('click', '#AddProductLinkageButton', function () {
+			$('#@(Html.FieldIdFor(x => x.LinkedProductId))').entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew")',
+				maxReturnValues: 1,
+				disableIds: '@Model.ProductId',
+				onLoadDialogBefore: function () {
+					$('#AddProductLinkageButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#AddProductLinkageButton').prop('disabled', false).button('reset');
+				},
+				onOkClicked: function (ids) {
+					var dialog = $('#entity-picker-product-dialog'),
+						item = dialog.find('.entity-picker-list .selected').first();
+
+					$('#linked-product-name').html(item.find('.title').attr('title'));
+
+					return true;
+				}
+			});
+		});
+
 	});
 
 	function toggleLinkageButtons() {
 		var unlinked = ($('#@Html.FieldIdFor(model => model.LinkedProductId)').val() === '0');
-		$('#add-product-linkage').toggle(unlinked);
-		$('#remove-product-linkage').toggle(!unlinked);
+		$('#AddProductLinkageButton').toggle(unlinked);
+		$('#RemoveProductLinkageButton').toggle(!unlinked);
 	}
 </script>
 
@@ -70,12 +95,13 @@
 			@Html.HiddenFor(model => model.LinkedProductId)
 			<div id="linked-product-name">@Model.LinkedProductName</div>
 
-			<button id="add-product-linkage" type="button" class="btn btn-below"
-				onclick="javascript:OpenWindow('@(Url.Action("ProductAttributeValueLinkagePopup", "Product", new { openerProductId = Html.FieldIdFor(model => model.LinkedProductId), openerProductName = Html.FieldIdFor(model => model.Name) }))', 1000, 800, true); return false;">
-				<i class="fa fa-link"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
-			</button>
-			<button id="remove-product-linkage" type="button" class="btn btn-below">
+			<button type="button" id="RemoveProductLinkageButton" class="btn btn-below">
 				<i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.UnlinkProduct")
+			</button>
+
+			<button type="button" id="AddProductLinkageButton" class="btn btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
+				<i class="fa fa-link"></i>
+				@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.LinkProduct")
 			</button>
 
             @Html.ValidationMessageFor(model => model.LinkedProductId)

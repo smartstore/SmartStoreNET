@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SmartStore.Core.Domain.Blogs
 {
     public static class BlogExtensions
     {
-        public static string[] ParseTags(this BlogPost blogPost)
+	    [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+	    public static string[] ParseTags(this BlogPost blogPost)
         {
             if (blogPost == null)
                 throw new ArgumentNullException("blogPost");
@@ -13,8 +15,8 @@ namespace SmartStore.Core.Domain.Blogs
             var parsedTags = new List<string>();
             if (!String.IsNullOrEmpty(blogPost.Tags))
             {
-                string[] tags2 = blogPost.Tags.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string tag2 in tags2)
+                var tags2 = blogPost.Tags.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var tag2 in tags2)
                 {
 					var tmp = tag2.Trim();
 					if (!String.IsNullOrEmpty(tmp))

@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
-using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.News;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.News
 {
@@ -61,13 +59,5 @@ namespace SmartStore.Services.News
         /// </summary>
         /// <param name="newsItem">News item</param>
         void UpdateCommentTotals(NewsItem newsItem);
-
-		/// <summary>
-		/// Creates a RSS feed with news items
-		/// </summary>
-		/// <param name="urlHelper">UrlHelper to generate URLs</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <returns>SmartSyndicationFeed object</returns>
-		SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId);
     }
 }

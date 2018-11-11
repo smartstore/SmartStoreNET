@@ -167,7 +167,21 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			string signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
 
 			if (signatureProvider != signatureConsumer)
-				return HmacResult.InvalidSignature;
+			{
+				if (cacheControllingData.AllowEmptyMd5Hash)
+				{
+					messageRepresentation = _hmac.CreateMessageRepresentation(context, null, headTimestamp);
+
+					signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
+
+					if (signatureProvider != signatureConsumer)
+						return HmacResult.InvalidSignature;
+				}
+				else
+				{
+					return HmacResult.InvalidSignature;
+				}
+			}
 
 			customer = GetCustomer(apiUser.CustomerId);
 			if (customer == null)

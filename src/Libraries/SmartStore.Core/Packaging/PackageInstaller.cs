@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using NuGet;
@@ -62,7 +63,7 @@ namespace SmartStore.Core.Packaging
 		{
 			Guard.ArgumentNotNull(() => packageStream);
 			
-			IPackage package = null;
+			IPackage package;
 			try
 			{
 				package = new ZipPackage(packageStream);
@@ -215,6 +216,7 @@ namespace SmartStore.Core.Packaging
 			}
 		}
 
+		[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Local")]
 		private bool RestoreExtensionFolder(string extensionFolder, string extensionId)
 		{
 			var virtualSource = _virtualPathProvider.Combine("~", extensionFolder, extensionId);

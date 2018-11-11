@@ -1,0 +1,534 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@using SmartStore.Core.Domain.DataExchange;
+@model ImportProfileModel
+@{
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
+}
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.TempFileName)
+@Html.HiddenFor(model => model.EntityType)
+
+@if (Model.ExistingFileNames.Count > 1)
+{
+	<div class="alert alert-warning">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@T("Admin.DataExchange.Import.MultipleFilesSameFileTypeNote")
+	</div>
+}
+
+<div>
+	<table class="adminContent">
+		<tr id="ImportFileUploadContainer">
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+
+				<div id="ImportFileUploader" class="fileupload">
+					<span class="btn btn-primary fileinput-button">
+						<i class="fa fa-upload"></i>
+						<span>@T(Model.ExistingFileNames.Any() ? "Admin.DataExchange.Import.AddAnotherFile" : "Admin.DataExchange.Import.FileUpload")</span>
+						<input id="ImportFileUpload" type="file" name="importfile" />
+					</span>
+
+					<button class="btn btn-warning cancel">
+						<i class="fa fa-times"></i>
+						<span>@T("Common.Fileuploader.Cancel")</span>
+					</button>
+
+					<div class="span5 fileupload-progress fade">
+						<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+							<div class="bar" style="width:0%;"></div>
+						</div>
+						<div class="progress-extended">&nbsp;</div>
+					</div>
+				</div>
+
+			</td>
+		</tr>
+		<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td id="ImportFileList" class="adminData">
+				@foreach (var fileName in Model.ExistingFileNames)
+				{
+					<p>
+						@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+						<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+
+						<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+							<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+						</button>
+					</p>
+				}
+			</td>
+		</tr>
+		@if (Model.ScheduleTaskId > 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ScheduleTaskId)
+				</td>
+				<td class="adminData">
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, reloadPage = true, area = "admin" })
+				</td>
+			</tr>
+		}
+		@if (Model.ImportResult != null)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ImportResult)
+				</td>
+				<td class="adminData">
+					@Html.Partial("ProfileImportResult", Model.ImportResult)
+				</td>
+			</tr>
+		}
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Enabled)
+				@Html.ValidationMessageFor(x => x.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.EntityTypeName)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(x => x.EntityTypeName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Name)
+				@Html.ValidationMessageFor(x => x.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.KeyFieldNames)
+			</td>
+			<td class="adminData">
+				@*ListBoxFor is insufficient here because the user cannot influence the stored order*@
+				<select class="control-large" multiple="multiple" name="@Html.FieldNameFor(x => x.KeyFieldNames)" id="@Html.FieldIdFor(x => x.KeyFieldNames)">
+					@foreach (var field in Model.KeyFieldNames)
+					{
+						var availableKey = Model.AvailableKeyFieldNames.FirstOrDefault(x => x.Value == field);
+						<option value="@field" selected="selected">@(availableKey != null ? availableKey.Text : field)</option>
+					}
+					@foreach (var field in Model.AvailableKeyFieldNames)
+					{
+						var selectedKey = Model.KeyFieldNames.FirstOrDefault(x => x == field.Value);
+						if (!selectedKey.HasValue())
+						{
+							<option value="@field.Value">@field.Text</option>
+						}
+					}
+				</select>
+				@Html.ValidationMessageFor(model => model.KeyFieldNames)
+			</td>
+		</tr>
+		@if (Model.KeyFieldNames != null && Model.KeyFieldNames.Contains("Id", StringComparer.OrdinalIgnoreCase))
+		{
+			<tr>
+				<td colspan="2">
+					<div class="alert alert-warning">
+						@T("Admin.DataExchange.Import.KeyFieldNames.Note")
+					</div>
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Skip)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Skip)
+				@Html.ValidationMessageFor(x => x.Skip)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Take)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Take)
+				@Html.ValidationMessageFor(x => x.Take)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.UpdateOnly)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.UpdateOnly)
+				@Html.ValidationMessageFor(x => x.UpdateOnly)
+			</td>
+		</tr>
+		@if (Model.EntityType == ImportEntityType.Product)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ExtraData.NumberOfPictures)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ExtraData.NumberOfPictures)
+					@Html.ValidationMessageFor(x => x.ExtraData.NumberOfPictures)
+				</td>
+			</tr>
+		}
+	</table>
+</div>
+
+@if (Model.CsvConfiguration != null)
+{
+	var viewData = new ViewDataDictionary();
+	viewData.Add("ShowGroupCaption", true);
+	viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
+	viewData.ModelState.Merge(ViewData.ModelState);
+	@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
+}
+
+@if (Model.ExistingFileNames.Any())
+{
+	@Html.Partial("_ColumnMappings")
+}
+
+<script type="text/javascript">
+	var mappedProperties = [];
+
+	jQuery(document).ready(function () {
+		var maxMappingLableLength = @(Model.MaxMappingLabelTextLength);
+
+		// upload import file
+		$('#ImportFileUploader').fileupload({
+			url: '@Url.Action("FileUpload", new { id = Model.Id })',
+			dataType: 'json',
+			acceptFileTypes: /(\.|\/)(csv|xlsx|txt|tab)$/i,
+			done: function (e, data) {
+				if (data.result.success) {
+					$('#ImportFileListContainer').show();
+
+					if (!_.isEmpty(data.result.tempFile)) {
+						$('input[name=TempFileName]').val(data.result.tempFile);
+						$('#ImportFileList').html(data.result.tempFile);
+						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
+					}
+					else {
+						location.href = '@Url.Action("Edit", new { id = Model.Id })';
+					}
+				}
+			}
+		});
+
+		// delete import file
+		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
+			e.preventDefault();
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
+			return false;
+		});
+
+		// execute import
+		$('#ProfileImportButton').click(function (e) {
+			e.preventDefault();
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
+			return false;
+		});
+
+		// reset column mappings
+		$('#ResetColumnMappings').click(function (e) {
+			e.preventDefault();
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';
+				$('body').append(form);
+				$('#ResetColumnMappingsForm').submit();
+			}
+			return false;
+		});
+
+		// mapping row handling
+		$('#ImportColumnMappings').on('change', '.select-property, .select-column', function (e) {
+			e.stopPropagation();
+			var row = $(this).closest('tr');
+			if (row.hasClass('column-mapping-new')) {
+				var properties = row.find('.select-property'),
+					hasColumn = !_.isEmpty(row.find('.select-column').select2('val')),
+					hasProperty = !_.isEmpty(properties.select2('val')),
+					isDefaultDisabled = (properties.find('option:selected').attr('data-defaultdisabled') === '1');
+
+				row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
+
+				row.find('.mapping-add').prop('disabled', !(hasProperty && hasColumn));
+			}
+		}).on('click', '.item-inner', function (e) {
+			// start editing mapping item
+			e.stopPropagation();
+			var item = $(this).closest('.mapping-item');
+
+			closeAllMappingEdits();
+
+			if (item.find('select').length > 0)
+				return;
+
+			var isProperty = item.hasClass('mapping-property'),
+				template = $(isProperty ? '#PropertyMappingTemplate' : '#ColumnMappingTemplate').children(':first'),
+				currentValue = item.find(isProperty ? 'input[name^="ColumnMapping.Property."]' : 'input[name^="ColumnMapping.Column."]').val();
+
+			// hide static label
+			item.find('.item-inner').hide();
+
+			// clone edit template into mapping item
+			var select = template.clone().appendTo(item).find('select');
+			select.val(currentValue);
+
+			select = initSelectBox(select, isProperty);
+			select.select2('focus');
+		}).on('click', '.mapping-apply', function (e) {
+			// apply edited values
+			e.stopPropagation();
+			var item = $(this).closest('.mapping-item'),
+				val = item.find('select').select2('val');
+
+			item.find('input[type=hidden]').val(val);
+
+			if (item.hasClass('mapping-property')) {
+				updatePropertyLabel(item, val);
+			}
+			else {
+				if (_.isEmpty(val)) {
+					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
+				}
+				item.find('.left-label').html(val);
+			}
+
+			var row = $(this).closest('tr'),
+				hasColumn = !_.isEmpty(row.find('input[name^="ColumnMapping.Column."]').val()),
+				property = row.find('input[name^="ColumnMapping.Property."]').val(),
+				properties = $('#PropertyMappingTemplate').find('select'),
+				isDefaultDisabled = (properties.find('option[value="' + property + '"]').attr('data-defaultdisabled') === '1');
+
+			row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
+
+			closeAllMappingEdits();
+		}).on('click', '.mapping-add', function (e) {
+			// add new mapping row
+			e.stopPropagation();
+			var row = $(this).closest('tr'),
+				table = row.closest('table'),
+				index = parseInt(table.attr('data-maxindex')) + 1;
+
+			var property = row.find('.select-property').select2('val'),
+				column = row.find('.select-column').select2('val');
+
+			row.find('.input-property').attr('name', 'ColumnMapping.Property.' + index).val(property);
+			row.find('.input-column').attr('name', 'ColumnMapping.Column.' + index).val(column);
+			row.find('.input-default').attr('name', 'ColumnMapping.Default.' + index);
+
+			table.attr('data-maxindex', index);
+			row.removeClass('column-mapping-new');
+
+			row.find('.item-inner').removeClass('hide');
+			updatePropertyLabel(row.find('.mapping-property'), property);
+			row.find('.mapping-column .left-label').text(column);
+
+			row.find('.select-property').select2('destroy').remove();
+			row.find('.select-column').select2('destroy').remove();
+
+			row.find('.mapping-add').remove();
+			row.find('.mapping-delete').show();
+
+			appendNewMappingRow();
+		}).on('click', '.mapping-cancel', function (e) {
+			e.stopPropagation();
+			closeAllMappingEdits();
+		}).on('click', '.mapping-delete', function (e) {
+			e.stopPropagation();
+			$(this).closest('tr').remove();
+		});
+
+		// close mapping edits
+		$(document).on('click', function (e) {
+			var table = $(e.target).closest('table');
+
+			if (table.length === 0 || !table.hasClass('column-mapping')) {
+				closeAllMappingEdits();
+			}
+		});
+
+		appendNewMappingRow();
+
+
+		function closeAllMappingEdits() {
+			$('#ImportColumnMappings').find('.mapping-edit').each(function () {
+				var self = $(this);
+				self.closest('.mapping-item').find('.item-inner').show();
+				self.find('select').select2('destroy');
+				self.remove();
+			});
+		}
+
+		function updatePropertyLabel(context, val) {
+			context.find('.right-label').text(val);
+
+			var leftLabel = context.find('.left-label');
+			isLocalized = (val.indexOf(']', val.length - 1) !== -1),
+			text = context.find('select').find('option:selected').text();
+
+			if (text.length > maxMappingLableLength) {
+				leftLabel.text(text.substring(0, maxMappingLableLength) + '…');
+				leftLabel.attr('title', $('<div/>').html(text).text());
+			}
+			else {
+				leftLabel.text(text);
+				leftLabel.attr('title', '');
+			}
+
+			context.find('i').removeClass('fa-globe fa-chain-broken').addClass(isLocalized ? 'fa-globe' : 'fa-chain-broken');
+		}
+
+		function initSelectBox(element, isProperty) {
+			return element.select2({
+				allowClear: true,
+				minimumResultsForSearch: 16,
+				matcher: function (term, text, opt) {
+					var searchFor = term.toUpperCase();
+
+					if (text.toUpperCase().indexOf(searchFor) >= 0)
+						return true;
+
+					var val = $(opt).val();
+					if (val && val.toUpperCase().indexOf(searchFor) >= 0)
+						return true;
+
+					return false;
+				},
+				formatResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
+				formatSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
+			});
+		}
+
+		function appendNewMappingRow() {
+			var mappings = $('#ImportColumnMappings');
+			if (!mappings.length)
+				return;
+
+			var html = $('#AddMappingTemplate').find('table tbody').html();
+
+			mappings.find('table:first tbody').append(html);
+
+			var row = mappings.find('table:first tr:last');
+
+			initSelectBox(row.find('.select-property'), true);
+			initSelectBox(row.find('.select-column'), false);
+		}
+
+		function selectPropertyFormatting(item, container, query) {
+			try {
+				if (item.text.length > 0) {
+					var option = $(item.element),
+						isLocalized = (item.id.indexOf(']', item.id.length - 1) !== -1),
+						html = '';
+
+					if (option.length === 0) {
+						html += '<div class="mapping-list-item">';
+						html += '<span style="display: inline-block; margin-right: 0;">';
+						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
+						html += '</span>';
+					}
+					else {
+						// update mapped properties when first popup list item is about to be rendered.
+						if (option.index() === 1) {
+							mappedProperties = [];
+
+							$('#ImportColumnMappings').find('input[name^="ColumnMapping.Property."]').each(function () {
+								var value = $(this).val();
+								if (!_.isEmpty(value)) {
+									mappedProperties.push(value);
+								}
+							});
+						}
+
+						var mappingIndex = $.inArray(item.id, mappedProperties);
+
+						html += '<div class="clear"></div>';
+						html += '<div class="mapping-list-item' + (mappingIndex === -1 ? '' : ' muted') + '">';
+
+						html += '<span style="display: inline-block; margin-right: 0;">';
+						html += '<i class="fa fa-fw ';
+						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-chain-broken' : 'fa-link'));
+						html += (mappingIndex === -1 ? ' text-success" />' : ' text-warning" />');
+						html += '</span>';
+					}
+
+					html += '<span class="muted right-label">' + item.id + '</span>';
+
+					html += '<span class="ml4" style="display: inline-block;"';
+					if (item.text.length > maxMappingLableLength) {
+						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
+					}
+					else {
+						html += '>' + item.text;
+					}
+					html += '</span>';
+					html += '</div>';
+					return html;
+				}
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+
+		function selectColumnFormatting(item, container, query) {
+			try {
+				if (item.id.length > 0) {
+					var html = '';
+
+					if (item.element) {
+						html += '<div class="clear"></div>';
+					}
+
+					html += '<div class="mapping-list-item">';
+
+					if (query && item.text !== item.id) {
+						html += '<span class="muted right-label"'
+						if (item.text.length > maxMappingLableLength) {
+							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
+						}
+						else {
+							html += '>' + item.text;
+						}
+						html += '</span>';
+					}
+
+					html += '<span>' + item.id + '</span>';
+
+					html += '</div>';
+					return html;
+				}
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+
+	});
+</script>

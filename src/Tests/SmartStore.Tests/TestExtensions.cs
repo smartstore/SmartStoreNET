@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace SmartStore.Tests
@@ -35,14 +37,20 @@ namespace SmartStore.Tests
             return actual;
         }
 
-        ///<summary>
-        /// Asserts that two objects are equal.
-        ///</summary>
-        ///<param name="actual"></param>
-        ///<param name="expected"></param>
-        ///<param name="message"></param>
-        ///<exception cref="AssertionException"></exception>
-        public static void ShouldEqual(this object actual, object expected, string message)
+		public static IEnumerable<T> ShouldSequenceEqual<T>(this IEnumerable<T> actual, IEnumerable<T> expected)
+		{
+			Assert.IsTrue(actual.SequenceEqual(expected));
+			return actual;
+		}
+
+		///<summary>
+		/// Asserts that two objects are equal.
+		///</summary>
+		///<param name="actual"></param>
+		///<param name="expected"></param>
+		///<param name="message"></param>
+		///<exception cref="AssertionException"></exception>
+		public static void ShouldEqual(this object actual, object expected, string message)
         {
             Assert.AreEqual(expected, actual);
         }

@@ -4,7 +4,7 @@
 	var returnUrl = (string)ViewBag.ReturnUrl;
 	var hasPermission = ViewBag.HasPermission == true;
 }
-<span class="label@(Model.Enabled ? " label-warning" : "")" style="margin-right: 6px">@(Model.Enabled ? T("Common.Scheduled") : T("Common.Unscheduled"))</span>
+<span class="label label-inline@(Model.Enabled ? " label-warning" : "")">@(Model.Enabled ? T("Common.Scheduled") : T("Common.Unscheduled"))</span>
 @if (Model.Enabled)
 {
 	<span>@T("Common.Rule"): </span>

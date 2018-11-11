@@ -36,7 +36,7 @@
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-edit", this.Html, this.Model));
 })
 @helper TabInfo()
-    { 
+{ 
     if (Model.CountryEnabled && Model.StateProvinceEnabled)
     {
         <script type="text/javascript">
@@ -65,6 +65,18 @@
         </script>
     }
     <table class="adminContent">
+		@if (Model.Id != 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Id)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.Id)
+					@Html.ValidationMessageFor(model => model.Id)
+				</td>
+			</tr>
+		}
         @if (Model.UsernamesEnabled)
         {
             if (Model.Id == 0 || Model.AllowUsersToChangeUsernames)
@@ -407,14 +419,14 @@
                 </td>
             </tr>
         }
-        @if (Model.Id > 0 && !String.IsNullOrEmpty(Model.LastVisitedPage))
+        @if (Model.Id > 0 && Model.LastVisitedPage.HasValue())
         {
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.LastVisitedPage)
                 </td>
                 <td class="adminData">
-                    @Html.DisplayFor(model => model.LastVisitedPage)
+					<a href="@Model.LastVisitedPage">@Model.LastVisitedPage.Truncate(128, "...")</a>
                 </td>
             </tr>
         }
@@ -495,13 +507,16 @@
         columns.Bound(x => x.Message);
         columns.Bound(x => x.CreatedOn).ReadOnly();
     }))
-    <div class="clear">
-    </div>
+    <div class="clear"></div>
     
-    <div class="caption-container">
-        <h3 class="bordered">@T("Admin.Customers.Customers.RewardPoints.AddTitle")</h3>
-    </div>
     <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.Customers.Customers.RewardPoints.AddTitle")</div>
+				</div>
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddRewardPointsValue)
@@ -516,7 +531,7 @@
                 @Html.SmartLabelFor(model => model.AddRewardPointsMessage)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AddRewardPointsMessage)
+                @Html.TextAreaFor(model => model.AddRewardPointsMessage)
                 @Html.ValidationMessageFor(model => model.AddRewardPointsMessage)
             </td>
         </tr>

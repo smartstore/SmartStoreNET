@@ -3,7 +3,6 @@
 @{
 	var allString = T("Admin.Common.All").Text;
     
-    //page title
     ViewBag.Title = T("Admin.Catalog.BulkEdit").Text;
 }
 @using (Html.BeginForm())
@@ -38,7 +37,7 @@
 				@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, allString)
 			</td>
 		</tr>
-		@if (Model.StoreCount > 1)
+		@if (Model.AvailableStores.Count > 1)
 		{
 			<tr>
 				<td class="adminTitle">

@@ -1,6 +1,4 @@
-﻿
-using SmartStore.Core.ComponentModel;
-using SmartStore.Core.Plugins;
+﻿using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Discounts
 {

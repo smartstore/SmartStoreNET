@@ -13,6 +13,8 @@
 			<a href='@Url.Action("List")'>(@T("Admin.Orders.BackToList"))</a>
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
             <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
                 <i class="fa fa-print"></i>
                 @T("Order.Print")
@@ -29,6 +31,8 @@
 				@T("Admin.Common.Delete")
 			</button>
             <input type="submit" id="btnRefreshPage" name="btnRefreshPage" style="display: none" />
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     
@@ -155,6 +159,9 @@
         }
 
     </script>
+    
+    @Html.Widget("order_edit_top")
+    
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -885,6 +892,14 @@
                 <hr />
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AcceptThirdPartyEmailHandOver)
+			</td>
+			<td class="adminData">
+				@(Model.AcceptThirdPartyEmailHandOver ? T("Common.Yes") : T("Common.No"))
+			</td>
+		</tr>
         <tr>
             <td colspan="2">
                 @if (Model.CustomerComment.HasValue())
@@ -1221,17 +1236,13 @@
                 })
                 .Columns(columns =>
                 {
-                    columns.Bound(x => x.Id).Width(50);
+                    columns.Bound(x => x.Id)
+						.Template(x => Html.ActionLink(x.Id.ToString(), "ShipmentDetails", "Order", new { id = x.Id }, new { }))
+						.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\"><#= Id #></a>");
                     columns.Bound(x => x.TrackingNumber);
                     columns.Bound(x => x.TotalWeight);
                     columns.Bound(x => x.ShippedDate);
                     columns.Bound(x => x.DeliveryDate);
-                    columns.Bound(x => x.Id)
-                        .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { }))
-                        .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
-                        .Width(50)
-                        .Centered()
-                        .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.View").Text));
                 })
                 .EnableCustomBinding(true))
 
@@ -1375,7 +1386,7 @@
 
     <table class="adminContent">
         <tr>
-            <td class="adminData" style="padding:0;">
+            <td class="adminData" style="padding: 0;">
 
                 <table id="OrderItemTable" class="table table-bordered table-striped">
                     <thead>
@@ -1410,7 +1421,7 @@
                         @foreach (var item in Model.Items)
                         {
                             <tr>
-                                <td style="width: 25%;vertical-align: top">
+                                <td style="width: 25%; vertical-align: top;">
                                     <div>
                                         @Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
 
@@ -1750,16 +1761,21 @@
             </td>
         </tr>
     </table>  
-    <div class="caption-container">
-        <h3 class="bordered">@T("Admin.Orders.OrderNotes.AddTitle")</h3>
-    </div>
+
     <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.Orders.OrderNotes.AddTitle")</div>
+				</div>
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddOrderNoteMessage)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.AddOrderNoteMessage, new { style = "Width: 350px; Height: 150px;" })
+                @Html.TextAreaFor(model => model.AddOrderNoteMessage, new { @class = "control-xlarge", style = "height: 120px;" })
                 @Html.ValidationMessageFor(model => model.AddOrderNoteMessage)
             </td>
         </tr>

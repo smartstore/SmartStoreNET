@@ -185,8 +185,8 @@ namespace SmartStore.Services.Tests.Catalog
 				_productBundleItemAttributeFilter,
                 _eventPublisher,
                 _pictureService);
-
-            _productAttributeParser = new ProductAttributeParser(_productAttributeService);
+			
+            _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(), NullCache.Instance);
 
 
 

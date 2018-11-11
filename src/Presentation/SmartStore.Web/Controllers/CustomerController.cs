@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
@@ -28,6 +30,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
@@ -36,7 +39,7 @@ using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CustomerController : PublicControllerBase
+	public partial class CustomerController : PublicControllerBase
     {
         #region Fields
 
@@ -73,6 +76,7 @@ namespace SmartStore.Web.Controllers
         private readonly IDownloadService _downloadService;
         private readonly IWebHelper _webHelper;
         private readonly ICustomerActivityService _customerActivityService;
+		private readonly IProductAttributeParser _productAttributeParser;
 
         private readonly MediaSettings _mediaSettings;
         private readonly IWorkflowMessageService _workflowMessageService;
@@ -105,7 +109,9 @@ namespace SmartStore.Web.Controllers
             IOpenAuthenticationService openAuthenticationService, 
             IBackInStockSubscriptionService backInStockSubscriptionService, 
             IDownloadService downloadService, IWebHelper webHelper,
-            ICustomerActivityService customerActivityService, MediaSettings mediaSettings,
+            ICustomerActivityService customerActivityService, 
+			IProductAttributeParser productAttributeParser,
+			MediaSettings mediaSettings,
             IWorkflowMessageService workflowMessageService, LocalizationSettings localizationSettings,
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
 			PluginMediator pluginMediator)
@@ -143,6 +149,7 @@ namespace SmartStore.Web.Controllers
             this._downloadService = downloadService;
             this._webHelper = webHelper;
             this._customerActivityService = customerActivityService;
+			this._productAttributeParser = productAttributeParser;
 
             this._mediaSettings = mediaSettings;
             this._workflowMessageService = workflowMessageService;
@@ -345,37 +352,46 @@ namespace SmartStore.Web.Controllers
         }
         
         [NonAction]
-        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer)
+        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer, int pageIndex)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            var model = new CustomerOrderListModel();
+			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
+
+			var model = new CustomerOrderListModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Orders;
-			var orders = _orderService.SearchOrders(_storeContext.CurrentStore.Id, customer.Id,
-				null, null, null, null, null, null, null, null, 0, int.MaxValue);
-            foreach (var order in orders)
-            {
-                var orderModel = new CustomerOrderListModel.OrderDetailsModel()
-                {
-                    Id = order.Id,
-                    OrderNumber = order.GetOrderNumber(),
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
-                    OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(order)
-                };
-                var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotal, order.CurrencyRate);
-                orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
 
-                model.Orders.Add(orderModel);
-            }
+			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, pageIndex, _orderSettings.OrderListPageSize);
+
+			var orderModels = orders
+				.Select(x =>
+				{
+					var orderModel = new CustomerOrderListModel.OrderDetailsModel
+					{
+						Id = x.Id,
+						OrderNumber = x.GetOrderNumber(),
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+						OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+						IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(x)
+					};
+
+					var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(x.OrderTotal, x.CurrencyRate);
+					orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, x.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
+
+					return orderModel;
+				})
+				.ToList();
+
+			model.Orders = new PagedList<CustomerOrderListModel.OrderDetailsModel>(orderModels, orders.PageIndex, orders.PageSize, orders.TotalCount);
+
 
 			var recurringPayments = _orderService.SearchRecurringPayments(_storeContext.CurrentStore.Id, customer.Id, 0, null);
 
             foreach (var recurringPayment in recurringPayments)
             {
-                var recurringPaymentModel = new CustomerOrderListModel.RecurringOrderModel()
+                var recurringPaymentModel = new CustomerOrderListModel.RecurringOrderModel
                 {
                     Id = recurringPayment.Id,
                     StartDate = _dateTimeHelper.ConvertToUserTime(recurringPayment.StartDateUtc, DateTimeKind.Utc).ToString(),
@@ -451,10 +467,7 @@ namespace SmartStore.Web.Controllers
                     //activity log
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
-                    if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                        return Redirect(returnUrl);
-                    else
-                        return RedirectToRoute("HomePage");
+					return RedirectToReferrer(returnUrl);
                 }
                 else
                 {
@@ -480,6 +493,7 @@ namespace SmartStore.Web.Controllers
             foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
                 model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == _dateTimeHelper.DefaultStoreTimeZone.Id) });
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
+            model.VatRequired = _taxSettings.VatRequired;
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
@@ -567,12 +581,12 @@ namespace SmartStore.Web.Controllers
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                 if (registrationResult.Success)
                 {
-                    //properties
+                    // properties
 					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 					{
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
 					}
-                    //VAT number
+                    // VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
@@ -583,12 +597,12 @@ namespace SmartStore.Web.Controllers
 						_genericAttributeService.SaveAttribute(customer,
 							SystemCustomerAttributeNames.VatNumberStatusId,
 							(int)vatNumberStatus);
-						//send VAT number admin notification
+						// send VAT number admin notification
 						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 							_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
 
-                    //form fields
+                    // form fields
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
@@ -624,10 +638,10 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && String.IsNullOrEmpty(customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber)))
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, customer.Id);
 
-                    //newsletter
+                    // newsletter
                     if (_customerSettings.NewsletterEnabled)
                     {
-                        //save newsletter value
+                        // save newsletter value
                         var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.Email, _storeContext.CurrentStore.Id);
                         if (newsletter != null)
                         {
@@ -706,11 +720,10 @@ namespace SmartStore.Web.Controllers
                     {
                         case UserRegistrationType.EmailValidation:
                             {
-                                //email validation message
+                                // email validation message
                                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
                                 _workflowMessageService.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
 
-                                //result
                                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation });
                             }
                         case UserRegistrationType.AdminApproval:
@@ -719,8 +732,8 @@ namespace SmartStore.Web.Controllers
                             }
                         case UserRegistrationType.Standard:
                             {
-                                //send customer welcome message
-                                _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
+								// send customer welcome message
+								_workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
 
                                 var redirectUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
                                 if (!String.IsNullOrEmpty(returnUrl))
@@ -745,6 +758,7 @@ namespace SmartStore.Web.Controllers
             foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
                 model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == _dateTimeHelper.DefaultStoreTimeZone.Id) });
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
+            model.VatRequired = _taxSettings.VatRequired;
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
@@ -815,10 +829,8 @@ namespace SmartStore.Web.Controllers
                 default:
                     break;
             }
-            var model = new RegisterResultModel
-            {
-                Result = resultText
-            };
+
+            var model = new RegisterResultModel { Result = resultText };
             return View(model);
         }
 
@@ -903,8 +915,8 @@ namespace SmartStore.Web.Controllers
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, "");
             //send welcome message
             _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
-            
-            var model = new AccountActivationModel();
+
+			var model = new AccountActivationModel();
             model.Result = _localizationService.GetResource("Account.AccountActivation.Activated");
             return View(model);
         }
@@ -966,8 +978,7 @@ namespace SmartStore.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     //username 
-                    if (_customerSettings.UsernamesEnabled &&
-                        this._customerSettings.AllowUsersToChangeUsernames)
+                    if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames)
                     {
                         if (!customer.Username.Equals(model.Username.Trim(), StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -1027,7 +1038,7 @@ namespace SmartStore.Web.Controllers
 
                         if (model.CustomerNumber != currentCustomerNumber && customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
                         {
-                            this.NotifyError("Common.CustomerNumberAlreadyExists");
+                            NotifyError("Common.CustomerNumberAlreadyExists");
                         }
                         else 
                         {
@@ -1070,38 +1081,13 @@ namespace SmartStore.Web.Controllers
                     //newsletter
                     if (_customerSettings.NewsletterEnabled)
                     {
-                        //save newsletter value
-                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
-                        if (newsletter != null)
-                        {
-							if (model.Newsletter)
-							{
-								newsletter.Active = true;
-								_newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
-							}
-							else
-							{
-								_newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
-							}
-                        }
-                        else
-                        {
-                            if (model.Newsletter)
-                            {
-                                _newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription()
-                                {
-                                    NewsLetterSubscriptionGuid = Guid.NewGuid(),
-                                    Email = customer.Email,
-                                    Active = true,
-                                    CreatedOnUtc = DateTime.UtcNow,
-									StoreId = _storeContext.CurrentStore.Id
-                                });
-                            }
-                        }
+						_newsLetterSubscriptionService.AddNewsLetterSubscriptionFor(model.Newsletter, customer.Email, _storeContext.CurrentStore.Id);
                     }
 
-                    if (_forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Signature, model.Signature);
+					if (_forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled)
+					{
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Signature, model.Signature);
+					}
 
 					return RedirectToAction("Info");
                 }
@@ -1275,13 +1261,13 @@ namespace SmartStore.Web.Controllers
         #region Orders
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Orders()
+        public ActionResult Orders(int? page)
         {
             if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
-            var customer = _workContext.CurrentCustomer;
-            var model = PrepareCustomerOrderListModel(customer);
+            var model = PrepareCustomerOrderListModel(_workContext.CurrentCustomer, Math.Max((page ?? 0) - 1, 0));
+
             return View(model);
         }
 
@@ -1294,9 +1280,13 @@ namespace SmartStore.Web.Controllers
 
             //get recurring payment identifier
             int recurringPaymentId = 0;
-            foreach (var formValue in form.AllKeys)
-                if (formValue.StartsWith("cancelRecurringPayment", StringComparison.InvariantCultureIgnoreCase))
-                    recurringPaymentId = Convert.ToInt32(formValue.Substring("cancelRecurringPayment".Length));
+			foreach (var formValue in form.AllKeys)
+			{
+				if (formValue.StartsWith("cancelRecurringPayment", StringComparison.InvariantCultureIgnoreCase))
+				{
+					recurringPaymentId = Convert.ToInt32(formValue.Substring("cancelRecurringPayment".Length));
+				}
+			}
 
             var recurringPayment = _orderService.GetRecurringPaymentById(recurringPaymentId);
             if (recurringPayment == null)
@@ -1309,16 +1299,14 @@ namespace SmartStore.Web.Controllers
             {
                 var errors = _orderProcessingService.CancelRecurringPayment(recurringPayment);
 
-                var model = PrepareCustomerOrderListModel(customer);
+                var model = PrepareCustomerOrderListModel(customer, 0);
                 model.CancelRecurringPaymentErrors = errors;
 
                 return View(model);
             }
-            else
-            {
-				return RedirectToAction("Orders");
-            }
-        }
+
+			return RedirectToAction("Orders");
+		}
 
         #endregion
 
@@ -1344,8 +1332,9 @@ namespace SmartStore.Web.Controllers
                 if (orderItem != null)
                 {
                     var product = orderItem.Product;
+					var attributeQueryData = new List<List<int>>();
 
-                    var itemModel = new CustomerReturnRequestsModel.ReturnRequestModel()
+                    var itemModel = new CustomerReturnRequestsModel.ReturnRequestModel
                     {
                         Id = returnRequest.Id,
                         ReturnRequestStatus = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext),
@@ -1356,8 +1345,22 @@ namespace SmartStore.Web.Controllers
                         ReturnAction = returnRequest.RequestedAction,
                         ReturnReason = returnRequest.ReasonForReturn,
                         Comments = returnRequest.CustomerComments,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc),
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc)
                     };
+
+					if (orderItem.Product.ProductType != ProductType.BundledProduct)
+					{
+						_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+					}
+					else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
+					{
+						var bundleData = orderItem.GetBundleData();
+
+						bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+					}
+
+					itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, itemModel.ProductSeName);
+
                     model.Items.Add(itemModel);
                 }
             }
@@ -1380,8 +1383,9 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerDownloadableProductsModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.DownloadableProducts;
-            var items = _orderService.GetAllOrderItems(null, customer.Id, null, null,
-                null, null, null, true);
+
+            var items = _orderService.GetAllOrderItems(null, customer.Id, null, null, null, null, null, true);
+
             foreach (var item in items)
             {
                 var itemModel = new CustomerDownloadableProductsModel.DownloadableProductsModel
@@ -1394,6 +1398,9 @@ namespace SmartStore.Web.Controllers
                     ProductAttributes = item.AttributeDescription,
 					ProductId = item.ProductId
                 };
+
+				itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(item.AttributesXml, item.ProductId, itemModel.ProductSeName);
+
                 model.Items.Add(itemModel);
 
                 if (_downloadService.IsDownloadAllowed(item))
@@ -1561,30 +1568,34 @@ namespace SmartStore.Web.Controllers
                 try
                 {
                     var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
-                    if ((uploadedFile != null) && (!String.IsNullOrEmpty(uploadedFile.FileName)))
-                    {
-                        int avatarMaxSize = _customerSettings.AvatarMaximumSizeBytes;
-                        if (uploadedFile.ContentLength > avatarMaxSize)
-                            throw new SmartException(string.Format(_localizationService.GetResource("Account.Avatar.MaximumUploadedFileSize"), Prettifier.BytesToString(avatarMaxSize)));
 
-                        byte[] customerPictureBinary = uploadedFile.InputStream.ToByteArray();
-                        if (customerAvatar != null)
-                            customerAvatar = _pictureService.UpdatePicture(customerAvatar.Id, customerPictureBinary, uploadedFile.ContentType, null, true);
-                        else
-                            customerAvatar = _pictureService.InsertPicture(customerPictureBinary, uploadedFile.ContentType, null, true, false);
-                    }
+					if ((uploadedFile != null) && (!String.IsNullOrEmpty(uploadedFile.FileName)))
+					{
+						var avatarMaxSize = _customerSettings.AvatarMaximumSizeBytes;
 
-                    int customerAvatarId = 0;
-                    if (customerAvatar != null)
-                        customerAvatarId = customerAvatar.Id;
+						if (uploadedFile.ContentLength > avatarMaxSize)
+							throw new SmartException(T("Account.Avatar.MaximumUploadedFileSize", Prettifier.BytesToString(avatarMaxSize)));
+
+						byte[] customerPictureBinary = uploadedFile.InputStream.ToByteArray();
+
+						if (customerAvatar != null)
+							customerAvatar = _pictureService.UpdatePicture(customerAvatar.Id, customerPictureBinary, uploadedFile.ContentType, null, true);
+						else
+							customerAvatar = _pictureService.InsertPicture(customerPictureBinary, uploadedFile.ContentType, null, true, false);
+					}
+					else if (customerAvatar != null)
+					{
+						_pictureService.DeletePicture(customerAvatar);
+						customerAvatar = null;
+					}
+
+                    var customerAvatarId = (customerAvatar != null ? customerAvatar.Id : 0);
 
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatarId);
 
-                    model.AvatarUrl = _pictureService.GetPictureUrl(
-                        customerAvatarId,
-                        _mediaSettings.AvatarPictureSize,
-                        false);
-                    return View(model);
+                    model.AvatarUrl = _pictureService.GetPictureUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
+
+					return View(model);
                 }
                 catch (Exception exc)
                 {
@@ -1592,12 +1603,8 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-
             //If we got this far, something failed, redisplay form
-            model.AvatarUrl = _pictureService.GetPictureUrl(
-                customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), 
-                _mediaSettings.AvatarPictureSize, 
-                false);
+            model.AvatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
 
             return View(model);
         }
@@ -1620,6 +1627,7 @@ namespace SmartStore.Web.Controllers
             var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
             if (customerAvatar != null)
                 _pictureService.DeletePicture(customerAvatar);
+
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, 0);
 
             return RedirectToAction("Avatar");

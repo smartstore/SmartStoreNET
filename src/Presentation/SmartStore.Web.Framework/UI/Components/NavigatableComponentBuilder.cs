@@ -103,7 +103,7 @@ namespace SmartStore.Web.Framework.UI
 
         public TBuilder ContentHtmlAttributes(object attributes)
         {
-            return this.ContentHtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.ContentHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public TBuilder ContentHtmlAttributes(IDictionary<string, object> attributes)

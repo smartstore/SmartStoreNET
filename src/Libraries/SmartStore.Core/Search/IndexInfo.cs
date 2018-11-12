@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Search
 {
@@ -25,6 +26,7 @@ namespace SmartStore.Core.Search
 
 		public string Scope { get; private set; }
 		public int DocumentCount { get; set; }
+        public long IndexSize { get; set; }
         public int LastAddedDocumentId { get; set; }
         public IEnumerable<string> Fields { get; set; }
 
@@ -52,6 +54,7 @@ namespace SmartStore.Core.Search
 						new XElement("error", Error),
 						new XElement("should-rebuild", ShouldRebuild ? "true" : "false"),
 						new XElement("document-count", DocumentCount),
+                        new XElement("index-size", IndexSize),
                         new XElement("last-added-document-id", LastAddedDocumentId),
                         new XElement("fields", string.Join(", ", Fields ?? Enumerable.Empty<string>()))
 			)).ToString();
@@ -100,6 +103,12 @@ namespace SmartStore.Core.Search
 				{
 					info.DocumentCount = documentCount.ToInt();
 				}
+
+                var indexSize = doc.Descendants("index-size").FirstOrDefault()?.Value;
+                if (indexSize.HasValue() && CommonHelper.TryConvert(indexSize, out long size))
+                {
+                    info.IndexSize = size;
+                }
 
                 var lastAddedDocumentId = doc.Descendants("last-added-document-id").FirstOrDefault()?.Value;
                 if (lastAddedDocumentId.HasValue())

@@ -26,6 +26,11 @@ namespace SmartStore.Core.Search
 		bool Exists { get; }
 
         /// <summary>
+        /// Gets the size of the index in bytes.
+        /// </summary>
+        long IndexSize { get; }
+
+        /// <summary>
         /// The identifier of the last added document.
         /// </summary>
         int LastAddedDocumentId { get; }

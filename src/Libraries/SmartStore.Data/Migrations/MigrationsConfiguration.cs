@@ -574,6 +574,7 @@
 
             builder.AddOrUpdate("Common.Voting", "Voting", "Abstimmung");
             builder.AddOrUpdate("Common.Answer", "Answer", "Antwort");
+            builder.AddOrUpdate("Common.Size", "Size", "Größe");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description",
                 "Manage form fields that are displayed during registration.",

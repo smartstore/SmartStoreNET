@@ -78,7 +78,7 @@ namespace SmartStore.Services.Seo
 		/// <remarks>
 		/// Be careful not to load large amounts of data at once (e.g. for "Product" scope with large range).
 		/// </remarks>
-		void PrefetchUrlRecords(string entityName, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false);
+		void PrefetchUrlRecords(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false);
 
 		/// <summary>
 		/// Prefetches a collection of url records properties for a range of entities in one go.

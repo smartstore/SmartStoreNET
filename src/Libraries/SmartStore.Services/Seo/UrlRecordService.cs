@@ -184,9 +184,9 @@ namespace SmartStore.Services.Seo
 			return query.ToList();
 		}
 
-		public virtual void PrefetchUrlRecords(string entityName, int languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
+		public virtual void PrefetchUrlRecords(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
 		{
-			var collection = GetUrlRecordCollectionInternal(entityName, languageId, entityIds, isRange, isSorted); 
+			var collection = GetUrlRecordCollectionInternal(entityName, languageIds, entityIds, isRange, isSorted); 
 
 			if (_prefetchedCollections.TryGetValue(entityName, out var existing))
 			{
@@ -200,10 +200,10 @@ namespace SmartStore.Services.Seo
 
 		public virtual UrlRecordCollection GetUrlRecordCollection(string entityName, int[] entityIds, bool isRange = false, bool isSorted = false)
 		{
-			return GetUrlRecordCollectionInternal(entityName, 0, entityIds, isRange, isSorted);
+			return GetUrlRecordCollectionInternal(entityName, null, entityIds, isRange, isSorted);
 		}
 
-		public virtual UrlRecordCollection GetUrlRecordCollectionInternal(string entityName, int? languageId, int[] entityIds, bool isRange = false, bool isSorted = false)
+		public virtual UrlRecordCollection GetUrlRecordCollectionInternal(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
 		{
 			Guard.NotEmpty(entityName, nameof(entityName));
 
@@ -228,9 +228,16 @@ namespace SmartStore.Services.Seo
 					}
 				}
 
-				if (languageId.HasValue)
+				if (languageIds != null && languageIds.Length > 0)
 				{
-					query = query.Where(x => x.LanguageId == languageId.Value);
+					if (languageIds.Length == 1)
+					{
+						query = query.Where(x => x.LanguageId == languageIds[0]);
+					}
+					else
+					{
+						query = query.Where(x => languageIds.Contains(x.LanguageId));
+					}
 				}
 
 				// Don't sort DESC, because latter items overwrite exisiting ones (it's the same as sorting DESC and taking the first)

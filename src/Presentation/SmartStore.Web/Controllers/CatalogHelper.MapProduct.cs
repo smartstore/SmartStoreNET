@@ -239,7 +239,7 @@ namespace SmartStore.Web.Controllers
 
 				if (prefetchSlugs)
 				{
-					_urlRecordService.PrefetchUrlRecords(nameof(Product), language.Id, allProductIds);
+					_urlRecordService.PrefetchUrlRecords(nameof(Product), new[] { language.Id, 0 }, allProductIds);
 				}
 
 				if (prefetchTranslations)

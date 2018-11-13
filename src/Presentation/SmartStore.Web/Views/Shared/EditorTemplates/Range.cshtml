@@ -23,13 +23,11 @@
 	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
 	var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
 
-	var metadataValues = ViewData.ModelMetadata.AdditionalValues;
-
-	var min = (ViewData["min"].Convert<decimal?>() ?? metadataValues.Get("min").Convert<decimal?>() ?? 0m).ToString(CultureInfo.InvariantCulture);
-	var max = (ViewData["max"].Convert<decimal?>() ?? metadataValues.Get("max").Convert<decimal?>() ?? 100m).ToString(CultureInfo.InvariantCulture);
-	var step = (ViewData["step"].Convert<decimal?>() ?? metadataValues.Get("step").Convert<decimal?>() ?? 1m).ToString(CultureInfo.InvariantCulture);
-	var ticks = (ViewData["ticks"].Convert<string>() ?? metadataValues.Get("ticks").Convert<string>()).SplitSafe(",").Select(x => x.Trim()).ToArray();
-	var format = ViewData["format"].Convert<string>() ?? metadataValues.Get("format").Convert<string>() ?? "{0}";
+	var min = (GetMetadata<decimal?>("min") ?? 0m).ToString(CultureInfo.InvariantCulture);
+	var max = (GetMetadata<decimal?>("max") ?? 100m).ToString(CultureInfo.InvariantCulture);
+	var step = (GetMetadata<decimal?>("step") ?? 1m).ToString(CultureInfo.InvariantCulture);
+	var ticks = GetMetadata<string>("ticks").SplitSafe(",").Select(x => x.Trim()).ToArray();
+	var format = GetMetadata<string>("format") ?? "{0}";
 
 	var invariantValue = ViewData.Model.Convert<decimal>().ToString(CultureInfo.InvariantCulture);
 }

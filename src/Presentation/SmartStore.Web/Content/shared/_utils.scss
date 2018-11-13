@@ -241,6 +241,27 @@ table th {
 
 
 //
+// Extra border utils
+// ------------------------------------------------------
+
+.border-translucent {
+    border-color: rgba(#000, 0.12) !important;
+}
+
+.rounded-sm {
+    border-radius: $border-radius-sm !important;
+}
+
+.rounded-lg {
+    border-radius: $border-radius-lg !important;
+}
+
+.rounded-xl {
+    border-radius: $border-radius-lg * 2 !important;
+}
+
+
+//
 // Some shims
 // ------------------------------------------------------
 

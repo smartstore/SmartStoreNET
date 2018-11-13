@@ -304,6 +304,47 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			return _helper.LocalizationFileResolver.Resolve(culture, virtualPath, pattern, true, fallbackCulture);
 		}
+
+		public bool HasMetadata(string name)
+		{
+			return TryGetMetadata<object>(name, out _);
+		}
+
+		/// <summary>
+		/// Looks up an entry in ViewData dictionary first, then in ViewData.ModelMetadata.AdditionalValues dictionary
+		/// </summary>
+		/// <typeparam name="T">Actual type of value</typeparam>
+		/// <param name="name">Name of entry</param>
+		/// <returns>Result</returns>
+		public T GetMetadata<T>(string name)
+		{
+			TryGetMetadata<T>(name, out var value);
+			return value;
+		}
+
+		/// <summary>
+		/// Looks up an entry in ViewData dictionary first, then in ViewData.ModelMetadata.AdditionalValues dictionary
+		/// </summary>
+		/// <typeparam name="T">Actual type of value</typeparam>
+		/// <param name="name">Name of entry</param>
+		/// <returns><c>true</c> if the entry exists in any of the dictionaries, <c>false</c> otherwise</returns>
+		public bool TryGetMetadata<T>(string name, out T value)
+		{
+			value = default(T);
+
+			var exists = ViewData.TryGetValue(name, out var raw);
+			if (!exists)
+			{
+				exists = ViewData.ModelMetadata?.AdditionalValues?.TryGetValue(name, out raw) == true;
+			}
+
+			if (raw != null)
+			{
+				value = raw.Convert<T>();
+			}
+
+			return exists;
+		}
 	}
 
     public abstract class WebViewPage : WebViewPage<dynamic>

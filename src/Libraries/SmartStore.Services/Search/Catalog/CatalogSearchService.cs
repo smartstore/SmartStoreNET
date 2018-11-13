@@ -165,7 +165,7 @@ namespace SmartStore.Services.Search
 
 					if (searchQuery.Take > 0)
 					{
-						using (_services.Chronometer.Step(stepPrefix + "Count"))
+						using (_services.Chronometer.Step(stepPrefix + "Search"))
 						{
 							totalCount = searchEngine.Count();
 							// Fix paging boundaries

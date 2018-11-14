@@ -3,6 +3,7 @@
 	using System;
 	using System.Data.Entity.Migrations;
 	using Setup;
+	using SmartStore.Core.Domain.Catalog;
 	using SmartStore.Core.Domain.Common;
 	using SmartStore.Utilities;
 
@@ -35,6 +36,11 @@
 				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.CacheSegmentSize, true), 500);
 				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.AlwaysPrefetchTranslations, true), false);
 				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.AlwaysPrefetchUrlSlugs, true), false);
+
+				// New CatalogSettings properties
+				x.Add(TypeHelper.NameOf<CatalogSettings>(y => y.ShowSubCategoriesInSubPages, true), false);
+				x.Add(TypeHelper.NameOf<CatalogSettings>(y => y.ShowDescriptionInSubPages, true), false);
+				x.Add(TypeHelper.NameOf<CatalogSettings>(y => y.IncludeFeaturedProductsInSubPages, true), false);
 			});
 		}
 
@@ -595,6 +601,24 @@
             builder.AddOrUpdate("Admin.Common.ProcessingInfo",
                 "{0}: {1} of {2} processed",
                 "{0}: {1} von {2} verarbeitet");
-        }
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowSubCategoriesInSubPages",
+				"Show subcategories also in subpages",
+				"Unterwarengruppen auch in Unterseiten anzeigen",
+				"Subpage: List index greater than 1 or any active filter.",
+				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowDescriptionInSubPages",
+				"Show page description also in subpages",
+				"Seitenbeschreibungen auch in Unterseiten anzeigen",
+				"Subpage: List index greater than 1 or any active filter.",
+				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInSubPages",
+				"Show featured products also in subpages",
+				"Top-Produkte auch in Unterseiten anzeigen",
+				"Subpage: List index greater than 1 or any active filter.",
+				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
+		}
     }
 }

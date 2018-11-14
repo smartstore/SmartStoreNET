@@ -330,13 +330,15 @@ namespace SmartStore.Services.Search.Modelling
 					throw new SmartException($"Unknown field name for facet group '{kind.ToString()}'");
 			}
 
-			var descriptor = new FacetDescriptor(fieldName);
-			descriptor.Label = _services.Localization.GetResource(FacetUtility.GetLabelResourceKey(kind) ?? kind.ToString());
-			descriptor.IsMultiSelect = isMultiSelect;
-			descriptor.DisplayOrder = displayOrder;
-			descriptor.OrderBy = sorting;
-			descriptor.MinHitCount = _searchSettings.FilterMinHitCount;
-			descriptor.MaxChoicesCount = _searchSettings.FilterMaxChoicesCount;
+			var descriptor = new FacetDescriptor(fieldName)
+			{
+				Label = _services.Localization.GetResource(FacetUtility.GetLabelResourceKey(kind) ?? kind.ToString()),
+				IsMultiSelect = isMultiSelect,
+				DisplayOrder = displayOrder,
+				OrderBy = sorting,
+				MinHitCount = _searchSettings.FilterMinHitCount,
+				MaxChoicesCount = _searchSettings.FilterMaxChoicesCount
+			};
 
 			addValues(descriptor);
 			query.WithFacet(descriptor);

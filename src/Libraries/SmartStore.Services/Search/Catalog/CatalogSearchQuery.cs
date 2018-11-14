@@ -37,6 +37,20 @@ namespace SmartStore.Services.Search
 			return this.MemberwiseClone();
 		}
 
+		public bool IsSubPage
+		{
+			get
+			{
+				if (PageIndex > 0)
+				{
+					return true;
+				}
+				
+				var hasActiveFilter = FacetDescriptors.Values.Any(x => x.Values.Any(y => y.IsSelected));
+				return hasActiveFilter;
+			}
+		}
+
 		#region Fluent builder
 
 		public CatalogSearchQuery SortBy(ProductSortingEnum sort)

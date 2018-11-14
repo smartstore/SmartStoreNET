@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
@@ -12,6 +13,7 @@ namespace SmartStore.Services.Search
 		private readonly int _totalHitsCount;
 		private readonly Func<IList<Product>> _hitsFactory;
 		private IPagedList<Product> _hits;
+		private bool? _isSubPage;
 
 		public CatalogSearchResult(
 			ISearchEngine engine,

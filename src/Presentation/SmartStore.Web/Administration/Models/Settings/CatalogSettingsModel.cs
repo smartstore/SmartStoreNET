@@ -167,6 +167,15 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.GridStyleListColumnSpan")]
 		public GridColumnSpan GridStyleListColumnSpan { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowSubCategoriesInSubPages")]
+		public bool ShowSubCategoriesInSubPages { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDescriptionInSubPages")]
+		public bool ShowDescriptionInSubPages { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInSubPages")]
+		public bool IncludeFeaturedProductsInSubPages { get; set; }
+
 		#endregion
 
 		#region Products

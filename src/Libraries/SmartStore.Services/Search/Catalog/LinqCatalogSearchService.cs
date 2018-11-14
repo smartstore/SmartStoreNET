@@ -766,8 +766,10 @@ namespace SmartStore.Services.Search
 
 				if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 				{
-					query = query
-						.Skip(() => searchQuery.PageIndex * searchQuery.Take)
+                    var skip = searchQuery.PageIndex * searchQuery.Take;
+
+                    query = query
+						.Skip(() => skip)
 						.Take(() => searchQuery.Take);
 
 					var ids = query.Select(x => x.Id).ToArray();

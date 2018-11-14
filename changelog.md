@@ -15,6 +15,7 @@
 * Made Topic ACL enabled
 * Implemented paging & filtering for Topic grid
 * Topics: added **IsPublished**, **Short Title** (link text) and **Intro** (teaser) properties.
+* New storefront catalog options: **ShowSubCategoriesInSubPages**, **ShowDescriptionInSubPages** & **IncludeFeaturedProductsInSubPages** (Subpage = List index > 1 or any active filter).
 * New security option: Use invisible reCAPTCHA
 * **BeezUp**:
 	* #1459 Add option to only submit one category name per product

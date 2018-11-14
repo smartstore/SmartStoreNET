@@ -421,19 +421,33 @@ namespace SmartStore.Services.DataExchange.Export
                                 var associatedProducts = context.AssociatedProducts.SelectMany(x => x.Value);
                                 ctx.AssociatedProductContext = CreateProductExportContext(associatedProducts, ctx.ContextCustomer, ctx.Store.Id);
 
-                                ctx.Translations[nameof(Product)] = CreateTranslationCollection(nameof(Product), entities.Where(x => x.ProductType != ProductType.GroupedProduct).Concat(associatedProducts));
+                                var translationEntities = entities.Where(x => x.ProductType != ProductType.GroupedProduct).Concat(associatedProducts);
+                                ctx.TranslationsPerPage[nameof(Product)] = CreateTranslationCollection(nameof(Product), translationEntities);
                             }
                             else
                             {
-                                ctx.Translations[nameof(Product)] = CreateTranslationCollection(nameof(Product), entities);
+                                ctx.TranslationsPerPage[nameof(Product)] = CreateTranslationCollection(nameof(Product), entities);
                             }
 
                             context.ProductTags.LoadAll();
                             context.ProductBundleItems.LoadAll();
+                            context.SpecificationAttributes.LoadAll();
+                            context.Attributes.LoadAll();
+
+                            var psa = context.SpecificationAttributes.SelectMany(x => x.Value);
+                            var sao = psa.Select(x => x.SpecificationAttributeOption);
+                            var sa = psa.Select(x => x.SpecificationAttributeOption.SpecificationAttribute);
+
+                            var pva = context.Attributes.SelectMany(x => x.Value);
+                            var pvav = pva.SelectMany(x => x.ProductVariantAttributeValues);
+                            var pa = pva.Select(x => x.ProductAttribute);
 
                             ctx.TranslationsPerPage[nameof(ProductTag)] = CreateTranslationCollection(nameof(ProductTag), context.ProductTags.SelectMany(x => x.Value));
                             ctx.TranslationsPerPage[nameof(ProductBundleItem)] = CreateTranslationCollection(nameof(ProductBundleItem), context.ProductBundleItems.SelectMany(x => x.Value));
-
+                            ctx.TranslationsPerPage[nameof(SpecificationAttribute)] = CreateTranslationCollection(nameof(SpecificationAttribute), sa);
+                            ctx.TranslationsPerPage[nameof(SpecificationAttributeOption)] = CreateTranslationCollection(nameof(SpecificationAttributeOption), sao);
+                            ctx.TranslationsPerPage[nameof(ProductAttribute)] = CreateTranslationCollection(nameof(ProductAttribute), pa);
+                            ctx.TranslationsPerPage[nameof(ProductVariantAttributeValue)] = CreateTranslationCollection(nameof(ProductVariantAttributeValue), pvav);
                         },
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
@@ -1479,7 +1493,6 @@ namespace SmartStore.Services.DataExchange.Export
 
                     ctx.EntityIdsPerSegment.Clear();
                     DetachAllEntitiesAndClear(ctx);
-                    _localizedEntityService.ClearCache();
 
                     if (context.IsMaxFailures)
                     {
@@ -1662,7 +1675,6 @@ namespace SmartStore.Services.DataExchange.Export
 					}
 
 					DetachAllEntitiesAndClear(ctx);
-                    _localizedEntityService.ClearCache();
 
                     try
 					{

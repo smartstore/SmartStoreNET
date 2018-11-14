@@ -25,16 +25,16 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
+using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export.Events;
 using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
-using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	public partial class DataExporter
+    public partial class DataExporter
 	{
 		private readonly string[] _orderCustomerAttributes = new string[]
 		{
@@ -49,13 +49,13 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			try
 			{
-				var languageId = (ctx.Projection.LanguageId ?? 0);
+				var languageId = ctx.Projection.LanguageId ?? 0;
 				string description = "";
 
-				// description merging
+				// Description merging.
 				if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.None)
 				{
-					// export empty description
+					// Export empty description.
 				}
 				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
 				{
@@ -87,37 +87,38 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					var productManus = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(product.Id);
 
-					if (productManus != null && productManus.Any())
-						description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
+                    if (productManus != null && productManus.Any())
+                    {
+                        var translations = ctx.Translations[nameof(Manufacturer)];
+                        var manufacturer = productManus.First().Manufacturer;
+                        description = translations.GetValue(languageId, manufacturer.Id, nameof(manufacturer.Name)) ?? manufacturer.Name;
+                    }
 
 					description = description.Grow((string)dynObject.Name, " ");
-
-					if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
-						description = description.Grow((string)dynObject.ShortDescription, " ");
-					else
-						description = description.Grow((string)dynObject.FullDescription, " ");
+                    description = ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription
+                        ? description.Grow((string)dynObject.ShortDescription, " ")
+                        : description.Grow((string)dynObject.FullDescription, " ");
 				}
 
-				// append text
+				// Append text.
 				if (ctx.Projection.AppendDescriptionText.HasValue() && ((string)dynObject.ShortDescription).IsEmpty() && ((string)dynObject.FullDescription).IsEmpty())
 				{
 					string[] appendText = ctx.Projection.AppendDescriptionText.SplitSafe(",");
 					if (appendText.Length > 0)
 					{
-						var rnd = (new Random()).Next(0, appendText.Length - 1);
-
+						var rnd = new Random().Next(0, appendText.Length - 1);
 						description = description.Grow(appendText.SafeGet(rnd), " ");
 					}
 				}
 
-				// remove critical characters
+				// Remove critical characters.
 				if (description.HasValue() && ctx.Projection.RemoveCriticalCharacters)
 				{
 					foreach (var str in ctx.Projection.CriticalCharacters.SplitSafe(","))
 						description = description.Replace(str, "");
 				}
 
-				// convert to plain text
+				// Convert to plain text.
 				if (description.HasValue() && ctx.Projection.DescriptionToPlainText)
 				{
 					//Regex reg = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
@@ -217,59 +218,6 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			return ConvertPrice(ctx, product, price) ?? price;
-		}
-
-		private List<dynamic> GetLocalized<T>(DataExporterContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
-			where T : BaseEntity, ILocalizedEntity
-		{
-			if (ctx.Languages.Count <= 1)
-				return null;
-
-			var localized = new List<dynamic>();
-
-			var localeKeyGroup = typeof(T).Name;
-			var isSlugSupported = typeof(ISlugSupported).IsAssignableFrom(typeof(T));
-
-			foreach (var language in ctx.Languages)
-			{
-				var languageCulture = language.Value.LanguageCulture.EmptyNull().ToLower();
-
-				// add SeName
-				if (isSlugSupported)
-				{
-					var value = _urlRecordService.Value.GetActiveSlug(entity.Id, localeKeyGroup, language.Value.Id);
-					if (value.HasValue())
-					{
-						dynamic exp = new HybridExpando();
-						exp.Culture = languageCulture;
-						exp.LocaleKey = "SeName";
-						exp.LocaleValue = value;
-
-						localized.Add(exp);
-					}
-				}
-
-				foreach (var keySelector in keySelectors)
-				{
-					var member = keySelector.Body as MemberExpression;
-					var propInfo = member.Member as PropertyInfo;
-					string localeKey = propInfo.Name;
-					var value = _localizedEntityService.GetLocalizedValue(language.Value.Id, entity.Id, localeKeyGroup, localeKey);
-
-					// we better not export empty values. the risk is to high that they are imported and unnecessary fill databases.
-					if (value.HasValue())
-					{
-						dynamic exp = new HybridExpando();
-						exp.Culture = languageCulture;
-						exp.LocaleKey = localeKey;
-						exp.LocaleValue = value;
-
-						localized.Add(exp);
-					}
-				}
-			}
-
-			return (localized.Count == 0 ? null : localized);
 		}
 
         private List<dynamic> GetLocalized<T>(
@@ -555,34 +503,40 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, ProductVariantAttribute pva)
 		{
-			if (pva == null)
-				return null;
+            if (pva == null)
+            {
+                return null;
+            }
 
-			dynamic result = new DynamicEntity(pva);
+            var languageId = ctx.Projection.LanguageId ?? 0;
+            var attribute = pva.ProductAttribute;
 
-			dynamic attribute = new DynamicEntity(pva.ProductAttribute);
+            dynamic result = new DynamicEntity(pva);
+			dynamic dynAttribute = new DynamicEntity(attribute);
+            var paTranslations = ctx.TranslationsPerPage[nameof(ProductAttribute)];
+            var pvavTranslations = ctx.TranslationsPerPage[nameof(ProductVariantAttributeValue)];
 
-			attribute.Name = pva.ProductAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
-			attribute.Description = pva.ProductAttribute.GetLocalized(x => x.Description, ctx.Projection.LanguageId ?? 0, true, false);
+            dynAttribute.Name = paTranslations.GetValue(languageId, attribute.Id, nameof(attribute.Name)) ?? attribute.Name;
+			dynAttribute.Description = paTranslations.GetValue(languageId, attribute.Id, nameof(attribute.Description)) ?? attribute.Description;
 
-			attribute.Values = pva.ProductVariantAttributeValues
+			dynAttribute.Values = pva.ProductVariantAttributeValues
 				.OrderBy(x => x.DisplayOrder)
 				.Select(x =>
 				{
 					dynamic dyn = new DynamicEntity(x);
 
-					dyn.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
-					dyn._Localized = GetLocalized(ctx, x, y => y.Name);
+                    dyn.Name = pvavTranslations.GetValue(languageId, x.Id, nameof(x.Name)) ?? x.Name;
+					dyn._Localized = GetLocalized(ctx, pvavTranslations, x, y => y.Name);
 
 					return dyn;
 				})
 				.ToList();
 
-			attribute._Localized = GetLocalized(ctx, pva.ProductAttribute,
+			dynAttribute._Localized = GetLocalized(ctx, paTranslations, attribute,
 				x => x.Name,
 				x => x.Description);
 
-			result.Attribute = attribute;
+			result.Attribute = dynAttribute;
 
 			return result;
 		}
@@ -680,7 +634,7 @@ namespace SmartStore.Services.DataExchange.Export
             }
 
 			dynamic result = new DynamicEntity(product);
-            var translations = ctx.Translations[nameof(Product)];
+            var translations = ctx.TranslationsPerPage[nameof(Product)];
 
             result.AppliedDiscounts = null;
             result.Downloads = null;
@@ -778,8 +732,9 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
                 {
+                    var translations = ctx.TranslationsPerPage[nameof(ProductVariantAttributeValue)];
                     var valueNames = variantAttributeValues
-                        .Select(x => x.GetLocalized(y => y.Name, languageId, true, false))
+                        .Select(x => translations.GetValue(languageId, x.Id, nameof(x.Name)) ?? x.Name)
                         .ToList();
 
                     dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", valueNames), " ");
@@ -995,11 +950,16 @@ namespace SmartStore.Services.DataExchange.Export
 				string brand = null;
 				var productManus = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(product.Id);
 
-				if (productManus != null && productManus.Any())
-					brand = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
-
-				if (brand.IsEmpty())
-					brand = ctx.Projection.Brand;
+                if (productManus != null && productManus.Any())
+                {
+                    var translations = ctx.Translations[nameof(Manufacturer)];
+                    var manufacturer = productManus.First().Manufacturer;
+                    brand = translations.GetValue(languageId, manufacturer.Id, nameof(manufacturer.Name)) ?? manufacturer.Name;
+                }
+                if (brand.IsEmpty())
+                {
+                    brand = ctx.Projection.Brand;
+                }
 
 				dynObject._Brand = brand;
 			}
@@ -1106,8 +1066,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, Order order)
 		{
-			if (order == null)
-				return null;
+            if (order == null)
+            {
+                return null;
+            }
 
 			dynamic result = new DynamicEntity(order);
 
@@ -1135,13 +1097,14 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, OrderItem orderItem)
 		{
-			if (orderItem == null)
-				return null;
+            if (orderItem == null)
+            {
+                return null;
+            }
 
 			dynamic result = new DynamicEntity(orderItem);
 
 			orderItem.Product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser.Value);
-
 			result.Product = ToDynamic(ctx, orderItem.Product);
 
 			return result;
@@ -1149,8 +1112,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, Shipment shipment)
 		{
-			if (shipment == null)
-				return null;
+            if (shipment == null)
+            {
+                return null;
+            }
 
 			dynamic result = new DynamicEntity(shipment);
 
@@ -1158,7 +1123,6 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(x =>
 				{
 					dynamic exp = new DynamicEntity(x);
-
 					return exp;
 				})
 				.ToList();
@@ -1168,18 +1132,21 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, Discount discount)
 		{
-			if (discount == null)
-				return null;
+            if (discount == null)
+            {
+                return null;
+            }
 
 			dynamic result = new DynamicEntity(discount);
-
 			return result;
 		}
 
         private dynamic ToDynamic(DataExporterContext ctx, Download download)
         {
             if (download == null)
+            {
                 return null;
+            }
 
             dynamic result = new DynamicEntity(download);
             return result;
@@ -1187,31 +1154,35 @@ namespace SmartStore.Services.DataExchange.Export
 
         private dynamic ToDynamic(DataExporterContext ctx, ProductSpecificationAttribute psa)
 		{
-			if (psa == null)
-				return null;
+            if (psa == null)
+            {
+                return null;
+            }
 
-			var option = psa.SpecificationAttributeOption;
+            var languageId = ctx.Projection.LanguageId ?? 0;
+            var option = psa.SpecificationAttributeOption;
+            var attribute = option.SpecificationAttribute;
 
-			dynamic result = new DynamicEntity(psa);
+            dynamic result = new DynamicEntity(psa);
+			dynamic dynAttribute = new DynamicEntity(attribute);
+            var saTranslations = ctx.TranslationsPerPage[nameof(SpecificationAttribute)];
+            var saoTranslations = ctx.TranslationsPerPage[nameof(SpecificationAttributeOption)];
 
-			dynamic dynAttribute = new DynamicEntity(option.SpecificationAttribute);
+            dynAttribute.Name = saTranslations.GetValue(languageId, attribute.Id, nameof(attribute.Name)) ?? attribute.Name;
+			dynAttribute._Localized = GetLocalized(ctx, saTranslations, attribute, x => x.Name);
 
-			dynAttribute.Name = option.SpecificationAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
-			dynAttribute._Localized = GetLocalized(ctx, option.SpecificationAttribute, x => x.Name);
+			dynAttribute.Alias = saTranslations.GetValue(languageId, attribute.Id, nameof(attribute.Alias)) ?? attribute.Alias;
+			dynAttribute._Localized = GetLocalized(ctx, saTranslations, attribute, x => x.Alias);
 
-			dynAttribute.Alias = option.SpecificationAttribute.GetLocalized(x => x.Alias, ctx.Projection.LanguageId ?? 0, true, false);
-			dynAttribute._Localized = GetLocalized(ctx, option.SpecificationAttribute, x => x.Alias);
+            dynamic dynOption = new DynamicEntity(option);
 
-			dynamic dynOption = new DynamicEntity(option);
+            dynOption.Name = saoTranslations.GetValue(languageId, option.Id, nameof(option.Name)) ?? option.Name;
+			dynOption._Localized = GetLocalized(ctx, saoTranslations, option, x => x.Name);
 
-			dynOption.Name = option.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
-			dynOption._Localized = GetLocalized(ctx, option, x => x.Name);
-
-			dynOption.Alias = option.GetLocalized(x => x.Alias, ctx.Projection.LanguageId ?? 0, true, false);
-			dynOption._Localized = GetLocalized(ctx, option, x => x.Alias);
+			dynOption.Alias = saoTranslations.GetValue(languageId, option.Id, nameof(option.Alias)) ?? option.Alias;
+			dynOption._Localized = GetLocalized(ctx, saoTranslations, option, x => x.Alias);
 
 			dynOption.SpecificationAttribute = dynAttribute;
-
 			result.SpecificationAttributeOption = dynOption;
 
 			return result;
@@ -1219,18 +1190,21 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, GenericAttribute genericAttribute)
 		{
-			if (genericAttribute == null)
-				return null;
+            if (genericAttribute == null)
+            {
+                return null;
+            }
 
 			dynamic result = new DynamicEntity(genericAttribute);
-
 			return result;
 		}
 
 		private dynamic ToDynamic(DataExporterContext ctx, NewsLetterSubscription subscription)
 		{
-			if (subscription == null)
-				return null;
+            if (subscription == null)
+            {
+                return null;
+            }
 
 			dynamic result = new DynamicEntity(subscription);
 
@@ -1243,8 +1217,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private dynamic ToDynamic(DataExporterContext ctx, ShoppingCartItem shoppingCartItem)
 		{
-			if (shoppingCartItem == null)
-				return null;
+            if (shoppingCartItem == null)
+            {
+                return null;
+            }
 
 			dynamic result = new DynamicEntity(shoppingCartItem);
 

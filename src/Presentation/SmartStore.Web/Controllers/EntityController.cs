@@ -157,9 +157,10 @@ namespace SmartStore.Web.Controllers
 							{
 								searchQuery = searchQuery.WithCategoryIds(null, node.Flatten(true).Select(x => x.Id).ToArray());
 							}
-						}		
+						}
 
-						var query = _catalogSearchService.PrepareQuery(searchQuery);
+                        var skip = model.PageIndex * model.PageSize;
+                        var query = _catalogSearchService.PrepareQuery(searchQuery);
 
 						var products = query
 							.Select(x => new
@@ -172,7 +173,7 @@ namespace SmartStore.Web.Controllers
 								x.MainPictureId
 							})
 							.OrderBy(x => x.Name)
-							.Skip(() => model.PageIndex * model.PageSize)
+							.Skip(() => skip)
 							.Take(() => model.PageSize)
 							.ToList();
 

@@ -43,6 +43,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -57,7 +58,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly HttpContextBase _httpContext;
 		private readonly Lazy<IPriceFormatter> _priceFormatter;
 		private readonly Lazy<IExportProfileService> _exportProfileService;
-        private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
+        private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IPictureService> _pictureService;
@@ -105,7 +106,7 @@ namespace SmartStore.Services.DataExchange.Export
 			HttpContextBase httpContext,
 			Lazy<IPriceFormatter> priceFormatter,
 			Lazy<IExportProfileService> exportProfileService,
-			Lazy<ILocalizedEntityService> localizedEntityService,
+			ILocalizedEntityService localizedEntityService,
 			Lazy<ILanguageService> languageService,
 			Lazy<IUrlRecordService> urlRecordService,
 			Lazy<IPictureService> pictureService,
@@ -197,11 +198,22 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public Localizer T { get; set; }
 
-		#endregion
+        #endregion
 
-		#region Utilities
+        #region Utilities
 
-		private void SetProgress(DataExporterContext ctx, int loadedRecords)
+        private LocalizedPropertyCollection CreateTranslationCollection(string keyGroup, IEnumerable<BaseEntity> entities)
+        {
+            if (entities == null || !entities.Any())
+            {
+                return new LocalizedPropertyCollection(keyGroup, null, Enumerable.Empty<LocalizedProperty>());
+            }
+
+            var collection = _localizedEntityService.GetLocalizedPropertyCollection(keyGroup, entities.Select(x => x.Id).Distinct().ToArray());
+            return collection;
+        }
+
+        private void SetProgress(DataExporterContext ctx, int loadedRecords)
 		{
 			try
 			{
@@ -313,7 +325,10 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			try
 			{
-				if (ctx.ProductExportContext != null)
+                ctx.AssociatedProductContext?.Clear();
+                ctx.TranslationsPerPage?.Clear();
+
+                if (ctx.ProductExportContext != null)
 				{
 					_dbContext.DetachEntities(x =>
 					{
@@ -324,8 +339,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 					ctx.ProductExportContext.Clear();
 				}
-
-                ctx.AssociatedProductContext?.Clear();
 
 				if (ctx.OrderExportContext != null)
 				{
@@ -386,7 +399,7 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			var offset = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
 			var limit = Math.Max(ctx.Request.Profile.Limit, 0);
-			var recordsPerSegment = (ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0));
+			var recordsPerSegment = ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0);
 			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 			
 			switch (ctx.Request.Provider.Value.EntityType)
@@ -397,15 +410,30 @@ namespace SmartStore.Services.DataExchange.Export
 						skip => GetProducts(ctx, skip),
 						entities =>
 						{
-							// Load data behind navigation properties for current queue in one go.
-							ctx.ProductExportContext = CreateProductExportContext(entities, ctx.ContextCustomer, ctx.Store.Id);
+                            // Load data behind navigation properties for current queue in one go.
+                            ctx.ProductExportContext = CreateProductExportContext(entities, ctx.ContextCustomer, ctx.Store.Id);
                             ctx.AssociatedProductContext = null;
+
+                            var context = ctx.ProductExportContext;
                             if (!ctx.Projection.NoGroupedProducts && entities.Where(x => x.ProductType == ProductType.GroupedProduct).Any())
                             {
-                                ctx.ProductExportContext.AssociatedProducts.LoadAll();
-                                var associatedProducts = ctx.ProductExportContext.AssociatedProducts.SelectMany(x => x.Value);
+                                context.AssociatedProducts.LoadAll();
+                                var associatedProducts = context.AssociatedProducts.SelectMany(x => x.Value);
                                 ctx.AssociatedProductContext = CreateProductExportContext(associatedProducts, ctx.ContextCustomer, ctx.Store.Id);
+
+                                ctx.Translations[nameof(Product)] = CreateTranslationCollection(nameof(Product), entities.Where(x => x.ProductType != ProductType.GroupedProduct).Concat(associatedProducts));
                             }
+                            else
+                            {
+                                ctx.Translations[nameof(Product)] = CreateTranslationCollection(nameof(Product), entities);
+                            }
+
+                            context.ProductTags.LoadAll();
+                            context.ProductBundleItems.LoadAll();
+
+                            ctx.TranslationsPerPage[nameof(ProductTag)] = CreateTranslationCollection(nameof(ProductTag), context.ProductTags.SelectMany(x => x.Value));
+                            ctx.TranslationsPerPage[nameof(ProductBundleItem)] = CreateTranslationCollection(nameof(ProductBundleItem), context.ProductBundleItems.SelectMany(x => x.Value));
+
                         },
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
@@ -1257,7 +1285,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private List<Store> Init(DataExporterContext ctx, int? totalRecords = null)
 		{
-			// Init base things that are even required for preview. Init all other things (regular export) in ExportCoreOuter.
+			// Init things that are required for export and for preview.
+            // Init things that are only required for export in ExportCoreOuter.
 			List<Store> result = null;
 
 			ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId ?? 0) ?? _services.WorkContext.WorkingCurrency;
@@ -1267,20 +1296,40 @@ namespace SmartStore.Services.DataExchange.Export
 			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
 			ctx.Languages = _languageService.Value.GetAllLanguages(true).ToDictionary(x => x.Id, x => x);
 
-			if (!ctx.IsPreview && ctx.Request.Profile.PerStore)
+            if (ctx.IsPreview)
+            {
+                ctx.Translations[nameof(Currency)] = new LocalizedPropertyCollection(nameof(Currency), null, Enumerable.Empty<LocalizedProperty>());
+                ctx.Translations[nameof(Country)] = new LocalizedPropertyCollection(nameof(Country), null, Enumerable.Empty<LocalizedProperty>());
+                ctx.Translations[nameof(StateProvince)] = new LocalizedPropertyCollection(nameof(StateProvince), null, Enumerable.Empty<LocalizedProperty>());
+                ctx.Translations[nameof(DeliveryTime)] = new LocalizedPropertyCollection(nameof(DeliveryTime), null, Enumerable.Empty<LocalizedProperty>());
+                ctx.Translations[nameof(QuantityUnit)] = new LocalizedPropertyCollection(nameof(QuantityUnit), null, Enumerable.Empty<LocalizedProperty>());
+                ctx.Translations[nameof(Manufacturer)] = new LocalizedPropertyCollection(nameof(Manufacturer), null, Enumerable.Empty<LocalizedProperty>());
+                ctx.Translations[nameof(Category)] = new LocalizedPropertyCollection(nameof(Category), null, Enumerable.Empty<LocalizedProperty>());
+            }
+            else
+            {
+                ctx.Translations[nameof(Currency)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Currency), null);
+                ctx.Translations[nameof(Country)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Country), null);
+                ctx.Translations[nameof(StateProvince)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(StateProvince), null);
+                ctx.Translations[nameof(DeliveryTime)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(DeliveryTime), null);
+                ctx.Translations[nameof(QuantityUnit)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(QuantityUnit), null);
+                ctx.Translations[nameof(Manufacturer)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Manufacturer), null);
+                ctx.Translations[nameof(Category)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Category), null);
+            }
+
+            if (!ctx.IsPreview && ctx.Request.Profile.PerStore)
 			{
 				result = new List<Store>(ctx.Stores.Values.Where(x => x.Id == ctx.Filter.StoreId || ctx.Filter.StoreId == 0));
 			}
 			else
 			{
-				int? storeId = (ctx.Filter.StoreId == 0 ? ctx.Projection.StoreId : ctx.Filter.StoreId);
-
+				int? storeId = ctx.Filter.StoreId == 0 ? ctx.Projection.StoreId : ctx.Filter.StoreId;
 				ctx.Store = ctx.Stores.Values.FirstOrDefault(x => x.Id == (storeId ?? _services.StoreContext.CurrentStore.Id));
 
 				result = new List<Store> { ctx.Store };
 			}
 
-			// get total records for progress
+			// Get total records for progress.
 			foreach (var store in result)
 			{
 				ctx.Store = store;
@@ -1289,7 +1338,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 				if (totalRecords.HasValue)
 				{
-					totalCount = totalRecords.Value;    // speed up preview by not counting total at each page
+                    // Speed up preview by not counting total at each page.
+                    totalCount = totalRecords.Value;
 				}
 				else
 				{
@@ -1429,7 +1479,7 @@ namespace SmartStore.Services.DataExchange.Export
 
                     ctx.EntityIdsPerSegment.Clear();
                     DetachAllEntitiesAndClear(ctx);
-                    _localizedEntityService.Value.ClearCache();
+                    _localizedEntityService.ClearCache();
 
                     if (context.IsMaxFailures)
                     {
@@ -1524,16 +1574,16 @@ namespace SmartStore.Services.DataExchange.Export
 						}
 					}
 
-					// lazyLoading: false, proxyCreation: false impossible. how to identify all properties of all data levels of all entities
-					// that require manual resolving for now and for future? fragile, susceptible to faults (e.g. price calculation)...
-					using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
+                    // lazyLoading: false, proxyCreation: false impossible due to price calculation.
+                    using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 					{
+                        // Init things required for export and not required for preview.
 						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
 						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
 						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
 						ctx.CategoryTemplates = _categoryTemplateService.Value.GetAllCategoryTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
 
-						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
+                        if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
 							ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
 						{
 							ctx.Countries = _countryService.Value.GetAllCountries(true).ToDictionary(x => x.Id, x => x);
@@ -1612,7 +1662,7 @@ namespace SmartStore.Services.DataExchange.Export
 					}
 
 					DetachAllEntitiesAndClear(ctx);
-                    _localizedEntityService.Value.ClearCache();
+                    _localizedEntityService.ClearCache();
 
                     try
 					{
@@ -1624,6 +1674,7 @@ namespace SmartStore.Services.DataExchange.Export
 						ctx.QuantityUnits.Clear();
 						ctx.DeliveryTimes.Clear();
 						ctx.Stores.Clear();
+                        ctx.Translations.Clear();
 
 						ctx.Request.CustomData.Clear();
 

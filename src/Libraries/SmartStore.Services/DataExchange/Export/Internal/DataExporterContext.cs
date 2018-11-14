@@ -39,6 +39,8 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			ProductTemplates = new Dictionary<int, string>();
 			CategoryTemplates = new Dictionary<int, string>();
 			NewsletterSubscriptions = new HashSet<string>();
+            Translations = new Dictionary<string, LocalizedPropertyCollection>();
+            TranslationsPerPage = new Dictionary<string, LocalizedPropertyCollection>();
 
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
@@ -116,15 +118,25 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		public Dictionary<int, string> CategoryTemplates { get; set; }
 		public HashSet<string> NewsletterSubscriptions { get; set; }
 
-		// Data loaded once per page.
-		public ProductExportContext ProductExportContext { get; set; }
+        /// <summary>
+        /// All translations for global scopes (like Category, Manufacturer etc.)
+        /// </summary>
+        public Dictionary<string, LocalizedPropertyCollection> Translations { get; set; }
+
+        // Data loaded once per page.
+        public ProductExportContext ProductExportContext { get; set; }
         public ProductExportContext AssociatedProductContext { get; set; }
         public OrderExportContext OrderExportContext { get; set; }
 		public ManufacturerExportContext ManufacturerExportContext { get; set; }
 		public CategoryExportContext CategoryExportContext { get; set; }
 		public CustomerExportContext CustomerExportContext { get; set; }
 
-		public ExportExecuteContext ExecuteContext { get; set; }
+        /// <summary>
+        /// All per page translations (like ProductVariantAttributeValue etc.)
+        /// </summary>
+        public Dictionary<string, LocalizedPropertyCollection> TranslationsPerPage { get; set; }
+
+        public ExportExecuteContext ExecuteContext { get; set; }
 		public DataExportResult Result { get; set; }
 	}
 }

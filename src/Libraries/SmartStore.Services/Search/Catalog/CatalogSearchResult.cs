@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
@@ -10,10 +9,8 @@ namespace SmartStore.Services.Search
 {
     public partial class CatalogSearchResult
 	{
-		private readonly int _totalHitsCount;
-		private readonly Func<IList<Product>> _hitsFactory;
+        private readonly Func<IList<Product>> _hitsFactory;
 		private IPagedList<Product> _hits;
-		private bool? _isSubPage;
 
 		public CatalogSearchResult(
 			ISearchEngine engine,
@@ -31,7 +28,7 @@ namespace SmartStore.Services.Search
 			Facets = facets ?? new Dictionary<string, FacetGroup>();
 
 			_hitsFactory = hitsFactory ?? (() => new List<Product>());
-			_totalHitsCount = totalHitsCount;
+			TotalHitsCount = totalHitsCount;
 		}
 
 		/// <summary>
@@ -52,26 +49,23 @@ namespace SmartStore.Services.Search
 			{
 				if (_hits == null)
 				{
-					var products = _totalHitsCount == 0 
+					var products = TotalHitsCount == 0 
 						? new List<Product>() 
 						: _hitsFactory.Invoke();
 
-					_hits = new PagedList<Product>(products, Query.PageIndex, Query.Take, _totalHitsCount);
+					_hits = new PagedList<Product>(products, Query.PageIndex, Query.Take, TotalHitsCount);
 				}
 
 				return _hits;
 			}
 		}
 
-		public int TotalHitsCount
-		{
-			get { return _totalHitsCount; }
-		}
+        public int TotalHitsCount { get; }
 
-		/// <summary>
-		/// The original catalog search query
-		/// </summary>
-		public CatalogSearchQuery Query
+        /// <summary>
+        /// The original catalog search query
+        /// </summary>
+        public CatalogSearchQuery Query
 		{
 			get;
 			private set;

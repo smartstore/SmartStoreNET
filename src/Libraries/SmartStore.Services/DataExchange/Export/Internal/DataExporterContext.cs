@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
 
@@ -41,6 +42,8 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			NewsletterSubscriptions = new HashSet<string>();
             Translations = new Dictionary<string, LocalizedPropertyCollection>();
             TranslationsPerPage = new Dictionary<string, LocalizedPropertyCollection>();
+            UrlRecords = new Dictionary<string, UrlRecordCollection>();
+            UrlRecordsPerPage = new Dictionary<string, UrlRecordCollection>();
 
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
@@ -97,8 +100,9 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		public Currency ContextCurrency { get; set; }
 		public Customer ContextCustomer { get; set; }
 		public Language ContextLanguage { get; set; }
+        public int LanguageId => Projection.LanguageId ?? 0;
 
-		public TraceLogger Log { get; set; }
+        public TraceLogger Log { get; set; }
 		public Store Store { get; set; }
 
 		public string FolderContent { get; private set; }
@@ -122,6 +126,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
         /// All translations for global scopes (like Category, Manufacturer etc.)
         /// </summary>
         public Dictionary<string, LocalizedPropertyCollection> Translations { get; set; }
+        public Dictionary<string, UrlRecordCollection> UrlRecords { get; set; }
 
         // Data loaded once per page.
         public ProductExportContext ProductExportContext { get; set; }
@@ -135,6 +140,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
         /// All per page translations (like ProductVariantAttributeValue etc.)
         /// </summary>
         public Dictionary<string, LocalizedPropertyCollection> TranslationsPerPage { get; set; }
+        public Dictionary<string, UrlRecordCollection> UrlRecordsPerPage { get; set; }
 
         public ExportExecuteContext ExecuteContext { get; set; }
 		public DataExportResult Result { get; set; }

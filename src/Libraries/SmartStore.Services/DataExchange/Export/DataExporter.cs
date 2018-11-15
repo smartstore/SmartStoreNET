@@ -44,6 +44,7 @@ using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -58,7 +59,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly HttpContextBase _httpContext;
 		private readonly Lazy<IPriceFormatter> _priceFormatter;
 		private readonly Lazy<IExportProfileService> _exportProfileService;
-        private readonly ILocalizedEntityService _localizedEntityService;
+        private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 		private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IPictureService> _pictureService;
@@ -99,14 +100,15 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<CatalogSettings> _catalogSettings;
 		private readonly Lazy<LocalizationSettings> _localizationSettings;
 		private readonly Lazy<TaxSettings> _taxSettings;
+        private readonly Lazy<SeoSettings> _seoSettings;
 
-		public DataExporter(
+        public DataExporter(
 			ICommonServices services,
 			IDbContext dbContext,
 			HttpContextBase httpContext,
 			Lazy<IPriceFormatter> priceFormatter,
 			Lazy<IExportProfileService> exportProfileService,
-			ILocalizedEntityService localizedEntityService,
+            Lazy<ILocalizedEntityService> localizedEntityService,
 			Lazy<ILanguageService> languageService,
 			Lazy<IUrlRecordService> urlRecordService,
 			Lazy<IPictureService> pictureService,
@@ -144,7 +146,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<CustomerSettings> customerSettings,
 			Lazy<CatalogSettings> catalogSettings,
 			Lazy<LocalizationSettings> localizationSettings,
-			Lazy<TaxSettings> taxSettings)
+			Lazy<TaxSettings> taxSettings,
+            Lazy<SeoSettings> seoSettings)
 		{
 			_services = services;
 			_dbContext = dbContext;
@@ -192,6 +195,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_catalogSettings = catalogSettings;
 			_localizationSettings = localizationSettings;
 			_taxSettings = taxSettings;
+            _seoSettings = seoSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -209,7 +213,18 @@ namespace SmartStore.Services.DataExchange.Export
                 return new LocalizedPropertyCollection(keyGroup, null, Enumerable.Empty<LocalizedProperty>());
             }
 
-            var collection = _localizedEntityService.GetLocalizedPropertyCollection(keyGroup, entities.Select(x => x.Id).Distinct().ToArray());
+            var collection = _localizedEntityService.Value.GetLocalizedPropertyCollection(keyGroup, entities.Select(x => x.Id).Distinct().ToArray());
+            return collection;
+        }
+
+        private UrlRecordCollection CreateUrlRecordCollection(string entityName, IEnumerable<BaseEntity> entities)
+        {
+            if (entities == null || !entities.Any())
+            {
+                return new UrlRecordCollection(entityName, null, Enumerable.Empty<UrlRecord>());
+            }
+
+            var collection = _urlRecordService.Value.GetUrlRecordCollection(entityName, entities.Select(x => x.Id).Distinct().ToArray());
             return collection;
         }
 
@@ -219,13 +234,15 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (!ctx.IsPreview && loadedRecords > 0)
 				{
-					int totalRecords = ctx.RecordsPerStore.Sum(x => x.Value);
+					var totalRecords = ctx.RecordsPerStore.Sum(x => x.Value);
 
-					if (ctx.Request.Profile.Limit > 0 && totalRecords > ctx.Request.Profile.Limit)
-						totalRecords = ctx.Request.Profile.Limit;
+                    if (ctx.Request.Profile.Limit > 0 && totalRecords > ctx.Request.Profile.Limit)
+                    {
+                        totalRecords = ctx.Request.Profile.Limit;
+                    }
 
 					ctx.RecordCount = Math.Min(ctx.RecordCount + loadedRecords, totalRecords);
-					var msg = ctx.ProgressInfo.FormatInvariant(ctx.RecordCount, totalRecords);
+					var msg = ctx.ProgressInfo.FormatInvariant(ctx.RecordCount.ToString("N0"), totalRecords.ToString("N0"));
 					ctx.Request.ProgressValueSetter.Invoke(ctx.RecordCount, totalRecords, msg);
 				}
 			}
@@ -327,6 +344,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
                 ctx.AssociatedProductContext?.Clear();
                 ctx.TranslationsPerPage?.Clear();
+                ctx.UrlRecordsPerPage?.Clear();
 
                 if (ctx.ProductExportContext != null)
 				{
@@ -421,12 +439,14 @@ namespace SmartStore.Services.DataExchange.Export
                                 var associatedProducts = context.AssociatedProducts.SelectMany(x => x.Value);
                                 ctx.AssociatedProductContext = CreateProductExportContext(associatedProducts, ctx.ContextCustomer, ctx.Store.Id);
 
-                                var translationEntities = entities.Where(x => x.ProductType != ProductType.GroupedProduct).Concat(associatedProducts);
-                                ctx.TranslationsPerPage[nameof(Product)] = CreateTranslationCollection(nameof(Product), translationEntities);
+                                var allProductEntities = entities.Where(x => x.ProductType != ProductType.GroupedProduct).Concat(associatedProducts);
+                                ctx.TranslationsPerPage[nameof(Product)] = CreateTranslationCollection(nameof(Product), allProductEntities);
+                                ctx.UrlRecordsPerPage[nameof(Product)] = CreateUrlRecordCollection(nameof(Product), allProductEntities);
                             }
                             else
                             {
                                 ctx.TranslationsPerPage[nameof(Product)] = CreateTranslationCollection(nameof(Product), entities);
+                                ctx.UrlRecordsPerPage[nameof(Product)] = CreateUrlRecordCollection(nameof(Product), entities);
                             }
 
                             context.ProductTags.LoadAll();
@@ -468,7 +488,15 @@ namespace SmartStore.Services.DataExchange.Export
 								x => _orderService.Value.GetOrderItemsByOrderIds(x),
 								x => _shipmentService.Value.GetShipmentsByOrderIds(x)
 							);
-						},
+
+                            ctx.OrderExportContext.OrderItems.LoadAll();
+
+                            var orderItems = ctx.OrderExportContext.OrderItems.SelectMany(x => x.Value);
+                            var products = orderItems.Select(x => x.Product);
+
+                            ctx.TranslationsPerPage[nameof(Product)] = CreateTranslationCollection(nameof(Product), products);
+                            ctx.UrlRecordsPerPage[nameof(Product)] = CreateUrlRecordCollection(nameof(Product), products);
+                        },
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
 					);
@@ -535,8 +563,13 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<ShoppingCartItem>
 					(
 						skip => GetShoppingCartItems(ctx, skip),
-						null,
-						entity => Convert(ctx, entity),
+                        entities =>
+                        {
+                            var products = entities.Select(x => x.Product);
+                            ctx.TranslationsPerPage[nameof(Product)] = CreateTranslationCollection(nameof(Product), products);
+                            ctx.UrlRecordsPerPage[nameof(Product)] = CreateUrlRecordCollection(nameof(Product), products);
+                        },
+                        entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
 					);
 					break;
@@ -1312,23 +1345,34 @@ namespace SmartStore.Services.DataExchange.Export
 
             if (ctx.IsPreview)
             {
-                ctx.Translations[nameof(Currency)] = new LocalizedPropertyCollection(nameof(Currency), null, Enumerable.Empty<LocalizedProperty>());
-                ctx.Translations[nameof(Country)] = new LocalizedPropertyCollection(nameof(Country), null, Enumerable.Empty<LocalizedProperty>());
-                ctx.Translations[nameof(StateProvince)] = new LocalizedPropertyCollection(nameof(StateProvince), null, Enumerable.Empty<LocalizedProperty>());
-                ctx.Translations[nameof(DeliveryTime)] = new LocalizedPropertyCollection(nameof(DeliveryTime), null, Enumerable.Empty<LocalizedProperty>());
-                ctx.Translations[nameof(QuantityUnit)] = new LocalizedPropertyCollection(nameof(QuantityUnit), null, Enumerable.Empty<LocalizedProperty>());
-                ctx.Translations[nameof(Manufacturer)] = new LocalizedPropertyCollection(nameof(Manufacturer), null, Enumerable.Empty<LocalizedProperty>());
-                ctx.Translations[nameof(Category)] = new LocalizedPropertyCollection(nameof(Category), null, Enumerable.Empty<LocalizedProperty>());
+                foreach (var name in new string[] { nameof(Currency), nameof(Country), nameof(StateProvince), nameof(DeliveryTime), nameof(QuantityUnit), nameof(Category), nameof(Manufacturer) })
+                {
+                    ctx.Translations[name] = new LocalizedPropertyCollection(name, null, Enumerable.Empty<LocalizedProperty>());
+                }
+
+                foreach (var name in new string[] { nameof(Product), nameof(ProductTag), nameof(ProductBundleItem), nameof(SpecificationAttribute), nameof(SpecificationAttributeOption), 
+                    nameof(ProductAttribute), nameof(ProductVariantAttributeValue) })
+                {
+                    ctx.TranslationsPerPage[name] = new LocalizedPropertyCollection(name, null, Enumerable.Empty<LocalizedProperty>());
+                }
+
+                ctx.UrlRecords[nameof(Category)] = new UrlRecordCollection(nameof(Category), null, Enumerable.Empty<UrlRecord>());
+                ctx.UrlRecords[nameof(Manufacturer)] = new UrlRecordCollection(nameof(Manufacturer), null, Enumerable.Empty<UrlRecord>());
+                ctx.UrlRecordsPerPage[nameof(Product)] = new UrlRecordCollection(nameof(Product), null, Enumerable.Empty<UrlRecord>());
             }
             else
             {
-                ctx.Translations[nameof(Currency)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Currency), null);
-                ctx.Translations[nameof(Country)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Country), null);
-                ctx.Translations[nameof(StateProvince)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(StateProvince), null);
-                ctx.Translations[nameof(DeliveryTime)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(DeliveryTime), null);
-                ctx.Translations[nameof(QuantityUnit)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(QuantityUnit), null);
-                ctx.Translations[nameof(Manufacturer)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Manufacturer), null);
-                ctx.Translations[nameof(Category)] = _localizedEntityService.GetLocalizedPropertyCollection(nameof(Category), null);
+                // Get all translations and slugs for certain entities in one go.
+                ctx.Translations[nameof(Currency)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(Currency), null);
+                ctx.Translations[nameof(Country)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(Country), null);
+                ctx.Translations[nameof(StateProvince)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(StateProvince), null);
+                ctx.Translations[nameof(DeliveryTime)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(DeliveryTime), null);
+                ctx.Translations[nameof(QuantityUnit)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(QuantityUnit), null);
+                ctx.Translations[nameof(Manufacturer)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(Manufacturer), null);
+                ctx.Translations[nameof(Category)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(Category), null);
+
+                ctx.UrlRecords[nameof(Category)] = _urlRecordService.Value.GetUrlRecordCollection(nameof(Category), null);
+                ctx.UrlRecords[nameof(Manufacturer)] = _urlRecordService.Value.GetUrlRecordCollection(nameof(Manufacturer), null);
             }
 
             if (!ctx.IsPreview && ctx.Request.Profile.PerStore)
@@ -1687,6 +1731,7 @@ namespace SmartStore.Services.DataExchange.Export
 						ctx.DeliveryTimes.Clear();
 						ctx.Stores.Clear();
                         ctx.Translations.Clear();
+                        ctx.UrlRecords.Clear();
 
 						ctx.Request.CustomData.Clear();
 

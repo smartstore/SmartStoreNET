@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Globalization;
 
 namespace SmartStore.Core.Domain.Seo
 {
-	public class UrlRecordCollection : IReadOnlyCollection<UrlRecord>
+    public class UrlRecordCollection : IReadOnlyCollection<UrlRecord>
 	{
 		private readonly string _entityName;
 		private readonly IDictionary<string, UrlRecord> _dict;
@@ -52,9 +51,16 @@ namespace SmartStore.Core.Domain.Seo
 			}
 		}
 
-		public string GetSlug(int languageId, int entityId)
+		public string GetSlug(int languageId, int entityId, bool returnDefaultValue = true)
 		{
-			return Find(languageId, entityId)?.Slug;
+			var slug = Find(languageId, entityId)?.Slug;
+            
+            if (returnDefaultValue && languageId != 0 && string.IsNullOrEmpty(slug))
+            {
+                slug = Find(0, entityId)?.Slug;
+            }
+
+            return slug;
 		}
 
 		public UrlRecord Find(int languageId, int entityId)

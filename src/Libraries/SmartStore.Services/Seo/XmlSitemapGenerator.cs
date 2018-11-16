@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Data.Entity;
 using System.Web.Mvc;
 using System.Xml.Linq;
 using SmartStore.Core;
@@ -10,17 +12,51 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
+using SmartStore.Services.Tasks;
 using SmartStore.Services.Topics;
+using System.Diagnostics;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Seo
 {
+	internal class XmlSitemapEntity : BaseEntity, ISlugSupported
+	{
+		public string EntityName { get; set; }
+		public DateTime LastMod { get; set; }
+
+		public override string GetEntityName()
+		{
+			return EntityName;
+		}
+	}
+
 	public partial class XmlSitemapGenerator : IXmlSitemapGenerator
     {
+		class QueryHolder
+		{
+			public IQueryable<Category> Categories { get; set; }
+			public IQueryable<Manufacturer> Manufacturers { get; set; }
+			public IQueryable<Topic> Topics { get; set; }
+			public IQueryable<Product> Products { get; set; }
+
+			public int GetTotalRecordCount()
+			{
+				int num = 0;
+				if (Categories != null) num += Categories.Count();
+				if (Manufacturers != null) num += Manufacturers.Count();
+				if (Topics != null) num += Topics.Count();
+				if (Products != null) num += Products.Count();
+
+				return num;
+			}
+		}
+		
 		/// <summary>
 		/// Key for seo sitemap
 		/// </summary>
@@ -52,16 +88,18 @@ namespace SmartStore.Services.Seo
 		/// </summary>
 		private const int MaximumSiteMapSizeInBytes = 10485760;
 
-        private readonly ICategoryService _categoryService;
+		private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IManufacturerService _manufacturerService;
         private readonly ITopicService _topicService;
 		private readonly ILanguageService _languageService;
 		private readonly ICustomerService _customerService;
 		private readonly ICatalogSearchService _catalogSearchService;
+		private readonly IUrlRecordService _urlRecordService;
 		private readonly SeoSettings _seoSettings;
 		private readonly SecuritySettings _securitySettings;
 		private readonly ICommonServices _services;
+		private readonly ILockFileManager _lockFileManager;
 		private readonly UrlHelper _urlHelper;
 
 		public XmlSitemapGenerator(
@@ -72,9 +110,11 @@ namespace SmartStore.Services.Seo
 			ILanguageService languageService,
 			ICustomerService customerService,
 			ICatalogSearchService catalogSearchService,
+			IUrlRecordService urlRecordService,
 			SeoSettings commonSettings, 
 			SecuritySettings securitySettings,
 			ICommonServices services,
+			ILockFileManager lockFileManager,
 			UrlHelper urlHelper)
         {
             _categoryService = categoryService;
@@ -84,26 +124,36 @@ namespace SmartStore.Services.Seo
 			_languageService = languageService;
 			_customerService = customerService;
 			_catalogSearchService = catalogSearchService;
+			_urlRecordService = urlRecordService;
             _seoSettings = commonSettings;
 			_securitySettings = securitySettings;
 			_services = services;
+			_lockFileManager = lockFileManager;
 			_urlHelper = urlHelper;
 
 			Logger = NullLogger.Instance;
-        }
-
-		public ILogger Logger
-		{
-			get;
-			set;
+			BasePath = _services.ApplicationEnvironment.TenantFolder.Combine("Sitemaps");
 		}
 
-		public void Invalidate()
+		private void EnsureBaseDirectoryExists()
+		{
+			// create base directory if it doesn't exist yet
+			if (!_services.ApplicationEnvironment.TenantFolder.DirectoryExists(BasePath))
+			{
+				_services.ApplicationEnvironment.TenantFolder.CreateDirectory(BasePath);
+			}
+		}
+
+		public string BasePath { get; private set; }
+
+		public ILogger Logger { get; set; }
+
+		public virtual void Invalidate()
 		{
 			_services.Cache.RemoveByPattern(XMLSITEMAP_PATTERN_KEY);
 		}
 
-		public bool IsGenerated
+		public virtual bool IsGenerated
 		{
 			get
 			{
@@ -115,7 +165,7 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		public string GetSitemap(int? index = null)
+		public virtual string GetSitemap(int? index = null)
 		{
 			var storeId = _services.StoreContext.CurrentStore.Id;
 			var langId = _services.WorkContext.WorkingLanguage.Id;
@@ -166,13 +216,223 @@ namespace SmartStore.Services.Seo
 			return null;
 		}
 
+		public virtual void Rebuild(CancellationToken cancellationToken, ProgressCallback callback = null)
+		{
+			var storeId = _services.StoreContext.CurrentStore.Id;
+			var langId = _services.WorkContext.WorkingLanguage.Id;
+
+			var siteMapPath = GetSitemapPath(storeId, langId);
+			var lockFilePath = GetLockFilePath(storeId, langId);
+
+			if (!_lockFileManager.TryAcquireLock(lockFilePath, out var lockFile))
+			{
+				Logger.Warn("XML Sitemap rebuild already in process.");
+				return;
+			}
+
+			using (lockFile)
+			{
+				// Impersonate
+				var prevCustomer = _services.WorkContext.CurrentCustomer;
+				var bot = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
+
+				try
+				{
+					var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
+					var nodes = new List<XmlSitemapNode>();
+					var queries = CreateQueries();
+					var total = queries.GetTotalRecordCount();
+
+					using (new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
+					{
+						var entities = EnumerateEntities(queries);
+
+						var segment = 0;
+						var numProcessed = 0;
+						foreach (var batch in entities.Slice(MaximumSiteMapNodeCount))
+						{
+							if (cancellationToken.IsCancellationRequested)
+							{
+								break;
+							}
+
+							numProcessed = ++segment * MaximumSiteMapNodeCount;
+							callback?.Invoke(numProcessed, total, "{0} / {1}".FormatCurrent(numProcessed, total));
+
+							var firstEntityName = batch.First().EntityName;
+							var lastEntityName = batch.Last().EntityName;
+
+							var slugs = GetUrlRecordCollectionsForBatch(batch, langId);
+
+							nodes.AddRange(batch.Select(x => new XmlSitemapNode
+							{
+								LastMod = x.LastMod,
+								Loc = _urlHelper.RouteUrl(x.EntityName, new { SeName = slugs[x.EntityName].GetSlug(langId, x.Id, true) }, protocol)
+							}));
+						}
+
+						if (!cancellationToken.IsCancellationRequested)
+						{
+							callback?.Invoke(numProcessed, total, "Processing custom nodes".FormatCurrent(numProcessed, total));
+							var customNodes = GetCustomNodes(protocol);
+							if (customNodes != null)
+							{
+								nodes.AddRange(customNodes);
+							}
+						}
+					}
+
+					cancellationToken.ThrowIfCancellationRequested();
+
+					callback?.Invoke(total, total, "Finalizing");
+					var documents = GetSiteMapDocuments(nodes.AsReadOnly(), protocol);
+
+					cancellationToken.ThrowIfCancellationRequested();
+
+					SaveToDisk(siteMapPath, documents, langId, storeId);
+				}
+				finally
+				{
+					// Undo impersonation
+					_services.WorkContext.CurrentCustomer = prevCustomer;
+				}
+			}
+		}
+
+		private void SaveToDisk(string path, List<string> documents, int languageId, int storeId)
+		{
+			EnsureBaseDirectoryExists();
+
+			var folder = _services.ApplicationEnvironment.TenantFolder;
+
+			if (folder.DirectoryExists(path))
+			{
+				folder.DeleteDirectory(path);
+			}
+
+			folder.CreateDirectory(path);
+
+			for (int i = 0; i < documents.Count; i++)
+			{
+				// Save segment to disk
+				var fileName = "sitemap-" + i + ".xml";
+				var filePath = folder.Combine(path, fileName);
+
+				folder.CreateTextFile(filePath, documents[i]);
+			}
+		}
+
+		private string GetSitemapPath(int storeId, int languageId)
+		{
+			return _services.ApplicationEnvironment.TenantFolder.Combine(BasePath + "/" + storeId + "/" + languageId);
+		}
+
+		private string GetLockFilePath(int storeId, int languageId)
+		{
+			return _services.ApplicationEnvironment.TenantFolder.Combine(GetSitemapPath(storeId, languageId), "_sitemap.lock");
+		}
+
+		private IDictionary<string, UrlRecordCollection> GetUrlRecordCollectionsForBatch(IEnumerable<XmlSitemapEntity> batch, int languageId)
+		{
+			var result = new Dictionary<string, UrlRecordCollection>();
+			var languageIds = new[] { languageId, 0 };
+
+			if (batch.First().EntityName == "Product")
+			{
+				// nothing comes after product
+				int min = batch.Last().Id;
+				int max = batch.First().Id;
+
+				result["Product"] = _urlRecordService.GetUrlRecordCollection("Product", languageIds, new[] { min, max }, true, true);
+			}
+
+			var entityGroups = batch.ToMultimap(x => x.EntityName, x => x.Id);
+			foreach (var group in entityGroups)
+			{
+				var isRange = group.Key == "Product";
+				var entityIds = isRange ? new[] { group.Value.Last(), group.Value.First() } : group.Value.ToArray();
+
+				result[group.Key] = _urlRecordService.GetUrlRecordCollection(group.Key, languageIds, entityIds, isRange, isRange);
+			}
+
+			return result;
+		}
+
+		private IEnumerable<XmlSitemapEntity> EnumerateEntities(QueryHolder queries)
+		{
+			var entities = Enumerable.Empty<XmlSitemapEntity>();
+
+			if (queries.Categories != null)
+			{
+				var categories = queries.Categories.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in categories)
+				{
+					yield return new XmlSitemapEntity { EntityName = "Category", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
+			}
+
+			if (queries.Manufacturers != null)
+			{
+				var manufacturers = queries.Manufacturers.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
+				foreach (var x in manufacturers)
+				{
+					yield return new XmlSitemapEntity { EntityName = "Manufacturer", Id = x.Id, LastMod = x.UpdatedOnUtc };
+				}
+			}
+
+			if (queries.Topics != null)
+			{
+				var topics = queries.Topics.Select(x => new { x.Id }).ToList();
+				foreach (var x in topics)
+				{
+					yield return new XmlSitemapEntity { EntityName = "Topic", Id = x.Id, LastMod = DateTime.UtcNow };
+				}
+			}
+
+			if (queries.Products != null)
+			{
+				var query = queries.Products.AsNoTracking();
+
+				var maxId = int.MaxValue;
+				int xxx = 0;
+				while (maxId > 1)
+				{
+					xxx++;
+					if (xxx >= 100)
+					{
+						break;
+					}
+
+					var products = queries.Products.AsNoTracking()
+						.Where(x => x.Id < maxId)
+						.OrderByDescending(x => x.Id)
+						.Take(() => 1000)
+						.Select(x => new { x.Id, x.UpdatedOnUtc })
+						.ToList();
+
+					if (products.Count == 0)
+					{
+						break;
+					}
+
+					maxId = products.Last().Id;
+
+					foreach (var x in products)
+					{
+						yield return new XmlSitemapEntity { EntityName = "Product", Id = x.Id, LastMod = x.UpdatedOnUtc };
+					}
+				}
+			}
+		}
+
 		/// <summary>
-		/// Gets the collection of XML sitemap documents for the current site. If there are less than 1.000 sitemap 
+		/// Generates the collection of XML sitemap documents for the current site. If there are less than 1.000 sitemap 
 		/// nodes, only one sitemap document will exist in the collection, otherwise a sitemap index document will be 
 		/// the first entry in the collection and all other entries will be sitemap XML documents.
 		/// </summary>
 		/// <returns>A collection of XML sitemap documents.</returns>
-		protected IList<string> Generate()
+		/// <remarks>This method operates uncached and always rebuilds the sitemap when called.</remarks>
+		protected virtual IList<string> Generate()
 		{
 			var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
 
@@ -180,10 +440,9 @@ namespace SmartStore.Services.Seo
 
 			using (var scope = new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
 			{
-
 				if (_seoSettings.XmlSitemapIncludesCategories)
 				{
-					nodes.AddRange(GetCategoryNodes(0, protocol));
+					nodes.AddRange(GetCategoryNodes(protocol));
 				}
 
 				if (_seoSettings.XmlSitemapIncludesManufacturers)
@@ -200,23 +459,21 @@ namespace SmartStore.Services.Seo
 				{
 					nodes.AddRange(GetProductNodes(protocol));
 				}
+
+				var customNodes = GetCustomNodes(protocol);
+				if (customNodes != null)
+				{
+					nodes.AddRange(customNodes);
+				}
 			}
 
-			var customNodes = GetCustomNodes(protocol);
-			if (customNodes != null)
-			{
-				nodes.AddRange(customNodes);
-			}
-
-			var documents = GetSiteMapDocuments(nodes.AsReadOnly());
+			var documents = GetSiteMapDocuments(nodes.AsReadOnly(), protocol);
 
 			return documents;
 		}
 
-		protected virtual List<string> GetSiteMapDocuments(IReadOnlyCollection<XmlSitemapNode> nodes)
+		protected virtual List<string> GetSiteMapDocuments(IReadOnlyCollection<XmlSitemapNode> nodes, string protocol)
 		{
-			var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
-
 			int siteMapCount = (int)Math.Ceiling(nodes.Count / (double)MaximumSiteMapNodeCount);
 			CheckSitemapCount(siteMapCount);
 
@@ -287,7 +544,7 @@ namespace SmartStore.Services.Seo
 
 		private string GetSitemapUrl(int index, string protocol)
 		{
-			var url = _urlHelper.RouteUrl("SitemapSEO", new { index = index }, protocol);
+			var url = _urlHelper.RouteUrl("SitemapSEO", new { index }, protocol);
 			return url;
 		}
 
@@ -354,7 +611,42 @@ namespace SmartStore.Services.Seo
 			return xml;
 		}
 
-		protected virtual IEnumerable<XmlSitemapNode> GetCategoryNodes(int parentCategoryId, string protocol)
+		private QueryHolder CreateQueries()
+		{
+			var holder = new QueryHolder();
+
+			if (_seoSettings.XmlSitemapIncludesCategories)
+			{
+				holder.Categories = _categoryService.GetAllCategories(showHidden: false, storeId: _services.StoreContext.CurrentStore.Id).SourceQuery;
+			}
+
+			if (_seoSettings.XmlSitemapIncludesManufacturers)
+			{
+				holder.Manufacturers = _manufacturerService.GetManufacturers(false).OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
+			}
+
+			if (_seoSettings.XmlSitemapIncludesTopics)
+			{
+				holder.Topics = _topicService.GetAllTopics(_services.StoreContext.CurrentStore.Id).AlterQuery(q =>
+				{
+					return q.Where(t => t.IncludeInSitemap && !t.RenderAsWidget);
+				}).SourceQuery;
+			}
+
+			if (_seoSettings.XmlSitemapIncludesProducts)
+			{
+				var searchQuery = new CatalogSearchQuery()
+					.VisibleOnly()
+					.VisibleIndividuallyOnly(true)
+					.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode);
+
+				holder.Products = _catalogSearchService.PrepareQuery(searchQuery);
+			}
+
+			return holder;
+		}
+
+		protected virtual IEnumerable<XmlSitemapNode> GetCategoryNodes(string protocol)
 		{
 			var categories = _categoryService.GetAllCategories(showHidden: false, storeId: _services.StoreContext.CurrentStore.Id);
 
@@ -433,7 +725,7 @@ namespace SmartStore.Services.Seo
 				.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode);
 
 			var query = _catalogSearchService.PrepareQuery(searchQuery);
-			query = query.OrderByDescending(x => x.CreatedOnUtc);
+			query = query.OrderByDescending(x => x.Id);
 
 			for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
 			{

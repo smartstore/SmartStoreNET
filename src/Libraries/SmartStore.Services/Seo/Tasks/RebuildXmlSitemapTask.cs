@@ -21,13 +21,20 @@ namespace SmartStore.Services.Seo
 
 		public void Execute(TaskExecutionContext ctx)
 		{
-			if (_generator.IsGenerated)
-			{
-				_generator.Invalidate();
-			}
+			//if (_generator.IsGenerated)
+			//{
+			//	_generator.Invalidate();
+			//}
 
-			// enforces refresh
-			_generator.GetSitemap(0);
+			//// enforces refresh
+			//_generator.GetSitemap(0);
+
+			_generator.Rebuild(ctx.CancellationToken, OnProgress);
+
+			void OnProgress(int value, int max, string msg)
+			{
+				ctx.SetProgress(value, max, msg, true);
+			}
 		}
 	}
 }

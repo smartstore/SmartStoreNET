@@ -128,7 +128,7 @@ namespace SmartStore.Services.Tasks
                 exception = ex;
                 faulted = true;
 				canceled = ex is OperationCanceledException;
-				lastError = ex.Message.Truncate(995, "...");
+				lastError = ex.ToAllMessages(true);
 
                 if (canceled)
                 {

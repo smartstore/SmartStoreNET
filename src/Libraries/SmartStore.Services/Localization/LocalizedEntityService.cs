@@ -328,7 +328,7 @@ namespace SmartStore.Services.Localization
                 throw new ArgumentException($"Expression '{keySelector}' refers to a field, not a property.");
             }
 
-            var keyGroup = typeof(T).Name;
+            var keyGroup = entity.GetEntityName();
             var key = propInfo.Name;
 			var valueStr = localeValue.Convert<string>();
 			var prop = GetLocalizedProperty(languageId, entity.Id, keyGroup, key);

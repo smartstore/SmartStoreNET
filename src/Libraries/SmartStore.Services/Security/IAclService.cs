@@ -115,7 +115,7 @@ namespace SmartStore.Services.Security
 			if (entity == null)
 				return new int[0];
 
-			return aclService.GetCustomerRoleIdsWithAccess(typeof(T).Name, entity.Id);
+			return aclService.GetCustomerRoleIdsWithAccess(entity.GetEntityName(), entity.Id);
 		}
 
 		/// <summary>
@@ -132,7 +132,7 @@ namespace SmartStore.Services.Security
 			if (!entity.SubjectToAcl)
 				return true;
 
-			return aclService.Authorize(typeof(T).Name, entity.Id);
+			return aclService.Authorize(entity.GetEntityName(), entity.Id);
 		}
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace SmartStore.Services.Security
 			if (!entity.SubjectToAcl)
 				return true;
 
-			return aclService.Authorize(typeof(T).Name, entity.Id, customer);
+			return aclService.Authorize(entity.GetEntityName(), entity.Id, customer);
 		}
 	}
 }

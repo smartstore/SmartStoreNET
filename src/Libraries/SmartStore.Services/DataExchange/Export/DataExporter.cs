@@ -224,7 +224,7 @@ namespace SmartStore.Services.DataExchange.Export
                 return new UrlRecordCollection(entityName, null, Enumerable.Empty<UrlRecord>());
             }
 
-            var collection = _urlRecordService.Value.GetUrlRecordCollection(entityName, entities.Select(x => x.Id).Distinct().ToArray());
+            var collection = _urlRecordService.Value.GetUrlRecordCollection(entityName, null, entities.Select(x => x.Id).Distinct().ToArray());
             return collection;
         }
 
@@ -1371,8 +1371,8 @@ namespace SmartStore.Services.DataExchange.Export
                 ctx.Translations[nameof(Manufacturer)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(Manufacturer), null);
                 ctx.Translations[nameof(Category)] = _localizedEntityService.Value.GetLocalizedPropertyCollection(nameof(Category), null);
 
-                ctx.UrlRecords[nameof(Category)] = _urlRecordService.Value.GetUrlRecordCollection(nameof(Category), null);
-                ctx.UrlRecords[nameof(Manufacturer)] = _urlRecordService.Value.GetUrlRecordCollection(nameof(Manufacturer), null);
+                ctx.UrlRecords[nameof(Category)] = _urlRecordService.Value.GetUrlRecordCollection(nameof(Category), null, null);
+                ctx.UrlRecords[nameof(Manufacturer)] = _urlRecordService.Value.GetUrlRecordCollection(nameof(Manufacturer), null, null);
             }
 
             if (!ctx.IsPreview && ctx.Request.Profile.PerStore)

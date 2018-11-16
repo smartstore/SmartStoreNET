@@ -94,7 +94,7 @@ namespace SmartStore.Services.Seo
 		/// <remarks>
 		/// Be careful not to load large amounts of data at once (e.g. for "Product" scope with large range).
 		/// </remarks>
-		UrlRecordCollection GetUrlRecordCollection(string entityName, int[] entityIds, bool isRange = false, bool isSorted = false);
+		UrlRecordCollection GetUrlRecordCollection(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false);
 
 		/// <summary>
 		/// Gets all URL records for the specified entity

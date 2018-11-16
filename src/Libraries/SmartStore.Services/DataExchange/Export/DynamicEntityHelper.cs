@@ -236,7 +236,7 @@ namespace SmartStore.Services.DataExchange.Export
             }
 
             var localized = new List<dynamic>();
-            var localeKeyGroup = typeof(T).Name;
+            var localeKeyGroup = entity.GetEntityName();
             //var isSlugSupported = typeof(ISlugSupported).IsAssignableFrom(typeof(T));
 
             foreach (var language in ctx.Languages)

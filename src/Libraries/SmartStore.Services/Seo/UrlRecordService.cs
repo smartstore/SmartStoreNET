@@ -198,9 +198,9 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		public virtual UrlRecordCollection GetUrlRecordCollection(string entityName, int[] entityIds, bool isRange = false, bool isSorted = false)
+		public virtual UrlRecordCollection GetUrlRecordCollection(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
 		{
-			return GetUrlRecordCollectionInternal(entityName, null, entityIds, isRange, isSorted);
+			return GetUrlRecordCollectionInternal(entityName, languageIds, entityIds, isRange, isSorted);
 		}
 
 		public virtual UrlRecordCollection GetUrlRecordCollectionInternal(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false)
@@ -335,7 +335,7 @@ namespace SmartStore.Services.Seo
 			Guard.NotNull(entity, nameof(entity));
 
             int entityId = entity.Id;
-            string entityName = typeof(T).Name;
+            string entityName = entity.GetEntityName();
 			UrlRecord result = null;
 
             var query = from ur in _urlRecordRepository.Table

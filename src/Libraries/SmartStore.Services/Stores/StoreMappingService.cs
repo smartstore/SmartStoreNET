@@ -60,7 +60,7 @@ namespace SmartStore.Services.Stores
 			Guard.NotNull(entity, nameof(entity));
 
 			int entityId = entity.Id;
-			string entityName = typeof(T).Name;
+			string entityName = entity.GetEntityName();
 
 			var query = from sm in _storeMappingRepository.Table
 						where sm.EntityId == entityId &&
@@ -121,7 +121,7 @@ namespace SmartStore.Services.Stores
 				throw new ArgumentOutOfRangeException(nameof(storeId));
 
 			int entityId = entity.Id;
-			string entityName = typeof(T).Name;
+			string entityName = entity.GetEntityName();
 
 			var storeMapping = new StoreMapping
 			{

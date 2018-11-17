@@ -10,15 +10,15 @@ namespace SmartStore.Services.Seo
     public partial interface IXmlSitemapGenerator
     {
 		/// <summary>
-		/// Gets the sitemap XML
+		/// Gets the sitemap partition
 		/// </summary>
 		/// <param name="index">
-		/// The page index. 0 or <c>null</c> retrieves the first document, which can be a sitemap INDEX document
+		/// The page index. 0 retrieves the first document, which can be a sitemap INDEX document
 		/// (when the sitemap size exceeded the limits). An index greater 0 retrieves the
 		/// sitemap XML document at this index, but only when the sitemap is actually indexed (otherwise <c>null</c> is returned)
 		/// </param>
-		/// <returns>Sitemap XML</returns>
-		string GetSitemap(int? index = null);
+		/// <returns>Sitemap partition</returns>
+		XmlSitemapPartition GetSitemapPart(int index = 0);
 
 		/// <summary>
 		/// Rebuilds the collection of XML sitemap documents for the current site. If there are less than 1.000 sitemap 
@@ -34,13 +34,18 @@ namespace SmartStore.Services.Seo
 		void Rebuild(CancellationToken cancellationToken, ProgressCallback callback = null);
 
 		/// <summary>
-		/// Removes the sitemap from the cache for a rebuild.
+		/// Determines whether a rebuild is already running.
 		/// </summary>
-		void Invalidate();
+		bool IsRebuilding { get; }
 
 		/// <summary>
 		/// Indicates whether the sitemap has been generated and cached.
 		/// </summary>
 		bool IsGenerated { get; }
+
+		/// <summary>
+		/// Removes the sitemap from the cache for a rebuild.
+		/// </summary>
+		void Invalidate();
 	}
 }

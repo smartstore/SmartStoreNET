@@ -582,6 +582,8 @@
     <Compile Include="Seo\IUrlRecordService.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />
     <Compile Include="Seo\IXmlSitemapGenerator.cs" />
+    <Compile Include="Seo\XmlSitemapBuildContext.cs" />
+    <Compile Include="Seo\XmlSitemapPartition.cs" />
     <Compile Include="Seo\Tasks\RebuildXmlSitemapTask.cs" />
     <Compile Include="Seo\XmlSitemapGenerator.cs" />
     <Compile Include="Seo\XmlSitemapNode.cs" />

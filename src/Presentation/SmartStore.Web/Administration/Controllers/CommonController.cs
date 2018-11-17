@@ -497,8 +497,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				var msg = T("Admin.System.Warnings.TaskScheduler.Fail", _taskScheduler.BaseUrl, exception.Message);
 
-				var xxx = T("Admin.System.Warnings.TaskScheduler.Fail");
-
 				model.Add(new SystemWarningModel
 				{
 					Level = SystemWarningLevel.Fail,
@@ -513,7 +511,7 @@ namespace SmartStore.Admin.Controllers
 			string sitemapUrl = null;
 			try
 			{
-				sitemapUrl = WebHelper.GetAbsoluteUrl(Url.RouteUrl("SitemapSEO"), this.Request);
+				sitemapUrl = WebHelper.GetAbsoluteUrl(Url.RouteUrl("XmlSitemap"), this.Request);
 				var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(sitemapUrl));
 				request.Method = "HEAD";
 				request.Timeout = 15000;

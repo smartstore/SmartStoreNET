@@ -104,6 +104,11 @@ $yiq-contrasted-threshold:	164;
 $yiq-text-dark:				$gray-900;
 $yiq-text-light:			#fff;
 
+$spacer: 1.25rem;
+$spacers: ( 
+	6: ($spacer * 4.5)
+);
+
 $theme-colors: ( 
 	"gray": $gray-700 
 );

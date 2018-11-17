@@ -319,9 +319,9 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Home", action = "Sitemap" },
                 new[] { "SmartStore.Web.Controllers" });
 
-            routes.MapLocalizedRoute("SitemapSEO",
+            routes.MapLocalizedRoute("XmlSitemap",
                 "sitemap.xml",
-				new { controller = "Home", action = "SitemapSeo" },
+				new { controller = "Media", action = "XmlSitemap" },
                 new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("StoreClosed",

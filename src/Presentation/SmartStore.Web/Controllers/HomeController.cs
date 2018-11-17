@@ -21,7 +21,7 @@ using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class HomeController : PublicControllerBase
+	public partial class HomeController : PublicControllerBase
 	{
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
@@ -29,10 +29,8 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
 		private readonly Lazy<CatalogHelper> _catalogHelper;
 		private readonly Lazy<ITopicService> _topicService;
-		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
-		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
 		private readonly Lazy<PrivacySettings> _privacySettings;
 
@@ -43,10 +41,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<ICatalogSearchService> catalogSearchService,
 			Lazy<CatalogHelper> catalogHelper,
 			Lazy<ITopicService> topicService,
-			Lazy<IXmlSitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
-			Lazy<SeoSettings> seoSettings,
 			Lazy<CustomerSettings> customerSettings,
 			Lazy<PrivacySettings> privacySettings)
         {
@@ -56,10 +52,8 @@ namespace SmartStore.Web.Controllers
 			_catalogSearchService = catalogSearchService;
 			_catalogHelper = catalogHelper;
 			_topicService = topicService;
-			_sitemapGenerator = sitemapGenerator;
 			_captchaSettings = captchaSettings;
 			_commonSettings = commonSettings;
-			_seoSettings = seoSettings;
             _customerSettings = customerSettings;
 			_privacySettings = privacySettings;
 		}
@@ -141,22 +135,6 @@ namespace SmartStore.Web.Controllers
 
 			model.DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage;
 			return View(model);
-		}
-
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult SitemapSeo(int? index = null)
-		{
-			if (!_seoSettings.Value.XmlSitemapEnabled)
-				return HttpNotFound();
-			
-			string content = _sitemapGenerator.Value.GetSitemap(index);
-
-			if (content == null)
-			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sitemap index is out of range.");
-			}
-
-			return Content(content, "text/xml", Encoding.UTF8);
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]

@@ -18,13 +18,13 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
-using SmartStore.Services.Tasks;
 using SmartStore.Services.Topics;
 using SmartStore.Core.IO;
-using SmartStore.Utilities.Threading;
 using SmartStore.Utilities;
 using System.IO;
-using System.Threading.Tasks;
+using SmartStore.Collections;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Seo
 {
@@ -66,11 +66,8 @@ namespace SmartStore.Services.Seo
 		private readonly ILockFileManager _lockFileManager;
 		private readonly UrlHelper _urlHelper;
 
-		private readonly int _storeId;
-		private readonly int _langId;
 		private readonly IVirtualFolder _tenantFolder;
 		private readonly string _baseDir;
-		private readonly string _siteMapDir;
 
 		public XmlSitemapGenerator(
 			ICategoryService categoryService,
@@ -101,11 +98,8 @@ namespace SmartStore.Services.Seo
 			_lockFileManager = lockFileManager;
 			_urlHelper = urlHelper;
 
-			_storeId = _services.StoreContext.CurrentStore.Id;
-			_langId = _services.WorkContext.WorkingLanguage.Id;
 			_tenantFolder = _services.ApplicationEnvironment.TenantFolder;
 			_baseDir = _tenantFolder.Combine("Sitemaps");
-			_siteMapDir = _tenantFolder.Combine(_baseDir, _storeId + "/" + _langId);
 
 			Logger = NullLogger.Instance;
 			
@@ -122,7 +116,10 @@ namespace SmartStore.Services.Seo
 		{
 			Guard.NotNegative(index, nameof(index));
 
-			var exists = SitemapFileExists(index, out var path, out var name);
+			var storeId = _services.StoreContext.CurrentStore.Id;
+			var langId = _services.WorkContext.WorkingLanguage.Id;
+
+			var exists = SitemapFileExists(storeId, langId, index, out var path, out var name);
 
 			if (exists)
 			{
@@ -130,8 +127,8 @@ namespace SmartStore.Services.Seo
 				{
 					Index = index,
 					Name = name,
-					LanguageId = _langId,
-					StoreId = _storeId,
+					LanguageId = langId,
+					StoreId = storeId,
 					ModifiedOnUtc = _tenantFolder.GetFileLastWriteTimeUtc(path),
 					Stream = _tenantFolder.OpenFile(path)
 				};
@@ -152,7 +149,7 @@ namespace SmartStore.Services.Seo
 				// If the main file (index 0) exists, the action should return NotFoundResult,
 				// otherwise the rebuild process should be started or waited for.
 
-				if (SitemapFileExists(0, out path, out name))
+				if (SitemapFileExists(storeId, langId, 0, out path, out name))
 				{
 					throw new IndexOutOfRangeException("The sitemap file '{0}' does not exist.".FormatInvariant(name));
 				}
@@ -161,31 +158,37 @@ namespace SmartStore.Services.Seo
 			// The main sitemap document with index 0 does not exist, meaning: the whole sitemap
 			// needs to be created and cached by partitions.
 
-			if (IsRebuilding)
+			if (IsRebuilding(storeId, langId))
 			{
 				// The rebuild process is already running, either started
 				// by the task scheduler or another HTTP request.
 				// We should wait for completion.
 
-				//while (IsRebuilding)
-				//{
-				//	//Thread.Sleep(500);
-				//	Task.Delay(500).Wait();
-				//}
+				Thread.Sleep(500);
+
+				while (IsRebuilding(storeId, langId))
+				{
+					Thread.Sleep(500);
+				}
 			}
 			else
 			{
 				// No lock. Rebuild now.
-				Rebuild(CancellationToken.None);
+				var buildContext = new XmlSitemapBuildContext(_services.StoreContext.CurrentStore, new[] { _services.WorkContext.WorkingLanguage })
+				{
+					CancellationToken = CancellationToken.None
+				};
+
+				Rebuild(buildContext);
 			}
 
-			// DRY: call self to get sitemap partiition object
+			// DRY: call self to get sitemap partition object
 			return GetSitemapPart(index, true);
 		}
 
-		private bool SitemapFileExists(int index, out string path, out string name)
+		private bool SitemapFileExists(int storeId, int languageId, int index, out string path, out string name)
 		{
-			path = BuildSitemapFilePath(index, out name);
+			path = BuildSitemapFilePath(storeId, languageId, index, out name);
 
 			// Does not work reliably with symlinks due to framework caching
 			//var exists = _tenantFolder.FileExists(path);
@@ -201,27 +204,56 @@ namespace SmartStore.Services.Seo
 			return exists;
 		}
 
-		private string BuildSitemapFilePath(int index, out string fileName)
+		private string BuildSitemapFilePath(int storeId, int languageId, int index, out string fileName)
 		{
 			fileName = SiteMapFileNamePattern.FormatInvariant(index);
-			return _tenantFolder.Combine(_siteMapDir, fileName);
+			return _tenantFolder.Combine(BuildSitemapDirPath(storeId, languageId), fileName);
 		}
 
-		private string GetLockFilePath()
+		private string BuildSitemapDirPath(int storeId, int languageId)
 		{
-			var fileName = LockFileNamePattern.FormatInvariant(_storeId, _langId);
+			return _tenantFolder.Combine(_baseDir, storeId + "/" + languageId);
+		}
+
+		private string GetLockFilePath(int storeId, int languageId)
+		{
+			var fileName = LockFileNamePattern.FormatInvariant(storeId, languageId);
 			return _tenantFolder.Combine(_baseDir, fileName);
 		}
 
-		public virtual void Rebuild(CancellationToken cancellationToken, ProgressCallback callback = null)
+		public virtual void Rebuild(XmlSitemapBuildContext ctx)
 		{
-			if (!_lockFileManager.TryAcquireLock(GetLockFilePath(), out var lockFile))
+			Guard.NotNull(ctx, nameof(ctx));
+
+			var lockFiles = new List<IDisposable>();
+
+			foreach (var language in ctx.Languages)
 			{
-				Logger.Warn("XML Sitemap rebuild already in process.");
+				if (_lockFileManager.TryAcquireLock(GetLockFilePath(ctx.Store.Id, language.Id), out var lockFile))
+				{
+					// Process only languages that are unlocked right now
+					// It is possible that an HTTP request triggered the generation
+					// of a language specific sitemap.
+					lockFiles.Add(lockFile);
+				}
+			}
+
+			if (lockFiles.Count == 0)
+			{
+				Logger.Warn("XML sitemap rebuild already in process.");
 				return;
 			}
 
-			using (lockFile)
+			// All sitemaps grouped by language
+			var sitemaps = new Multimap<int, XmlSitemapNode>();
+
+			var compositeFileLock = new ActionDisposable(() => 
+			{
+				lockFiles.Each(x => x.Dispose());
+				lockFiles.Clear();
+			});
+
+			using (compositeFileLock)
 			{
 				// Impersonate
 				var prevCustomer = _services.WorkContext.CurrentCustomer;
@@ -230,9 +262,10 @@ namespace SmartStore.Services.Seo
 
 				try
 				{
-					var protocol = _services.StoreContext.CurrentStore.ForceSslForAllPages ? "https" : "http";
+					var protocol = ctx.Protocol;
+					var languageIds = ctx.Languages.Select(x => x.Id).Concat(new[] { 0 }).ToArray();
 					var nodes = new List<XmlSitemapNode>();
-					var queries = CreateQueries();
+					var queries = CreateQueries(ctx.Store.Id);
 					var total = queries.GetTotalRecordCount();
 
 					using (new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
@@ -243,53 +276,59 @@ namespace SmartStore.Services.Seo
 						var numProcessed = 0;
 						foreach (var batch in entities.Slice(MaximumSiteMapNodeCount))
 						{
-							if (cancellationToken.IsCancellationRequested)
+							if (ctx.CancellationToken.IsCancellationRequested)
 							{
 								break;
 							}
 
 							numProcessed = ++segment * MaximumSiteMapNodeCount;
-							callback?.Invoke(numProcessed, total, "{0} / {1}".FormatCurrent(numProcessed, total));
+							ctx.ProgressCallback?.Invoke(numProcessed, total, "{0} / {1}".FormatCurrent(numProcessed, total));
 
 							var firstEntityName = batch.First().EntityName;
 							var lastEntityName = batch.Last().EntityName;
 
-							var slugs = GetUrlRecordCollectionsForBatch(batch, _langId);
+							var slugs = GetUrlRecordCollectionsForBatch(batch, languageIds);
 
-							nodes.AddRange(batch.Select(x => new XmlSitemapNode
+							foreach (var language in ctx.Languages)
 							{
-								LastMod = x.LastMod,
-								Loc = _urlHelper.RouteUrl(x.EntityName, new { SeName = slugs[x.EntityName].GetSlug(_langId, x.Id, true) }, protocol)
-							}));
+								sitemaps[language.Id].AddRange(batch.Select(x => new XmlSitemapNode
+								{
+									LastMod = x.LastMod,
+									Loc = _urlHelper.RouteUrl(x.EntityName, new { SeName = slugs[x.EntityName].GetSlug(language.Id, x.Id, true) }, protocol)
+								}));
+							}
 						}
 
-						if (!cancellationToken.IsCancellationRequested)
+						if (!ctx.CancellationToken.IsCancellationRequested)
 						{
-							callback?.Invoke(numProcessed, total, "Processing custom nodes".FormatCurrent(numProcessed, total));
-							var customNodes = GetCustomNodes(protocol);
-							if (customNodes != null)
-							{
-								nodes.AddRange(customNodes);
-							}
+							ctx.ProgressCallback?.Invoke(numProcessed, total, "Processing custom nodes".FormatCurrent(numProcessed, total));
+							ProcessCustomNodes(ctx, sitemaps);
 						}
 					}
 
-					cancellationToken.ThrowIfCancellationRequested();
+					ctx.CancellationToken.ThrowIfCancellationRequested();
 
-					callback?.Invoke(total, total, "Finalizing");
-
-					if (nodes.Count == 0)
+					if (sitemaps.Count == 0)
 					{
 						// Ensure that at least one entry exists. Otherwise,
 						// the system will try to rebuild again.
-						nodes.Add(new XmlSitemapNode { LastMod = DateTime.UtcNow, Loc = _urlHelper.RouteUrl("HomePage") });
+						foreach (var language in ctx.Languages)
+						{
+							sitemaps[language.Id].Add(new XmlSitemapNode { LastMod = DateTime.UtcNow, Loc = _urlHelper.RouteUrl("HomePage") });
+						}
 					}
 
-					var documents = GetSiteMapDocuments(nodes.AsReadOnly(), protocol);
+					// Save all sitemaps to disk
+					foreach (var language in ctx.Languages)
+					{
+						if (ctx.CancellationToken.IsCancellationRequested)
+							break;
 
-					cancellationToken.ThrowIfCancellationRequested();
+						ctx.ProgressCallback?.Invoke(total, total, "Saving sitemaps for '{0}'.".FormatInvariant(language.GetTwoLetterISOLanguageName()));
 
-					SaveToDisk(documents);
+						var documents = GetSiteMapDocuments((IReadOnlyCollection<XmlSitemapNode>)sitemaps[language.Id], protocol);
+						SaveToDisk(documents, ctx.Store, language);
+					}
 				}
 				finally
 				{
@@ -299,20 +338,22 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		private void SaveToDisk(List<string> documents)
+		private void SaveToDisk(List<string> documents, Store store, Language language)
 		{
-			if (_tenantFolder.DirectoryExists(_siteMapDir))
+			var sitemapDir = BuildSitemapDirPath(store.Id, language.Id);
+
+			if (_tenantFolder.DirectoryExists(sitemapDir))
 			{
-				_tenantFolder.DeleteDirectory(_siteMapDir);
+				_tenantFolder.DeleteDirectory(sitemapDir);
 			}
 
-			_tenantFolder.CreateDirectory(_siteMapDir);
+			_tenantFolder.CreateDirectory(sitemapDir);
 
 			for (int i = 0; i < documents.Count; i++)
 			{
 				// Save segment to disk
 				var fileName = SiteMapFileNamePattern.FormatInvariant(i);
-				var filePath = _tenantFolder.Combine(_siteMapDir, fileName);
+				var filePath = _tenantFolder.Combine(sitemapDir, fileName);
 
 				_tenantFolder.CreateTextFile(filePath, documents[i]);
 			}
@@ -358,7 +399,7 @@ namespace SmartStore.Services.Seo
 				while (maxId > 1)
 				{
 					xxx++;
-					if (xxx >= 100)
+					if (xxx >= 50)
 					{
 						break;
 					}
@@ -385,10 +426,9 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		private IDictionary<string, UrlRecordCollection> GetUrlRecordCollectionsForBatch(IEnumerable<NamedEntity> batch, int languageId)
+		private IDictionary<string, UrlRecordCollection> GetUrlRecordCollectionsForBatch(IEnumerable<NamedEntity> batch, int[] languageIds)
 		{
 			var result = new Dictionary<string, UrlRecordCollection>();
-			var languageIds = new[] { languageId, 0 };
 
 			if (batch.First().EntityName == "Product")
 			{
@@ -550,13 +590,18 @@ namespace SmartStore.Services.Seo
 			return xml;
 		}
 
-		private QueryHolder CreateQueries()
+		private QueryHolder CreateQueries(int storeId)
 		{
+			if (_services.StoreService.IsSingleStoreMode())
+			{
+				storeId = 0;
+			}
+
 			var holder = new QueryHolder();
 
 			if (_seoSettings.XmlSitemapIncludesCategories)
 			{
-				holder.Categories = _categoryService.GetAllCategories(showHidden: false, storeId: _services.StoreContext.CurrentStore.Id).SourceQuery;
+				holder.Categories = _categoryService.GetAllCategories(showHidden: false, storeId: storeId).SourceQuery;
 			}
 
 			if (_seoSettings.XmlSitemapIncludesManufacturers)
@@ -566,7 +611,7 @@ namespace SmartStore.Services.Seo
 
 			if (_seoSettings.XmlSitemapIncludesTopics)
 			{
-				holder.Topics = _topicService.GetAllTopics(_services.StoreContext.CurrentStore.Id).AlterQuery(q =>
+				holder.Topics = _topicService.GetAllTopics(storeId).AlterQuery(q =>
 				{
 					return q.Where(t => t.IncludeInSitemap && !t.RenderAsWidget);
 				}).SourceQuery;
@@ -577,7 +622,7 @@ namespace SmartStore.Services.Seo
 				var searchQuery = new CatalogSearchQuery()
 					.VisibleOnly()
 					.VisibleIndividuallyOnly(true)
-					.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode);
+					.HasStoreId(storeId);
 
 				holder.Products = _catalogSearchService.PrepareQuery(searchQuery);
 			}
@@ -588,6 +633,10 @@ namespace SmartStore.Services.Seo
 		protected virtual IEnumerable<XmlSitemapNode> GetCustomNodes(string protocol)
 		{
 			return Enumerable.Empty<XmlSitemapNode>();
+		}
+
+		protected void ProcessCustomNodes(XmlSitemapBuildContext ctx, Multimap<int, XmlSitemapNode> sitemaps)
+		{
 		}
 
 		/// <summary>
@@ -615,27 +664,23 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		public bool IsRebuilding
+		public bool IsRebuilding(int storeId, int languageId)
 		{
-			get
-			{
-				return _lockFileManager.IsLocked(GetLockFilePath());
-			}
+			return _lockFileManager.IsLocked(GetLockFilePath(storeId, languageId));
 		}
 
-		public virtual bool IsGenerated
+		public virtual bool IsGenerated(int storeId, int languageId)
 		{
-			get
-			{
-				return SitemapFileExists(0, out _, out _);
-			}
+			return SitemapFileExists(storeId, languageId, 0, out _, out _);
 		}
 
-		public virtual void Invalidate()
+		public virtual void Invalidate(int storeId, int languageId)
 		{
-			if (_tenantFolder.DirectoryExists(_siteMapDir))
+			var dir = BuildSitemapDirPath(storeId, languageId);
+
+			if (_tenantFolder.DirectoryExists(dir))
 			{
-				_tenantFolder.DeleteDirectory(_siteMapDir);
+				_tenantFolder.DeleteDirectory(dir);
 			}
 		}
 

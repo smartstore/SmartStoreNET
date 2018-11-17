@@ -21,31 +21,30 @@ namespace SmartStore.Services.Seo
 		XmlSitemapPartition GetSitemapPart(int index = 0);
 
 		/// <summary>
-		/// Rebuilds the collection of XML sitemap documents for the current site. If there are less than 1.000 sitemap 
+		/// Rebuilds the collection of XML sitemap documents for a store/language combination. If there are less than 1.000 sitemap 
 		/// nodes, only one sitemap document will exist in the collection, otherwise a sitemap index document will be 
 		/// the first entry in the collection and all other entries will be sitemap XML documents.
 		/// </summary>
-		/// <param name="callback">Optional callback for progress change</param>
-		/// <param name="cancellationToken">Cancellation token</param>
+		/// <param name="ctx">The build context</param>
 		/// <remarks>
 		/// During rebuilding, requests are being served from the existing cache.
 		/// Once rebuild is completed, the cache is updated.
 		/// </remarks>
-		void Rebuild(CancellationToken cancellationToken, ProgressCallback callback = null);
+		void Rebuild(XmlSitemapBuildContext ctx);
 
 		/// <summary>
 		/// Determines whether a rebuild is already running.
 		/// </summary>
-		bool IsRebuilding { get; }
+		bool IsRebuilding(int storeId, int languageId);
 
 		/// <summary>
 		/// Indicates whether the sitemap has been generated and cached.
 		/// </summary>
-		bool IsGenerated { get; }
+		bool IsGenerated(int storeId, int languageId);
 
 		/// <summary>
 		/// Removes the sitemap from the cache for a rebuild.
 		/// </summary>
-		void Invalidate();
+		void Invalidate(int storeId, int languageId);
 	}
 }

@@ -15,11 +15,14 @@ namespace SmartStore.Services.Seo
 
 			Store = store;
 			Languages = languages;
+			Protocol = Store.ForceSslForAllPages ? "https" : "http";
 		}
 
 		public CancellationToken CancellationToken { get; set; }
 		public ProgressCallback ProgressCallback { get; set; }
 		public Store Store { get; set; }
 		public Language[] Languages { get; set; }
+
+		public string Protocol { get; private set; }
 	}
 }

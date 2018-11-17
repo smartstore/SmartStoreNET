@@ -124,15 +124,14 @@ namespace SmartStore.Web.Framework.Localization
             if (data != null && DataSettings.DatabaseIsInstalled() && SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(requestContext.HttpContext.Request, true);
-                string cultureCode;
-                if (helper.IsLocalizedUrl(out cultureCode))
-                {
+				if (helper.IsLocalizedUrl(out string cultureCode))
+				{
 					if (!requestContext.RouteData.Values.ContainsKey("StripInvalidSeoCode"))
 					{
 						data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath).TrimEnd('/');
 					}
-                }
-            }
+				}
+			}
 
             return data;
         }

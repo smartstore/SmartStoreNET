@@ -227,14 +227,9 @@ namespace SmartStore.Web.Controllers
 				if (settings.MapLegalInfo)
 				{
 					var shippingInfoUrl = _urlHelper.TopicUrl("shippinginfo");
-					if (shippingInfoUrl.HasValue())
-					{
-						legalInfo = T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoUrl);
-					}
-					else
-					{
-						legalInfo = T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
-					}
+                    legalInfo = shippingInfoUrl.HasValue()
+                        ? T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoUrl)
+                        : T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
 				}
 
 				if (prefetchSlugs)
@@ -532,30 +527,23 @@ namespace SmartStore.Web.Controllers
 					item.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
 				}
 
-				if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-				{
-					item.DisplayDeliveryTimeAccordingToStock = product.StockQuantity > 0 || (product.StockQuantity <= 0 && _catalogSettings.DeliveryTimeIdForEmptyStock.HasValue);
-				}
-				else
-				{
-					item.DisplayDeliveryTimeAccordingToStock = true;
-				}
+                item.DisplayDeliveryTimeAccordingToStock = product.ManageInventoryMethod == ManageInventoryMethod.ManageStock
+                    ? product.StockQuantity > 0 || (product.StockQuantity <= 0 && _catalogSettings.DeliveryTimeIdForEmptyStock.HasValue)
+                    : true;
 
 				if (product.DisplayStockAvailability && product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
 				{
 					if (product.StockQuantity > 0)
 					{
-						if (product.DisplayStockQuantity)
-							item.StockAvailablity = T("Products.Availability.InStockWithQuantity", product.StockQuantity);
-						else
-							item.StockAvailablity = T("Products.Availability.InStock");
+                        item.StockAvailablity = product.DisplayStockQuantity
+                            ? T("Products.Availability.InStockWithQuantity", product.StockQuantity)
+                            : T("Products.Availability.InStock");
 					}
 					else
 					{
-						if (product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0)
-							item.StockAvailablity = T("Products.Availability.OutOfStock");
-						else if (product.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
-							item.StockAvailablity = T("Products.Availability.Backordering");
+                        item.StockAvailablity = product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0
+                            ? T("Products.Availability.OutOfStock")
+                            : T("Products.Availability.Backordering");
 					}
 				}
 
@@ -614,7 +602,7 @@ namespace SmartStore.Web.Controllers
 			var finalPriceBase = decimal.Zero;
 			var finalPrice = decimal.Zero;
 			var displayPrice = decimal.Zero;
-			ICollection<Product> associatedProducts = null;
+            ICollection<Product> associatedProducts = null;
 
 			var priceModel = new ProductSummaryModel.PriceModel();
 			item.Price = priceModel;
@@ -644,11 +632,7 @@ namespace SmartStore.Web.Controllers
 						.ThenBy(x => x.DisplayOrder);
 
 					ctx.GroupedProducts = allAssociatedProducts.ToMultimap(x => x.ParentGroupedProductId, x => x);
-
-					if (ctx.GroupedProducts.Any())
-					{
-						ctx.BatchContext.AppliedDiscounts.Collect(allAssociatedProducts.Select(x => x.Id));
-					}
+                    ctx.AssociatedProductBatchContext = _dataExporter.Value.CreateProductExportContext(allAssociatedProducts, ctx.Customer, null, null, false);
 				}
 
 				associatedProducts = ctx.GroupedProducts[product.Id];
@@ -666,7 +650,7 @@ namespace SmartStore.Web.Controllers
 				priceModel.AvailableForPreOrder = product.AvailableForPreOrder;
 			}
 
-			// Return if no pricing at all.
+			// Return if there's no pricing at all.
 			if (contextProduct == null || contextProduct.CustomerEntersPrice || !ctx.AllowPrices || _catalogSettings.PriceDisplayType == PriceDisplayType.Hide)
 			{
 				return finalPrice;
@@ -686,14 +670,16 @@ namespace SmartStore.Web.Controllers
 				return finalPrice;
 			}
 
-			// Calculate prices.
+            // Calculate prices.
+            var batchContext = product.ProductType == ProductType.GroupedProduct ? ctx.AssociatedProductBatchContext : ctx.BatchContext;
+
 			if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 			{
-				displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.Currency, ctx.BatchContext);
+				displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, ctx.Customer, ctx.Currency, batchContext);
 			}
 			else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 			{
-				displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, ctx.BatchContext);
+				displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, ctx.Customer, decimal.Zero, false, 1, null, batchContext);
 			}
 			else
 			{
@@ -701,11 +687,11 @@ namespace SmartStore.Web.Controllers
 				if (product.ProductType == ProductType.GroupedProduct)
 				{
 					displayFromMessage = true;
-					displayPrice = _priceCalculationService.GetLowestPrice(product, ctx.Customer, ctx.BatchContext, associatedProducts, out contextProduct) ?? decimal.Zero;
+					displayPrice = _priceCalculationService.GetLowestPrice(product, ctx.Customer, batchContext, associatedProducts, out contextProduct) ?? decimal.Zero;
 				}
 				else
 				{
-					displayPrice = _priceCalculationService.GetLowestPrice(product, ctx.Customer, ctx.BatchContext, out displayFromMessage);
+					displayPrice = _priceCalculationService.GetLowestPrice(product, ctx.Customer, batchContext, out displayFromMessage);
 				}
 			}
 
@@ -801,7 +787,8 @@ namespace SmartStore.Web.Controllers
 			public ProductSummaryModel Model { get; set; }
 			public ProductSummaryMappingSettings Settings { get; set; }
 			public ProductExportContext BatchContext { get; set; }
-			public Multimap<int, Product> GroupedProducts { get; set; }
+            public ProductExportContext AssociatedProductBatchContext { get; set; }
+            public Multimap<int, Product> GroupedProducts { get; set; }
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
 			public IDictionary<int, PictureInfo> PictureInfos { get; set; }
 			public Dictionary<string, LocalizedString> Resources { get; set; }

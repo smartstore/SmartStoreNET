@@ -162,7 +162,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         public void Common_routes()
         {
             "~/contactus".ShouldMapTo<HomeController>(c => c.ContactUs());
-			"~/sitemap.xml".ShouldMapTo<HomeController>(c => c.SitemapSeo(1));
+			"~/sitemap.xml".ShouldMapTo<MediaController>(c => c.XmlSitemap(1));
         }
 
         [Test]

@@ -216,17 +216,31 @@ namespace SmartStore.Services.Localization
 							where x.LocaleKeyGroup == localeKeyGroup
 							select x;
 
+				var requestedSet = entityIds;
+
 				if (entityIds != null && entityIds.Length > 0)
 				{
 					if (isRange)
 					{
-						var min = isSorted ? entityIds[0] : entityIds.Min();
-						var max = isSorted ? entityIds[entityIds.Length - 1] : entityIds.Max();
+						if (!isSorted)
+						{
+							Array.Sort(entityIds);
+						}
+
+						var min = entityIds[0];
+						var max = entityIds[entityIds.Length - 1];
+
+						if (entityIds.Length == 2 && max > min + 1)
+						{
+							// Only min & max were passed, create the range sequence.
+							requestedSet = Enumerable.Range(min, max - min + 1).ToArray();
+						}
 
 						query = query.Where(x => x.EntityId >= min && x.EntityId <= max);
 					}
 					else
 					{
+						requestedSet = entityIds;
 						query = query.Where(x => entityIds.Contains(x.EntityId));
 					}
 				}
@@ -236,7 +250,7 @@ namespace SmartStore.Services.Localization
 					query = query.Where(x => x.LanguageId == languageId);
 				}
 
-				return new LocalizedPropertyCollection(localeKeyGroup, entityIds, query.ToList());
+				return new LocalizedPropertyCollection(localeKeyGroup, requestedSet, query.ToList());
 			}
 		}
 

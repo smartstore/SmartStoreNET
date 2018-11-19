@@ -43,9 +43,9 @@ namespace SmartStore.Services.Seo
 		/// <summary>
 		/// The maximum number of sitemap nodes allowed in a sitemap file. The absolute maximum allowed is 50,000 
 		/// according to the specification. See http://www.sitemaps.org/protocol.html but the file size must also be 
-		/// less than 10MB. After some experimentation, a maximum of 1.000 nodes keeps the file size below 10MB.
+		/// less than 10MB. After some experimentation, a maximum of 2.000 nodes keeps the file size below 10MB.
 		/// </summary>
-		private const int MaximumSiteMapNodeCount = 1000;
+		private const int MaximumSiteMapNodeCount = 2000;
 
 		/// <summary>
 		/// The maximum size of a sitemap file in bytes (10MB).
@@ -60,8 +60,6 @@ namespace SmartStore.Services.Seo
 		private readonly ICustomerService _customerService;
 		private readonly ICatalogSearchService _catalogSearchService;
 		private readonly IUrlRecordService _urlRecordService;
-		private readonly SeoSettings _seoSettings;
-		private readonly SecuritySettings _securitySettings;
 		private readonly ICommonServices _services;
 		private readonly ILockFileManager _lockFileManager;
 		private readonly UrlHelper _urlHelper;
@@ -78,8 +76,6 @@ namespace SmartStore.Services.Seo
 			ICustomerService customerService,
 			ICatalogSearchService catalogSearchService,
 			IUrlRecordService urlRecordService,
-			SeoSettings commonSettings, 
-			SecuritySettings securitySettings,
 			ICommonServices services,
 			ILockFileManager lockFileManager,
 			UrlHelper urlHelper)
@@ -92,8 +88,6 @@ namespace SmartStore.Services.Seo
 			_customerService = customerService;
 			_catalogSearchService = catalogSearchService;
 			_urlRecordService = urlRecordService;
-            _seoSettings = commonSettings;
-			_securitySettings = securitySettings;
 			_services = services;
 			_lockFileManager = lockFileManager;
 			_urlHelper = urlHelper;
@@ -116,10 +110,10 @@ namespace SmartStore.Services.Seo
 		{
 			Guard.NotNegative(index, nameof(index));
 
-			var storeId = _services.StoreContext.CurrentStore.Id;
-			var langId = _services.WorkContext.WorkingLanguage.Id;
+			var store = _services.StoreContext.CurrentStore;
+			var language = _services.WorkContext.WorkingLanguage;
 
-			var exists = SitemapFileExists(storeId, langId, index, out var path, out var name);
+			var exists = SitemapFileExists(store.Id, language.Id, index, out var path, out var name);
 
 			if (exists)
 			{
@@ -127,8 +121,8 @@ namespace SmartStore.Services.Seo
 				{
 					Index = index,
 					Name = name,
-					LanguageId = langId,
-					StoreId = storeId,
+					LanguageId = language.Id,
+					StoreId = store.Id,
 					ModifiedOnUtc = _tenantFolder.GetFileLastWriteTimeUtc(path),
 					Stream = _tenantFolder.OpenFile(path)
 				};
@@ -149,7 +143,7 @@ namespace SmartStore.Services.Seo
 				// If the main file (index 0) exists, the action should return NotFoundResult,
 				// otherwise the rebuild process should be started or waited for.
 
-				if (SitemapFileExists(storeId, langId, 0, out path, out name))
+				if (SitemapFileExists(store.Id, language.Id, 0, out path, out name))
 				{
 					throw new IndexOutOfRangeException("The sitemap file '{0}' does not exist.".FormatInvariant(name));
 				}
@@ -158,23 +152,23 @@ namespace SmartStore.Services.Seo
 			// The main sitemap document with index 0 does not exist, meaning: the whole sitemap
 			// needs to be created and cached by partitions.
 
-			if (IsRebuilding(storeId, langId))
+			var wasRebuilding = false;
+			var lockFilePath = GetLockFilePath(store.Id, language.Id);
+
+			while (IsRebuilding(lockFilePath))
 			{
 				// The rebuild process is already running, either started
 				// by the task scheduler or another HTTP request.
 				// We should wait for completion.
 
-				Thread.Sleep(500);
-
-				while (IsRebuilding(storeId, langId))
-				{
-					Thread.Sleep(500);
-				}
+				wasRebuilding = true;
+				Thread.Sleep(1000);
 			}
-			else
+
+			if (!wasRebuilding)
 			{
 				// No lock. Rebuild now.
-				var buildContext = new XmlSitemapBuildContext(_services.StoreContext.CurrentStore, new[] { _services.WorkContext.WorkingLanguage })
+				var buildContext = new XmlSitemapBuildContext(store, new[] { language })
 				{
 					CancellationToken = CancellationToken.None
 				};
@@ -262,18 +256,22 @@ namespace SmartStore.Services.Seo
 
 				try
 				{
-					var protocol = ctx.Protocol;
 					var languageIds = ctx.Languages.Select(x => x.Id).Concat(new[] { 0 }).ToArray();
 					var nodes = new List<XmlSitemapNode>();
-					var queries = CreateQueries(ctx.Store.Id);
-					var total = queries.GetTotalRecordCount();
 
 					using (new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
 					{
+						var queries = CreateQueries(ctx);
+						var total = queries.GetTotalRecordCount();
 						var entities = EnumerateEntities(queries);
 
-						var segment = 0;
+						var totalSegments = (int)Math.Ceiling(total / (double)MaximumSiteMapNodeCount);
+						var segmentNodes = new List<XmlSitemapNode>();
+						var segment = 1;
 						var numProcessed = 0;
+
+						CheckSitemapCount(totalSegments);
+
 						foreach (var batch in entities.Slice(MaximumSiteMapNodeCount))
 						{
 							if (ctx.CancellationToken.IsCancellationRequested)
@@ -281,7 +279,7 @@ namespace SmartStore.Services.Seo
 								break;
 							}
 
-							numProcessed = ++segment * MaximumSiteMapNodeCount;
+							numProcessed = segment++ * MaximumSiteMapNodeCount;
 							ctx.ProgressCallback?.Invoke(numProcessed, total, "{0} / {1}".FormatCurrent(numProcessed, total));
 
 							var firstEntityName = batch.First().EntityName;
@@ -291,12 +289,22 @@ namespace SmartStore.Services.Seo
 
 							foreach (var language in ctx.Languages)
 							{
+								var baseUrl = BuildBaseUrl(ctx.Store, language);
+
 								sitemaps[language.Id].AddRange(batch.Select(x => new XmlSitemapNode
 								{
 									LastMod = x.LastMod,
-									Loc = _urlHelper.RouteUrl(x.EntityName, new { SeName = slugs[x.EntityName].GetSlug(language.Id, x.Id, true) }, protocol)
+									Loc = BuildNodeUrl(baseUrl, x, slugs[x.EntityName], language)
 								}));
 							}
+
+							if (segment % 5 == 0 || segment == totalSegments)
+							{
+								// Commit every 5th segment (10.000 nodes) temprorarily to disk to save RAM
+							}
+
+							GC.Collect();
+							GC.WaitForPendingFinalizers();
 						}
 
 						if (!ctx.CancellationToken.IsCancellationRequested)
@@ -314,7 +322,7 @@ namespace SmartStore.Services.Seo
 						// the system will try to rebuild again.
 						foreach (var language in ctx.Languages)
 						{
-							sitemaps[language.Id].Add(new XmlSitemapNode { LastMod = DateTime.UtcNow, Loc = _urlHelper.RouteUrl("HomePage") });
+							sitemaps[language.Id].Add(new XmlSitemapNode { LastMod = DateTime.UtcNow, Loc = BuildBaseUrl(ctx.Store, language) });
 						}
 					}
 
@@ -326,16 +334,44 @@ namespace SmartStore.Services.Seo
 
 						ctx.ProgressCallback?.Invoke(total, total, "Saving sitemaps for '{0}'.".FormatInvariant(language.GetTwoLetterISOLanguageName()));
 
-						var documents = GetSiteMapDocuments((IReadOnlyCollection<XmlSitemapNode>)sitemaps[language.Id], protocol);
+						var baseUrl = BuildBaseUrl(ctx.Store, language);
+						var documents = GetSiteMapDocuments((IReadOnlyCollection<XmlSitemapNode>)sitemaps[language.Id], baseUrl);
 						SaveToDisk(documents, ctx.Store, language);
+						documents.Clear();
 					}
 				}
 				finally
 				{
 					// Undo impersonation
 					_services.WorkContext.CurrentCustomer = prevCustomer;
+					sitemaps.Clear();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
 				}
 			}
+		}
+
+		private string BuildBaseUrl(Store store, Language language)
+		{
+			var host = _services.StoreService.GetHost(store).EnsureEndsWith("/");
+
+			var locSettings = _services.Settings.LoadSetting<LocalizationSettings>(store.Id);
+			if (locSettings.SeoFriendlyUrlsForLanguagesEnabled)
+			{
+				var defaultLangId = _languageService.GetDefaultLanguageId(store.Id);
+				if (language.Id != defaultLangId || locSettings.DefaultLanguageRedirectBehaviour < DefaultLanguageRedirectBehaviour.StripSeoCode)
+				{
+					host += language.GetTwoLetterISOLanguageName() + "/";
+				}
+			}
+
+			return host;
+		}
+
+		private string BuildNodeUrl(string baseUrl, NamedEntity entity, UrlRecordCollection slugs, Language language)
+		{
+			return baseUrl + slugs.GetSlug(language.Id, entity.Id, true);
 		}
 
 		private void SaveToDisk(List<string> documents, Store store, Language language)
@@ -393,21 +429,14 @@ namespace SmartStore.Services.Seo
 			if (queries.Products != null)
 			{
 				var query = queries.Products.AsNoTracking();
-
 				var maxId = int.MaxValue;
-				int xxx = 0;
+
 				while (maxId > 1)
 				{
-					xxx++;
-					if (xxx >= 50)
-					{
-						break;
-					}
-
 					var products = queries.Products.AsNoTracking()
 						.Where(x => x.Id < maxId)
 						.OrderByDescending(x => x.Id)
-						.Take(() => 1000)
+						.Take(() => MaximumSiteMapNodeCount)
 						.Select(x => new { x.Id, x.UpdatedOnUtc })
 						.ToList();
 
@@ -451,7 +480,7 @@ namespace SmartStore.Services.Seo
 			return result;
 		}
 
-		protected virtual List<string> GetSiteMapDocuments(IReadOnlyCollection<XmlSitemapNode> nodes, string protocol)
+		protected virtual List<string> GetSiteMapDocuments(IReadOnlyCollection<XmlSitemapNode> nodes, string baseUrl)
 		{
 			int siteMapCount = (int)Math.Ceiling(nodes.Count / (double)MaximumSiteMapNodeCount);
 			CheckSitemapCount(siteMapCount);
@@ -469,7 +498,7 @@ namespace SmartStore.Services.Seo
 
 			if (siteMapCount > 1)
 			{
-				var xml = this.GetSitemapIndexDocument(siteMaps, protocol);
+				var xml = this.GetSitemapIndexDocument(siteMaps, baseUrl);
 				siteMapDocuments.Add(xml);
 			}
 
@@ -487,7 +516,7 @@ namespace SmartStore.Services.Seo
 		/// </summary>
 		/// <param name="siteMaps">The collection of sitemaps containing their index and nodes.</param>
 		/// <returns>The sitemap index XML document, containing links to all the sitemap XML documents.</returns>
-		private string GetSitemapIndexDocument(IEnumerable<KeyValuePair<int, IEnumerable<XmlSitemapNode>>> siteMaps, string protocol)
+		private string GetSitemapIndexDocument(IEnumerable<KeyValuePair<int, IEnumerable<XmlSitemapNode>>> siteMaps, string baseUrl)
 		{
 			XNamespace ns = SiteMapsNamespace;
 
@@ -504,7 +533,7 @@ namespace SmartStore.Services.Seo
 
 				var xel = new XElement(
 					ns + "sitemap",
-					new XElement(ns + "loc", this.GetSitemapUrl(map.Key, protocol)),
+					new XElement(ns + "loc", this.GetSitemapUrl(map.Key, baseUrl)),
 					lastModified.HasValue ?
 						new XElement(
 							ns + "lastmod",
@@ -521,10 +550,10 @@ namespace SmartStore.Services.Seo
 			return xml;
 		}
 
-		private string GetSitemapUrl(int index, string protocol)
+		private string GetSitemapUrl(int index, string baseUrl)
 		{
-			var url = _urlHelper.RouteUrl("XmlSitemap", new { index }, protocol);
-			return url;
+			var url = _urlHelper.RouteUrl("XmlSitemap", new { index }).TrimStart('/');
+			return baseUrl + url;
 		}
 
 		/// <summary>
@@ -590,26 +619,31 @@ namespace SmartStore.Services.Seo
 			return xml;
 		}
 
-		private QueryHolder CreateQueries(int storeId)
+		private QueryHolder CreateQueries(XmlSitemapBuildContext ctx)
 		{
+			var storeId = ctx.Store.Id;
+
 			if (_services.StoreService.IsSingleStoreMode())
 			{
 				storeId = 0;
 			}
 
+			// Always work with store-dependant setting
+			var seoSettings = _services.Settings.LoadSetting<SeoSettings>(storeId);
+
 			var holder = new QueryHolder();
 
-			if (_seoSettings.XmlSitemapIncludesCategories)
+			if (seoSettings.XmlSitemapIncludesCategories)
 			{
 				holder.Categories = _categoryService.GetAllCategories(showHidden: false, storeId: storeId).SourceQuery;
 			}
 
-			if (_seoSettings.XmlSitemapIncludesManufacturers)
+			if (seoSettings.XmlSitemapIncludesManufacturers)
 			{
 				holder.Manufacturers = _manufacturerService.GetManufacturers(false).OrderBy(x => x.DisplayOrder).ThenBy(x => x.Name);
 			}
 
-			if (_seoSettings.XmlSitemapIncludesTopics)
+			if (seoSettings.XmlSitemapIncludesTopics)
 			{
 				holder.Topics = _topicService.GetAllTopics(storeId).AlterQuery(q =>
 				{
@@ -617,7 +651,7 @@ namespace SmartStore.Services.Seo
 				}).SourceQuery;
 			}
 
-			if (_seoSettings.XmlSitemapIncludesProducts)
+			if (seoSettings.XmlSitemapIncludesProducts)
 			{
 				var searchQuery = new CatalogSearchQuery()
 					.VisibleOnly()
@@ -628,11 +662,6 @@ namespace SmartStore.Services.Seo
 			}
 
 			return holder;
-		}
-
-		protected virtual IEnumerable<XmlSitemapNode> GetCustomNodes(string protocol)
-		{
-			return Enumerable.Empty<XmlSitemapNode>();
 		}
 
 		protected void ProcessCustomNodes(XmlSitemapBuildContext ctx, Multimap<int, XmlSitemapNode> sitemaps)
@@ -666,7 +695,12 @@ namespace SmartStore.Services.Seo
 
 		public bool IsRebuilding(int storeId, int languageId)
 		{
-			return _lockFileManager.IsLocked(GetLockFilePath(storeId, languageId));
+			return IsRebuilding(GetLockFilePath(storeId, languageId));
+		}
+
+		private bool IsRebuilding(string lockFilePath)
+		{
+			return _lockFileManager.IsLocked(lockFilePath);
 		}
 
 		public virtual bool IsGenerated(int storeId, int languageId)
@@ -700,6 +734,7 @@ namespace SmartStore.Services.Seo
 				if (Manufacturers != null) num += Manufacturers.Count();
 				if (Topics != null) num += Topics.Count();
 				if (Products != null) num += Products.Count();
+				//if (Products != null) num += 100000;
 
 				return num;
 			}

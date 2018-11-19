@@ -213,17 +213,31 @@ namespace SmartStore.Services.Seo
 							where x.EntityName == entityName && x.IsActive
 							select x;
 
+				var requestedSet = entityIds;
+
 				if (entityIds != null && entityIds.Length > 0)
 				{
 					if (isRange)
 					{
-						var min = isSorted ? entityIds[0] : entityIds.Min();
-						var max = isSorted ? entityIds[entityIds.Length - 1] : entityIds.Max();
+						if (!isSorted)
+						{
+							Array.Sort(entityIds);
+						}
+
+						var min = entityIds[0];
+						var max = entityIds[entityIds.Length - 1];
+
+						if (entityIds.Length == 2 && max > min + 1)
+						{
+							// Only min & max were passed, create the range sequence.
+							requestedSet = Enumerable.Range(min, max - min + 1).ToArray();
+						}
 
 						query = query.Where(x => x.EntityId >= min && x.EntityId <= max);
 					}
 					else
 					{
+						requestedSet = entityIds;
 						query = query.Where(x => entityIds.Contains(x.EntityId));
 					}
 				}
@@ -241,7 +255,7 @@ namespace SmartStore.Services.Seo
 				}
 
 				// Don't sort DESC, because latter items overwrite exisiting ones (it's the same as sorting DESC and taking the first)
-				return new UrlRecordCollection(entityName, entityIds, query.OrderBy(x => x.Id).ToList());
+				return new UrlRecordCollection(entityName, requestedSet, query.OrderBy(x => x.Id).ToList());
 			}
 		}
 

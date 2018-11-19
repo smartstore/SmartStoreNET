@@ -469,7 +469,6 @@
     <Compile Include="Search\IndexProviderBase.cs" />
     <Compile Include="Search\Events\IndexSegmentProcessedEvent.cs" />
     <Compile Include="Search\ISearchAlias.cs" />
-    <Compile Include="Search\ISearchBits.cs" />
     <Compile Include="Search\ISearchEngine.cs" />
     <Compile Include="Search\Filter\ISearchFilter.cs" />
     <Compile Include="Search\ISearchHit.cs" />

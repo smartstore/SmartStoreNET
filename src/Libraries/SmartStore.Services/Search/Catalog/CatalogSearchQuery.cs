@@ -206,12 +206,9 @@ namespace SmartStore.Services.Search
 				return this;
 			}
 
-			string fieldName = null;
-
-			if (featuredOnly.HasValue)
-				fieldName = (featuredOnly.Value ? "featuredcategoryid" : "notfeaturedcategoryid");
-			else
-				fieldName = "categoryid";
+			var fieldName = featuredOnly.HasValue
+                ? featuredOnly.Value ? "featuredcategoryid" : "notfeaturedcategoryid"
+                : "categoryid";
 
 			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
@@ -236,12 +233,9 @@ namespace SmartStore.Services.Search
 				return this;
 			}
 
-			string fieldName = null;
-
-			if (featuredOnly.HasValue)
-				fieldName = (featuredOnly.Value ? "featuredmanufacturerid" : "notfeaturedmanufacturerid");
-			else
-				fieldName = "manufacturerid";
+			var fieldName = featuredOnly.HasValue
+                ? featuredOnly.Value ? "featuredmanufacturerid" : "notfeaturedmanufacturerid"
+                : "manufacturerid";
 
 			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
 		}

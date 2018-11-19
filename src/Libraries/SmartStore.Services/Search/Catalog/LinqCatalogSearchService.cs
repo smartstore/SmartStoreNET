@@ -132,6 +132,8 @@ namespace SmartStore.Services.Search
 			var ordered = false;
 			var utcNow = DateTime.UtcNow;
             var isGroupingRequired = false;
+            var categoryId = 0;
+            var manufacturerId = 0;
 			var query = baseQuery ?? _productRepository.Table;
 
 			query = query.Where(x => !x.Deleted && !x.IsSystemProduct);
@@ -151,7 +153,8 @@ namespace SmartStore.Services.Search
 			var categoryIds = GetIdList(filters, "categoryid");
 			if (categoryIds.Any())
 			{
-				if (categoryIds.Count == 1 && categoryIds.First() == 0)
+                categoryId = categoryIds.First();
+				if (categoryIds.Count == 1 && categoryId == 0)
 				{
 					// Has no category.
 					query = query.Where(x => x.ProductCategories.Count == 0);
@@ -168,20 +171,23 @@ namespace SmartStore.Services.Search
             if (featuredCategoryIds.Any())
             {
                 isGroupingRequired = true;
+                categoryId = categoryId == 0 ? featuredCategoryIds.First() : categoryId;
                 query = QueryCategories(query, featuredCategoryIds, true);
             }
             if (notFeaturedCategoryIds.Any())
             {
                 isGroupingRequired = true;
+                categoryId = categoryId == 0 ? notFeaturedCategoryIds.First() : categoryId;
                 query = QueryCategories(query, notFeaturedCategoryIds, false);
             }
 
 			var manufacturerIds = GetIdList(filters, "manufacturerid");
 			if (manufacturerIds.Any())
 			{
-				if (manufacturerIds.Count == 1 && manufacturerIds.First() == 0)
+                manufacturerId = manufacturerIds.First();
+				if (manufacturerIds.Count == 1 && manufacturerId == 0)
 				{
-					// has no manufacturer
+					// Has no manufacturer.
 					query = query.Where(x => x.ProductManufacturers.Count == 0);
 				}
 				else
@@ -196,11 +202,13 @@ namespace SmartStore.Services.Search
             if (featuredManuIds.Any())
             {
                 isGroupingRequired = true;
+                manufacturerId = manufacturerId == 0 ? featuredManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, featuredManuIds, true);
             }
             if (notFeaturedManuIds.Any())
             {
                 isGroupingRequired = true;
+                manufacturerId = manufacturerId == 0 ? notFeaturedManuIds.First() : manufacturerId;
                 query = QueryManufacturers(query, notFeaturedManuIds, false);
             }
 
@@ -491,14 +499,12 @@ namespace SmartStore.Services.Search
 				if (sort.FieldName.IsEmpty())
 				{
 					// Sort by relevance.
-					if (categoryIds.Any())
+					if (categoryId != 0)
 					{
-						var categoryId = categoryIds.First();
 						query = OrderBy(ref ordered, query, x => x.ProductCategories.Where(pc => pc.CategoryId == categoryId).FirstOrDefault().DisplayOrder);
 					}
-					else if (manufacturerIds.Any())
+					else if (manufacturerId != 0)
 					{
-						var manufacturerId = manufacturerIds.First();
 						query = OrderBy(ref ordered, query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
 					}
 					else if (FindFilter(searchQuery.Filters, "parentid") != null)

@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -93,6 +93,7 @@
 * Region cannot be selected in checkout when entering a billing or shipping address
 * Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
 * MegaMenu: Improved item rendering for third tier elements
+* Product display order on category and manufacturer pages sometimes wrong when using linq search.
 
 
 ## SmartStore.NET 3.1.5

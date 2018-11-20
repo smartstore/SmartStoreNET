@@ -45,18 +45,16 @@
 	</div>
 </div>
 
-@using (Html.BeginZoneContent("end"))
-{
-	<script data-origin="FileUploader">
-		$(function () {
-			$('#@Model.Id').fileUploadWrapper({
-				onUploading: @Html.Raw(Model.OnUploadingHandlerName.HasValue() ? Model.OnUploadingHandlerName : "null"),
-				onUploadCompleted: @Html.Raw(Model.OnUploadCompletedHandlerName.HasValue() ? Model.OnUploadCompletedHandlerName : "null"),
-				onAborted: @Html.Raw(Model.OnAbortedHandlerName.HasValue() ? Model.OnAbortedHandlerName : "null"),
-				onError: @Html.Raw(Model.OnErrorHandlerName.HasValue() ? Model.OnErrorHandlerName : "null"),
-				onFileRemove: @Html.Raw(Model.OnFileRemoveHandlerName.HasValue() ? Model.OnFileRemoveHandlerName : "null"),
-				onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null")
-			});
-    });
-	</script>
-}
+
+<script data-origin="FileUploader">
+	$(function () {
+		$('#@Model.Id').fileUploadWrapper({
+			onUploading: @Html.Raw(Model.OnUploadingHandlerName.HasValue() ? Model.OnUploadingHandlerName : "null"),
+			onUploadCompleted: @Html.Raw(Model.OnUploadCompletedHandlerName.HasValue() ? Model.OnUploadCompletedHandlerName : "null"),
+			onAborted: @Html.Raw(Model.OnAbortedHandlerName.HasValue() ? Model.OnAbortedHandlerName : "null"),
+			onError: @Html.Raw(Model.OnErrorHandlerName.HasValue() ? Model.OnErrorHandlerName : "null"),
+			onFileRemove: @Html.Raw(Model.OnFileRemoveHandlerName.HasValue() ? Model.OnFileRemoveHandlerName : "null"),
+			onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null")
+		});
+});
+</script>

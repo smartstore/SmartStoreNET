@@ -234,7 +234,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (!ctx.IsPreview && loadedRecords > 0)
 				{
-					var totalRecords = ctx.RecordsPerStore.Sum(x => x.Value);
+                    var totalRecords = ctx.StatsPerStore.Sum(x => x.Value.TotalRecords);
 
                     if (ctx.Request.Profile.Limit > 0 && totalRecords > ctx.Request.Profile.Limit)
                     {
@@ -418,7 +418,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var offset = Math.Max(ctx.Request.Profile.Offset, 0);
 			var limit = Math.Max(ctx.Request.Profile.Limit, 0);
 			var recordsPerSegment = ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0);
-			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
+            var totalRecords = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.StatsPerStore.First(x => x.Key == ctx.Store.Id).Value.TotalRecords;
 			
 			switch (ctx.Request.Provider.Value.EntityType)
 			{
@@ -470,7 +470,7 @@ namespace SmartStore.Services.DataExchange.Export
                             ctx.TranslationsPerPage[nameof(ProductVariantAttributeValue)] = CreateTranslationCollection(nameof(ProductVariantAttributeValue), pvav);
                         },
 						entity => Convert(ctx, entity),
-						offset, PageSize, limit, recordsPerSegment, totalCount
+						offset, PageSize, limit, recordsPerSegment, totalRecords
 					);
 					break;
 
@@ -498,7 +498,7 @@ namespace SmartStore.Services.DataExchange.Export
                             ctx.UrlRecordsPerPage[nameof(Product)] = CreateUrlRecordCollection(nameof(Product), products);
                         },
 						entity => Convert(ctx, entity),
-						offset, PageSize, limit, recordsPerSegment, totalCount
+						offset, PageSize, limit, recordsPerSegment, totalRecords
 					);
 					break;
 
@@ -514,7 +514,7 @@ namespace SmartStore.Services.DataExchange.Export
 							);
 						},
 						entity => Convert(ctx, entity),
-						offset, PageSize, limit, recordsPerSegment, totalCount
+						offset, PageSize, limit, recordsPerSegment, totalRecords
 					);
 					break;
 
@@ -530,7 +530,7 @@ namespace SmartStore.Services.DataExchange.Export
 							);
 						},
 						entity => Convert(ctx, entity),
-						offset, PageSize, limit, recordsPerSegment, totalCount
+						offset, PageSize, limit, recordsPerSegment, totalRecords
 					);
 					break;
 
@@ -545,7 +545,7 @@ namespace SmartStore.Services.DataExchange.Export
 							);
 						},
 						entity => Convert(ctx, entity),
-						offset, PageSize, limit, recordsPerSegment, totalCount
+						offset, PageSize, limit, recordsPerSegment, totalRecords
 					);
 					break;
 
@@ -555,7 +555,7 @@ namespace SmartStore.Services.DataExchange.Export
 						skip => GetNewsLetterSubscriptions(ctx, skip),
 						null,
 						entity => Convert(ctx, entity),
-						offset, PageSize, limit, recordsPerSegment, totalCount
+						offset, PageSize, limit, recordsPerSegment, totalRecords
 					);
 					break;
 
@@ -570,7 +570,7 @@ namespace SmartStore.Services.DataExchange.Export
                             ctx.UrlRecordsPerPage[nameof(Product)] = CreateUrlRecordCollection(nameof(Product), products);
                         },
                         entity => Convert(ctx, entity),
-						offset, PageSize, limit, recordsPerSegment, totalCount
+						offset, PageSize, limit, recordsPerSegment, totalRecords
 					);
 					break;
 
@@ -858,7 +858,7 @@ namespace SmartStore.Services.DataExchange.Export
 			return context;
 		}
 
-		private IQueryable<Product> GetProductQuery(DataExporterContext ctx, int skip, int take)
+		private IQueryable<Product> GetProductQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			IQueryable<Product> query = null;
 
@@ -902,18 +902,25 @@ namespace SmartStore.Services.DataExchange.Export
 					searchQuery = searchQuery.WithProductId(f.IdMinimum, f.IdMaximum);
 
 				query = _catalogSearchService.Value.PrepareQuery(searchQuery);
-				query = query.OrderByDescending(x => x.CreatedOnUtc);
 			}
 			else
 			{
 				query = ctx.Request.ProductQuery;
 			}
 
-			if (skip > 0)
-				query = query.Skip(() => skip);
+            query = query.OrderBy(x => x.Id);
 
-			if (take != int.MaxValue)
-				query = query.Take(() => take);
+            // Skip required for preview.
+            var skipValue = skip.GetValueOrDefault();
+            if (skipValue > 0)
+            {
+                query = query.Skip(() => skipValue);
+            }
+
+            if (take != int.MaxValue)
+            {
+                query = query.Take(() => take);
+            }
 
 			return query;
 		}
@@ -1330,10 +1337,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		#endregion
 
-		private List<Store> Init(DataExporterContext ctx, int? totalRecords = null)
+		private List<Store> Init(DataExporterContext ctx)
 		{
-			// Init things that are required for export and for preview.
-            // Init things that are only required for export in ExportCoreOuter.
 			List<Store> result = null;
 
 			ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId ?? 0) ?? _services.WorkContext.WorkingCurrency;
@@ -1387,47 +1392,45 @@ namespace SmartStore.Services.DataExchange.Export
 				result = new List<Store> { ctx.Store };
 			}
 
-			// Get total records for progress.
+			// Get record stats for each store.
 			foreach (var store in result)
 			{
 				ctx.Store = store;
 
-				int totalCount = 0;
+                IQueryable<BaseEntity> query = null;
 
-				if (totalRecords.HasValue)
-				{
-                    // Speed up preview by not counting total at each page.
-                    totalCount = totalRecords.Value;
-				}
-				else
-				{
-					switch (ctx.Request.Provider.Value.EntityType)
-					{
-						case ExportEntityType.Product:
-							totalCount = GetProductQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
-							break;
-						case ExportEntityType.Order:
-							totalCount = GetOrderQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
-							break;
-						case ExportEntityType.Manufacturer:
-							totalCount = GetManufacturerQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
-							break;
-						case ExportEntityType.Category:
-							totalCount = GetCategoryQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
-							break;
-						case ExportEntityType.Customer:
-							totalCount = GetCustomerQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
-							break;
-						case ExportEntityType.NewsLetterSubscription:
-							totalCount = GetNewsLetterSubscriptionQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
-							break;
-						case ExportEntityType.ShoppingCartItem:
-							totalCount = GetShoppingCartItemQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue).Count();
-							break;
-					}
-				}
+                switch (ctx.Request.Provider.Value.EntityType)
+                {
+                    case ExportEntityType.Product:
+                        query = GetProductQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue);
+                        break;
+                    case ExportEntityType.Order:
+                        query = GetOrderQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue);
+                        break;
+                    case ExportEntityType.Manufacturer:
+                        query = GetManufacturerQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue);
+                        break;
+                    case ExportEntityType.Category:
+                        query = GetCategoryQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue);
+                        break;
+                    case ExportEntityType.Customer:
+                        query = GetCustomerQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue);
+                        break;
+                    case ExportEntityType.NewsLetterSubscription:
+                        query = GetNewsLetterSubscriptionQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue);
+                        break;
+                    case ExportEntityType.ShoppingCartItem:
+                        query = GetShoppingCartItemQuery(ctx, ctx.Request.Profile.Offset, int.MaxValue);
+                        break;
+                }
 
-				ctx.RecordsPerStore.Add(store.Id, totalCount);
+                var stats = new RecordStats
+                {
+                    TotalRecords = query.Count(),
+                    MaxId = query.Max(x => (int?)x.Id) ?? 0
+                };
+
+                ctx.StatsPerStore.Add(store.Id, stats);
 			}
 
 			return result;
@@ -1634,7 +1637,6 @@ namespace SmartStore.Services.DataExchange.Export
                     // lazyLoading: false, proxyCreation: false impossible due to price calculation.
                     using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 					{
-                        // Init things required for export and not required for preview.
 						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
 						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
 						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
@@ -1805,77 +1807,69 @@ namespace SmartStore.Services.DataExchange.Export
 			return ctx.Result;
 		}
 
-		public IList<dynamic> Preview(DataExportRequest request, int pageIndex, int? totalRecords = null)
+		public DataExportPreviewResult Preview(DataExportRequest request, int pageIndex)
 		{
-			var result = new List<dynamic>();
-			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
+            var result = new DataExportPreviewResult();
+            var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 			var ctx = new DataExporterContext(request, cancellation.Token, true);
 
-			var unused = Init(ctx, totalRecords);
-			var offset = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
+			var unused = Init(ctx);
+			var skip = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
 
 			if (!HasPermission(ctx))
 			{
 				throw new SmartException(T("Admin.AccessDenied"));
 			}
 
-			switch (request.Provider.Value.EntityType)
+            result.TotalRecords = ctx.StatsPerStore.First().Value.TotalRecords;
+
+            switch (request.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
 					{
-						var items = GetProductQuery(ctx, offset, PageSize).ToList();
-						items.Each(x => result.Add(ToDynamic(ctx, x)));
+						var items = GetProductQuery(ctx, skip, PageSize).ToList();
+						items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
 					}
 					break;
 				case ExportEntityType.Order:
 					{
-						var items = GetOrderQuery(ctx, offset, PageSize).ToList();
-						items.Each(x => result.Add(ToDynamic(ctx, x)));
+						var items = GetOrderQuery(ctx, skip, PageSize).ToList();
+						items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
 					}
 					break;
 				case ExportEntityType.Category:
 					{
-						var items = GetCategoryQuery(ctx, offset, PageSize).ToList();
-						items.Each(x => result.Add(ToDynamic(ctx, x)));
+						var items = GetCategoryQuery(ctx, skip, PageSize).ToList();
+						items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
 					}
 					break;
 				case ExportEntityType.Manufacturer:
 					{
-						var items = GetManufacturerQuery(ctx, offset, PageSize).ToList();
-						items.Each(x => result.Add(ToDynamic(ctx, x)));
+						var items = GetManufacturerQuery(ctx, skip, PageSize).ToList();
+						items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
 					}
 					break;
 				case ExportEntityType.Customer:
 					{
-						var items = GetCustomerQuery(ctx, offset, PageSize).ToList();
-						items.Each(x => result.Add(ToDynamic(ctx, x)));
+						var items = GetCustomerQuery(ctx, skip, PageSize).ToList();
+						items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
 					}
 					break;
 				case ExportEntityType.NewsLetterSubscription:
 					{
-						var items = GetNewsLetterSubscriptionQuery(ctx, offset, PageSize).ToList();
-						items.Each(x => result.Add(ToDynamic(ctx, x)));
+						var items = GetNewsLetterSubscriptionQuery(ctx, skip, PageSize).ToList();
+						items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
 					}
 					break;
 				case ExportEntityType.ShoppingCartItem:
 					{
-						var items = GetShoppingCartItemQuery(ctx, offset, PageSize).ToList();
-						items.Each(x => result.Add(ToDynamic(ctx, x)));
+						var items = GetShoppingCartItemQuery(ctx, skip, PageSize).ToList();
+						items.Each(x => result.Data.Add(ToDynamic(ctx, x)));
 					}
 					break;
 			}
 
-			return result;
-		}
-
-		public int GetDataCount(DataExportRequest request)
-		{
-			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
-			var ctx = new DataExporterContext(request, cancellation.Token, true);
-			var unused = Init(ctx);
-
-			var totalCount = ctx.RecordsPerStore.First().Value;
-			return totalCount;
+            return result;
 		}
 	}
 }

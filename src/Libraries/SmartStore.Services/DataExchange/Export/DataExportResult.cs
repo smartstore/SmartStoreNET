@@ -62,4 +62,23 @@ namespace SmartStore.Services.DataExchange.Export
             public RelatedEntityType? RelatedType { get; set; }
         }
 	}
+
+
+    public class DataExportPreviewResult
+    {
+        public DataExportPreviewResult()
+        {
+            Data = new List<dynamic>();
+        }
+
+        /// <summary>
+        /// Preview data.
+        /// </summary>
+        public List<dynamic> Data { get; set; }
+
+        /// <summary>
+        /// Number of total records.
+        /// </summary>
+        public int TotalRecords { get; set; }
+    }
 }

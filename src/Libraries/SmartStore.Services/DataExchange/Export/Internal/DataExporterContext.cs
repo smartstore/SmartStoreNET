@@ -45,13 +45,13 @@ namespace SmartStore.Services.DataExchange.Export.Internal
             UrlRecords = new Dictionary<string, UrlRecordCollection>();
             UrlRecordsPerPage = new Dictionary<string, UrlRecordCollection>();
 
-			RecordsPerStore = new Dictionary<int, int>();
+            StatsPerStore = new Dictionary<int, RecordStats>();
 			EntityIdsLoaded = new List<int>();
 			EntityIdsPerSegment = new List<int>();
 
 			Result = new DataExportResult
 			{
-				FileFolder = (IsFileBasedExport ? FolderContent : null)
+				FileFolder = IsFileBasedExport ? FolderContent : null
 			};
 
 			ExecuteContext = new ExportExecuteContext(Result, CancellationToken, FolderContent);
@@ -82,11 +82,11 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		/// </summary>
 		public List<int> EntityIdsPerSegment { get; set; }
 
-		public int RecordCount { get; set; }
-		public Dictionary<int, int> RecordsPerStore { get; set; }
-		public string ProgressInfo { get; set; }
+        public string ProgressInfo { get; set; }
+        public int RecordCount { get; set; }
+        public Dictionary<int, RecordStats> StatsPerStore { get; set; }
 
-		public DataExportRequest Request { get; private set; }
+        public DataExportRequest Request { get; private set; }
 		public CancellationToken CancellationToken { get; private set; }
 		public bool IsPreview { get; private set; }
 
@@ -145,4 +145,10 @@ namespace SmartStore.Services.DataExchange.Export.Internal
         public ExportExecuteContext ExecuteContext { get; set; }
 		public DataExportResult Result { get; set; }
 	}
+
+    internal class RecordStats
+    {
+        public int TotalRecords { get; set; }
+        public int MaxId { get; set; }
+    }
 }

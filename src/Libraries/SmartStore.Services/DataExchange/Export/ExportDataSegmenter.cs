@@ -38,20 +38,18 @@ namespace SmartStore.Services.DataExchange.Export
 
 	public class ExportDataSegmenter<T> : IExportDataSegmenterProvider where T : BaseEntity
 	{
-		private Func<int, List<T>> _load;
-		private Action<ICollection<T>> _loaded;
-		private Func<T, List<dynamic>> _convert;
+		private readonly Func<int, List<T>> _load;
+		private readonly Action<ICollection<T>> _loaded;
+		private readonly Func<T, List<dynamic>> _convert;
 
-		private int _offset;
-		private int _take;
-		private int _limit;
-		private int _recordsPerSegment;
-		private int _totalRecords;
+		private readonly int _offset;
+		private readonly int _take;
+		private readonly int _limit;
+		private readonly int _recordsPerSegment;
+		private readonly int _totalRecords;
 
 		private int _skip;
-		private int _countRecords;
-
-		private Queue<T> _data;
+        private Queue<T> _data;
 
 		public ExportDataSegmenter(
 			Func<int, List<T>> load,
@@ -84,25 +82,24 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				var total = Math.Max(_totalRecords - _offset, 0);
 
-				if (_limit > 0 && _limit < total)
-					return _limit;
+                if (_limit > 0 && _limit < total)
+                {
+                    return _limit;
+                }
 
 				return total;
 			}
 		}
 
-		/// <summary>
-		/// Number of processed records
-		/// </summary>
-		public int RecordCount
-		{
-			get { return _countRecords; }
-		}
+        /// <summary>
+        /// Number of processed records
+        /// </summary>
+        public int RecordCount { get; private set; }
 
-		/// <summary>
-		/// Record per segment counter
-		/// </summary>
-		public int RecordPerSegmentCount { get; set; }
+        /// <summary>
+        /// Record per segment counter
+        /// </summary>
+        public int RecordPerSegmentCount { get; set; }
 
 		/// <summary>
 		/// Whether there is data available
@@ -111,7 +108,7 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			get
 			{
-				if (_limit > 0 && _countRecords >= _limit)
+				if (_limit > 0 && RecordCount >= _limit)
 					return false;
 
 				if (_data != null && _data.Count > 0)
@@ -138,7 +135,7 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					_convert(entity).Each(x => records.Add(x));
 
-					if (++_countRecords >= _limit && _limit > 0)
+					if (++RecordCount >= _limit && _limit > 0)
 						return records;
 
 					if (++RecordPerSegmentCount >= _recordsPerSegment && _recordsPerSegment > 0)
@@ -155,13 +152,13 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <returns></returns>
 		public bool ReadNextSegment()
 		{
-			if (_limit > 0 && _countRecords >= _limit)
+			if (_limit > 0 && RecordCount >= _limit)
 				return false;
 
 			if (_recordsPerSegment > 0 && RecordPerSegmentCount >= _recordsPerSegment)
 				return false;
 
-			// do not make the queue longer than necessary
+			// Do not make the queue longer than necessary.
 			if (_recordsPerSegment > 0 && _data != null && _data.Count >= _recordsPerSegment)
 				return true;
 
@@ -183,22 +180,24 @@ namespace SmartStore.Services.DataExchange.Export
 				_data = new Queue<T>(_load(_skip));
 			}
 
-			// give provider the opportunity to make something with entity ids
+			// Give provider the opportunity to make something with entity ids.
 			_loaded?.Invoke(_data.AsReadOnly());
 
-			return (_data.Count > 0);
+			return _data.Count > 0;
 		}
 
 		/// <summary>
-		/// Dispose and reset segmenter instance
+		/// Dispose and reset segmenter instance.
 		/// </summary>
 		public void Dispose()
 		{
-			if (_data != null)
-				_data.Clear();
+            if (_data != null)
+            {
+                _data.Clear();
+            }
 
 			_skip = _offset;
-			_countRecords = 0;
+			RecordCount = 0;
 			RecordPerSegmentCount = 0;
 		}
 	}

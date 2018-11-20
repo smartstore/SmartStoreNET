@@ -17,7 +17,7 @@ else if (Model.LastHistoryEntry.Id != 0)
 	}
 	if (Model.LastHistoryEntry.Error.HasValue())
 	{
-		<div class="text-danger mt-2"><strong>@T("Common.Error"): </strong> <span>@Model.LastHistoryEntry.Error</span></div>
+		<div class="text-danger mt-2"><strong class="font-weight-medium">@T("Common.Error"): </strong> <span>@Model.LastHistoryEntry.Error.Truncate(100, "...")</span></div>
 		if (Model.LastHistoryEntry.SucceededOn.HasValue && Model.LastHistoryEntry.SucceededOn != Model.LastHistoryEntry.FinishedOn)
 		{
 			<div><span>@T("Admin.System.ScheduleTasks.LastSuccess"): </span> <span class="muted">@Model.LastHistoryEntry.SucceededOn.Value.ToString("g")</span></div>

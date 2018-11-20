@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -47,6 +47,10 @@
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
+* (Perf) Ultra-fast file-based XML sitemap generation for extremely large catalogs (> 1M)
+	* At least 10x faster
+	* Generated files are saved on the hard disk now: a rebuild after an app restart is no longer necessary.
+	* No exclusive locks during rebuilds anymore: if an (outdated) file already exists, it is returned instantly.
 * Debitoor: Partially update customer instead of full update to avoid all fields being overwritten
 * #1479 Show in messages the delivery time at the time of purchase
 * #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.

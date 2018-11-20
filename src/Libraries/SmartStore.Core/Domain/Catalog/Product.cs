@@ -711,14 +711,14 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
         [Index("IX_Product_Published_Deleted_IsSystemProduct", 1)]
-        public bool Published { get; set; }
+		public bool Published { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity has been deleted
         /// </summary>
 		[Index]
         [Index("IX_Product_Published_Deleted_IsSystemProduct", 2)]
-        public bool Deleted { get; set; }
+		public bool Deleted { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entity is a system product.
@@ -726,7 +726,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		[Index("IX_Product_SystemName_IsSystemProduct", 2)]
         [Index("IX_Product_Published_Deleted_IsSystemProduct", 3)]
-        public bool IsSystemProduct { get; set; }
+		public bool IsSystemProduct { get; set; }
 
 		/// <summary>
 		/// Gets or sets the product system name.

@@ -513,7 +513,7 @@ namespace SmartStore.Services.Seo
 				//var limit = 0;
 				while (maxId > 1)
 				{
-					var products = queries.Products.AsNoTracking()
+					var products = query
 						.Where(x => x.Id < maxId)
 						.OrderByDescending(x => x.Id)
 						.Take(() => MaximumSiteMapNodeCount)

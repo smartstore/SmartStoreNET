@@ -656,8 +656,8 @@ namespace SmartStore.Services.Search
 				{
 					var count = 0;
 					var hasActivePredefinedFacet = false;
-					var minPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).Min(x => (double)x.Price);
-					var maxPrice = _productRepository.Table.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).Max(x => (double)x.Price);
+					var minPrice = _productRepository.Table.Where(x => x.Published && !x.Deleted && !x.IsSystemProduct).Min(x => (double)x.Price);
+					var maxPrice = _productRepository.Table.Where(x => x.Published && !x.Deleted && !x.IsSystemProduct).Max(x => (double)x.Price);
 					minPrice = FacetUtility.MakePriceEven(minPrice);
 					maxPrice = FacetUtility.MakePriceEven(maxPrice);
 

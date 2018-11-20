@@ -14,6 +14,14 @@
 			AutomaticMigrationsEnabled = false;
 			AutomaticMigrationDataLossAllowed = true;
 			ContextKey = "SmartStore.Core";
+
+			var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
+			if (commandTimeout.HasValue)
+			{
+				CommandTimeout = commandTimeout.Value;
+			}
+
+			CommandTimeout = 9999999;
 		}
 
 		public void SeedDatabase(SmartObjectContext context)

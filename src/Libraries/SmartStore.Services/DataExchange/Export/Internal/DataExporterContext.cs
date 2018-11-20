@@ -47,7 +47,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
             StatsPerStore = new Dictionary<int, RecordStats>();
 			EntityIdsLoaded = new List<int>();
-			EntityIdsPerSegment = new List<int>();
+			EntityIdsPerSegment = new HashSet<int>();
 
 			Result = new DataExportResult
 			{
@@ -80,7 +80,8 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		/// <summary>
 		/// All entity identifiers per segment (to avoid exporting products multiple times).
 		/// </summary>
-		public List<int> EntityIdsPerSegment { get; set; }
+		public HashSet<int> EntityIdsPerSegment { get; set; }
+        public int LastId { get; set; }
 
         public string ProgressInfo { get; set; }
         public int RecordCount { get; set; }
@@ -150,5 +151,6 @@ namespace SmartStore.Services.DataExchange.Export.Internal
     {
         public int TotalRecords { get; set; }
         public int MaxId { get; set; }
+        public int OffsetId { get; set; }
     }
 }

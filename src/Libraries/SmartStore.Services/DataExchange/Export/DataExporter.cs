@@ -415,17 +415,20 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx)
 		{
-			var offset = Math.Max(ctx.Request.Profile.Offset, 0);
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            var offset = Math.Max(ctx.Request.Profile.Offset, 0);
 			var limit = Math.Max(ctx.Request.Profile.Limit, 0);
 			var recordsPerSegment = ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0);
-            var totalRecords = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.StatsPerStore.First(x => x.Key == ctx.Store.Id).Value.TotalRecords;
-			
-			switch (ctx.Request.Provider.Value.EntityType)
+            var totalRecords = offset + stats.TotalRecords;
+
+            ctx.LastId = stats.OffsetId;
+
+            switch (ctx.Request.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Product>
 					(
-						skip => GetProducts(ctx, skip),
+						() => GetProducts(ctx),
 						entities =>
 						{
                             // Load data behind navigation properties for current queue in one go.
@@ -477,7 +480,7 @@ namespace SmartStore.Services.DataExchange.Export
 				case ExportEntityType.Order:
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Order>
 					(
-						skip => GetOrders(ctx, skip),
+						() => GetOrders(ctx),
 						entities =>
 						{
 							ctx.OrderExportContext = new OrderExportContext(entities,
@@ -505,7 +508,7 @@ namespace SmartStore.Services.DataExchange.Export
 				case ExportEntityType.Manufacturer:
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Manufacturer>
 					(
-						skip => GetManufacturers(ctx, skip),
+						() => GetManufacturers(ctx),
 						entities =>
 						{
 							ctx.ManufacturerExportContext = new ManufacturerExportContext(entities,
@@ -521,7 +524,7 @@ namespace SmartStore.Services.DataExchange.Export
 				case ExportEntityType.Category:
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Category>
 					(
-						skip => GetCategories(ctx, skip),
+						() => GetCategories(ctx),
 						entities =>
 						{
 							ctx.CategoryExportContext = new CategoryExportContext(entities,
@@ -537,7 +540,7 @@ namespace SmartStore.Services.DataExchange.Export
 				case ExportEntityType.Customer:
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Customer>
 					(
-						skip => GetCustomers(ctx, skip),
+						() => GetCustomers(ctx),
 						entities =>
 						{
 							ctx.CustomerExportContext = new CustomerExportContext(entities,
@@ -552,7 +555,7 @@ namespace SmartStore.Services.DataExchange.Export
 				case ExportEntityType.NewsLetterSubscription:
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<NewsLetterSubscription>
 					(
-						skip => GetNewsLetterSubscriptions(ctx, skip),
+						() => GetNewsLetterSubscriptions(ctx),
 						null,
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalRecords
@@ -562,7 +565,7 @@ namespace SmartStore.Services.DataExchange.Export
 				case ExportEntityType.ShoppingCartItem:
 					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<ShoppingCartItem>
 					(
-						skip => GetShoppingCartItems(ctx, skip),
+						() => GetShoppingCartItems(ctx),
                         entities =>
                         {
                             var products = entities.Select(x => x.Product);
@@ -858,7 +861,7 @@ namespace SmartStore.Services.DataExchange.Export
 			return context;
 		}
 
-		private IQueryable<Product> GetProductQuery(DataExporterContext ctx, int? skip, int take)
+        private IQueryable<Product> GetProductQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			IQueryable<Product> query = null;
 
@@ -916,6 +919,10 @@ namespace SmartStore.Services.DataExchange.Export
             {
                 query = query.Skip(() => skipValue);
             }
+            else if (ctx.LastId > 0)
+            {
+                query = query.Where(x => x.Id > ctx.LastId);
+            }
 
             if (take != int.MaxValue)
             {
@@ -925,11 +932,22 @@ namespace SmartStore.Services.DataExchange.Export
 			return query;
 		}
 
-		private List<Product> GetProducts(DataExporterContext ctx, int skip)
+		private List<Product> GetProducts(DataExporterContext ctx)
 		{
-			// We use ctx.EntityIdsPerSegment to avoid exporting products multiple times per segment\file (cause of associated products).
-			var result = new List<Product>();
-			var products = GetProductQuery(ctx, skip, PageSize).ToList();
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            if (ctx.LastId >= stats.MaxId)
+            {
+                // End of data reached.
+                return null;
+            }
+
+            var products = GetProductQuery(ctx, null, PageSize).ToList();
+            if (!products.Any())
+            {
+                return null;
+            }
+
+            var result = new List<Product>();
             Multimap<int, Product> associatedProducts = null;
 
             if (ctx.Projection.NoGroupedProducts)
@@ -942,11 +960,11 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
 				{
-					if (!ctx.EntityIdsPerSegment.Contains(product.Id))
-					{
-						result.Add(product);
-						ctx.EntityIdsPerSegment.Add(product.Id);
-					}
+                    // We use ctx.EntityIdsPerSegment to avoid exporting products multiple times per segment\file (cause of associated products).
+                    if (ctx.EntityIdsPerSegment.Add(product.Id))
+                    {
+                        result.Add(product);
+                    }
 				}
 				else if (product.ProductType == ProductType.GroupedProduct)
 				{
@@ -965,31 +983,30 @@ namespace SmartStore.Services.DataExchange.Export
                                     continue;
                                 }
 
-                                if (!ctx.EntityIdsPerSegment.Contains(associatedProduct.Id))
+                                if (ctx.EntityIdsPerSegment.Add(associatedProduct.Id))
                                 {
                                     result.Add(associatedProduct);
-                                    ctx.EntityIdsPerSegment.Add(associatedProduct.Id);
                                 }
                             }
                         }
 					}
 					else
 					{
-						if (!ctx.EntityIdsPerSegment.Contains(product.Id))
+						if (ctx.EntityIdsPerSegment.Add(product.Id))
 						{
 							result.Add(product);
-							ctx.EntityIdsPerSegment.Add(product.Id);
 						}
 					}
 				}
 			}
 
-			SetProgress(ctx, products.Count);
+            ctx.LastId = products.Last().Id;
+            SetProgress(ctx, products.Count);
 
 			return result;
 		}
 
-		private IQueryable<Order> GetOrderQuery(DataExporterContext ctx, int skip, int take)
+		private IQueryable<Order> GetOrderQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var query = _orderService.Value.GetOrders(
 				ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId,
@@ -1003,93 +1020,160 @@ namespace SmartStore.Services.DataExchange.Export
 				null,
 				null);
 
-			if (ctx.Request.EntitiesToExport.Any())
-				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            if (ctx.Request.EntitiesToExport.Any())
+            {
+                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            }
 
-			query = query.OrderByDescending(x => x.CreatedOnUtc);
+            query = query.OrderBy(x => x.Id);
 
-			if (skip > 0)
-				query = query.Skip(() => skip);
+            var skipValue = skip.GetValueOrDefault();
+            if (skipValue > 0)
+            {
+                query = query.Skip(() => skipValue);
+            }
+            else if (ctx.LastId > 0)
+            {
+                query = query.Where(x => x.Id > ctx.LastId);
+            }
 
-			if (take != int.MaxValue)
-				query = query.Take(() => take);
+            if (take != int.MaxValue)
+            {
+                query = query.Take(() => take);
+            }
 
 			return query;
 		}
 
-		private List<Order> GetOrders(DataExporterContext ctx, int skip)
+		private List<Order> GetOrders(DataExporterContext ctx)
 		{
-			var orders = GetOrderQuery(ctx, skip, PageSize).ToList();
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            if (ctx.LastId >= stats.MaxId)
+            {
+                // End of data reached.
+                return null;
+            }
+
+            var orders = GetOrderQuery(ctx, null, PageSize).ToList();
+            if (!orders.Any())
+            {
+                return null;
+            }
 
 			if (ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
 				ctx.SetLoadedEntityIds(orders.Select(x => x.Id));
 			}
 
-			SetProgress(ctx, orders.Count);
+            ctx.LastId = orders.Last().Id;
+            SetProgress(ctx, orders.Count);
 
 			return orders;
 		}
 
-		private IQueryable<Manufacturer> GetManufacturerQuery(DataExporterContext ctx, int skip, int take)
+		private IQueryable<Manufacturer> GetManufacturerQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
 			var query = _manufacturerService.Value.GetManufacturers(true, storeId);
 
-			if (ctx.Request.EntitiesToExport.Any())
-				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            if (ctx.Request.EntitiesToExport.Any())
+            {
+                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            }
 
-			query = query.OrderBy(x => x.DisplayOrder);
+            query = query.OrderBy(x => x.Id);
 
-			if (skip > 0)
-				query = query.Skip(() => skip);
+            var skipValue = skip.GetValueOrDefault();
+            if (skipValue > 0)
+            {
+                query = query.Skip(() => skipValue);
+            }
+            else if (ctx.LastId > 0)
+            {
+                query = query.Where(x => x.Id > ctx.LastId);
+            }
 
-			if (take != int.MaxValue)
-				query = query.Take(() => take);
+            if (take != int.MaxValue)
+            {
+                query = query.Take(() => take);
+            }
 
 			return query;
 		}
 
-		private List<Manufacturer> GetManufacturers(DataExporterContext ctx, int skip)
+		private List<Manufacturer> GetManufacturers(DataExporterContext ctx)
 		{
-			var manus = GetManufacturerQuery(ctx, skip, PageSize).ToList();
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            if (ctx.LastId >= stats.MaxId)
+            {
+                // End of data reached.
+                return null;
+            }
 
-			SetProgress(ctx, manus.Count);
+            var manus = GetManufacturerQuery(ctx, null, PageSize).ToList();
+            if (!manus.Any())
+            {
+                return null;
+            }
+
+            ctx.LastId = manus.Last().Id;
+            SetProgress(ctx, manus.Count);
 
 			return manus;
 		}
 
-		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int skip, int take)
+		private IQueryable<Category> GetCategoryQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : 0;
 			var query = _categoryService.Value.BuildCategoriesQuery(null, true, null, storeId);
 
-			if (ctx.Request.EntitiesToExport.Any())
-				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            if (ctx.Request.EntitiesToExport.Any())
+            {
+                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            }
 
-			query = query
-				.OrderBy(x => x.ParentCategoryId)
-				.ThenBy(x => x.DisplayOrder);
+            query = query.OrderBy(x => x.Id);
 
-			if (skip > 0)
-				query = query.Skip(() => skip);
+            var skipValue = skip.GetValueOrDefault();
+            if (skipValue > 0)
+            {
+                query = query.Skip(() => skipValue);
+            }
+            else if (ctx.LastId > 0)
+            {
+                query = query.Where(x => x.Id > ctx.LastId);
+            }
 
-			if (take != int.MaxValue)
-				query = query.Take(() => take);
+            if (take != int.MaxValue)
+            {
+                query = query.Take(() => take);
+            }
 
 			return query;
 		}
 
-		private List<Category> GetCategories(DataExporterContext ctx, int skip)
+		private List<Category> GetCategories(DataExporterContext ctx)
 		{
-			var categories = GetCategoryQuery(ctx, skip, PageSize).ToList();
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            if (ctx.LastId >= stats.MaxId)
+            {
+                // End of data reached.
+                return null;
+            }
 
-			SetProgress(ctx, categories.Count);
+            var categories = GetCategoryQuery(ctx, null, PageSize).ToList();
+            if (!categories.Any())
+            {
+                return null;
+            }
+
+            ctx.LastId = categories.Last().Id;
+            SetProgress(ctx, categories.Count);
 
 			return categories;
 		}
 
-		private IQueryable<Customer> GetCustomerQuery(DataExporterContext ctx, int skip, int take)
+		private IQueryable<Customer> GetCustomerQuery(DataExporterContext ctx, int? skip, int take)
 		{
 			var query = _customerRepository.Value.TableUntracked
 				.Expand(x => x.BillingAddress)
@@ -1099,20 +1183,30 @@ namespace SmartStore.Services.DataExchange.Export
 				.Expand(x => x.CustomerRoles)
 				.Where(x => !x.Deleted);
 
-			if (ctx.Filter.IsActiveCustomer.HasValue)
-				query = query.Where(x => x.Active == ctx.Filter.IsActiveCustomer.Value);
+            if (ctx.Filter.IsActiveCustomer.HasValue)
+            {
+                query = query.Where(x => x.Active == ctx.Filter.IsActiveCustomer.Value);
+            }
 
-			if (ctx.Filter.IsTaxExempt.HasValue)
-				query = query.Where(x => x.IsTaxExempt == ctx.Filter.IsTaxExempt.Value);
+            if (ctx.Filter.IsTaxExempt.HasValue)
+            {
+                query = query.Where(x => x.IsTaxExempt == ctx.Filter.IsTaxExempt.Value);
+            }
 
-			if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Length > 0)
-				query = query.Where(x => x.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+            if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Any())
+            {
+                query = query.Where(x => x.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+            }
 
-			if (ctx.Filter.BillingCountryIds != null && ctx.Filter.BillingCountryIds.Length > 0)
-				query = query.Where(x => x.BillingAddress != null && ctx.Filter.BillingCountryIds.Contains(x.BillingAddress.Id));
+            if (ctx.Filter.BillingCountryIds != null && ctx.Filter.BillingCountryIds.Any())
+            {
+                query = query.Where(x => x.BillingAddress != null && ctx.Filter.BillingCountryIds.Contains(x.BillingAddress.Id));
+            }
 
-			if (ctx.Filter.ShippingCountryIds != null && ctx.Filter.ShippingCountryIds.Length > 0)
-				query = query.Where(x => x.ShippingAddress != null && ctx.Filter.ShippingCountryIds.Contains(x.ShippingAddress.Id));
+            if (ctx.Filter.ShippingCountryIds != null && ctx.Filter.ShippingCountryIds.Any())
+            {
+                query = query.Where(x => x.ShippingAddress != null && ctx.Filter.ShippingCountryIds.Contains(x.ShippingAddress.Id));
+            }
 
 			if (ctx.Filter.LastActivityFrom.HasValue)
 			{
@@ -1154,40 +1248,67 @@ namespace SmartStore.Services.DataExchange.Export
 					.Select(x => x.Customer);
 			}
 
-			if (ctx.Request.EntitiesToExport.Any())
-				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            if (ctx.Request.EntitiesToExport.Any())
+            {
+                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            }
 
-			query = query.OrderByDescending(x => x.CreatedOnUtc);
+            query = query.OrderBy(x => x.Id);
 
-			if (skip > 0)
-				query = query.Skip(() => skip);
+            var skipValue = skip.GetValueOrDefault();
+            if (skipValue > 0)
+            {
+                query = query.Skip(() => skipValue);
+            }
+            else if (ctx.LastId > 0)
+            {
+                query = query.Where(x => x.Id > ctx.LastId);
+            }
 
-			if (take != int.MaxValue)
-				query = query.Take(() => take);
+            if (take != int.MaxValue)
+            {
+                query = query.Take(() => take);
+            }
 
 			return query;
 		}
 
-		private List<Customer> GetCustomers(DataExporterContext ctx, int skip)
+		private List<Customer> GetCustomers(DataExporterContext ctx)
 		{
-			var customers = GetCustomerQuery(ctx, skip, PageSize).ToList();
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            if (ctx.LastId >= stats.MaxId)
+            {
+                // End of data reached.
+                return null;
+            }
 
-			SetProgress(ctx, customers.Count);
+            var customers = GetCustomerQuery(ctx, null, PageSize).ToList();
+            if (!customers.Any())
+            {
+                return null;
+            }
+
+            ctx.LastId = customers.Last().Id;
+            SetProgress(ctx, customers.Count);
 
 			return customers;
 		}
 
-		private IQueryable<NewsLetterSubscription> GetNewsLetterSubscriptionQuery(DataExporterContext ctx, int skip, int take)
+		private IQueryable<NewsLetterSubscription> GetNewsLetterSubscriptionQuery(DataExporterContext ctx, int? skip, int take)
 		{
-			var storeId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
+			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId;
 
 			var query = _subscriptionRepository.Value.TableUntracked;
 
-			if (storeId > 0)
-				query = query.Where(x => x.StoreId == storeId);
+            if (storeId > 0)
+            {
+                query = query.Where(x => x.StoreId == storeId);
+            }
 
-			if (ctx.Filter.IsActiveSubscriber.HasValue)
-				query = query.Where(x => x.Active == ctx.Filter.IsActiveSubscriber.Value);
+            if (ctx.Filter.IsActiveSubscriber.HasValue)
+            {
+                query = query.Where(x => x.Active == ctx.Filter.IsActiveSubscriber.Value);
+            }
 
             if (ctx.Filter.WorkingLanguageId != null && ctx.Filter.WorkingLanguageId != 0)
             {
@@ -1216,43 +1337,66 @@ namespace SmartStore.Services.DataExchange.Export
 				query = query.Where(x => createdTo >= x.CreatedOnUtc);
 			}
 
-			if (ctx.Request.EntitiesToExport.Any())
-				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            if (ctx.Request.EntitiesToExport.Any())
+            {
+                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            }
 
-			query = query
-				.OrderBy(x => x.StoreId)
-				.ThenBy(x => x.Email);
+            query = query.OrderBy(x => x.Id);
 
-			if (skip > 0)
-				query = query.Skip(() => skip);
+            var skipValue = skip.GetValueOrDefault();
+            if (skipValue > 0)
+            {
+                query = query.Skip(() => skipValue);
+            }
+            else if (ctx.LastId > 0)
+            {
+                query = query.Where(x => x.Id > ctx.LastId);
+            }
 
-			if (take != int.MaxValue)
-				query = query.Take(() => take);
+            if (take != int.MaxValue)
+            {
+                query = query.Take(() => take);
+            }
 
 			return query;
 		}
 
-		private List<NewsLetterSubscription> GetNewsLetterSubscriptions(DataExporterContext ctx, int skip)
+		private List<NewsLetterSubscription> GetNewsLetterSubscriptions(DataExporterContext ctx)
 		{
-			var subscriptions = GetNewsLetterSubscriptionQuery(ctx, skip, PageSize).ToList();
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            if (ctx.LastId >= stats.MaxId)
+            {
+                // End of data reached.
+                return null;
+            }
 
-			SetProgress(ctx, subscriptions.Count);
+            var subscriptions = GetNewsLetterSubscriptionQuery(ctx, null, PageSize).ToList();
+            if (!subscriptions.Any())
+            {
+                return null;
+            }
+
+            ctx.LastId = subscriptions.Last().Id;
+            SetProgress(ctx, subscriptions.Count);
 
 			return subscriptions;
 		}
 
-		private IQueryable<ShoppingCartItem> GetShoppingCartItemQuery(DataExporterContext ctx, int skip, int take)
+		private IQueryable<ShoppingCartItem> GetShoppingCartItemQuery(DataExporterContext ctx, int? skip, int take)
 		{
-			var storeId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
+			var storeId = ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId;
 
 			var query = _shoppingCartItemRepository.Value.TableUntracked
 				.Expand(x => x.Customer)
 				.Expand(x => x.Customer.CustomerRoles)
 				.Expand(x => x.Product)
-				.Where(x => !x.Customer.Deleted);   //  && !x.Product.Deleted
+				.Where(x => !x.Customer.Deleted);
 
-			if (storeId > 0)
-				query = query.Where(x => x.StoreId == storeId);
+            if (storeId > 0)
+            {
+                query = query.Where(x => x.StoreId == storeId);
+            }
 
 			if (ctx.Request.ActionOrigin.IsCaseInsensitiveEqual("CurrentCarts"))
 			{
@@ -1267,14 +1411,20 @@ namespace SmartStore.Services.DataExchange.Export
 				query = query.Where(x => x.ShoppingCartTypeId == ctx.Filter.ShoppingCartTypeId.Value);
 			}
 
-			if (ctx.Filter.IsActiveCustomer.HasValue)
-				query = query.Where(x => x.Customer.Active == ctx.Filter.IsActiveCustomer.Value);
+            if (ctx.Filter.IsActiveCustomer.HasValue)
+            {
+                query = query.Where(x => x.Customer.Active == ctx.Filter.IsActiveCustomer.Value);
+            }
 
-			if (ctx.Filter.IsTaxExempt.HasValue)
-				query = query.Where(x => x.Customer.IsTaxExempt == ctx.Filter.IsTaxExempt.Value);
+            if (ctx.Filter.IsTaxExempt.HasValue)
+            {
+                query = query.Where(x => x.Customer.IsTaxExempt == ctx.Filter.IsTaxExempt.Value);
+            }
 
-			if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Length > 0)
-				query = query.Where(x => x.Customer.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+            if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Any())
+            {
+                query = query.Where(x => x.Customer.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+            }
 
 			if (ctx.Filter.LastActivityFrom.HasValue)
 			{
@@ -1309,30 +1459,50 @@ namespace SmartStore.Services.DataExchange.Export
 				query = query.Where(x => x.BundleItemId == null);
 			}
 
-			if (ctx.Request.EntitiesToExport.Any())
-				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            if (ctx.Request.EntitiesToExport.Any())
+            {
+                query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+            }
 
-			query = query
-				.OrderBy(x => x.ShoppingCartTypeId)
-				.ThenBy(x => x.CustomerId)
-				.ThenByDescending(x => x.CreatedOnUtc);
+            query = query.OrderBy(x => x.Id);
 
-			if (skip > 0)
-				query = query.Skip(skip);
+            var skipValue = skip.GetValueOrDefault();
+            if (skipValue > 0)
+            {
+                query = query.Skip(() => skipValue);
+            }
+            else if (ctx.LastId > 0)
+            {
+                query = query.Where(x => x.Id > ctx.LastId);
+            }
 
-			if (take != int.MaxValue)
-				query = query.Take(take);
+            if (take != int.MaxValue)
+            {
+                query = query.Take(take);
+            }
 
 			return query;
 		}
 
-		private List<ShoppingCartItem> GetShoppingCartItems(DataExporterContext ctx, int skip)
+		private List<ShoppingCartItem> GetShoppingCartItems(DataExporterContext ctx)
 		{
-			var shoppingCartItems = GetShoppingCartItemQuery(ctx, skip, PageSize).ToList();
+            var stats = ctx.StatsPerStore[ctx.Store.Id];
+            if (ctx.LastId >= stats.MaxId)
+            {
+                // End of data reached.
+                return null;
+            }
 
-			SetProgress(ctx, shoppingCartItems.Count);
+            var cartItems = GetShoppingCartItemQuery(ctx, null, PageSize).ToList();
+            if (!cartItems.Any())
+            {
+                return null;
+            }
 
-			return shoppingCartItems;
+            ctx.LastId = cartItems.Last().Id;
+            SetProgress(ctx, cartItems.Count);
+
+			return cartItems;
 		}
 
 		#endregion
@@ -1426,14 +1596,22 @@ namespace SmartStore.Services.DataExchange.Export
 
                 var stats = new RecordStats
                 {
-                    TotalRecords = query.Count(),
-                    MaxId = query.Max(x => (int?)x.Id) ?? 0
+                    TotalRecords = query.Count()
                 };
 
-                ctx.StatsPerStore.Add(store.Id, stats);
+                if (!ctx.IsPreview)
+                {
+                    stats.MaxId = query.Max(x => (int?)x.Id) ?? 0;
+                    if (ctx.Request.Profile.Offset > 0)
+                    {
+                        stats.OffsetId = query.Select(x => x.Id).FirstOrDefault();
+                    }
+                }
+
+                ctx.StatsPerStore[store.Id] = stats;
 			}
 
-			return result;
+            return result;
 		}
 
 		private void ExportCoreInner(DataExporterContext ctx, Store store)

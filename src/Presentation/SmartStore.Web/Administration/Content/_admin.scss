@@ -789,6 +789,11 @@ legend {
 			}
 		}
 
+        .nav-item:nth-child(n+8) > .nav-link {
+            > img, > i  { margin-left: 0 !important; margin-right: 0 !important; }
+            > span      { display: none; }
+        }
+
 		.nav-link:hover,
 		.nav-link.active {
 			color: inherit;

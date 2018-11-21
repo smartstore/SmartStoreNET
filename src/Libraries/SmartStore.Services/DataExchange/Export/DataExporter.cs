@@ -314,7 +314,6 @@ namespace SmartStore.Services.DataExchange.Export
                         using (_rwLock.GetWriteLock())
                         using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
                         {
-                            ctx.Log.Info($"Creating file {path}.");
                             stream.CopyTo(fileStream);
                         }
                     }
@@ -323,7 +322,7 @@ namespace SmartStore.Services.DataExchange.Export
                 {
                     ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
                     ctx.Log.ErrorFormat(ex, $"Failed to stream file {path}.");
-                    ctx.Result.LastError = ex.ToString();
+                    ctx.Result.LastError = ex.ToAllMessages(true);
                 }
                 finally
                 {
@@ -640,6 +639,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
             var context = ctx.ExecuteContext;
+            var provider = ctx.Request.Provider.Value;
 
 			try
 			{
@@ -647,18 +647,18 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (method == "Execute")
                 {
-                    ctx.Request.Provider.Value.Execute(context);
+                    provider.Execute(context);
                 }
                 else if (method == "OnExecuted")
                 {
-                    ctx.Request.Provider.Value.OnExecuted(context);
+                    provider.OnExecuted(context);
                 }
             }
             catch (Exception ex)
 			{
 				context.Abort = DataExchangeAbortion.Hard;
 				ctx.Log.ErrorFormat(ex, $"The provider failed at the {method.NaIfEmpty()} method.");
-				ctx.Result.LastError = ex.ToString();
+				ctx.Result.LastError = ex.ToAllMessages(true);
 			}
 			finally
 			{
@@ -666,14 +666,20 @@ namespace SmartStore.Services.DataExchange.Export
 
                 if (method == "Execute")
                 {
-                    ctx.Log.Info($"Provider reports {context.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {ctx.Request.Provider.Value.EntityType.ToString()}.");
+                    var sb = new StringBuilder();
+                    sb.Append($"Provider reports {context.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {provider.EntityType.ToString()} to {path.NaIfEmpty()}.");
 
-                    foreach (var unit in context.ExtraDataUnits.Where(x => x.RelatedType.HasValue))
+                    foreach (var unit in context.ExtraDataUnits.Where(x => x.RelatedType.HasValue && x.DataStream != null))
                     {
-                        StreamToFile(ctx, unit.DataStream, Path.Combine(context.Folder, unit.FileName), x => unit.DataStream = null);
+                        // Set unit.DataStream to null so that providers know that this unit should no longer be written to.
+                        // We need these units later for ExportProfile.ResultInfo.
+                        var unitPath = Path.Combine(context.Folder, unit.FileName);
+                        StreamToFile(ctx, unit.DataStream, unitPath, x => unit.DataStream = null);
 
-                        ctx.Log.Info($"Provider reports {unit.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {unit.RelatedType.Value.ToString()}.");
+                        sb.Append($"\r\nProvider reports {unit.RecordsSucceeded.ToString("N0")} successfully exported record(s) of type {unit.RelatedType.Value.ToString()} to {unitPath.NaIfEmpty()}.");
                     }
+
+                    ctx.Log.Info(sb.ToString());
                 }
 			}
 
@@ -741,10 +747,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 					if (context.Result != null)
 					{
-						context.Result.LastError = ex.ToAllMessages();
+						context.Result.LastError = ex.ToAllMessages(true);
 					}
 
-					ctx.Log.ErrorFormat(ex, "Deployment \"{0}\" of type {1} failed", deployment.Name, deployment.DeploymentType.ToString());
+					ctx.Log.Error(ex, $"Deployment \"{deployment.Name}\" of type {deployment.DeploymentType.ToString()} failed.");
 				}
 
 				deployment.ResultInfo = XmlHelper.Serialize(context.Result);
@@ -1671,7 +1677,7 @@ namespace SmartStore.Services.DataExchange.Export
 			context.PublicFolderPath = publicDeployment.GetDeploymentFolder(true);
 			context.PublicFolderUrl = publicDeployment.GetPublicFolderUrl(_services, ctx.Store);
 
-			var fileExtension = provider.Value.FileExtension.HasValue() ? provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "";
+            var fileExtension = provider.Value.FileExtension.HasValue() ? provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "";
 
 			using (var segmenter = CreateSegmenter(ctx))
 			{
@@ -1880,7 +1886,7 @@ namespace SmartStore.Services.DataExchange.Export
 				catch (Exception ex)
 				{
 					logger.ErrorsAll(ex);
-					ctx.Result.LastError = ex.ToString();
+					ctx.Result.LastError = ex.ToAllMessages(true);
 				}
 				finally
 				{
@@ -1888,6 +1894,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						if (!ctx.IsPreview && profile.Id != 0)
 						{
+                            ctx.Result.Files = ctx.Result.Files.OrderBy(x => x.RelatedType).ToList();
 							profile.ResultInfo = XmlHelper.Serialize(ctx.Result);
 
 							_exportProfileService.Value.UpdateExportProfile(profile);
@@ -1940,10 +1947,14 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						int? orderStatusId = null;
 
-						if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Processing)
-							orderStatusId = (int)OrderStatus.Processing;
-						else if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Complete)
-							orderStatusId = (int)OrderStatus.Complete;
+                        if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Processing)
+                        {
+                            orderStatusId = (int)OrderStatus.Processing;
+                        }
+                        else if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Complete)
+                        {
+                            orderStatusId = (int)OrderStatus.Complete;
+                        }
 
 						using (var scope = new DbContextScope(_dbContext, false, null, false, false, false, false))
 						{
@@ -1962,7 +1973,7 @@ namespace SmartStore.Services.DataExchange.Export
 					catch (Exception ex)
 					{
 						logger.ErrorsAll(ex);
-						ctx.Result.LastError = ex.ToString();
+                        ctx.Result.LastError = ex.ToAllMessages(true);
 					}
 				}
 			}

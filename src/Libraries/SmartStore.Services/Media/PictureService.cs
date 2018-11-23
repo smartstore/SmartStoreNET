@@ -208,14 +208,16 @@ namespace SmartStore.Services.Media
 		public virtual byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId)
 		{
 			equalPictureId = 0;
+
+			var myStream = new MemoryStream(pictureBinary);
+
 			try
 			{
 				foreach (var picture in pictures)
 				{
-					var otherPictureBinary = LoadPictureBinary(picture);
+					myStream.Seek(0, SeekOrigin.Begin);
 
-					using (var myStream = new MemoryStream(pictureBinary))
-					using (var otherStream = new MemoryStream(otherPictureBinary))
+					using (var otherStream = OpenPictureStream(picture))
 					{
 						if (myStream.ContentsEqual(otherStream))
 						{
@@ -230,6 +232,10 @@ namespace SmartStore.Services.Media
 			catch
 			{
 				return null;
+			}
+			finally
+			{
+				myStream.Dispose();
 			}
 		}
 

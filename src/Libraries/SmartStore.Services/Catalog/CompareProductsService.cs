@@ -7,10 +7,10 @@ using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Compare products service
-	/// </summary>
-	public partial class CompareProductsService : ICompareProductsService
+    /// <summary>
+    /// Compare products service
+    /// </summary>
+    public partial class CompareProductsService : ICompareProductsService
     {
         private const string COMPARE_PRODUCTS_COOKIE_NAME = "sm.CompareProducts";
 
@@ -34,23 +34,22 @@ namespace SmartStore.Services.Catalog
         /// Gets a "compare products" identifier list
         /// </summary>
         /// <returns>"compare products" identifier list</returns>
-        protected List<int> GetComparedProductIds()
+        protected virtual HashSet<int> GetComparedProductIds()
         {
-            var productIds = new List<int>();
-            HttpCookie compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME);
+            var compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME);
             if ((compareCookie == null) || (compareCookie.Values == null))
-                return productIds;
-            string[] values = compareCookie.Values.GetValues("CompareProductIds");
-            if (values == null)
-                return productIds;
-            foreach (string productId in values)
             {
-                int prodId = int.Parse(productId);
-                if (!productIds.Contains(prodId))
-                    productIds.Add(prodId);
+                return new HashSet<int>();
             }
 
-            return productIds;
+            var values = compareCookie.Values.GetValues("CompareProductIds");
+            if (values == null)
+            {
+                return new HashSet<int>();
+            }
+
+            var result = new HashSet<int>(values.Select(x => x.ToInt()));
+            return result;
         }
 
         #endregion
@@ -77,15 +76,11 @@ namespace SmartStore.Services.Catalog
         /// <returns>"Compare products" list</returns>
         public virtual IList<Product> GetComparedProducts()
         {
-            var products = new List<Product>();
             var productIds = GetComparedProductIds();
-            foreach (int productId in productIds)
-            {
-                var product = _productService.GetProductById(productId);
-                if (product != null && product.Published && !product.Deleted && !product.IsSystemProduct)
-                    products.Add(product);
-            }
-            return products;
+            var products = _productService.GetProductsByIds(productIds.ToArray());
+            var result = products.Where(x => !x.Deleted && x.Published && !x.IsSystemProduct).ToList();
+
+            return result;
         }
 
         public virtual int GetComparedProductsCount()

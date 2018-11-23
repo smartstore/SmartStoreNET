@@ -32,10 +32,10 @@
 		&:not(:active):not(.active):focus,
 		&:not(:active):not(.active).focus {
 			@if $color == "secondary" or $color == "light" {
-				box-shadow: 0 0 0 0.2em rgba($primary, .15);
+				box-shadow: 0 0 0 rgba(0,0,0, 0) inset, 0 0 0 0.2em rgba($primary, .15);
 			}
 			@else {
-				box-shadow: 0 0 0 0.2em rgba($value, .4);
+				box-shadow: 0 0 0 rgba(0,0,0, 0) inset, 0 0 0 0.2em rgba($value, .4);
 			}
 		}
 	}
@@ -90,11 +90,11 @@
 @import '../../Content/shared/_dropdown.scss';
 @import "../../Content/shared/_throbber.scss";
 @import "../../Content/shared/_spinner.scss";
-@import '../../Content/shared/_animate.scss';
 @import "../../Content/shared/_sortable-grip.scss";
 @import "../../Content/shared/_entity-picker.scss";
 @import '../../Content/shared/_choice.scss';
 @import '../../Content/shared/_switch.scss';
+@import '../../Content/shared/_rangeslider.scss';
 @import "../../Content/shared/_utils.scss";
 
 //

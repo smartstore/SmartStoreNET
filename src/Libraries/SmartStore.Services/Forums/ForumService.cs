@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
@@ -404,7 +405,7 @@ namespace SmartStore.Services.Forums
 
             query = query.OrderByDescending(x => x.LastPostTime);
 
-            var forumTopics = query.Take(count).ToList();
+            var forumTopics = query.Take(() => count).ToList();
             return forumTopics;
         }
 

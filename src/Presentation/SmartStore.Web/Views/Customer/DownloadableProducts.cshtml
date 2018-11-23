@@ -21,7 +21,7 @@
 <div class="card-deck card-cols-sm-1 esd-list">
 	@foreach (var item in Model.Items)
 	{
-		<div class="card card-shadow esd-item">
+		<div class="card shadow-sm esd-item">
 			<div class="card-body">
 				<h4 class="card-title mb-4" @Html.LanguageAttributes(item.ProductName)>@item.ProductName.Value.Truncate(50, "...")</h4>
 				<dl class="row mb-0">

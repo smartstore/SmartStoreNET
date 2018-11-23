@@ -103,7 +103,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				ContextName = contextName,
 				EntityId = entity.Id,
-				EntityName = typeof(T).Name,
+				EntityName = entity.GetEntityName(),
 				SourceKey = sourceKey
 			};
 
@@ -125,7 +125,7 @@ namespace SmartStore.Services.DataExchange
 				throw Error.InvalidOperation("Cannot get a sync mapping record for a transient (unsaved) entity");
 			}
 
-			return svc.GetSyncMappingByEntity(entity.Id, typeof(T).Name, contextName);
+			return svc.GetSyncMappingByEntity(entity.Id, entity.GetEntityName(), contextName);
 		}
 
 		/// <summary>

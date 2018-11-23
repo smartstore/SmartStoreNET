@@ -32,6 +32,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             {
 				return (scope ?? Scope()).Resolve<T>();
             }
+
 			return (scope ?? Scope()).ResolveKeyed<T>(key);
         }
 
@@ -56,6 +57,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             {
 				return (scope ?? Scope()).Resolve<IEnumerable<T>>().ToArray();
             }
+
 			return (scope ?? Scope()).ResolveKeyed<IEnumerable<T>>(key).ToArray();
         }
 
@@ -66,10 +68,9 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public object ResolveUnregistered(Type type, ILifetimeScope scope = null)
         {
-			FastActivator activator;
 			object[] parameterInstances = null;
 
-			if (!_cachedActivators.TryGetValue(type, out activator))
+			if (!_cachedActivators.TryGetValue(type, out FastActivator activator))
 			{
 				var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 				foreach (var constructor in constructors)

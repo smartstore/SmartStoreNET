@@ -220,6 +220,11 @@ namespace SmartStore.Services.Catalog
         {
             Guard.NotNull(productIds, nameof(productIds));
 
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductSpecificationAttribute>();
+            }
+
             var query = _productSpecificationAttributeRepository.TableUntracked
                 .Expand(x => x.SpecificationAttributeOption.SpecificationAttribute)
                 .Where(x => productIds.Contains(x.ProductId));

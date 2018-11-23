@@ -555,7 +555,7 @@
 					@Html.SmartLabelFor(model => model.TaxCategoryId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories, new { placeholder = T("Common.PleaseSelect").Text })
+					@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories)
 					@Html.ValidationMessageFor(model => model.TaxCategoryId)
 				</td>
 			</tr>

@@ -7,9 +7,11 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Common;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Search.Rendering;
+using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Catalog;
@@ -26,6 +28,8 @@ namespace SmartStore.Web.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly CatalogHelper _catalogHelper;
 		private readonly ICatalogSearchQueryFactory _queryFactory;
+		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly IUrlRecordService _urlRecordService;
 		private readonly Lazy<IFacetTemplateProvider> _templateProvider;
 
 		public SearchController(
@@ -36,6 +40,8 @@ namespace SmartStore.Web.Controllers
 			SearchSettings searchSettings,
 			IGenericAttributeService genericAttributeService,
 			CatalogHelper catalogHelper,
+			ILocalizedEntityService localizedEntityService,
+			IUrlRecordService urlRecordService,
 			Lazy<IFacetTemplateProvider> templateProvider)
 		{
 			_queryFactory = queryFactory;
@@ -45,6 +51,8 @@ namespace SmartStore.Web.Controllers
 			_searchSettings = searchSettings;
 			_genericAttributeService = genericAttributeService;
 			_catalogHelper = catalogHelper;
+			_localizedEntityService = localizedEntityService;
+			_urlRecordService = urlRecordService;
 			_templateProvider = templateProvider;
 		}
 
@@ -94,16 +102,30 @@ namespace SmartStore.Web.Controllers
 			{
 				x.MapPrices = false;
 				x.MapShortDescription = true;
+				x.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
+				x.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
+				x.PrefetchTranslations = true;
+				x.PrefetchUrlSlugs = true;
 			});
 
-			mappingSettings.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
-			mappingSettings.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
+			using (_urlRecordService.BeginScope(false))
+			using (_localizedEntityService.BeginScope(false))
+			{
+				// InstantSearch should be REALLY very fast! No time for smart caching stuff.
+				if (result.Hits.Count > 0)
+				{
+					_localizedEntityService.PrefetchLocalizedProperties(
+						nameof(Product),
+						Services.WorkContext.WorkingLanguage.Id,
+						result.Hits.Select(x => x.Id).ToArray());
+				}
+				
+				// Add product hits.
+				model.TopProducts = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
-			// Add product hits.
-			model.TopProducts = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
-
-            // Add spell checker suggestions (if any).
-            model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
+				// Add spell checker suggestions (if any).
+				model.AddSpellCheckerSuggestions(result.SpellCheckerSuggestions, T, x => Url.RouteUrl("Search", new { q = x }));
+			}
 
             return PartialView(model);
 		}

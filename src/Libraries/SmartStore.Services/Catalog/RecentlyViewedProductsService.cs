@@ -89,7 +89,7 @@ namespace SmartStore.Services.Catalog
             var productIds = GetRecentlyViewedProductsIds(number);
 			var recentlyViewedProducts = _productService
 				.GetProductsByIds(productIds.ToArray())
-				.Where(x => x.Published && !x.Deleted && !x.IsSystemProduct && _aclService.Authorize(x))
+				.Where(x => x.Published && !x.Deleted && _aclService.Authorize(x))
 				.ToList();
 
             return recentlyViewedProducts;

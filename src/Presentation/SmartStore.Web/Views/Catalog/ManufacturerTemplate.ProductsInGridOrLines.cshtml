@@ -53,7 +53,7 @@
         @{ Html.RenderWidget("manufacturerdetails_top"); }
         
 		@* Description *@
-        @if (!String.IsNullOrWhiteSpace(Model.Description))
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
         {
             <div @Html.LanguageAttributes(Model.Description) class="manufacturer-description lead html-editor-content">
                 @Html.Raw(Html.CollapsedText(Model.Description))

@@ -64,6 +64,39 @@ namespace SmartStore.Services.Seo
 		IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive);
 
 		/// <summary>
+		/// Prefetches a collection of url records properties for a range of entities in one go
+		/// and caches them for the duration of the current request.
+		/// </summary>
+		/// <param name="entityName">Entity name</param>
+		/// <param name="entityIds">
+		/// The entity ids to prefetch url records for. Can be null,
+		/// in which case all records for the requested entity name are loaded.
+		/// </param>
+		/// <param name="isRange">Whether <paramref name="entityIds"/> represents a range of ids (perf).</param>
+		/// <param name="isSorted">Whether <paramref name="entityIds"/> is already sorted (perf).</param>
+		/// <returns>Url record collection</returns>
+		/// <remarks>
+		/// Be careful not to load large amounts of data at once (e.g. for "Product" scope with large range).
+		/// </remarks>
+		void PrefetchUrlRecords(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false);
+
+		/// <summary>
+		/// Prefetches a collection of url records properties for a range of entities in one go.
+		/// </summary>
+		/// <param name="entityName">Entity name</param>
+		/// <param name="entityIds">
+		/// The entity ids to prefetch url records for. Can be null,
+		/// in which case all records for the requested entity name are loaded.
+		/// </param>
+		/// <param name="isRange">Whether <paramref name="entityIds"/> represents a range of ids (perf).</param>
+		/// <param name="isSorted">Whether <paramref name="entityIds"/> is already sorted (perf).</param>
+		/// <returns>Url record collection</returns>
+		/// <remarks>
+		/// Be careful not to load large amounts of data at once (e.g. for "Product" scope with large range).
+		/// </remarks>
+		UrlRecordCollection GetUrlRecordCollection(string entityName, int[] languageIds, int[] entityIds, bool isRange = false, bool isSorted = false);
+
+		/// <summary>
 		/// Gets all URL records for the specified entity
 		/// </summary>
 		/// <typeparam name="T">Type</typeparam>

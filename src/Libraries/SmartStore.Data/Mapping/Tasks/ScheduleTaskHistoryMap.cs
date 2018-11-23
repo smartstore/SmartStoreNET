@@ -9,8 +9,8 @@ namespace SmartStore.Data.Mapping.Tasks
         {
             ToTable("ScheduleTaskHistory");
             HasKey(x => x.Id);
-            Property(x => x.MachineName).HasMaxLength(400);
-            Property(x => x.Error).HasMaxLength(1000);
+            Property(x => x.MachineName).IsRequired().HasMaxLength(400);
+            Property(x => x.Error);
 			Property(x => x.ProgressMessage).HasMaxLength(1000);
 
             HasRequired(x => x.ScheduleTask)

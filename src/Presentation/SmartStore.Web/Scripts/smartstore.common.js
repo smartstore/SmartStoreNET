@@ -393,19 +393,6 @@
 			});
 		}
 
-		// Notify subscribers about page/content width change
-		if (window.EventBroker) {
-			var currentContentWidth = $('#content').width();
-			$(window).on('resize', function () {
-				var contentWidth = $('#content').width();
-				if (contentWidth !== currentContentWidth) {
-					currentContentWidth = contentWidth;
-					console.debug("Grid tier changed: " + viewport.current());
-					EventBroker.publish("page.resized", viewport);
-				}
-			});
-		}
-
 		// tab strip smart auto selection
 		$('.tabs-autoselect ul.nav a[data-toggle=tab]').on('shown.bs.tab', function (e) {
 			var tab = $(e.target),

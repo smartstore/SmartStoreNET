@@ -554,7 +554,7 @@ namespace SmartStore.Services.Media
 						select p;
 
 			if (recordsToReturn > 0)
-				query = query.Take(recordsToReturn);
+				query = query.Take(() => recordsToReturn);
 
 			var pics = query.ToList();
 			return pics;
@@ -584,7 +584,7 @@ namespace SmartStore.Services.Media
 							ProductId = g.Key,
 							Pictures = g.OrderBy(x => x.DisplayOrder)
 								.Take(take)
-								.Select(x => new { PictureId = x.PictureId, ProductId = x.ProductId })
+								.Select(x => new { x.PictureId, x.ProductId })
 						};
 
 			var groupingResult = query.ToDictionary(x => x.ProductId, x => x.Pictures);

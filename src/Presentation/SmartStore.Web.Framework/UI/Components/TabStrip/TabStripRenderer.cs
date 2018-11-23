@@ -367,13 +367,16 @@ namespace SmartStore.Web.Framework.UI
 						writer.RenderBeginTag("img");
 						writer.RenderEndTag(); // img
 					}
-					//writer.WriteEncodedText(item.Text);
+
+					// caption
+					writer.AddAttribute("class", "tab-caption");
+					writer.RenderBeginTag("span");
+					writer.WriteEncodedText(item.Text);
+					writer.RenderEndTag();
 
 					// Badge
 					if (item.BadgeText.HasValue())
 					{
-						//writer.Write("&nbsp;");
-
 						// caption
 						writer.AddAttribute("class", "tab-caption");
 						writer.RenderBeginTag("span");
@@ -391,10 +394,6 @@ namespace SmartStore.Web.Framework.UI
 						writer.RenderBeginTag("span");
 						writer.WriteEncodedText(item.BadgeText);
 						writer.RenderEndTag(); // span > badge
-					}
-					else
-					{
-						writer.WriteEncodedText(item.Text);
 					}
 
 					// nav link short summary for collapsed state

@@ -191,3 +191,18 @@ $custom-control-indicator-active-color:			#fff;
 $custom-control-indicator-active-bg:			lighten($warning, 35%);
 $custom-checkbox-indicator-indeterminate-bg:	$warning;
 $custom-control-indicator-focus-box-shadow:		0 0 0 1px $body-bg, 0 0 0 $input-btn-focus-width rgba($warning, .25);
+
+
+// Custom Range
+
+$custom-range-track-height:                 0.315rem;
+$custom-range-track-bg:                     rgba(#000, 0.12);
+$custom-range-track-border-radius:          0;
+$custom-range-track-box-shadow:             none;
+
+$custom-range-thumb-width:                  0.925rem;
+$custom-range-thumb-bg:                     $primary;
+$custom-range-thumb-box-shadow:             0 1px .25rem rgba($primary, .2);
+$custom-range-thumb-focus-box-shadow:       0 0 0 1px $body-bg, 0 0 0 3px $input-btn-focus-color;
+$custom-range-thumb-focus-box-shadow-width: 1px; // For focus box shadow issue in IE/Edge
+$custom-range-thumb-active-bg:              lighten($primary, 20%);

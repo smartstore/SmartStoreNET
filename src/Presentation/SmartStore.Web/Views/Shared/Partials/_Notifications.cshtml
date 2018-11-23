@@ -2,7 +2,7 @@
 
 @if (this.HasMessages)
 {
-	<script type="text/javascript">
+	<script>
         $(function () {
         	var items = $("#notification-list").find("> .msg");
             items.each(function (i, el) {
@@ -25,7 +25,7 @@
         })
 	</script>
 
-	<div id="notification-list" style="display:none; position:absolute; left:-9999px">
+	<div id="notification-list" class="d-none" style="position:absolute; left:-9999px">
 		@foreach (var message in this.GetMessages(NotifyType.Error))
         {
 			<div class="msg" data-type="error">@Html.Raw(message)</div>

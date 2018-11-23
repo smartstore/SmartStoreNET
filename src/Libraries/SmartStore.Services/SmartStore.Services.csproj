@@ -239,6 +239,7 @@
     <Compile Include="DataExchange\Import\IEntityImporter.cs" />
     <Compile Include="DataExchange\Import\ImportExtraData.cs" />
     <Compile Include="DataExchange\Import\ImportExecuteContext.cs" />
+    <Compile Include="DataExchange\Import\ImportFile.cs" />
     <Compile Include="DataExchange\Import\Internal\DataImporterContext.cs" />
     <Compile Include="DataExchange\Import\DataImportTask.cs" />
     <Compile Include="DataExchange\Import\DataTable\IDataTable.cs" />
@@ -581,6 +582,8 @@
     <Compile Include="Seo\IUrlRecordService.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />
     <Compile Include="Seo\IXmlSitemapGenerator.cs" />
+    <Compile Include="Seo\XmlSitemapBuildContext.cs" />
+    <Compile Include="Seo\XmlSitemapPartition.cs" />
     <Compile Include="Seo\Tasks\RebuildXmlSitemapTask.cs" />
     <Compile Include="Seo\XmlSitemapGenerator.cs" />
     <Compile Include="Seo\XmlSitemapNode.cs" />

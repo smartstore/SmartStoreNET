@@ -383,6 +383,7 @@ a.t-button.t-state-disabled:hover,
 	    .t-input {
             padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
 		    padding-right: $input-height-inner-sm + 1rem !important;
+            height: $input-height-sm;
 	    }
 
         .t-formatted-value {

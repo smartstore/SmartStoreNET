@@ -73,7 +73,7 @@ namespace SmartStore.Services.Security
 			Guard.NotNull(entity, nameof(entity));
 
 			int entityId = entity.Id;
-            string entityName = typeof(T).Name;
+            string entityName = entity.GetEntityName();
 
 			return GetAclRecordsFor(entityName, entityId);
         }
@@ -131,7 +131,7 @@ namespace SmartStore.Services.Security
                 throw new ArgumentOutOfRangeException(nameof(customerRoleId));
 
             int entityId = entity.Id;
-            string entityName = typeof(T).Name;
+            string entityName = entity.GetEntityName();
 
             var aclRecord = new AclRecord
             {

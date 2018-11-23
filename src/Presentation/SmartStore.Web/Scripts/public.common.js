@@ -158,17 +158,16 @@
     // on document ready
     // TODO: reorganize > public.globalinit.js
     $(function () {
-        // Notify subscribers about page/content width change
-        if (window.EventBroker) {
-        	var currentContentWidth = $('#content').width();
-        	$(window).on('resize', function () {
-        		var contentWidth = $('#content').width();
-        		if (contentWidth !== currentContentWidth) {
-        			currentContentWidth = contentWidth;
-        			console.debug("Grid tier changed: " + viewport.current());
-        			EventBroker.publish("page.resized", viewport);
-        		}
-        	});
+        // Init reveal on scroll with AOS library
+        if (typeof AOS !== 'undefined') {
+            AOS.init({ once: true });
+        }
+
+        if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
+            SmartStore.parallax.init({
+                context: document.body,
+                selector: '.parallax'
+            });
         }
         
         applyCommonPlugins($("body"));

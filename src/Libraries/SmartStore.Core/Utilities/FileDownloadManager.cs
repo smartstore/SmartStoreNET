@@ -139,10 +139,12 @@ namespace SmartStore.Utilities
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				if (context.Logger != null)
-					context.Logger.ErrorsAll(exception);
+                if (context.Logger != null)
+                {
+                    context.Logger.ErrorsAll(ex);
+                }
 			}
 		}
 
@@ -156,53 +158,65 @@ namespace SmartStore.Utilities
 
 				using (var response = await client.GetAsync(item.Url))
 				{
-					if (response.IsSuccessStatusCode && response.Content.Headers.ContentType != null)
-					{
-						var contentType = response.Content.Headers.ContentType.MediaType;
-						if (contentType.HasValue() && !contentType.IsCaseInsensitiveEqual(item.MimeType))
-						{
-							// Update mime type and local path.
-							var extension = MimeTypes.MapMimeTypeToExtension(contentType).NullEmpty() ?? ".jpg";
+                    if (response.IsSuccessStatusCode)
+                    {
+                        if (response.Content.Headers.ContentType != null)
+                        {
+                            var contentType = response.Content.Headers.ContentType.MediaType;
+                            if (contentType.HasValue() && !contentType.IsCaseInsensitiveEqual(item.MimeType))
+                            {
+                                // Update mime type and local path.
+                                var extension = MimeTypes.MapMimeTypeToExtension(contentType).NullEmpty() ?? ".jpg";
 
-							item.MimeType = contentType;
-							item.Path = Path.ChangeExtension(item.Path, extension.EnsureStartsWith("."));
-						}
-					}
+                                item.MimeType = contentType;
+                                item.Path = Path.ChangeExtension(item.Path, extension.EnsureStartsWith("."));
+                            }
+                        }
 
-					//Task <Stream> task = client.GetStreamAsync(item.Url);
-					Task<Stream> task = response.Content.ReadAsStreamAsync();
-					await task;
+                        //Task <Stream> task = client.GetStreamAsync(item.Url);
+                        Task<Stream> task = response.Content.ReadAsStreamAsync();
+                        await task;
 
-					using (var srcStream = task.Result)
-					using (var dstStream = File.Open(item.Path, FileMode.Create))
-					{
-						while ((count = srcStream.Read(bytes, 0, bytes.Length)) != 0 && !canceled)
-						{
-							dstStream.Write(bytes, 0, count);
+                        using (var srcStream = task.Result)
+                        using (var dstStream = File.Open(item.Path, FileMode.Create))
+                        {
+                            while ((count = srcStream.Read(bytes, 0, bytes.Length)) != 0 && !canceled)
+                            {
+                                dstStream.Write(bytes, 0, count);
 
-							if (context.CancellationToken != null && context.CancellationToken.IsCancellationRequested)
-							{
-								canceled = true;
-							}
-						}
-					}
+                                if (context.CancellationToken != null && context.CancellationToken.IsCancellationRequested)
+                                {
+                                    canceled = true;
+                                }
+                            }
+                        }
 
-					item.Success = (!task.IsFaulted && !canceled);
-				}
+                        item.Success = !task.IsFaulted && !canceled;
+                    }
+                    else
+                    {
+                        item.Success = false;
+                        item.ErrorMessage = response.StatusCode.ToString();
+                    }
+                }
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
 				try
 				{
 					item.Success = false;
-					item.ErrorMessage = exception.ToAllMessages();
+					item.ErrorMessage = ex.ToAllMessages();
 
-					var webExc = exception.InnerException as WebException;
-					if (webExc != null)
-						item.ExceptionStatus = webExc.Status;
+					var webExc = ex.InnerException as WebException;
+                    if (webExc != null)
+                    {
+                        item.ExceptionStatus = webExc.Status;
+                    }
 
-					if (context.Logger != null)
-						context.Logger.Error(exception, item.ToString());
+                    if (context.Logger != null)
+                    {
+                        context.Logger.Error(ex, item.ToString());
+                    }
 				}
 				catch { }
 			}

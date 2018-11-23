@@ -113,7 +113,7 @@ namespace SmartStore.Services.DataExchange
 				return;
 			}
 
-			_syncMappingsRepository.DeleteAll(x => x.EntityId == entity.Id && x.EntityName == typeof(T).Name);
+			_syncMappingsRepository.DeleteAll(x => x.EntityId == entity.Id && x.EntityName == entity.GetEntityName());
 		}
 
 		public void DeleteSyncMappings(string contextName, string entityName = null)

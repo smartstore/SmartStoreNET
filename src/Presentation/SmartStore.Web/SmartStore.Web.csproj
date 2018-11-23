@@ -853,6 +853,7 @@
     <Content Include="Content\fontastic\fonts\fontastic.svg" />
     <Content Include="Content\placeholder.txt" />
     <Content Include="Content\print-rtl.css" />
+    <Content Include="Content\vendors\aos\js\aos.js" />
     <Content Include="Content\vendors\drift\Drift.js" />
     <Content Include="Content\vendors\drift\Drift.min.js" />
     <Content Include="Content\vendors\fileuploader\images\loading.gif" />
@@ -1002,6 +1003,12 @@
     <Content Include="App_Data\widgetzones.json" />
     <Content Include="Content\skinning\_rtl.scss" />
     <Content Include="Content\skinning\_summernote.scss" />
+    <Content Include="Content\vendors\aos\scss\aos.scss" />
+    <Content Include="Content\vendors\aos\scss\_animations.scss" />
+    <Content Include="Content\vendors\aos\scss\_easing.scss" />
+    <Content Include="Content\vendors\aos\scss\_core.scss" />
+    <Content Include="Content\bs4\scss\utilities\_shadows.scss" />
+    <Content Include="Content\shared\_rangeslider.scss" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1048,7 +1055,6 @@
     <Content Include="Content\bs4\scss\mixins\_list-group.scss" />
     <Content Include="Content\bs4\scss\mixins\_lists.scss" />
     <Content Include="Content\bs4\scss\mixins\_nav-divider.scss" />
-    <Content Include="Content\bs4\scss\mixins\_navbar-align.scss" />
     <Content Include="Content\bs4\scss\mixins\_pagination.scss" />
     <Content Include="Content\bs4\scss\mixins\_reset-text.scss" />
     <Content Include="Content\bs4\scss\mixins\_resize.scss" />
@@ -1110,7 +1116,6 @@
     <Content Include="Content\bs4\scss\_utilities.scss" />
     <Content Include="Content\bs4\scss\_variables.scss" />
     <Content Include="Content\shared\_alert.scss" />
-    <Content Include="Content\shared\_animate.scss" />
     <Content Include="Content\shared\_buttons.scss" />
     <Content Include="Content\shared\_card.scss" />
     <Content Include="Content\shared\_choice.scss" />
@@ -1146,7 +1151,9 @@
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.js" />
     <Content Include="Content\vendors\jquery\jquery.validate.unobtrusive.min.js" />
     <Content Include="Content\vendors\modernizr\modernizr.js" />
+    <Content Include="Scripts\smartstore.rangeslider.js" />
     <Content Include="Scripts\smartstore.keynav.js" />
+    <Content Include="Scripts\smartstore.parallax.js" />
     <Content Include="Scripts\smartstore.offcanvas.js" />
     <Content Include="Scripts\public.offcanvas-cart.js" />
     <Content Include="Scripts\public.offcanvas-menu.js" />
@@ -1162,7 +1169,6 @@
     <Content Include="Scripts\smartstore.viewport.js" />
     <Content Include="Content\vendors\underscore\underscore.min.js" />
     <Content Include="Content\vendors\underscore\underscore.js" />
-    <Content Include="Content\vendors\wow\wow.js" />
     <Content Include="Themes\FlexBlue\preview.png" />
     <Content Include="Themes\FlexBlack\preview.png" />
     <Content Include="Scripts\smartstore.entitypicker.js" />
@@ -1769,6 +1775,10 @@
     <Content Include="Views\Shared\Partials\Customer.Avatar.cshtml" />
     <Content Include="Views\Shared\Layouts\_Layout.Bare.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Range.cshtml" />
+    <Content Include="Themes\Flex\Content\_accordion.scss">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\EditorTemplates\FontAwesomeIcon.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

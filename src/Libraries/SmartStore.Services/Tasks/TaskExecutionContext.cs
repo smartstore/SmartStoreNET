@@ -7,10 +7,13 @@ using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
 {
-    /// <summary>
-    /// Provides the context for the Execute method of the <see cref="ITask"/> interface.
-    /// </summary>
-    public class TaskExecutionContext
+	public delegate void ProgressCallback(int value, int maximum, string message);
+
+
+	/// <summary>
+	/// Provides the context for the Execute method of the <see cref="ITask"/> interface.
+	/// </summary>
+	public class TaskExecutionContext
 	{
 		private readonly IComponentContext _componentContext;
         private readonly ScheduleTaskHistory _originalTaskHistory;

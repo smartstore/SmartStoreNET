@@ -11454,16 +11454,16 @@
 		<Value>Keinen Objekten zugeordnet</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements">
-		<Value>Vorraussetzungen</Value>
+		<Value>Voraussetzungen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements.AddNew">
 		<Value>Hinzufügen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements.DiscountRequirementType">
-		<Value>Typ der Vorraussetzung</Value>
+		<Value>Typ der Voraussetzung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Hint">
-		<Value>Vorraussetzungen für den Rabatt</Value>
+		<Value>Voraussetzungen für den Rabatt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Select">
 		<Value>Typ auswählen</Value>
@@ -11472,10 +11472,10 @@
 		<Value>Speichern fehlgeschlagen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements.Remove">
-		<Value>Vorraussetzung für den Rabatt entfernen</Value>
+		<Value>Voraussetzung für den Rabatt entfernen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements.SaveBeforeEdit">
-		<Value>Sie müssen den Rabatt zunächst speichern, bevor Sie Vorraussetzungen für seine Anwendung festlegen können</Value>
+		<Value>Sie müssen den Rabatt zunächst speichern, bevor Sie Voraussetzungen für seine Anwendung festlegen können</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Discounts.Requirements.Saved">
 		<Value>Rabattvoraussetzung gespeichert</Value>

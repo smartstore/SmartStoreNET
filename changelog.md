@@ -2,6 +2,10 @@
 
 ## SmartStore.NET 3.2
 
+### Highlights
+* (Perf) #1202 Search: update to Lucene.NET 4.8
+* (Perf) Huge performance increase in discount resolution and calculation
+
 ### New Features
 * **EmailReminder**:
 	* Reminders for open shopping carts
@@ -11,6 +15,7 @@
 * Made Topic ACL enabled
 * Implemented paging & filtering for Topic grid
 * Topics: added **IsPublished**, **Short Title** (link text) and **Intro** (teaser) properties.
+* New storefront catalog options: **ShowSubCategoriesInSubPages**, **ShowDescriptionInSubPages** & **IncludeFeaturedProductsInSubPages** (Subpage = List index > 1 or any active filter).
 * New security option: Use invisible reCAPTCHA
 * **BeezUp**:
 	* #1459 Add option to only submit one category name per product
@@ -28,14 +33,27 @@
 * **MegaSearch**:
 	* Supports searching for forum posts.
 	* #1172 Option to display related search terms on search page.
+	* Command to continue a previously aborted search index rebuild.
+* **Import/export of**:
+	* Product tags.
+	* Tier prices.
+	* Product attribute options.
+	* Product attribute combinations (update only).
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
-* Viveum: Supports payment via "Virtual Account Brands" like PayPal.
+* Viveum: Supports payment via "Virtual Account Brands" (e.g. PayPal).
 * Added options for alternating price display (in badges).
 * #1515 Poll: Add result tab with a list of answers and customers for a poll
+* BMEcat: Added export and import of product tags.
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
-* Debitoor: Partially update customer instead of full update to avoid all fields being overwritten
+* (Perf) Ultra-fast file-based XML sitemap generation for extremely large catalogs (> 1M)
+	* At least 10x faster
+	* Generated files are saved on the hard disk now: a rebuild after an app restart is no longer necessary.
+	* No exclusive locks during rebuilds anymore: if an (outdated) file already exists, it is returned instantly.
+* **Debitoor**:
+	* Partially update customer instead of full update to avoid all fields being overwritten.
+	* #1540 Place company name in front of customer name (according to address format of the particular country).
 * #1479 Show in messages the delivery time at the time of purchase
 * #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
 * #1106 BMECat: import & export support for product keywords
@@ -44,6 +62,7 @@
 * Refactored download section  
 * Enhanced EntityPicker to pick from customers, manufacturers & categories
 * #1510 Breadcrumb of an associated product should include the grouped product if it has no assigned categories.
+* OpenTrans: added customer number to parties
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
@@ -78,6 +97,9 @@
 * Fixed social media image detection
 * Fixed redirection of bots when several languages were active
 * Region cannot be selected in checkout when entering a billing or shipping address
+* Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
+* MegaMenu: Improved item rendering for third tier elements
+* Product display order on category and manufacturer pages sometimes wrong when using linq search.
 
 
 ## SmartStore.NET 3.1.5

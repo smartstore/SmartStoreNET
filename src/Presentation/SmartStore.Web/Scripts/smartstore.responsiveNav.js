@@ -63,7 +63,7 @@
 		}
 
 		function toggleOffCanvas() {
-			var breakpoint = el.data('breakpoint') || '<lg';
+            var breakpoint = el.data('breakpoint') || '<lg';
 			if (viewport.is(breakpoint)) {
 				collapseNav();
 			}
@@ -73,7 +73,7 @@
 		}
 
 		this.init = function () {
-			EventBroker.subscribe("page.resized", function (msg, viewport) {
+            EventBroker.subscribe("page.resized", function (msg, viewport) {
 				toggleOffCanvas();
 			});
 

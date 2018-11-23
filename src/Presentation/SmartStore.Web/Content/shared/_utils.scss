@@ -59,19 +59,6 @@
 
 
 //
-// Some Flex utils
-// ------------------------------------------------------
-
-.flex-grow-0 {
-	flex-grow: 0 !important;
-}
-
-.flex-grow-1 {
-	flex-grow: 1 !important;
-}
-
-
-//
 // Count badge
 // --------------------------------------------------
 
@@ -254,6 +241,27 @@ table th {
 
 
 //
+// Extra border utils
+// ------------------------------------------------------
+
+.border-translucent {
+    border-color: rgba(#000, 0.12) !important;
+}
+
+.rounded-sm {
+    border-radius: $border-radius-sm !important;
+}
+
+.rounded-lg {
+    border-radius: $border-radius-lg !important;
+}
+
+.rounded-xl {
+    border-radius: $border-radius-lg * 2 !important;
+}
+
+
+//
 // Some shims
 // ------------------------------------------------------
 
@@ -264,6 +272,30 @@ table th {
 .muted {
 	@extend .text-muted;
 }
+
+.animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeInDown {
+    from  { opacity: 0; transform: translate3d(0, -20px, 0); }
+    to    { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fadeOutLeft {
+    from  { opacity: 1; }
+    to    { opacity: 0; transform: translate3d(-20px, 0, 0); }
+}
+
+@keyframes fadeOutRight {
+    from  { opacity: 1; }
+    to    { opacity: 0; transform: translate3d(20px, 0, 0); }
+}
+
+.fadeOutLeft    { animation-name: fadeOutLeft; }
+.fadeOutRight   { animation-name: fadeOutRight; }
+.fadeInDown     { animation-name: fadeInDown; }
 
 //
 // Profiler sucks on small screens

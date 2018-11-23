@@ -45,7 +45,8 @@ namespace SmartStore
 
 		public static object Convert(this object value, Type to, CultureInfo culture)
 		{
-			Guard.NotNull(to, nameof(to));
+			if (to == null)
+				throw new ArgumentNullException(nameof(to));
 
 			if (value == null || value == DBNull.Value || to.IsInstanceOfType(value))
 			{
@@ -92,6 +93,7 @@ namespace SmartStore
             {
                 return (char)(value + 48);
             }
+
             return (char)((value - 10) + 97);
         }
 
@@ -101,8 +103,7 @@ namespace SmartStore
 
         public static int ToInt(this string value, int defaultValue = 0)
         {
-            int result;
-			if (CommonHelper.TryConvert(value, out result))
+			if (CommonHelper.TryConvert(value, out int result))
 			{
 				return result;
 			}
@@ -112,18 +113,17 @@ namespace SmartStore
 
 		public static char ToChar(this string value, bool unescape = false, char defaultValue = '\0')
 		{
-			char result;
-			if (value.HasValue() && char.TryParse(unescape ? Regex.Unescape(value) : value, out result))
+			if (value.HasValue() && char.TryParse(unescape ? Regex.Unescape(value) : value, out char result))
 			{
 				return result;
 			}
+
 			return defaultValue;
 		}
 
 		public static float ToFloat(this string value, float defaultValue = 0)
         {
-            float result;
-			if (CommonHelper.TryConvert(value, out result))
+			if (CommonHelper.TryConvert(value, out float result))
 			{
 				return result;
 			}
@@ -133,8 +133,7 @@ namespace SmartStore
 
         public static bool ToBool(this string value, bool defaultValue = false)
         {
-            bool result;
-			if (CommonHelper.TryConvert(value, out result))
+			if (CommonHelper.TryConvert(value, out bool result))
 			{
 				return result;
 			}
@@ -182,13 +181,13 @@ namespace SmartStore
 		{
 			if (value.HasValue())
 			{
-				DateTime dt;
-				if (DateTime.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out dt))
+				if (DateTime.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime dt))
 					return dt;
 
 				if (DateTime.TryParseExact(value, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out dt))
 					return dt;
 			}
+
 			return null;
 		}
 
@@ -211,7 +210,8 @@ namespace SmartStore
 
         public static byte[] ToByteArray(this Stream stream)
         {
-			Guard.NotNull(stream, nameof(stream));
+			if (stream == null)
+				throw new ArgumentNullException(nameof(stream));
 
 			if (stream is MemoryStream)
 			{
@@ -229,7 +229,8 @@ namespace SmartStore
 
 		public static async Task<byte[]> ToByteArrayAsync(this Stream stream)
 		{
-			Guard.NotNull(stream, nameof(stream));
+			if (stream == null)
+				throw new ArgumentNullException(nameof(stream));
 
 			if (stream is MemoryStream)
 			{
@@ -257,7 +258,8 @@ namespace SmartStore
 
 		public static string AsString(this Stream stream, Encoding encoding)
         {
-			Guard.NotNull(encoding, nameof(encoding));
+			if (encoding == null)
+				throw new ArgumentNullException(nameof(encoding));
 
 			// convert stream to string
 			string result;
@@ -277,7 +279,8 @@ namespace SmartStore
 
 		public static Task<string> AsStringAsync(this Stream stream, Encoding encoding)
 		{
-			Guard.NotNull(encoding, nameof(encoding));
+			if (encoding == null)
+				throw new ArgumentNullException(nameof(encoding));
 
 			// convert stream to string
 			Task<string> result;
@@ -328,7 +331,8 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string Hash(this byte[] value, bool toBase64 = false)
         {
-			Guard.NotNull(value, nameof(value));
+			if (value == null)
+				throw new ArgumentNullException(nameof(value));
 
 			using (MD5 md5 = MD5.Create())
             {
@@ -360,7 +364,8 @@ namespace SmartStore
 		/// <returns>The compressed result</returns>
 		public static byte[] Zip(this byte[] buffer)
 		{
-			Guard.NotNull(buffer, nameof(buffer));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
 
 			using (var compressedStream = new MemoryStream())
 			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Compress))
@@ -378,7 +383,8 @@ namespace SmartStore
 		/// <returns>The decompressed result</returns>
 		public static byte[] UnZip(this byte[] buffer)
 		{
-			Guard.NotNull(buffer, nameof(buffer));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
 
 			using (var compressedStream = new MemoryStream(buffer))
 			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))

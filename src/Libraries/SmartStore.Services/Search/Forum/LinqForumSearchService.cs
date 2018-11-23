@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
@@ -327,7 +328,8 @@ namespace SmartStore.Services.Search
 
                     // Limit the result. Do not allow to get all customers.
                     var maxChoices = descriptor.MaxChoicesCount > 0 ? descriptor.MaxChoicesCount : 20;
-                    var customers = customerQuery.Take(maxChoices * 3).ToList();
+                    var take = maxChoices * 3;
+                    var customers = customerQuery.Take(() => take).ToList();
 
                     foreach (var customer in customers)
                     {
@@ -399,9 +401,10 @@ namespace SmartStore.Services.Search
 
                 if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
                 {
+                    var skip = searchQuery.PageIndex * searchQuery.Take;
                     query = query
-                        .Skip(searchQuery.PageIndex * searchQuery.Take)
-                        .Take(searchQuery.Take);
+                        .Skip(() => skip)
+                        .Take(() => searchQuery.Take);
 
                     var ids = query.Select(x => x.Id).ToArray();
                     hitsFactory = () => _forumService.GetPostsByIds(ids);

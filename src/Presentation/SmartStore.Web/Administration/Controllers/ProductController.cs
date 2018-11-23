@@ -256,7 +256,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.IsEsd = m.IsEsd;
 			p.IsTaxExempt = m.IsTaxExempt;
-			p.TaxCategoryId = m.TaxCategoryId;
+			p.TaxCategoryId = m.TaxCategoryId ?? 0;
 			p.CustomsTariffNumber = m.CustomsTariffNumber;
 			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
@@ -728,6 +728,12 @@ namespace SmartStore.Admin.Controllers
 					Selected = product != null && !setPredefinedValues && tc.Id == product.TaxCategoryId
 				});
 			}
+
+            // Do not pre-select a tax category that is not stored.
+            if (product != null && product.TaxCategoryId == 0)
+            {
+                model.AvailableTaxCategories.Insert(0, new SelectListItem { Text = T("Common.PleaseSelect"), Value = "", Selected = true });
+            }
 
             // delivery times
             var defaultDeliveryTime = _deliveryTimesService.GetDefaultDeliveryTime();
@@ -2370,17 +2376,29 @@ namespace SmartStore.Admin.Controllers
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
 				var productPictures = _productService.GetProductPicturesByProductId(productId);
+
 				var productPicturesModel = productPictures
 					.Select(x =>
 					{
-						return new ProductModel.ProductPictureModel
+						var pictureModel = new ProductModel.ProductPictureModel
 						{
 							Id = x.Id,
 							ProductId = x.ProductId,
 							PictureId = x.PictureId,
-							PictureUrl = _pictureService.GetUrl(x.PictureId),
 							DisplayOrder = x.DisplayOrder
 						};
+
+                        try
+                        {
+                            pictureModel.PictureUrl = _pictureService.GetUrl(x.PictureId);
+                        }
+                        catch (Exception ex)
+                        {
+                            // The user must always have the possibility to delete faulty images.
+                            Logger.Error(ex);
+                        }
+
+                        return pictureModel;
 					})
 					.ToList();
 

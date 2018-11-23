@@ -132,10 +132,12 @@ namespace SmartStore.PayPal.Models
 			if (fromSettings)
 			{
 				MiniMapper.Map(settings, this);
-			}
+            }
 			else
 			{
-				MiniMapper.Map(this, settings);
+                TransactMode = TransactMode.AuthorizeAndCapture;
+
+                MiniMapper.Map(this, settings);
 				settings.ApiAccountName = ApiAccountName.TrimSafe();
 				settings.ApiAccountPassword = ApiAccountPassword.TrimSafe();
 				settings.ClientId = ClientId.TrimSafe();

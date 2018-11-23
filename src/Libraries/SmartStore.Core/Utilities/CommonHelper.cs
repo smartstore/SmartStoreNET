@@ -59,7 +59,8 @@ namespace SmartStore.Utilities
 		/// </remarks>
 		public static string MapPath(string path, bool findAppRoot = true)
 		{
-			Guard.NotNull(path, nameof(path));
+			if (path == null)
+				throw new ArgumentNullException(nameof(path));
 
 			if (HostingEnvironment.IsHosted)
 			{
@@ -181,7 +182,8 @@ namespace SmartStore.Utilities
 
 		public static IDictionary<string, object> ObjectToDictionary(object obj)
 		{
-			Guard.NotNull(obj, nameof(obj));
+			if (obj == null)
+				throw new ArgumentNullException(nameof(obj));
 
 			return FastProperty.ObjectToDictionary(
 				obj,

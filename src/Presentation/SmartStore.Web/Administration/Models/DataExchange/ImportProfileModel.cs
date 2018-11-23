@@ -23,9 +23,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Name { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
-		public List<string> ExistingFileNames { get; set; }
+        public List<ImportFile> ExistingFiles { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Entity")]
+        [SmartResourceDisplayName("Admin.Common.Entity")]
 		public ImportEntityType EntityType { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Entity")]
@@ -34,7 +34,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.RecordsSkip")]
+        [SmartResourceDisplayName("Admin.DataExchange.Import.ImportRelatedData")]
+        public bool ImportRelatedData { get; set; }
+
+        [SmartResourceDisplayName("Admin.Common.RecordsSkip")]
 		public int? Skip { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]

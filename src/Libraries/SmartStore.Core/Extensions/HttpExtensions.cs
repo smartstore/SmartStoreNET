@@ -13,26 +13,20 @@ using SmartStore.Core;
 using System.Web.Mvc;
 
 namespace SmartStore
-{  
-    public static class HttpExtensions
-    {
-        private const string HTTP_CLUSTER_VAR = "HTTP_CLUSTER_HTTPS";
-		private const string HTTP_XFWDPROTO_VAR = "HTTP_X_FORWARDED_PROTO";
+{
+	public static class HttpExtensions
+	{
 		private const string CACHE_REGION_NAME = "SmartStoreNET:";
 
-		/// <summary>
-		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
-		/// Works with Cloud's load balancers.
-		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		public static bool IsSecureConnection(this HttpRequestBase request)
-        {
-            return (request.IsSecureConnection
-				|| (request.ServerVariables[HTTP_CLUSTER_VAR] != null || request.ServerVariables[HTTP_CLUSTER_VAR] == "on")
-				|| (request.ServerVariables[HTTP_XFWDPROTO_VAR] != null || request.ServerVariables[HTTP_XFWDPROTO_VAR] == "https"));
-        }
-
+		private static readonly List<Tuple<string, string>> _sslHeaders = new List<Tuple<string, string>>
+		{
+			new Tuple<string, string>("HTTP_CLUSTER_HTTPS", "on"),
+			new Tuple<string, string>("X-Forwarded-Proto", "https"),
+			new Tuple<string, string>("x-arr-ssl", null),
+			new Tuple<string, string>("X-Forwarded-Protocol", "https"),
+			new Tuple<string, string>("X-Forwarded-Ssl", "on"),
+			new Tuple<string, string>("X-Url-Scheme", "https")
+		};
 
 		/// <summary>
 		/// Returns wether the specified url is local to the host or not
@@ -42,7 +36,6 @@ namespace SmartStore
 		/// <returns></returns>
 		public static bool IsAppLocalUrl(this HttpRequestBase request, string url)
 		{
-
 			if (string.IsNullOrWhiteSpace(url))
 			{
 				return false;
@@ -104,10 +97,35 @@ namespace SmartStore
 		/// <returns></returns>
 		public static bool IsSecureConnection(this HttpRequest request)
         {
-            return (request.IsSecureConnection || (request.ServerVariables[HTTP_CLUSTER_VAR] != null || request.ServerVariables[HTTP_CLUSTER_VAR] == "on"));
+            return IsSecureConnection(new HttpRequestWrapper(request));
         }
 
-	    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+		/// <summary>
+		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
+		/// Works with Cloud's load balancers.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
+		public static bool IsSecureConnection(this HttpRequestBase request)
+		{
+			if (request.IsSecureConnection)
+			{
+				return true;
+			}
+
+			foreach (var tuple in _sslHeaders)
+			{
+				var serverVar = request.ServerVariables[tuple.Item1];
+				if (serverVar != null)
+				{
+					return tuple.Item2 == null || tuple.Item2.Equals(serverVar, StringComparison.OrdinalIgnoreCase);
+				}
+			}
+
+			return false;
+		}
+
+		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 	    public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
 			CopyCookie(webRequest, httpRequest, FormsAuthentication.FormsCookieName);

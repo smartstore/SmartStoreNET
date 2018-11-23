@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -248,7 +249,7 @@ namespace SmartStore.Services.Orders
             }
 
             if (recordsToReturn != 0 && recordsToReturn != int.MaxValue)
-                query2 = query2.Take(recordsToReturn);
+                query2 = query2.Take(() => recordsToReturn);
 
             var result = query2.ToList().Select(x =>
             {
@@ -308,7 +309,7 @@ namespace SmartStore.Services.Orders
             query3 = query3.OrderByDescending(x => x.ProductsPurchased);
 
 			if (recordsToReturn > 0)
-				query3 = query3.Take(recordsToReturn);
+				query3 = query3.Take(() => recordsToReturn);
 
 			var report = query3.ToList();
 

@@ -1,10 +1,11 @@
 ﻿namespace SmartStore.Data.Migrations
 {
 	using System;
-	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
-	using System.Linq;
 	using Setup;
+	using SmartStore.Core.Domain.Catalog;
+	using SmartStore.Core.Domain.Common;
+	using SmartStore.Utilities;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
@@ -13,6 +14,14 @@
 			AutomaticMigrationsEnabled = false;
 			AutomaticMigrationDataLossAllowed = true;
 			ContextKey = "SmartStore.Core";
+
+			var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
+			if (commandTimeout.HasValue)
+			{
+				CommandTimeout = commandTimeout.Value;
+			}
+
+			CommandTimeout = 9999999;
 		}
 
 		public void SeedDatabase(SmartObjectContext context)
@@ -30,7 +39,17 @@
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
+			context.MigrateSettings(x => 
+			{
+				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.CacheSegmentSize, true), 500);
+				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.AlwaysPrefetchTranslations, true), false);
+				x.Add(TypeHelper.NameOf<PerformanceSettings>(y => y.AlwaysPrefetchUrlSlugs, true), false);
 
+				// New CatalogSettings properties
+				x.Add(TypeHelper.NameOf<CatalogSettings>(y => y.ShowSubCategoriesInSubPages, true), false);
+				x.Add(TypeHelper.NameOf<CatalogSettings>(y => y.ShowDescriptionInSubPages, true), false);
+				x.Add(TypeHelper.NameOf<CatalogSettings>(y => y.IncludeFeaturedProductsInSubPages, true), false);
+			});
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -569,6 +588,7 @@
 
             builder.AddOrUpdate("Common.Voting", "Voting", "Abstimmung");
             builder.AddOrUpdate("Common.Answer", "Answer", "Antwort");
+            builder.AddOrUpdate("Common.Size", "Size", "Größe");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description",
                 "Manage form fields that are displayed during registration.",
@@ -577,6 +597,36 @@
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description",
                 "Manage form fields that are displayed during checkout and on \"My account\" page.",
                 "Verwalten Sie Formularfelder, die während des Checkout-Prozesses und im \"Mein Konto\" Bereich angezeigt werden.");
-        }
+
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.RelatedEntityType.TierPrice", "Tier price", "Staffelpreis");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.RelatedEntityType.ProductVariantAttributeValue", "Attribute option", "Attribut-Option");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.RelatedEntityType.ProductVariantAttributeCombination", "Attribute combination", "Attribut-Kombination");
+
+            builder.AddOrUpdate("Admin.DataExchange.Export.ExportRelatedData.Validate",
+                "Related data cannot be exported if the option \"Export attribute combinations\" is activated.",
+                "Zugehörige Daten können nicht exportiert werden, wenn die Option \"Attributkombinationen exportieren\" aktiviert ist.");
+
+            builder.AddOrUpdate("Admin.Common.ProcessingInfo",
+                "{0}: {1} of {2} processed",
+                "{0}: {1} von {2} verarbeitet");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowSubCategoriesInSubPages",
+				"Show subcategories also in subpages",
+				"Unterwarengruppen auch in Unterseiten anzeigen",
+				"Subpage: List index greater than 1 or any active filter.",
+				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowDescriptionInSubPages",
+				"Show page description also in subpages",
+				"Seitenbeschreibungen auch in Unterseiten anzeigen",
+				"Subpage: List index greater than 1 or any active filter.",
+				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInSubPages",
+				"Show featured products also in subpages",
+				"Top-Produkte auch in Unterseiten anzeigen",
+				"Subpage: List index greater than 1 or any active filter.",
+				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
+		}
     }
 }

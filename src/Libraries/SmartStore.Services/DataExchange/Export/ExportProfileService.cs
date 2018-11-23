@@ -110,14 +110,14 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				else
 				{
-					// what we do here is to preset typical settings for feed creation
-					// but on the other hand they may be untypical for generic data export\exchange
+					// What we do here is to preset typical settings for feed creation
+					// but on the other hand they may be untypical for generic data export\exchange.
 					var projection = new ExportProjection
 					{
 						RemoveCriticalCharacters = true,
 						CriticalCharacters = "¼,½,¾",
 						PriceType = PriceDisplayType.PreSelectedPrice,
-						NoGroupedProducts = (features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false),
+						NoGroupedProducts = features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false,
 						OnlyIndividuallyVisibleAssociated = true,
 						DescriptionMerging = ExportDescriptionMerging.Description
 					};

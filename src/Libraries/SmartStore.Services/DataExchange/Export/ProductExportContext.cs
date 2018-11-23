@@ -35,7 +35,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
 			Func<int[], Multimap<int, Discount>> appliedDiscounts,
 			Func<int[], Multimap<int, ProductBundleItem>> productBundleItems,
-			Func<int[], Multimap<int, Picture>> pictures,
+            Func<int[], Multimap<int, Product>> associatedProducts,
+            Func<int[], Multimap<int, Picture>> pictures,
 			Func<int[], Multimap<int, ProductPicture>> productPictures,
 			Func<int[], Multimap<int, ProductTag>> productTags,
             Func<int[], Multimap<int, Download>> downloads)
@@ -46,7 +47,8 @@ namespace SmartStore.Services.DataExchange.Export
 				productCategories,
 				productManufacturers,
 				appliedDiscounts,
-				productBundleItems)
+				productBundleItems,
+                associatedProducts)
 		{
 			_funcPictures = pictures;
 			_funcProductPictures = productPictures;
@@ -57,26 +59,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public new void Clear()
 		{
-            if (_productPictures != null)
-            {
-                _productPictures.Clear();
-            }
-            if (_productTags != null)
-            {
-                _productTags.Clear();
-            }
-            if (_specificationAttributes != null)
-            {
-                _specificationAttributes.Clear();
-            }
-            if (_pictures != null)
-            {
-                _pictures.Clear();
-            }
-            if (_downloads != null)
-            {
-                _downloads.Clear();
-            }
+            _productPictures?.Clear();
+            _productTags?.Clear();
+            _specificationAttributes?.Clear();
+            _pictures?.Clear();
+            _downloads?.Clear();
 
 			base.Clear();
 		}

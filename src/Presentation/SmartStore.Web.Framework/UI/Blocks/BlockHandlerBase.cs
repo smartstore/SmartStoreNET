@@ -62,6 +62,11 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			entity.Model = JsonConvert.SerializeObject(block, Formatting.None, settings);
 		}
 
+		public virtual string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity)
+		{
+			return sourceEntity.Model;
+		}
+
 		public void Render(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper)
 		{
 			RenderCore(element, templates, htmlHelper, htmlHelper.ViewContext.Writer);
@@ -78,29 +83,34 @@ namespace SmartStore.Web.Framework.UI.Blocks
 
 		protected virtual void RenderCore(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
 		{
-			Guard.NotNull(element, nameof(element));
-			Guard.NotNull(templates, nameof(templates));
-			Guard.NotNull(htmlHelper, nameof(htmlHelper));
-			Guard.NotNull(textWriter, nameof(textWriter));
-
-			var routeInfo = templates.Select(x => GetRoute(element, x)).FirstOrDefault();
-			if (routeInfo == null)
-			{
-				throw new InvalidOperationException("The return value of the 'GetRoute()' method cannot be NULL.");
-			}
-
-			//routeInfo.RouteValues["model"] = element.Block;
-
-			var originalWriter = htmlHelper.ViewContext.Writer;
-			htmlHelper.ViewContext.Writer = textWriter;
-
-			using (new ActionDisposable(() => htmlHelper.ViewContext.Writer = originalWriter))
-			{
-				htmlHelper.RenderAction(routeInfo.Action, routeInfo.Controller, routeInfo.RouteValues);
-			}
+            RenderByChildAction(element, templates, htmlHelper, textWriter);
 		}
 
-		protected abstract RouteInfo GetRoute(IBlockContainer element, string template);
+        protected void RenderByChildAction(IBlockContainer element, IEnumerable<string> templates, HtmlHelper htmlHelper, TextWriter textWriter)
+        {
+            Guard.NotNull(element, nameof(element));
+            Guard.NotNull(templates, nameof(templates));
+            Guard.NotNull(htmlHelper, nameof(htmlHelper));
+            Guard.NotNull(textWriter, nameof(textWriter));
+
+            var routeInfo = templates.Select(x => GetRoute(element, x)).FirstOrDefault();
+            if (routeInfo == null)
+            {
+                throw new InvalidOperationException("The return value of the 'GetRoute()' method cannot be NULL.");
+            }
+
+            //routeInfo.RouteValues["model"] = element.Block;
+
+            var originalWriter = htmlHelper.ViewContext.Writer;
+            htmlHelper.ViewContext.Writer = textWriter;
+
+            using (new ActionDisposable(() => htmlHelper.ViewContext.Writer = originalWriter))
+            {
+                htmlHelper.RenderAction(routeInfo.Action, routeInfo.Controller, routeInfo.RouteValues);
+            }
+        }
+
+        protected abstract RouteInfo GetRoute(IBlockContainer element, string template);
 
 		/// <summary>
 		/// Add locales for localizable entities

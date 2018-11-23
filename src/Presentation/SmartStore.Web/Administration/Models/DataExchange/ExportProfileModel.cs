@@ -47,7 +47,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }
 
-		[SmartResourceDisplayName("Common.Execution")]
+        [SmartResourceDisplayName("Admin.DataExchange.Export.ExportRelatedData")]
+        public bool ExportRelatedData { get; set; }
+
+        [SmartResourceDisplayName("Common.Execution")]
 		public int ScheduleTaskId { get; set; }
 		public string ScheduleTaskName { get; set; }
 		public bool IsTaskRunning { get; set; }
@@ -175,13 +178,15 @@ namespace SmartStore.Admin.Models.DataExchange
 			public int StoreId { get; set; }
 			public string StoreName { get; set; }
 			public string Label { get; set; }
+            public int DisplayOrder { get; set; }
 
-			public int DisplayOrder { get; set; }
+            public RelatedEntityType? RelatedType { get; set; }
 
 			public string FilePath { get; set; }
 			public string FileUrl { get; set; }
+            public string FriendlyFileUrl { get; set; }
 
-			public string FileName { get; set; }
+            public string FileName { get; set; }
 			public string FileExtension { get; set; }
 
 			public string FileRootPath
@@ -199,7 +204,7 @@ namespace SmartStore.Admin.Models.DataExchange
 					return rootPath;
 				}
 			}
-		}
+        }
 	}
 
     public partial class ExportProfileValidator : AbstractValidator<ExportProfileModel>
@@ -220,6 +225,11 @@ namespace SmartStore.Admin.Models.DataExchange
                     return FileSystemHelper.IsSafeRootPath(x);
                 })
                 .WithMessage(T("Admin.DataExchange.Export.FolderName.Validate"));
+
+            RuleFor(x => x.ExportRelatedData)
+                .Must(x => x == false)
+                .When(x => x.Projection.AttributeCombinationAsProduct)
+                .WithMessage(T("Admin.DataExchange.Export.ExportRelatedData.Validate"));
         }
     }
 }

@@ -13,6 +13,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Collections;
+using SmartStore.Core.Data.Hooks;
 
 namespace SmartStore.Services.Discounts
 {
@@ -31,6 +32,7 @@ namespace SmartStore.Services.Discounts
         private readonly IEventPublisher _eventPublisher;
 		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
+		private readonly IDictionary<DiscountKey, bool> _discountValidityCache;
 
         public DiscountService(IRequestCache requestCache,
             IRepository<Discount> discountRepository,
@@ -53,15 +55,16 @@ namespace SmartStore.Services.Discounts
             _eventPublisher = eventPublisher;
 			_settingService = settingService;
 			_providerManager = providerManager;
-        }
+			_discountValidityCache = new Dictionary<DiscountKey, bool>();
+		}
 
-        /// <summary>
-        /// Checks discount limitation for customer
-        /// </summary>
-        /// <param name="discount">Discount</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>Value indicating whether discount can be used</returns>
-        protected virtual bool CheckDiscountLimitations(Discount discount, Customer customer)
+		/// <summary>
+		/// Checks discount limitation for customer
+		/// </summary>
+		/// <param name="discount">Discount</param>
+		/// <param name="customer">Customer</param>
+		/// <returns>Value indicating whether discount can be used</returns>
+		protected virtual bool CheckDiscountLimitations(Discount discount, Customer customer)
         {
 			Guard.NotNull(discount, nameof(discount));
 
@@ -98,11 +101,9 @@ namespace SmartStore.Services.Discounts
 
         public virtual void DeleteDiscount(Discount discount)
         {
-            if (discount == null)
-                throw new ArgumentNullException("discount");
+			Guard.NotNull(discount, nameof(discount));
 
-            _discountRepository.Delete(discount);
-
+			_discountRepository.Delete(discount);
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
 
@@ -173,21 +174,17 @@ namespace SmartStore.Services.Discounts
 
         public virtual void UpdateDiscount(Discount discount)
         {
-            if (discount == null)
-                throw new ArgumentNullException("discount");
+			Guard.NotNull(discount, nameof(discount));
 
             _discountRepository.Update(discount);
-
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
 
         public virtual void DeleteDiscountRequirement(DiscountRequirement discountRequirement)
         {
-            if (discountRequirement == null)
-                throw new ArgumentNullException("discountRequirement");
+			Guard.NotNull(discountRequirement, nameof(discountRequirement));
 
-            _discountRequirementRepository.Delete(discountRequirement);
-
+			_discountRequirementRepository.Delete(discountRequirement);
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
 
@@ -210,31 +207,37 @@ namespace SmartStore.Services.Discounts
             return discount;
         }
 
-        public virtual bool IsDiscountValid(Discount discount, Customer customer)
+		private System.Diagnostics.Stopwatch _watch = new System.Diagnostics.Stopwatch();
+		public virtual bool IsDiscountValid(Discount discount, Customer customer)
         {
-			Guard.NotNull(discount, nameof(discount));
-
-            var couponCodeToValidate = "";
+			var couponCodeToValidate = "";
             if (customer != null)
 			{
 				couponCodeToValidate = customer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode, _genericAttributeService);
 			}			
 
-            return IsDiscountValid(discount, customer, couponCodeToValidate);
+            var valid = IsDiscountValid(discount, customer, couponCodeToValidate);
+			return valid;
         }
 
         public virtual bool IsDiscountValid(Discount discount, Customer customer, string couponCodeToValidate)
         {
 			Guard.NotNull(discount, nameof(discount));
 
+			var cacheKey = new DiscountKey(discount, customer, couponCodeToValidate);
+			if (_discountValidityCache.TryGetValue(cacheKey, out var result))
+			{
+				return result;
+			}
+
 			// Check coupon code
 			if (discount.RequiresCouponCode)
             {
                 if (discount.CouponCode.IsEmpty())
-                    return false;
+                    return Cached(false);
 
                 if (!discount.CouponCode.Equals(couponCodeToValidate, StringComparison.InvariantCultureIgnoreCase))
-                    return false;
+                    return Cached(false);
             }
 
             // Check date range
@@ -245,25 +248,25 @@ namespace SmartStore.Services.Discounts
             {
                 var startDate = DateTime.SpecifyKind(discount.StartDateUtc.Value, DateTimeKind.Utc);
                 if (startDate.CompareTo(now) > 0)
-                    return false;
+                    return Cached(false);
             }
 
             if (discount.EndDateUtc.HasValue)
             {
                 var endDate = DateTime.SpecifyKind(discount.EndDateUtc.Value, DateTimeKind.Utc);
                 if (endDate.CompareTo(now) < 0)
-                    return false;
+                    return Cached(false);
             }
 
             if (!CheckDiscountLimitations(discount, customer))
-                return false;
+                return Cached(false);
 
 			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
 			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
 			{
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 				if (cart.Any(x => x.Item?.Product != null && x.Item.Product.IsGiftCard))
-					return false;
+					return Cached(false);
 			}
 
 			// discount requirements
@@ -281,12 +284,17 @@ namespace SmartStore.Services.Discounts
 					Store = store
                 };
 
-				// TODO: cache result... CheckRequirement is called very often
 				if (!requirementRule.Value.CheckRequirement(request))
-                    return false;
+                    return Cached(false);
             }
 
-            return true;
+            return Cached(true);
+
+			bool Cached(bool value)
+			{
+				_discountValidityCache[cacheKey] = value;
+				return value;
+			}
         }
 
         public virtual DiscountUsageHistory GetDiscountUsageHistoryById(int discountUsageHistoryId)
@@ -314,32 +322,34 @@ namespace SmartStore.Services.Discounts
 
         public virtual void InsertDiscountUsageHistory(DiscountUsageHistory discountUsageHistory)
         {
-            if (discountUsageHistory == null)
-                throw new ArgumentNullException("discountUsageHistory");
+			Guard.NotNull(discountUsageHistory, nameof(discountUsageHistory));
 
-            _discountUsageHistoryRepository.Insert(discountUsageHistory);
-
+			_discountUsageHistoryRepository.Insert(discountUsageHistory);
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
 
         public virtual void UpdateDiscountUsageHistory(DiscountUsageHistory discountUsageHistory)
         {
-            if (discountUsageHistory == null)
-                throw new ArgumentNullException("discountUsageHistory");
+			Guard.NotNull(discountUsageHistory, nameof(discountUsageHistory));
 
-            _discountUsageHistoryRepository.Update(discountUsageHistory);
-
+			_discountUsageHistoryRepository.Update(discountUsageHistory);
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
 
         public virtual void DeleteDiscountUsageHistory(DiscountUsageHistory discountUsageHistory)
         {
-            if (discountUsageHistory == null)
-                throw new ArgumentNullException("discountUsageHistory");
+			Guard.NotNull(discountUsageHistory, nameof(discountUsageHistory));
 
-            _discountUsageHistoryRepository.Delete(discountUsageHistory);
-
+			_discountUsageHistoryRepository.Delete(discountUsageHistory);
             _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
         }
+
+		class DiscountKey : Tuple<Discount, Customer, string>
+		{
+			public DiscountKey(Discount discount, Customer customer, string customerCouponCode)
+				: base(discount, customer, customerCouponCode)
+			{
+			}
+		}
     }
 }

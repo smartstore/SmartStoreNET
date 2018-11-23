@@ -27,7 +27,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 
 					File.Copy(context.ZipPath, destinationFile, true);
 
-					context.Log.Info("Copied zipped export data to " + destinationFile);
+					context.Log.Info($"Copied zipped export data to {destinationFile}.");
 				}
 			}
 			else
@@ -37,7 +37,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					context.Result.LastError = context.T("Admin.DataExchange.Export.Deployment.CopyFileFailed");
 				}
 
-				context.Log.Info("Copied export data files to " + destinationFolder);
+				context.Log.Info($"Copied export data files to {destinationFolder}.");
 			}
 		}
 	}

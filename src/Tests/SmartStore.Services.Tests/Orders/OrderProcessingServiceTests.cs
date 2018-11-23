@@ -173,7 +173,7 @@ namespace SmartStore.Services.Tests.Orders
             _rewardPointsSettings = new RewardPointsSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,
-				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService, _taxSettings);
+				_catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService, _taxSettings);
 
             _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,

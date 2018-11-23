@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.News;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.News;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
@@ -15,12 +14,13 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class NewsController : AdminControllerBase
 	{
 		#region Fields
@@ -29,10 +29,8 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ICustomerContentService _customerContentService;
-        private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
         private readonly IUrlRecordService _urlRecordService;
-        private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ICustomerService _customerService;
@@ -41,29 +39,30 @@ namespace SmartStore.Admin.Controllers
 
 		#region Constructors
 
-        public NewsController(INewsService newsService, ILanguageService languageService,
-            IDateTimeHelper dateTimeHelper, ICustomerContentService customerContentService,
-            ILocalizationService localizationService, IPermissionService permissionService,
-            IUrlRecordService urlRecordService, IStoreService storeService, IStoreMappingService storeMappingService,
-			AdminAreaSettings adminAreaSettings,
+        public NewsController(
+            INewsService newsService, 
+            ILanguageService languageService,
+            IDateTimeHelper dateTimeHelper,
+            ICustomerContentService customerContentService,
+            IPermissionService permissionService,
+            IUrlRecordService urlRecordService,
+            IStoreService storeService,
+            IStoreMappingService storeMappingService,
 			ICustomerService customerService)
         {
-            this._newsService = newsService;
-            this._languageService = languageService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._customerContentService = customerContentService;
-            this._localizationService = localizationService;
-            this._permissionService = permissionService;
-            this._urlRecordService = urlRecordService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._adminAreaSettings = adminAreaSettings;
-			this._customerService = customerService;
+            _newsService = newsService;
+            _languageService = languageService;
+            _dateTimeHelper = dateTimeHelper;
+            _customerContentService = customerContentService;
+            _permissionService = permissionService;
+            _urlRecordService = urlRecordService;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
+			_customerService = customerService;
 		}
 
 		#endregion 
         
-
 		#region Utilities
 
 		[NonAction]
@@ -159,8 +158,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(NewsItemModel model, bool continueEditing)
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public ActionResult Create(NewsItemModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
                 return AccessDeniedView();
@@ -173,21 +172,21 @@ namespace SmartStore.Admin.Controllers
                 newsItem.CreatedOnUtc = DateTime.UtcNow;
                 _newsService.InsertNews(newsItem);
 
-                // search engine name
+                // Search engine name.
                 var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
-				// Stores
 				SaveStoreMappings(newsItem, model);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Added"));
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, newsItem, form));
+
+                NotifySuccess(T("Admin.ContentManagement.News.NewsItems.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
-			//Stores
 			PrepareStoresMappingModel(model, null, true);
 
             return View(model);
@@ -214,8 +213,8 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Edit(NewsItemModel model, bool continueEditing)
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
+        public ActionResult Edit(NewsItemModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
                 return AccessDeniedView();
@@ -231,21 +230,21 @@ namespace SmartStore.Admin.Controllers
                 newsItem.EndDateUtc = model.EndDate;
                 _newsService.UpdateNews(newsItem);
 
-                // search engine name
+                // Search engine name.
                 var seName = newsItem.ValidateSeName(model.SeName, model.Title, true);
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
-				// Stores
 				SaveStoreMappings(newsItem, model);
 
-                NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Updated"));
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, newsItem, form));
+
+                NotifySuccess(T("Admin.ContentManagement.News.NewsItems.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
 
-			//stores
 			PrepareStoresMappingModel(model, newsItem, true);
 
             return View(model);
@@ -263,7 +262,7 @@ namespace SmartStore.Admin.Controllers
 
             _newsService.DeleteNews(newsItem);
 
-            NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Deleted"));
+            NotifySuccess(T("Admin.ContentManagement.News.NewsItems.Deleted"));
             return RedirectToAction("List");
         }
 

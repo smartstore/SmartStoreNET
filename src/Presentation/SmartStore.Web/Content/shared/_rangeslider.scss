@@ -1,0 +1,137 @@
+/// <reference path="_variables-shared.scss" />
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+
+// Range slider
+// ==============================================================
+
+.range-slider {
+    position: relative;
+    height: $input-height;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+
+    .form-control-range {
+        height: $custom-range-thumb-height;
+
+        &::-ms-thumb {
+            padding: 0;
+        }
+    }
+
+    &.range-slider-sm {
+        height: $input-height-sm;
+    }
+
+    &.color-opacity-slider {
+        &:after,
+        &:before {
+            position: absolute;
+            content: ' ';
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+
+        &:after {
+            border: $input-border-width solid $input-border-color;
+            border-radius: $input-border-radius;
+        }
+
+        &:before {
+            left: 1px;
+            top: 1px;
+            right: 1px;
+            bottom: 1px;
+            overflow: hidden;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3ggRDQA1Yl77tAAAAN1JREFUeNrt1rEJwCAURVEVFwruv4BEMtGHdGJpF4LHLqQ7+OTm3u+0nNau9XOMx995SnK2DyxYsD4/OSK86Jt/3SwzhAXrT6d60RW8GcKCpeAVvPtihrBgKXgFb4YIYMFS8AreDGEhgKXgFbwZwoKFQMEreDOEBUvBe9EVvBnCgqXgFbz7YoawYCl4BW+GCGDBUvAK3gxhIYCl4BW8GcKChUDBK3gzhAVLwXvRFbwZwoKl4BW8+2KGsGApeAVvhghgwVLwCt4MYSGApeAVvBnCgoVAwSt4M4QF6/jzAlCrcKXDcpR1AAAAAElFTkSuQmCC');
+            background-repeat: repeat;
+            opacity: calc(1 - var(--slider-value, 0));
+        }
+    }
+
+    .range-ticks {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        z-index: -5;
+    }
+
+    .range-tick {
+        position: relative;
+        color: $gray-600;
+        padding-top: 5px;
+        cursor: default;
+        width: 1px;
+        height: 5px;
+        border-radius: 1px;
+        background-color: $custom-range-track-bg;
+
+        &:after {
+            position: absolute;
+            content: attr(data-value);
+            top: 6px;
+            transform: translateX(-50%);
+            color: $gray-500;
+        }
+
+        &:first-child:after { transform: none; }
+        &:last-child:after  { transform: translateX(-100%); }
+    }
+
+    .range-value {
+        position: absolute;
+        font-size: 11px;
+        border-radius: 3px;
+        background-color: $gray-800;
+        color: #fff;
+        padding: 2px 6px;
+        opacity: 0;
+
+        &[data-placement=right] {
+            transform: translateX($custom-range-thumb-width * 1.7);
+        }
+
+        &[data-placement=left] {
+            transform: translateX(calc(-100% - #{$custom-range-thumb-width * 1.7}));
+        }
+
+        &:before {
+            position: absolute;
+            content: '';
+            top: 50%;
+            left: 0;
+            transform: translate3d(-100%, -50%, 0);
+            width: 0; 
+            height: 0; 
+            border: 5px solid transparent;
+            border-right-color: $gray-800;
+        }
+
+        &[data-placement=left]:before {
+            border-right-color: transparent;
+            border-left-color: $gray-800;
+            left: auto;
+            right: 0;
+            transform: translate3d(100%, -50%, 0);
+        }
+    }
+
+    &.ready {
+        .range-value {
+            transition: transform 0.25s ease-out, left 0.1s ease-out, opacity 0.25s ease-in-out;
+        }
+
+        &:hover .range-value,
+        .form-control-range:focus + .range-value,
+        .range-track {
+            opacity: 1;
+        }
+    }
+}

@@ -94,7 +94,7 @@
 				
 				<div class="col-auto" style="width: 280px">
 
-					<div class="card card-shadow theme-item@(isActive ? " active" : "")@(isBroken ? " broken" : "")" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
+					<div class="card shadow-sm theme-item@(isActive ? " active" : "")@(isBroken ? " broken" : "")" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
 						<div class="card-img-top theme-thumbnail" style="background-image: url('@Url.Content(theme.PreviewImageUrl)')"></div>
 
 						<div class="card-body p-3">

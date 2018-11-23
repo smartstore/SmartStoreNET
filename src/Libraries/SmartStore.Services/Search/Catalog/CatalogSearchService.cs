@@ -165,7 +165,7 @@ namespace SmartStore.Services.Search
 
 					if (searchQuery.Take > 0)
 					{
-						using (_services.Chronometer.Step(stepPrefix + "Count"))
+						using (_services.Chronometer.Step(stepPrefix + "Search"))
 						{
 							totalCount = searchEngine.Count();
 							// Fix paging boundaries
@@ -175,13 +175,13 @@ namespace SmartStore.Services.Search
 							}
 						}
 
-						using (_services.Chronometer.Step(stepPrefix + "Hits"))
-						{
-							searchHits = searchEngine.Search();
-						}
-
 						if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
 						{
+							using (_services.Chronometer.Step(stepPrefix + "Hits"))
+							{
+								searchHits = searchEngine.Search();
+							}
+
 							using (_services.Chronometer.Step(stepPrefix + "Collect"))
 							{
 								var productIds = searchHits.Select(x => x.EntityId).ToArray();

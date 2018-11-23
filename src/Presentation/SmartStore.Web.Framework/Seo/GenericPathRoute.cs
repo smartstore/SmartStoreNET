@@ -18,8 +18,7 @@ namespace SmartStore.Web.Framework.Seo
     public class GenericPathRoute : LocalizedRoute
     {
 		// Key = Prefix, Value = EntityType
-		private readonly Multimap<string, string> _urlPrefixes = 
-			new Multimap<string, string>(StringComparer.OrdinalIgnoreCase, x => new HashSet<string>(x, StringComparer.OrdinalIgnoreCase));
+		private static readonly Multimap<string, string> _urlPrefixes = new Multimap<string, string>(StringComparer.OrdinalIgnoreCase);
 		
 		/// <summary>
         /// Initializes a new instance of the System.Web.Routing.Route class, using the specified URL pattern and handler class.
@@ -68,11 +67,21 @@ namespace SmartStore.Web.Framework.Seo
         {
         }
 
-		public void RegisterUrlPrefix(string prefix, params string[] entityNames)
+		public static void RegisterUrlPrefix(string prefix, params string[] entityNames)
 		{
 			Guard.NotEmpty(prefix, nameof(prefix));
 
 			_urlPrefixes.AddRange(prefix, entityNames);
+		}
+		
+		public static string GetUrlPrefixFor(string entityName)
+		{
+			Guard.NotEmpty(entityName, nameof(entityName));
+
+			if (_urlPrefixes.Count == 0)
+				return null;
+
+			return _urlPrefixes.FirstOrDefault(x => x.Value.Contains(entityName, StringComparer.OrdinalIgnoreCase)).Key;
 		}
 
         /// <summary>
@@ -129,7 +138,7 @@ namespace SmartStore.Web.Framework.Seo
                 }
 
 				// Verify prefix matches any assigned entity name
-				if (entityNames != null && !entityNames.Contains(urlRecord.EntityName))
+				if (entityNames != null && !entityNames.Contains(urlRecord.EntityName, StringComparer.OrdinalIgnoreCase))
 				{
 					// does NOT match
 					return NotFound(data);

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	[Serializable]
+    [Serializable]
 	public class DataExportResult
 	{
 		public DataExportResult()
@@ -46,19 +47,38 @@ namespace SmartStore.Services.DataExchange.Export
 			public int StoreId { get; set; }
 
 			/// <summary>
-			/// Name of file
+			/// Name of file.
 			/// </summary>
 			public string FileName { get; set; }
 
 			/// <summary>
-			/// Short optional text that describes the content of the file
+			/// Short optional text that describes the content of the file.
 			/// </summary>
 			public string Label { get; set; }
 
-			/// <summary>
-			/// Whether the file contains entity data
-			/// </summary>
-			public bool IsDataFile { get; set; }
-		}
+            /// <summary>
+            /// The related entity type.
+            /// </summary>
+            public RelatedEntityType? RelatedType { get; set; }
+        }
 	}
+
+
+    public class DataExportPreviewResult
+    {
+        public DataExportPreviewResult()
+        {
+            Data = new List<dynamic>();
+        }
+
+        /// <summary>
+        /// Preview data.
+        /// </summary>
+        public List<dynamic> Data { get; set; }
+
+        /// <summary>
+        /// Number of total records.
+        /// </summary>
+        public int TotalRecords { get; set; }
+    }
 }

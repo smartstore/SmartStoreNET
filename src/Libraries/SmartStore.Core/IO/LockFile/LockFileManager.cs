@@ -42,7 +42,7 @@ namespace SmartStore.Core.IO
 				{
 					return false;
 				}
-
+				
 				lockFile = new LockFile(_env.TenantFolder, path, DateTime.UtcNow.ToString("u"), _rwLock);
 				return true;
 			}
@@ -80,8 +80,7 @@ namespace SmartStore.Core.IO
 			{
 				var content = _env.TenantFolder.ReadFile(path);
 
-				DateTime creationUtc;
-				if (DateTime.TryParse(content, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out creationUtc))
+				if (DateTime.TryParse(content, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var creationUtc))
 				{
 					// if expired the file is not removed
 					// it should be automatically as there is a finalizer in LockFile

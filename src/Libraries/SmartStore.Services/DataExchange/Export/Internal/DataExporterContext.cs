@@ -2,17 +2,17 @@
 using System.Linq;
 using System.Threading;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Export.Internal
 {
-	internal class DataExporterContext
+    internal class DataExporterContext
 	{
 		public DataExporterContext(
 			DataExportRequest request,
@@ -40,14 +40,18 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			ProductTemplates = new Dictionary<int, string>();
 			CategoryTemplates = new Dictionary<int, string>();
 			NewsletterSubscriptions = new HashSet<string>();
+            Translations = new Dictionary<string, LocalizedPropertyCollection>();
+            TranslationsPerPage = new Dictionary<string, LocalizedPropertyCollection>();
+            UrlRecords = new Dictionary<string, UrlRecordCollection>();
+            UrlRecordsPerPage = new Dictionary<string, UrlRecordCollection>();
 
-			RecordsPerStore = new Dictionary<int, int>();
+            StatsPerStore = new Dictionary<int, RecordStats>();
 			EntityIdsLoaded = new List<int>();
-			EntityIdsPerSegment = new List<int>();
+			EntityIdsPerSegment = new HashSet<int>();
 
 			Result = new DataExportResult
 			{
-				FileFolder = (IsFileBasedExport ? FolderContent : null)
+				FileFolder = IsFileBasedExport ? FolderContent : null
 			};
 
 			ExecuteContext = new ExportExecuteContext(Result, CancellationToken, FolderContent);
@@ -62,7 +66,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		}
 
 		/// <summary>
-		/// All entity identifiers per export
+		/// All entity identifiers per export.
 		/// </summary>
 		public List<int> EntityIdsLoaded { get; set; }
 		public void SetLoadedEntityIds(IEnumerable<int> ids)
@@ -74,21 +78,22 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		}
 
 		/// <summary>
-		/// All entity identifiers per segment (to avoid exporting products multiple times)
+		/// All entity identifiers per segment (to avoid exporting products multiple times).
 		/// </summary>
-		public List<int> EntityIdsPerSegment { get; set; }
+		public HashSet<int> EntityIdsPerSegment { get; set; }
+        public int LastId { get; set; }
 
-		public int RecordCount { get; set; }
-		public Dictionary<int, int> RecordsPerStore { get; set; }
-		public string ProgressInfo { get; set; }
+        public string ProgressInfo { get; set; }
+        public int RecordCount { get; set; }
+        public Dictionary<int, RecordStats> StatsPerStore { get; set; }
 
-		public DataExportRequest Request { get; private set; }
+        public DataExportRequest Request { get; private set; }
 		public CancellationToken CancellationToken { get; private set; }
 		public bool IsPreview { get; private set; }
 
 		public bool Supports(ExportFeatures feature)
 		{
-			return (!IsPreview && Request.Provider.Metadata.ExportFeatures.HasFlag(feature));
+			return !IsPreview && Request.Provider.Metadata.ExportFeatures.HasFlag(feature);
 		}
 
 		public ExportFilter Filter { get; private set; }
@@ -96,8 +101,9 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		public Currency ContextCurrency { get; set; }
 		public Customer ContextCustomer { get; set; }
 		public Language ContextLanguage { get; set; }
+        public int LanguageId => Projection.LanguageId ?? 0;
 
-		public TraceLogger Log { get; set; }
+        public TraceLogger Log { get; set; }
 		public Store Store { get; set; }
 
 		public string FolderContent { get; private set; }
@@ -107,7 +113,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			get { return Request.Provider == null || Request.Provider.Value == null || Request.Provider.Value.FileExtension.HasValue(); }
 		}
 
-		// data loaded once per export
+		// Data loaded once per export.
 		public Dictionary<int, DeliveryTime> DeliveryTimes { get; set; }
 		public Dictionary<int, QuantityUnit> QuantityUnits { get; set; }
 		public Dictionary<int, Store> Stores { get; set; }
@@ -117,14 +123,34 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		public Dictionary<int, string> CategoryTemplates { get; set; }
 		public HashSet<string> NewsletterSubscriptions { get; set; }
 
-		// data loaded once per page
-		public ProductExportContext ProductExportContext { get; set; }
-		public OrderExportContext OrderExportContext { get; set; }
+        /// <summary>
+        /// All translations for global scopes (like Category, Manufacturer etc.)
+        /// </summary>
+        public Dictionary<string, LocalizedPropertyCollection> Translations { get; set; }
+        public Dictionary<string, UrlRecordCollection> UrlRecords { get; set; }
+
+        // Data loaded once per page.
+        public ProductExportContext ProductExportContext { get; set; }
+        public ProductExportContext AssociatedProductContext { get; set; }
+        public OrderExportContext OrderExportContext { get; set; }
 		public ManufacturerExportContext ManufacturerExportContext { get; set; }
 		public CategoryExportContext CategoryExportContext { get; set; }
 		public CustomerExportContext CustomerExportContext { get; set; }
 
-		public ExportExecuteContext ExecuteContext { get; set; }
+        /// <summary>
+        /// All per page translations (like ProductVariantAttributeValue etc.)
+        /// </summary>
+        public Dictionary<string, LocalizedPropertyCollection> TranslationsPerPage { get; set; }
+        public Dictionary<string, UrlRecordCollection> UrlRecordsPerPage { get; set; }
+
+        public ExportExecuteContext ExecuteContext { get; set; }
 		public DataExportResult Result { get; set; }
 	}
+
+    internal class RecordStats
+    {
+        public int TotalRecords { get; set; }
+        public int MaxId { get; set; }
+        public int OffsetId { get; set; }
+    }
 }

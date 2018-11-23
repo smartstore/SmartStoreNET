@@ -123,80 +123,83 @@ namespace SmartStore.Data.Migrations
 				context.SaveChanges();
 			}
 
-			#region Pictures
-
-			if (storeMediaInDb)
+			using (var scope = new DbContextScope(context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
 			{
-				PageEntities(context, mediaStorages, context.Set<Picture>().OrderBy(x => x.Id), picture =>
-				{
+				#region Pictures
 
-					if (picture.PictureBinary != null && picture.PictureBinary.LongLength > 0)
+				if (storeMediaInDb)
+				{
+					PageEntities(context, mediaStorages, context.Set<Picture>().OrderBy(x => x.Id), picture =>
 					{
-						picture.MediaStorage = new MediaStorage { Data = picture.PictureBinary };
-						picture.PictureBinary = null;
+
+						if (picture.PictureBinary != null && picture.PictureBinary.LongLength > 0)
+						{
+							picture.MediaStorage = new MediaStorage { Data = picture.PictureBinary };
+							picture.PictureBinary = null;
+						}
+					});
+				}
+
+				#endregion
+
+				#region Downloads
+
+				PageEntities(context, mediaStorages, context.Set<Download>().OrderBy(x => x.Id), download =>
+				{
+					if (download.DownloadBinary != null && download.DownloadBinary.LongLength > 0)
+					{
+						if (storeMediaInDb)
+						{
+							// move binary data
+							download.MediaStorage = new MediaStorage { Data = download.DownloadBinary };
+						}
+						else
+						{
+							// move to file system. it's necessary because from now on DownloadService depends on current storage provider
+							// and it would not find the binary data anymore if not moved.
+							var fileName = GetFileName(download.Id, download.Extension, download.ContentType);
+							var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "Downloads"), fileName);
+
+							fileSystem.WriteAllBytes(path, download.DownloadBinary);
+						}
+
+						download.DownloadBinary = null;
 					}
 				});
+
+				#endregion
+
+				#region Queued email attachments
+
+				var attachmentQuery = context.Set<QueuedEmailAttachment>()
+					.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
+					.OrderBy(x => x.Id);
+
+				PageEntities(context, mediaStorages, attachmentQuery, attachment =>
+				{
+					if (attachment.Data != null && attachment.Data.LongLength > 0)
+					{
+						if (storeMediaInDb)
+						{
+							// move binary data
+							attachment.MediaStorage = new MediaStorage { Data = attachment.Data };
+						}
+						else
+						{
+							// move to file system. it's necessary because from now on QueuedEmailService depends on current storage provider
+							// and it would not find the binary data anymore if do not move it.
+							var fileName = GetFileName(attachment.Id, Path.GetExtension(attachment.Name.EmptyNull()), attachment.MimeType);
+							var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "QueuedEmailAttachment"), fileName);
+
+							fileSystem.WriteAllBytes(path, attachment.Data);
+						}
+
+						attachment.Data = null;
+					}
+				});
+
+				#endregion
 			}
-
-			#endregion
-
-			#region Downloads
-
-			PageEntities(context, mediaStorages, context.Set<Download>().OrderBy(x => x.Id), download =>
-			{
-				if (download.DownloadBinary != null && download.DownloadBinary.LongLength > 0)
-				{
-					if (storeMediaInDb)
-					{
-						// move binary data
-						download.MediaStorage = new MediaStorage { Data = download.DownloadBinary };
-					}
-					else
-					{
-						// move to file system. it's necessary because from now on DownloadService depends on current storage provider
-						// and it would not find the binary data anymore if not moved.
-						var fileName = GetFileName(download.Id, download.Extension, download.ContentType);
-						var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "Downloads"), fileName);
-
-						fileSystem.WriteAllBytes(path, download.DownloadBinary);
-					}
-
-					download.DownloadBinary = null;
-				}
-			});
-
-			#endregion
-
-			#region Queued email attachments
-
-			var attachmentQuery = context.Set<QueuedEmailAttachment>()
-				.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
-				.OrderBy(x => x.Id);
-
-			PageEntities(context, mediaStorages, attachmentQuery, attachment =>
-			{
-				if (attachment.Data != null && attachment.Data.LongLength > 0)
-				{
-					if (storeMediaInDb)
-					{
-						// move binary data
-						attachment.MediaStorage = new MediaStorage { Data = attachment.Data };
-					}
-					else
-					{
-						// move to file system. it's necessary because from now on QueuedEmailService depends on current storage provider
-						// and it would not find the binary data anymore if do not move it.
-						var fileName = GetFileName(attachment.Id, Path.GetExtension(attachment.Name.EmptyNull()), attachment.MimeType);
-						var path = fileSystem.Combine(fileSystem.Combine(mediaBasePath, "QueuedEmailAttachment"), fileName);
-
-						fileSystem.WriteAllBytes(path, attachment.Data);
-					}
-
-					attachment.Data = null;
-				}
-			});
-
-			#endregion
 
 #pragma warning restore 612, 618
 		}
@@ -221,8 +224,9 @@ namespace SmartStore.Data.Migrations
 				}
 
 				GC.Collect();
+				GC.WaitForPendingFinalizers();
 
-				// load max 1000 entities at once
+				// load max 200 entities at once
 				entities = new PagedList<TEntity>(query, pageIndex++, PAGE_SIZE);
 
 				entities.Each(x => moveEntity(x));

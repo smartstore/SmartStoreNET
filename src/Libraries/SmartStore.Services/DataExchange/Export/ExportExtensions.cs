@@ -15,7 +15,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Export
 {
-	public static class ExportExtensions
+    public static class ExportExtensions
 	{
 		/// <summary>
 		/// Returns a value indicating whether the export provider is valid
@@ -138,17 +138,22 @@ namespace SmartStore.Services.DataExchange.Export
 			sb.Replace("%Store.Id%", store.Id.ToString());
 			sb.Replace("%File.Index%", fileIndex.ToString("D4"));
 
-			if (profile.FileNamePattern.Contains("%Profile.SeoName%"))
-				sb.Replace("%Profile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false).Replace("/", "").Replace("-", ""));		
-
-			if (profile.FileNamePattern.Contains("%Store.SeoName%"))
-				sb.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false) : "allstores");
-
-			if (profile.FileNamePattern.Contains("%Random.Number%"))
-				sb.Replace("%Random.Number%", CommonHelper.GenerateRandomInteger().ToString());
-
-			if (profile.FileNamePattern.Contains("%Timestamp%"))
-				sb.Replace("%Timestamp%", DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture));
+            if (profile.FileNamePattern.Contains("%Profile.SeoName%"))
+            {
+                sb.Replace("%Profile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false).Replace("/", "").Replace("-", ""));
+            }
+            if (profile.FileNamePattern.Contains("%Store.SeoName%"))
+            {
+                sb.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false) : "allstores");
+            }
+            if (profile.FileNamePattern.Contains("%Random.Number%"))
+            {
+                sb.Replace("%Random.Number%", CommonHelper.GenerateRandomInteger().ToString());
+            }
+            if (profile.FileNamePattern.Contains("%Timestamp%"))
+            {
+                sb.Replace("%Timestamp%", DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture));
+            }
 
 			var result = sb.ToString()
 				.ToValidFileName("")

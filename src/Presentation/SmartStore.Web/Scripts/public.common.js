@@ -160,7 +160,7 @@
     $(function () {
         // Init reveal on scroll with AOS library
         if (typeof AOS !== 'undefined') {
-            AOS.init({ once: true });
+            AOS.init({ once: true, duration: 1000 });
         }
 
         if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {

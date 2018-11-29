@@ -692,7 +692,7 @@ namespace SmartStore.Admin.Controllers
 			if (product != null)
 			{
 				model.CopyProductModel.Id = product.Id;
-				model.CopyProductModel.Name = "{0} {1}".FormatInvariant(T("Admin.Common.CopyOf"), product.Name);
+				model.CopyProductModel.Name = T("Admin.Common.CopyOf", product.Name);
 				model.CopyProductModel.Published = true;
 				model.CopyProductModel.CopyImages = true;
 			}

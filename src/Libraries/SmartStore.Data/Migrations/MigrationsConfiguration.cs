@@ -627,6 +627,9 @@
 				"Top-Produkte auch in Unterseiten anzeigen",
 				"Subpage: List index greater than 1 or any active filter.",
 				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
+
+
+			builder.AddOrUpdate("Admin.Common.CopyOf", "Copy of {0}", "Kopie von {0}");
 		}
     }
 }

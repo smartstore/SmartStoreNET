@@ -29,7 +29,7 @@ var summernote_image_upload_url;
 		dialogsInBody: true,
 		dialogsFade: true,
 		height: 300,
-		prettifyHtml: true,
+		prettifyHtml: false,
 		onCreateLink: function (url) {
 			// Prevents that summernote prepends "http://" to our links (WTF!!!)
 			var c = url[0];

@@ -163,7 +163,7 @@
             AOS.init({ once: true, duration: 1000 });
         }
 
-        if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax')) {
+        if (SmartStore.parallax !== undefined && !$('body').hasClass('no-parallax') && !$('html').hasClass('moz') && !$('html').hasClass('edge')) {
             SmartStore.parallax.init({
                 context: document.body,
                 selector: '.parallax'

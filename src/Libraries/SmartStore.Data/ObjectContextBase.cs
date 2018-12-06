@@ -42,7 +42,7 @@ namespace SmartStore.Data
             this.Alias = null;
 			this.DbHookHandler = NullDbHookHandler.Instance;
 
-			if (_commandTimeoutInSeconds >= 0)
+			if (_commandTimeoutInSeconds >= 0 && DataSettings.Current.IsSqlServer)
 			{
 				Database.CommandTimeout = _commandTimeoutInSeconds;
 			}

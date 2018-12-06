@@ -9,16 +9,3 @@ GO
 
 CREATE NONCLUSTERED INDEX [IX_LocalizedProperty_Key] ON [LocalizedProperty] ([Id])	INCLUDE ([EntityId], [LocaleKeyGroup], [LocaleKey])
 GO
-
-CREATE NONCLUSTERED INDEX [IX_SeekExport1] ON [dbo].[Product]
-(
-	[Published] ASC,
-	[Id] ASC,
-	[VisibleIndividually] ASC,
-	[Deleted] ASC,
-	[IsSystemProduct] ASC,
-	[AvailableStartDateTimeUtc] ASC,
-	[AvailableEndDateTimeUtc] ASC
-)
-INCLUDE ([UpdatedOnUtc]) WITH (SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY]
-GO

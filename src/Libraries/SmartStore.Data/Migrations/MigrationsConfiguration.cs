@@ -3,7 +3,8 @@
 	using System;
 	using System.Data.Entity.Migrations;
 	using Setup;
-	using SmartStore.Core.Domain.Catalog;
+    using SmartStore.Core.Data;
+    using SmartStore.Core.Domain.Catalog;
 	using SmartStore.Core.Domain.Common;
 	using SmartStore.Utilities;
 
@@ -15,13 +16,16 @@
 			AutomaticMigrationDataLossAllowed = true;
 			ContextKey = "SmartStore.Core";
 
-			var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
-			if (commandTimeout.HasValue)
-			{
-				CommandTimeout = commandTimeout.Value;
-			}
+            if (DataSettings.Current.IsSqlServer)
+            {
+                var commandTimeout = CommonHelper.GetAppSetting<int?>("sm:EfMigrationsCommandTimeout");
+                if (commandTimeout.HasValue)
+                {
+                    CommandTimeout = commandTimeout.Value;
+                }
 
-			CommandTimeout = 9999999;
+                CommandTimeout = 9999999;
+            }
 		}
 
 		public void SeedDatabase(SmartObjectContext context)

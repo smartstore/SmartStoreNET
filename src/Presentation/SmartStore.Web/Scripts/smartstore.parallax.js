@@ -8,6 +8,8 @@
 
     var initialized = false,
         stages = [],
+        // to adjust speed on smaller devices
+        speedRatios = { xs: 0.5, sm: 0.6, md: 0.7, lg: 0.9, xl: 1 },
         viewport = ResponsiveBootstrapToolkit;
 
     function update() {
@@ -24,18 +26,34 @@
             if (!visible)
                 return;
 
-            if (item.filter && !viewport.is(item.filter))
+            if (item.filter && !viewport.is(item.filter)) {
+                if (item.initialized) {
+                    // Restore original styling
+                    el.css('background-position', item.originalPosition);
+                    el.css('background-attachment', item.originalAttachment);
+                    item.initialized = false;
+                }
+
                 return;
+            }             
+
+            speed = item.ratio * speedRatios[viewport.current()];
 
             if (item.type === 'bg') {
+                if (!item.initialized) {
+                    // for smoother scrolling
+                    el.css('background-attachment', 'fixed');
+                    item.initialized = true;
+                }
+
                 // set bg parallax offset
-                var ypos = Math.round((top - scrollTop) * item.ratio) + item.offset;
+                var ypos = Math.round((top - scrollTop) * speed) + item.offset;
                 el.css('background-position-y', ypos + "px");
             }
             else if (item.type === 'content') {
                 var bottom = top + height,
                     rate = 100 / (bottom + winHeight - top) * ((scrollTop + winHeight) - top),
-                    ytransform = (rate - 50) * (item.ratio * -3);
+                    ytransform = (rate - 50) * (speed * -3);
 
                 el.css(window.Prefixer.css('transform'), 'translate3d(0, ' + ytransform + 'px, 0)');
             }
@@ -55,7 +73,10 @@
                     type: el.data('parallax-type') || 'bg',
                     filter: el.data('parallax-filter'),
                     offset: (el.data('parallax-offset') || 0) * -1,
-                    ratio: el.data('parallax-speed') || 0.5
+                    ratio: el.data('parallax-speed') || 0.5,
+                    originalPosition: el.css('background-position'),
+                    originalAttachment: el.css('background-attachment'),
+                    initialized: false
                 };
             });
 

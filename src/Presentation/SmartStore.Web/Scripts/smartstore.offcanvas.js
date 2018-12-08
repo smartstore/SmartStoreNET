@@ -200,7 +200,7 @@
         	e.preventDefault();
             self.hide();
         });
-
+        
         body.addClass('canvas-sliding');
         body.addClass('canvas-sliding-'
             + (this.options.placement == 'right' ? 'left' : 'right')

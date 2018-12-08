@@ -7,13 +7,20 @@
 ; (function ($, window, document, undefined) {
 
     var initialized = false,
+        isTouch = Modernizr.touchevents,
         stages = [],
-        // to adjust speed on smaller devices
-        speedRatios = { xs: 0.5, sm: 0.6, md: 0.7, lg: 0.9, xl: 1 },
+        //// to adjust speed on smaller devices
+        //speedRatios = { xs: 0.5, sm: 0.6, md: 0.7, lg: 0.9, xl: 1 },
         viewport = ResponsiveBootstrapToolkit;
 
     function update() {
         _.each(stages, function (item, i) {
+            if (item.type == 'bg' && isTouch) {
+                // Found no proper way to make bg parallax
+                // run reliably on touch devices.
+                return;
+            }            
+
             var el = $(item.el);
             var winHeight = window.innerHeight;
             var scrollTop = window.pageYOffset;
@@ -37,7 +44,7 @@
                 return;
             }             
 
-            speed = item.ratio * speedRatios[viewport.current()];
+            speed = item.speed; // * speedRatios[viewport.current()];
 
             if (item.type === 'bg') {
                 if (!item.initialized) {
@@ -47,13 +54,13 @@
                 }
 
                 // set bg parallax offset
-                var ypos = Math.round((top - scrollTop) * speed) + item.offset;
-                el.css('background-position-y', ypos + "px");
+                var ypos = Math.round((top - scrollTop) * speed) + (item.offset * -1);
+                el.css('background-position', 'center ' + ypos + "px");
             }
             else if (item.type === 'content') {
                 var bottom = top + height,
                     rate = 100 / (bottom + winHeight - top) * ((scrollTop + winHeight) - top),
-                    ytransform = (rate - 50) * (speed * -3);
+                    ytransform = (rate - 50) * (speed * -6) + item.offset;
 
                 el.css(window.Prefixer.css('transform'), 'translate3d(0, ' + ytransform + 'px, 0)');
             }
@@ -71,9 +78,9 @@
                 return {
                     el: val,
                     type: el.data('parallax-type') || 'bg',
+                    speed: toFloat(el.data('parallax-speed'), 0.5),
+                    offset: (el.data('parallax-offset') || 0),
                     filter: el.data('parallax-filter'),
-                    offset: (el.data('parallax-offset') || 0) * -1,
-                    ratio: el.data('parallax-speed') || 0.5,
                     originalPosition: el.css('background-position'),
                     originalAttachment: el.css('background-attachment'),
                     initialized: false

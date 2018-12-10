@@ -632,8 +632,15 @@
 				"Subpage: List index greater than 1 or any active filter.",
 				"Unterseite: Listenindex größer 1 oder mind. ein aktiver Filter.");
 
-
 			builder.AddOrUpdate("Admin.Common.CopyOf", "Copy of {0}", "Kopie von {0}");
-		}
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.DefaultLanguage.Note",
+                "The default language of the shop is <b class=\"font-weight-medium\">{0}</b>. The default is always the first published language.",
+                "Die Standardsprache des Shops ist <b class=\"font-weight-medium\">{0}</b>. Standard ist stets die erste veröffentlichte Sprache.");
+
+            builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages.Note",
+                "Click <b class=\"font-weight-medium\">Download</b> to install a new language including all localized resources. On <a class=\"font-weight-medium\" href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> you will find more details about available resources.",
+                "Klicken Sie auf <b class=\"font-weight-medium\">Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a class=\"font-weight-medium\" href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
+        }
     }
 }

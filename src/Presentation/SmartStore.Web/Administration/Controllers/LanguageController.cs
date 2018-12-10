@@ -335,6 +335,8 @@ namespace SmartStore.Admin.Controllers
 
 			var lastImportInfos = GetLastResourcesImportInfos();
 			var languages = _languageService.GetAllLanguages(true);
+            var defaultLanguageId = _languageService.GetDefaultLanguageId();
+
             var model = languages.Select(x =>
 			{
 				var langModel = x.ToModel();
@@ -345,6 +347,11 @@ namespace SmartStore.Admin.Controllers
 					langModel.LastResourcesImportOn = info.ImportedOn;
 					langModel.LastResourcesImportOnString = langModel.LastResourcesImportOn.Value.RelativeFormat(false, "f");
 				}
+
+                if (x.Id == defaultLanguageId)
+                {
+                    ViewBag.DefaultLanguageNote = T("Admin.Configuration.Languages.DefaultLanguage.Note", langModel.Name).Text;
+                }
 
 				return langModel;
 			})

@@ -201,8 +201,7 @@
             self.hide();
         });
         
-        body.addClass('canvas-sliding');
-        body.addClass('canvas-sliding-'
+        body.addClass('canvas-sliding canvas-sliding-'
             + (this.options.placement == 'right' ? 'left' : 'right')
 			+ (this.options.lg ? ' canvas-lg' : '')
             + (this.options.fullscreen ? ' canvas-fullscreen' : ''));

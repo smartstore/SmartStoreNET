@@ -100,6 +100,7 @@
 * Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
 * MegaMenu: Improved item rendering for third tier elements
 * Product display order on category and manufacturer pages sometimes wrong when using linq search.
+* Debitoor: Wrong invoice total if a subtotal discount has been applied.
 
 
 ## SmartStore.NET 3.1.5

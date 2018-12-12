@@ -66,20 +66,19 @@
 			</header>
         }
 
-        @{ 
-			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
-			Html.RenderWidget("content_before");
-		}
-
         <div id="content-wrapper">
-            <section id="content" class="container mt-3">
+			@{ 
+				Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+				Html.RenderWidget("content_before");
+			}
+            <section id="content" class="container">
 				@{ 
 					@RenderSection("teaser", required: false);
 					Html.RenderAction("Breadcrumb", "Common", new { area = "" });
 					Html.RenderZone("teaser");
 					Html.RenderWidget("teaser");
 				}
-                <div id="content-body" class="row mt-4">
+                <div id="content-body" class="row">
 
 					@if (hasLeftCol)
 					{

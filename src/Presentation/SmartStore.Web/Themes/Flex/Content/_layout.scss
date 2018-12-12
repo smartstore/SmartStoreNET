@@ -46,16 +46,21 @@ body {
     }
 }
 
-#header {
-    background-color: $header-bg;
-}
-
 #page {
     overflow-x: hidden;  
 }
 
+#header {
+    background-color: $header-bg;
+}
+
 #content-wrapper {
-    min-height: 600px;
+    min-height: 300px;
+}
+
+#content {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .page-main {

@@ -52,7 +52,7 @@
 				'</div>'
 			].join("");
 
-			modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
+            modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
 				modal.remove();
 			});
 
@@ -311,7 +311,9 @@
 
     // on document ready
 	$(function () {
-		var rtl = SmartStore.globalization.culture.isRTL;
+        var rtl = SmartStore.globalization.culture.isRTL,
+            win = $(window),
+            body = $(document.body);
 
 		function getFunction(code, argNames) {
 			var fn = window, parts = (code || "").split(".");
@@ -515,7 +517,7 @@
 				elLabel.text(sel);
 			});
 
-			$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
+			body.on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
 				var btn = $(this).parent().find('> .btn');
 				if (e.type == "mouseenter") {
 					btn.addClass('hover');
@@ -523,7 +525,7 @@
 				else if (e.type == "mousedown") {
 					btn.addClass('active focus').removeClass('hover');
 					_.delay(function () {
-						$('body').one('mousedown touch', function (e) { btn.removeClass('active focus'); });
+                        body.one('mousedown touch', function (e) { btn.removeClass('active focus'); });
 					}, 50);
 				}
 				else if (e.type == "mouseleave") {
@@ -632,14 +634,14 @@
 		(function () {
 			$('#scroll-top').on('click', function (e) {
 				e.preventDefault();
-				$(window).scrollTo(0, 600);
+				win.scrollTo(0, 600);
 				return false;
 			});
 
 			var prevY;
 
 			var throttledScroll = _.throttle(function (e) {
-				var y = $(window).scrollTop();
+                var y = win.scrollTop();
 				if (_.isNumber(prevY)) {
 					// Show scroll button only when scrolled up
 					if (y < prevY && y > 500) {
@@ -653,8 +655,12 @@
 				prevY = y;
 			}, 100);
 
-			$(window).on("scroll", throttledScroll);
-		})();
+            win.on("scroll", throttledScroll);
+        })();
+        
+        // Modal stuff
+        $(document).on('hide.bs.modal', '.modal', function (e) { body.addClass('modal-hiding'); })
+        $(document).on('hidden.bs.modal', '.modal', function (e) { body.removeClass('modal-hiding'); })
     });
 
 })( jQuery, this, document );

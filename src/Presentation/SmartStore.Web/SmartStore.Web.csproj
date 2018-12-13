@@ -1780,6 +1780,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Shared\EditorTemplates\FontAwesomeIcon.cshtml" />
+    <Content Include="Views\Shared\Partials\_Assets.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

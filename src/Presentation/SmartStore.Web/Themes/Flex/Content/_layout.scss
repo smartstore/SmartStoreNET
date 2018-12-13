@@ -109,15 +109,18 @@ body {
     right: 0;
     width: 36px;
     height: 36px;
-    border-radius: 3px 0 0 3px;
-    border: 1px solid rgba(0,0,0, 0.15);
+    border-radius: $border-radius 0 0 $border-radius;
+    border: 1px solid rgba(#000, 0.1);
     border-right-width: 0;
-    background: rgba(255,255,255, 0.9);
+    background: rgba(#fff, 0.9);
     color: $body-color !important;
     text-decoration: none;
     transform: translate3d(100%, 0, 0);
-    transition: transform .2s ease-in-out;
+    transition: all .5s ease;
+    opacity: 0;
+
     &.in {
         transform: translate3d(0, 0, 0) !important;
+        opacity: 1;
     }
 }

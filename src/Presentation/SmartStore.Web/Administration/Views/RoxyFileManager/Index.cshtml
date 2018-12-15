@@ -38,11 +38,11 @@
 					</button>
 
 					<button type="button" class="btn btn-sm btn-light btn-icon ml-auto" id="btnRenameDir" title="Rename directory" onclick="renameDir()" data-lang-v="RenameDir" data-lang-t="T_RenameDir">
-						<i class="fa fa-pencil"></i>
+						<i class="fa fa-pencil-alt"></i>
 						<span class="d-none">Create</span>
 					</button>
 					<button type="button" class="btn btn-sm btn-light btn-to-danger btn-icon" id="btnDeleteDir" title="Delete selected directory" onclick="deleteDir()" data-lang-v="DeleteDir" data-lang-t="T_DeleteDir">
-						<i class="fa fa-trash"></i>
+						<i class="far fa-trash-alt"></i>
 						<span class="d-none">Delete</span>
 					</button>
 				</div>
@@ -66,11 +66,11 @@
 					</div>
 					<div class="btn-group d-none d-xl-inline-flex">
 						<button type="button" class="btn btn-sm btn-light btn-icon" id="btnPreviewFile" title="Preview selected file" onclick="previewFile()" data-lang-v="Preview" data-lang-t="T_Preview">
-							<i class="fa fa-eye"></i>
+							<i class="far fa-eye"></i>
 							<span class="d-none">Preview</span>
 						</button>
 						<button type="button" class="btn btn-sm btn-light btn-icon" id="btnRenameFile" title="Rename selected file" onclick="renameFile()" data-lang-v="RenameFile" data-lang-t="T_RenameFile">
-							<i class="fa fa-pencil"></i>
+							<i class="fa fa-pencil-alt"></i>
 							<span class="d-none">Rename</span>
 						</button>
 						<button type="button" class="btn btn-sm btn-light btn-icon" id="btnDownloadFile" title="Download selected file" onclick="downloadFile()" data-lang-v="DownloadFile" data-lang-t="T_DownloadFile">
@@ -78,7 +78,7 @@
 							<span class="d-none">Download</span>
 						</button>
 						<button type="button" class="btn btn-sm btn-light btn-icon btn-to-danger" id="btnDeleteFile" title="Delete selected file" onclick="deleteFile()" data-lang-v="DeleteFile" data-lang-t="T_DeleteFile">
-							<i class="fa fa-trash"></i>
+							<i class="far fa-trash-alt"></i>
 							<span class="d-none">Delete</span>
 						</button>
 					</div>
@@ -160,7 +160,7 @@
 			<span>Select</span>
 		</a>
 		<a href="#" class="dropdown-item" onclick="previewFile()" data-lang="Preview" id="mnuPreview">
-			<i class="fa fa-fw fa-eye"></i>
+			<i class="far fa-fw fa-eye"></i>
 			<span>Preview</span>
 		</a>
 		<a href="#" class="dropdown-item" onclick="downloadFile()" data-lang="DownloadFile" id="mnuDownload">
@@ -177,16 +177,16 @@
 			<span>Copy</span>
 		</a>
 		<a href="#" class="dropdown-item paste disabled" onclick="return pasteToFiles(event, this)" data-lang="Paste" id="mnuFilePaste">
-			<i class="fa fa-fw fa-paste"></i>
+			<i class="far fa-fw fa-clipboard"></i>
 			<span>Paste</span>
 		</a>
 		<div class="dropdown-divider"></div>
 		<a href="#" class="dropdown-item" onclick="renameFile()" data-lang="RenameFile" id="mnuRenameFile">
-			<i class="fa fa-fw fa-pencil"></i>
+			<i class="fa fa-fw fa-pencil-alt"></i>
 			<span>Rename</span>
 		</a>
 		<a href="#" class="dropdown-item" onclick="deleteFile()" data-lang="DeleteFile" id="mnuDeleteFile">
-			<i class="fa fa-fw fa-trash"></i>
+			<i class="far fa-fw fa-trash-alt"></i>
 			<span>Delete</span>
 		</a>
 	</div>
@@ -209,16 +209,16 @@
 			<span>Copy</span>
 		</a>
 		<a href="#" class="dropdown-item paste disabled" onclick="return pasteToDirs(event, this)" data-lang="Paste" id="mnuDirPaste">
-			<i class="fa fa-fw fa-paste"></i>
+			<i class="far fa-fw fa-clipboard"></i>
 			<span>Paste</span>
 		</a>
 		<div class="dropdown-divider"></div>
 		<a href="#" class="dropdown-item" onclick="renameDir()" data-lang="RenameDir" id="mnuRenameDir">
-			<i class="fa fa-fw fa-pencil"></i>
+			<i class="fa fa-fw fa-pencil-alt"></i>
 			<span>Rename</span>
 		</a>
 		<a href="#" class="dropdown-item" onclick="deleteDir()" data-lang="DeleteDir" id="mnuDeleteDir">
-			<i class="fa fa-fw fa-trash"></i>
+			<i class="far fa-fw fa-trash-alt"></i>
 			<span>Delete</span>
 		</a>
 	</div>

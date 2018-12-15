@@ -817,7 +817,7 @@ namespace SmartStore.Web.Framework
 			Guard.NotNull(helper, nameof(helper));
 			Guard.NotEmpty(fileExtension, nameof(fileExtension));
 
-			var icon = "file-o";
+			var icon = "far fa-file";
 			var ext = fileExtension;
 
 			if (ext != null && ext.StartsWith("."))
@@ -830,7 +830,7 @@ namespace SmartStore.Web.Framework
 				switch (ext.ToLowerInvariant())
 				{
 					case "pdf":
-						icon = "file-pdf-o";
+						icon = "far fa-file-pdf";
 						break;
 					case "doc":
 					case "docx":
@@ -839,18 +839,18 @@ namespace SmartStore.Web.Framework
 					case "dot":
 					case "dotx":
 					case "dotm":
-						icon = "file-word-o";
+						icon = "far fa-file-word";
 						break;
 					case "xls":
 					case "xlsx":
 					case "xlsm":
 					case "xlsb":
 					case "ods":
-						icon = "file-excel-o";
+						icon = "far fa-file-excel";
 						break;
 					case "csv":
 					case "tab":
-						icon = "table";
+						icon = "fa fa-file-csv";
 						break;
 					case "ppt":
 					case "pptx":
@@ -862,25 +862,25 @@ namespace SmartStore.Web.Framework
 					case "potm":
 					case "pps":
 					case "ppsm":
-						icon = "file-powerpoint-o";
+						icon = "far fa-file-powerpoint";
 						break;
 					case "zip":
 					case "rar":
 					case "7z":
-						icon = "file-archive-o";
+						icon = "far fa-file-archive";
 						break;
 					case "png":
 					case "jpg":
 					case "jpeg":
 					case "bmp":
 					case "psd":
-						icon = "file-image-o";
+						icon = "far fa-file-image";
 						break;
 					case "mp3":
 					case "wav":
 					case "ogg":
 					case "wma":
-						icon = "file-audio-o";
+						icon = "far fa-file-audio";
 						break;
 					case "mp4":
 					case "mkv":
@@ -889,25 +889,25 @@ namespace SmartStore.Web.Framework
 					case "asf":
 					case "mpg":
 					case "mpeg":
-						icon = "file-video-o";
+						icon = "far fa-file-video";
 						break;
 					case "txt":
-						icon = "file-text-o";
+						icon = "far fa-file-alt";
 						break;
 					case "exe":
-						icon = "gear";
+						icon = "fa fa-cog";
 						break;
 					case "xml":
 					case "html":
 					case "htm":
-						icon = "file-code-o";
+						icon = "far fa-file-code";
 						break;
 				}
 			}
 
 			var label = ext.NaIfEmpty().ToUpper();
 
-			var result = "<i class='fa fa-fw fa-{0}{1}' title='{2}'></i>".FormatInvariant(
+			var result = "<i class='fa-fw {0}{1}' title='{2}'></i>".FormatInvariant(
 				icon, 
 				extraCssClasses.HasValue() ? " " + extraCssClasses : "",
 				label);

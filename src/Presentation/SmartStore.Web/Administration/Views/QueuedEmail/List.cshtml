@@ -8,7 +8,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-envelope-o"></i>
+            <i class="far fa-envelope"></i>
             @T("Admin.System.QueuedEmails")
         </div>
         <div class="options">
@@ -27,11 +27,11 @@
 			</div>		
 
             <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-secondary btn-to-danger">
-				<i class="fa fa-trash-o"></i>
+				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.System.QueuedEmails.DeleteSelected")</span>
 			</button>
 			<button type="submit" id="delete-all" name="delete-all" value="delete-all" class="btn btn-danger" onclick='return confirm(@T("Admin.Common.AreYouSure").JsText);'>
-				<i class="fa fa-trash-o"></i>
+				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.DeleteAll")</span>
 			</button>
 

@@ -183,9 +183,9 @@ namespace SmartStore.Admin.Models.Orders
 					case Core.Domain.Payments.PaymentStatus.Paid:
 						return "fa fa-fw fa-check text-success";
 					case Core.Domain.Payments.PaymentStatus.PartiallyRefunded:
-						return "fa fa-fw fa-exchange text-warning";
+						return "fa fa-fw fa-exchange-alt text-warning";
 					case Core.Domain.Payments.PaymentStatus.Refunded:
-						return "fa fa-fw fa-exchange text-success";
+						return "fa fa-fw fa-exchange-alt text-success";
 					case Core.Domain.Payments.PaymentStatus.Voided:
 						return "fa fa-fw fa-ban muted";
 					default:

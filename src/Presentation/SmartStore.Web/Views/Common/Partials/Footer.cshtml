@@ -15,32 +15,32 @@
 	var socialLinks = new List<Tuple<string, string>>();
 	if (Model.FacebookLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
+		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "fab fa-facebook-f"));
 	}
 
 	if (Model.GooglePlusLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
+		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "fab fa-google-plus-g"));
 	}
 
 	if (Model.TwitterLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
+		socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "fab fa-twitter"));
 	}
 
 	if (Model.PinterestLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
+		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "fab fa-pinterest-p"));
 	}
 
 	if (Model.YoutubeLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
+		socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "fab fa-youtube"));
 	}
 
 	if (Model.InstagramLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.InstagramLink, "instagram"));
+		socialLinks.Add(new Tuple<string, string>(Model.InstagramLink, "fab fa-instagram"));
 	}
 
 	var invserseFooter = GetThemeVariable<bool>("inverse-footer");
@@ -57,7 +57,7 @@
 					@foreach (var link in socialLinks)
 					{
 						<a href="@link.Item1" target="_blank" class="btn x-btn-@(invserseFooter ? "clear" : "secondary") btn-circle btn-social btn-brand-@link.Item2">
-							<i class="fa fa-@link.Item2"></i>
+							<i class="@link.Item2"></i>
 						</a>
 					}
 				</div>

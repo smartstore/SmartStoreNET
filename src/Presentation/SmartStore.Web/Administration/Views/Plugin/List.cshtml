@@ -87,7 +87,7 @@
 						@if (plugin.Url.HasValue())
 						{
 							<span class="attr">
-								<i class="fa fa-external-link mr-1"></i>
+								<i class="fa fa-external-link-alt mr-1"></i>
 								<a href="@plugin.Url" target="PluginWebsiteWnd">@T("Common.Website")</a>
 							</span>
 						}
@@ -118,7 +118,7 @@
 					else
 					{
 						<a class="btn btn-success plugin-install" data-toggle="button" href="#" style="min-width: 180px">
-							<i class="fa fa-arrow-circle-o-down"></i>
+							<i class="far fa-arrow-alt-circle-down"></i>
 							<span>@T("Admin.Configuration.Plugins.Fields.Install")</span>
 						</a>
 					}
@@ -157,11 +157,11 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a href="@Url.Action("ReloadList")" class="dropdown-item" >
-                        <i class="fa fa-refresh"></i>
+                        <i class="fa fa-sync"></i>
 						<span>@T("Admin.Configuration.Plugins.ReloadList")</span>
                     </a>                    
                     <a href="@Url.Action("UpdateAllStringResources")" class="plugin-update-allresources dropdown-item">
-                        <i class="fa fa-refresh"></i>
+                        <i class="fa fa-sync"></i>
 						<span>@T("Admin.Configuration.Plugins.Resources.UpdateAll")</span>
                     </a>
                 </div>

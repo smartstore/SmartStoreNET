@@ -373,13 +373,13 @@
 					vertical: 'auto'
 				},
 				icons: {
-					time: 'fa fa-clock-o',
+					time: 'far fa-clock',
 					date: 'fa fa-calendar',
 					up: 'fa fa-angle-up',
 					down: 'fa fa-angle-down',
 					previous: 'fa fa-angle-left',
 					next: 'fa fa-angle-right',
-					today: 'fa fa-calendar-check-o',
+					today: 'far fa-calendar-check',
 					clear: 'fa fa-delete',
 					close: 'fa fa-times'
 				}

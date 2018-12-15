@@ -988,7 +988,7 @@ namespace SmartStore.Web.Controllers
 			{
 				Id = "info",
 				Text = T("Account.CustomerInfo"),
-				Icon = "user-o",
+				Icon = "fal fa-user",
 				Url = Url.Action("Info"),
 			});
 
@@ -997,7 +997,7 @@ namespace SmartStore.Web.Controllers
 			{
 				Id = "addresses",
 				Text = T("Account.CustomerAddresses"),
-				Icon = "address-book-o",
+				Icon = "fal fa-address-book",
 				Url = Url.Action("Addresses"),
 			});
 
@@ -1006,7 +1006,7 @@ namespace SmartStore.Web.Controllers
 			{
 				Id = "orders",
 				Text = T("Account.CustomerOrders"),
-				Icon = "file-text",
+				Icon = "fal fa-file-invoice",
 				Url = Url.Action("Orders"),
 			});
 
@@ -1017,7 +1017,7 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = "returnrequests",
 					Text = T("Account.CustomerReturnRequests"),
-					Icon = "truck",
+					Icon = "fal fa-truck",
 					Url = Url.Action("ReturnRequests"),
 				});
 			}
@@ -1029,7 +1029,7 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = "downloads",
 					Text = T("Account.DownloadableProducts"),
-					Icon = "download",
+					Icon = "fal fa-download",
 					Url = Url.Action("DownloadableProducts"),
 				});
 			}
@@ -1041,7 +1041,7 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = "backinstock",
 					Text = T("Account.BackInStockSubscriptions"),
-					Icon = "bullhorn",
+					Icon = "fal fa-truck-loading",
 					Url = Url.Action("BackInStockSubscriptions"),
 				});
 			}
@@ -1053,7 +1053,7 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = "rewardpoints",
 					Text = T("Account.RewardPoints"),
-					Icon = "certificate",
+					Icon = "fal fa-certificate",
 					Url = Url.Action("RewardPoints"),
 				});
 			}
@@ -1063,7 +1063,7 @@ namespace SmartStore.Web.Controllers
 			{
 				Id = "changepassword",
 				Text = T("Account.ChangePassword"),
-				Icon = "unlock-alt",
+				Icon = "fal fa-unlock-alt",
 				Url = Url.Action("ChangePassword"),
 			});
 
@@ -1074,7 +1074,7 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = "avatar",
 					Text = T("Account.Avatar"),
-					Icon = "user-circle",
+					Icon = "fal fa-user-circle",
 					Url = Url.Action("Avatar"),
 				});
 			}
@@ -1086,7 +1086,7 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = "forumsubscriptions",
 					Text = T("Account.ForumSubscriptions"),
-					Icon = "bell",
+					Icon = "fal fa-bell",
 					Url = Url.Action("ForumSubscriptions"),
 				});
 			}
@@ -1099,7 +1099,7 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = "privatemessages",
 					Text = T("PrivateMessages.Inbox"),
-					Icon = "envelope-o",
+					Icon = "fal fa-envelope",
 					Url = Url.RouteUrl("PrivateMessages", new { tab = "inbox" }),
 					BadgeText = numUnreadMessages > 0 ? numUnreadMessages.ToString() : null,
 					BadgeStyle = BadgeStyle.Warning

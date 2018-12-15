@@ -24,14 +24,14 @@
         @{ Html.RenderWidget("account_dropdown_before"); }
 
 		<a class="dropdown-item" href="@Url.Action("Info", "Customer")" rel="nofollow">
-			<i class="fa fa-fw fa-user"></i>
+			<i class="fal fa-user fa-fw"></i>
 			<span>@T("Account.MyAccount")</span>
 		</a>
 
         @if (Model.DisplayAdminLink)
         {
             <a class="dropdown-item" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
-                <i class="fa fa-fw fa-cog"></i> 
+                <i class="fal fa-cog fa-fw"></i> 
 				<span>@T("Account.Administration")</span>
             </a>
         }
@@ -39,7 +39,7 @@
         @if (Model.AllowPrivateMessages)
         {
 			<a class="dropdown-item" href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
-				<i class="fa fa-fw fa-envelope"></i>
+				<i class="fal fa-envelope fa-fw"></i>
 				<span>@T("PrivateMessages.Inbox")</span>
 				@if (Model.UnreadPrivateMessages != "")
 				{
@@ -61,7 +61,7 @@
         @if (Model.WishlistEnabled)
         {
             <a class="dropdown-item" href="@Url.RouteUrl("Wishlist")">
-                <i class="fa fa-fw fa-heart"></i>
+                <i class="fal fa-heart fa-fw"></i>
 				<span>@T("Wishlist")</span> 
 				<span class="wishlist-qty badge badge-success @(Model.WishlistItems > 0 ? "label-success" : "d-none")">@Model.WishlistItems</span>
 			</a> 
@@ -69,14 +69,14 @@
         @if (Model.ShoppingCartEnabled)
         {
             <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
-                <i class="fa fa-fw fa-shopping-bag"></i>
+                <i class="fal fa-shopping-bag fa-fw"></i>
 				<span>@T("ShoppingCart")</span> 
 				<span class="cart-qty badge badge-success @(Model.ShoppingCartItems > 0 ? "label-success" : "d-none")">@Model.ShoppingCartItems</span>
 			</a>
         }
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="@Url.RouteUrl("Logout")" rel="nofollow">
-            <i class="fa fa-fw fa-sign-out"></i>
+            <i class="fal fa-sign-out-alt fa-fw"></i>
 			<span>@T("Account.Logout")</span>
 		</a>
 

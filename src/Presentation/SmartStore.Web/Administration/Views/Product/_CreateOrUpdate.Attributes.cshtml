@@ -197,7 +197,7 @@
 							.Centered();
 						columns.Bound(x => x.AllowOutOfStockOrders)
 							.Width(60)
-							.HeaderTemplate("<span class='t-link'><i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i></span>")
+							.HeaderTemplate("<span class='t-link'><i class=\"fa fa-sort-numeric-up\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i></span>")
 							.Template(item => @Html.SymbolForBool(item.AllowOutOfStockOrders))
 							.ClientTemplate(@Html.SymbolForBool("AllowOutOfStockOrders"))
 							.Centered();
@@ -254,7 +254,7 @@
 
 	<button type="button" id="btnDeleteAllCombinations" class="t-button t-grid-cancel-changes" data-url='@Url.Action("DeleteAllAttributeCombinations", new { productId = Model.Id })'
 			data-ask="@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AskToDeleteAll")">
-		<i class="fa fa-trash-o"></i>
+		<i class="far fa-trash-alt"></i>
 		<span>@T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.DeleteAllCombinations")</span>
 	</button>
 }

@@ -121,12 +121,43 @@
     content: $content;
 }
 
-@mixin fontawesome($content, $size: inherit) {
+@mixin fontawesome($content, $size: $icon-font-size-base, $variant: $icon-font-variant-default) {
     display: inline-block;
-    font: normal normal normal 16px/1 'FontAwesome';
-    font-size: $size;
+    font-style: normal;
+    font-variant: normal;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
+    line-height: 1;
+
+    font-size: $size;
+    @include fontawesome-font($content, $variant);
+}
+
+@mixin fontawesome-font($content, $variant: $icon-font-variant-default) {
+    @if $fa-use-pro == false and $variant == "light" {
+        $variant: regular;
+    }
+    
+    @if $fa-use-pro == false and $variant == "regular" {
+        @if not(map-has-key($fa-free-regular-icons, $content)) {
+            $variant: solid;
+        }
+    }
+
+    @if $variant == "brand" {
+        font-family: $fa-font-family-brands;
+        font-weight: 400;
+    }
+    @else {
+        font-weight: map-get($icon-font-variants, $variant);
+        @if $fa-use-pro {
+            font-family: $fa-font-family-pro;
+        }
+        @else {
+            font-family: $fa-font-family-free;
+        }
+    }
+
     content: $content;
 }
 

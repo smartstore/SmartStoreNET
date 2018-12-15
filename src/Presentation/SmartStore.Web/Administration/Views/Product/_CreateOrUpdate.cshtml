@@ -18,7 +18,7 @@
 @Html.SmartStore().TabStrip().Name("product-edit").OnAjaxSuccess("productEditTab_onAjaxSuccess").HtmlAttributes(new { data_product_id = Model.Id }).Style(TabsStyle.Material).Position(TabsPosition.Left).Items(x =>
 {
     x.Add().Text(T("Admin.Catalog.Products.Info"))
-        .Icon("fa fa-pencil fa-lg fa-fw")
+        .Icon("fa fa-pencil-alt fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Info" })
         .Content(Html.Partial("_CreateOrUpdate.Info", Model).ToHtmlString())
         .Selected(true);
@@ -54,7 +54,7 @@
     if (Model.ProductTypeId != (int)ProductType.GroupedProduct)
     {
         x.Add().Text(T("Admin.Catalog.Products.Price").Text)
-            .Icon("fa fa-euro fa-lg fa-fw")
+            .Icon("fa fa-euro-sign fa-lg fa-fw")
             .LinkHtmlAttributes(new { data_tab_name = "Price" })
             .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Price" })
             .Ajax();
@@ -68,7 +68,7 @@
         .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Discounts" })
         .Ajax();
     x.Add().Text(T("Admin.Catalog.Products.Pictures").Text)
-        .Icon("fa fa-picture-o fa-lg fa-fw")
+        .Icon("far fa-image fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Pictures" })
         .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Pictures" })
         .Ajax();
@@ -78,7 +78,7 @@
         .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Categories" })
         .Ajax();
     x.Add().Text(T("Admin.Catalog.Products.Manufacturers").Text)
-        .Icon("fa fa-building-o fa-lg fa-fw")
+        .Icon("far fa-building fa-lg fa-fw")
         .LinkHtmlAttributes(new { data_tab_name = "Manufacturers" })
         .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Manufacturers" })
         .Ajax();
@@ -91,7 +91,7 @@
     if (Model.ProductTypeId != (int)ProductType.BundledProduct)
     {
         x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes").Text)
-            .Icon("fa fa-list-alt fa-lg fa-fw")
+            .Icon("far fa-list-alt fa-lg fa-fw")
             .LinkHtmlAttributes(new { data_tab_name = "Attributes" })
             .Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Attributes" })
             .Ajax();

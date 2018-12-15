@@ -40,7 +40,7 @@
 					<div class="text-truncate">
 						@if (item.Published.HasValue)
 						{
-							<i class="published fa @(item.Published.Value ? "fa-globe" : "fa-eye-slash") xicon-active-@item.Published.Value.ToString().ToLower()" title="@(item.Published.Value ? T("Common.Published") : T("Common.Unpublished"))"></i>
+							<i class="published @(item.Published.Value ? "fa fa-globe" : "far fa-eye-slash") xicon-active-@item.Published.Value.ToString().ToLower()" title="@(item.Published.Value ? T("Common.Published") : T("Common.Unpublished"))"></i>
 						}
 						<span class="summary" title="@item.SummaryTitle">@item.Summary</span>
 					</div>

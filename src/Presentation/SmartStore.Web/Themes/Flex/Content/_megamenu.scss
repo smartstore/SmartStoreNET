@@ -35,13 +35,13 @@ $mixed-megamenu-bg:             $megamenu-bg;
         font-weight: $font-weight-medium;
         font-size: $megamenu-navlink-font-size;
     }
-
+    
 	.dropdown-toggle:after {
 		border: none !important;
-		@include fontawesome("\f107");
+		@include fontawesome("\f107", $font-size-base);
 		width: auto;
 		height: auto;
-		vertical-align: initial;
+		vertical-align: middle;
 		margin-left: 0.15rem;
 	}
 }

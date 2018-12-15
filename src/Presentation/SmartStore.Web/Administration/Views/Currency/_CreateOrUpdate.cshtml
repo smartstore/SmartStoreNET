@@ -20,7 +20,7 @@
 @Html.SmartStore().TabStrip().Name("currency-edit").Style(TabsStyle.Material).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text)
-		//.Icon("fa fa-pencil fa-lg fa-fw")
+		//.Icon("fa fa-pencil-alt fa-lg fa-fw")
 		.Content(TabInfo())
 		.Selected(true);
 
@@ -28,7 +28,7 @@
 		//.Icon("fa fa-globe fa-lg fa-fw")
 		.Content(TabStores());
 
-    //generate an event
+	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "currency-edit", this.Html, this.Model));
 })
 

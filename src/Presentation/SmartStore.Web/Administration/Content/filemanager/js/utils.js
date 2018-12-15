@@ -107,21 +107,21 @@ RoxyLang = {
 }
 
 var RoxyIconHints = {
-	"pdf": { name: "file-pdf-o", color: "#F44336" },
-	"document": { name: "file-word-o", color: "#2B579A" },
-	"spreadsheet": { name: "file-excel-o", color: "#217346" },
-	"database": { name: "database", color: "#3ba074" },
-	"presentation": { name: "file-powerpoint-o", color: "#D24726" },
-	"archive": { name: "file-archive-o", color: "#3F51B5" },
-	"audio": { name: "file-audio-o", color: "#009688" },
-	"markup": { name: "file-code-o", color: "#4CAF50" },
-	"code": { name: "bolt", color: "#4CAF50" },
-	"exe": { name: "gear", color: "#58595B" },
-	"image": { name: "file-image-o", color: "#e77c00" },
-	"text": { name: "file-text-o", color: "#607D8B" },
-	"video": { name: "file-video-o", color: "#FF5722" },
-	"font": { name: "font", color: "#797985" },
-	"misc": { name: "file-o", color: "#ccc" }
+    "pdf": { name: "far fa-file-pdf", color: "#F44336" },
+    "document": { name: "far fa-file-word", color: "#2B579A" },
+    "spreadsheet": { name: "far fa-file-excel", color: "#217346" },
+    "database": { name: "fa fa-database", color: "#3ba074" },
+    "presentation": { name: "far fa-file-powerpoint", color: "#D24726" },
+	"archive": { name: "far fa-file-archive", color: "#3F51B5" },
+    "audio": { name: "far fa-file-audio", color: "#009688" },
+    "markup": { name: "far fa-file-code", color: "#4CAF50" },
+    "code": { name: "fa fa-bolt", color: "#4CAF50" },
+	"exe": { name: "fa fa-cog", color: "#58595B" },
+    "image": { name: "far fa-file-image", color: "#e77c00" },
+    "text": { name: "far fa-file-alt", color: "#607D8B" },
+    "video": { name: "far fa-file-video", color: "#FF5722" },
+    "font": { name: "fa fa-font", color: "#797985" },
+    "misc": { name: "far fa-file", color: "#ccc" }
 }
 
 function RoxyUtils() { }

@@ -48,7 +48,7 @@
 		<div class="mf-dropdown">
 			<button class="btn btn-secondary btn-artlist-action">
 				<em>@T("Pager.XPerPage", "<span>" + pageable.PageSize + "</span>")</em>
-				<i class="fa fa-caret-down"></i>
+				<i class="fas fa-caret-down"></i>
 			</button>
 			<select class="artlist-action-select form-control noskin"
 					name="artlist-action-pagesize"
@@ -80,7 +80,7 @@
 				<em class="d-sm-none"><span>@pageable.PageNumber</span>/<span>@pageable.TotalPages</span></em>
 				<em class="d-none d-sm-inline d-md-none">@T("Pager.PageXOfYShort", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
 				<em class="d-none d-md-inline">@T("Pager.PageXOfY", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
-				<i class="fa fa-caret-down"></i>
+				<i class="fas fa-caret-down"></i>
 			</button>
 			<select class="artlist-action-select form-control noskin" name="artlist-action-page" id="artlist-action-page" data-qname="i" title="@T("Pager.PageXOfY", pageable.PageNumber, pageable.TotalPages)">
 				@{

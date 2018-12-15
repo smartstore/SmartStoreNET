@@ -3,13 +3,22 @@
 	var vendorsRoot = "~/Content/vendors/";
 	var contentRoot = "~/Content/";
 
-	// add css assets
-	Html.AddCssFileParts(
+	var cssParts = new List<string>
+	{
 		contentRoot + "fontastic/fontastic.css",
-		vendorsRoot + "font-awesome/font-awesome.css",
 		vendorsRoot + "pnotify/css/pnotify.css",
 		vendorsRoot + "pnotify/css/pnotify.mobile.css",
-		vendorsRoot + "pnotify/css/pnotify.buttons.css");
+		vendorsRoot + "pnotify/css/pnotify.buttons.css"
+	};
+
+	if (!GetThemeVariable<bool>("fa-use-pro"))
+	{
+		// TODO: (mc) make UI for FA5 CDN URL
+		cssParts.Insert(0, vendorsRoot + "fa5/css/all.css");
+	}
+
+	// add css assets
+	Html.AddCssFileParts(cssParts.ToArray());
 
 	Html.AppendScriptParts(ResourceLocation.Head,
 		vendorsRoot + "modernizr/modernizr.js",

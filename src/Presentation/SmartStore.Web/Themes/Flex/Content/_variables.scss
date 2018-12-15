@@ -135,6 +135,12 @@ $btn-border-radius:             .125rem;
 $btn-border-radius-lg:          .1875rem;
 $btn-border-radius-sm:          .125rem;
 
+// Shadows
+
+$box-shadow-sm:               0 0 .625rem 0 rgba(#000, .05);
+$box-shadow:                  0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+$box-shadow-lg:               0 1rem 3rem rgba(#000, .125);
+
 $input-box-shadow:              none;
 $input-focus-box-shadow:        none;
 $input-border-radius:           $btn-border-radius;
@@ -170,6 +176,8 @@ $btn-disabled-opacity:			0.5;
 
 // Dropdown
 
+$dropdown-box-shadow:			$box-shadow;
+$dropdown-border-color:			rgba(#000, 0.05); 
 $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
 
@@ -233,13 +241,6 @@ $nav-tabs-link-active-color:		$gray-900;
 $custom-control-indicator-checked-color:        #fff;
 $custom-control-indicator-checked-bg:           $blue;
 $custom-control-indicator-checked-disabled-bg:  rgba($blue, .5);
-
-
-// Shadows
-
-$box-shadow-sm:               0 0 .625rem 0 rgba(#000, .05);
-$box-shadow:                  0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
-$box-shadow-lg:               0 1rem 3rem rgba(#000, .125);
 
 
 // Misc

@@ -97,14 +97,14 @@
 										if (item.IsPaymentMethod)
 										{
 											<a class="dropdown-item" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
-												<i class="fa fa-fw fa-pencil-square-o"></i>
+												<i class="far fa-fw fa-pen-square"></i>
 												<span>@T("Admin.Common.Edit")</span>
 											</a>
 										}
 										else
 										{
 											<a class="dropdown-item module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
-												<i class="fa fa-fw fa-pencil-square-o"></i>
+												<i class="far fa-fw fa-pen-square"></i>
 												<span>@T("Admin.Common.Edit")</span>
 											</a>
 										}

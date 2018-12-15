@@ -18,8 +18,8 @@
 			position: absolute;
 			right: $dropdown-item-padding-x / 2;
 			top: 50%;
-			transform: translateY(-50%);
-			@include fontawesome("\f105", 16px); // angle-right
+			transform: translateY(-40%);
+			@include fontawesome("\f105", 13px); // angle-right
 		}
 	}
 
@@ -56,10 +56,12 @@
 // ==============================================================
 
 .dropdown-menu-light-icons .dropdown-item:not(.disabled) > i {
-	color: $text-muted;
+	color: mix($gray-600, $gray-700, 50%);
 }
 
 .dropdown-item {
+    position: relative;
+
 	&.disabled {
 		cursor: default;
 	}
@@ -72,7 +74,7 @@
 
 	&:not(.disabled) {
 		> i {
-			color: lighten($dropdown-link-color, 20%);
+			color: lighten($dropdown-link-color, 15%);
 		}
 
 		.dropdown-group.show > & > i,

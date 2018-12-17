@@ -723,7 +723,6 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.OrderMinimumQuantity, 1);
 				row.SetProperty(context.Result, (x) => x.OrderMaximumQuantity, 100);
 				row.SetProperty(context.Result, (x) => x.QuantityStep, 1);
-				row.SetProperty(context.Result, (x) => x.QuantiyControlType);
 				row.SetProperty(context.Result, (x) => x.HideQuantityControl);
                 row.SetProperty(context.Result, (x) => x.AllowedQuantities);
 				row.SetProperty(context.Result, (x) => x.DisableBuyButton);
@@ -763,6 +762,11 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 				row.SetProperty(context.Result, (x) => x.CustomsTariffNumber);
 				row.SetProperty(context.Result, (x) => x.CountryOfOriginId);
+
+                if (row.TryGetDataValue("QuantiyControlType", out int qct))
+                {
+                    product.QuantiyControlType = (QuantityControlType)qct;
+                }
 
 				if (row.TryGetDataValue("ProductTemplateViewPath", out string tvp, row.IsTransient))
 				{

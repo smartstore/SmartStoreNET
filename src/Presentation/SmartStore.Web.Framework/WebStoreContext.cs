@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Web.Framework
@@ -14,13 +15,13 @@ namespace SmartStore.Web.Framework
 	{
 		internal const string OverriddenStoreIdKey = "OverriddenStoreId";
 		
-		private readonly IStoreService _storeService;
+		private readonly Work<IStoreService> _storeService;
 		private readonly IWebHelper _webHelper;
 		private readonly HttpContextBase _httpContext;
 
 		private Store _currentStore;
 
-		public WebStoreContext(IStoreService storeService, IWebHelper webHelper, HttpContextBase httpContext)
+		public WebStoreContext(Work<IStoreService> storeService, IWebHelper webHelper, HttpContextBase httpContext)
 		{
 			_storeService = storeService;
 			_webHelper = webHelper;
@@ -109,14 +110,14 @@ namespace SmartStore.Web.Framework
 					if (storeOverride.HasValue)
 					{
 						// the store to be used can be overwritten on request basis (e.g. for theme preview, editing etc.)
-						_currentStore = _storeService.GetStoreById(storeOverride.Value);
+						_currentStore = _storeService.Value.GetStoreById(storeOverride.Value);
 					}
 
 					if (_currentStore == null)
 					{
 						// ty to determine the current store by HTTP_HOST
 						var host = _webHelper.ServerVariables("HTTP_HOST");
-						var allStores = _storeService.GetAllStores();
+						var allStores = _storeService.Value.GetAllStores();
 						var store = allStores.FirstOrDefault(s => s.ContainsHostValue(host));
 
 						if (store == null)
@@ -147,7 +148,7 @@ namespace SmartStore.Web.Framework
 		{
 			get
 			{
-				return _storeService.IsSingleStoreMode() ? 0 : CurrentStore.Id;
+				return _storeService.Value.IsSingleStoreMode() ? 0 : CurrentStore.Id;
 			}
 		}
 

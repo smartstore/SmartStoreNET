@@ -598,7 +598,23 @@
 		// html text collapser
 		if ($.fn.moreLess) {
 			$('.more-less').moreLess();
-		}
+        }
+
+        // Unselectable radio button groups
+        $(document).on('click', '.btn-group-toggle.unselectable > .btn', function (e) {
+            var btn = $(this);
+            var radio = btn.find('input:radio');
+
+            if (radio.length && radio.prop('checked')) {
+                _.delay(function () {
+                    radio.prop('checked', false);
+                    btn.removeClass('active focus');
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, 50);
+            }
+        });
 
 		// state region dropdown
 		$(document).on('change', '.country-selector', function () {

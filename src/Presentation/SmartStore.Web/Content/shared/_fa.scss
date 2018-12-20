@@ -2,13 +2,13 @@
 /// <reference path="_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
-.fa,
+/*.fa,
 .fal,
 .far,
 .fas,
 .fab {
     font-size: $icon-font-size-base;
-}
+}*/
 
 @if $fa-use-pro == false {
     // Shim for light icons

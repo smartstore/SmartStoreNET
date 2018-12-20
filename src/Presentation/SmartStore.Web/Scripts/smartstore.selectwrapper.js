@@ -179,7 +179,7 @@
                         imageUrl = option.data('imageurl'),
                         color = option.data('color'),
                         hint = option.data('hint')
-                        faIcon = option.data('fa-icon');
+                        icon = option.data('icon');
                     
                     if (imageUrl) {
                         return $('<span class="choice-item"><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
@@ -190,8 +190,20 @@
                     else if (hint && isResult) {
                         return $('<span class="select2-option"><span>' + item.text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
                     }
-                    else if (faIcon) {
-                        return $('<span class="choice-item"><i class="fa ' + faIcon + ' fa-fw mr-2" />' + item.text + '</span>');
+                    else if (icon) {
+                        var html = ['<span class="choice-item">'];
+                        var icons = _.isArray(icon) ? icon : [icon];
+                        var len = (isResult ? 2 : 0) || icons.length;
+
+                        for (i = 0; i < len; i++) {
+                            var iconClass = (i < icons.length ? icons[i] + " " : "far ") + "fa-fw mr-2 fs-h6";
+                            html.push('<i class="' + iconClass + '" />');
+                        }
+
+                        html.push(item.text);
+                        html.push('</span>');
+
+                        return html;
                     }
                     else {
                         return $('<span class="select2-option">' + item.text + '</span>');
@@ -211,7 +223,7 @@
                 templateSelection: function (item) {
                     return renderSelectItem(item, false);
                 },
-                closeOnSelect: !(sel.prop('multiple') || sel.data("tags")),
+                closeOnSelect: !sel.prop('multiple'), //|| sel.data("tags"),
                 adaptContainerCssClass: function (c) {
                     if (_.str.startsWith(c, "select-"))
                         return c;
@@ -223,6 +235,35 @@
                         return c;
                     else
                         return null;
+                },
+                matcher: function (params, data) {
+                    // If there are no search terms, return all of the data
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+
+                    // Do not display the item if there is no 'text' property
+                    if (typeof data.text === 'undefined') {
+                        return null;
+                    }
+
+                    if (data.text.indexOf(params.term) > -1) {
+                        return data;
+                    }
+
+                    var terms = $(data.element).data("terms");
+                    if (terms) {
+                        terms = _.isArray(terms) ? terms : [terms];
+                        if (terms.length > 0) {
+                            for (var i = 0; i < terms.length; i++) {
+                                if (terms[i].indexOf(params.term) > -1) {
+                                    return data;
+                                }
+                            }
+                        }
+                    }
+
+                    return null;
                 }
             };
 

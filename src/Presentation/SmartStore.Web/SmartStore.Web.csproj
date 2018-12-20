@@ -1057,6 +1057,7 @@
     <Content Include="Content\vendors\fa5\webfonts\fa-solid-900.woff" />
     <Content Include="Content\vendors\fa5\webfonts\fa-solid-900.woff2" />
     <Content Include="Content\shared\_fa.scss" />
+    <Content Include="App_Data\icons.json" />
     <None Include="Content\vendors\x-editable\README.txt" />
     <Content Include="favicon.ico" />
     <Content Include="favicon.readme.txt" />
@@ -1827,7 +1828,7 @@
     <Content Include="Themes\Flex\Content\_accordion.scss">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\Shared\EditorTemplates\FontAwesomeIcon.cshtml" />
+    <Content Include="Views\Shared\Partials\FontAwesomeIcon.cshtml" />
     <Content Include="Views\Shared\Partials\_Assets.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>

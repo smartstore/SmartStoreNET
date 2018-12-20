@@ -1,0 +1,69 @@
+﻿@model IIcon
+
+@using Newtonsoft.Json;
+@using SmartStore.Web.Framework;
+
+@{
+	var iconExplorer = EngineContext.Current.Resolve<IIconExplorer>(); 
+	var isCustom = false;
+	if (Model.Icon.HasValue())
+	{
+		isCustom = iconExplorer.GetIconByName(Model.Icon) == null;
+	}
+}
+
+<div class="row xs-gutters">
+	<div class="col">
+		<select id="@Html.IdFor(x => x.Icon)" name="@Html.NameFor(x => x.Icon)" data-tags="true" data-icon-cols="2">
+			@if (isCustom)
+			{
+				<option value="@Model.Icon" data-icon="fas fa-question text-warning">
+					@Model.Icon
+				</option>
+			}
+
+			@foreach (var icon in iconExplorer.All)
+			{
+				var iconClass = string.Empty;
+				if (icon.IsBrandIcon)
+				{
+					iconClass = "fab fa-" + icon.Name;
+				}
+				else if (icon.HasRegularStyle)
+				{
+					iconClass = "[\"fas fa-" + icon.Name + "\", \"far fa-" + icon.Name + "\"]";
+				}
+				else
+				{
+					iconClass = "fas fa-" + icon.Name;
+				}
+
+				string terms = null;
+				if (icon.SearchInfo.Terms.Length > 0)
+				{
+					terms = JsonConvert.SerializeObject(icon.SearchInfo.Terms);
+				}
+
+				<option value="@icon.Name" data-icon="@iconClass" data-terms="@terms" @Html.Attr("selected", "selected", !isCustom && Model.Icon.EmptyNull().Equals(icon.Name))>
+					@icon.Name
+				</option>
+			}
+		</select>
+	</div>
+	<div class="col-auto">
+		<div class="btn-group btn-group-toggle unselectable" data-toggle="buttons">
+			<label class="btn btn-icon btn-secondary@(Model.Style == "fas" ? " active" : "")" title="Solid">
+				<input type="radio" name="@Html.FieldNameFor(x => x.Style)" value="fas" @(Model.Style == "fas" ? "checked" : "") />
+				<span class="d-inline-block rounded-circle bg-dark" style="width:14px; height:14px; line-height:14px; vertical-align:-1px"></span>
+			</label>
+			<label class="btn btn-icon btn-secondary@(Model.Style == "far" ? " active" : "")" title="Regular">
+				<input type="radio" name="@Html.FieldNameFor(x => x.Style)" value="far" @(Model.Style == "far" ? "checked" : "") />
+				<span class="d-inline-block rounded-circle border border-dark" style="width:14px; height:14px; border-width: 2px !important; vertical-align:-1px"></span>
+			</label>
+			<label class="btn btn-icon btn-secondary@(Model.Style == "fal" ? " active" : "")" title="Light (Pro only)">
+				<input type="radio" name="@Html.FieldNameFor(x => x.Style)" value="fal" @(Model.Style == "fal" ? "checked" : "") />
+				<span class="d-inline-block rounded-circle border border-gray" style="width:14px; height:14px; border-width: 1px !important; vertical-align:-1px"></span>
+			</label>
+		</div>
+	</div>
+</div>

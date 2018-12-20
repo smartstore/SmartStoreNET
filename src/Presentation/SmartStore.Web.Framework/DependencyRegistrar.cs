@@ -828,6 +828,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
 			builder.RegisterType<MenuPublisher>().As<IMenuPublisher>().InstancePerRequest();
 			builder.RegisterType<DefaultBreadcrumb>().As<IBreadcrumb>().InstancePerRequest();
+			builder.RegisterType<IconExplorer>().As<IIconExplorer>().SingleInstance();
 
 			// Sitemaps
 			builder.RegisterType<SiteMapService>().As<ISiteMapService>().InstancePerRequest();

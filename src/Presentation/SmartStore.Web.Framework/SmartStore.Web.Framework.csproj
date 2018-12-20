@@ -359,6 +359,9 @@
     <Compile Include="UI\Components\Window\Window.cs" />
     <Compile Include="UI\Breadcrumb.cs" />
     <Compile Include="UI\Blocks\IBlock.cs" />
+    <Compile Include="UI\Icons\IconDescription.cs" />
+    <Compile Include="UI\Icons\IconExplorer.cs" />
+    <Compile Include="UI\Icons\IIcon.cs" />
     <Compile Include="UI\IWidgetProvider.cs" />
     <Compile Include="UI\IWidgetSelector.cs" />
     <Compile Include="UI\BundleBuilder.cs" />

@@ -63,6 +63,7 @@
 * Enhanced EntityPicker to pick from customers, manufacturers & categories
 * #1510 Breadcrumb of an associated product should include the grouped product if it has no assigned categories.
 * OpenTrans: added customer number to parties
+* Do not filter cookie using resources if cookie usage has not yet been consented to
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

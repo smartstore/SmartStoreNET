@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
@@ -35,7 +36,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
 		#region Fields & Constants
 
@@ -481,9 +482,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx));
-					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
-
+                    var storeService = new StoreService(new EfRepository<Store>(_ctx));
+					var storeContext = new WebStoreContext(new Work<IStoreService>(x => storeService), new WebHelper(null), null);
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(

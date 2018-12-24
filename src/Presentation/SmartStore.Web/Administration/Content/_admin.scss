@@ -931,18 +931,16 @@ a.admin-config-group[data-toggle=collapse] {
     position: relative;
 
     &:after {
-	    display: block;
-	    position: absolute;
-	    font-family: FontAwesome;
-	    font-size: 1.2rem;
-	    line-height: 1;
-	    content: "\f107";
+        @include fontawesome-font("\f107", regular);    // angle-down
+        display: block;
+        position: absolute;
+        font-size: 1.2rem;
+        line-height: 1;
         color: $body-color;
-	    //content: "\f077";
         right: 0;
-	    top: 50%;
-	    margin-top: -7px;
-	    transition: transform 0.25s ease-in-out;
+        top: 50%;
+        margin-top: -7px;
+        transition: transform 0.25s ease-in-out;
     }
 
     &.collapsed:after {

@@ -19,7 +19,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	[AdminAuthorize]
+    [AdminAuthorize]
     public class TopicController : AdminControllerBase
     {
         private readonly ITopicService _topicService;
@@ -61,9 +61,8 @@ namespace SmartStore.Admin.Controllers
                 _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
                 _localizedEntityService.SaveLocalizedValue(topic, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
 
-				var seName = topic.ValidateSeName(localized.SeName, localized.Title.NullEmpty() ?? localized.ShortTitle, false);
+				var seName = topic.ValidateSeName(localized.SeName, localized.Title.NullEmpty() ?? localized.ShortTitle, false, localized.LanguageId);
 				_urlRecordService.SaveSlug(topic, seName, localized.LanguageId);
-
 			}
         }
 

@@ -84,7 +84,7 @@ namespace SmartStore.Admin.Controllers
                                                            localized.MetaTitle,
                                                            localized.LanguageId);
 
-				var seName = topic.ValidateSeName(localized.SeName, localized.Title, false);
+				var seName = topic.ValidateSeName(localized.SeName, localized.Title, false, localized.LanguageId);
 				_urlRecordService.SaveSlug(topic, seName, localized.LanguageId);
 
 			}

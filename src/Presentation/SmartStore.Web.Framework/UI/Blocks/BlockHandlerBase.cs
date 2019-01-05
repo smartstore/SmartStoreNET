@@ -42,6 +42,11 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			return block;
 		}
 
+		public virtual bool IsValid(T block)
+		{
+			return true;
+		}
+
 		public virtual void Save(T block, IBlockEntity entity)
 		{
 			Guard.NotNull(entity, nameof(entity));

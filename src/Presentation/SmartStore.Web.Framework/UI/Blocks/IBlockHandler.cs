@@ -25,6 +25,8 @@ namespace SmartStore.Web.Framework.UI.Blocks
 
 		T Load(IBlockEntity entity, StoryViewMode viewMode);
 
+		bool IsValid(T block);
+
 		void Save(T block, IBlockEntity entity);
 
 		string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity);

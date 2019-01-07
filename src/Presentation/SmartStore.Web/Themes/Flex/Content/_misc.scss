@@ -158,3 +158,33 @@
     display: -webkit-box !important;
     display: -ms-flexbox !important;
 }
+
+
+//
+// Vars
+// -------------------------------------------------
+
+:root {
+
+  $varnames: ();
+
+  @each $color, $value in $colors {
+    $varnames: $varnames + '--' + $color + ",";
+  }
+
+  @each $color, $value in $theme-colors {
+    $varnames: $varnames + '--' + $color + ",";
+  }
+
+  @each $color, $value in $grays {
+    $varnames: $varnames + '--gray-' + $color + ",";
+    --gray-#{$color}: $value;
+  }
+  
+  $varnames: $varnames + '--body,--muted,--black';
+
+  --varnames: $varnames;
+  --body: $body-color;
+  --muted: $text-muted;
+  --black: #000;
+}

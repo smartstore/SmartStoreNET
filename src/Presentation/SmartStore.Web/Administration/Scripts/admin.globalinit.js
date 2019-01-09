@@ -112,7 +112,8 @@
         });
 
         $("#page").tooltip({
-            selector: "a[rel=tooltip], .tooltip-toggle"
+            selector: "a[rel=tooltip], .tooltip-toggle",
+            trigger: 'hover'
         });
 
         // Temp only

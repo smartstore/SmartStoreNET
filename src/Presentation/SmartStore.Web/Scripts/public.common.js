@@ -34,7 +34,11 @@
             if ($.fn.tooltip === undefined)
                 return;
             if (!Modernizr.touchevents) {
-                ctx.tooltip({ selector: '[data-toggle=tooltip], .tooltip-toggle', animation: false });
+                ctx.tooltip({
+                    selector: '[data-toggle=tooltip], .tooltip-toggle',
+                    animation: false,
+                    trigger: 'hover'
+                });
             }
         },
         // touch spin

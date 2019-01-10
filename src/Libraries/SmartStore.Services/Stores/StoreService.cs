@@ -1,29 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Data;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
-using SmartStore.Services.Media;
-using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Services.Stores
 {
 	public partial class StoreService : IStoreService
 	{
 		private readonly IRepository<Store> _storeRepository;
-		private readonly IEventPublisher _eventPublisher;
-		private readonly SecuritySettings _securitySettings;
 
 		private bool? _isSingleStoreMode = null;
 
-		public StoreService(IRepository<Store> storeRepository, IEventPublisher eventPublisher, SecuritySettings securitySettings)
+		public StoreService(IRepository<Store> storeRepository)
 		{
 			_storeRepository = storeRepository;
-			_eventPublisher = eventPublisher;
-			_securitySettings = securitySettings;
 		}
 
 		public virtual void DeleteStore(Store store)

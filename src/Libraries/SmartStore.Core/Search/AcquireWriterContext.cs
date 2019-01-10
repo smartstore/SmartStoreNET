@@ -11,7 +11,6 @@ namespace SmartStore.Core.Search
 	public enum AcquirementReason
 	{
 		Indexing,
-		Optimizing,
 		Deleting
 	}
 

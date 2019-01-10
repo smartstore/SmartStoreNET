@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -62,6 +63,20 @@ namespace SmartStore.Web.Framework.UI
 							var value = kvp.Value;
 
 							value.Name = key;
+
+							// Styles
+							var styles = value.Styles;
+							if (styles != null)
+							{
+								if (styles.Length == 1 && styles[0] == "brands")
+								{
+									value.IsBrandIcon = true;
+								}
+								else if (styles.Contains("regular"))
+								{
+									value.HasRegularStyle = true;
+								}
+							}
 
 							if (value.SearchInfo?.Terms?.Length > 0)
 							{
@@ -127,7 +142,18 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotEmpty(name, nameof(name));
 			EnsureIsLoaded();
 
-			_icons.TryGetValue(name, out var description);
+			if (!_icons.TryGetValue(name, out var description))
+			{
+				description = new IconDescription
+				{
+					IsPro = true,
+					Name = name,
+					Label = name,
+					Styles = new[] { "solid", "regular", "light" },
+					HasRegularStyle = true,
+				};
+			}
+
 			return description;
 		}
 

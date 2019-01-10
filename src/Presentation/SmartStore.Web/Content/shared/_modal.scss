@@ -10,9 +10,9 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 // FLEX MODAL
 // ------------------------------------
 
-.modal-backdrop.show {
+/*.modal-backdrop.show {
     backdrop-filter: blur(3px);
-}
+}*/
 
 .modal-backdrop.fade {
     // fade out

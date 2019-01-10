@@ -24,29 +24,52 @@ namespace SmartStore.Web.Framework.UI
 		[JsonIgnore]
 		public bool IsBrandIcon
 		{
-			get
-			{
-				if (Styles != null && Styles.Length == 1)
-				{
-					return Styles[0] == "brands";
-				}
-
-				return false;
-			}
+			get;
+			internal set;
 		}
 
 		[JsonIgnore]
 		public bool HasRegularStyle
 		{
-			get
-			{
-				if (Styles != null)
-				{
-					return Styles.Contains("regular");
-				}
+			get;
+			internal set;
+		}
 
-				return false;
+		[JsonIgnore]
+		public bool IsPro
+		{
+			get;
+			internal set;
+		}
+
+		public string GetCssClass(string style)
+		{
+			var prefix = "fa";
+
+			if (IsBrandIcon)
+			{
+				prefix = "fab";
 			}
+			else
+			{
+				switch (style)
+				{
+					case "solid":
+					case "fas":
+						prefix = "fas";
+						break;
+					case "regular":
+					case "far":
+						prefix = "far";
+						break;
+					case "light":
+					case "fal":
+						prefix = "fal";
+						break;
+				}
+			}
+
+			return string.Concat(prefix, " fa-", Name);
 		}
 
 		public class Search

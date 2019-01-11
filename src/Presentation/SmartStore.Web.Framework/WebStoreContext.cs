@@ -21,11 +21,11 @@ namespace SmartStore.Web.Framework
 
 		private Store _currentStore;
 
-		public WebStoreContext(Work<IStoreService> storeService, IWebHelper webHelper, HttpContextBase httpContext)
+		public WebStoreContext(Work<IStoreService> storeService)
 		{
 			_storeService = storeService;
-			_webHelper = webHelper;
-			_httpContext = httpContext;
+			_httpContext = new HttpContextWrapper(HttpContext.Current);
+			_webHelper = new WebHelper(_httpContext);
 		}
 
 		public void SetRequestStore(int? storeId)

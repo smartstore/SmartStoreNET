@@ -33,6 +33,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -482,8 +483,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-                    var storeService = new StoreService(new EfRepository<Store>(_ctx));
-					var storeContext = new WebStoreContext(new Work<IStoreService>(x => storeService), new WebHelper(null), null);
+					var storeService = new StoreService(new EfRepository<Store>(_ctx));
+					var storeContext = new WebStoreContext(new Work<IStoreService>(x => storeService));
+                    
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(

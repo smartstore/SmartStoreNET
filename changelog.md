@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -103,7 +103,8 @@
 * Product display order on category and manufacturer pages sometimes wrong when using linq search.
 * Debitoor: Wrong invoice total if a subtotal discount has been applied.
 * Import: Fixes invalid conversion "System.Double" to "SmartStore.Core.Domain.Catalog.QuantityControlType".
-* Topics: Fixes "Cannot insert duplicate key row in object 'dbo.UrlRecord' with unique index 'IX_UrlRecord_Slug'"
+* Topics: Fixes "Cannot insert duplicate key row in object 'dbo.UrlRecord' with unique index 'IX_UrlRecord_Slug'".
+* #1566 Santander: eliminate the 1 cent rounding difference at amountTotalNet.
 * Fixed redirection to the homepage for pages which are loaded while the application is restarted 
 
 

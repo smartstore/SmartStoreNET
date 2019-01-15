@@ -8,7 +8,7 @@
 	var isCustom = false;
 	if (Model.Icon.HasValue())
 	{
-		isCustom = iconExplorer.GetIconByName(Model.Icon) == null;
+		isCustom = iconExplorer.GetIconByName(Model.Icon).IsPro;
 	}
 }
 

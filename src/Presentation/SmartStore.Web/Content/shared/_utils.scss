@@ -262,6 +262,20 @@ table th {
 }
 
 
+// Extra color utils
+// ------------------------------------------------------
+
+@each $g, $value in $grays {
+    .bg-gray-#{$g} {
+        background-color: $value !important;
+    }
+
+    .text-gray-#{$g} {
+        color: $value !important;
+    }
+}
+
+
 //
 // Some shims
 // ------------------------------------------------------

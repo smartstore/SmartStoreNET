@@ -311,7 +311,7 @@
 
     // on document ready
 	$(function () {
-        var rtl = SmartStore.globalization.culture.isRTL,
+        var rtl = SmartStore.globalization != undefined ? SmartStore.globalization.culture.isRTL : false,
             win = $(window),
             body = $(document.body);
 

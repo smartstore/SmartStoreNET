@@ -563,9 +563,8 @@ $btn-size-sm: $input-height-sm;
         $c2: #000;
         $o1: 0.11;
         $o2: 0.08;
+        border-color: $c;
     }
-
-    border-color: $c;
 
     @if $state == 'normal' {
         box-shadow: 0 4px 6px rgba($c1, $o1), 0 1px 3px rgba($c2, $o2);

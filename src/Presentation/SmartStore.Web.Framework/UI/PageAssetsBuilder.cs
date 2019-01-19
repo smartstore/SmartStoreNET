@@ -90,7 +90,7 @@ namespace SmartStore.Web.Framework.UI
 
         public void AddBodyCssClass(string className)
         {
-            if (className.HasValue())
+            if (className.HasValue() && !_bodyCssClasses.Contains(className))
             {
                 _bodyCssClasses.Insert(0, className);
             }

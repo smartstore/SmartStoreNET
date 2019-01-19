@@ -4,7 +4,7 @@
 // Mixins
 // ========================================================================
 
-@mixin scrim-gradient($start-color: #000, $direction: 'to bottom') {
+@mixin scrim-gradient($start-color: #000, $direction: 'to bottom', $radial: false) {
     $coords: (
         0: 1,
         19: 0.738,
@@ -31,7 +31,12 @@
         $stops: append($stops, $stop, comma);
     }
 
-    background: linear-gradient(unquote($direction), $stops);
+    @if $radial == true {
+        background: radial-gradient(unquote($direction), $stops);
+    }
+    @else {
+        background: linear-gradient(unquote($direction), $stops);
+    }   
 }
 
 @mixin center($xy: xy) {

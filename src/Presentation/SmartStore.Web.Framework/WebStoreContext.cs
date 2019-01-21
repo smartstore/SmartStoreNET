@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Services;
+using SmartStore.Core.Fakes;
 
 namespace SmartStore.Web.Framework
 {
@@ -25,7 +26,7 @@ namespace SmartStore.Web.Framework
 		public WebStoreContext(Work<IStoreService> storeService)
 		{
 			_storeService = storeService;
-			_httpContext = new HttpContextWrapper(HttpContext.Current);
+			_httpContext = HttpContext.Current != null ? (HttpContextBase)new HttpContextWrapper(HttpContext.Current) : new FakeHttpContext("~/");
 			_webHelper = new WebHelper(_httpContext);
 		}
 

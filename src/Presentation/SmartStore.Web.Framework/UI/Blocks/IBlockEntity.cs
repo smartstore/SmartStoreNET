@@ -17,5 +17,11 @@ namespace SmartStore.Web.Framework.UI.Blocks
 		string SubTitle { get; set; }
 		string Body { get; set; }
 		string Template { get; set; }
-	}
+        string Custom1 { get; set; }
+        string Custom2 { get; set; }
+        string Custom3 { get; set; }
+        string Custom4 { get; set; }
+        string Custom5 { get; set; }
+
+    }
 }

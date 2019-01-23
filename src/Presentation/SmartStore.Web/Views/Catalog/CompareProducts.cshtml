@@ -210,18 +210,23 @@
 								<th class="caption"><span @Html.LanguageAttributes(specificationAttribute.SpecificationAttributeName)>@specificationAttribute.SpecificationAttributeName</span></th>
 								@foreach (var product in Model.Items)
 								{
-									var foundProductSpec = product.SpecificationAttributes.Where(psa => psa.SpecificationAttributeId == specificationAttribute.SpecificationAttributeId).FirstOrDefault();
-									var specValue = foundProductSpec != null ? foundProductSpec.SpecificationAttributeOption : null;
+									var foundProductSpecs = product.SpecificationAttributes
+                                        .Where(psa => psa.SpecificationAttributeId == specificationAttribute.SpecificationAttributeId);
 
 									<td>
-										@if (specValue != null && specValue.Value.HasValue())
-										{
-											<span @Html.LanguageAttributes(specValue)>@specValue</span>
-										}
-										else
-										{
-											<text>&nbsp;</text>
-										}
+                                        @foreach (var spec in foundProductSpecs)
+                                        {
+                                            var specValue = spec != null ? spec.SpecificationAttributeOption : null;
+
+                                            if (specValue != null && specValue.Value.HasValue())
+                                            {
+											    <div @Html.LanguageAttributes(specValue)>@specValue</div>
+										    }
+										    else
+										    {
+											    <div>&nbsp;</div>
+										    }
+                                        }
 									</td>
 								}
 							</tr>

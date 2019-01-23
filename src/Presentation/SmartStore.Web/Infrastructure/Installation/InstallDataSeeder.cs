@@ -33,7 +33,6 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
-using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {

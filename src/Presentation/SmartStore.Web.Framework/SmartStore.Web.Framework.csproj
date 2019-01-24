@@ -315,7 +315,7 @@
     <Compile Include="UI\Blocks\IBlockHandler.cs" />
     <Compile Include="UI\Blocks\IBlockEntity.cs" />
     <Compile Include="UI\Blocks\IBlockContainer.cs" />
-    <Compile Include="Modelling\StoryExportAssetAttribute.cs" />
+    <Compile Include="UI\Blocks\StoryAssetAttribute.cs" />
     <Compile Include="UI\Choices\ChoiceItemModel.cs" />
     <Compile Include="UI\Choices\GenericChoiceModel.cs" />
     <Compile Include="UI\Choices\ChoiceModel.cs" />

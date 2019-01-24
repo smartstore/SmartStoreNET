@@ -1,22 +1,22 @@
 ﻿using System;
 
-namespace SmartStore.Web.Framework.Modelling
+namespace SmartStore.Web.Framework.UI.Blocks
 {
     /// <summary>
     /// Specifies whether a property refers to an asset to be included in the story export.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public sealed class StoryExportAssetAttribute : Attribute
+    public sealed class StoryAssetAttribute : Attribute
     {
-        public StoryExportAssetAttribute(
-            StoryExportPropertyType type,
+        public StoryAssetAttribute(
+            StoryAssetKind type,
             Type root,
             string rootProperty)
         {
             Guard.NotNull(root, nameof(root));
             Guard.NotEmpty(rootProperty, nameof(rootProperty));
 
-            Type = type;
+            Kind = type;
             Root = root;
             RootProperty = rootProperty;
         }
@@ -24,7 +24,7 @@ namespace SmartStore.Web.Framework.Modelling
         /// <summary>
         /// The asset property type.
         /// </summary>
-        public StoryExportPropertyType Type { get; private set; }
+        public StoryAssetKind Kind { get; private set; }
 
         /// <summary>
         /// The root entity type that contains the model data.
@@ -39,12 +39,12 @@ namespace SmartStore.Web.Framework.Modelling
     }
 
 
-    public enum StoryExportPropertyType
+    public enum StoryAssetKind
     {
         /// <summary>
         /// The property value is a picture identifier.
         /// </summary>
-        PictureId = 0
+        Picture = 0
     }
 
 

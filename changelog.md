@@ -72,6 +72,7 @@
 	* Export the product images if no attribute images are defined
 	* Do not export the first image twice for additional images
 	* Export image URL of full size image (not default size) for additional images
+	* Custom labels were not exported
 * Media middleware: 0-byte files should be treated as missing.
 * Megamenu alpha/omega blends do not toggle correctly on touch devices
 * Summernote HTML editor exceeds parent container width when CodeMirror is activated

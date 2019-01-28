@@ -25,6 +25,11 @@ namespace SmartStore.Web.Framework.UI.Blocks
         /// <summary>
         /// The property value is a picture identifier.
         /// </summary>
-        Picture = 0
+        Picture = 0,
+
+        /// <summary>
+        /// The property value is a video path.
+        /// </summary>
+        Video
     }
 }

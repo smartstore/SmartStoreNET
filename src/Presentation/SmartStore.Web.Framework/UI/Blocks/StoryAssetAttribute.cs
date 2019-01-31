@@ -30,6 +30,21 @@ namespace SmartStore.Web.Framework.UI.Blocks
         /// <summary>
         /// The property value is a video path.
         /// </summary>
-        Video
+        Video,
+
+        /// <summary>
+        /// The property value is a product identifier.
+        /// </summary>
+        Product,
+
+        /// <summary>
+        /// The property value is a category identifier.
+        /// </summary>
+        Category,
+
+        /// <summary>
+        /// The property value is a manufacturer identifier.
+        /// </summary>
+        Manufacturer
     }
 }

@@ -86,10 +86,15 @@ namespace SmartStore.Services.Customers
 		/// </summary>
 		public bool? Deleted { get; set; } = false;
 
-		/// <summary>
-		/// Whether only system account records should be loaded. Default: false (meaning: ignore system accounts)
-		/// </summary>
-		public bool? IsSystemAccount { get; set; } = false;
+        /// <summary>
+        /// Whether only active customers should be loaded.
+        /// </summary>
+        public bool? Active { get; set; }
+
+        /// <summary>
+        /// Whether only system account records should be loaded. Default: false (meaning: ignore system accounts)
+        /// </summary>
+        public bool? IsSystemAccount { get; set; } = false;
 
 		/// <summary>
 		/// Searches in FullName (FirstName + LastName) and Company fields. Default: null.

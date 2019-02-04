@@ -107,7 +107,8 @@
 * Import: Fixes invalid conversion "System.Double" to "SmartStore.Core.Domain.Catalog.QuantityControlType".
 * Topics: Fixes "Cannot insert duplicate key row in object 'dbo.UrlRecord' with unique index 'IX_UrlRecord_Slug'".
 * #1566 Santander: eliminate the 1 cent rounding difference at amountTotalNet.
-* Fixed redirection to the homepage for pages which are loaded while the application is restarted 
+* Fixed redirection to the homepage for pages which are loaded while the application is restarted.
+* #1570 Filter option "Only deactivated customers" filters deleted instead of deactivated customers.
 
 
 ## SmartStore.NET 3.1.5

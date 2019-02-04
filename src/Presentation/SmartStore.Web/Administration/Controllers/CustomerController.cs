@@ -74,7 +74,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly IQueuedEmailService _queuedEmailService;
-        private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEmailAccountService _emailAccountService;
         private readonly ForumSettings _forumSettings;
         private readonly IForumService _forumService;
@@ -108,7 +107,7 @@ namespace SmartStore.Admin.Controllers
             ICustomerActivityService customerActivityService,
             IPriceCalculationService priceCalculationService,
             IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
-            IQueuedEmailService queuedEmailService, EmailAccountSettings emailAccountSettings,
+            IQueuedEmailService queuedEmailService,
             IEmailAccountService emailAccountService, ForumSettings forumSettings,
             IForumService forumService, IOpenAuthenticationService openAuthenticationService,
 			AddressSettings addressSettings, IStoreService storeService,
@@ -142,7 +141,6 @@ namespace SmartStore.Admin.Controllers
             _permissionService = permissionService;
             _adminAreaSettings = adminAreaSettings;
             _queuedEmailService = queuedEmailService;
-            _emailAccountSettings = emailAccountSettings;
             _emailAccountService = emailAccountService;
             _forumSettings = forumSettings;
             _forumService = forumService;
@@ -501,7 +499,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult CustomerList(GridCommand command, CustomerListModel model)
         {
-			// We use own own binder for searchCustomerRoleIds property 
+			// We use own own binder for searchCustomerRoleIds property.
 			var gridModel = new GridModel<CustomerModel>();
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
@@ -516,7 +514,8 @@ namespace SmartStore.Admin.Controllers
 					MonthOfBirth = model.SearchMonthOfBirth.ToInt(),
 					Phone = model.SearchPhone,
 					ZipPostalCode = model.SearchZipPostalCode,
-					Deleted = model.SearchDeletedOnly,
+					Deleted = false,
+                    Active = model.SearchActiveOnly,
 					PageIndex = command.Page - 1,
 					PageSize = command.PageSize
 				};

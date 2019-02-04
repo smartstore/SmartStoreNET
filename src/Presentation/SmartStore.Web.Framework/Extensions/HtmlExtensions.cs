@@ -148,20 +148,26 @@ namespace SmartStore.Web.Framework
 		{
 			var result = new StringBuilder();
 
-			var labelAttrs = new RouteValueDictionary(htmlAttributes);
-			//labelAttrs.AppendCssClass("col-form-label");
-
-			var label = helper.Label(expression, labelText, labelAttrs);
-
 			result.Append("<div class='ctl-label'>");
-			{
-				result.Append(label);
-				if (hint.HasValue())
-				{
-					result.Append(helper.Hint(hint).ToHtmlString());
-				}
-			}
-			result.Append("</div>");
+
+            if (expression.IsEmpty() && labelText.IsEmpty())
+            {
+                result.Append("<label>&nbsp;</label>");
+            }
+            else
+            {
+                var labelAttrs = new RouteValueDictionary(htmlAttributes);
+                var label = helper.Label(expression, labelText, labelAttrs);
+
+                result.Append(label);
+            }
+
+            if (hint.HasValue())
+            {
+                result.Append(helper.Hint(hint).ToHtmlString());
+            }
+
+            result.Append("</div>");
 
 			return MvcHtmlString.Create(result.ToString());
 		}

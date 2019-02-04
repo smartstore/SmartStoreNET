@@ -182,6 +182,11 @@ namespace SmartStore.Services.Customers
 				query = query.Where(c => c.Deleted == q.Deleted.Value);
 			}
 
+            if (q.Active.HasValue)
+            {
+                query = query.Where(c => c.Active == q.Active.Value);
+            }
+
 			if (q.IsSystemAccount.HasValue)
 			{
 				query = q.IsSystemAccount.Value == true
@@ -200,9 +205,9 @@ namespace SmartStore.Services.Customers
 			{
 				query = query
 					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+					.Where(z => z.Attribute.KeyGroup == "Customer" &&
 						z.Attribute.Key == SystemCustomerAttributeNames.Phone &&
-						z.Attribute.Value.Contains(q.Phone)))
+						z.Attribute.Value.Contains(q.Phone))
 					.Select(z => z.Customer);
 			}
 
@@ -211,9 +216,9 @@ namespace SmartStore.Services.Customers
 			{
 				query = query
 					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+					.Where(z => z.Attribute.KeyGroup == "Customer" &&
 						z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
-						z.Attribute.Value.Contains(q.ZipPostalCode)))
+						z.Attribute.Value.Contains(q.ZipPostalCode))
 					.Select(z => z.Customer);
 			}
 

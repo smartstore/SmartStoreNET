@@ -8,7 +8,7 @@ namespace SmartStore.Admin.Models.Customers
 {
     public class CustomerListModel : ModelBase
     {
-		public CustomerListModel ()
+		public CustomerListModel()
 		{
 			AvailableCustomerRoles = new List<SelectListItem>();
 		}
@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Models.Customers
         public string SearchZipPostalCode { get; set; }
         public bool ZipPostalCodeEnabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Customers.Customers.List.SearchDeletedOnly")]
-		public bool SearchDeletedOnly { get; set; }
-	}
+        [SmartResourceDisplayName("Admin.Customers.Customers.List.SearchActiveOnly")]
+        public bool? SearchActiveOnly { get; set; }
+    }
 }

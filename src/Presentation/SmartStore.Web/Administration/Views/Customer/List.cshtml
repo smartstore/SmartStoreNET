@@ -97,20 +97,15 @@
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.SearchCustomerRoleIds)
-			@*@Html.DropDownListFor(model => model.SearchCustomerRoleIds, Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })*@
 			@Html.DropDownList("SearchCustomerRoleIds", Model.AvailableCustomerRoles, null, new { multiple = "multiple", @class = "form-control" })
 		</div>
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			<label>&nbsp;</label>
-			<div class="form-check form-control-plaintext">
-				@Html.CheckBoxFor(model => model.SearchDeletedOnly, new { @class = "form-check-input" })
-				<label class="form-check-label" for="SearchDeletedOnly">@Html.DisplayNameFor(model => model.SearchDeletedOnly)</label>
-			</div>	
+			@Html.SmartLabelFor(model => model.SearchActiveOnly)
+			@Html.EditorFor(model => Model.SearchActiveOnly, new { @class = "form-control sf" })
 		</div>
 
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
-			<label>&nbsp;</label>
 			<button type="submit" id="search-customers" name="search-customers" class="btn btn-warning btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
@@ -122,7 +117,8 @@
 		.Name("customers-grid")
 		.ClientEvents(events => events
 			.OnDataBinding("onDataBinding")
-			.OnDataBound("onDataBound"))
+			.OnDataBound("onDataBound")
+            .OnRowDataBound("onRowDataBound"))
 		.Columns(columns =>
 		{
 			columns.Bound(x => x.Id)
@@ -216,8 +212,7 @@
 			});
 		});
 
-		function onDataBound(e) {
-
+		function onDataBound() {
 			$('#customers-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
 				var currentId = $(this).val();
 				var checked = jQuery.inArray(currentId, selectedIds);
@@ -226,7 +221,13 @@
 			});
 
 			updateMasterCheckbox();
-		}
+        }
+
+        function onRowDataBound(e) {
+		    if (!e.dataItem.Active) {
+			    $(e.row).find('td').wrapInner('<span class="muted" />');
+		    }
+        }
 
 		function updateMasterCheckbox() {
 			var numChkBoxes = $('#customers-grid input[type=checkbox][id!=mastercheckbox]').length;
@@ -244,7 +245,7 @@
 				SearchMonthOfBirth: $('#@Html.FieldIdFor(model => model.SearchMonthOfBirth)').val(),
 				SearchPhone: $('#@Html.FieldIdFor(model => model.SearchPhone)').val(),
 				SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val(),
-				SearchDeletedOnly: $('#@Html.FieldIdFor(model => model.SearchDeletedOnly)').prop('checked')
+				SearchActiveOnly: $('#@Html.FieldIdFor(model => model.SearchActiveOnly)').val()
 			};
 			e.data = searchModel;
 		}

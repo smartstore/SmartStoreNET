@@ -651,6 +651,9 @@
             builder.AddOrUpdate("Common.Entity.SelectCategory", "Select category", "Warengruppe auswählen");
             builder.AddOrUpdate("Common.Entity.SelectManufacturer", "Select manufacturer", "Hersteller auswählen");
             builder.AddOrUpdate("Common.Entity.SelectTopic", "Select topic", "Seite auswählen");
+
+            builder.Delete("Admin.Customers.Customers.List.SearchDeletedOnly");
+            builder.AddOrUpdate("Admin.Customers.Customers.List.SearchActiveOnly", "Only activated customers", "Nur aktivierte Kunden");
         }
     }
 }

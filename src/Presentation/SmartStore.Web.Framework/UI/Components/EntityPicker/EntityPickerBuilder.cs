@@ -71,8 +71,6 @@ namespace SmartStore.Web.Framework.UI
 
 		public EntityPickerBuilder<TModel> For(string expression)
 		{
-			Guard.NotEmpty(expression, nameof(expression));
-
 			base.Component.TargetInputSelector = "#" + this.HtmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(expression);
 			return this;
 		}

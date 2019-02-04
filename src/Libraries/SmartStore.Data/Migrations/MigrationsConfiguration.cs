@@ -641,6 +641,16 @@
             builder.AddOrUpdate("Admin.Configuration.Languages.AvailableLanguages.Note",
                 "Click <b class=\"font-weight-medium\">Download</b> to install a new language including all localized resources. On <a class=\"font-weight-medium\" href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> you will find more details about available resources.",
                 "Klicken Sie auf <b class=\"font-weight-medium\">Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a class=\"font-weight-medium\" href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
+
+            builder.AddOrUpdate("Common.Entity.Product", "Product", "Produkt");
+            builder.AddOrUpdate("Common.Entity.Category", "Category", "Warengruppe");
+            builder.AddOrUpdate("Common.Entity.Manufacturer", "Manufacturer", "Hersteller");
+            builder.AddOrUpdate("Common.Entity.Topic", "Topic", "Seite");
+
+            builder.AddOrUpdate("Common.Entity.SelectProduct", "Select product", "Produkt auswählen");
+            builder.AddOrUpdate("Common.Entity.SelectCategory", "Select category", "Warengruppe auswählen");
+            builder.AddOrUpdate("Common.Entity.SelectManufacturer", "Select manufacturer", "Hersteller auswählen");
+            builder.AddOrUpdate("Common.Entity.SelectTopic", "Select topic", "Seite auswählen");
         }
     }
 }

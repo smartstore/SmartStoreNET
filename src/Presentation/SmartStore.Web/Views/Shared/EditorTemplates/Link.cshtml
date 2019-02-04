@@ -1,0 +1,49 @@
+@functions
+{
+    private dynamic GetTypeInfo(string type)
+    {
+        switch (type)
+        {
+            case "product":
+                return new { icon = "fa fa-cube", title = T("Common.Entity.Product").Text };
+            case "category":
+                return new { icon = "fa fa-sitemap", title = T("Common.Entity.Category").Text };
+            case "manufacturer":
+                return new { icon = "far fa-building", title = T("Common.Entity.Manufacturer").Text };
+            case "topic":
+                return new { icon = "far fa-file", title = T("Common.Entity.Topic").Text };
+            default:
+                return new { icon = "fa fa-link", title = "URL" };
+        }
+    }
+
+    private string Value => ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
+}
+
+@{
+    var type = (GetMetadata<string>("type").NullEmpty() ?? "product").ToLower();
+    var typeInfo = GetTypeInfo(type);
+    var maxItems = GetMetadata<int?>("maxItems") ?? 1;
+    var appendMode = GetMetadata<bool?>("appendMode") ?? false;
+}
+
+<div class="input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text" style="max-width: 45px;" title="@typeInfo.title">
+            <i class="fa-fw @typeInfo.icon"></i>
+        </span>
+    </div>
+    @Html.TextBox("", Value, new { @class = "form-control" })
+    <div class="input-group-append">
+		@(Html.SmartStore().EntityPicker()
+            .For(string.Empty)
+            .EntityType("product")
+			.MaxItems(maxItems)
+			.AppendMode(appendMode)
+            .FieldName("link")
+			.DialogTitle(T("Common.Entity.SelectProduct").Text.EncodeJsString('\'', false))
+			.Caption(T("Common.Search").Text.EncodeJsString('\'', false)))
+    </div>
+</div>
+
+@*<script></script>*@

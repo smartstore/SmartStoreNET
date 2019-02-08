@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Events;
-using SmartStore.Core.Plugins;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Customers;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
-using SmartStore.Services.Configuration;
-using SmartStore.Collections;
-using SmartStore.Core.Data.Hooks;
+using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Discounts
 {
@@ -28,21 +25,16 @@ namespace SmartStore.Services.Discounts
         private readonly IRequestCache _requestCache;
 		private readonly IStoreContext _storeContext;
 		private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IPluginFinder _pluginFinder;
-        private readonly IEventPublisher _eventPublisher;
-		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
 		private readonly IDictionary<DiscountKey, bool> _discountValidityCache;
 
-        public DiscountService(IRequestCache requestCache,
+        public DiscountService(
+            IRequestCache requestCache,
             IRepository<Discount> discountRepository,
             IRepository<DiscountRequirement> discountRequirementRepository,
             IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
 			IStoreContext storeContext,
 			IGenericAttributeService genericAttributeService,
-            IPluginFinder pluginFinder,
-            IEventPublisher eventPublisher,
-			ISettingService settingService,
 			IProviderManager providerManager)
         {
             _requestCache = requestCache;
@@ -51,9 +43,6 @@ namespace SmartStore.Services.Discounts
             _discountUsageHistoryRepository = discountUsageHistoryRepository;
 			_storeContext = storeContext;
 			_genericAttributeService = genericAttributeService;
-            _pluginFinder = pluginFinder;
-            _eventPublisher = eventPublisher;
-			_settingService = settingService;
 			_providerManager = providerManager;
 			_discountValidityCache = new Dictionary<DiscountKey, bool>();
 		}
@@ -207,7 +196,6 @@ namespace SmartStore.Services.Discounts
             return discount;
         }
 
-		private System.Diagnostics.Stopwatch _watch = new System.Diagnostics.Stopwatch();
 		public virtual bool IsDiscountValid(Discount discount, Customer customer)
         {
 			var couponCodeToValidate = "";

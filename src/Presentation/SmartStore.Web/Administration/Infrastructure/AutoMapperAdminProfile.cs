@@ -431,16 +431,19 @@ namespace SmartStore.Admin.Infrastructure
 			CreateMap<NewsLetterSubscriptionModel, NewsLetterSubscription>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.NewsLetterSubscriptionGuid, mo => mo.Ignore())
-				.ForMember(dest => dest.StoreId, mo => mo.Ignore());
-			//forums
-			CreateMap<ForumGroup, ForumGroupModel>()
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.ForumModels, mo => mo.Ignore());
-			CreateMap<ForumGroupModel, ForumGroup>()
+				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
+                .ForMember(dest => dest.WorkingLanguageId, mo => mo.Ignore());
+            //forums
+            CreateMap<ForumGroup, ForumGroupModel>()
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+                .ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
+                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+                .ForMember(dest => dest.ForumModels, mo => mo.Ignore());
+            CreateMap<ForumGroupModel, ForumGroup>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Forums, mo => mo.Ignore());
@@ -499,6 +502,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.EndDate, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableLanguages, mo => mo.Ignore())
                 .ForMember(dest => dest.UsernamesEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.GridPageSize, mo => mo.Ignore());
 			CreateMap<PollModel, Poll>()

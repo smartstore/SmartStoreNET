@@ -634,36 +634,34 @@ namespace SmartStore.Web.Controllers
 			IList<ProductBundleItemData> productBundleItems = null,
 			int selectedQuantity = 1)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
-
-			if (model == null)
-				throw new ArgumentNullException("model");
+            Guard.NotNull(model, nameof(model));
+            Guard.NotNull(product, nameof(product));
 
 			var store = _services.StoreContext.CurrentStore;
 			var customer = _services.WorkContext.CurrentCustomer;
 			var currency = _services.WorkContext.WorkingCurrency;
 
-			decimal preSelectedPriceAdjustmentBase = decimal.Zero;
-			decimal preSelectedWeightAdjustment = decimal.Zero;
-			bool displayPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
-			bool isBundle = (product.ProductType == ProductType.BundledProduct);
-			bool isBundleItemPricing = (productBundleItem != null && productBundleItem.Item.BundleProduct.BundlePerItemPricing);
-			bool isBundlePricing = (productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemPricing);
-			int bundleItemId = (productBundleItem == null ? 0 : productBundleItem.Item.Id);
+			var preSelectedPriceAdjustmentBase = decimal.Zero;
+			var preSelectedWeightAdjustment = decimal.Zero;
+			var displayPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
+			var isBundle = product.ProductType == ProductType.BundledProduct;
+			var isBundleItemPricing = productBundleItem != null && productBundleItem.Item.BundleProduct.BundlePerItemPricing;
+			var isBundlePricing = productBundleItem != null && !productBundleItem.Item.BundleProduct.BundlePerItemPricing;
+			var bundleItemId = productBundleItem == null ? 0 : productBundleItem.Item.Id;
 
-			bool hasSelectedAttributesValues = false;
-			bool hasSelectedAttributes = query.Variants.Count > 0;
+			var hasSelectedAttributesValues = false;
+			var hasSelectedAttributes = query.Variants.Count > 0;
 			List<ProductVariantAttributeValue> selectedAttributeValues = null;
-
-			var variantAttributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
+			var variantAttributes = isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
 			model.IsBundlePart = product.ProductType != ProductType.BundledProduct && productBundleItem != null;
 			model.ProductPrice.DynamicPriceUpdate = _catalogSettings.EnableDynamicPriceUpdate;
 			model.ProductPrice.BundleItemShowBasePrice = _catalogSettings.BundleItemShowBasePrice;
 
-			if (!model.ProductPrice.DynamicPriceUpdate)
-				selectedQuantity = 1;
+            if (!model.ProductPrice.DynamicPriceUpdate)
+            {
+                selectedQuantity = 1;
+            }
 
 			#region Product attributes
 
@@ -1075,11 +1073,11 @@ namespace SmartStore.Web.Controllers
 			#region Product price
 
 			model.ProductPrice.ProductId = product.Id;
+            model.ProductPrice.HidePrices = !displayPrices;
+            model.ProductPrice.ShowLoginNote = !displayPrices && productBundleItem == null && _catalogSettings.ShowLoginForPriceNote;
 
-			if (displayPrices)
+            if (displayPrices)
 			{
-				model.ProductPrice.HidePrices = false;
-
 				if (product.CustomerEntersPrice && !isBundleItemPricing)
 				{
 					model.ProductPrice.CustomerEntersPrice = true;
@@ -1092,26 +1090,25 @@ namespace SmartStore.Web.Controllers
 					}
 					else
 					{
-						decimal taxRate = decimal.Zero;
-						decimal oldPrice = decimal.Zero;
-						decimal finalPriceWithoutDiscountBase = decimal.Zero;
-						decimal finalPriceWithDiscountBase = decimal.Zero;
-						decimal attributesTotalPriceBase = decimal.Zero;
-                        decimal attributesTotalPriceBaseOrig = decimal.Zero;
-                        decimal finalPriceWithoutDiscount = decimal.Zero;
-						decimal finalPriceWithDiscount = decimal.Zero;
-
-						decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
+						var taxRate = decimal.Zero;
+                        var oldPrice = decimal.Zero;
+                        var finalPriceWithoutDiscountBase = decimal.Zero;
+                        var finalPriceWithDiscountBase = decimal.Zero;
+                        var attributesTotalPriceBase = decimal.Zero;
+                        var attributesTotalPriceBaseOrig = decimal.Zero;
+                        var finalPriceWithoutDiscount = decimal.Zero;
+                        var finalPriceWithDiscount = decimal.Zero;
+                        var oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
 
 						if (model.ProductPrice.DynamicPriceUpdate && !isBundlePricing)
 						{
 							if (selectedAttributeValues != null)
 							{
 								selectedAttributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(x, 
-                                    product, _services.WorkContext.CurrentCustomer, null, selectedQuantity));
+                                    product, customer, null, selectedQuantity));
 
                                 selectedAttributeValues.Each(x => attributesTotalPriceBaseOrig += _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(x,
-                                    product, _services.WorkContext.CurrentCustomer, null, 1));
+                                    product, customer, null, 1));
                             }
 							else
 							{
@@ -1208,36 +1205,32 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				model.ProductPrice.HidePrices = true;
-				model.ProductPrice.OldPrice = null;
+                model.ProductPrice.OldPrice = null;
 				model.ProductPrice.Price = null;
 			}
+
 			#endregion
 
 			#region 'Add to cart' model
 
 			model.AddToCart.ProductId = product.Id;
-
-			//quantity
 			model.AddToCart.EnteredQuantity = product.OrderMinimumQuantity;
-
             model.AddToCart.MinOrderAmount = product.OrderMinimumQuantity;
             model.AddToCart.MaxOrderAmount = product.OrderMaximumQuantity;
 			model.AddToCart.QuantityUnitName = model.QuantityUnitName; // TODO: (mc) remove 'QuantityUnitName' from parent model later
             model.AddToCart.QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1;
             model.AddToCart.HideQuantityControl = product.HideQuantityControl;
             model.AddToCart.QuantiyControlType = product.QuantiyControlType;
+            model.AddToCart.AvailableForPreOrder = product.AvailableForPreOrder;
 
-            //'add to cart', 'add to wishlist' buttons
-            model.AddToCart.DisableBuyButton = !displayPrices || product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
-			model.AddToCart.DisableWishlistButton = !displayPrices || product.DisableWishlistButton 
-				|| !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist)
-				|| product.ProductType == ProductType.GroupedProduct;
+            // 'add to cart', 'add to wishlist' buttons.
+            model.AddToCart.DisableBuyButton = !displayPrices || product.DisableBuyButton || 
+                !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 
-			//pre-order
-			model.AddToCart.AvailableForPreOrder = product.AvailableForPreOrder;
+			model.AddToCart.DisableWishlistButton = !displayPrices || product.DisableWishlistButton
+                || product.ProductType == ProductType.GroupedProduct
+                || !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
 
-			//customer entered price
 			model.AddToCart.CustomerEntersPrice = product.CustomerEntersPrice;
 			if (model.AddToCart.CustomerEntersPrice)
 			{
@@ -1251,7 +1244,6 @@ namespace SmartStore.Web.Controllers
 					_priceFormatter.FormatPrice(maximumCustomerEnteredPrice, true, false));
 			}
 
-			//allowed quantities
 			var allowedQuantities = product.ParseAllowedQuatities();
 			foreach (var qty in allowedQuantities)
 			{

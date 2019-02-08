@@ -68,7 +68,7 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowColorSquaresInLists = true;
 			ShowDiscountSign = true;
 			ShowVariantCombinationPriceAdjustment = true;
-			ShowLinkedAttributeValueImage = true;
+            ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
             ShowProductReviewsInProductDetail = true;
             EnableHtmlTextCollapser = true;
@@ -129,10 +129,15 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ShowVariantCombinationPriceAdjustment { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to display quantity of linked product at attribute values
-		/// </summary>
-		public bool ShowLinkedAttributeValueQuantity { get; set; }
+        /// <summary>
+        /// Indicates whether to show a login note if the user is not authorized to see prices.
+        /// </summary>
+        public bool ShowLoginForPriceNote { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to display quantity of linked product at attribute values
+        /// </summary>
+        public bool ShowLinkedAttributeValueQuantity { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to display the image of linked product at attribute values

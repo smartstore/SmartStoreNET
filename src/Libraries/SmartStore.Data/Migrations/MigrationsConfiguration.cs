@@ -654,6 +654,16 @@
 
             builder.Delete("Admin.Customers.Customers.List.SearchDeletedOnly");
             builder.AddOrUpdate("Admin.Customers.Customers.List.SearchActiveOnly", "Only activated customers", "Nur aktivierte Kunden");
+
+            builder.AddOrUpdate("Products.LoginForPrice",
+                "Prices will be displayed after login.",
+                "Preise werden nach Anmeldung angezeigt.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowLoginForPriceNote",
+                "Show login for price note",
+                "Hinweis \"Preis nach Anmeldung\" anzeigen",
+                "Specifies whether to display a message stating that prices will not be displayed until login.",
+                "Legt fest, ob ein Hinweis erscheinen soll, dass Preise erst nach Anmeldung angezeigt werden.");
         }
     }
 }

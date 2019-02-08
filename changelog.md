@@ -66,6 +66,7 @@
 * OpenTrans: added customer number to parties
 * Do not filter cookie using resources if cookie usage has not yet been consented to.
 * #1563 QueuedMessagesClearTask: add a setting for the age of the mails to be deleted.
+* #1569 Added a setting to show login note if no prices are displayed due to customer group permissions.
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

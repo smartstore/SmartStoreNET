@@ -20,8 +20,8 @@
     </div>
     @Html.TextBox("", Value, new { @class = "form-control" })
     <div class="input-group-append">
-		<button type="button" class="btn btn-secondary" data-toggle="dropdown">
-			<i class="fa fa-ellipsis-h"></i>
+		<button type="button" class="btn btn-secondary" data-toggle="dropdown" title="@T("Common.Search")">
+			<i class="fa fa-search"></i>
 		</button>
 		<div class="dropdown-menu dropdown-menu-right">
             @if (allowedTypes.Contains("product"))

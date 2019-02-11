@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Paypal 3.1.5.3
+###Improvements
+* PayPal PLUS: now up to 10 more third party payment methods are allowed by PayPal.
+
 ##Paypal 3.1.5.2
 ###Improvements
 * PayPal PLUS: additionally store access data in the database.

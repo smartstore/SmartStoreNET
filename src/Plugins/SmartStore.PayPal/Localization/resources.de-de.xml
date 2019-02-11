@@ -403,7 +403,7 @@ Zahlungsgebühr: {10}]]>
         <Value>
           <![CDATA[<p>PayPal PLUS bietet die Möglichkeit per PayPal, Kreditkarte, Lastschriftverfahren und per Rechnung zu bezahlen.
 Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS unterstützt nur den Transaktionstyp der sofortigen Buchung und ist derzeit nur in Deutschland verfügbar.</p>
-<p>PayPal PLUS ersetzt die Zahlartenliste im Kassenbereich durch die PayPal Payment Wall. Sie können der Payment Wall jedoch bis zu 5 weitere Offline- bzw. Weiterleitungszahlarten hinzufügen.</p>
+<p>PayPal PLUS ersetzt die Zahlartenliste im Kassenbereich durch die PayPal Payment Wall. Sie können der Payment Wall jedoch bis zu 10 weitere Offline- bzw. Weiterleitungszahlarten hinzufügen.</p>
 <p>So richten Sie PayPal PLUS ein:
 <ol>
 <li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a> eine neue REST API Anwendung an.
@@ -428,9 +428,6 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
       </LocaleResource>
       <LocaleResource Name="ThirdPartyPaymentMethods.Hint">
         <Value>Sie können bis zu 5 weitere Zahlarten festlegen. Diese werden zusammen mit den PayPal PLUS Zahlarten im Kassenbereich angeboten.</Value>
-      </LocaleResource>
-      <LocaleResource Name="ValidateThirdPartyPaymentMethods">
-        <Value>Es können maximal 5 weitere Zahlarten festgelegt werden.</Value>
       </LocaleResource>
       <LocaleResource Name="DisplayPaymentMethodLogo">
         <Value>Logo der Zahlarten anzeigen</Value>

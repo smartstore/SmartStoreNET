@@ -162,13 +162,6 @@ namespace SmartStore.PayPal.Models
             {
                 RuleFor(x => x.Secret).NotEmpty();
             }
-
-            if (addRule("ThirdPartyPaymentMethods"))
-            {
-                RuleFor(x => x.ThirdPartyPaymentMethods)
-                    .Must(x => x == null || x.Count <= 5)
-                    .WithMessage(T("Plugins.Payments.PayPalPlus.ValidateThirdPartyPaymentMethods"));
-            }
         }
     }
 }

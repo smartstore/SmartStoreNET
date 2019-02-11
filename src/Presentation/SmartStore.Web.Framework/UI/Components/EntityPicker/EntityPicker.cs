@@ -1,5 +1,4 @@
-﻿using System;
-namespace SmartStore.Web.Framework.UI
+﻿namespace SmartStore.Web.Framework.UI
 {
     public class EntityPicker : Component
     {
@@ -16,8 +15,9 @@ namespace SmartStore.Web.Framework.UI
 		}
 
 		public string EntityType { get; set; }
+        public int LanguageId { get; set; }
 
-		public string TargetInputSelector
+        public string TargetInputSelector
 		{
 			get { return HtmlAttributes["data-target"] as string; }
 			set { HtmlAttributes["data-target"] = value; }
@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.UI
 		public bool DisableGroupedProducts { get; set; }
 		public bool DisableBundleProducts { get; set; }
 		public int[] DisabledEntityIds { get; set; }
-		public int[] SelectedEntityIds { get; set; }
+		public string[] Selected { get; set; }
 
 		public bool EnableThumbZoomer { get; set; }
 		public bool HighlightSearchTerm { get; set; }

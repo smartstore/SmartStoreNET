@@ -1,49 +1,118 @@
 @functions
 {
-    private dynamic GetTypeInfo(string type)
-    {
-        switch (type)
-        {
-            case "product":
-                return new { icon = "fa fa-cube", title = T("Common.Entity.Product").Text };
-            case "category":
-                return new { icon = "fa fa-sitemap", title = T("Common.Entity.Category").Text };
-            case "manufacturer":
-                return new { icon = "far fa-building", title = T("Common.Entity.Manufacturer").Text };
-            case "topic":
-                return new { icon = "far fa-file", title = T("Common.Entity.Topic").Text };
-            default:
-                return new { icon = "fa fa-link", title = "URL" };
-        }
-    }
-
     private string Value => ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
 }
 
 @{
-    var type = (GetMetadata<string>("type").NullEmpty() ?? "product").ToLower();
-    var typeInfo = GetTypeInfo(type);
+    var rnd = CommonHelper.GenerateRandomInteger();
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var type = (GetMetadata<string>("type").NullEmpty() ?? "url").ToLower();
     var maxItems = GetMetadata<int?>("maxItems") ?? 1;
     var appendMode = GetMetadata<bool?>("appendMode") ?? false;
+    var allowedTypes = (GetMetadata<string>("allowedTypes").NullEmpty() ?? "product,category,manufacturer,topic,file").SplitSafe(",");
 }
 
-<div class="input-group">
+<div id="link-builder-@rnd" class="input-group">
     <div class="input-group-prepend">
-        <span class="input-group-text" style="max-width: 45px;" title="@typeInfo.title">
-            <i class="fa-fw @typeInfo.icon"></i>
+        <span id="link-builder-type-@rnd" class="input-group-text" style="max-width: 45px;" title="@T("Common.Url")">
+            <i class="fa-fw fa fa-link"></i>
         </span>
     </div>
     @Html.TextBox("", Value, new { @class = "form-control" })
     <div class="input-group-append">
+		<button type="button" class="btn btn-secondary" data-toggle="dropdown">
+			<i class="fa fa-ellipsis-h"></i>
+		</button>
+		<div class="dropdown-menu dropdown-menu-right">
+            @if (allowedTypes.Contains("product"))
+            {
+			    <a class="dropdown-item link-type" href="#" data-type="product">@T("Common.Entity.Product")</a>
+            }
+            @if (allowedTypes.Contains("category"))
+            {
+			    <a class="dropdown-item link-type" href="#" data-type="category">@T("Common.Entity.Category")</a>
+            }
+            @if (allowedTypes.Contains("manufacturer"))
+            {
+			    <a class="dropdown-item link-type" href="#" data-type="manufacturer">@T("Common.Entity.Manufacturer")</a>
+            }
+            @if (allowedTypes.Contains("topic"))
+            {
+			    <a class="dropdown-item link-type" href="#" data-type="topic">@T("Common.Entity.Topic")</a>
+            }
+            @if (allowedTypes.Contains("file"))
+            {
+			    <a class="dropdown-item link-type" href="@Url.Content("~/Admin/RoxyFileManager/")" data-type="file">@T("Common.File")</a>
+            }
+		</div>
+    </div>
+    <div class="hide">
 		@(Html.SmartStore().EntityPicker()
             .For(string.Empty)
-            .EntityType("product")
-			.MaxItems(maxItems)
-			.AppendMode(appendMode)
+            .EntityType(type)
             .FieldName("link")
-			.DialogTitle(T("Common.Entity.SelectProduct").Text.EncodeJsString('\'', false))
-			.Caption(T("Common.Search").Text.EncodeJsString('\'', false)))
+            .HtmlAttribute("id", "link-type-picker-" + rnd.ToString())
+			.MaxItems(maxItems)
+			.AppendMode(appendMode))
     </div>
 </div>
 
-@*<script></script>*@
+<script>
+    $(document).ready(function () {
+        updateTypeInfo(getTypeInfo('@type'));
+
+		// Switch link type.
+		$('#link-builder-@(rnd)').on('click', '.link-type', function (e) {
+            e.preventDefault();
+            var type = $(this).data('type'),
+                info = getTypeInfo(type);
+
+            updateTypeInfo(info);
+
+            if (type === 'file') {
+                var url = $(this).attr('href');
+                url = modifyUrl(url, 'type', '#');
+                url = modifyUrl(url, 'field', '@(id)');
+                url = modifyUrl(url, 'mid', 'modal-browse-files');
+
+                openPopup({
+                    id: 'modal-browse-files',
+                    url: url,
+                    flex: true,
+                    large: true,
+                    backdrop: false
+                });
+            }
+            else {
+                $('#link-type-picker-@(rnd)')
+                    .attr('data-entitytype', type)
+                    .attr('data-caption', info.caption)
+                    .trigger('click');
+            }
+        });
+
+        function updateTypeInfo(info) {
+            $el = $('#link-builder-type-@(rnd)');
+            $el.attr('title', info.title);
+            $el.find('i').attr('class', 'fa-fw ' + info.icon);
+        }
+
+        function getTypeInfo(type) {
+            switch (type) {
+                case 'product':
+                    return { icon: "fa fa-cube", title: "@T("Common.Entity.Product").Text", caption: "@T("Common.Entity.SelectProduct").Text" };
+                case 'category':
+                    return { icon: "fa fa-sitemap", title: "@T("Common.Entity.Category").Text", caption: "@T("Common.Entity.SelectCategory").Text" };
+                case 'manufacturer':
+                    return { icon: "far fa-building", title: "@T("Common.Entity.Manufacturer").Text", caption: "@T("Common.Entity.SelectManufacturer").Text" };
+                case 'topic':
+                    return { icon: "far fa-file", title: "@T("Common.Entity.Topic").Text", caption: "@T("Common.Entity.SelectTopic").Text" };
+                case 'file':
+                    return { icon: "fas fa-images", title: "@T("Common.File").Text", caption: "@T("Common.File").Text" };
+                case 'url':
+                default:
+                    return { icon: "fa fa-link", title: "@T("Common.Url").Text", caption: "@T("Common.Url").Text" };
+            }
+        }
+	});
+</script>

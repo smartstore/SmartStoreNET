@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -31,7 +27,13 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
-		public EntityPickerBuilder<TModel> Caption(string value)
+        public EntityPickerBuilder<TModel> LanguageId(int value)
+        {
+            base.Component.LanguageId = value;
+            return this;
+        }
+
+        public EntityPickerBuilder<TModel> Caption(string value)
 		{
 			base.Component.Caption = value;
 			return this;
@@ -94,9 +96,9 @@ namespace SmartStore.Web.Framework.UI
 			return this;
 		}
 
-		public EntityPickerBuilder<TModel> SelectedEntityIds(params int[] values)
+		public EntityPickerBuilder<TModel> Selected(params string[] values)
 		{
-			base.Component.SelectedEntityIds = values;
+			base.Component.Selected = values;
 			return this;
 		}
 

@@ -642,6 +642,8 @@
                 "Click <b class=\"font-weight-medium\">Download</b> to install a new language including all localized resources. On <a class=\"font-weight-medium\" href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> you will find more details about available resources.",
                 "Klicken Sie auf <b class=\"font-weight-medium\">Download</b>, um eine neue Sprache mit allen lokalisierten Ressourcen zu installieren. Auf <a class=\"font-weight-medium\" href=\"https://translate.smartstore.com/\" target=\"_blank\">translate.smartstore.com</a> finden Sie weitere Details zu verfügbaren Ressourcen.");
 
+            builder.AddOrUpdate("Common.Url", "URL", "URL");
+            builder.AddOrUpdate("Common.File", "File", "Datei");
             builder.AddOrUpdate("Common.Entity.Product", "Product", "Produkt");
             builder.AddOrUpdate("Common.Entity.Category", "Category", "Warengruppe");
             builder.AddOrUpdate("Common.Entity.Manufacturer", "Manufacturer", "Hersteller");

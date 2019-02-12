@@ -204,8 +204,7 @@ namespace SmartStore.Web.Framework.UI
 			if (tab.Id.IsEmpty())
 				return null;
 
-			var model = ViewContext.ViewData.Model as EntityModelBase;
-			if (model != null && model.Id == 0)
+			if (ViewContext.ViewData.Model is EntityModelBase model && model.Id == 0)
 			{
 				// it's a "create" operation: don't select
 				return null;
@@ -409,8 +408,7 @@ namespace SmartStore.Web.Framework.UI
 
 		private string GetTabName(Tab tab)
 		{
-			object value;
-			if (tab.LinkHtmlAttributes.TryGetValue("data-tab-name", out value)) 
+			if (tab.LinkHtmlAttributes.TryGetValue("data-tab-name", out object value)) 
 			{
 				return value.ToString();
 			}

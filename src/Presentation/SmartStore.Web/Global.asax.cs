@@ -82,7 +82,7 @@ namespace SmartStore.Web
 
 		public static void RegisterJsEngines()
 		{
-			JsEngineSwitcher engineSwitcher = JsEngineSwitcher.Instance;
+			var engineSwitcher = JsEngineSwitcher.Current;
 			engineSwitcher.EngineFactories
 				.AddV8()
 				.AddMsie(new MsieSettings

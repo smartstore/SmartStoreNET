@@ -6,11 +6,11 @@
 $section-header-height: 70px;
 
 :root {
-    --content-padding-x: $content-padding-x / 2;
-    --content-padding-y: $content-padding-y;
+    --content-padding-x: #{$content-padding-x / 2};
+    --content-padding-y: #{$content-padding-y};
 
     @include media-breakpoint-up(lg) {
-        --content-padding-x: $content-padding-x;
+        --content-padding-x: #{$content-padding-x};
     }
 }
 

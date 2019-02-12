@@ -1365,7 +1365,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            return RedirectToAction("Print", "Order", new { id = orderId, pdf = pdf, area = "" });
+            return RedirectToAction("Print", "Order", new { id = orderId, pdf, area = "" });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -2072,9 +2072,12 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var model = new ShipmentListModel();
-            model.DisplayPdfPackagingSlip = _pdfSettings.Enabled;
-            return View(model);
+			var model = new ShipmentListModel
+			{
+				DisplayPdfPackagingSlip = _pdfSettings.Enabled
+			};
+
+			return View(model);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
@@ -2220,7 +2223,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				NotifyError(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
 
-				return RedirectToAction("AddShipment", new { orderId = orderId });
+				return RedirectToAction("AddShipment", new { orderId });
 			}
         }
 
@@ -2559,13 +2562,13 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult BestsellersReport()
         {
-            var model = new BestsellersReportModel();
+			var model = new BestsellersReportModel
+			{
+				AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList(),
+				AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList()
+			};
 
-            model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-
-            model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
-
-            foreach (var c in _countryService.GetAllCountriesForBilling())
+			foreach (var c in _countryService.GetAllCountriesForBilling())
             {
                 model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
             }
@@ -2678,14 +2681,15 @@ namespace SmartStore.Admin.Controllers
         protected virtual IList<OrderAverageReportLineSummaryModel> GetOrderAverageReportModel()
         {
 			var urlHelper = new UrlHelper(Request.RequestContext);
-            var report = new List<OrderAverageReportLineSummary>();
+			var report = new List<OrderAverageReportLineSummary>
+			{
+				_orderReportService.OrderAverageReport(0, OrderStatus.Pending),
+				_orderReportService.OrderAverageReport(0, OrderStatus.Processing),
+				_orderReportService.OrderAverageReport(0, OrderStatus.Complete),
+				_orderReportService.OrderAverageReport(0, OrderStatus.Cancelled)
+			};
 
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Pending));
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Processing));
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Complete));
-			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Cancelled));
-
-            var model = report.Select(x =>
+			var model = report.Select(x =>
             {
                 return new OrderAverageReportLineSummaryModel()
                 {

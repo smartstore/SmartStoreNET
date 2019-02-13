@@ -126,6 +126,7 @@
 		<MakeDir Directories="$(StageFolder)\Plugins\bin\" />
 		<!-- Ensure that an initially empty folder gets successfully zipped -->
 		<Copy SourceFiles="$(StageFolder)\Content\placeholder.txt" DestinationFolder="$(StageFolder)\Plugins\bin\" />
+		<Copy SourceFiles="$(StageFolder)\Content\web.config" DestinationFolder="$(StageFolder)\Plugins\" />
 		
 		<!-- copy the migration sql scripts to the stage directory -->
 		<Copy SourceFiles="@(MigrationFiles)" DestinationFolder="$(StageFolder)\App_Data\Migrations\%(RecursiveDir)" />

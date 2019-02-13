@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -22,7 +21,6 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
@@ -31,12 +29,12 @@ using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CatalogHelper
+    public partial class CatalogHelper
 	{
 		public void MapListActions(ProductSummaryModel model, IPagingOptions entity, string defaultPageSizeOptions)
 		{
 			var searchQuery = _catalogSearchQueryFactory.Current;
-			
+
 			// View mode
 			model.AllowViewModeChanging = _catalogSettings.AllowProductViewModeChanging;
 
@@ -46,7 +44,7 @@ namespace SmartStore.Web.Controllers
 			{
 				model.CurrentSortOrder = searchQuery?.CustomData.Get("CurrentSortOrder").Convert<int?>();
 
-				model.AvailableSortOptions = _services.Cache.Get("pres:productlistsortoptions-{0}".FormatInvariant(_services.WorkContext.WorkingLanguage.Id), () => 
+				model.AvailableSortOptions = _services.Cache.Get("pres:productlistsortoptions-{0}".FormatInvariant(_services.WorkContext.WorkingLanguage.Id), () =>
 				{
 					var dict = new Dictionary<int, string>();
 					foreach (ProductSortingEnum enumValue in Enum.GetValues(typeof(ProductSortingEnum)))
@@ -74,7 +72,7 @@ namespace SmartStore.Web.Controllers
 					model.CurrentSortOrderName = model.AvailableSortOptions.Get(model.CurrentSortOrder ?? 1) ?? model.AvailableSortOptions.First().Value;
 				}
 			}
-			
+
 			// Pagination
 			if (entity?.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize)
 			{
@@ -160,7 +158,7 @@ namespace SmartStore.Web.Controllers
 			{
 				settings = new ProductSummaryMappingSettings();
 			}
-			
+
 			using (_services.Chronometer.Step("MapProductSummaryModel"))
 			{
 				var model = new ProductSummaryModel(products)
@@ -223,7 +221,7 @@ namespace SmartStore.Web.Controllers
 					{ "Products.DimensionsValue", T("Products.DimensionsValue") },
 					{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
 				};
-				
+
 				if (settings.MapLegalInfo)
 				{
 					var shippingInfoUrl = _urlHelper.TopicUrl("shippinginfo");
@@ -245,7 +243,7 @@ namespace SmartStore.Web.Controllers
 
 				using (var scope = new DbContextScope(ctx: _services.DbContext, autoCommit: false, validateOnSave: false))
 				{
-					// Run in uncommitting scope, because pictures could be updated (IsNew property) 
+					// Run in uncommitting scope, because pictures could be updated (IsNew property)
 					var batchContext = _dataExporter.Value.CreateProductExportContext(products, customer, null, 1, false);
 
 					if (settings.MapPrices)
@@ -253,7 +251,7 @@ namespace SmartStore.Web.Controllers
 						batchContext.AppliedDiscounts.LoadAll();
 						batchContext.TierPrices.LoadAll();
 					}
-					
+
 					if (settings.MapAttributes || settings.MapColorAttributes)
 					{
 						batchContext.Attributes.LoadAll();
@@ -287,7 +285,7 @@ namespace SmartStore.Web.Controllers
 						{
 							// Prefetch all spec attribute option translations
 							PrefetchTranslations(
-								nameof(SpecificationAttributeOption), 
+								nameof(SpecificationAttributeOption),
 								language.Id,
 								batchContext.SpecificationAttributes.SelectMany(x => x.Value).Select(x => x.SpecificationAttributeOption));
 
@@ -337,18 +335,18 @@ namespace SmartStore.Web.Controllers
 
 					return model;
 				}
-			}		
+			}
 		}
 
-		private void PrefetchTranslations(string keyGroup, int languageId, IEnumerable<BaseEntity> entities)
+		protected void PrefetchTranslations(string keyGroup, int languageId, IEnumerable<BaseEntity> entities)
 		{
 			if (entities.Any())
 			{
 				_localizedEntityService.PrefetchLocalizedProperties(keyGroup, languageId, entities.Select(x => x.Id).Distinct().ToArray());
-			}	
+			}
 		}
 
-		private void MapProductSummaryItem(Product product, MapProductSummaryItemContext ctx)
+        protected void MapProductSummaryItem(Product product, MapProductSummaryItemContext ctx)
 		{
 			var contextProduct = product;
 			var finalPrice = decimal.Zero;
@@ -396,7 +394,7 @@ namespace SmartStore.Web.Controllers
 						.Where(x => x.Color.HasValue() && !x.Color.IsCaseInsensitiveEqual("transparent"))
 						.Distinct()
 						.Take(20) // limit results
-						.Select(x => 
+						.Select(x =>
 						{
 							var attr = x.ProductVariantAttribute.ProductAttribute;
 							var attrName = cachedAttributeNames.Get(attr.Id) ?? (cachedAttributeNames[attr.Id] = attr.GetLocalized(l => l.Name));
@@ -472,7 +470,7 @@ namespace SmartStore.Web.Controllers
 			if (settings.MapManufacturers)
 			{
 				item.Manufacturer = PrepareManufacturersOverviewModel(
-					ctx.BatchContext.ProductManufacturers.GetOrLoad(product.Id), 
+					ctx.BatchContext.ProductManufacturers.GetOrLoad(product.Id),
 					ctx.CachedManufacturerModels,
 					_catalogSettings.ShowManufacturerLogoInLists && settings.ViewMode == ProductSummaryViewMode.List).FirstOrDefault();
 			}
@@ -549,7 +547,7 @@ namespace SmartStore.Web.Controllers
 
 				#endregion
 			}
-			
+
 			item.LegalInfo = ctx.LegalInfo;
 			item.RatingSum = product.ApprovedRatingSum;
 			item.TotalReviews = product.ApprovedTotalReviews;
@@ -587,13 +585,13 @@ namespace SmartStore.Web.Controllers
 					Style = BadgeStyle.Success
 				});
 			}
-            
+
             model.Items.Add(item);
 		}
 
-		/// <param name="contextProduct">The product or the first associated product of a group.</param>
-		/// <returns>The final price</returns>
-		private decimal MapSummaryItemPrice(Product product, ref Product contextProduct, ProductSummaryModel.SummaryItem item, MapProductSummaryItemContext ctx)
+        /// <param name="contextProduct">The product or the first associated product of a group.</param>
+        /// <returns>The final price</returns>
+        protected decimal MapSummaryItemPrice(Product product, ref Product contextProduct, ProductSummaryModel.SummaryItem item, MapProductSummaryItemContext ctx)
 		{
 			var displayFromMessage = false;
 			var taxRate = decimal.Zero;
@@ -756,7 +754,7 @@ namespace SmartStore.Web.Controllers
 			return finalPrice;
 		}
 
-		private IEnumerable<ProductSpecificationModel> MapProductSpecificationModels(IEnumerable<ProductSpecificationAttribute> attributes)
+        protected IEnumerable<ProductSpecificationModel> MapProductSpecificationModels(IEnumerable<ProductSpecificationAttribute> attributes)
 		{
 			Guard.NotNull(attributes, nameof(attributes));
 
@@ -782,7 +780,7 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-		private class MapProductSummaryItemContext
+        protected class MapProductSummaryItemContext
 		{
 			public ProductSummaryModel Model { get; set; }
 			public ProductSummaryMappingSettings Settings { get; set; }
@@ -829,7 +827,7 @@ namespace SmartStore.Web.Controllers
 		public bool MapDeliveryTimes { get; set; }
 
 		public bool ForceRedirectionAfterAddingToCart { get; set; }
-		public int? ThumbnailSize { get; set; }	
+		public int? ThumbnailSize { get; set; }
 
 		public bool? PrefetchTranslations { get; set; }
 		public bool? PrefetchUrlSlugs { get; set; }

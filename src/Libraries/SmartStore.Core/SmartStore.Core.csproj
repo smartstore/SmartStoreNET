@@ -63,7 +63,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
+      <HintPath>..\..\packages\AngleSharp.0.9.11\lib\net45\AngleSharp.dll</HintPath>
     </Reference>
     <Reference Include="Autofac, Version=4.9.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.4.9.0\lib\net45\Autofac.dll</HintPath>

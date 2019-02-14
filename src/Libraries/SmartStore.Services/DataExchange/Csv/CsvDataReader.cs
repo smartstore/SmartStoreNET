@@ -47,20 +47,22 @@ namespace SmartStore.Services.DataExchange.Csv
 			this.Configuration = configuration;
 
 			_csv = new CsvReader(
-				reader, 
+				reader,
 				configuration.HasHeaders,
 				configuration.Delimiter,
 				configuration.Quote,
 				configuration.Escape,
 				configuration.Comment,
 				configuration.TrimValues ? ValueTrimmingOptions.All : ValueTrimmingOptions.None,
-				configuration.NullValue);
-
-			_csv.SupportsMultiline = configuration.SupportsMultiline;
-			_csv.SkipEmptyLines = configuration.SkipEmptyLines;
-			_csv.DefaultHeaderName = configuration.DefaultHeaderName;
-			_csv.DefaultParseErrorAction = (LumenWorks.Framework.IO.Csv.ParseErrorAction)((int)configuration.DefaultParseErrorAction);
-			_csv.MissingFieldAction = (LumenWorks.Framework.IO.Csv.MissingFieldAction)((int)configuration.MissingFieldAction);
+				4096,
+				configuration.NullValue)
+			{
+				SupportsMultiline = configuration.SupportsMultiline,
+				SkipEmptyLines = configuration.SkipEmptyLines,
+				DefaultHeaderName = configuration.DefaultHeaderName,
+				DefaultParseErrorAction = (LumenWorks.Framework.IO.Csv.ParseErrorAction)((int)configuration.DefaultParseErrorAction),
+				MissingFieldAction = (LumenWorks.Framework.IO.Csv.MissingFieldAction)((int)configuration.MissingFieldAction)
+			};
 
 			_reader = _csv;
 		}

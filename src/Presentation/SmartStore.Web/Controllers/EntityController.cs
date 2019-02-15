@@ -7,15 +7,12 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Search;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
-using SmartStore.Services.Seo;
-using SmartStore.Services.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Models.Entity;
@@ -32,8 +29,6 @@ namespace SmartStore.Web.Controllers
 		private readonly IManufacturerService _manufacturerService;
         private readonly ICustomerService _customerService;
         private readonly ICategoryService _categoryService;
-        private readonly IUrlRecordService _urlRecordService;
-        private readonly ITopicService _topicService;
 
         public EntityController(
 			ICatalogSearchService catalogSearchService,
@@ -43,9 +38,7 @@ namespace SmartStore.Web.Controllers
 			IPictureService pictureService,
 			IManufacturerService manufacturerService,
             ICustomerService customerService,
-            ICategoryService categoryService,
-            IUrlRecordService urlRecordService,
-            ITopicService topicService)
+            ICategoryService categoryService)
         {
 			_catalogSearchService = catalogSearchService;
             _catalogSettings = catalogSettings;
@@ -55,8 +48,6 @@ namespace SmartStore.Web.Controllers
 			_manufacturerService = manufacturerService;
             _customerService = customerService;
             _categoryService = categoryService;
-            _urlRecordService = urlRecordService;
-            _topicService = topicService;
         }
 
 		#region Entity Picker
@@ -106,7 +97,6 @@ namespace SmartStore.Web.Controllers
                 var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
 				var disableIds = model.DisableIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
                 var selected = model.Selected.SplitSafe(",");
-                var returnLink = model.ReturnField.IsCaseInsensitiveEqual("link");
                 var returnSku = model.ReturnField.IsCaseInsensitiveEqual("sku");
 
                 using (var scope = new DbContextScope(Services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
@@ -175,9 +165,6 @@ namespace SmartStore.Web.Controllers
 
                         var allPictureIds = products.Select(x => x.MainPictureId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
-                        var slugs = returnLink
-                            ? _urlRecordService.GetUrlRecordCollection(nameof(Product), null, products.Select(x => x.Id).ToArray())
-                            : null;
 
                         model.SearchResult = products
                             .Select(x =>
@@ -188,21 +175,9 @@ namespace SmartStore.Web.Controllers
                                     Title = x.Name,
                                     Summary = x.Sku,
                                     SummaryTitle = "{0}: {1}".FormatInvariant(sku, x.Sku.NaIfEmpty()),
-                                    Published = hasPermission ? x.Published : (bool?)null
+                                    Published = hasPermission ? x.Published : (bool?)null,
+                                    ReturnValue = returnSku ? x.Sku : x.Id.ToString()
                                 };
-
-                                if (returnLink)
-                                {
-                                    item.ReturnValue = Url.RouteUrl("Product", new { SeName = slugs.GetSlug(languageId, x.Id) });
-                                }
-                                else if (returnSku)
-                                {
-                                    item.ReturnValue = x.Sku;
-                                }
-                                else
-                                {
-                                    item.ReturnValue = x.Id.ToString();
-                                }
 
                                 item.Selected = selected.Contains(item.ReturnValue);
 
@@ -248,18 +223,11 @@ namespace SmartStore.Web.Controllers
                         var categories = _categoryService.GetAllCategories(model.SearchTerm, showHidden: true);
                         var allPictureIds = categories.Select(x => x.PictureId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
-                        var slugs = returnLink
-                            ? _urlRecordService.GetUrlRecordCollection(nameof(Category), null, categories.Select(x => x.Id).ToArray())
-                            : null;
 
                         model.SearchResult = categories
                             .Select(x =>
                             {
                                 var path = ((ICategoryNode)x).GetCategoryPath(_categoryService, languageId, "({0})");
-                                var returnValue = returnLink
-                                    ? Url.RouteUrl("Category", new { SeName = slugs.GetSlug(languageId, x.Id) })
-                                    : x.Id.ToString();
-
                                 var item = new EntityPickerModel.SearchResultModel
                                 {
                                     Id = x.Id,
@@ -267,8 +235,8 @@ namespace SmartStore.Web.Controllers
                                     Summary = path,
                                     SummaryTitle = path,
                                     Published = x.Published,
-                                    ReturnValue = returnValue,
-                                    Selected = selected.Contains(returnValue),
+                                    ReturnValue = x.Id.ToString(),
+                                    Selected = selected.Contains(x.Id.ToString()),
                                     Disable = disableIds.Contains(x.Id)
                                 };
 
@@ -295,24 +263,17 @@ namespace SmartStore.Web.Controllers
                         var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchTerm, model.PageIndex, model.PageSize, showHidden: true);
                         var allPictureIds = manufacturers.Select(x => x.PictureId.GetValueOrDefault());
                         var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);
-                        var slugs = returnLink
-                            ? _urlRecordService.GetUrlRecordCollection(nameof(Manufacturer), null, manufacturers.Select(x => x.Id).ToArray())
-                            : null;
 
                         model.SearchResult = manufacturers
                             .Select(x =>
                             {
-                                var returnValue = returnLink
-                                    ? Url.RouteUrl("Manufacturer", new { SeName = slugs.GetSlug(languageId, x.Id) })
-                                    : x.Id.ToString();
-
                                 var item = new EntityPickerModel.SearchResultModel
                                 {
                                     Id = x.Id,
                                     Title = x.Name,
                                     Published = x.Published,
-                                    ReturnValue = returnValue,
-                                    Selected = selected.Contains(returnValue),
+                                    ReturnValue = x.Id.ToString(),
+                                    Selected = selected.Contains(x.Id.ToString()),
                                     Disable = disableIds.Contains(x.Id)
                                 };
 
@@ -368,36 +329,6 @@ namespace SmartStore.Web.Controllers
                                     SummaryTitle = fullName,
                                     Published = true,
                                     Selected = selected.Contains(x.Id.ToString()),
-                                    Disable = disableIds.Contains(x.Id)
-                                };
-
-                                return item;
-                            })
-                            .ToList();
-                    }
-                    else if (model.EntityType.IsCaseInsensitiveEqual("topic"))
-                    {
-                        var topics = _topicService.GetAllTopics(0, model.PageIndex, model.PageSize, true);
-                        var slugs = returnLink
-                            ? _urlRecordService.GetUrlRecordCollection(nameof(Topic), null, topics.Select(x => x.Id).ToArray())
-                            : null;
-
-                        model.SearchResult = topics
-                            .Select(x =>
-                            {
-                                var returnValue = returnLink
-                                    ? Url.RouteUrl("Topic", new { SeName = slugs.GetSlug(languageId, x.Id) })
-                                    : x.Id.ToString();
-
-                                var item = new EntityPickerModel.SearchResultModel
-                                {
-                                    Id = x.Id,
-                                    Published = x.IsPublished,
-                                    Title = x.Title.NullEmpty() ?? x.SystemName,
-                                    Summary = x.SystemName,
-                                    SummaryTitle = x.SystemName,
-                                    ReturnValue = returnValue,
-                                    Selected = selected.Contains(returnValue),
                                     Disable = disableIds.Contains(x.Id)
                                 };
 

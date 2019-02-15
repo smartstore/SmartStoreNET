@@ -1,118 +1,130 @@
+@using SmartStore.Services.Cms
+
 @functions
 {
     private string Value => ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
-}
+
+    private dynamic GetTypeInfos(TokenizeType type)
+    {
+        switch (type)
+        {
+            case TokenizeType.Product:
+                return new { icon = "fa fa-cube", name = T("Common.Entity.Product").Text };
+            case TokenizeType.Category:
+                return new { icon = "fa fa-sitemap", name = T("Common.Entity.Category").Text };
+            case TokenizeType.Manufacturer:
+                return new { icon = "far fa-building", name = T("Common.Entity.Manufacturer").Text };
+            case TokenizeType.Topic:
+                return new { icon = "far fa-file", name = T("Common.Entity.Topic").Text };
+            case TokenizeType.Media:
+                return new { icon = "fas fa-images", name = T("Common.Media").Text };
+            case TokenizeType.File:
+                return new { icon = "far fa-folder-open", name = T("Common.File").Text };
+            case TokenizeType.Url:
+            default:
+                return new { icon = "fa fa-link", name = T("Common.Url").Text };
+        }
+    }
+        }
 
 @{
     var rnd = CommonHelper.GenerateRandomInteger();
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
-    var type = (GetMetadata<string>("type").NullEmpty() ?? "url").ToLower();
-    var maxItems = GetMetadata<int?>("maxItems") ?? 1;
-    var appendMode = GetMetadata<bool?>("appendMode") ?? false;
-    var allowedTypes = (GetMetadata<string>("allowedTypes").NullEmpty() ?? "product,category,manufacturer,topic,file").SplitSafe(",");
+
+    var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
+    var allowedTypes = arr.Any()
+        ? arr.Select(x => (TokenizeType)Enum.Parse(typeof(TokenizeType), x, true)).ToArray()
+        : Enum.GetValues(typeof(TokenizeType)).Cast<TokenizeType>().ToArray();
 }
 
-<div id="link-builder-@rnd" class="input-group">
-    <div class="input-group-prepend">
-        <span id="link-builder-type-@rnd" class="input-group-text" style="max-width: 45px;" title="@T("Common.Url")">
-            <i class="fa-fw fa fa-link"></i>
-        </span>
-    </div>
-    @Html.TextBox("", Value, new { @class = "form-control" })
-    <div class="input-group-append">
-		<button type="button" class="btn btn-secondary" data-toggle="dropdown" title="@T("Common.Search")">
-			<i class="fa fa-search"></i>
-		</button>
-		<div class="dropdown-menu dropdown-menu-right">
-            @if (allowedTypes.Contains("product"))
-            {
-			    <a class="dropdown-item link-type" href="#" data-type="product">@T("Common.Entity.Product")</a>
-            }
-            @if (allowedTypes.Contains("category"))
-            {
-			    <a class="dropdown-item link-type" href="#" data-type="category">@T("Common.Entity.Category")</a>
-            }
-            @if (allowedTypes.Contains("manufacturer"))
-            {
-			    <a class="dropdown-item link-type" href="#" data-type="manufacturer">@T("Common.Entity.Manufacturer")</a>
-            }
-            @if (allowedTypes.Contains("topic"))
-            {
-			    <a class="dropdown-item link-type" href="#" data-type="topic">@T("Common.Entity.Topic")</a>
-            }
-            @if (allowedTypes.Contains("file"))
-            {
-			    <a class="dropdown-item link-type" href="@Url.Content("~/Admin/RoxyFileManager/")" data-type="file">@T("Common.File")</a>
-            }
-		</div>
-    </div>
-    <div class="hide">
-		@(Html.SmartStore().EntityPicker()
-            .For(string.Empty)
-            .EntityType(type)
-            .FieldName("link")
-            .HtmlAttribute("id", "link-type-picker-" + rnd.ToString())
-			.MaxItems(maxItems)
-			.AppendMode(appendMode))
+<div id="link-builder-@rnd">
+    <div class="d-flex flex-nowrap input-group">
+        @Html.TextBox("", Value, new { type = "hidden" })
+        <div class="input-group-prepend">
+		    <button id="btn-type-@rnd" type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
+			    <i class="fa fa-link"></i>
+		    </button>
+            <div class="dropdown-menu">
+                @foreach (var type in allowedTypes)
+                {
+                    var info = GetTypeInfos(type);
+                    <a class="dropdown-item link-type" href="#" data-type="@type.ToString().ToLower()">
+                        <i class="fa-fw @info.icon"></i>
+                        <span>@info.name</span>
+                    </a>
+                }
+            </div>
+        </div>
+        @foreach (var type in allowedTypes)
+        {
+            <div class="flex-grow-1 link-control@(type == TokenizeType.Product ? "" : " hide")" data-type="@type.ToString().ToLower()">
+                @if (type == TokenizeType.Product)
+                {
+                    <input type="text" class="form-control product-name" value="" readonly />
+                }
+            </div>
+        }
+        @if (allowedTypes.Contains(TokenizeType.Product))
+        {
+            <div class="input-group-append link-control" data-type="product">
+		        @(Html.SmartStore().EntityPicker()
+                    .HtmlAttribute("id", "link-builder-product-picker-" + rnd.ToString())
+                    .MaxItems(1)
+                    .AppendMode(false)
+                    .DialogTitle(T("Common.Entity.SelectProduct").Text.EncodeJsString('\'', false))
+                    .Caption(T("Common.Search").Text.EncodeJsString('\'', false))
+                    .OnSelectionCompleted("function (ids) { $('#" + id + "').val(ids ? ('product:' + ids[0]) : ''); return true; }"))
+            </div>
+        }
+        <div class="input-group-append">
+			<button type="button" class="btn btn-secondary btn-to-danger" title="@T("Common.Remove")">
+				<i class="fa fa-times"></i>
+			</button>
+        </div>
     </div>
 </div>
 
 <script>
     $(document).ready(function () {
-        updateTypeInfo(getTypeInfo('@type'));
+        var container = $('#link-builder-@(rnd)');
+        updateTypeInfo();
 
 		// Switch link type.
-		$('#link-builder-@(rnd)').on('click', '.link-type', function (e) {
+		container.on('click', '.link-type', function (e) {
             e.preventDefault();
-            var type = $(this).data('type'),
-                info = getTypeInfo(type);
+            var el = $(this);
+            updateTypeInfo(el);
 
-            updateTypeInfo(info);
-
-            if (type === 'file') {
-                var url = $(this).attr('href');
-                url = modifyUrl(url, 'type', '#');
-                url = modifyUrl(url, 'field', '@(id)');
-                url = modifyUrl(url, 'mid', 'modal-browse-files');
-
-                openPopup({
-                    id: 'modal-browse-files',
-                    url: url,
-                    flex: true,
-                    large: true,
-                    backdrop: false
-                });
-            }
-            else {
-                $('#link-type-picker-@(rnd)')
-                    .attr('data-entitytype', type)
-                    .attr('data-caption', info.caption)
-                    .trigger('click');
-            }
         });
 
-        function updateTypeInfo(info) {
-            $el = $('#link-builder-type-@(rnd)');
-            $el.attr('title', info.title);
-            $el.find('i').attr('class', 'fa-fw ' + info.icon);
+        function updateTypeInfo(el) {
+            if (!el) {
+                // Get type from current input value.
+                var val = container.find('input[name="@(id)"]').val(),
+                    type = getType(val) || 'url';
+
+                el = container.find('a[data-type=' + type + ']');
+            }
+
+            if (!el) return;
+
+            var btn = $('#btn-type-@(rnd)'),
+                icon = el.find('i').first().attr('class').replace('fa-fw ', ''),
+                name = el.find('span').first().text();
+
+            btn.find('i').attr('class', icon);
+            btn.attr('title', name);
         }
 
-        function getTypeInfo(type) {
-            switch (type) {
-                case 'product':
-                    return { icon: "fa fa-cube", title: "@T("Common.Entity.Product").Text", caption: "@T("Common.Entity.SelectProduct").Text" };
-                case 'category':
-                    return { icon: "fa fa-sitemap", title: "@T("Common.Entity.Category").Text", caption: "@T("Common.Entity.SelectCategory").Text" };
-                case 'manufacturer':
-                    return { icon: "far fa-building", title: "@T("Common.Entity.Manufacturer").Text", caption: "@T("Common.Entity.SelectManufacturer").Text" };
-                case 'topic':
-                    return { icon: "far fa-file", title: "@T("Common.Entity.Topic").Text", caption: "@T("Common.Entity.SelectTopic").Text" };
-                case 'file':
-                    return { icon: "fas fa-images", title: "@T("Common.File").Text", caption: "@T("Common.File").Text" };
-                case 'url':
-                default:
-                    return { icon: "fa fa-link", title: "@T("Common.Url").Text", caption: "@T("Common.Url").Text" };
+        function getType(str) {
+            if (!_.isEmpty(str)) {
+                var arr = str.split(':');
+                if (arr.length === 2 && !_.isEmpty(arr[0])) {
+                    return arr[0].toLowerCase();
+                }
             }
+
+            return null;
         }
-	});
+    });
 </script>

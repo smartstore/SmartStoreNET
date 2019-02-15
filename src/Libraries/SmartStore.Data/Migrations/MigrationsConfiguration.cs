@@ -644,6 +644,7 @@
 
             builder.AddOrUpdate("Common.Url", "URL", "URL");
             builder.AddOrUpdate("Common.File", "File", "Datei");
+            builder.AddOrUpdate("Common.Media", "Media", "Medien");
             builder.AddOrUpdate("Common.Entity.Product", "Product", "Produkt");
             builder.AddOrUpdate("Common.Entity.Category", "Category", "Warengruppe");
             builder.AddOrUpdate("Common.Entity.Manufacturer", "Manufacturer", "Hersteller");

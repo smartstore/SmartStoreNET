@@ -35,7 +35,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
 		[GdprConsent]
         public ActionResult Subscribe(bool subscribe, string email)
         {

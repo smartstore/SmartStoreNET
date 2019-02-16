@@ -658,7 +658,6 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("ShippingMethod")]
         [FormValueRequired("nextstep")]
-        [ValidateInput(false)]
         public ActionResult SelectShippingMethod(string shippingoption)
         {
             //validation
@@ -771,7 +770,6 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("PaymentMethod")]
         [FormValueRequired("nextstep")]
-        [ValidateInput(false)]
         public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model, FormCollection form)
         {
 			// validation
@@ -845,8 +843,8 @@ namespace SmartStore.Web.Controllers
 
             return View(model);
         }
+
         [HttpPost, ActionName("Confirm")]
-        [ValidateInput(false)]
         public ActionResult ConfirmOrder(FormCollection form)
         {
 			//validation

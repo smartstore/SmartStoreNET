@@ -2,22 +2,20 @@
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.Web.Mvc;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
-    [Validator(typeof(WishlistEmailAFriendValidator))]
+	[Validator(typeof(WishlistEmailAFriendValidator))]
     public partial class WishlistEmailAFriendModel : ModelBase
     {
-        [AllowHtml]
         [SmartResourceDisplayName("Wishlist.EmailAFriend.FriendEmail")]
         public string FriendEmail { get; set; }
 
-        [AllowHtml]
         [SmartResourceDisplayName("Wishlist.EmailAFriend.YourEmailAddress")]
         public string YourEmailAddress { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         [SmartResourceDisplayName("Wishlist.EmailAFriend.PersonalMessage")]
         public string PersonalMessage { get; set; }
 

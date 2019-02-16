@@ -1,14 +1,15 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Boards
 {
-    [Validator(typeof(EditForumTopicValidator))]
+	[Validator(typeof(EditForumTopicValidator))]
     public partial class EditForumTopicModel : EntityModelBase
     {
         public EditForumTopicModel()
@@ -28,10 +29,9 @@ namespace SmartStore.Web.Models.Boards
         public int TopicTypeId { get; set; }
         public EditorType ForumEditor { get; set; }
 
-        [AllowHtml]
         public string Subject { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         public string Text { get; set; }
         
         public bool IsModerator { get; set; }

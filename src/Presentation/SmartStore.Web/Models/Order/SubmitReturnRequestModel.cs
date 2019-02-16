@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Order
 {
@@ -20,17 +21,15 @@ namespace SmartStore.Web.Models.Order
         public IList<OrderItemModel> Items { get; set; }
 		public IList<int> AddedReturnRequestIds { get; set; }
 
-		[AllowHtml]
         [SmartResourceDisplayName("ReturnRequests.ReturnReason")]
         public string ReturnReason { get; set; }
         public IList<SelectListItem> AvailableReturnReasons { get; set; }
 
-        [AllowHtml]
         [SmartResourceDisplayName("ReturnRequests.ReturnAction")]
         public string ReturnAction { get; set; }
         public IList<SelectListItem> AvailableReturnActions { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         [SmartResourceDisplayName("ReturnRequests.Comments")]
         public string Comments { get; set; }
 

@@ -923,7 +923,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         [GdprConsent]
 		public ActionResult TopicCreate(EditForumTopicModel model, bool captchaValid)
@@ -1089,7 +1088,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         public ActionResult TopicEdit(EditForumTopicModel model, bool captchaValid)
         {
@@ -1315,7 +1313,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         [GdprConsent]
 		public ActionResult PostCreate(EditForumPostModel model, bool captchaValid)
@@ -1478,7 +1475,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         [ValidateCaptcha]
         public ActionResult PostEdit(EditForumPostModel model, bool captchaValid)
         {

@@ -110,7 +110,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         public ActionResult Vote(int pollAnswerId)
         {
             var pollAnswer = _pollService.GetPollAnswerById(pollAnswerId);

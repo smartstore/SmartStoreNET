@@ -3,11 +3,11 @@ using FluentValidation.Attributes;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.Web.Mvc;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    [Validator(typeof(ProductEmailAFriendValidator))]
+	[Validator(typeof(ProductEmailAFriendValidator))]
     public partial class ProductEmailAFriendModel : ModelBase
     {
         public int ProductId { get; set; }
@@ -16,15 +16,13 @@ namespace SmartStore.Web.Models.Catalog
 
         public string ProductSeName { get; set; }
 
-        [AllowHtml]
         [SmartResourceDisplayName("Products.EmailAFriend.FriendEmail")]
         public string FriendEmail { get; set; }
 
-        [AllowHtml]
         [SmartResourceDisplayName("Products.EmailAFriend.YourEmailAddress")]
         public string YourEmailAddress { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         [SmartResourceDisplayName("Products.EmailAFriend.PersonalMessage")]
         public string PersonalMessage { get; set; }
 

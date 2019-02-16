@@ -164,7 +164,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [HttpPost, ValidateInput(false)]
+        [HttpPost]
         public ActionResult Authenticate(int id, string password)
         {
             var authResult = false;

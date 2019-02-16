@@ -1,13 +1,13 @@
-﻿using System.Web.Mvc;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Boards
 {
-    [Validator(typeof(EditForumPostValidator))]
+	[Validator(typeof(EditForumPostValidator))]
     public partial class EditForumPostModel : EntityModelBase
     {
         public int ForumTopicId { get; set; }
@@ -16,7 +16,7 @@ namespace SmartStore.Web.Models.Boards
         public bool DisplayCaptcha { get; set; }
         public bool IsFirstPost { get; set; }
 
-        [AllowHtml]
+        [SanitizeHtml]
         public string Text { get; set; }
         public EditorType ForumEditor { get; set; }
 

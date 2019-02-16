@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.News;
 using SmartStore.Core.Domain.News;
+using SmartStore.Core.Html;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -328,7 +329,7 @@ namespace SmartStore.Admin.Controllers
 					commentModel.IpAddress = newsComment.IpAddress;
 					commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsComment.CreatedOnUtc, DateTimeKind.Utc);
 					commentModel.CommentTitle = newsComment.CommentTitle;
-					commentModel.CommentText = Core.Html.HtmlUtils.FormatText(newsComment.CommentText, false, true, false, false, false, false);
+					commentModel.CommentText = HtmlUtils.ConvertPlainTextToHtml(newsComment.CommentText.HtmlEncode());
 
 					if (customer == null)
 						commentModel.CustomerName = "".NaIfEmpty();

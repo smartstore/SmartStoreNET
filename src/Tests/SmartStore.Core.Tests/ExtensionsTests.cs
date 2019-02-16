@@ -31,7 +31,7 @@ namespace SmartStore.Core.Tests
 		public void Can_Strip_Html()
 		{
 			var html = GetFileStream("testdata.html").AsString();
-			var text = html.RemoveHtml().Trim();
+			var text = html.RemoveHtml();
 
 			Assert.IsTrue(text.StartsWith("Produktmerkmale"), "StartsWith Produktmerkmale");
 			Assert.IsFalse(text.Contains("function()"), "No function()");

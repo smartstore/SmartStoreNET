@@ -668,7 +668,7 @@ namespace SmartStore.Services.Messages
 			var message = (string)null;
 			if (part.Message.HasValue())
 			{
-				message = HtmlUtils.FormatText(part.Message, true, false, false, false, false, false);
+				message = HtmlUtils.StripTags(part.Message);
 			}
 			m["Message"] = message;
 
@@ -746,7 +746,7 @@ namespace SmartStore.Services.Messages
 			var m = new Dictionary<string, object>
 			{
 				{ "Title", part.Title.NullEmpty() },
-				{ "Text", HtmlUtils.FormatText(part.ReviewText, true, false, false, false, false, false).NullEmpty() },
+				{ "Text", HtmlUtils.StripTags(part.ReviewText).NullEmpty() },
 				{ "Rating", part.Rating }
 			};
 
@@ -840,7 +840,7 @@ namespace SmartStore.Services.Messages
 			{
 				{  "NewsTitle", part.NewsItem.Title.NullEmpty() },
 				{  "Title", part.CommentTitle.NullEmpty() },
-				{  "Text", HtmlUtils.FormatText(part.CommentText, true, false, false, false, false, false).NullEmpty() },
+				{  "Text", HtmlUtils.StripTags(part.CommentText).NullEmpty() },
 				{  "NewsUrl", BuildRouteUrl("NewsItem", new { SeName = part.NewsItem.GetSeName(messageContext.Language.Id) }, messageContext) }
 			};
 

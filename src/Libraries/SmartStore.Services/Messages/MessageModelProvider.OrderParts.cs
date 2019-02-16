@@ -451,8 +451,8 @@ namespace SmartStore.Services.Messages
 				{ "Reason", part.ReasonForReturn.NullEmpty() },
 				{ "Status", part.ReturnRequestStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id) },
 				{ "RequestedAction", part.RequestedAction.NullEmpty() },
-				{ "CustomerComments", HtmlUtils.FormatText(part.CustomerComments, true, false, false, false, false, false).NullEmpty() },
-				{ "StaffNotes", HtmlUtils.FormatText(part.StaffNotes, true, false, false, false, false, false).NullEmpty() },
+				{ "CustomerComments", HtmlUtils.StripTags(part.CustomerComments).NullEmpty() },
+				{ "StaffNotes", HtmlUtils.StripTags(part.StaffNotes).NullEmpty() },
 				{ "Quantity", part.Quantity },
 				{ "RefundToWallet", part.RefundToWallet },
 				{ "Url", BuildActionUrl("Edit", "ReturnRequest", new { id = part.Id, area = "admin" }, messageContext) }

@@ -4,21 +4,15 @@ using SmartStore.Core.Html.CodeFormatter;
 
 namespace SmartStore.Core.Html
 {
-    /// <summary>
-    /// Represents a BBCode helper
-    /// </summary>
     public partial class BBCodeHelper
     {
-        #region Fields
         private static readonly Regex regexBold = new Regex(@"\[b\](.+?)\[/b\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexItalic = new Regex(@"\[i\](.+?)\[/i\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUnderLine = new Regex(@"\[u\](.+?)\[/u\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl1 = new Regex(@"\[url\=([^\]]+)\]([^\]]+)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl2 = new Regex(@"\[url\](.+?)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex regexQuote = new Regex(@"\[quote(=.+?)?\](.+?)\[/quote\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        #endregion
 
-        #region Methods
         /// <summary>
         /// Formats the text
         /// </summary>
@@ -30,8 +24,14 @@ namespace SmartStore.Core.Html
         /// <param name="replaceCode">A value indicating whether to replace Code</param>
         /// <param name="replaceQuote">A value indicating whether to replace Quote</param>
         /// <returns>Formatted text</returns>
-        public static string FormatText(string text, bool replaceBold, bool replaceItalic,
-            bool replaceUnderline, bool replaceUrl, bool replaceCode, bool replaceQuote)
+        public static string ToHtml(
+			string text, 
+			bool replaceBold = true, 
+			bool replaceItalic = true,
+            bool replaceUnderline = true,
+			bool replaceUrl = true, 
+			bool replaceCode = true, 
+			bool replaceQuote = true)
         {
             if (String.IsNullOrEmpty(text))
                 return string.Empty;
@@ -115,6 +115,5 @@ namespace SmartStore.Core.Html
             str = Regex.Replace(str, @"\[/quote\]", String.Empty, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             return str;
         }
-        #endregion
     }
 }

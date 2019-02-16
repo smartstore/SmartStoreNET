@@ -106,7 +106,7 @@ namespace SmartStore.Web.Controllers
 				var email = model.Email.Trim();
 				var fullName = model.FullName;
 				var subject = T("ContactUs.EmailSubject", Services.StoreContext.CurrentStore.Name);
-				var body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
+				var body = Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Enquiry.HtmlEncode());
 
 				// Required for some SMTP servers
 				EmailAddress sender = null;

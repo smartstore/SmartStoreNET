@@ -914,7 +914,7 @@ namespace SmartStore.Web.Controllers
 					model.SenderEmail,
 					model.SenderName,
 					model.SenderPhone,
-					Core.Html.HtmlUtils.FormatText(model.Question, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.Question.HtmlEncode()));
 
 				if (msg?.Email?.Id != null)
 				{
@@ -987,7 +987,7 @@ namespace SmartStore.Web.Controllers
 					product,
 					model.YourEmailAddress, 
 					model.FriendEmail,
-					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
 				model.ProductId = product.Id;
 				model.ProductName = product.GetLocalized(x => x.Name);

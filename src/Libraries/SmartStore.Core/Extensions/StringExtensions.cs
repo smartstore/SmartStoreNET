@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AngleSharp.Dom;
 using AngleSharp.Parser.Html;
+using SmartStore.Core.Html;
 
 namespace SmartStore
 {
@@ -22,7 +23,7 @@ namespace SmartStore
         public const char LineFeed = '\n';
         public const char Tab = '\t';
 
-        private delegate void ActionLine(TextWriter textWriter, string line);
+		private delegate void ActionLine(TextWriter textWriter, string line);
 
         #region Char extensions
 
@@ -564,34 +565,7 @@ namespace SmartStore
 
 		public static string RemoveHtml(this string source)
 		{
-			if (source.IsEmpty())
-				return string.Empty;
-
-			var ignoreTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "script", "style", "svg", "img" };
-
-			var parser = new HtmlParser();
-			var doc = parser.Parse(source);
-
-			var treeWalker = doc.CreateTreeWalker(doc.Body, FilterSettings.Text);
-
-			var sb = new StringBuilder();
-
-			var node = treeWalker.ToNext();
-			while (node != null)
-			{
-				if (!ignoreTags.Contains(node.Parent.NodeName))
-				{
-					var text = node.TextContent;
-					if (text.HasValue())
-					{
-						sb.AppendLine(text);
-					}
-				}
-
-				node = treeWalker.ToNext();
-			}
-
-			return sb.ToString().HtmlDecode();
+			return HtmlUtils.StripTags(source).Trim().HtmlDecode();
 		}
 
 		/// <summary>

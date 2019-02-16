@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Web.Mvc;
+using SmartStore.Core.Html;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Framework.Modelling
 {
-    public class SmartModelBinder : DefaultModelBinder
+	public class SmartModelBinder : DefaultModelBinder
     {
         public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
@@ -26,6 +28,19 @@ namespace SmartStore.Web.Framework.Modelling
 
             return model;
         }
+
+		protected override void SetProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
+		{
+			var attrs = property.Attributes;
+			var sanitizeHtmlAttr = attrs.OfType<SanitizeHtmlAttribute>().FirstOrDefault();
+
+			if (property.PropertyType == typeof(string) && sanitizeHtmlAttr != null && value is string input && !string.IsNullOrWhiteSpace(input))
+			{
+				value = HtmlUtils.SanitizeHtml(input, sanitizeHtmlAttr.IsFragment);
+			}
+
+			base.SetProperty(controllerContext, bindingContext, property, value);
+		}
 
 		private CustomPropertiesDictionary BindCustomPropertiesDictioary(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{

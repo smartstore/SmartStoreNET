@@ -141,7 +141,7 @@
                 return;
             }
 
-            if (Modernizr.touchevents && !sel.hasClass("skin")) {
+            if (Modernizr.touchevents && !sel.hasClass("skin") && !sel.data("select-url")) {
                 if (sel.find('option[data-color], option[data-imageurl]').length === 0) {
                     // skip skinning if device is mobile and no rich content exists (color & image)
                     return;

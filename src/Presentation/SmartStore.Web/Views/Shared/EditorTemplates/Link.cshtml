@@ -25,11 +25,12 @@
                 return new { icon = "fa fa-link", name = T("Common.Url").Text };
         }
     }
-        }
+}
 
 @{
     var rnd = CommonHelper.GenerateRandomInteger();
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var token = this.CommonServices.Resolve<ILinkResolver>().GetDisplayName(Value);
 
     var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
     var allowedTypes = arr.Any()
@@ -39,8 +40,10 @@
 
 <div id="link-builder-@rnd">
     <div class="d-flex flex-nowrap input-group">
+        @* Template control that receives the link expression. *@
         @Html.TextBox("", Value, new { type = "hidden" })
-        <div class="input-group-prepend">
+        @* 1. prepend type selector. *@
+        <div class="input-group-prepend type-container">
 		    <button id="btn-type-@rnd" type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
 			    <i class="fa fa-link"></i>
 		    </button>
@@ -55,29 +58,75 @@
                 }
             </div>
         </div>
+        @* 2. main control. *@
         @foreach (var type in allowedTypes)
         {
-            <div class="flex-grow-1 link-control@(type == TokenizeType.Product ? "" : " hide")" data-type="@type.ToString().ToLower()">
+            var label = token.Type == type ? token.Result : string.Empty;
+            var value = token.Type == type ? token.Value.ToString() : string.Empty;
+            <div class="flex-grow-1 link-control@(token.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
                 @if (type == TokenizeType.Product)
                 {
-                    <input type="text" class="form-control product-name" value="" readonly />
+                    <input id="lb-product-name-@rnd" type="text" class="form-control resettable" value="@label" readonly />
+                }
+                else if (type == TokenizeType.Category)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllCategories", "Category", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == TokenizeType.Manufacturer)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllManufacturers", "Manufacturer", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == TokenizeType.Topic)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllTopics", "Topic", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == TokenizeType.Url)
+                {
+                    <input type="text" class="form-control transferable resettable" value="@value" />
+                }
+                else if (type == TokenizeType.Media)
+                {
+                }
+                else if (type == TokenizeType.File)
+                {
+                    <input id="lb-file-url-@rnd" type="text" class="form-control transferable resettable" value="@label" readonly />
                 }
             </div>
         }
+        @* 3. append additional controls. *@
         @if (allowedTypes.Contains(TokenizeType.Product))
         {
-            <div class="input-group-append link-control" data-type="product">
+            <div class="input-group-append link-control@(token.Type == TokenizeType.Product ? "" : " hide")" data-type="product">
 		        @(Html.SmartStore().EntityPicker()
-                    .HtmlAttribute("id", "link-builder-product-picker-" + rnd.ToString())
+                    .HtmlAttribute("id", "lb-product-picker-" + rnd.ToString())
                     .MaxItems(1)
                     .AppendMode(false)
                     .DialogTitle(T("Common.Entity.SelectProduct").Text.EncodeJsString('\'', false))
                     .Caption(T("Common.Search").Text.EncodeJsString('\'', false))
-                    .OnSelectionCompleted("function (ids) { $('#" + id + "').val(ids ? ('product:' + ids[0]) : ''); return true; }"))
+                    .OnSelectionCompleted("function (ids, selectedItems) { $('#" + id + "').val('product:' + ids[0]); $('#lb-product-name-" + rnd + "').val(selectedItems[0].name); return true; }"))
             </div>
         }
+        @if (allowedTypes.Contains(TokenizeType.File))
+        {
+            <div class="input-group-append link-control@(token.Type == TokenizeType.File ? "" : " hide")" data-type="file">
+                <a href="javascript:void(0)" class="btn btn-secondary browse-files" data-url="@Url.Content("~/Admin/RoxyFileManager/")" data-field-id="lb-file-url-@rnd">
+                    <i class="fa fa-upload"></i>
+                    <span>@(T("Common.BrowseFiles"))&hellip;</span>
+                </a>
+            </div>
+        }
+        @* 4. append reset button. *@
         <div class="input-group-append">
-			<button type="button" class="btn btn-secondary btn-to-danger" title="@T("Common.Remove")">
+			<button type="button" class="btn btn-secondary btn-to-danger btn-reset" title="@T("Common.Remove")">
 				<i class="fa fa-times"></i>
 			</button>
         </div>
@@ -86,45 +135,87 @@
 
 <script>
     $(document).ready(function () {
-        var container = $('#link-builder-@(rnd)');
-        updateTypeInfo();
+        var container = $('#link-builder-@(rnd)'),
+            input = container.find('input[name="@(id)"]'),
+            controls = container.find('div.link-control');
+
+        // Set type selector to initial type from current expression.
+        updateTypeInfo(container.find('a[data-type="@(token.Type.ToString().ToLower())"]'));
+
+        // Init controls.
+        controls.find('select').selectWrapper();
+        controls.find('.select2-container').addClass('w-100');
 
 		// Switch link type.
 		container.on('click', '.link-type', function (e) {
             e.preventDefault();
-            var el = $(this);
-            updateTypeInfo(el);
+            var el = $(this),
+                type = el.data('type'),
+                newCtrl = controls.filter('[data-type="' + type + '"]');
 
+            controls.hide();
+            newCtrl.show();
+            updateTypeInfo(el);
+            _.delay(function () { newCtrl.first().find(':input:first:not([readonly])').focus() }, 100);
+        });
+
+        // Reset value.
+        container.on('click', 'button.btn-reset', function () {
+            input.val('');
+            controls.find('.resettable:visible').val('').trigger('change');
+            // TODO: find a better way to do this.
+            var select2 = controls.find('.select2:visible');
+            if (select2.length) {
+                var label = select2.find('.selection .select2-selection__rendered');
+                if (label.length) {
+                    label.removeAttr('title').html('');
+                }
+            }
+        });
+
+        // Browse files.
+        container.on('click', '.browse-files', function (e) {
+            e.preventDefault();
+            var el = $(this),
+                url = el.data('url');
+
+            url = modifyUrl(url, 'type', '#');
+            url = modifyUrl(url, 'field', el.data('field-id'));
+            url = modifyUrl(url, 'mid', 'modal-browse-files');
+
+            openPopup({
+                id: 'modal-browse-files',
+                url: url,
+                flex: true,
+                large: true,
+                backdrop: false
+            });
+        });
+
+        // Build expression and transfer to token input.
+        container.on('change', '.transferable', function () {
+            $el = $(this);
+            var val = $el.val();
+            if (_.isEmpty(val)) {
+                input.val('');
+            }
+            else {
+                var type = $el.closest('.link-control').data('type');
+                input.val(type === 'url' ? val : '{0}:{1}'.format(type, val));
+            }
+            //console.log('change ' + input.val());
         });
 
         function updateTypeInfo(el) {
-            if (!el) {
-                // Get type from current input value.
-                var val = container.find('input[name="@(id)"]').val(),
-                    type = getType(val) || 'url';
+            if (el) {
+                var btn = $('#btn-type-@(rnd)'),
+                    icon = el.find('i').first().attr('class').replace('fa-fw ', ''),
+                    name = el.find('span').first().text();
 
-                el = container.find('a[data-type=' + type + ']');
+                btn.find('i').attr('class', icon);
+                btn.attr('title', name);
             }
-
-            if (!el) return;
-
-            var btn = $('#btn-type-@(rnd)'),
-                icon = el.find('i').first().attr('class').replace('fa-fw ', ''),
-                name = el.find('span').first().text();
-
-            btn.find('i').attr('class', icon);
-            btn.attr('title', name);
         }
 
-        function getType(str) {
-            if (!_.isEmpty(str)) {
-                var arr = str.split(':');
-                if (arr.length === 2 && !_.isEmpty(arr[0])) {
-                    return arr[0].toLowerCase();
-                }
-            }
-
-            return null;
-        }
     });
 </script>

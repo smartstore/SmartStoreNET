@@ -13,14 +13,9 @@ namespace SmartStore.Services.Cms
 
         public static implicit operator string (TokenizeResult obj)
         {
-            if (!string.IsNullOrEmpty(obj.Result))
+            if (obj != null)
             {
-                return obj.Result;
-            }
-
-            if (obj.Value != null)
-            {
-                return obj.Value.ToString().EmptyNull();
+                return obj.Result.EmptyNull();
             }
 
             return string.Empty;

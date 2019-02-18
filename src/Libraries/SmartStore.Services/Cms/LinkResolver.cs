@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
-using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Topics;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Cms
@@ -17,116 +17,125 @@ namespace SmartStore.Services.Cms
         private const string LINKRESOLVER_NAME_KEY = "SmartStore.linkresolver.name-{0}-{1}";
         private const string LINKRESOLVER_LINK_KEY = "SmartStore.linkresolver.link-{0}-{1}";
 
-        protected readonly IRepository<Picture> _pictureRepository;
+        protected readonly ICommonServices _services;
         protected readonly IUrlRecordService _urlRecordService;
         protected readonly ILanguageService _languageService;
-        protected readonly IPictureService _pictureService;
         protected readonly ILocalizedEntityService _localizedEntityService;
-        protected readonly IWorkContext _workContext;
-        protected readonly ICacheManager _cache;
         protected readonly UrlHelper _urlHelper;
 
         public LinkResolver(
-            IRepository<Picture> pictureRepository,
+            ICommonServices services,
             IUrlRecordService urlRecordService,
             ILanguageService languageService,
-            IPictureService pictureService,
             ILocalizedEntityService localizedEntityService,
-            IWorkContext workContext,
-            ICacheManager cache,
             UrlHelper urlHelper)
         {
-            _pictureRepository = pictureRepository;
+            _services = services;
             _urlRecordService = urlRecordService;
             _languageService = languageService;
-            _pictureService = pictureService;
             _localizedEntityService = localizedEntityService;
-            _workContext = workContext;
-            _cache = cache;
             _urlHelper = urlHelper;
         }
 
         protected virtual TokenizeResult Parse(string linkExpression)
         {
-            var arr = linkExpression.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (arr.Length != 2)
+            if (!string.IsNullOrWhiteSpace(linkExpression))
             {
-                return null;
-            }
+                var index = linkExpression.IndexOf(':');
 
-            if (!Enum.TryParse(arr[0], true, out TokenizeType type))
-            {
-                return null;
-            }
-
-            switch (type)
-            {
-                case TokenizeType.Product:
-                case TokenizeType.Category:
-                case TokenizeType.Manufacturer:
-                case TokenizeType.Topic:
-                    return new TokenizeResult(type, arr[1].ToInt());
-                case TokenizeType.Media:
-                    // Picture.Id, more to come later.
-                    return new TokenizeResult(type, arr[1].ToInt());
-
-                case TokenizeType.Url:
-                case TokenizeType.File:
-                default:
-                    return new TokenizeResult(type, arr[1]);
-            }
-        }
-
-        public virtual TokenizeResult GetDisplayName(string linkExpression, int languageId = 0)
-        {
-            Guard.NotEmpty(linkExpression, nameof(linkExpression));
-
-            if (languageId == 0)
-            {
-                languageId = _workContext.WorkingLanguage.Id;
-            }
-
-            var data = _cache.Get(LINKRESOLVER_NAME_KEY.FormatInvariant(linkExpression, languageId), () =>
-            {
-                var result = Parse(linkExpression);
-                if (result != null)
+                if (index != -1 && Enum.TryParse(linkExpression.Substring(0, index), true, out TokenizeType type))
                 {
-                    var entityName = result.Type.ToString();
+                    var value = linkExpression.Substring(index + 1);
 
-                    switch (result.Type)
+                    switch (type)
                     {
                         case TokenizeType.Product:
                         case TokenizeType.Category:
                         case TokenizeType.Manufacturer:
-                            result.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)result.Value, entityName, "Name");
-                            break;
                         case TokenizeType.Topic:
-                            result.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)result.Value, entityName, "ShortTitle");
-                            if (string.IsNullOrEmpty(result.Result))
-                            {
-                                result.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)result.Value, entityName, "Title");
-                            }
-                            break;
                         case TokenizeType.Media:
-                            var entityId = (int)result.Value;
-                            result.Result = _pictureRepository.TableUntracked.Where(x => x.Id == entityId).Select(x => x.SeoFilename).FirstOrDefault();
+                            var id = value.ToInt();
+                            if (id != 0)
+                            {
+                                return new TokenizeResult(type, id);
+                            }
                             break;
                         case TokenizeType.Url:
-                            var url = result.Value.ToString();
-                            if (url.EmptyNull().StartsWith("~"))
-                            {
-                                url = VirtualPathUtility.ToAbsolute(url);
-                            }
-                            result.Result = url;
-                            break;
                         case TokenizeType.File:
                         default:
-                            result.Result = result.Value.ToString();
-                            break;
+                            return new TokenizeResult(type, value);
                     }
                 }
+            }
 
-                return result;
+            // Fallback to default.
+            return new TokenizeResult(TokenizeType.Url, linkExpression.EmptyNull());
+        }
+
+        protected virtual string GetFromDatabase<T>(Expression<Func<T, string>> selector, int entityId) where T : BaseEntity
+        {
+            var dbSet = _services.DbContext.Set<T>();
+            return dbSet.AsNoTracking().Where(x => x.Id == entityId).Select(selector).FirstOrDefault().EmptyNull();
+        }
+
+        public virtual TokenizeResult GetDisplayName(string linkExpression, int languageId = 0)
+        {
+            if (languageId == 0)
+            {
+                languageId = _services.WorkContext.WorkingLanguage.Id;
+            }
+
+            var data = _services.Cache.Get(LINKRESOLVER_NAME_KEY.FormatInvariant(linkExpression, languageId), () =>
+            {
+                var r = Parse(linkExpression);
+                var entityName = r.Type.ToString();
+
+                switch (r.Type)
+                {
+                    case TokenizeType.Product:
+                    case TokenizeType.Category:
+                    case TokenizeType.Manufacturer:
+                        r.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entityName, "Name");
+                        if (string.IsNullOrEmpty(r.Result))
+                        {
+                            if (r.Type == TokenizeType.Product)
+                                r.Result = GetFromDatabase<Product>(x => x.Name, (int)r.Value);
+                            else if (r.Type == TokenizeType.Category)
+                                r.Result = GetFromDatabase<Category>(x => x.Name, (int)r.Value);
+                            else
+                                r.Result = GetFromDatabase<Manufacturer>(x => x.Name, (int)r.Value);
+                        }
+                        break;                        
+                    case TokenizeType.Topic:
+                        r.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entityName, "ShortTitle");
+                        if (string.IsNullOrEmpty(r.Result))
+                        {
+                            r.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entityName, "Title");
+                        }
+                        if (string.IsNullOrEmpty(r.Result))
+                        {
+                            r.Result = GetFromDatabase<Topic>(x => x.SystemName, (int)r.Value);
+                        }
+                        break;
+                    case TokenizeType.Media:
+                        var entityId = (int)r.Value;
+                        r.Result = GetFromDatabase<Picture>(x => x.SeoFilename, (int)r.Value);
+                        break;
+                    case TokenizeType.Url:
+                        var url = r.Value.ToString();
+                        if (url.EmptyNull().StartsWith("~"))
+                        {
+                            url = VirtualPathUtility.ToAbsolute(url);
+                        }
+                        r.Result = url;
+                        break;
+                    case TokenizeType.File:
+                    default:
+                        r.Result = r.Value.ToString();
+                        break;
+                }
+
+                return r;
             });
 
             return data;
@@ -134,48 +143,48 @@ namespace SmartStore.Services.Cms
 
         public virtual TokenizeResult GetLink(string linkExpression, int languageId = 0)
         {
-            Guard.NotEmpty(linkExpression, nameof(linkExpression));
-
             if (languageId == 0)
             {
-                languageId = _workContext.WorkingLanguage.Id;
+                languageId = _services.WorkContext.WorkingLanguage.Id;
             }
 
-            var data = _cache.Get(LINKRESOLVER_LINK_KEY.FormatInvariant(linkExpression, languageId), () =>
+            var data = _services.Cache.Get(LINKRESOLVER_LINK_KEY.FormatInvariant(linkExpression, languageId), () =>
             {
                 var result = Parse(linkExpression);
-                if (result != null)
+
+                switch (result.Type)
                 {
-                    switch (result.Type)
-                    {
-                        case TokenizeType.Product:
-                        case TokenizeType.Category:
-                        case TokenizeType.Manufacturer:
-                        case TokenizeType.Topic:
-                            var entityName = result.Type.ToString();
-                            // Perf: GetActiveSlug only fetches UrlRecord.Slug from database.
-                            var slug = _urlRecordService.GetActiveSlug((int)result.Value, entityName, languageId);
-                            if (!string.IsNullOrEmpty(slug))
-                            {
-                                result.Result = _urlHelper.RouteUrl(entityName, new { SeName = slug });
-                            }
-                            break;
-                        case TokenizeType.Media:
-                            result.Result = _pictureService.GetUrl((int)result.Value);
-                            break;
-                        case TokenizeType.Url:
-                            var url = result.Value.ToString();
-                            if (url.EmptyNull().StartsWith("~"))
-                            {
-                                url = VirtualPathUtility.ToAbsolute(url);
-                            }
-                            result.Result = url;
-                            break;
-                        case TokenizeType.File:
-                        default:
-                            result.Result = result.Value.ToString();
-                            break;
-                    }
+                    case TokenizeType.Product:
+                    case TokenizeType.Category:
+                    case TokenizeType.Manufacturer:
+                    case TokenizeType.Topic:
+                        var entityName = result.Type.ToString();
+                        // Perf: GetActiveSlug only fetches UrlRecord.Slug from database.
+                        var slug = _urlRecordService.GetActiveSlug((int)result.Value, entityName, languageId);
+                        if (string.IsNullOrEmpty(slug))
+                        {
+                            slug = _urlRecordService.GetActiveSlug((int)result.Value, entityName, 0);
+                        }
+                        if (!string.IsNullOrEmpty(slug))
+                        {
+                            result.Result = _urlHelper.RouteUrl(entityName, new { SeName = slug });
+                        }
+                        break;
+                    case TokenizeType.Media:
+                        result.Result = _services.PictureService.GetUrl((int)result.Value);
+                        break;
+                    case TokenizeType.Url:
+                        var url = result.Value.ToString();
+                        if (url.EmptyNull().StartsWith("~"))
+                        {
+                            url = VirtualPathUtility.ToAbsolute(url);
+                        }
+                        result.Result = url;
+                        break;
+                    case TokenizeType.File:
+                    default:
+                        result.Result = result.Value.ToString();
+                        break;
                 }
 
                 return result;

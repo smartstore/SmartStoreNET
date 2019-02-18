@@ -36,7 +36,6 @@ namespace SmartStore.Services.Cms
         Manufacturer,
         Topic,
         Url = 20,
-        Media = 25,
         File = 30
     }
 }

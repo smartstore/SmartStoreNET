@@ -53,7 +53,6 @@ namespace SmartStore.Services.Cms
                         case TokenizeType.Category:
                         case TokenizeType.Manufacturer:
                         case TokenizeType.Topic:
-                        case TokenizeType.Media:
                             var id = value.ToInt();
                             if (id != 0)
                             {
@@ -117,10 +116,6 @@ namespace SmartStore.Services.Cms
                             r.Result = GetFromDatabase<Topic>(x => x.SystemName, (int)r.Value);
                         }
                         break;
-                    case TokenizeType.Media:
-                        var entityId = (int)r.Value;
-                        r.Result = GetFromDatabase<Picture>(x => x.SeoFilename, (int)r.Value);
-                        break;
                     case TokenizeType.Url:
                         var url = r.Value.ToString();
                         if (url.EmptyNull().StartsWith("~"))
@@ -169,9 +164,6 @@ namespace SmartStore.Services.Cms
                         {
                             result.Result = _urlHelper.RouteUrl(entityName, new { SeName = slug });
                         }
-                        break;
-                    case TokenizeType.Media:
-                        result.Result = _services.PictureService.GetUrl((int)result.Value);
                         break;
                     case TokenizeType.Url:
                         var url = result.Value.ToString();

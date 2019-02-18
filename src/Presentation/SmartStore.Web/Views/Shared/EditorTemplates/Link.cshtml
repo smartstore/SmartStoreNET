@@ -16,8 +16,6 @@
                 return new { icon = "far fa-building", name = T("Common.Entity.Manufacturer").Text };
             case TokenizeType.Topic:
                 return new { icon = "far fa-file", name = T("Common.Entity.Topic").Text };
-            case TokenizeType.Media:
-                return new { icon = "fas fa-images", name = T("Common.Media").Text };
             case TokenizeType.File:
                 return new { icon = "far fa-folder-open", name = T("Common.File").Text };
             case TokenizeType.Url:
@@ -92,9 +90,6 @@
                 else if (type == TokenizeType.Url)
                 {
                     <input type="text" class="form-control transferable resettable" value="@value" />
-                }
-                else if (type == TokenizeType.Media)
-                {
                 }
                 else if (type == TokenizeType.File)
                 {

@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -52,6 +52,7 @@
 	* At least 10x faster
 	* Generated files are saved on the hard disk now: a rebuild after an app restart is no longer necessary.
 	* No exclusive locks during rebuilds anymore: if an (outdated) file already exists, it is returned instantly.
+* Better protection against XSS attacks
 * **Debitoor**:
 	* Partially update customer instead of full update to avoid all fields being overwritten.
 	* #1540 Place company name in front of customer name (according to address format of the particular country).

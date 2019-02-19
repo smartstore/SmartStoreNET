@@ -667,6 +667,11 @@
                 "Hinweis \"Preis nach Anmeldung\" anzeigen",
                 "Specifies whether to display a message stating that prices will not be displayed until login.",
                 "Legt fest, ob ein Hinweis erscheinen soll, dass Preise erst nach Anmeldung angezeigt werden.");
+
+            builder.AddOrUpdate("Products.EmailAFriend.LoginNote",
+                "Please log in to use this function. <a href='{0}'>Login now</a>",
+                "Bitte melden Sie sich an, um diese Funktion nutzen zu können. <a href='{0}'>Jetzt anmelden</a>");
+
         }
     }
 }

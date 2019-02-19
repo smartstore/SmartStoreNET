@@ -133,6 +133,8 @@
 
         options = options || {};
 
+        var originalMatcher = $.fn.select2.defaults.defaults.matcher;
+
         return this.each(function () {
             var sel = $(this);
 
@@ -237,30 +239,23 @@
                         return null;
                 },
                 matcher: function (params, data) {
-                    // If there are no search terms, return all of the data
-                    if ($.trim(params.term) === '') {
-                        return data;
-                    }
-
-                    // Do not display the item if there is no 'text' property
-                    if (typeof data.text === 'undefined') {
-                        return null;
-                    }
-
-                    if (data.text.indexOf(params.term) > -1) {
-                        return data;
-                    }
-
+                    var fallback = true;
                     var terms = $(data.element).data("terms");
+
                     if (terms) {
                         terms = _.isArray(terms) ? terms : [terms];
                         if (terms.length > 0) {
+                            fallback = false;
                             for (var i = 0; i < terms.length; i++) {
                                 if (terms[i].indexOf(params.term) > -1) {
                                     return data;
                                 }
                             }
                         }
+                    }
+
+                    if (fallback) {
+                        return originalMatcher(params, data);
                     }
 
                     return null;

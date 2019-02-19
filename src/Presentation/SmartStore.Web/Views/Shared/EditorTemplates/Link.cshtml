@@ -4,21 +4,21 @@
 {
     private string Value => ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
 
-    private dynamic GetTypeInfos(TokenizeType type)
+    private dynamic GetTypeInfos(LinkType type)
     {
         switch (type)
         {
-            case TokenizeType.Product:
+            case LinkType.Product:
                 return new { icon = "fa fa-cube", name = T("Common.Entity.Product").Text };
-            case TokenizeType.Category:
+            case LinkType.Category:
                 return new { icon = "fa fa-sitemap", name = T("Common.Entity.Category").Text };
-            case TokenizeType.Manufacturer:
+            case LinkType.Manufacturer:
                 return new { icon = "far fa-building", name = T("Common.Entity.Manufacturer").Text };
-            case TokenizeType.Topic:
+            case LinkType.Topic:
                 return new { icon = "far fa-file", name = T("Common.Entity.Topic").Text };
-            case TokenizeType.File:
+            case LinkType.File:
                 return new { icon = "far fa-folder-open", name = T("Common.File").Text };
-            case TokenizeType.Url:
+            case LinkType.Url:
             default:
                 return new { icon = "fa fa-link", name = T("Common.Url").Text };
         }
@@ -32,8 +32,8 @@
 
     var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
     var allowedTypes = arr.Any()
-        ? arr.Select(x => (TokenizeType)Enum.Parse(typeof(TokenizeType), x, true)).ToArray()
-        : Enum.GetValues(typeof(TokenizeType)).Cast<TokenizeType>().ToArray();
+        ? arr.Select(x => (LinkType)Enum.Parse(typeof(LinkType), x, true)).ToArray()
+        : Enum.GetValues(typeof(LinkType)).Cast<LinkType>().ToArray();
 }
 
 <div id="link-builder-@rnd">
@@ -62,45 +62,45 @@
             var label = token.Type == type ? token.Result : string.Empty;
             var value = token.Type == type ? token.Value.ToString() : string.Empty;
             <div class="flex-grow-1 link-control@(token.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
-                @if (type == TokenizeType.Product)
+                @if (type == LinkType.Product)
                 {
                     <input id="lb-product-name-@rnd" type="text" class="form-control resettable" value="@label" readonly />
                 }
-                else if (type == TokenizeType.Category)
+                else if (type == LinkType.Category)
                 {
                     <select class="form-control transferable resettable" 
                             data-select-url="@Url.Action("AllCategories", "Category", new { area = "admin" })"
                             data-select-selected-id="@value"
                             data-select-init-text="@label"></select>
                 }
-                else if (type == TokenizeType.Manufacturer)
+                else if (type == LinkType.Manufacturer)
                 {
                     <select class="form-control transferable resettable" 
                             data-select-url="@Url.Action("AllManufacturers", "Manufacturer", new { area = "admin" })"
                             data-select-selected-id="@value"
                             data-select-init-text="@label"></select>
                 }
-                else if (type == TokenizeType.Topic)
+                else if (type == LinkType.Topic)
                 {
                     <select class="form-control transferable resettable" 
                             data-select-url="@Url.Action("AllTopics", "Topic", new { area = "admin" })"
                             data-select-selected-id="@value"
                             data-select-init-text="@label"></select>
                 }
-                else if (type == TokenizeType.Url)
+                else if (type == LinkType.Url)
                 {
                     <input type="text" class="form-control transferable resettable" value="@value" />
                 }
-                else if (type == TokenizeType.File)
+                else if (type == LinkType.File)
                 {
                     <input id="lb-file-url-@rnd" type="text" class="form-control transferable resettable" value="@label" readonly />
                 }
             </div>
         }
         @* 3. append additional controls. *@
-        @if (allowedTypes.Contains(TokenizeType.Product))
+        @if (allowedTypes.Contains(LinkType.Product))
         {
-            <div class="input-group-append link-control@(token.Type == TokenizeType.Product ? "" : " hide")" data-type="product">
+            <div class="input-group-append link-control@(token.Type == LinkType.Product ? "" : " hide")" data-type="product">
 		        @(Html.SmartStore().EntityPicker()
                     .HtmlAttribute("id", "lb-product-picker-" + rnd.ToString())
                     .MaxItems(1)
@@ -110,9 +110,9 @@
                     .OnSelectionCompleted("function (ids, selectedItems) { $('#" + id + "').val('product:' + ids[0]); $('#lb-product-name-" + rnd + "').val(selectedItems[0].name); return true; }"))
             </div>
         }
-        @if (allowedTypes.Contains(TokenizeType.File))
+        @if (allowedTypes.Contains(LinkType.File))
         {
-            <div class="input-group-append link-control@(token.Type == TokenizeType.File ? "" : " hide")" data-type="file">
+            <div class="input-group-append link-control@(token.Type == LinkType.File ? "" : " hide")" data-type="file">
                 <a href="javascript:void(0)" class="btn btn-secondary browse-files" data-url="@Url.Content("~/Admin/RoxyFileManager/")" data-field-id="lb-file-url-@rnd">
                     <i class="fa fa-upload"></i>
                     <span>@(T("Common.BrowseFiles"))&hellip;</span>

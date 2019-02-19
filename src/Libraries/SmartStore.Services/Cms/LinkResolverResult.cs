@@ -3,15 +3,15 @@
 namespace SmartStore.Services.Cms
 {
     [Serializable]
-    public partial class TokenizeResult
+    public partial class LinkResolverResult
     {
-        public TokenizeResult(TokenizeType type, object value)
+        public LinkResolverResult(LinkType type, object value)
         {
             Type = type;
             Value = value;
         }
 
-        public static implicit operator string (TokenizeResult obj)
+        public static implicit operator string (LinkResolverResult obj)
         {
             if (obj != null)
             {
@@ -21,7 +21,7 @@ namespace SmartStore.Services.Cms
             return string.Empty;
         }
 
-        public TokenizeType Type { get; private set; }
+        public LinkType Type { get; private set; }
 
         public object Value { get; private set; }
 
@@ -29,7 +29,7 @@ namespace SmartStore.Services.Cms
     }
 
 
-    public enum TokenizeType
+    public enum LinkType
     {
         Product = 0,
         Category,

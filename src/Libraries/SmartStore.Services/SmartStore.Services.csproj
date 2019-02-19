@@ -198,7 +198,7 @@
     <Compile Include="Catalog\PriceCalculationContext.cs" />
     <Compile Include="Cms\ILinkResolver.cs" />
     <Compile Include="Cms\LinkResolver.cs" />
-    <Compile Include="Cms\TokenizeResult.cs" />
+    <Compile Include="Cms\LinkResolverResult.cs" />
     <Compile Include="Common\IUserAgent.cs" />
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />

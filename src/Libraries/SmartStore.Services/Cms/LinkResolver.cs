@@ -37,47 +37,7 @@ namespace SmartStore.Services.Cms
             _urlHelper = urlHelper;
         }
 
-        protected virtual TokenizeResult Parse(string linkExpression)
-        {
-            if (!string.IsNullOrWhiteSpace(linkExpression))
-            {
-                var index = linkExpression.IndexOf(':');
-
-                if (index != -1 && Enum.TryParse(linkExpression.Substring(0, index), true, out TokenizeType type))
-                {
-                    var value = linkExpression.Substring(index + 1);
-
-                    switch (type)
-                    {
-                        case TokenizeType.Product:
-                        case TokenizeType.Category:
-                        case TokenizeType.Manufacturer:
-                        case TokenizeType.Topic:
-                            var id = value.ToInt();
-                            if (id != 0)
-                            {
-                                return new TokenizeResult(type, id);
-                            }
-                            break;
-                        case TokenizeType.Url:
-                        case TokenizeType.File:
-                        default:
-                            return new TokenizeResult(type, value);
-                    }
-                }
-            }
-
-            // Fallback to default.
-            return new TokenizeResult(TokenizeType.Url, linkExpression.EmptyNull());
-        }
-
-        protected virtual string GetFromDatabase<T>(Expression<Func<T, string>> selector, int entityId) where T : BaseEntity
-        {
-            var dbSet = _services.DbContext.Set<T>();
-            return dbSet.AsNoTracking().Where(x => x.Id == entityId).Select(selector).FirstOrDefault().EmptyNull();
-        }
-
-        public virtual TokenizeResult GetDisplayName(string linkExpression, int languageId = 0)
+        public virtual LinkResolverResult GetDisplayName(string linkExpression, int languageId = 0)
         {
             if (languageId == 0)
             {
@@ -91,21 +51,21 @@ namespace SmartStore.Services.Cms
 
                 switch (r.Type)
                 {
-                    case TokenizeType.Product:
-                    case TokenizeType.Category:
-                    case TokenizeType.Manufacturer:
+                    case LinkType.Product:
+                    case LinkType.Category:
+                    case LinkType.Manufacturer:
                         r.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entityName, "Name");
                         if (string.IsNullOrEmpty(r.Result))
                         {
-                            if (r.Type == TokenizeType.Product)
+                            if (r.Type == LinkType.Product)
                                 r.Result = GetFromDatabase<Product>(x => x.Name, (int)r.Value);
-                            else if (r.Type == TokenizeType.Category)
+                            else if (r.Type == LinkType.Category)
                                 r.Result = GetFromDatabase<Category>(x => x.Name, (int)r.Value);
                             else
                                 r.Result = GetFromDatabase<Manufacturer>(x => x.Name, (int)r.Value);
                         }
                         break;                        
-                    case TokenizeType.Topic:
+                    case LinkType.Topic:
                         r.Result = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entityName, "ShortTitle");
                         if (string.IsNullOrEmpty(r.Result))
                         {
@@ -116,7 +76,7 @@ namespace SmartStore.Services.Cms
                             r.Result = GetFromDatabase<Topic>(x => x.SystemName, (int)r.Value);
                         }
                         break;
-                    case TokenizeType.Url:
+                    case LinkType.Url:
                         var url = r.Value.ToString();
                         if (url.EmptyNull().StartsWith("~"))
                         {
@@ -124,7 +84,7 @@ namespace SmartStore.Services.Cms
                         }
                         r.Result = url;
                         break;
-                    case TokenizeType.File:
+                    case LinkType.File:
                     default:
                         r.Result = r.Value.ToString();
                         break;
@@ -136,7 +96,7 @@ namespace SmartStore.Services.Cms
             return data;
         }
 
-        public virtual TokenizeResult GetLink(string linkExpression, int languageId = 0)
+        public virtual LinkResolverResult GetLink(string linkExpression, int languageId = 0)
         {
             if (languageId == 0)
             {
@@ -149,10 +109,10 @@ namespace SmartStore.Services.Cms
 
                 switch (result.Type)
                 {
-                    case TokenizeType.Product:
-                    case TokenizeType.Category:
-                    case TokenizeType.Manufacturer:
-                    case TokenizeType.Topic:
+                    case LinkType.Product:
+                    case LinkType.Category:
+                    case LinkType.Manufacturer:
+                    case LinkType.Topic:
                         var entityName = result.Type.ToString();
                         // Perf: GetActiveSlug only fetches UrlRecord.Slug from database.
                         var slug = _urlRecordService.GetActiveSlug((int)result.Value, entityName, languageId);
@@ -165,7 +125,7 @@ namespace SmartStore.Services.Cms
                             result.Result = _urlHelper.RouteUrl(entityName, new { SeName = slug });
                         }
                         break;
-                    case TokenizeType.Url:
+                    case LinkType.Url:
                         var url = result.Value.ToString();
                         if (url.EmptyNull().StartsWith("~"))
                         {
@@ -173,7 +133,7 @@ namespace SmartStore.Services.Cms
                         }
                         result.Result = url;
                         break;
-                    case TokenizeType.File:
+                    case LinkType.File:
                     default:
                         result.Result = result.Value.ToString();
                         break;
@@ -184,5 +144,49 @@ namespace SmartStore.Services.Cms
 
             return data;
         }
-    }
+
+		protected virtual LinkResolverResult Parse(string linkExpression)
+		{
+			if (!string.IsNullOrWhiteSpace(linkExpression))
+			{
+				var index = linkExpression.IndexOf(':');
+
+				if (index != -1 && Enum.TryParse(linkExpression.Substring(0, index), true, out LinkType type))
+				{
+					var value = linkExpression.Substring(index + 1);
+
+					switch (type)
+					{
+						case LinkType.Product:
+						case LinkType.Category:
+						case LinkType.Manufacturer:
+						case LinkType.Topic:
+							var id = value.ToInt();
+							if (id != 0)
+							{
+								return new LinkResolverResult(type, id);
+							}
+							break;
+						case LinkType.Url:
+						case LinkType.File:
+						default:
+							return new LinkResolverResult(type, value);
+					}
+				}
+			}
+
+			// Fallback to default.
+			return new LinkResolverResult(LinkType.Url, linkExpression.EmptyNull());
+		}
+
+		protected virtual string GetFromDatabase<T>(Expression<Func<T, string>> selector, int entityId) where T : BaseEntity
+		{
+			return _services.DbContext.Set<T>()
+				.AsNoTracking()
+				.Where(x => x.Id == entityId)
+				.Select(selector)
+				.FirstOrDefault()
+				.EmptyNull();
+		}
+	}
 }

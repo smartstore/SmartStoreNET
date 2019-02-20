@@ -28,7 +28,7 @@
 @{
     var rnd = CommonHelper.GenerateRandomInteger();
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
-    var token = this.CommonServices.Resolve<ILinkResolver>().GetDisplayName(Value);
+    var link = this.CommonServices.Resolve<ILinkResolver>().Resolve(Value);
 
     var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
     var allowedTypes = arr.Any()
@@ -59,9 +59,9 @@
         @* 2. main control. *@
         @foreach (var type in allowedTypes)
         {
-            var label = token.Type == type ? token.Result : string.Empty;
-            var value = token.Type == type ? token.Value.ToString() : string.Empty;
-            <div class="flex-grow-1 link-control@(token.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
+            var label = link.Type == type ? link.Label : string.Empty;
+            var value = link.Type == type ? link.Value.ToString() : string.Empty;
+            <div class="flex-grow-1 link-control@(link.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
                 @if (type == LinkType.Product)
                 {
                     <input id="lb-product-name-@rnd" type="text" class="form-control resettable" value="@label" readonly />
@@ -100,7 +100,7 @@
         @* 3. append additional controls. *@
         @if (allowedTypes.Contains(LinkType.Product))
         {
-            <div class="input-group-append link-control@(token.Type == LinkType.Product ? "" : " hide")" data-type="product">
+            <div class="input-group-append link-control@(link.Type == LinkType.Product ? "" : " hide")" data-type="product">
 		        @(Html.SmartStore().EntityPicker()
                     .HtmlAttribute("id", "lb-product-picker-" + rnd.ToString())
                     .MaxItems(1)
@@ -112,7 +112,7 @@
         }
         @if (allowedTypes.Contains(LinkType.File))
         {
-            <div class="input-group-append link-control@(token.Type == LinkType.File ? "" : " hide")" data-type="file">
+            <div class="input-group-append link-control@(link.Type == LinkType.File ? "" : " hide")" data-type="file">
                 <a href="javascript:void(0)" class="btn btn-secondary browse-files" data-url="@Url.Content("~/Admin/RoxyFileManager/")" data-field-id="lb-file-url-@rnd">
                     <i class="fa fa-upload"></i>
                     <span>@(T("Common.BrowseFiles"))&hellip;</span>
@@ -135,7 +135,7 @@
             controls = container.find('div.link-control');
 
         // Set type selector to initial type from current expression.
-        updateTypeInfo(container.find('a[data-type="@(token.Type.ToString().ToLower())"]'));
+        updateTypeInfo(container.find('a[data-type="@(link.Type.ToString().ToLower())"]'));
 
         // Init controls.
         controls.find('select').selectWrapper();

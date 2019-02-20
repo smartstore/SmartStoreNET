@@ -5,27 +5,11 @@ namespace SmartStore.Services.Cms
     [Serializable]
     public partial class LinkResolverResult
     {
-        public LinkResolverResult(LinkType type, object value)
-        {
-            Type = type;
-            Value = value;
-        }
+        public LinkType Type { get; set; }
+        public object Value { get; set; }
 
-        public static implicit operator string (LinkResolverResult obj)
-        {
-            if (obj != null)
-            {
-                return obj.Result.EmptyNull();
-            }
-
-            return string.Empty;
-        }
-
-        public LinkType Type { get; private set; }
-
-        public object Value { get; private set; }
-
-        public string Result { get; set; }
+        public string Link { get; set; }
+        public string Label { get; set; }
     }
 
 

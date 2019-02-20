@@ -6,19 +6,11 @@
     public partial interface ILinkResolver
     {
         /// <summary>
-        /// Gets a display name for a link expression.
+        /// Resolves a link expression.
         /// </summary>
         /// <param name="linkExpression">Link expression.</param>
         /// <param name="languageId">Language identifier. 0 to use current working language.</param>
-        /// <returns>Tokenize result. Never returns <c>null</c>.</returns>
-        LinkResolverResult GetDisplayName(string linkExpression, int languageId = 0);
-
-        /// <summary>
-        /// Gets the link for a link expression.
-        /// </summary>
-        /// <param name="linkExpression">Link expression.</param>
-        /// <param name="languageId">Language identifier. 0 to use current working language.</param>/// 
-        /// <returns>Tokenize result. Never returns <c>null</c>.</returns>
-        LinkResolverResult GetLink(string linkExpression, int languageId = 0);
+        /// <returns>LinkResolverResult</returns>
+        LinkResolverResult Resolve(string linkExpression, int languageId = 0);
     }
 }

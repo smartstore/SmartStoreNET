@@ -50,44 +50,33 @@ namespace SmartStore.Services.Cms
                     case LinkType.Category:
                     case LinkType.Manufacturer:
                         r.Link = GetLink((int)r.Value, entity, languageId);
-
                         r.Label = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entity, "Name");
+
                         if (string.IsNullOrEmpty(r.Label))
                         {
                             if (r.Type == LinkType.Product)
-                                r.Label = GetFromDatabase<Product>(x => x.Name, (int)r.Value);
+							{
+								r.Label = GetFromDatabase<Product>(x => x.Name, (int)r.Value);
+							}  
                             else if (r.Type == LinkType.Category)
-                                r.Label = GetFromDatabase<Category>(x => x.Name, (int)r.Value);
+							{
+								r.Label = GetFromDatabase<Category>(x => x.Name, (int)r.Value);
+							} 
                             else
-                                r.Label = GetFromDatabase<Manufacturer>(x => x.Name, (int)r.Value);
+							{
+								r.Label = GetFromDatabase<Manufacturer>(x => x.Name, (int)r.Value);
+							}      
                         }
                         break;
                     case LinkType.Topic:
-                        if (r.Value is string)
-                        {
-                            var systemName = (string)r.Value;
-                            var id = _services.DbContext.Set<Topic>()
-                                .AsNoTracking()
-                                .Where(x => x.SystemName == systemName)
-                                .Select(x => x.Id)
-                                .FirstOrDefault();
+						var (id, systemName) = GetTopicData(r);
 
-                            r.Link = GetLink(id, entity, languageId);
-                        }
-                        else
-                        {
-                            r.Link = GetLink((int)r.Value, entity, languageId);
-                        }
+						r.Link = GetLink(id, entity, languageId);
 
-                        r.Label = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entity, "ShortTitle");
-                        if (string.IsNullOrEmpty(r.Label))
-                        {
-                            r.Label = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entity, "Title");
-                        }
-                        if (string.IsNullOrEmpty(r.Label))
-                        {
-                            r.Label = GetFromDatabase<Topic>(x => x.SystemName, (int)r.Value);
-                        }
+                        r.Label = _localizedEntityService.GetLocalizedValue(languageId, id, entity, "ShortTitle").NullEmpty() ?? 
+							_localizedEntityService.GetLocalizedValue(languageId, id, entity, "Title").NullEmpty() ?? 
+							systemName ?? GetFromDatabase<Topic>(x => x.SystemName, id);
+
                         break;
                     case LinkType.Url:
                         var url = r.Value.ToString();
@@ -107,6 +96,19 @@ namespace SmartStore.Services.Cms
             });
 
             return data;
+
+			(int, string) GetTopicData(LinkResolverResult r)
+			{
+				if (r.Value is string systemName)
+				{
+					var id = _services.DbContext.Set<Topic>().Where(x => x.SystemName == systemName).Select(x => x.Id).FirstOrDefault();
+					return (id, systemName);
+				}
+				else
+				{
+					return ((int)r.Value, null);
+				}
+			}
         }
 
         protected virtual LinkResolverResult Parse(string linkExpression)
@@ -130,12 +132,11 @@ namespace SmartStore.Services.Cms
                             {
                                 return new LinkResolverResult { Type = type, Value = id };
                             }
-                            else if (type == LinkType.Topic)
+                            else
                             {
                                 // System name.
                                 return new LinkResolverResult { Type = type, Value = value };
                             }
-                            break;
                         case LinkType.Url:
                         case LinkType.File:
                         default:
@@ -151,11 +152,8 @@ namespace SmartStore.Services.Cms
         {
             if (id != 0)
             {
-                var slug = _urlRecordService.GetActiveSlug(id, entity, languageId);
-                if (string.IsNullOrEmpty(slug))
-                {
-                    slug = _urlRecordService.GetActiveSlug(id, entity, 0);
-                }
+                var slug = _urlRecordService.GetActiveSlug(id, entity, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(id, entity, 0);
+
                 if (!string.IsNullOrEmpty(slug))
                 {
                     return _urlHelper.RouteUrl(entity, new { SeName = slug });

@@ -115,7 +115,7 @@
 * #1566 Santander: eliminate the 1 cent rounding difference at amountTotalNet.
 * Fixed redirection to the homepage for pages which are loaded while the application is restarted.
 * #1570 Filter option "Only deactivated customers" filters deleted instead of deactivated customers.
-* UPS rates were way to high due to incorrect API request
+* UPS rates were way too high due to incorrect API request
 * #1475 select boxes must be wrapped on mobile devices if data-select-url is set  
 * Fixed the redirection to the homepage for pages which are loaded while the application is restarted
 

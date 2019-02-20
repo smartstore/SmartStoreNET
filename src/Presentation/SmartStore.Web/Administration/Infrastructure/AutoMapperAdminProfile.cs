@@ -704,14 +704,12 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
 			CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
 				.ForMember(dest => dest.AvailableRegisterCustomerRoles, mo => mo.Ignore());
-			CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
-				.ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
-				.ForMember(dest => dest.PasswordMinLength, mo => mo.Ignore())
-				.ForMember(dest => dest.AvatarMaximumSizeBytes, mo => mo.Ignore())
-				.ForMember(dest => dest.DownloadableProductsValidateUser, mo => mo.Ignore())
-				.ForMember(dest => dest.OnlineCustomerMinutes, mo => mo.Ignore())
-				.ForMember(dest => dest.PrefillLoginUsername, mo => mo.Ignore())
-				.ForMember(dest => dest.PrefillLoginPwd, mo => mo.Ignore());
+            CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
+                .ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
+                .ForMember(dest => dest.PasswordMinLength, mo => mo.Ignore())
+                .ForMember(dest => dest.AvatarMaximumSizeBytes, mo => mo.Ignore())
+                .ForMember(dest => dest.DownloadableProductsValidateUser, mo => mo.Ignore())
+                .ForMember(dest => dest.OnlineCustomerMinutes, mo => mo.Ignore());
 			CreateMap<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>();
 			CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
 				.ForMember(dest => dest.Id, mo => mo.Ignore());

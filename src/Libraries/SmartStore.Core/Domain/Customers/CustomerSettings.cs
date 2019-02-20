@@ -255,9 +255,6 @@ namespace SmartStore.Core.Domain.Customers
 
         #endregion
 
-        public string PrefillLoginUsername { get; set; }
-        public string PrefillLoginPwd { get; set; }
-
 		/// <summary>
 		/// Identifier of a customer role that new registered customers will be assigned to
 		/// </summary>

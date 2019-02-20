@@ -440,20 +440,7 @@ namespace SmartStore.Web.Controllers
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.CheckoutAsGuest = checkoutAsGuest ?? false;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
-            
-            if (_customerSettings.PrefillLoginUsername.HasValue())
-            {
-                if (model.UsernamesEnabled)
-                    model.Username = _customerSettings.PrefillLoginUsername;
-                else
-                    model.Email = _customerSettings.PrefillLoginUsername;
-                
-            }
-            if (_customerSettings.PrefillLoginPwd.HasValue())
-            {
-                model.Password = _customerSettings.PrefillLoginPwd;
-            }
-
+           
             return View(model);
         }
 

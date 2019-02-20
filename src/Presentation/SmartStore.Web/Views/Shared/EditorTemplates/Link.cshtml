@@ -131,7 +131,7 @@
 <script>
     $(document).ready(function () {
         var container = $('#link-builder-@(rnd)'),
-            input = container.find('input[name="@(id)"]'),
+            input = container.find('#@(id)'),
             controls = container.find('div.link-control');
 
         // Set type selector to initial type from current expression.
@@ -196,7 +196,7 @@
             }
             else {
                 var type = $el.closest('.link-control').data('type');
-                input.val(type === 'url' ? val : '{0}:{1}'.format(type, val));
+                input.val(type === 'url' ? val : (type + ':' + val));
             }
             //console.log('change ' + input.val());
         });

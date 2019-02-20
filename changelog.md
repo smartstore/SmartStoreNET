@@ -69,6 +69,8 @@
 * #1563 QueuedMessagesClearTask: add a setting for the age of the mails to be deleted.
 * #1569 Added a setting to show login note if no prices are displayed due to customer group permissions.
 * PayPal PLUS: now up to 10 more third party payment methods are allowed by PayPal.
+* #1560 Tell-a-Friend and anonymous user: render alert box and tell guest to login to use this function
+* #1571: Compare products only shows one specification attribute option
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
@@ -113,6 +115,9 @@
 * #1566 Santander: eliminate the 1 cent rounding difference at amountTotalNet.
 * Fixed redirection to the homepage for pages which are loaded while the application is restarted.
 * #1570 Filter option "Only deactivated customers" filters deleted instead of deactivated customers.
+* UPS rates were way to high due to incorrect API request
+* #1475 select boxes must be wrapped on mobile devices if data-select-url is set  
+* Fixed the redirection to the homepage for pages which are loaded while the application is restarted
 
 
 ## SmartStore.NET 3.1.5

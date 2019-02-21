@@ -70,7 +70,8 @@
 * #1569 Added a setting to show login note if no prices are displayed due to customer group permissions.
 * PayPal PLUS: now up to 10 more third party payment methods are allowed by PayPal.
 * #1560 Tell-a-Friend and anonymous user: render alert box and tell guest to login to use this function
-* #1571: Compare products only shows one specification attribute option
+* #1571 Compare products only shows one specification attribute option
+* #1539 Allow signing in with both e-mail and username 
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

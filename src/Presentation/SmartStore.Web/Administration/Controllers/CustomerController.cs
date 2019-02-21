@@ -233,7 +233,7 @@ namespace SmartStore.Admin.Controllers
             return new CustomerModel
             {
                 Id = customer.Id,
-                Email = !String.IsNullOrEmpty(customer.Email) ? customer.Email : (customer.IsGuest() ? _localizationService.GetResource("Admin.Customers.Guest") : "".NaIfEmpty()),
+                Email = customer.Email.HasValue() ? customer.Email : (customer.IsGuest() ? T("Admin.Customers.Guest").Text : "".NaIfEmpty()),
                 Username = customer.Username,
                 FullName = customer.GetFullName(),
                 Company = customer.Company,
@@ -290,7 +290,7 @@ namespace SmartStore.Admin.Controllers
             
 			if (_customerSettings.CountryEnabled)
 			{
-				model.AvailableCountries.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+				model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
 
 				foreach (var c in _countryService.GetAllCountries())
 				{
@@ -310,7 +310,7 @@ namespace SmartStore.Admin.Controllers
 					}
 					else
 					{
-						model.AvailableStates.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
 					}
 				}
 			}
@@ -408,14 +408,14 @@ namespace SmartStore.Admin.Controllers
             if (isInGuestsRole && isInRegisteredRole)
             {
                 //return "The customer cannot be in both 'Guests' and 'Registered' customer roles";
-				return String.Format(_localizationService.GetResource("Admin.Customers.CanOnlyBeCustomerOrGuest"),
+				return String.Format(T("Admin.Customers.CanOnlyBeCustomerOrGuest"),
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests).Name,
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Name);
             }
             if (!isInGuestsRole && !isInRegisteredRole)
             {
                 //return "Add the customer to 'Guests' or 'Registered' customer role";
-				return String.Format(_localizationService.GetResource("Admin.Customers.MustBeCustomerOrGuest"),
+				return String.Format(T("Admin.Customers.MustBeCustomerOrGuest"),
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests).Name,
                     _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered).Name);
             }
@@ -903,7 +903,7 @@ namespace SmartStore.Admin.Controllers
 					_eventPublisher.Publish(new ModelBoundEvent(model, customer, form));
 
                     // activity log
-                    _customerActivityService.InsertActivity("EditCustomer", _localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id);
+                    _customerActivityService.InsertActivity("EditCustomer", T("ActivityLog.EditCustomer"), customer.Id);
 
                     NotifySuccess(T("Admin.Customers.Customers.Updated"));
 
@@ -1132,7 +1132,7 @@ namespace SmartStore.Admin.Controllers
                 };
 
                 _forumService.InsertPrivateMessage(privateMessage);
-                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.SendPM.Sent"));
+                NotifySuccess(T("Admin.Customers.Customers.SendPM.Sent"));
             }
             catch (Exception exc)
             {
@@ -1317,7 +1317,7 @@ namespace SmartStore.Admin.Controllers
             //countries
             foreach (var c in _countryService.GetAllCountries(true))
                 model.Address.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString() });
-            model.Address.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+            model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
 
             return View(model);
         }
@@ -1344,7 +1344,7 @@ namespace SmartStore.Admin.Controllers
                 customer.Addresses.Add(address);
                 _customerService.UpdateCustomer(customer);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Addresses.Added"));
+                NotifySuccess(T("Admin.Customers.Customers.Addresses.Added"));
                 return RedirectToAction("AddressEdit", new { addressId = address.Id, customerId = model.CustomerId });
             }
 
@@ -1366,7 +1366,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Address.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+                model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
             }
             return View(model);
         }
@@ -1422,7 +1422,7 @@ namespace SmartStore.Admin.Controllers
                     model.Address.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == address.StateProvinceId) });
             }
             else
-                model.Address.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+                model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
 
             return View(model);
         }
@@ -1446,7 +1446,7 @@ namespace SmartStore.Admin.Controllers
                 address = model.Address.ToEntity(address);
                 _addressService.UpdateAddress(address);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Addresses.Updated"));
+                NotifySuccess(T("Admin.Customers.Customers.Addresses.Updated"));
                 return RedirectToAction("AddressEdit", new { addressId = model.Address.Id, customerId = model.CustomerId });
             }
 

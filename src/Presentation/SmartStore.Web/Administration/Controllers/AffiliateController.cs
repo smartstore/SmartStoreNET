@@ -131,7 +131,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
-				model.Address.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+				model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
 			}
         }
 
@@ -218,7 +218,7 @@ namespace SmartStore.Admin.Controllers
                     affiliate.Address.StateProvinceId = null;
                 _affiliateService.InsertAffiliate(affiliate);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Affiliates.Added"));
+                NotifySuccess(T("Admin.Affiliates.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = affiliate.Id }) : RedirectToAction("List");
             }
 
@@ -267,7 +267,7 @@ namespace SmartStore.Admin.Controllers
                     affiliate.Address.StateProvinceId = null;
                 _affiliateService.UpdateAffiliate(affiliate);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Affiliates.Updated"));
+                NotifySuccess(T("Admin.Affiliates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", affiliate.Id) : RedirectToAction("List");
             }
 
@@ -289,7 +289,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             _affiliateService.DeleteAffiliate(affiliate);
-            NotifySuccess(_localizationService.GetResource("Admin.Affiliates.Deleted"));
+            NotifySuccess(T("Admin.Affiliates.Deleted"));
             return RedirectToAction("List");
         }
 

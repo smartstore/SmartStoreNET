@@ -122,7 +122,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			var currentCustomer = _services.WorkContext.CurrentCustomer;
 
-			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
+			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().CustomerLoginType != CustomerLoginType.Email ? currentCustomer.Username : currentCustomer.Email;
 			ViewBag.Stores = _services.StoreService.GetAllStores();
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 			{

@@ -273,7 +273,7 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-				if (_customerSettings.UsernamesEnabled && !_customerSettings.AllowUsersToChangeUsernames)
+				if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && !_customerSettings.AllowUsersToChangeUsernames)
 				{
 					model.Username = customer.Username;
 				}
@@ -338,7 +338,7 @@ namespace SmartStore.Web.Controllers
             model.FaxEnabled = _customerSettings.FaxEnabled;
             model.FaxRequired = _customerSettings.FaxRequired;
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.SignatureEnabled = _forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled;
@@ -437,7 +437,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult Login(bool? checkoutAsGuest)
         {
             var model = new LoginModel();
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.CustomerLoginType = _customerSettings.CustomerLoginType;
             model.CheckoutAsGuest = checkoutAsGuest ?? false;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
            
@@ -456,16 +456,48 @@ namespace SmartStore.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                if (_customerSettings.CustomerLoginType == CustomerLoginType.Username && model.Username != null)
                 {
                     model.Username = model.Username.Trim();
                 }
 
-                if (_customerRegistrationService.ValidateCustomer(_customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password))
+                if (_customerSettings.CustomerLoginType == CustomerLoginType.UsernameOrEmail && model.UsernameOrEmail != null)
                 {
-                    var customer = _customerSettings.UsernamesEnabled 
-						? _customerService.GetCustomerByUsername(model.Username) 
-						: _customerService.GetCustomerByEmail(model.Email);
+                    model.UsernameOrEmail = model.UsernameOrEmail.Trim();
+                }
+
+                var userNameOrEmail = String.Empty;
+                if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
+                {
+                    userNameOrEmail = model.Email;
+                }
+                else if (_customerSettings.CustomerLoginType == CustomerLoginType.Username)
+                {
+                    userNameOrEmail = model.Username;
+                }
+                else
+                {
+                    userNameOrEmail = model.UsernameOrEmail;
+                }
+
+                if (_customerRegistrationService.ValidateCustomer(userNameOrEmail, model.Password))
+                {
+                    Customer customer = null;
+
+                    if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
+                    {
+                        customer = _customerService.GetCustomerByEmail(model.Email);
+                    }
+                    else if (_customerSettings.CustomerLoginType == CustomerLoginType.Username)
+                    {
+                        customer = _customerService.GetCustomerByUsername(model.Username);
+                    }
+                    else
+                    {
+                        customer = _customerService.GetCustomerByEmail(model.UsernameOrEmail);
+                        if (customer == null)
+                            customer = _customerService.GetCustomerByUsername(model.UsernameOrEmail);
+                    }
 
                     _shoppingCartService.MigrateShoppingCart(_workContext.CurrentCustomer, customer);
 
@@ -490,7 +522,7 @@ namespace SmartStore.Web.Controllers
             }
 
             // If we got this far, something failed, redisplay form.
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.CustomerLoginType = _customerSettings.CustomerLoginType;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
 
             return View(model);
@@ -532,7 +564,7 @@ namespace SmartStore.Web.Controllers
             model.FaxEnabled = _customerSettings.FaxEnabled;
             model.FaxRequired = _customerSettings.FaxRequired;
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage;
 
@@ -597,14 +629,14 @@ namespace SmartStore.Web.Controllers
             
             if (ModelState.IsValid)
             {
-                if (_customerSettings.UsernamesEnabled && model.Username != null)
+                if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && model.Username != null)
                 {
                     model.Username = model.Username.Trim();
                 }
 
                 bool isApproved = _customerSettings.UserRegistrationType == UserRegistrationType.Standard;
                 var registrationRequest = new CustomerRegistrationRequest(customer, model.Email,
-                    _customerSettings.UsernamesEnabled ? model.Username : model.Email, model.Password, _customerSettings.DefaultPasswordFormat, isApproved);
+                    _customerSettings.CustomerLoginType != CustomerLoginType.Email ? model.Username : model.Email, model.Password, _customerSettings.DefaultPasswordFormat, isApproved);
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
 
                 if (registrationResult.Success)
@@ -814,7 +846,7 @@ namespace SmartStore.Web.Controllers
             model.FaxEnabled = _customerSettings.FaxEnabled;
             model.FaxRequired = _customerSettings.FaxRequired;
             model.NewsletterEnabled = _customerSettings.NewsletterEnabled;
-            model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+            model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage;
 
@@ -876,7 +908,7 @@ namespace SmartStore.Web.Controllers
             var usernameAvailable = false;
             var statusText = _localizationService.GetResource("Account.CheckUsernameAvailability.NotAvailable");
 
-            if (_customerSettings.UsernamesEnabled && username != null)
+            if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && username != null)
             {
                 username = username.Trim();
 
@@ -1135,7 +1167,7 @@ namespace SmartStore.Web.Controllers
 			{
 				ModelState.AddModelError("", "Email is not provided.");
 			}               
-            if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames && model.Username.IsEmpty())
+            if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && _customerSettings.AllowUsersToChangeUsernames && model.Username.IsEmpty())
             {
 				ModelState.AddModelError("", "Username is not provided.");
             }
@@ -1148,7 +1180,7 @@ namespace SmartStore.Web.Controllers
                     customer.LastName = model.LastName;
 
                     // Username.
-                    if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames)
+                    if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && _customerSettings.AllowUsersToChangeUsernames)
                     {
                         if (!customer.Username.Equals(model.Username.Trim(), StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -1165,7 +1197,7 @@ namespace SmartStore.Web.Controllers
                         // Change email.
                         _customerRegistrationService.SetEmail(customer, model.Email.Trim());
                         // Re-authenticate (if usernames are disabled).
-                        if (!_customerSettings.UsernamesEnabled)
+                        if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
                         {
                             _authenticationService.SignIn(customer, true);
                         }

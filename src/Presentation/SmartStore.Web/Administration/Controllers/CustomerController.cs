@@ -180,23 +180,22 @@ namespace SmartStore.Admin.Controllers
             var report = new List<RegisteredCustomerReportLineModel>();
             report.Add(new RegisteredCustomerReportLineModel()
             {
-                Period = _localizationService.GetResource("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.7days"),
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.7days"),
                 Customers = _customerReportService.GetRegisteredCustomersReport(7)
             });
-
             report.Add(new RegisteredCustomerReportLineModel()
             {
-                Period = _localizationService.GetResource("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.14days"),
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.14days"),
                 Customers = _customerReportService.GetRegisteredCustomersReport(14)
             });
             report.Add(new RegisteredCustomerReportLineModel()
             {
-                Period = _localizationService.GetResource("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.month"),
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.month"),
                 Customers = _customerReportService.GetRegisteredCustomersReport(30)
             });
             report.Add(new RegisteredCustomerReportLineModel()
             {
-                Period = _localizationService.GetResource("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.year"),
+                Period = T("Admin.Customers.Reports.RegisteredCustomers.Fields.Period.year"),
                 Customers = _customerReportService.GetRegisteredCustomersReport(365)
             });
 
@@ -252,7 +251,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			string timeZoneId = (model.TimeZoneId.HasValue() ? model.TimeZoneId : _dateTimeHelper.DefaultStoreTimeZone.Id);
 
-			model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+			model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
 			model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
 			model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
 
@@ -274,7 +273,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
 
-			// Form fields.
+			// Form fields
 			model.TitleEnabled = _customerSettings.TitleEnabled;
 			model.GenderEnabled = _customerSettings.GenderEnabled;
 			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
@@ -319,7 +318,7 @@ namespace SmartStore.Admin.Controllers
 
 		protected virtual void PrepareCustomerModelForEdit(CustomerModel model, Customer customer)
 		{
-			model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+			model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
 			model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
 			model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
 			model.Deleted = customer.Deleted;
@@ -338,7 +337,7 @@ namespace SmartStore.Admin.Controllers
 			model.LastIpAddress = model.LastIpAddress;
 			model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
 
-			// Form fields.
+			// Form fields
 			model.TitleEnabled = _customerSettings.TitleEnabled;
 			model.GenderEnabled = _customerSettings.GenderEnabled;
 			model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
@@ -369,7 +368,7 @@ namespace SmartStore.Admin.Controllers
 
 				if (_customerSettings.StateProvinceEnabled)
 				{
-					// States.
+					// States
 					var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
 					if (states.Count > 0)
 					{
@@ -466,7 +465,7 @@ namespace SmartStore.Admin.Controllers
 
 			var listModel = new CustomerListModel
             {
-                UsernamesEnabled = _customerSettings.UsernamesEnabled,
+                UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email,
                 DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled,
                 CompanyEnabled = _customerSettings.CompanyEnabled,
                 PhoneEnabled = _customerSettings.PhoneEnabled,
@@ -561,16 +560,16 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            if (!String.IsNullOrWhiteSpace(model.Email))
+            if (model.Email.HasValue())
             {
-                var cust2 = _customerService.GetCustomerByEmail(model.Email);
-                if (cust2 != null)
+                var tempCust = _customerService.GetCustomerByEmail(model.Email);
+                if (tempCust != null)
                     ModelState.AddModelError("", "Email is already registered");
             }
-            if (!String.IsNullOrWhiteSpace(model.Username) & _customerSettings.UsernamesEnabled)
+            if (model.Username.HasValue() && _customerSettings.CustomerLoginType != CustomerLoginType.Email)
             {
-                var cust2 = _customerService.GetCustomerByEmail(model.Username);
-                if (cust2 != null)
+                var tempCust = _customerService.GetCustomerByEmail(model.Username);
+                if (tempCust != null)
                     ModelState.AddModelError("", "Username is already registered");
             }
 
@@ -801,7 +800,7 @@ namespace SmartStore.Admin.Controllers
 						var numberExists = _customerService.SearchCustomers(new CustomerSearchQuery { CustomerNumber = model.CustomerNumber }).SourceQuery.Any();
 						if (model.CustomerNumber != customer.CustomerNumber && numberExists)
 						{
-							this.NotifyError("Common.CustomerNumberAlreadyExists");
+							NotifyError("Common.CustomerNumberAlreadyExists");
 						}
 						else
 						{
@@ -820,7 +819,7 @@ namespace SmartStore.Admin.Controllers
                     }
 
                     // Username
-                    if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames)
+                    if (_customerSettings.CustomerLoginType != CustomerLoginType.Email && _customerSettings.AllowUsersToChangeUsernames)
                     {
                         if (model.Username.HasValue())
                         {
@@ -841,7 +840,7 @@ namespace SmartStore.Admin.Controllers
 
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
 						// Set VAT number status
-						if (!String.IsNullOrEmpty(model.VatNumber))
+						if (model.VatNumber.HasValue())
 						{
 							if (!model.VatNumber.Equals(prevVatNumber, StringComparison.InvariantCultureIgnoreCase))
 							{
@@ -906,7 +905,7 @@ namespace SmartStore.Admin.Controllers
                     // activity log
                     _customerActivityService.InsertActivity("EditCustomer", _localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id);
 
-                    NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Updated"));
+                    NotifySuccess(T("Admin.Customers.Customers.Updated"));
 
                     return continueEditing ? RedirectToAction("Edit", customer.Id) : RedirectToAction("List");
                 }
@@ -940,7 +939,7 @@ namespace SmartStore.Admin.Controllers
 
 				if (changePassResult.Success)
 				{
-					NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
+					NotifySuccess(T("Admin.Customers.Customers.PasswordChanged"));
 				}
 				else
 				{
@@ -1489,7 +1488,7 @@ namespace SmartStore.Admin.Controllers
                     model.Address.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == address.StateProvinceId) });
             }
             else
-                model.Address.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+                model.Address.AvailableStates.Add(new SelectListItem() { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
 
             return View(model);
         }

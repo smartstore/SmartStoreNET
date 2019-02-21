@@ -1013,7 +1013,7 @@ namespace SmartStore.Admin.Controllers
 				GridPageSize = DataExporter.PageSize,
 				EntityType = provider.Value.EntityType,
 				LogFileExists = System.IO.File.Exists(profile.GetExportLogPath()),
-				UsernamesEnabled = _customerSettings.Value.UsernamesEnabled
+				UsernamesEnabled = _customerSettings.Value.CustomerLoginType != CustomerLoginType.Email
 			};
 
 			return View(model);

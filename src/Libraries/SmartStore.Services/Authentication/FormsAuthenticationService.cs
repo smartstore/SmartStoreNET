@@ -31,11 +31,11 @@ namespace SmartStore.Services.Authentication
 
             var ticket = new FormsAuthenticationTicket(
                 1 /*version*/,
-                _customerSettings.UsernamesEnabled ? customer.Username : customer.Email,
+                _customerSettings.CustomerLoginType != CustomerLoginType.Email ? customer.Username : customer.Email,
                 now,
                 now.Add(_expirationTimeSpan),
                 createPersistentCookie,
-                _customerSettings.UsernamesEnabled ? customer.Username : customer.Email,
+                _customerSettings.CustomerLoginType != CustomerLoginType.Email ? customer.Username : customer.Email,
                 FormsAuthentication.FormsCookiePath);
 
             var encryptedTicket = FormsAuthentication.Encrypt(ticket);
@@ -102,9 +102,22 @@ namespace SmartStore.Services.Authentication
             if (String.IsNullOrWhiteSpace(usernameOrEmail))
                 return null;
 
-            var customer = _customerSettings.UsernamesEnabled
-                ? _customerService.GetCustomerByUsername(usernameOrEmail)
-                : _customerService.GetCustomerByEmail(usernameOrEmail);
+            Customer customer = null;
+
+            if (_customerSettings.CustomerLoginType == CustomerLoginType.Email)
+            {
+                customer = _customerService.GetCustomerByEmail(usernameOrEmail);
+            }
+            else if (_customerSettings.CustomerLoginType == CustomerLoginType.Username)
+            {
+                customer = _customerService.GetCustomerByUsername(usernameOrEmail);
+            }
+            else
+            {
+                customer = _customerService.GetCustomerByEmail(usernameOrEmail);
+                if (customer == null)
+                    customer = _customerService.GetCustomerByUsername(usernameOrEmail);
+            }
 
             return customer;
         }

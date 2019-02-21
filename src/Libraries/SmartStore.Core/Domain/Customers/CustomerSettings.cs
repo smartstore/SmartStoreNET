@@ -6,7 +6,7 @@ namespace SmartStore.Core.Domain.Customers
     {
 		public CustomerSettings()
 		{
-			UsernamesEnabled = true;
+			CustomerLoginType = CustomerLoginType.UsernameOrEmail;
             CustomerNumberMethod = CustomerNumberMethod.Disabled;
             CustomerNumberVisibility = CustomerNumberVisibility.None;
 			DefaultPasswordFormat = PasswordFormat.Hashed;
@@ -25,11 +25,11 @@ namespace SmartStore.Core.Domain.Customers
 			FirstNameRequired = false;
 			LastNameRequired = false;
 		}
-		
-		/// <summary>
-        /// Gets or sets a value indicating whether usernames are used instead of emails
+
+        /// <summary>
+        /// Gets or sets a value indicating the customer login type
         /// </summary>
-        public bool UsernamesEnabled { get; set; }
+        public CustomerLoginType CustomerLoginType { get; set; }
 
         /// <summary>
         /// Gets or sets the customer number method

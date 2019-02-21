@@ -115,10 +115,9 @@ namespace SmartStore.Admin.Controllers
             model.Address.FaxEnabled = true;
 
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
-			model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
+			model.UsernamesEnabled = _customerSettings.CustomerLoginType != CustomerLoginType.Email;
 
             //address
-            //model.Address.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.Address.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (affiliate != null && c.Id == affiliate.Address.CountryId) });

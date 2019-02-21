@@ -672,6 +672,19 @@
                 "Please log in to use this function. <a href='{0}'>Login now</a>",
                 "Bitte melden Sie sich an, um diese Funktion nutzen zu können. <a href='{0}'>Jetzt anmelden</a>");
 
+            builder.AddOrUpdate("Account.Login.Fields.UsernameOrEmail",
+                "Username or email",
+                "Benutzername oder Email");
+            
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerLoginType",
+                "Customer login type",
+                "Art des Kundenlogins",
+                "Specifies the customer login type.",
+                "Legt Art des Kundenlogins fest.");
+
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerLoginType.Username", "Username", "Benutzername");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerLoginType.Email", "Email", "Email");
+            builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerLoginType.UsernameOrEmail", "Username or email", "Benutzername oder Email");
         }
     }
 }

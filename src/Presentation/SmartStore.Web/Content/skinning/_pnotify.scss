@@ -12,6 +12,12 @@
     border-width: 1px;
 
     &.alert { border-color: rgba(0,0,0, 0.12) !important }
+
+    &:after {
+        visibility: initial;
+        height: auto;
+        clear: none;
+    }
 }
 
 .ui-pnotify-icon {

@@ -52,9 +52,7 @@ namespace SmartStore.Services.Customers
             }
             else
             {
-                customer = _customerService.GetCustomerByEmail(usernameOrEmail);
-                if(customer == null)
-                    customer = _customerService.GetCustomerByUsername(usernameOrEmail);
+                customer = _customerService.GetCustomerByEmail(usernameOrEmail) ?? _customerService.GetCustomerByUsername(usernameOrEmail);
             }
 
             if (customer == null || customer.Deleted || !customer.Active)

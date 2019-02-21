@@ -4,10 +4,14 @@ using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Cms
 {
@@ -18,100 +22,139 @@ namespace SmartStore.Services.Cms
         protected readonly ICommonServices _services;
         protected readonly IUrlRecordService _urlRecordService;
         protected readonly ILocalizedEntityService _localizedEntityService;
+        protected readonly IAclService _aclService;
+        protected readonly IStoreMappingService _storeMappingService;
         protected readonly UrlHelper _urlHelper;
 
         public LinkResolver(
             ICommonServices services,
             IUrlRecordService urlRecordService,
             ILocalizedEntityService localizedEntityService,
+            IAclService aclService,
+            IStoreMappingService storeMappingService,
             UrlHelper urlHelper)
         {
             _services = services;
             _urlRecordService = urlRecordService;
             _localizedEntityService = localizedEntityService;
+            _aclService = aclService;
+            _storeMappingService = storeMappingService;
             _urlHelper = urlHelper;
+
+            QuerySettings = DbQuerySettings.Default;
         }
 
-        public virtual LinkResolverResult Resolve(string linkExpression, int languageId = 0)
+        public DbQuerySettings QuerySettings { get; set; }
+
+        public virtual LinkResolverResult Resolve(string linkExpression, Customer customer = null, int languageId = 0, int storeId = 0)
         {
+            if (customer == null)
+            {
+                customer = _services.WorkContext.CurrentCustomer;
+            }
             if (languageId == 0)
             {
                 languageId = _services.WorkContext.WorkingLanguage.Id;
             }
+            if (storeId == 0)
+            {
+                storeId = _services.StoreContext.CurrentStore.Id;
+            }
 
             var data = _services.Cache.Get(LINKRESOLVER_KEY.FormatInvariant(linkExpression, languageId), () =>
             {
-                var r = Parse(linkExpression);
-                var entity = r.Type.ToString();
+                var d = Parse(linkExpression);
 
-                switch (r.Type)
+                switch (d.Type)
                 {
                     case LinkType.Product:
                     case LinkType.Category:
                     case LinkType.Manufacturer:
-                        r.Link = GetLink((int)r.Value, entity, languageId);
-                        r.Label = _localizedEntityService.GetLocalizedValue(languageId, (int)r.Value, entity, "Name");
-
-                        if (string.IsNullOrEmpty(r.Label))
+                        if (d.Type == LinkType.Product)
                         {
-                            if (r.Type == LinkType.Product)
-							{
-								r.Label = GetFromDatabase<Product>(x => x.Name, (int)r.Value);
-							}  
-                            else if (r.Type == LinkType.Category)
-							{
-								r.Label = GetFromDatabase<Category>(x => x.Name, (int)r.Value);
-							} 
-                            else
-							{
-								r.Label = GetFromDatabase<Manufacturer>(x => x.Name, (int)r.Value);
-							}      
+                            GetEntityData<Product>(d, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Name,
+                                Published = x.Published,
+                                Deleted = x.Deleted,
+                                SubjectToAcl = x.SubjectToAcl,
+                                LimitedToStores = x.LimitedToStores
+                            });
+                        }
+                        else if (d.Type == LinkType.Category)
+                        {
+                            GetEntityData<Category>(d, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Name,
+                                Published = x.Published,
+                                Deleted = x.Deleted,
+                                SubjectToAcl = x.SubjectToAcl,
+                                LimitedToStores = x.LimitedToStores
+                            });
+                        }
+                        else
+                        {
+                            GetEntityData<Manufacturer>(d, languageId, x => new ResolverEntitySummary
+                            {
+                                Name = x.Name,
+                                Published = x.Published,
+                                Deleted = x.Deleted,
+                                LimitedToStores = x.LimitedToStores
+                            });
                         }
                         break;
                     case LinkType.Topic:
-						var (id, systemName) = GetTopicData(r);
-
-						r.Link = GetLink(id, entity, languageId);
-
-                        r.Label = _localizedEntityService.GetLocalizedValue(languageId, id, entity, "ShortTitle").NullEmpty() ?? 
-							_localizedEntityService.GetLocalizedValue(languageId, id, entity, "Title").NullEmpty() ?? 
-							systemName ?? GetFromDatabase<Topic>(x => x.SystemName, id);
-
+                        GetEntityData<Topic>(d, languageId, x => null);
                         break;
                     case LinkType.Url:
-                        var url = r.Value.ToString();
+                        var url = d.Value.ToString();
                         if (url.EmptyNull().StartsWith("~"))
                         {
                             url = VirtualPathUtility.ToAbsolute(url);
                         }
-                        r.Link = r.Label = url;
+                        d.Link = d.Label = url;
                         break;
                     case LinkType.File:
                     default:
-                        r.Link = r.Label = r.Value.ToString();
+                        d.Link = d.Label = d.Value.ToString();
                         break;
                 }
 
-                return r;
+                return d;
             });
 
-            return data;
+            var result = new LinkResolverResult
+            {
+                Type = data.Type,
+                Status = data.Status,
+                Value = data.Value,
+                Link = data.Link,
+                Label = data.Label
+            };
 
-			(int, string) GetTopicData(LinkResolverResult r)
-			{
-				if (r.Value is string systemName)
-				{
-					var id = _services.DbContext.Set<Topic>().Where(x => x.SystemName == systemName).Select(x => x.Id).FirstOrDefault();
-					return (id, systemName);
-				}
-				else
-				{
-					return ((int)r.Value, null);
-				}
-			}
+            // Check ACL and limited to stores.
+            switch (data.Type)
+            {
+                case LinkType.Product:
+                case LinkType.Category:
+                case LinkType.Manufacturer:
+                case LinkType.Topic:
+                    var entityName = data.Type.ToString();
+                    if (data.LimitedToStores && data.Status == ResolveStatus.Ok && !QuerySettings.IgnoreMultiStore && !_storeMappingService.Authorize(entityName, data.Id, storeId))
+                    {
+                        result.Status = ResolveStatus.NotFound;
+                    }
+                    else if (data.SubjectToAcl && data.Status == ResolveStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, data.Id, customer))
+                    {
+                        result.Status = ResolveStatus.Forbidden;
+                    }
+                    break;
+            }
+
+            return result;
         }
 
-        protected virtual LinkResolverResult Parse(string linkExpression)
+        protected virtual LinkResolverData Parse(string linkExpression)
         {
             if (!string.IsNullOrWhiteSpace(linkExpression))
             {
@@ -128,49 +171,106 @@ namespace SmartStore.Services.Cms
                         case LinkType.Manufacturer:
                         case LinkType.Topic:
                             var id = value.ToInt();
-                            if (id != 0)
-                            {
-                                return new LinkResolverResult { Type = type, Value = id };
-                            }
-                            else
-                            {
-                                // System name.
-                                return new LinkResolverResult { Type = type, Value = value };
-                            }
+                            return new LinkResolverData { Type = type, Value = id != 0 ? (object)id : value };
                         case LinkType.Url:
                         case LinkType.File:
                         default:
-                            return new LinkResolverResult { Type = type, Value = value };
+                            return new LinkResolverData { Type = type, Value = value };
                     }
                 }
             }
 
-            return new LinkResolverResult { Type = LinkType.Url, Value = linkExpression.EmptyNull() };
+            return new LinkResolverData { Type = LinkType.Url, Value = linkExpression.EmptyNull() };
         }
 
-        protected virtual string GetLink(int id, string entity, int languageId)
+        internal void GetEntityData<T>(LinkResolverData data, int languageId, Expression<Func<T, ResolverEntitySummary>> selector) where T : BaseEntity
         {
-            if (id != 0)
-            {
-                var slug = _urlRecordService.GetActiveSlug(id, entity, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(id, entity, 0);
+            ResolverEntitySummary summary = null;
+            string systemName = null;
 
-                if (!string.IsNullOrEmpty(slug))
-                {
-                    return _urlHelper.RouteUrl(entity, new { SeName = slug });
-                }
+            if (data.Value is string)
+            {
+                data.Id = 0;
+                systemName = (string)data.Value;
+            }
+            else
+            {
+                data.Id = (int)data.Value;
             }
 
-            return null;
-        }
+            if (data.Type == LinkType.Topic)
+            {
+                var query = _services.DbContext.Set<Topic>()
+                    .AsNoTracking()
+                    .AsQueryable();
 
-        protected virtual string GetFromDatabase<T>(Expression<Func<T, string>> selector, int entityId) where T : BaseEntity
-		{
-			return _services.DbContext.Set<T>()
-				.AsNoTracking()
-				.Where(x => x.Id == entityId)
-				.Select(selector)
-				.FirstOrDefault()
-				.EmptyNull();
-		}
+                query = string.IsNullOrEmpty(systemName)
+                    ? query.Where(x => x.Id == data.Id)
+                    : query.Where(x => x.SystemName == systemName);
+
+                summary = query.Select(x => new ResolverEntitySummary
+                {
+                    Id = x.Id,
+                    Name = x.SystemName,
+                    Published = x.IsPublished,
+                    SubjectToAcl = x.SubjectToAcl,
+                    LimitedToStores = x.LimitedToStores
+                })
+                .FirstOrDefault();
+            }
+            else
+            {
+                summary = _services.DbContext.Set<T>()
+                    .AsNoTracking()
+                    .Where(x => x.Id == data.Id)
+                    .Select(selector)
+                    .FirstOrDefault();
+            }
+
+            if (summary != null)
+            {
+                var entityName = data.Type.ToString();
+
+                data.Id = summary.Id != 0 ? summary.Id : data.Id;
+                data.SubjectToAcl = summary.SubjectToAcl;
+                data.LimitedToStores = summary.LimitedToStores;
+                data.Status = summary.Deleted || !summary.Published
+                    ? ResolveStatus.Unpublished
+                    : ResolveStatus.Ok;
+
+                if (data.Type == LinkType.Topic)
+                {
+                    data.Label = _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "ShortTitle").NullEmpty() ??
+                        _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "Title").NullEmpty() ??
+                        summary.Name;
+                }
+                else
+                {
+                    data.Label = _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "Name").NullEmpty() ?? summary.Name;
+                }
+
+                var slug = _urlRecordService.GetActiveSlug(data.Id, entityName, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(data.Id, entityName, 0);
+                if (!string.IsNullOrEmpty(slug))
+                {
+                    data.Link = _urlHelper.RouteUrl(entityName, new { SeName = slug });
+                }
+            }
+            else
+            {
+                data.Label = systemName;
+                data.Status = ResolveStatus.NotFound;
+            }
+        }
+    }
+
+
+    internal class ResolverEntitySummary
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool Deleted { get; set; }
+        public bool Published { get; set; }
+        public bool SubjectToAcl { get; set; }
+        public bool LimitedToStores { get; set; }
     }
 }

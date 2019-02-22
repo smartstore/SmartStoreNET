@@ -12,12 +12,12 @@ namespace SmartStore.Services.Cms
         File = 30
     }
 
-    public enum ResolveStatus
+    public enum LinkStatus
     {
-        Ok = 0,
-        NotFound,
-        Forbidden,
-        Unpublished
+        Ok = 200,
+		Forbidden = 403,
+		NotFound = 404,
+        Hidden = 410
     }
 
 
@@ -25,7 +25,7 @@ namespace SmartStore.Services.Cms
     {
         public LinkType Type { get; set; }
         public object Value { get; set; }
-        public ResolveStatus Status { get; set; }
+        public LinkStatus Status { get; set; }
 
         public string Link { get; set; }
         public string Label { get; set; }
@@ -36,7 +36,7 @@ namespace SmartStore.Services.Cms
     {
         public LinkType Type { get; set; }
         public object Value { get; set; }
-        public ResolveStatus Status { get; set; }
+        public LinkStatus Status { get; set; }
 
         public string Link { get; set; }
         public string Label { get; set; }

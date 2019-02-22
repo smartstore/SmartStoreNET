@@ -68,40 +68,33 @@ namespace SmartStore.Services.Cms
                 switch (d.Type)
                 {
                     case LinkType.Product:
-                    case LinkType.Category:
-                    case LinkType.Manufacturer:
-                        if (d.Type == LinkType.Product)
+						GetEntityData<Product>(d, languageId, x => new ResolverEntitySummary
+						{
+							Name = x.Name,
+							Published = x.Published,
+							Deleted = x.Deleted,
+							SubjectToAcl = x.SubjectToAcl,
+							LimitedToStores = x.LimitedToStores
+						});
+						break;
+					case LinkType.Category:
+						GetEntityData<Category>(d, languageId, x => new ResolverEntitySummary
+						{
+							Name = x.Name,
+							Published = x.Published,
+							Deleted = x.Deleted,
+							SubjectToAcl = x.SubjectToAcl,
+							LimitedToStores = x.LimitedToStores
+						});
+						break;
+					case LinkType.Manufacturer:
+                        GetEntityData<Manufacturer>(d, languageId, x => new ResolverEntitySummary
                         {
-                            GetEntityData<Product>(d, languageId, x => new ResolverEntitySummary
-                            {
-                                Name = x.Name,
-                                Published = x.Published,
-                                Deleted = x.Deleted,
-                                SubjectToAcl = x.SubjectToAcl,
-                                LimitedToStores = x.LimitedToStores
-                            });
-                        }
-                        else if (d.Type == LinkType.Category)
-                        {
-                            GetEntityData<Category>(d, languageId, x => new ResolverEntitySummary
-                            {
-                                Name = x.Name,
-                                Published = x.Published,
-                                Deleted = x.Deleted,
-                                SubjectToAcl = x.SubjectToAcl,
-                                LimitedToStores = x.LimitedToStores
-                            });
-                        }
-                        else
-                        {
-                            GetEntityData<Manufacturer>(d, languageId, x => new ResolverEntitySummary
-                            {
-                                Name = x.Name,
-                                Published = x.Published,
-                                Deleted = x.Deleted,
-                                LimitedToStores = x.LimitedToStores
-                            });
-                        }
+                            Name = x.Name,
+                            Published = x.Published,
+                            Deleted = x.Deleted,
+                            LimitedToStores = x.LimitedToStores
+                        });
                         break;
                     case LinkType.Topic:
                         GetEntityData<Topic>(d, languageId, x => null);
@@ -140,13 +133,13 @@ namespace SmartStore.Services.Cms
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
                     var entityName = data.Type.ToString();
-                    if (data.LimitedToStores && data.Status == ResolveStatus.Ok && !QuerySettings.IgnoreMultiStore && !_storeMappingService.Authorize(entityName, data.Id, storeId))
+                    if (data.LimitedToStores && data.Status == LinkStatus.Ok && !QuerySettings.IgnoreMultiStore && !_storeMappingService.Authorize(entityName, data.Id, storeId))
                     {
-                        result.Status = ResolveStatus.NotFound;
+                        result.Status = LinkStatus.NotFound;
                     }
-                    else if (data.SubjectToAcl && data.Status == ResolveStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, data.Id, customer))
+                    else if (data.SubjectToAcl && data.Status == LinkStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, data.Id, customer))
                     {
-                        result.Status = ResolveStatus.Forbidden;
+                        result.Status = LinkStatus.Forbidden;
                     }
                     break;
             }
@@ -234,9 +227,9 @@ namespace SmartStore.Services.Cms
                 data.Id = summary.Id != 0 ? summary.Id : data.Id;
                 data.SubjectToAcl = summary.SubjectToAcl;
                 data.LimitedToStores = summary.LimitedToStores;
-                data.Status = summary.Deleted || !summary.Published
-                    ? ResolveStatus.Unpublished
-                    : ResolveStatus.Ok;
+                data.Status = summary.Deleted
+                    ? LinkStatus.NotFound
+                    : summary.Published ? LinkStatus.Ok : LinkStatus.Hidden;
 
                 if (data.Type == LinkType.Topic)
                 {
@@ -258,7 +251,7 @@ namespace SmartStore.Services.Cms
             else
             {
                 data.Label = systemName;
-                data.Status = ResolveStatus.NotFound;
+                data.Status = LinkStatus.NotFound;
             }
         }
     }

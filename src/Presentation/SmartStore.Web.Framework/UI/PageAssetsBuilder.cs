@@ -99,10 +99,7 @@ namespace SmartStore.Web.Framework.UI
 
         public void SetHtmlId(string htmlId)
         {
-            if (htmlId.HasValue())
-            {
-                _htmlId = htmlId;
-            }
+            _htmlId = htmlId;
         }
 
         public string GenerateBodyCssClasses()

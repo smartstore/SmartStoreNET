@@ -70,7 +70,7 @@ namespace SmartStore.Admin.Controllers
 			if (!excludeProperties)
 			{
 				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(forumGroup);
-                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(forumGroup);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(forumGroup);
             }
 
 			model.AvailableStores = allStores.ToSelectListItems(model.SelectedStoreIds);

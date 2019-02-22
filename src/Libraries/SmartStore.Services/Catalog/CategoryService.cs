@@ -116,7 +116,7 @@ namespace SmartStore.Services.Catalog
             var category = GetCategoryById(categoryId);
             var subcategories = GetAllCategoriesByParentCategoryId(categoryId, true);
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccess(category);
+			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccessTo(category);
 
 			var categoryIds = new HashSet<int>(subcategories.Select(x => x.Id));
 			categoryIds.Add(categoryId);

@@ -88,7 +88,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (topic != null)
 				{
-					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(topic);
+					model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(topic);
 				}
 				else
 				{

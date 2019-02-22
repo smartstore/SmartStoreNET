@@ -602,7 +602,7 @@ namespace SmartStore.Admin.Controllers
             {
                 if (product != null)
                 {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(product);
+                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
                 }
                 else
                 {

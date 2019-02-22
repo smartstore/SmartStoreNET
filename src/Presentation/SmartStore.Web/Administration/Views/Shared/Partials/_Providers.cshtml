@@ -111,7 +111,7 @@
 									}
 									@if (item.IsConfigurable)
 									{
-										<a class="dropdown-item module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
+										<a class="dropdown-item module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName, listUrl = Request.RawUrl })">
 											<i class="fa fa-fw fa-cog"></i>
 											<span>@T("Admin.Common.Configure")</span>
 										</a>

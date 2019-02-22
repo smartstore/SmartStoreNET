@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
@@ -46,16 +47,18 @@ namespace SmartStore.Services.Cms
 
         public DbQuerySettings QuerySettings { get; set; }
 
-        public virtual LinkResolverResult Resolve(string linkExpression, Customer customer = null, int languageId = 0, int storeId = 0)
+        public virtual LinkResolverResult Resolve(string linkExpression, IEnumerable<CustomerRole> roles = null, int languageId = 0, int storeId = 0)
         {
-            if (customer == null)
+            if (roles == null)
             {
-                customer = _services.WorkContext.CurrentCustomer;
+                roles = _services.WorkContext.CurrentCustomer.CustomerRoles;
             }
+
             if (languageId == 0)
             {
                 languageId = _services.WorkContext.WorkingLanguage.Id;
             }
+
             if (storeId == 0)
             {
                 storeId = _services.StoreContext.CurrentStore.Id;
@@ -137,7 +140,7 @@ namespace SmartStore.Services.Cms
                     {
                         result.Status = LinkStatus.NotFound;
                     }
-                    else if (data.SubjectToAcl && data.Status == LinkStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, data.Id, customer))
+                    else if (data.SubjectToAcl && data.Status == LinkStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, data.Id, roles))
                     {
                         result.Status = LinkStatus.Forbidden;
                     }

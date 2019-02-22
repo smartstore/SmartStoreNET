@@ -38,7 +38,7 @@
                 @Html.SmartLabelFor(model => model.IsPublished)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.IsPublished, Model.IsSystemTopic ? new { @disabled = "disabled" } : null )
+				@Html.CheckBoxFor(model => model.IsPublished, Model.IsSystemTopic ? new { @readonly = "readonly" } : null )
                 @Html.ValidationMessageFor(model => model.IsPublished)
             </td>
         </tr>

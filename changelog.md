@@ -45,6 +45,7 @@
 * #1515 Poll: Add result tab with a list of answers and customers for a poll
 * BMEcat: Added export and import of product tags.
 * Santander instalment purchase.
+* #1542 Pages: Added options to set body CSS class and Html Id 
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).

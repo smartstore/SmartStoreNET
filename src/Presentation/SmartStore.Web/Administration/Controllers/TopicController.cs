@@ -333,6 +333,11 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(T("Admin.ContentManagement.Topics.Updated"));
                 return continueEditing ? RedirectToAction("Edit", topic.Id) : RedirectToAction("List");
             }
+            else
+            {
+                // Chrome spat out an error message after validation with this rule .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
+                HttpContext.Response.AddHeader("X-XSS-Protection", "0");
+            }
 
 			// If we got this far, something failed, redisplay form.
 			model.Url = GetTopicUrl(topic);

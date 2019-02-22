@@ -32,10 +32,22 @@ namespace SmartStore.Core.Domain.Topics
 		[DataMember]
 		public bool IsSystemTopic { get; set; }
 
-		/// <summary>
-		/// Gets or sets the value indicating whether this topic should be included in sitemap
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the html id
+        /// </summary>
+        [DataMember]
+        public string HtmlId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the body css class
+        /// </summary>
+        [DataMember]
+        public string BodyCssClass { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether this topic should be included in sitemap
+        /// </summary>
+        [DataMember]
 		public bool IncludeInSitemap { get; set; }
 
 		/// <summary>

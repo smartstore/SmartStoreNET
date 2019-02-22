@@ -680,11 +680,28 @@
                 "Customer login type",
                 "Art des Kundenlogins",
                 "Specifies the customer login type.",
-                "Legt Art des Kundenlogins fest.");
+                "Legt die Art des Kundenlogins fest.");
 
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerLoginType.Username", "Username", "Benutzername");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerLoginType.Email", "Email", "Email");
             builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerLoginType.UsernameOrEmail", "Username or email", "Benutzername oder Email");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Topics.Fields.HtmlId",
+                "Html Id",
+                "Html-ID",
+                "Specifies the Html Id of the page.",
+                "Legt die Html-ID der Seite fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Topics.Fields.BodyCssClass",
+                "Body CSS class",
+                "Body CSS-Klasse",
+                "Specifies the CSS class of the body element.",
+                "Legt die CSS-Klasse des Body-Elements fest.");
+
+
+            builder.AddOrUpdate("Admin.ContentManagement.Topics.Validation.NoWhiteSpace",
+                "Whitespace isn't allowed.",
+                "Leerzeichen sind nicht erlaubt.");
         }
     }
 }

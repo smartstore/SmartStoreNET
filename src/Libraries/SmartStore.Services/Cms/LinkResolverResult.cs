@@ -14,10 +14,10 @@ namespace SmartStore.Services.Cms
 
     public enum LinkStatus
     {
-        Ok = 200,
-		Forbidden = 403,
-		NotFound = 404,
-        Hidden = 410
+        Ok,
+		Forbidden,
+		NotFound,
+        Hidden
     }
 
 

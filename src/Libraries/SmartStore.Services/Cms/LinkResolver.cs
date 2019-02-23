@@ -49,7 +49,12 @@ namespace SmartStore.Services.Cms
 
         public virtual LinkResolverResult Resolve(string linkExpression, IEnumerable<CustomerRole> roles = null, int languageId = 0, int storeId = 0)
         {
-            if (roles == null)
+			if (linkExpression.IsEmpty())
+			{
+				return new LinkResolverResult { Type = LinkType.Url, Status = LinkStatus.NotFound };
+			}
+
+			if (roles == null)
             {
                 roles = _services.WorkContext.CurrentCustomer.CustomerRoles;
             }

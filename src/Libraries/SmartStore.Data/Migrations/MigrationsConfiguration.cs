@@ -698,10 +698,15 @@
                 "Specifies the CSS class of the body element.",
                 "Legt die CSS-Klasse des Body-Elements fest.");
 
-
             builder.AddOrUpdate("Admin.ContentManagement.Topics.Validation.NoWhiteSpace",
                 "Whitespace isn't allowed.",
                 "Leerzeichen sind nicht erlaubt.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Tax.VatRequired",
+                "Customers must enter a VAT number",
+                "Kunden müssen eine Steuernummer angeben",
+                "Specifies whether customers must enter a VAT identification number.",
+                "Legt fest, ob Kunden bei der Registrierung eine Steuernummer angeben müssen.");
         }
     }
 }

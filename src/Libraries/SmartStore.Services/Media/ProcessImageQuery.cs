@@ -124,6 +124,12 @@ namespace SmartStore.Services.Media
 			set { Set("m", value); }
 		}
 
+		public string BackgroundColor
+		{
+			get { return Get<string>("bg"); }
+			set { Set("bg", value); }
+		}
+
 		/// <summary>
 		/// Gets or sets the output file format either as a string ("png", "jpg", and "gif"),
 		/// or as a format object instance.

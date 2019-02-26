@@ -99,8 +99,7 @@ namespace SmartStore.Core.Plugins
 		/// <returns>>Plugin descriptor</returns>
         public virtual PluginDescriptor GetPluginDescriptorBySystemName(string systemName, bool installedOnly = true)
         {
-			PluginDescriptor descriptor;
-			if (systemName.HasValue() && _nameMap.TryGetValue(systemName, out descriptor))
+			if (systemName.HasValue() && _nameMap.TryGetValue(systemName, out var descriptor))
 			{
 				if (!installedOnly || descriptor.Installed)
 					return descriptor;

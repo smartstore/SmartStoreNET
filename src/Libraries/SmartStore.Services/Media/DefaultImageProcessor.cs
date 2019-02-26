@@ -145,6 +145,11 @@ namespace SmartStore.Services.Media
 			{
 				var scaleMode = ConvertScaleMode(query.ScaleMode);
 				processor.Resize(new ResizeLayer(size, resizeMode: scaleMode, upscale: false));
+			}		
+
+			if (query.BackgroundColor.HasValue())
+			{
+				processor.BackgroundColor(ColorTranslator.FromHtml(query.BackgroundColor));
 			}
 
 			// Format

@@ -1728,7 +1728,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [HttpPost, ValidateInput(false)]
+        [HttpPost]
         public ActionResult InstantSearch(ForumSearchQuery query)
         {
             if (!_forumSettings.ForumsEnabled || string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
@@ -1780,7 +1780,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [RequireHttpsByConfig(SslRequirement.No), ValidateInput(false)]
+        [RequireHttpsByConfig(SslRequirement.No)]
         public ActionResult Search(ForumSearchQuery query)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -1873,7 +1873,7 @@ namespace SmartStore.Web.Controllers
         }
 
         // Ajax.
-        [HttpPost, ValidateInput(false)]
+        [HttpPost]
         public ActionResult Search(ForumSearchQuery query, int[] renderedTopicIds)
         {
             if (!_forumSettings.ForumsEnabled || query.Term.IsEmpty() || query.Term.Length < _searchSettings.InstantSearchTermMinLength)

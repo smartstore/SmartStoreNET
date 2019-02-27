@@ -225,6 +225,7 @@
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
     <Compile Include="Modelling\IAclSelector.cs" />
     <Compile Include="Modelling\IStoreSelector.cs" />
+    <Compile Include="Modelling\Results\CachedFileResult.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />
     <Compile Include="Modelling\Results\PermissiveRedirectResult.cs" />
     <Compile Include="Plugins\PluginRazorHost.cs" />

@@ -1,0 +1,36 @@
+﻿@model IReadOnlyList<MenuItem>
+
+@{ Html.RenderWidget("breadcrumb_before"); }
+
+<div class="breadcrumb-container d-none d-md-flex flex-wrap">
+	<ol class="breadcrumb" itemscope itemtype="http://schema.org/BreadcrumbList">
+		<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+			<a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")" itemprop="item">
+				<meta itemprop="name" content="@T("HomePage")">
+				<meta itemprop="position" content="1">
+				<i class="fa fa-home"></i>
+			</a>
+		</li>
+		@for (int i = 0; i < Model.Count - 1; i++)
+		{
+			var item = Model[i];
+			var isLast = i == Model.Count - 1;
+
+			<li class="breadcrumb-item@(isLast ? " active" : "")" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				@if (item.HasRoute())
+				{
+					<a href="@item.GenerateUrl(this.Url)" title="@item.Text" itemprop="item">
+						<meta itemprop="position" content="@(i + 2)">
+						<span itemprop="name" dir="auto">@item.Text</span>
+					</a>
+				}
+			</li>
+		}
+	</ol>
+    <div class="breadcrumb-item active">
+        <span>@Model.LastOrDefault().Text</span>
+    </div>
+</div>
+
+@{ Html.RenderWidget("breadcrumb_after"); }
+

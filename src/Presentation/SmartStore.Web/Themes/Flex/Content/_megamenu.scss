@@ -170,7 +170,7 @@ $mixed-megamenu-bg:             $megamenu-bg;
     }
 
     i {
-        font-size: 38px;
+        font-size: 32px;
         transition: all .2s ease-in-out;
         height: 58px;
         line-height: 58px;
@@ -179,9 +179,9 @@ $mixed-megamenu-bg:             $megamenu-bg;
         padding: 0;
         margin: 0;
         display: inline-block;
-        opacity: 0.4;
+        opacity: 0.6;
 
-        &:hover { opacity: 0.6; }
+        &:hover { opacity: 0.85; }
         &:active { opacity: 1; } 
     }
 }

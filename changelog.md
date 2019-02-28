@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -57,6 +57,7 @@
 * **Debitoor**:
 	* Partially update customer instead of full update to avoid all fields being overwritten.
 	* #1540 Place company name in front of customer name (according to address format of the particular country).
+	* #1565 Add a button to manually create a draft invoice.
 * #1479 Show in messages the delivery time at the time of purchase
 * #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
 * #1106 BMECat: import & export support for product keywords

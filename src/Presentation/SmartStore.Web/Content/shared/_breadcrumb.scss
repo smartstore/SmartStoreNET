@@ -12,8 +12,8 @@
     content: '|';
     padding: 0 0.5rem;
 }
-.breadcrumb-item:last-of-type:after { 
-    display: none; 
+div.breadcrumb-item:after {
+    display: none;
 }
 .breadcrumb > li + li::before {
     display: none !important;

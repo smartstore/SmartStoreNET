@@ -31,7 +31,7 @@ namespace SmartStore.Core.IO
 		{
 			basePath = basePath.EmptyNull();
 
-			var pathIsAbsolute = FileSystemHelper.IsAbsolutePhysicalPath(basePath);
+			var pathIsAbsolute = PathHelper.IsAbsolutePhysicalPath(basePath);
 
 			NormalizeStoragePath(ref basePath, pathIsAbsolute);
 

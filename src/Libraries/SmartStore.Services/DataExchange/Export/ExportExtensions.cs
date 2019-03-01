@@ -192,7 +192,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				else
 				{
-					path = FileSystemHelper.ValidateRootPath(deployment.FileSystemPath);
+					path = PathHelper.NormalizeAppRelativePath(deployment.FileSystemPath);
 					path = CommonHelper.MapPath(path);
 				}
 			}

@@ -49,50 +49,6 @@ namespace SmartStore.Utilities
 			return path;
 		}
 
-		/// <summary>
-		/// Ensures that path is a valid root path
-		/// </summary>
-		/// <param name="path">Relative path</param>
-		/// <returns>Valid root path</returns>
-		public static string ValidateRootPath(string path)
-		{
-			if (path.HasValue())
-			{
-				path = path.Replace('\\', '/');
-
-				if (!path.StartsWith("~/"))
-				{
-					if (path.StartsWith("~"))
-						path = path.Substring(1);
-
-					path = (path.StartsWith("/") ? "~" : "~/") + path;
-				}
-			}
-			return path;
-		}
-
-        /// <summary>
-        /// Checks whether a path is a safe root path.
-        /// </summary>
-        /// <param name="path">Relative path</param>
-        public static bool IsSafeRootPath(string path)
-        {
-            if (path.EmptyNull().Length > 2 &&
-                !path.IsCaseInsensitiveEqual("con") &&
-                path.IndexOfAny(Path.GetInvalidPathChars()) == -1)
-            {
-                try
-                {
-                    var mappedPath = CommonHelper.MapPath(path);
-                    var appPath = CommonHelper.MapPath("~/");
-                    return !mappedPath.IsCaseInsensitiveEqual(appPath);
-                }
-                catch { }
-            }
-
-            return false;
-        }
-
         /// <summary>
         /// Safe way to cleanup the temp directory. Should be called via scheduled task.
         /// </summary>
@@ -336,35 +292,5 @@ namespace SmartStore.Utilities
 			}
 			catch { }
 		}
-
-		/// <summary>
-		/// Checks whether the given path is a fully qualified absolute path (either UNC or rooted with drive letter)
-		/// </summary>
-		/// <param name="path">Path to check</param>
-		/// <returns><c>true</c> if path is fully qualified</returns>
-		public static bool IsAbsolutePhysicalPath(string path)
-		{
-			if ((path == null) || (path.Length < 3))
-			{
-				return false;
-			}
-
-			return (((path[1] == ':') && IsDirectorySeparatorChar(path[2])) || IsUncSharePath(path));
-		}
-
-		internal static bool IsUncSharePath(string path) =>
-			(((path.Length > 2) && IsDirectorySeparatorChar(path[0])) && IsDirectorySeparatorChar(path[1]));
-
-
-		private static bool IsDirectorySeparatorChar(char ch)
-		{
-			if (ch != '\\')
-			{
-				return (ch == '/');
-			}
-
-			return true;
-		}
-
 	}
 }

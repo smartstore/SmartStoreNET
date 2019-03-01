@@ -90,7 +90,7 @@ namespace SmartStore.Web.Framework.Modelling
 		{
 			Guard.NotEmpty(path, nameof(path));
 
-			if (!FileSystemHelper.IsAbsolutePhysicalPath(path))
+			if (!PathHelper.IsAbsolutePhysicalPath(path))
 			{
 				path = CommonHelper.MapPath(path);
 			}

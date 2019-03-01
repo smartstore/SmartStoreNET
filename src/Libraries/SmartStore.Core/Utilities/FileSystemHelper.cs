@@ -133,23 +133,21 @@ namespace SmartStore.Utilities
 			if (path.IsEmpty())
 				return true;
 
-			bool result = true;
 			try
 			{
 				if (Directory.Exists(path))
 				{
-					throw new MemberAccessException("Deleting folders due to security reasons not possible: {0}".FormatWith(path));
+					throw new UnauthorizedAccessException("Deleting folders not possible due to security reasons: {0}".FormatWith(path));
 				}
 
-				File.Delete(path);	// no exception, if file doesn't exists
+				File.Delete(path);  // no exception, if file doesn't exists
+				return true;
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				result = false;
-				exc.Dump();
+				ex.Dump();
+				return false;
 			}
-
-			return result;
 		}
 
 		/// <summary>
@@ -321,7 +319,7 @@ namespace SmartStore.Utilities
 			{
 				return Directory.GetFiles(directoryPath).Length;
 			}
-			catch (Exception) { }
+			catch { }
 
 			return 0;
 		}
@@ -334,10 +332,9 @@ namespace SmartStore.Utilities
 		{
 			try
 			{
-				if (path.HasValue())
-					File.WriteAllText(path, "");
+				if (path.HasValue()) File.WriteAllText(path, "");
 			}
-			catch (Exception) { }
+			catch { }
 		}
 
 		/// <summary>
@@ -345,12 +342,29 @@ namespace SmartStore.Utilities
 		/// </summary>
 		/// <param name="path">Path to check</param>
 		/// <returns><c>true</c> if path is fully qualified</returns>
-		public static bool IsFullPath(string path)
+		public static bool IsAbsolutePhysicalPath(string path)
 		{
-			return !String.IsNullOrWhiteSpace(path)
-				&& path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
-				&& Path.IsPathRooted(path)
-				&& !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
+			if ((path == null) || (path.Length < 3))
+			{
+				return false;
+			}
+
+			return (((path[1] == ':') && IsDirectorySeparatorChar(path[2])) || IsUncSharePath(path));
 		}
+
+		internal static bool IsUncSharePath(string path) =>
+			(((path.Length > 2) && IsDirectorySeparatorChar(path[0])) && IsDirectorySeparatorChar(path[1]));
+
+
+		private static bool IsDirectorySeparatorChar(char ch)
+		{
+			if (ch != '\\')
+			{
+				return (ch == '/');
+			}
+
+			return true;
+		}
+
 	}
 }

@@ -25,18 +25,27 @@ namespace SmartStore.Web.Framework.Modelling
 		private readonly Func<Stream> _streamReader;
 		private readonly Func<byte[]> _bufferReader;
 
-		public CachedFileResult(FileInfo file, Func<Stream> reader = null)
-			: this(CreateETag(file), MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+		public CachedFileResult(string path, string contentType = null)
+			: base(contentType ?? MimeTypes.MapNameToMimeType(path))
 		{
+			_etag = CreateETag(path);
+			_path = path;
 		}
 
-		public CachedFileResult(IFile file, Func<Stream> reader = null)
-			: this(CreateETag(file), MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+		public CachedFileResult(FileInfo file, string contentType = null, Func<Stream> reader = null)
+			: this(CreateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
 		{
+			LastModifiedUtc = file.LastWriteTimeUtc;
 		}
 
-		public CachedFileResult(VirtualFile file, Func<Stream> reader = null)
-			: this(CreateETag(file), MimeTypes.MapNameToMimeType(file.Name), reader ?? file.Open)
+		public CachedFileResult(IFile file, string contentType = null, Func<Stream> reader = null)
+			: this(CreateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.OpenRead)
+		{
+			LastModifiedUtc = file.LastUpdated;
+		}
+
+		public CachedFileResult(VirtualFile file, string contentType = null, Func<Stream> reader = null)
+			: this(CreateETag(file), contentType ?? MimeTypes.MapNameToMimeType(file.Name), reader ?? file.Open)
 		{
 		}
 
@@ -75,6 +84,19 @@ namespace SmartStore.Web.Framework.Modelling
 		public DateTime Expiration { get; set; } = DateTime.UtcNow.AddDays(7);
 
 		public TimeSpan MaxAge { get; set; } = TimeSpan.FromDays(7);
+
+
+		public static string CreateETag(string path)
+		{
+			Guard.NotEmpty(path, nameof(path));
+
+			if (!FileSystemHelper.IsAbsolutePhysicalPath(path))
+			{
+				path = CommonHelper.MapPath(path);
+			}
+
+			return CreateETag(new FileInfo(path));
+		}
 
 		public static string CreateETag(VirtualFile file)
 		{

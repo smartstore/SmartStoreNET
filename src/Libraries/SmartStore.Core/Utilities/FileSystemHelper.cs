@@ -124,6 +124,7 @@ namespace SmartStore.Utilities
 				result = false;
 				exc.Dump();
 			}
+
 			return result;
 		}
 
@@ -149,10 +150,10 @@ namespace SmartStore.Utilities
 				{
 					fi.CopyTo(Path.Combine(target.ToString(), fi.Name), overwrite);
 				}
-				catch (Exception exc)
+				catch (Exception ex)
 				{
 					result = false;
-					exc.Dump();
+					ex.Dump();
 				}
 			}
 
@@ -163,10 +164,10 @@ namespace SmartStore.Utilities
 					DirectoryInfo targetSubDir = target.CreateSubdirectory(sourceSubDir.Name);
 					CopyDirectory(sourceSubDir, targetSubDir, overwrite);
 				}
-				catch (Exception exc)
+				catch (Exception ex)
 				{
 					result = false;
-					exc.Dump();
+					ex.Dump();
 				}
 			}
 
@@ -205,7 +206,7 @@ namespace SmartStore.Utilities
 							Thread.Sleep(0);
 							fi.Delete();
 						}
-						catch (Exception) { }
+						catch { }
 					}
 				}
 

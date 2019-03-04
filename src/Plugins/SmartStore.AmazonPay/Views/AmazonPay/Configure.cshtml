@@ -96,7 +96,7 @@
 				@Html.SmartLabelFor(model => model.SecretKey)
 			</td>
 			<td class="adminData">
-				@Html.SettingEditorFor(model => model.SecretKey)
+				@Html.SettingEditorFor(model => model.SecretKey, null, new { htmlAttributes = new { autocomplete = "new-password", value = Model.SecretKey } })
 				@Html.ValidationMessageFor(model => model.SecretKey)
 			</td>
 		</tr>

@@ -155,3 +155,9 @@ $modal-transition-timing: cubic-bezier(0.165, 0.84, 0.44, 1); // easeOutQuart
 		flex: 1;
 	}
 }
+
+
+.close {
+    // "Fix" font-size
+    font-size: 1.5rem;
+}

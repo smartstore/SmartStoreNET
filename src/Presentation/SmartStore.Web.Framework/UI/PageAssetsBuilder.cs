@@ -91,10 +91,17 @@ namespace SmartStore.Web.Framework.UI
 
         public void AddBodyCssClass(string className)
         {
-            if (className.HasValue() && !_bodyCssClasses.Contains(className))
-            {
-                _bodyCssClasses.Insert(0, className);
-            }
+			if (className.IsEmpty())
+				return;
+
+			var classes = className.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (var clas in classes)
+			{
+				if (!_bodyCssClasses.Contains(clas))
+				{
+					_bodyCssClasses.Insert(0, clas);
+				}
+			}	
         }
 
         public void SetHtmlId(string htmlId)

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.WebPages;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -112,6 +114,18 @@ namespace SmartStore.Web.Framework.UI
 		public WindowBuilder<TModel> RenderAtPageEnd(bool value)
 		{
 			base.Component.RenderAtPageEnd = value;
+			return this;
+		}
+
+		public WindowBuilder<TModel> BodyHtmlAttributes(object attributes)
+		{
+			return this.BodyHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
+		}
+
+		public WindowBuilder<TModel> BodyHtmlAttributes(IDictionary<string, object> attributes)
+		{
+			base.Component.BodyHtmlAttributes.Clear();
+			base.Component.BodyHtmlAttributes.Merge(attributes);
 			return this;
 		}
 	}

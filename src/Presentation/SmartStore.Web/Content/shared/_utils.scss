@@ -373,6 +373,16 @@ table th {
 }
 
 
+// Animations
+// ------------------------------------------------------
+
+body.no-anims * {
+    transition-property: none !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+
 // Misc utils
 // -------------------------
 

@@ -214,6 +214,17 @@ table th {
 
 
 //
+// Bootstrap additions
+// --------------------------------------------------
+
+.embed-responsive-16by10 {
+    &::before {
+        padding-top: percentage(10 / 16);
+    }
+}
+
+
+//
 // Bootstrap List group tweaks
 // ------------------------------------------------------
 

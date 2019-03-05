@@ -190,6 +190,16 @@ $modal-content-box-shadow-xs:       0 12px 26px rgba(#32325d, .12), 0 3px 10px r
 $modal-content-box-shadow-sm-up:    0 50px 100px rgba(#32325d, .12), 0 15px 35px rgba(#32325d, .27), 0 5px 15px rgba(#000, .25);
 
 
+// Embeds (TODO: Use from v4.3 onwards)
+$embed-responsive-aspect-ratios: (
+  (21 9),
+  (16 9),
+  (16 10),
+  (4 3),
+  (1 1)
+);
+
+
 /*$custom-control-indicator-bg:				$gray-200;
 $custom-control-indicator-disabled-bg:		$gray-100;
 $custom-control-indicator-checked-color:	#fff;

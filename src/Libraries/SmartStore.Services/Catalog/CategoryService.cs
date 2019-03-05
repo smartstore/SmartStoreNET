@@ -433,6 +433,23 @@ namespace SmartStore.Services.Catalog
 			return _categoryRepository.GetByIdCached(categoryId, "db.category.id-" + categoryId);
 		}
 
+        public virtual IList<Category> GetCategoriesByIds(int[] categoryIds)
+        {
+            if (categoryIds == null || !categoryIds.Any())
+            {
+                return new List<Category>();
+            }
+
+            var query = from p in _categoryRepository.Table
+                        where categoryIds.Contains(p.Id)
+                        select p;
+
+            var categories = query.ToList();
+
+            // Sort by passed identifier sequence.
+            return categories.OrderBySequence(categoryIds).ToList();
+        }
+
         public virtual void InsertCategory(Category category)
         {
 			Guard.NotNull(category, nameof(category));

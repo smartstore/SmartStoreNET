@@ -4,7 +4,7 @@
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web;
 
-<div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+<div class="pd-offer" @(!Model.ProductPrice.CallForPrice ? "itemprop=\"offers\" itemscope itemtype=\"http://schema.org/Offer\"" : "")>
 	<meta itemprop="itemCondition" content="http://schema.org/NewCondition" />
 
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton || Model.ProductPrice.ShowLoginNote)

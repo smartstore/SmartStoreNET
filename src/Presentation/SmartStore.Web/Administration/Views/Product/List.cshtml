@@ -215,11 +215,13 @@
 			});
 
 			//"Delete (selected)" button
-			$('#delete-selected').click(function (e) {
-				e.preventDefault();
-				//redirect to required URL
-				setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
-				return false;
+            $('#delete-selected').click(function (e) {
+                if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
+                    e.preventDefault();
+                    //redirect to required URL
+                    setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
+                    return false;
+                }
 			});
 
 			//wire up checkboxes.

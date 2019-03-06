@@ -440,9 +440,9 @@ namespace SmartStore.Services.Catalog
                 return new List<Category>();
             }
 
-            var query = from p in _categoryRepository.Table
-                        where categoryIds.Contains(p.Id)
-                        select p;
+            var query = from c in _categoryRepository.Table
+                        where categoryIds.Contains(c.Id)
+                        select c;
 
             var categories = query.ToList();
 

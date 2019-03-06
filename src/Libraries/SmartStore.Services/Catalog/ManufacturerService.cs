@@ -121,6 +121,23 @@ namespace SmartStore.Services.Catalog
 			return _manufacturerRepository.GetByIdCached(manufacturerId, "db.manu.id-" + manufacturerId);
 		}
 
+        public virtual IList<Manufacturer> GetManufacturersByIds(int[] manufacturerIds)
+        {
+            if (manufacturerIds == null || !manufacturerIds.Any())
+            {
+                return new List<Manufacturer>();
+            }
+
+            var query = from m in _manufacturerRepository.Table
+                        where manufacturerIds.Contains(m.Id)
+                        select m;
+
+            var manufacturers = query.ToList();
+
+            // Sort by passed identifier sequence.
+            return manufacturers.OrderBySequence(manufacturerIds).ToList();
+        }
+
         public virtual void InsertManufacturer(Manufacturer manufacturer)
         {
             if (manufacturer == null)

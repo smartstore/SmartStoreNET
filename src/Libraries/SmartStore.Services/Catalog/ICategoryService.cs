@@ -101,10 +101,10 @@ namespace SmartStore.Services.Catalog
         Category GetCategoryById(int categoryId);
 
         /// <summary>
-        /// Gets a categories by Ids
+        /// Gets categories by Ids
         /// </summary>
         /// <param name="categoryId">Array of category identifiers</param>
-        /// <returns>List if Categories</returns>
+        /// <returns>List of Categories</returns>
         IList<Category> GetCategoriesByIds(int[] categoryIds);
 
         /// <summary>

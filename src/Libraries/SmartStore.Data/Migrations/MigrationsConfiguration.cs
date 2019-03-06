@@ -707,6 +707,16 @@
                 "Kunden müssen eine Steuernummer angeben",
                 "Specifies whether customers must enter a VAT identification number.",
                 "Legt fest, ob Kunden bei der Registrierung eine Steuernummer angeben müssen.");
+
+            builder.AddOrUpdate("Common.Top", "Top", "Oben");
+            builder.AddOrUpdate("Common.Bottom", "Bottom", "Unten");
+            builder.AddOrUpdate("Common.Left", "Left", "Links");
+            builder.AddOrUpdate("Common.Right", "Right", "Rechts");
+            builder.AddOrUpdate("Common.TopLeft", "Top left", "Links oben");
+            builder.AddOrUpdate("Common.TopRight", "Top right", "Rechts oben");
+            builder.AddOrUpdate("Common.BottomLeft", "Bottom left", "Links unten");
+            builder.AddOrUpdate("Common.BottomRight", "Bottom right", "Rechts unten");
+            builder.AddOrUpdate("Common.Center", "Center", "Mitte");
         }
     }
 }

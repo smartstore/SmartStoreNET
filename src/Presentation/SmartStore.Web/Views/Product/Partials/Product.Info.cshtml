@@ -42,7 +42,7 @@
 	<!-- Short description -->
 	@if (Model.ShortDescription.Value.HasValue())
 	{
-		<div @Html.LanguageAttributes(Model.ShortDescription) class="pd-description">
+		<div @Html.LanguageAttributes(Model.ShortDescription) class="pd-description" itemprop="description">
 			@Html.Raw(Model.ShortDescription)
 		</div>
 	}

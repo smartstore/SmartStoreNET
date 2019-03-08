@@ -46,6 +46,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets the specification attribute option
         /// </summary>
+        [DataMember]
         public virtual SpecificationAttributeOption SpecificationAttributeOption { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace SmartStore.Services.Common
 	{
 		public void Execute(TaskExecutionContext ctx)
 		{
-			FileSystemHelper.TempCleanup();
+			FileSystemHelper.ClearTempDirectories();
 		}
 	}
 }

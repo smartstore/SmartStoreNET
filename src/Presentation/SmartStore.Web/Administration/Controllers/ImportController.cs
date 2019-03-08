@@ -66,7 +66,7 @@ namespace SmartStore.Admin.Controllers
 			catch (Exception ex)
 			{
 				error = ex.ToAllMessages();
-				FileSystemHelper.Delete(path);
+				FileSystemHelper.DeleteFile(path);
 				return false;
 			}
 		}
@@ -397,7 +397,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					var importFileDestination = Path.Combine(profile.GetImportFolder(true, true), model.TempFileName);
 
-					FileSystemHelper.Copy(importFile, importFileDestination, true, true);
+					FileSystemHelper.CopyFile(importFile, importFileDestination, true, true);
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}
@@ -611,7 +611,7 @@ namespace SmartStore.Admin.Controllers
 					if (id == 0)
 					{
 						var path = Path.Combine(FileSystemHelper.TempDirTenant(), postedFile.FileName);
-						FileSystemHelper.Delete(path);
+						FileSystemHelper.DeleteFile(path);
 
 						success = postedFile.Stream.ToFile(path);
 						if (success)
@@ -787,7 +787,7 @@ namespace SmartStore.Admin.Controllers
 				if (profile != null)
 				{
 					var path = Path.Combine(profile.GetImportFolder(true), name);
-					FileSystemHelper.Delete(path);
+					FileSystemHelper.DeleteFile(path);
 				}
 			}
 

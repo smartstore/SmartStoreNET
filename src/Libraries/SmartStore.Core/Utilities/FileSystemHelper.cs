@@ -9,13 +9,16 @@ namespace SmartStore.Utilities
 {
     public static class FileSystemHelper
 	{
+		private static readonly string _pathTemp = CommonHelper.MapPath(CommonHelper.GetAppSetting("sm:TempDirectory", "~/App_Data/_temp"));
+		private static readonly string _pathTempTenant = CommonHelper.MapPath(DataSettings.Current.TenantPath + "/_temp");
+
 		/// <summary>
 		/// Returns physical path to application temp directory
 		/// </summary>
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDir(string subDirectory = null)
 		{
-			return TempDirInternal(CommonHelper.GetAppSetting("sm:TempDirectory", "~/App_Data/_temp"), subDirectory);
+			return TempDirInternal(_pathTemp, subDirectory);
 		}
 
 		/// <summary>
@@ -24,18 +27,16 @@ namespace SmartStore.Utilities
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDirTenant(string subDirectory = null)
 		{
-			return TempDirInternal(DataSettings.Current.TenantPath + "/_temp", subDirectory);
+			return TempDirInternal(_pathTempTenant, subDirectory);
 		}
 
-		private static string TempDirInternal(string virtualPath, string subDirectory = null)
+		private static string TempDirInternal(string path, string subDirectory = null)
 		{
-			var path = CommonHelper.MapPath(virtualPath);
-
 			if (!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
 			}
-				
+
 			if (subDirectory.HasValue())
 			{
 				path = Path.Combine(path, subDirectory);
@@ -50,41 +51,125 @@ namespace SmartStore.Utilities
 		}
 
         /// <summary>
-        /// Safe way to cleanup the temp directory. Should be called via scheduled task.
+        /// Safe way to cleanup temporary directories. Should be called via scheduled task.
         /// </summary>
-        public static void TempCleanup()
+        public static void ClearTempDirectories()
 		{
-			try
+			var olderThan = TimeSpan.FromHours(5);
+
+			ClearDirectory(new DirectoryInfo(TempDir()), false, olderThan);
+			ClearDirectory(new DirectoryInfo(TempDirTenant()), false, olderThan);
+		}
+
+		/// <summary>
+		/// Safe way to delete all directory content
+		/// </summary>
+		/// <param name="path">Directory path</param>
+		/// <param name="deleteIfEmpfy">Delete dir too if it doesn't contain any entries after deletion anymore</param>
+		/// <param name="olderThan">Delete only files older than this TimeSpan</param>
+		/// <param name="exceptFileNames">Name of files not to be deleted</param>
+		public static void ClearDirectory(string path, bool deleteIfEmpfy, TimeSpan olderThan, params string[] exceptFileNames)
+		{
+			if (path.IsEmpty())
+				return;
+
+			ClearDirectory(new DirectoryInfo(path), deleteIfEmpfy, olderThan, exceptFileNames);
+		}
+
+		/// <summary>
+		/// Safe way to delete all directory content
+		/// </summary>
+		/// <param name="path">Directory path</param>
+		/// <param name="deleteIfEmpfy">Delete dir too if it doesn't contain any entries after deletion anymore</param>
+		/// <param name="exceptFileNames">Name of files not to be deleted</param>
+		public static void ClearDirectory(string path, bool deleteIfEmpfy, params string[] exceptFileNames)
+		{
+			if (path.IsEmpty())
+				return;
+
+			ClearDirectory(new DirectoryInfo(path), deleteIfEmpfy, TimeSpan.Zero, exceptFileNames);
+		}
+
+		/// <summary>
+		/// Safe way to delete all directory content
+		/// </summary>
+		/// <param name="dir">Directory info object</param>
+		/// <param name="deleteIfEmpfy">Delete dir too if it doesn't contain any entries after deletion anymore</param>
+		/// <param name="exceptFileNames">Name of files not to be deleted</param>
+		public static void ClearDirectory(DirectoryInfo dir, bool deleteIfEmpfy, params string[] exceptFileNames)
+		{
+			Guard.NotNull(dir, nameof(dir));
+
+			ClearDirectory(dir, deleteIfEmpfy, TimeSpan.Zero, exceptFileNames);
+		}
+
+		/// <summary>
+		/// Safe way to delete all directory content
+		/// </summary>
+		/// <param name="dir">Directory info object</param>
+		/// <param name="deleteIfEmpfy">Delete dir too if it doesn't contain any entries after deletion anymore</param>
+		/// <param name="olderThan">Delete only files older than this TimeSpan</param>
+		/// <param name="exceptFileNames">Name of files not to be deleted</param>
+		public static void ClearDirectory(DirectoryInfo dir, bool deleteIfEmpfy, TimeSpan olderThan, params string[] exceptFileNames)
+		{
+			Guard.NotNull(dir, nameof(dir));
+
+			if (!dir.Exists)
+				return;
+
+			var olderThanDate = DateTime.UtcNow.Subtract(olderThan);
+
+			for (int i = 0; i < 10; i++)
 			{
-				var dirs = new string[] { TempDir(), TempDirTenant() };
-
-				foreach (var dir in dirs)
+				try
 				{
-					if (Directory.Exists(dir))
+					foreach (var file in dir.EnumerateFiles().Where(fi => fi.LastWriteTime < olderThanDate))
 					{
-						var oldestDate = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
-						var files = Directory.EnumerateFiles(dir);
+						if (file.LastWriteTimeUtc >= olderThanDate)
+							continue;
 
-						foreach (string file in files)
+						if (exceptFileNames.Any(x => x.IsCaseInsensitiveEqual(file.Name)))
+							continue;
+
+						if (file.IsReadOnly)
 						{
-							var fi = new FileInfo(file);
-
-							if (fi.LastWriteTime < oldestDate)
-								Delete(file);
+							file.IsReadOnly = false;
 						}
+						
+						file.Delete();
+					}
+
+					foreach (var subDir in dir.EnumerateDirectories())
+					{
+						ClearDirectory(subDir, true, olderThan, exceptFileNames);
 					}
 				}
+				catch (Exception ex)
+				{
+					ex.Dump();
+				}
 			}
-			catch (Exception ex)
+
+			if (deleteIfEmpfy)
 			{
-				ex.Dump();
+				try
+				{
+					if (dir.EnumerateFileSystemInfos().Any())
+					{
+						dir.Delete();
+					}
+				}
+				catch (Exception ex)
+				{
+					ex.Dump();
+				}
 			}
 		}
 
 		/// <summary>
 		/// Safe way to delete a file.
 		/// </summary>
-		public static bool Delete(string path)
+		public static bool DeleteFile(string path)
 		{
 			if (path.IsEmpty())
 				return true;
@@ -96,7 +181,8 @@ namespace SmartStore.Utilities
 					throw new UnauthorizedAccessException("Deleting folders not possible due to security reasons: {0}".FormatWith(path));
 				}
 
-				File.Delete(path);  // no exception, if file doesn't exists
+				// No exception, if file doesn't exists
+				File.Delete(path);
 				return true;
 			}
 			catch (Exception ex)
@@ -109,7 +195,7 @@ namespace SmartStore.Utilities
 		/// <summary>
 		/// Safe way to copy a file.
 		/// </summary>
-		public static bool Copy(string sourcePath, string destinationPath, bool overwrite = true, bool deleteSource = false)
+		public static bool CopyFile(string sourcePath, string destinationPath, bool overwrite = true, bool deleteSource = false)
 		{
 			bool result = true;
 			try
@@ -117,7 +203,7 @@ namespace SmartStore.Utilities
 				File.Copy(sourcePath, destinationPath, overwrite);
 
 				if (deleteSource)
-					Delete(sourcePath);
+					DeleteFile(sourcePath);
 			}
 			catch (Exception exc)
 			{
@@ -172,73 +258,6 @@ namespace SmartStore.Utilities
 			}
 
 			return result;
-		}
-
-		/// <summary>
-		/// Safe way to delete all directory content
-		/// </summary>
-		/// <param name="directoryPath">A directory path</param>
-		/// <param name="selfToo">Delete directoryPath too</param>
-		/// <param name="exceptFileNames">Name of files not to be deleted</param>
-		public static void ClearDirectory(string directoryPath, bool selfToo, List<string> exceptFileNames = null)
-		{
-			if (directoryPath.IsEmpty())
-				return;
-
-			try
-			{
-				var dir = new DirectoryInfo(directoryPath);
-
-				foreach (var fi in dir.GetFiles())
-				{
-					if (exceptFileNames != null && exceptFileNames.Any(x => x.IsCaseInsensitiveEqual(fi.Name)))
-						continue;
-
-					try
-					{
-						fi.IsReadOnly = false;
-						fi.Delete();
-					}
-					catch (Exception)
-					{
-						try
-						{
-							Thread.Sleep(0);
-							fi.Delete();
-						}
-						catch { }
-					}
-				}
-
-				foreach (var di in dir.GetDirectories())
-				{
-					ClearDirectory(di.FullName, false);
-
-					try
-					{
-						di.Delete();
-					}
-					catch (Exception)
-					{
-						try
-						{
-							Thread.Sleep(0);
-							di.Delete();
-						}
-						catch (Exception) { }
-					}
-				}
-			}
-			catch (Exception) { }
-
-			if (selfToo)
-			{
-				try
-				{
-					Directory.Delete(directoryPath, true);	// just deletes the (now empty) directory
-				}
-				catch (Exception) { }
-			}
 		}
 
 		/// <summary>

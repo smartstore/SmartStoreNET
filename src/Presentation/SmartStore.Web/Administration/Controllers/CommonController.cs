@@ -910,7 +910,7 @@ namespace SmartStore.Admin.Controllers
 						if ((!startDateValue.HasValue || startDateValue.Value < info.CreationTimeUtc) &&
 							(!endDateValue.HasValue || info.CreationTimeUtc < endDateValue.Value))
 						{
-							if (FileSystemHelper.Delete(fullPath))
+							if (FileSystemHelper.DeleteFile(fullPath))
 								++model.DeleteExportedFiles.NumberOfDeletedFiles;
 						}
 					}

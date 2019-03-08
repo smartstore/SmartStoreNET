@@ -804,7 +804,7 @@ namespace SmartStore.Admin.Controllers
             }
             finally
             {
-                FileSystemHelper.Delete(tempFilePath);
+                FileSystemHelper.DeleteFile(tempFilePath);
             }
 
             return RedirectToAction("Edit", new { id = language.Id });
@@ -882,7 +882,7 @@ namespace SmartStore.Admin.Controllers
                     asyncState.Remove<LanguageDownloadState>();
                 }
 
-                FileSystemHelper.Delete(tempFilePath);
+                FileSystemHelper.DeleteFile(tempFilePath);
             }
         }
 

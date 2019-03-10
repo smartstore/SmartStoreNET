@@ -323,9 +323,8 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 			}
 
-			PermissionRecord requiredPermission = StandardPermissionProvider.AccessAdminPanel;
+			var requiredPermission = StandardPermissionProvider.AccessAdminPanel;
 			var listUrl2 = Url.Action("List");
-
 			var metadata = provider.Metadata;
 
 			if (metadata.ProviderType == typeof(IPaymentMethod))
@@ -333,7 +332,7 @@ namespace SmartStore.Admin.Controllers
 				requiredPermission = StandardPermissionProvider.ManagePaymentMethods;
 				listUrl2 = Url.Action("Providers", "Payment");
 			}
-			if (metadata.ProviderType == typeof(ITaxProvider))
+			else if (metadata.ProviderType == typeof(ITaxProvider))
 			{
 				requiredPermission = StandardPermissionProvider.ManageTaxSettings;
 				listUrl2 = Url.Action("Providers", "Tax");
@@ -589,6 +588,7 @@ namespace SmartStore.Admin.Controllers
 
 			ViewBag.RefreshPage = true;
 			ViewBag.btnId = btnId;
+
 			return View(model);
 		}
 

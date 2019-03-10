@@ -13,7 +13,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public FileUploader(Localizer localizer)
         {
-			HtmlAttributes.AppendCssClass("fileupload form-row align-items-center");
+			HtmlAttributes.AppendCssClass("fileupload");
 			HtmlAttributes.Add("data-accept", "gif|jpe?g|png");
 			HtmlAttributes.Add("data-show-remove-after-upload", "false");
 			IconCssClass = "fa fa-upload";
@@ -37,6 +37,7 @@ namespace SmartStore.Web.Framework.UI
 		public ButtonStyle ButtonStyle { get; set; }
 		public bool ButtonOutlineStyle { get; set; }
 		public bool ShowRemoveButton { get; set; }
+		public bool Compact { get; set; }
 
 		public string CancelText { get; set; }
 		public string RemoveText { get; set; }

@@ -1407,7 +1407,6 @@ namespace SmartStore.Web.Controllers
         //add product to cart using AJAX
 		//currently we use this method on the product details pages
         [HttpPost]
-        [ValidateInput(false)]
         public ActionResult AddProduct(int productId, int shoppingCartTypeId, ProductVariantQuery query, FormCollection form)
         {
             var product = _productService.GetProductById(productId);
@@ -1696,7 +1695,6 @@ namespace SmartStore.Web.Controllers
 			});
         }
        
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("continueshopping")]
         public ActionResult ContinueShopping()
@@ -1705,7 +1703,6 @@ namespace SmartStore.Web.Controllers
 			return RedirectToReferrer(returnUrl);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("startcheckout")]
         public ActionResult StartCheckout(ProductVariantQuery query, bool? useRewardPoints)
@@ -1742,7 +1739,7 @@ namespace SmartStore.Web.Controllers
         }
 
 		// Ajax. Required for cart payment buttons.
-		[HttpPost, ValidateInput(false)]
+		[HttpPost]
 		public ActionResult SaveCartData(ProductVariantQuery query, bool? useRewardPoints)
 		{
 			var warnings = ValidateAndSaveCartData(query, useRewardPoints);
@@ -1754,7 +1751,6 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-		[ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applydiscountcouponcode")]
         public ActionResult ApplyDiscountCoupon(string discountcouponcode, ProductVariantQuery query)
@@ -1795,7 +1791,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applygiftcardcouponcode")]
         public ActionResult ApplyGiftCard(string giftcardcouponcode, ProductVariantQuery query)
@@ -1841,7 +1836,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("applyrewardpoints")]
         public ActionResult ApplyRewardPoints(bool useRewardPoints, ProductVariantQuery query)
@@ -1860,7 +1854,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("estimateshipping")]
         public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, ProductVariantQuery query)
@@ -2138,7 +2131,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("removesubtotaldiscount", "removeordertotaldiscount", "removediscountcouponcode")]
         public ActionResult RemoveDiscountCoupon()
@@ -2153,7 +2145,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
         [FormValueRequired("removegiftcard")]
         public ActionResult RemoveGiftardCode(int giftCardId)
@@ -2352,7 +2343,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[ValidateInput(false)]
 		[HttpPost, ActionName("Wishlist")]
 		[FormValueRequired("addtocartbutton")]
 		public ActionResult AddItemstoCartFromWishlist(Guid? customerGuid, FormCollection form)
@@ -2551,7 +2541,7 @@ namespace SmartStore.Web.Controllers
 					_workContext.CurrentCustomer,
 					model.YourEmailAddress,
                     model.FriendEmail, 
-					Core.Html.HtmlUtils.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+					Core.Html.HtmlUtils.ConvertPlainTextToHtml(model.PersonalMessage.HtmlEncode()));
 
                 model.SuccessfullySent = true;
                 model.Result = _localizationService.GetResource("Wishlist.EmailAFriend.SuccessfullySent");

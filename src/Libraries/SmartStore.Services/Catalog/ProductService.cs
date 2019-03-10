@@ -74,7 +74,7 @@ namespace SmartStore.Services.Catalog
 				var mutualAssociations = (
 					from rp in _relatedProductRepository.Table
 					join p in _productRepository.Table on rp.ProductId2 equals p.Id
-					where rp.ProductId2 == id1 && !p.Deleted && !p.IsSystemProduct
+					where rp.ProductId2 == id1 && !p.Deleted
 					select rp).ToList();
 
 				foreach (int id2 in productIds)
@@ -115,7 +115,7 @@ namespace SmartStore.Services.Catalog
 				var mutualAssociations = (
 					from rp in _crossSellProductRepository.Table
 					join p in _productRepository.Table on rp.ProductId2 equals p.Id
-					where rp.ProductId2 == id1 && !p.Deleted && !p.IsSystemProduct
+					where rp.ProductId2 == id1 && !p.Deleted
 					select rp).ToList();
 
 				foreach (int id2 in productIds)
@@ -172,7 +172,7 @@ namespace SmartStore.Services.Catalog
             var query = 
 				from p in _productRepository.Table
 				orderby p.HomePageDisplayOrder
-				where p.Published && !p.Deleted && !p.IsSystemProduct && p.ShowOnHomePage
+				where p.Published && !p.Deleted && p.ShowOnHomePage
 				select p;
 
             var products = query.ToList();
@@ -189,8 +189,10 @@ namespace SmartStore.Services.Catalog
 
         public virtual IList<Product> GetProductsByIds(int[] productIds, ProductLoadFlags flags = ProductLoadFlags.None)
         {
-            if (productIds == null || productIds.Length == 0)
+            if (productIds == null || !productIds.Any())
+            {
                 return new List<Product>();
+            }
 
             var query = from p in _productRepository.Table
                         where productIds.Contains(p.Id)
@@ -203,7 +205,7 @@ namespace SmartStore.Services.Catalog
 
 			var products = query.ToList();
 
-			// sort by passed identifier sequence
+			// Sort by passed identifier sequence.
 			return products.OrderBySequence(productIds).ToList();
 		}
 
@@ -337,7 +339,7 @@ namespace SmartStore.Services.Catalog
 			// Track inventory for product
 			var query1 = from p in _productRepository.Table
 						 orderby p.MinStockQuantity
-						 where !p.Deleted && !p.IsSystemProduct &&
+						 where !p.Deleted && 
 							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
 							p.MinStockQuantity >= p.StockQuantity
 						 select p;
@@ -346,7 +348,7 @@ namespace SmartStore.Services.Catalog
 			// Track inventory for product by product attributes
 			var query2 = from p in _productRepository.Table
 						 from pvac in p.ProductVariantAttributeCombinations
-						 where !p.Deleted && !p.IsSystemProduct &&
+						 where !p.Deleted && 
 							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
 							pvac.StockQuantity <= 0
 						 select p;
@@ -374,7 +376,7 @@ namespace SmartStore.Services.Catalog
 
 			var query = from p in _productRepository.Table
 						orderby p.DisplayOrder, p.Id
-						where !p.Deleted && !p.IsSystemProduct && p.Sku == sku
+						where !p.Deleted && p.Sku == sku
 						select p;
 			var product = query.FirstOrDefault();
 			return product;
@@ -389,7 +391,7 @@ namespace SmartStore.Services.Catalog
 
             var query = from p in _productRepository.Table
                         orderby p.Id
-                        where !p.Deleted && !p.IsSystemProduct && p.Gtin == gtin
+                        where !p.Deleted && p.Gtin == gtin
                         select p;
             var product = query.FirstOrDefault();
             return product;
@@ -403,7 +405,7 @@ namespace SmartStore.Services.Catalog
 			manufacturerPartNumber = manufacturerPartNumber.Trim();
 
 			var product = _productRepository.Table
-				.Where(x => !x.Deleted && !x.IsSystemProduct && x.ManufacturerPartNumber == manufacturerPartNumber)
+				.Where(x => !x.Deleted && x.ManufacturerPartNumber == manufacturerPartNumber)
 				.OrderBy(x => x.Id)
 				.FirstOrDefault();
 
@@ -418,7 +420,7 @@ namespace SmartStore.Services.Catalog
 			name = name.Trim();
 
 			var product = _productRepository.Table
-				.Where(x => !x.Deleted && !x.IsSystemProduct && x.Name == name)
+				.Where(x => !x.Deleted && x.Name == name)
 				.OrderBy(x => x.Id)
 				.FirstOrDefault();
 
@@ -596,7 +598,13 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
-			var query = _productRepository.TableUntracked
+            var map = new Multimap<int, ProductTag>();
+            if (!productIds.Any())
+            {
+                return map;
+            }
+
+            var query = _productRepository.TableUntracked
 				.Expand(x => x.ProductTags)
 				.Where(x => productIds.Contains(x.Id))
 				.Select(x => new
@@ -605,7 +613,6 @@ namespace SmartStore.Services.Catalog
 					Tags = x.ProductTags
 				});
 
-			var map = new Multimap<int, ProductTag>();
 			var list = query.ToList();
 
 			foreach (var item in list)
@@ -617,11 +624,40 @@ namespace SmartStore.Services.Catalog
 			return map;
 		}
 
-		public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
+        public virtual Multimap<int, Product> GetAssociatedProductsByProductIds(int[] productIds, bool showHidden = false)
+        {
+            Guard.NotNull(productIds, nameof(productIds));
+
+            if (!productIds.Any())
+            {
+                return new Multimap<int, Product>();
+            }
+
+            // Ignore multistore. Expect multistore setting for associated products is the same as for parent grouped product.
+            var query = _productRepository.TableUntracked
+                .Where(x => productIds.Contains(x.ParentGroupedProductId) && !x.Deleted && (showHidden || x.Published))
+                .OrderBy(x => x.ParentGroupedProductId)
+                .ThenBy(x => x.DisplayOrder);
+
+            var associatedProducts = query.ToList();
+
+            var map = associatedProducts
+                .ToMultimap(x => x.ParentGroupedProductId, x => x);
+
+            return map;
+        }
+
+        public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
-						
-			var query = _productRepository.Table // .TableUntracked does not seem to eager load
+
+            var map = new Multimap<int, Discount>();
+            if (!productIds.Any())
+            {
+                return map;
+            }
+
+            var query = _productRepository.Table // .TableUntracked does not seem to eager load
 				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
 				.Where(x => productIds.Contains(x.Id))
 				.Select(x => new
@@ -629,8 +665,6 @@ namespace SmartStore.Services.Catalog
 					ProductId = x.Id,
 					Discounts = x.AppliedDiscounts
 				});
-
-			var map = new Multimap<int, Discount>();
 
 			foreach (var item in query.ToList())
 			{
@@ -655,7 +689,7 @@ namespace SmartStore.Services.Catalog
         {
             var query = from rp in _relatedProductRepository.Table
                         join p in _productRepository.Table on rp.ProductId2 equals p.Id
-                        where rp.ProductId1 == productId1 && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
+                        where rp.ProductId1 == productId1 && !p.Deleted && (showHidden || p.Published)
                         orderby rp.DisplayOrder
                         select rp;
 
@@ -713,7 +747,7 @@ namespace SmartStore.Services.Catalog
         {
             var query = from csp in _crossSellProductRepository.Table
                         join p in _productRepository.Table on csp.ProductId2 equals p.Id
-                        where csp.ProductId1 == productId1 && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
+                        where csp.ProductId1 == productId1 && !p.Deleted && (showHidden || p.Published)
                         orderby csp.Id
                         select csp;
 
@@ -727,7 +761,7 @@ namespace SmartStore.Services.Catalog
 
 			var query = from csp in _crossSellProductRepository.Table
 						join p in _productRepository.Table on csp.ProductId2 equals p.Id
-						where productIds.Contains(csp.ProductId1) && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
+						where productIds.Contains(csp.ProductId1) && !p.Deleted && (showHidden || p.Published)
 						orderby csp.Id
 						select csp;
 
@@ -815,6 +849,11 @@ namespace SmartStore.Services.Catalog
 		public virtual Multimap<int, TierPrice> GetTierPricesByProductIds(int[] productIds, Customer customer = null, int storeId = 0)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
+
+            if (!productIds.Any())
+            {
+                return new Multimap<int, TierPrice>();
+            }
 
 			var query =
 				from x in _tierPriceRepository.TableUntracked
@@ -906,7 +945,14 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false)
 		{
-			var query = 
+            Guard.NotNull(productIds, nameof(productIds));
+
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductPicture>();
+            }
+
+            var query = 
 				from pp in _productPictureRepository.TableUntracked.Expand(x => x.Picture)
 				where productIds.Contains(pp.ProductId)
 				orderby pp.ProductId, pp.DisplayOrder
@@ -1025,12 +1071,12 @@ namespace SmartStore.Services.Catalog
 			return _productBundleItemRepository.GetById(bundleItemId);
 		}
 
-		public virtual IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false)
+        public virtual IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false)
 		{
 			var query =
 				from pbi in _productBundleItemRepository.Table
 				join p in _productRepository.Table on pbi.ProductId equals p.Id
-				where pbi.BundleProductId == bundleProductId && !p.Deleted && !p.IsSystemProduct && (showHidden || (pbi.Published && p.Published))
+				where pbi.BundleProductId == bundleProductId && !p.Deleted && (showHidden || (pbi.Published && p.Published))
 				orderby pbi.DisplayOrder
 				select pbi;
 
@@ -1043,24 +1089,48 @@ namespace SmartStore.Services.Catalog
 			return bundleItemData;
 		}
 
-		public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
+        public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
+
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductBundleItem>();
+            }
 
 			var query =
 				from pbi in _productBundleItemRepository.TableUntracked
 				join p in _productRepository.TableUntracked on pbi.ProductId equals p.Id
-				where productIds.Contains(pbi.BundleProductId) && !p.Deleted && !p.IsSystemProduct && (showHidden || (pbi.Published && p.Published))
+				where productIds.Contains(pbi.BundleProductId) && !p.Deleted && (showHidden || (pbi.Published && p.Published))
 				orderby pbi.DisplayOrder
 				select pbi;
 
-			var map = query.Include(x => x.Product)
-				.ToList()
+            var map = query
+                .Include(x => x.Product)
+                .Include(x => x.BundleProduct)
+                .ToList()
 				.ToMultimap(x => x.BundleProductId, x => x);
 
 			return map;
 		}
 
-		#endregion
-	}
+        public virtual bool IsBundleItem(int productId)
+        {
+            if (productId == 0)
+            {
+                return false;
+            }
+
+            var query =
+                from pbi in _productBundleItemRepository.TableUntracked
+                join bundle in _productRepository.TableUntracked on pbi.BundleProductId equals bundle.Id
+                where pbi.ProductId == productId && !bundle.Deleted
+                select pbi;
+
+            var result = query.Any();
+            return result;
+        }
+
+        #endregion
+    }
 }

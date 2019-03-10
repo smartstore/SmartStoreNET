@@ -3,9 +3,12 @@ using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using System.Linq;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Admin.Models.Topics
 {
@@ -41,6 +44,12 @@ namespace SmartStore.Admin.Models.Topics
 		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.SystemName")]
         [AllowHtml]
         public string SystemName { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.HtmlId")]
+        public string HtmlId { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.BodyCssClass")]
+        public string BodyCssClass { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.IncludeInSitemap")]
         public bool IncludeInSitemap { get; set; }
@@ -157,9 +166,12 @@ namespace SmartStore.Admin.Models.Topics
 
     public partial class TopicValidator : AbstractValidator<TopicModel>
     {
-        public TopicValidator()
+        public TopicValidator(Localizer T)
         {
             RuleFor(x => x.SystemName).NotEmpty();
+            RuleFor(x => x.HtmlId)
+                .Must(u => u.IsEmpty() || !u.Any(x => char.IsWhiteSpace(x)))
+                .WithMessage(T("Admin.ContentManagement.Topics.Validation.NoWhiteSpace"));
         }
     }
 }

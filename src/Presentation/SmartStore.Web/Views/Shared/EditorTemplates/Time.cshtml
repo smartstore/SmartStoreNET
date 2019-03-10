@@ -11,6 +11,21 @@
 			return value;
 		}
 	}
+
+	private string CssClass
+	{
+		get
+		{
+			var cls = "input-group date datetimepicker-group";
+
+			if (ViewData.ContainsKey("size"))
+			{
+				cls += " input-group-" + ViewData["size"].Convert<string>();
+			}
+
+			return cls;
+		}
+	}
 }
 
 @{
@@ -25,7 +40,7 @@
 <div class="input-group date datetimepicker-group" id="@id-parent" data-date="@value" data-target-input="nearest">
 	@Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = "LT" })
 	<div class="input-group-append input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
-		<span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+		<span class="input-group-text"><i class="far fa-clock"></i></span>
 	</div>
 </div>
 

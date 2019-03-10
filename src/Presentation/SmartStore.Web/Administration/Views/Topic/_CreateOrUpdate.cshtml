@@ -17,7 +17,6 @@
 		x.Add().Text(T("Admin.Common.GenericAttributes").Text).Content(TabGenericAttributes());
 	}
 	
-	// Generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "topic-edit", this.Html, this.Model));
 })
 
@@ -38,7 +37,7 @@
                 @Html.SmartLabelFor(model => model.IsPublished)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.IsPublished, Model.IsSystemTopic ? new { @disabled = "disabled" } : null )
+				@Html.CheckBoxFor(model => model.IsPublished, Model.IsSystemTopic ? new { @readonly = "readonly" } : null )
                 @Html.ValidationMessageFor(model => model.IsPublished)
             </td>
         </tr>
@@ -101,10 +100,30 @@
                 @Html.SmartLabelFor(model => model.RenderAsWidget)
             </td>
             <td class="adminData">
-				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget" })
+				@Html.CheckBoxFor(model => model.RenderAsWidget, new { data_toggler_for = "#pnlRenderAsWidget, #pnlTopicAttrValues" })
                 @Html.ValidationMessageFor(model => model.RenderAsWidget)
             </td>
         </tr>
+        <tbody id="pnlTopicAttrValues" data-panel-reverse="true">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.HtmlId)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.HtmlId)
+                    @Html.ValidationMessageFor(model => model.HtmlId)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.BodyCssClass)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(x => x.BodyCssClass)
+                    @Html.ValidationMessageFor(model => model.BodyCssClass)
+                </td>
+            </tr>
+        </tbody>
 		<tbody id="pnlRenderAsWidget">
 			<tr>
 				<td class="adminTitle">

@@ -52,7 +52,7 @@
 				'</div>'
 			].join("");
 
-			modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
+            modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
 				modal.remove();
 			});
 
@@ -311,7 +311,9 @@
 
     // on document ready
 	$(function () {
-		var rtl = SmartStore.globalization.culture.isRTL;
+        var rtl = SmartStore.globalization != undefined ? SmartStore.globalization.culture.isRTL : false,
+            win = $(window),
+            body = $(document.body);
 
 		function getFunction(code, argNames) {
 			var fn = window, parts = (code || "").split(".");
@@ -371,13 +373,13 @@
 					vertical: 'auto'
 				},
 				icons: {
-					time: 'fa fa-clock-o',
+					time: 'far fa-clock',
 					date: 'fa fa-calendar',
 					up: 'fa fa-angle-up',
 					down: 'fa fa-angle-down',
 					previous: 'fa fa-angle-left',
 					next: 'fa fa-angle-right',
-					today: 'fa fa-calendar-check-o',
+					today: 'far fa-calendar-check',
 					clear: 'fa fa-delete',
 					close: 'fa fa-times'
 				}
@@ -390,19 +392,6 @@
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
 				new PNotify(opts);
-			});
-		}
-
-		// Notify subscribers about page/content width change
-		if (window.EventBroker) {
-			var currentContentWidth = $('#content').width();
-			$(window).on('resize', function () {
-				var contentWidth = $('#content').width();
-				if (contentWidth !== currentContentWidth) {
-					currentContentWidth = contentWidth;
-					console.debug("Grid tier changed: " + viewport.current());
-					EventBroker.publish("page.resized", viewport);
-				}
 			});
 		}
 
@@ -528,7 +517,7 @@
 				elLabel.text(sel);
 			});
 
-			$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
+			body.on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
 				var btn = $(this).parent().find('> .btn');
 				if (e.type == "mouseenter") {
 					btn.addClass('hover');
@@ -536,7 +525,7 @@
 				else if (e.type == "mousedown") {
 					btn.addClass('active focus').removeClass('hover');
 					_.delay(function () {
-						$('body').one('mousedown touch', function (e) { btn.removeClass('active focus'); });
+                        body.one('mousedown touch', function (e) { btn.removeClass('active focus'); });
 					}, 50);
 				}
 				else if (e.type == "mouseleave") {
@@ -609,7 +598,23 @@
 		// html text collapser
 		if ($.fn.moreLess) {
 			$('.more-less').moreLess();
-		}
+        }
+
+        // Unselectable radio button groups
+        $(document).on('click', '.btn-group-toggle.unselectable > .btn', function (e) {
+            var btn = $(this);
+            var radio = btn.find('input:radio');
+
+            if (radio.length && radio.prop('checked')) {
+                _.delay(function () {
+                    radio.prop('checked', false);
+                    btn.removeClass('active focus');
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, 50);
+            }
+        });
 
 		// state region dropdown
 		$(document).on('change', '.country-selector', function () {
@@ -645,14 +650,14 @@
 		(function () {
 			$('#scroll-top').on('click', function (e) {
 				e.preventDefault();
-				$(window).scrollTo(0, 600);
+				win.scrollTo(0, 600);
 				return false;
 			});
 
 			var prevY;
 
 			var throttledScroll = _.throttle(function (e) {
-				var y = $(window).scrollTop();
+                var y = win.scrollTop();
 				if (_.isNumber(prevY)) {
 					// Show scroll button only when scrolled up
 					if (y < prevY && y > 500) {
@@ -666,8 +671,12 @@
 				prevY = y;
 			}, 100);
 
-			$(window).on("scroll", throttledScroll);
-		})();
+            win.on("scroll", throttledScroll);
+        })();
+        
+        // Modal stuff
+        $(document).on('hide.bs.modal', '.modal', function (e) { body.addClass('modal-hiding'); })
+        $(document).on('hidden.bs.modal', '.modal', function (e) { body.removeClass('modal-hiding'); })
     });
 
 })( jQuery, this, document );

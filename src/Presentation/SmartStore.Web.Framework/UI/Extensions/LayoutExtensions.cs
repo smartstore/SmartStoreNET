@@ -312,7 +312,27 @@ namespace SmartStore.Web.Framework.UI
             return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateBodyCssClasses()));
         }
 
-		public static MvcHtmlString BodyId(this HtmlHelper html)
+        public static void SetHtmlId(this HtmlHelper html, string htmlId)
+        {
+            var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+            pageAssetsBuilder.SetHtmlId(htmlId);
+        }
+
+        public static MvcHtmlString HtmlId(this HtmlHelper html)
+        {
+            var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+            var result = html.Encode(pageAssetsBuilder.GenerateHtmlId());
+
+            try
+            {
+                result = result.ToAttribute("id");
+            }
+            catch { }
+
+            return MvcHtmlString.Create(result);
+        }
+
+        public static MvcHtmlString BodyId(this HtmlHelper html)
 		{
 			string result = "";
 

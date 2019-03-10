@@ -39,6 +39,7 @@
 @import "../../../Content/vendors/photoswipe/photoswipe.scss";
 @import "../../../Content/vendors/slick/slick.scss";
 @import "../../../Content/vendors/select2/scss/core.scss";
+@import "../../../Content/vendors/aos/scss/aos.scss";
 
 
 
@@ -56,7 +57,8 @@
 
 /*@import 'shared/_colors.scss';*/ // <-- uncomment this for convenient prototyping
 @import '../../../Content/shared/_variables-shared.scss'; 
-@import '../../../Content/shared/_mixins.scss'; 
+@import '../../../Content/shared/_mixins.scss';
+@import '../../../Content/shared/_fa.scss'; 
 @import '../../../Content/shared/_typo.scss';
 @import '../../../Content/shared/_alert.scss';
 @import '../../../Content/shared/_buttons.scss'; 
@@ -74,7 +76,6 @@
 @import "../../../Content/shared/_sortable-grip.scss";
 @import '../../../Content/shared/_choice.scss';
 @import "../../../Content/shared/_offcanvas.scss";
-@import "../../../Content/shared/_animate.scss";
 @import "../../../Content/shared/_utils.scss";
 
 
@@ -113,6 +114,7 @@
 @import "_gallery.scss";
 @import "_cart.scss";
 @import "_checkout.scss";
+@import "_accordion.scss";
 @import "_misc.scss";
 @import "_print.scss";
 

@@ -187,7 +187,7 @@ namespace SmartStore.Services.Messages
 			{
 				parsed = RenderTemplate(email, ctx, required);
 
-				if (required || parsed != null)
+				if (required || parsed.HasValue())
 				{
 					return parsed.Convert<EmailAddress>();
 				}
@@ -627,7 +627,7 @@ namespace SmartStore.Services.Messages
 			{
 				// Fetch a random one
 				var skip = new Random().Next(count);
-				result = query.OrderBy(x => x.Id).Skip(skip).FirstOrDefault();
+				result = query.OrderBy(x => x.Id).Skip(() => skip).FirstOrDefault();
 			}
 			else
 			{

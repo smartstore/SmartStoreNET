@@ -15,6 +15,10 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Events;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Core.Data;
+using SmartStore.Web.Framework.Filters;
+using System.Net;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Web.Controllers
 {
@@ -36,6 +40,9 @@ namespace SmartStore.Web.Controllers
 		private readonly IMediaFileSystem _mediaFileSystem;
 		private readonly MediaSettings _mediaSettings;
 
+		private readonly Lazy<SeoSettings> _seoSettings;
+		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
+
 		public MediaController(
 			IPictureService pictureService,
 			IImageProcessor imageProcessor,
@@ -43,7 +50,9 @@ namespace SmartStore.Web.Controllers
 			IUserAgent userAgent,
 			IEventPublisher eventPublisher,
 			IMediaFileSystem mediaFileSystem,
-			MediaSettings mediaSettings)
+			MediaSettings mediaSettings,
+			Lazy<SeoSettings> seoSettings,
+			Lazy<IXmlSitemapGenerator> sitemapGenerator)
         {
 			_pictureService = pictureService;
 			_imageProcessor = imageProcessor;
@@ -52,11 +61,39 @@ namespace SmartStore.Web.Controllers
 			_eventPublisher = eventPublisher;
 			_mediaFileSystem = mediaFileSystem;
 			_mediaSettings = mediaSettings;
+			_seoSettings = seoSettings;
+			_sitemapGenerator = sitemapGenerator;
 
 			Logger = NullLogger.Instance;
         }
 
 		public ILogger Logger { get; set; }
+
+		#region XML sitemap
+
+		[Compress]
+		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		public ActionResult XmlSitemap(int? index = null)
+		{
+			if (!_seoSettings.Value.XmlSitemapEnabled)
+				return HttpNotFound();
+
+			try
+			{
+				var partition = _sitemapGenerator.Value.GetSitemapPart(index ?? 0);
+				return new FileStreamResult(partition.Stream, "text/xml");
+			}
+			catch (IndexOutOfRangeException)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sitemap index is out of range.");
+			}
+			catch (Exception ex)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, ex.Message);
+			}
+		}
+
+		#endregion
 
 		public async Task<ActionResult> Image(int id /* pictureId*/, string name)
 		{

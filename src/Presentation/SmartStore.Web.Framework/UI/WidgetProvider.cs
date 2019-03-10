@@ -14,13 +14,15 @@ namespace SmartStore.Web.Framework.UI
 	public class WidgetProvider : IWidgetProvider
 	{
 		private readonly IApplicationEnvironment _env;
+		private readonly HttpRequestBase _httpRequest;
 
 		private Multimap<string, WidgetRouteInfo> _zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
 		private Multimap<Regex, WidgetRouteInfo> _zoneExpressionWidgetsMap = new Multimap<Regex, WidgetRouteInfo>();
 
-		public WidgetProvider(IApplicationEnvironment env)
+		public WidgetProvider(IApplicationEnvironment env, HttpRequestBase httpRequest)
 		{
 			_env = env;
+			_httpRequest = httpRequest;
 		}
 
 		public void RegisterAction(string[] widgetZones, string actionName, string controllerName, RouteValueDictionary routeValues, int order = 0)
@@ -29,23 +31,26 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotEmpty(actionName, nameof(actionName));
 			Guard.NotEmpty(controllerName, nameof(controllerName));
 
+			if (_httpRequest.QueryString["nowidgets"] != null)
+			{
+				return;
+			}
+
 			if (_zoneWidgetsMap == null)
 			{
 				_zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
 			}
 
-			var routeInfo = new WidgetRouteInfo
-			{
-				ActionName = actionName,
-				ControllerName = controllerName,
-				RouteValues = routeValues ?? new RouteValueDictionary(),
-				Order = order
-			};
-
 			foreach (var zone in widgetZones)
 			{
 				if (zone.HasValue())
-					_zoneWidgetsMap.Add(zone, routeInfo);
+					_zoneWidgetsMap.Add(zone, new WidgetRouteInfo
+					{
+						ActionName = actionName,
+						ControllerName = controllerName,
+						RouteValues = new RouteValueDictionary(routeValues ?? new RouteValueDictionary()),
+						Order = order
+					});
 			}	
 		}
 
@@ -54,6 +59,11 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotNull(widgetZoneExpression, nameof(widgetZoneExpression));
 			Guard.NotEmpty(actionName, nameof(actionName));
 			Guard.NotEmpty(controllerName, nameof(controllerName));
+
+			if (_httpRequest.QueryString["nowidgets"] != null)
+			{
+				return;
+			}
 
 			if (_zoneExpressionWidgetsMap == null)
 			{

@@ -60,10 +60,15 @@ namespace SmartStore.Core.Domain
 		/// </summary>
 		public bool Enabled { get; set; }
 
-		/// <summary>
-		/// Number of records to bypass
-		/// </summary>
-		public int Skip { get; set; }
+        /// <summary>
+        /// Whether the import related data
+        /// </summary>
+        public bool ImportRelatedData { get; set; }
+
+        /// <summary>
+        /// Number of records to bypass
+        /// </summary>
+        public int Skip { get; set; }
 
 		/// <summary>
 		/// Maximum number of records to return

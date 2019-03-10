@@ -1,14 +1,14 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using System.Collections.Generic;
-using System.Web.Mvc;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class ProductReviewOverviewModel : ModelBase
+	public partial class ProductReviewOverviewModel : ModelBase
     {
         public int ProductId { get; set; }
 
@@ -36,11 +36,10 @@ namespace SmartStore.Web.Models.Catalog
 
 		#region Add
 
-		[AllowHtml]
 		[SmartResourceDisplayName("Reviews.Fields.Title")]
 		public string Title { get; set; }
 
-		[AllowHtml]
+		[SanitizeHtml]
 		[SmartResourceDisplayName("Reviews.Fields.ReviewText")]
 		public string ReviewText { get; set; }
 

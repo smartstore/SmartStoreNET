@@ -50,7 +50,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public virtual SpecificationAttribute SpecificationAttribute { get; set; }
 
         /// <summary>
-        /// Gets or sets the product specification attribute
+        /// Gets or sets the product specification attributes
         /// </summary>
 		[DataMember]
 		public virtual ICollection<ProductSpecificationAttribute> ProductSpecificationAttributes

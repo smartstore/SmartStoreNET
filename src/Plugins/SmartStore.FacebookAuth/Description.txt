@@ -1,4 +1,4 @@
-﻿FriendlyName: Facebook
+﻿FriendlyName: Facebook Login
 SystemName: SmartStore.FacebookAuth
 Group: Security
 Version: 3.1.5

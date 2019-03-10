@@ -2,11 +2,20 @@
 
 ## SmartStore.NET 3.2
 
+### Highlights
+* (Perf) #1202 Search: update to Lucene.NET 4.8
+* (Perf) Huge performance increase in discount resolution and calculation
+
 ### New Features
+* **EmailReminder**:
+	* Reminders for open shopping carts
+	* Reminders for product reviews
+	* Reminders to visit the shop after a long absence
 * #1144 Enable multi server search index
 * Made Topic ACL enabled
 * Implemented paging & filtering for Topic grid
 * Topics: added **IsPublished**, **Short Title** (link text) and **Intro** (teaser) properties.
+* New storefront catalog options: **ShowSubCategoriesInSubPages**, **ShowDescriptionInSubPages** & **IncludeFeaturedProductsInSubPages** (Subpage = List index > 1 or any active filter).
 * New security option: Use invisible reCAPTCHA
 * **BeezUp**:
 	* #1459 Add option to only submit one category name per product
@@ -15,14 +24,57 @@
 * Added option to display preview pictures in product lists
 * Added option to add multiple file versions to product download section
 * Added options for alternating price display (in badges)
-* Added option to display a captcha on forum pages when creating or replying to a topic.
-* MegaSearch: Supports searching for forum posts.
+* **Forum**:
+	* Added option to display a captcha on forum pages when creating or replying to a topic.
+	* #417 Restrict forum groups to specific customer roles.
+	* Added published property to forum topic and post.
+	* Added voting for forum posts.
+	* Several performance improvements.
+* **MegaSearch**:
+	* Supports searching for forum posts.
+	* #1172 Option to display related search terms on search page.
+	* Command to continue a previously aborted search index rebuild.
+* **Import/export of**:
+	* Product tags.
+	* Tier prices.
+	* Product attribute options.
+	* Product attribute combinations (update only).
 * Customer avatar: Letter with colored background if no avatar image was uploaded.
+* Viveum: Supports payment via "Virtual Account Brands" (e.g. PayPal).
+* Added options for alternating price display (in badges).
+* #1515 Poll: Add result tab with a list of answers and customers for a poll
+* BMEcat: Added export and import of product tags.
+* Santander instalment purchase.
+* #1542 Pages: Added options to set body CSS class and Html Id.
+* Web-API: Added endpoints for ProductSpecificationAttribute.
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
-* Debitoor: Partially update customer instead of full update to avoid all fields being overwritten
+* (Perf) Ultra-fast file-based XML sitemap generation for extremely large catalogs (> 1M)
+	* At least 10x faster
+	* Generated files are saved on the hard disk now: a rebuild after an app restart is no longer necessary.
+	* No exclusive locks during rebuilds anymore: if an (outdated) file already exists, it is returned instantly.
+* Better protection against XSS attacks
+* **Debitoor**:
+	* Partially update customer instead of full update to avoid all fields being overwritten.
+	* #1540 Place company name in front of customer name (according to address format of the particular country).
+	* #1565 Add a button to manually create a draft invoice.
 * #1479 Show in messages the delivery time at the time of purchase
+* #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
+* #1106 BMECat: import & export support for product keywords
+* #1499 Added hint to forms indicating that fields with an asterisk (*)
+* Added filter for newsletter subscriber export by working language
+* Refactored download section  
+* Enhanced EntityPicker to pick from customers, manufacturers & categories
+* #1510 Breadcrumb of an associated product should include the grouped product if it has no assigned categories.
+* OpenTrans: added customer number to parties
+* Do not filter cookie using resources if cookie usage has not yet been consented to.
+* #1563 QueuedMessagesClearTask: add a setting for the age of the mails to be deleted.
+* #1569 Added a setting to show login note if no prices are displayed due to customer group permissions.
+* PayPal PLUS: now up to 10 more third party payment methods are allowed by PayPal.
+* #1560 Tell-a-Friend and anonymous user: render alert box and tell guest to login to use this function
+* #1571 Compare products only shows one specification attribute option
+* #1539 Allow signing in with both e-mail and username 
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
@@ -30,6 +82,7 @@
 	* Export the product images if no attribute images are defined
 	* Do not export the first image twice for additional images
 	* Export image URL of full size image (not default size) for additional images
+	* Custom labels were not exported
 * Media middleware: 0-byte files should be treated as missing.
 * Megamenu alpha/omega blends do not toggle correctly on touch devices
 * Summernote HTML editor exceeds parent container width when CodeMirror is activated
@@ -51,6 +104,24 @@
 * NullReferenceException in manufacturer list when there is no manufacturer.
 * Wrong order of featured products on category page.
 * #1504 Cart item price calculation wrong if attribute combinations with text types are involved.
+* #1485 Dropdown list for product sorting does not work with Internet Explorer 11.
+* #1468 Twitter authentication not working anymore.
+* Newsletter subscription didn't work when customer privacy setting DisplayGdprConsentOnForms was turned off
+* Fixed social media image detection
+* Fixed redirection of bots when several languages were active
+* Region cannot be selected in checkout when entering a billing or shipping address
+* Fixed invalid conversion of "System.Int32" to "SmartStore.Core.Domain.Tax.VatNumberStatus" when placing an order
+* MegaMenu: Improved item rendering for third tier elements
+* Product display order on category and manufacturer pages sometimes wrong when using linq search.
+* Debitoor: Wrong invoice total if a subtotal discount has been applied.
+* Import: Fixes invalid conversion "System.Double" to "SmartStore.Core.Domain.Catalog.QuantityControlType".
+* Topics: Fixes "Cannot insert duplicate key row in object 'dbo.UrlRecord' with unique index 'IX_UrlRecord_Slug'".
+* #1566 Santander: eliminate the 1 cent rounding difference at amountTotalNet.
+* Fixed redirection to the homepage for pages which are loaded while the application is restarted.
+* #1570 Filter option "Only deactivated customers" filters deleted instead of deactivated customers.
+* UPS rates were way too high due to incorrect API request
+* #1475 select boxes must be wrapped on mobile devices if data-select-url is set  
+* Fixed the redirection to the homepage for pages which are loaded while the application is restarted
 
 
 ## SmartStore.NET 3.1.5

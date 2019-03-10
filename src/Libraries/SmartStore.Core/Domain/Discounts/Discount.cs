@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Catalog;
 
@@ -9,6 +10,7 @@ namespace SmartStore.Core.Domain.Discounts
 	/// Represents a discount
 	/// </summary>
 	[DataContract]
+	[DebuggerDisplay("{Name} - {DiscountType}")]
 	public partial class Discount : BaseEntity
     {
         private ICollection<DiscountRequirement> _discountRequirements;

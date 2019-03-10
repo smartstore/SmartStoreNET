@@ -86,7 +86,8 @@ namespace SmartStore.ComponentModel
 
 		public static ITypeConverter GetConverter(Type type)
 		{
-			Guard.NotNull(type, nameof(type));
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
 
 			if (_typeConverters.TryGetValue(type, out var converter))
 			{

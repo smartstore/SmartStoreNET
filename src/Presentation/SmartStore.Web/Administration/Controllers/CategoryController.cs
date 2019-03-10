@@ -198,7 +198,7 @@ namespace SmartStore.Admin.Controllers
             {
                 if (category != null)
                 {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(category);
+                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(category);
                 }
                 else
                 {

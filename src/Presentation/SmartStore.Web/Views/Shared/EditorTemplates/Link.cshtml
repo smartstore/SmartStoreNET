@@ -1,0 +1,216 @@
+@using SmartStore.Services.Cms
+
+@functions
+{
+    private string Value => ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
+
+    private dynamic GetTypeInfos(LinkType type)
+    {
+        switch (type)
+        {
+            case LinkType.Product:
+                return new { icon = "fa fa-cube", name = T("Common.Entity.Product").Text };
+            case LinkType.Category:
+                return new { icon = "fa fa-sitemap", name = T("Common.Entity.Category").Text };
+            case LinkType.Manufacturer:
+                return new { icon = "far fa-building", name = T("Common.Entity.Manufacturer").Text };
+            case LinkType.Topic:
+                return new { icon = "far fa-file", name = T("Common.Entity.Topic").Text };
+            case LinkType.File:
+                return new { icon = "far fa-folder-open", name = T("Common.File").Text };
+            case LinkType.Url:
+            default:
+                return new { icon = "fa fa-link", name = T("Common.Url").Text };
+        }
+    }
+}
+
+@{
+    var rnd = CommonHelper.GenerateRandomInteger();
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var link = this.CommonServices.Resolve<ILinkResolver>().Resolve(Value);
+
+    var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
+    var allowedTypes = arr.Any()
+        ? arr.Select(x => (LinkType)Enum.Parse(typeof(LinkType), x, true)).ToArray()
+        : Enum.GetValues(typeof(LinkType)).Cast<LinkType>().ToArray();
+}
+
+<div id="link-builder-@rnd">
+    <div class="d-flex flex-nowrap input-group">
+        @* Template control that receives the link expression. *@
+        @Html.TextBox("", Value, new { type = "hidden" })
+        @* 1. prepend type selector. *@
+        <div class="input-group-prepend type-container">
+		    <button id="btn-type-@rnd" type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
+			    <i class="fa fa-link"></i>
+		    </button>
+            <div class="dropdown-menu">
+                @foreach (var type in allowedTypes)
+                {
+                    var info = GetTypeInfos(type);
+                    <a class="dropdown-item link-type" href="#" data-type="@type.ToString().ToLower()">
+                        <i class="fa-fw @info.icon"></i>
+                        <span>@info.name</span>
+                    </a>
+                }
+            </div>
+        </div>
+        @* 2. main control. *@
+        @foreach (var type in allowedTypes)
+        {
+            var label = link.Type == type ? link.Label : string.Empty;
+            var value = link.Type == type && link.Value != null ? link.Value.ToString() : string.Empty;
+            <div class="flex-grow-1 link-control@(link.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
+                @if (type == LinkType.Product)
+                {
+                    <input id="lb-product-name-@rnd" type="text" class="form-control resettable" value="@label" readonly />
+                }
+                else if (type == LinkType.Category)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllCategories", "Category", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.Manufacturer)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllManufacturers", "Manufacturer", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.Topic)
+                {
+                    <select class="form-control transferable resettable" 
+                            data-select-url="@Url.Action("AllTopics", "Topic", new { area = "admin" })"
+                            data-select-selected-id="@value"
+                            data-select-init-text="@label"></select>
+                }
+                else if (type == LinkType.Url)
+                {
+                    <input type="text" class="form-control transferable resettable" value="@value" />
+                }
+                else if (type == LinkType.File)
+                {
+                    <input id="lb-file-url-@rnd" type="text" class="form-control transferable resettable" value="@label" readonly />
+                }
+            </div>
+        }
+        @* 3. append additional controls. *@
+        @if (allowedTypes.Contains(LinkType.Product))
+        {
+            <div class="input-group-append link-control@(link.Type == LinkType.Product ? "" : " hide")" data-type="product">
+		        @(Html.SmartStore().EntityPicker()
+                    .HtmlAttribute("id", "lb-product-picker-" + rnd.ToString())
+                    .MaxItems(1)
+                    .AppendMode(false)
+                    .DialogTitle(T("Common.Entity.SelectProduct").Text.EncodeJsString('\'', false))
+                    .Caption(T("Common.Search").Text.EncodeJsString('\'', false))
+                    .OnSelectionCompleted("function (ids, selectedItems) { $('#" + id + "').val('product:' + ids[0]); $('#lb-product-name-" + rnd + "').val(selectedItems[0].name); return true; }"))
+            </div>
+        }
+        @if (allowedTypes.Contains(LinkType.File))
+        {
+            <div class="input-group-append link-control@(link.Type == LinkType.File ? "" : " hide")" data-type="file">
+                <a href="javascript:void(0)" class="btn btn-secondary browse-files" data-url="@Url.Content("~/Admin/RoxyFileManager/")" data-field-id="lb-file-url-@rnd">
+                    <i class="fa fa-upload"></i>
+                    <span>@(T("Common.BrowseFiles"))&hellip;</span>
+                </a>
+            </div>
+        }
+        @* 4. append reset button. *@
+        <div class="input-group-append">
+			<button type="button" class="btn btn-secondary btn-to-danger btn-reset" title="@T("Common.Remove")">
+				<i class="fa fa-times"></i>
+			</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var container = $('#link-builder-@(rnd)'),
+            input = container.find('#@(id)'),
+            controls = container.find('div.link-control');
+
+        // Set type selector to initial type from current expression.
+        updateTypeInfo(container.find('a[data-type="@(link.Type.ToString().ToLower())"]'));
+
+        // Init controls.
+        controls.find('select').selectWrapper();
+        controls.find('.select2-container').addClass('w-100');
+
+		// Switch link type.
+		container.on('click', '.link-type', function (e) {
+            e.preventDefault();
+            var el = $(this),
+                type = el.data('type'),
+                newCtrl = controls.filter('[data-type="' + type + '"]');
+
+            controls.hide();
+            newCtrl.show();
+            updateTypeInfo(el);
+            _.delay(function () { newCtrl.first().find(':input:first:not([readonly])').focus() }, 100);
+        });
+
+        // Reset value.
+        container.on('click', 'button.btn-reset', function () {
+            input.val('');
+            controls.find('.resettable:visible').val('').trigger('change');
+            // TODO: find a better way to do this.
+            var select2 = controls.find('.select2:visible');
+            if (select2.length) {
+                var label = select2.find('.selection .select2-selection__rendered');
+                if (label.length) {
+                    label.removeAttr('title').html('');
+                }
+            }
+        });
+
+        // Browse files.
+        container.on('click', '.browse-files', function (e) {
+            e.preventDefault();
+            var el = $(this),
+                url = el.data('url');
+
+            url = modifyUrl(url, 'type', '#');
+            url = modifyUrl(url, 'field', el.data('field-id'));
+            url = modifyUrl(url, 'mid', 'modal-browse-files');
+
+            openPopup({
+                id: 'modal-browse-files',
+                url: url,
+                flex: true,
+                large: true,
+                backdrop: false
+            });
+        });
+
+        // Build expression and transfer to token input.
+        container.on('change', '.transferable', function () {
+            $el = $(this);
+            var val = $el.val();
+            if (_.isEmpty(val)) {
+                input.val('');
+            }
+            else {
+                var type = $el.closest('.link-control').data('type');
+                input.val(type === 'url' ? val : (type + ':' + val));
+            }
+            //console.log('change ' + input.val());
+        });
+
+        function updateTypeInfo(el) {
+            if (el) {
+                var btn = $('#btn-type-@(rnd)'),
+                    icon = el.find('i').first().attr('class').replace('fa-fw ', ''),
+                    name = el.find('span').first().text();
+
+                btn.find('i').attr('class', icon);
+                btn.attr('title', name);
+            }
+        }
+
+    });
+</script>

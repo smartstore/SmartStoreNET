@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
@@ -19,12 +21,13 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<ForumPost> _forumPostRepository;
         private readonly IRepository<PrivateMessage> _forumPrivateMessageRepository;
         private readonly IRepository<ForumSubscription> _forumSubscriptionRepository;
+        private readonly IRepository<StoreMapping> _storeMappingRepository;
+        private readonly IRepository<AclRecord> _aclRepository;
         private readonly ForumSettings _forumSettings;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
-		private readonly ICommonServices _services;
+        private readonly ICommonServices _services;
 
         public ForumService(
             IRepository<ForumGroup> forumGroupRepository,
@@ -33,12 +36,13 @@ namespace SmartStore.Services.Forums
             IRepository<ForumPost> forumPostRepository,
             IRepository<PrivateMessage> forumPrivateMessageRepository,
             IRepository<ForumSubscription> forumSubscriptionRepository,
+            IRepository<StoreMapping> storeMappingRepository,
+            IRepository<AclRecord> aclRepository,
             ForumSettings forumSettings,
             IRepository<Customer> customerRepository,
             IGenericAttributeService genericAttributeService,
             ICustomerService customerService,
-			IRepository<StoreMapping> storeMappingRepository,
-			ICommonServices services)
+            ICommonServices services)
         {
             _forumGroupRepository = forumGroupRepository;
             _forumRepository = forumRepository;
@@ -46,28 +50,28 @@ namespace SmartStore.Services.Forums
             _forumPostRepository = forumPostRepository;
             _forumPrivateMessageRepository = forumPrivateMessageRepository;
             _forumSubscriptionRepository = forumSubscriptionRepository;
+            _storeMappingRepository = storeMappingRepository;
+            _aclRepository = aclRepository;
             _forumSettings = forumSettings;
             _customerRepository = customerRepository;
             _genericAttributeService = genericAttributeService;
             _customerService = customerService;
-			_storeMappingRepository = storeMappingRepository;
-			_services = services;
+            _services = services;
         }
 
-		public DbQuerySettings QuerySettings { get; set; }
+        public DbQuerySettings QuerySettings { get; set; }
 
-        private void UpdateForumStats(int forumId)
+        protected virtual void UpdateForumStatistics(Forum forum)
         {
-            var forum = GetForumById(forumId);
             if (forum == null)
             {
                 return;
             }
 
-            var queryLastValues = 
+            var queryLastValues =
                 from ft in _forumTopicRepository.TableUntracked
                 join fp in _forumPostRepository.TableUntracked on ft.Id equals fp.TopicId
-                where ft.ForumId == forumId
+                where ft.ForumId == forum.Id && ft.Published && fp.Published
                 orderby fp.CreatedOnUtc descending, ft.CreatedOnUtc descending
                 select new
                 {
@@ -82,27 +86,30 @@ namespace SmartStore.Services.Forums
             forum.LastPostId = lastValues?.LastPostId ?? 0;
             forum.LastPostCustomerId = lastValues?.LastPostCustomerId ?? 0;
             forum.LastPostTime = lastValues?.LastPostTime;
-            forum.NumTopics = _forumTopicRepository.Table.Where(x => x.ForumId == forumId).Count();
+
+            forum.NumTopics = _forumTopicRepository
+                .Table.Where(x => x.ForumId == forum.Id && x.Published)
+                .Count();
+
             forum.NumPosts = (
                 from ft in _forumTopicRepository.Table
                 join fp in _forumPostRepository.Table on ft.Id equals fp.TopicId
-                where ft.ForumId == forumId
+                where ft.ForumId == forum.Id && ft.Published && fp.Published
                 select fp.Id).Count();
 
             UpdateForum(forum);
         }
 
-        private void UpdateForumTopicStats(int forumTopicId)
+        protected virtual void UpdateTopicStatistics(ForumTopic topic)
         {
-            var forumTopic = GetTopicById(forumTopicId);
-            if (forumTopic == null)
+            if (topic == null)
             {
                 return;
             }
 
-            var queryLastValues = 
+            var queryLastValues =
                 from fp in _forumPostRepository.TableUntracked
-                where fp.TopicId == forumTopicId
+                where fp.TopicId == topic.Id && fp.Published
                 orderby fp.CreatedOnUtc descending
                 select new
                 {
@@ -112,42 +119,44 @@ namespace SmartStore.Services.Forums
                 };
             var lastValues = queryLastValues.FirstOrDefault();
 
-            forumTopic.LastPostId = lastValues?.LastPostId ?? 0;
-            forumTopic.LastPostCustomerId = lastValues?.LastPostCustomerId ?? 0;
-            forumTopic.LastPostTime = lastValues?.LastPostTime;
-            forumTopic.NumPosts = _forumPostRepository.Table.Where(x => x.TopicId == forumTopicId).Count();
+            topic.LastPostId = lastValues?.LastPostId ?? 0;
+            topic.LastPostCustomerId = lastValues?.LastPostCustomerId ?? 0;
+            topic.LastPostTime = lastValues?.LastPostTime;
 
-            UpdateTopic(forumTopic);
+            topic.NumPosts = topic.Published
+                ? _forumPostRepository.Table.Where(x => x.TopicId == topic.Id && x.Published).Count()
+                : 0;
+
+            UpdateTopic(topic, false);
         }
 
-        private void UpdateCustomerStats(int customerId)
+        protected virtual void UpdateCustomerStatistics(Customer customer)
         {
-            if (customerId != 0)
+            if (customer != null)
             {
-                var customer = _customerService.GetCustomerById(customerId);
-                if (customer != null)
-                {
-                    var numPosts = _forumPostRepository.Table.Where(x => x.CustomerId == customerId).Count();
+                var numPosts = _forumPostRepository.Table
+                    .Where(x => x.CustomerId == customer.Id && x.ForumTopic.Published && x.Published)
+                    .Count();
 
-                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ForumPostCount, numPosts);
-                }
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.ForumPostCount, numPosts);
             }
         }
 
         #region Group
 
-        public virtual ForumGroup GetForumGroupById(int forumGroupId)
+        public virtual ForumGroup GetForumGroupById(int groupId)
         {
-            if (forumGroupId == 0)
+            if (groupId == 0)
             {
                 return null;
             }
 
-            return _forumGroupRepository.GetById(forumGroupId);
+            return _forumGroupRepository.GetById(groupId);
         }
 
-        public virtual IList<ForumGroup> GetAllForumGroups(int storeId = 0)
+        public virtual IList<ForumGroup> GetAllForumGroups(int storeId = 0, bool showHidden = false)
         {
+            var joinApplied = false;
             var query = _forumGroupRepository.Table.Expand(x => x.Forums);
 
             if (!QuerySettings.IgnoreMultiStore && storeId > 0)
@@ -159,6 +168,25 @@ namespace SmartStore.Services.Forums
                     where !fg.LimitedToStores || storeId == sm.StoreId
                     select fg;
 
+                joinApplied = true;
+            }
+
+            if (!showHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+
+                query =
+                    from fg in query
+                    join a in _aclRepository.Table on new { a1 = fg.Id, a2 = "ForumGroup" } equals new { a1 = a.EntityId, a2 = a.EntityName } into fg_acl
+                    from a in fg_acl.DefaultIfEmpty()
+                    where !fg.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
+                    select fg;
+
+                joinApplied = true;
+            }
+
+            if (joinApplied)
+            {
                 query =
                     from fg in query
                     group fg by fg.Id into fgGroup
@@ -171,26 +199,26 @@ namespace SmartStore.Services.Forums
             return query.ToListCached();
         }
 
-        public virtual void InsertForumGroup(ForumGroup forumGroup)
+        public virtual void InsertForumGroup(ForumGroup group)
         {
-            Guard.NotNull(forumGroup, nameof(forumGroup));
+            Guard.NotNull(group, nameof(group));
 
-            _forumGroupRepository.Insert(forumGroup);
+            _forumGroupRepository.Insert(group);
         }
 
-        public virtual void UpdateForumGroup(ForumGroup forumGroup)
+        public virtual void UpdateForumGroup(ForumGroup group)
         {
-            Guard.NotNull(forumGroup, nameof(forumGroup));
+            Guard.NotNull(group, nameof(group));
 
-            _forumGroupRepository.Update(forumGroup);
+            _forumGroupRepository.Update(group);
         }
 
-        public virtual void DeleteForumGroup(ForumGroup forumGroup)
+        public virtual void DeleteForumGroup(ForumGroup group)
         {
-            if (forumGroup != null)
+            if (group != null)
             {
-                _forumGroupRepository.Delete(forumGroup);
-            }            
+                _forumGroupRepository.Delete(group);
+            }
         }
 
         #endregion
@@ -204,19 +232,12 @@ namespace SmartStore.Services.Forums
                 return null;
             }
 
-            return _forumRepository.GetById(forumId);
+            var entity = _forumRepository.Table
+                .Expand(x => x.ForumGroup)
+                .FirstOrDefault(x => x.Id == forumId);
+
+            return entity;
         }
-
-        public virtual IList<Forum> GetAllForumsByGroupId(int forumGroupId)
-        {
-			var query = from f in _forumRepository.Table
-						orderby f.DisplayOrder
-						where f.ForumGroupId == forumGroupId
-						select f;
-
-			var forums = query.ToListCached();
-			return forums;
-		}
 
         public virtual void InsertForum(Forum forum)
         {
@@ -240,21 +261,27 @@ namespace SmartStore.Services.Forums
             }
 
             // Delete forum subscriptions (topics).
-            var queryTopicIds = from ft in _forumTopicRepository.Table
-                                where ft.ForumId == forum.Id
-                                select ft.Id;
-            var queryFs1 = from fs in _forumSubscriptionRepository.Table
-                           where queryTopicIds.Contains(fs.TopicId)
-                           select fs;
+            var queryTopicIds = 
+                from ft in _forumTopicRepository.Table
+                where ft.ForumId == forum.Id
+                select ft.Id;
+
+            var queryFs1 = 
+                from fs in _forumSubscriptionRepository.Table
+                where queryTopicIds.Contains(fs.TopicId)
+                select fs;
+
             foreach (var fs in queryFs1.ToList())
             {
                 _forumSubscriptionRepository.Delete(fs);
             }
 
             // Delete forum subscriptions (forum).
-            var queryFs2 = from fs in _forumSubscriptionRepository.Table
-                           where fs.ForumId == forum.Id
-                           select fs;
+            var queryFs2 = 
+                from fs in _forumSubscriptionRepository.Table
+                where fs.ForumId == forum.Id
+                select fs;
+
             foreach (var fs2 in queryFs2.ToList())
             {
                 _forumSubscriptionRepository.Delete(fs2);
@@ -268,14 +295,18 @@ namespace SmartStore.Services.Forums
 
         #region Topic
 
-        public virtual ForumTopic GetTopicById(int forumTopicId)
+        public virtual ForumTopic GetTopicById(int topicId)
         {
-            if (forumTopicId == 0)
+            if (topicId == 0)
             {
                 return null;
             }
 
-            var entity = _forumTopicRepository.Table.FirstOrDefault(x => x.Id == forumTopicId);
+            var entity = _forumTopicRepository.Table
+                .Expand(x => x.Forum)
+                .Expand(x => x.Forum.ForumGroup)
+                .FirstOrDefault(x => x.Id == topicId);
+
             return entity;
         }
 
@@ -292,12 +323,19 @@ namespace SmartStore.Services.Forums
             return query.OrderBySequence(topicIds).ToList();
         }
 
-        public virtual IPagedList<ForumTopic> GetAllTopics(int forumId, int pageIndex, int pageSize)
+        public virtual IPagedList<ForumTopic> GetAllTopics(int forumId, int pageIndex, int pageSize, bool showHidden = false)
         {
+            var customer = _services.WorkContext.CurrentCustomer;
             var query = _forumTopicRepository.TableUntracked;
+
             if (forumId != 0)
             {
                 query = query.Where(x => x.ForumId == forumId);
+            }
+
+            if (!showHidden && !customer.IsForumModerator())
+            {
+                query = query.Where(x => x.Published || x.CustomerId == customer.Id);
             }
 
             query = query
@@ -309,157 +347,230 @@ namespace SmartStore.Services.Forums
             return topics;
         }
 
-        public virtual IList<ForumTopic> GetActiveTopics(int forumId, int count)
+        public virtual IList<ForumTopic> GetActiveTopics(int forumId, int count, bool showHidden = false)
         {
+            var joinApplied = false;
+            var customer = _services.WorkContext.CurrentCustomer;
+
             var query =
-				from ft in _forumTopicRepository.Table
-				where (forumId == 0 || ft.ForumId == forumId) && (ft.LastPostTime.HasValue)
-				select ft;
+                from ft in _forumTopicRepository.Table
+                where (forumId == 0 || ft.ForumId == forumId) && ft.LastPostTime.HasValue
+                select ft;
 
-			if (!QuerySettings.IgnoreMultiStore)
-			{
-				var currentStoreId = _services.StoreContext.CurrentStore.Id;
+            if (!showHidden && !customer.IsForumModerator())
+            {
+                query = query.Where(x => x.Published || x.CustomerId == customer.Id);
+            }
 
-				query =
-					from ft in query
-					join ff in _forumRepository.Table on ft.ForumId equals ff.Id
-					join fg in _forumGroupRepository.Table on ff.ForumGroupId equals fg.Id
-					join sm in _storeMappingRepository.Table on new { c1 = fg.Id, c2 = "ForumGroup" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into fg_sm
-					from sm in fg_sm.DefaultIfEmpty()
-					where !fg.LimitedToStores || currentStoreId == sm.StoreId
-					select ft;
+            if (!QuerySettings.IgnoreMultiStore)
+            {
+                var currentStoreId = _services.StoreContext.CurrentStore.Id;
 
-				query =
-					from ft in query
-					group ft by ft.Id into ftGroup
-					orderby ftGroup.Key
-					select ftGroup.FirstOrDefault();
-			}
+                query =
+                    from ft in query
+                    join ff in _forumRepository.Table on ft.ForumId equals ff.Id
+                    join fg in _forumGroupRepository.Table on ff.ForumGroupId equals fg.Id
+                    join sm in _storeMappingRepository.Table on new { c1 = fg.Id, c2 = "ForumGroup" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into fg_sm
+                    from sm in fg_sm.DefaultIfEmpty()
+                    where !fg.LimitedToStores || currentStoreId == sm.StoreId
+                    select ft;
 
-			query = query.OrderByDescending(x => x.LastPostTime);
+                joinApplied = true;
+            }
 
-            var forumTopics = query.Take(count).ToList();
+            if (!showHidden && !QuerySettings.IgnoreAcl)
+            {
+                var allowedCustomerRolesIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+
+                query =
+                    from ft in query
+                    join ff in _forumRepository.Table on ft.ForumId equals ff.Id
+                    join fg in _forumGroupRepository.Table on ff.ForumGroupId equals fg.Id
+                    join a in _aclRepository.Table on new { a1 = fg.Id, a2 = "ForumGroup" } equals new { a1 = a.EntityId, a2 = a.EntityName } into fg_acl
+                    from a in fg_acl.DefaultIfEmpty()
+                    where !fg.SubjectToAcl || allowedCustomerRolesIds.Contains(a.CustomerRoleId)
+                    select ft;
+
+                joinApplied = true;
+            }
+
+            if (joinApplied)
+            {
+                query =
+                    from ft in query
+                    group ft by ft.Id into ftGroup
+                    orderby ftGroup.Key
+                    select ftGroup.FirstOrDefault();
+            }
+
+            query = query.OrderByDescending(x => x.LastPostTime);
+
+            var forumTopics = query.Take(() => count).ToList();
             return forumTopics;
         }
 
-        public virtual void InsertTopic(ForumTopic forumTopic, bool sendNotifications)
+        public virtual void InsertTopic(ForumTopic topic, bool sendNotifications)
         {
-            Guard.NotNull(forumTopic, nameof(forumTopic));
+            Guard.NotNull(topic, nameof(topic));
 
-            _forumTopicRepository.Insert(forumTopic);
+            _forumTopicRepository.Insert(topic);
 
-            UpdateForumStats(forumTopic.ForumId);
+            var forum = topic.Forum ?? GetForumById(topic.ForumId);
+
+            UpdateForumStatistics(forum);
 
             if (sendNotifications)
             {
-                var forum = forumTopic.Forum;
                 var subscriptions = GetAllSubscriptions(0, forum.Id, 0, 0, int.MaxValue);
                 var languageId = _services.WorkContext.WorkingLanguage.Id;
 
                 foreach (var subscription in subscriptions)
                 {
-                    if (subscription.CustomerId == forumTopic.CustomerId)
+                    if (subscription.CustomerId == topic.CustomerId)
                     {
                         continue;
                     }
 
                     if (subscription.Customer.Email.HasValue())
                     {
-                        _services.MessageFactory.SendNewForumTopicMessage(subscription.Customer, forumTopic, languageId);	
+                        _services.MessageFactory.SendNewForumTopicMessage(subscription.Customer, topic, languageId);
                     }
                 }
             }
         }
 
-        public virtual void UpdateTopic(ForumTopic forumTopic)
+        public virtual void UpdateTopic(ForumTopic topic, bool updateStatistics)
         {
-            Guard.NotNull(forumTopic, nameof(forumTopic));
+            Guard.NotNull(topic, nameof(topic));
 
-            _forumTopicRepository.Update(forumTopic);
+            _forumTopicRepository.Update(topic);
+
+            if (updateStatistics)
+            {
+                var forum = topic.Forum ?? GetForumById(topic.ForumId);
+                var customer = topic.Customer ?? _customerService.GetCustomerById(topic.CustomerId);
+
+                UpdateForumStatistics(forum);
+                UpdateTopicStatistics(topic);
+                UpdateCustomerStatistics(customer);
+            }
         }
 
-        public virtual void DeleteTopic(ForumTopic forumTopic)
+        public virtual void DeleteTopic(ForumTopic topic)
         {
-            if (forumTopic == null)
+            if (topic == null)
             {
                 return;
             }
 
-            int customerId = forumTopic.CustomerId;
-            int forumId = forumTopic.ForumId;
+            var forum = topic.Forum ?? GetForumById(topic.ForumId);
+            var customer = topic.Customer ?? _customerService.GetCustomerById(topic.CustomerId);
 
-            _forumTopicRepository.Delete(forumTopic);
+            _forumTopicRepository.Delete(topic);
 
             // Delete forum subscriptions.
-            var queryFs = from ft in _forumSubscriptionRepository.Table
-                          where ft.TopicId == forumTopic.Id
-                          select ft;
-            var forumSubscriptions = queryFs.ToList();
-            foreach (var fs in forumSubscriptions)
+            var subscriptions = _forumSubscriptionRepository.Table.Where(x => x.TopicId == topic.Id).ToList();
+            foreach (var subscription in subscriptions)
             {
-                _forumSubscriptionRepository.Delete(fs);
+                _forumSubscriptionRepository.Delete(subscription);
             }
 
-            UpdateForumStats(forumId);
-            UpdateCustomerStats(customerId);
+            UpdateForumStatistics(forum);
+            UpdateCustomerStatistics(customer);
         }
 
-        public virtual ForumTopic MoveTopic(int forumTopicId, int newForumId)
+        public virtual ForumTopic MoveTopic(int topicId, int newForumId)
         {
-            var forumTopic = GetTopicById(forumTopicId);
-            if (forumTopic == null)
+            var topic = GetTopicById(topicId);
+            if (topic != null && IsCustomerAllowedToMoveTopic(_services.WorkContext.CurrentCustomer, topic))
             {
-                return forumTopic;
-            }
-
-            if (IsCustomerAllowedToMoveTopic(_services.WorkContext.CurrentCustomer, forumTopic))
-            {
-                var previousForumId = forumTopic.ForumId;
+                var previousForumId = topic.ForumId;
                 var newForum = GetForumById(newForumId);
+
                 if (newForum != null && previousForumId != newForumId)
                 {
-                    forumTopic.ForumId = newForum.Id;
-                    UpdateTopic(forumTopic);
+                    topic.ForumId = newForum.Id;
+                    UpdateTopic(topic, false);
 
-                    UpdateForumStats(previousForumId);
-                    UpdateForumStats(newForumId);
+                    UpdateForumStatistics(GetForumById(previousForumId));
+                    UpdateForumStatistics(newForum);
                 }
             }
 
-            return forumTopic;
+            return topic;
         }
 
-        public virtual int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId)
+        public virtual int CalculateTopicPageIndex(int topicId, int pageSize, int postId)
         {
-            var pageIndex = 0;
-            var forumPosts = GetAllPosts(forumTopicId, 0, true, 0, int.MaxValue);
-
-            for (var i = 0; i < forumPosts.TotalCount; i++)
+            if (pageSize > 0 && postId != 0)
             {
-                if (forumPosts[i].Id == postId)
+                var query = GetPostQuery(topicId, 0, true, true);
+                var postIds = query.Select(x => x.Id).ToList();
+
+                for (var i = 0; i < postIds.Count; ++i)
                 {
-                    if (pageSize > 0)
+                    if (postIds[i] == postId)
                     {
-                        pageIndex = i / pageSize;
+                        return i / pageSize;
                     }
                 }
             }
 
-            return pageIndex;
+            return 0;
         }
 
         #endregion
 
         #region Post
 
-        public virtual ForumPost GetPostById(int forumPostId)
+        protected virtual IQueryable<ForumPost> GetPostQuery(
+            int topicId,
+            int customerId,
+            bool ascSort,
+            bool showHidden = false,
+            bool untracked = false)
         {
-            if (forumPostId == 0)
+            var customer = _services.WorkContext.CurrentCustomer;
+            var query = untracked ? _forumPostRepository.TableUntracked : _forumPostRepository.Table;
+
+            if (topicId > 0)
+            {
+                query = query.Where(x => topicId == x.TopicId);
+            }
+            if (customerId > 0)
+            {
+                query = query.Where(x => customerId == x.CustomerId);
+            }
+            if (!showHidden && !customer.IsForumModerator())
+            {
+                query = query.Where(x => x.Published || x.CustomerId == customer.Id);
+            }
+
+            if (ascSort)
+            {
+                query = query.OrderBy(x => x.CreatedOnUtc).ThenBy(x => x.Id);
+            }
+            else
+            {
+                query = query.OrderByDescending(x => x.CreatedOnUtc).ThenBy(x => x.Id);
+            }
+
+            return query;
+        }
+
+        public virtual ForumPost GetPostById(int postId)
+        {
+            if (postId == 0)
             {
                 return null;
             }
 
-            var forumPost = _forumPostRepository.Table.FirstOrDefault(x => x.Id == forumPostId);
+            var forumPost = _forumPostRepository.Table
+                .Expand(x => x.ForumTopic)
+                .Expand(x => x.ForumTopic.Forum)
+                .Expand(x => x.ForumTopic.Forum.ForumGroup)
+                .FirstOrDefault(x => x.Id == postId);
+
             return forumPost;
         }
 
@@ -476,123 +587,119 @@ namespace SmartStore.Services.Forums
             return query.OrderBySequence(postIds).ToList();
         }
 
-        public virtual IPagedList<ForumPost> GetAllPosts(int forumTopicId, int customerId, bool ascSort, int pageIndex, int pageSize)
+        public virtual IPagedList<ForumPost> GetAllPosts(
+            int topicId,
+            int customerId,
+            bool ascSort,
+            int pageIndex,
+            int pageSize,
+            bool showHidden = false)
         {
-            var query = _forumPostRepository.Table;
-            if (forumTopicId > 0)
-            {
-                query = query.Where(fp => forumTopicId == fp.TopicId);
-            }
-            if (customerId > 0)
-            {
-                query = query.Where(fp => customerId == fp.CustomerId);
-            }
-            if (ascSort)
-            {
-                query = query.OrderBy(fp => fp.CreatedOnUtc).ThenBy(fp => fp.Id);
-            }
-            else
-            {
-                query = query.OrderByDescending(fp => fp.CreatedOnUtc).ThenBy(fp => fp.Id);
-            }
-
+            var query = GetPostQuery(topicId, customerId, ascSort, showHidden);
             var forumPosts = new PagedList<ForumPost>(query, pageIndex, pageSize);
             return forumPosts;
         }
 
-        public virtual void InsertPost(ForumPost forumPost, bool sendNotifications)
+        public virtual void InsertPost(ForumPost post, bool sendNotifications)
         {
-            Guard.NotNull(forumPost, nameof(forumPost));
+            Guard.NotNull(post, nameof(post));
 
-            _forumPostRepository.Insert(forumPost);
+            _forumPostRepository.Insert(post);
 
-            var forumTopic = GetTopicById(forumPost.TopicId);
+            var topic = post.ForumTopic ?? GetTopicById(post.TopicId);
+            var forum = topic.Forum ?? GetForumById(topic.ForumId);
+            var customer = post.Customer ?? _customerService.GetCustomerById(post.CustomerId);
 
-            UpdateForumTopicStats(forumPost.TopicId);
-            UpdateForumStats(forumTopic.ForumId);
-            UpdateCustomerStats(forumPost.CustomerId);
+            UpdateTopicStatistics(topic);
+            UpdateForumStatistics(forum);
+            UpdateCustomerStatistics(customer);
 
             if (sendNotifications)
             {
-                var forum = forumTopic.Forum;
                 var languageId = _services.WorkContext.WorkingLanguage.Id;
-                var subscriptions = GetAllSubscriptions(0, 0, forumTopic.Id, 0, int.MaxValue);
+                var subscriptions = GetAllSubscriptions(0, 0, topic.Id, 0, int.MaxValue);
                 var friendlyTopicPageIndex = CalculateTopicPageIndex(
-                    forumPost.TopicId,
-                    _forumSettings.PostsPageSize > 0 ? _forumSettings.PostsPageSize : 10,
-                    forumPost.Id) + 1;
+                    post.TopicId,
+                    _forumSettings.PostsPageSize > 0 ? _forumSettings.PostsPageSize : 20,
+                    post.Id) + 1;
 
                 foreach (var subscription in subscriptions)
                 {
-                    if (subscription.CustomerId == forumPost.CustomerId)
+                    if (subscription.CustomerId == post.CustomerId)
                     {
                         continue;
                     }
 
                     if (subscription.Customer.Email.HasValue())
                     {
-                        _services.MessageFactory.SendNewForumPostMessage(subscription.Customer, forumPost, friendlyTopicPageIndex, languageId);
+                        _services.MessageFactory.SendNewForumPostMessage(subscription.Customer, post, friendlyTopicPageIndex, languageId);
                     }
                 }
             }
         }
 
-        public virtual void UpdatePost(ForumPost forumPost)
+        public virtual void UpdatePost(ForumPost post, bool updateStatistics)
         {
-            Guard.NotNull(forumPost, nameof(forumPost));
+            Guard.NotNull(post, nameof(post));
 
-            _forumPostRepository.Update(forumPost);
+            _forumPostRepository.Update(post);
+
+            if (updateStatistics)
+            {
+                var topic = post.ForumTopic ?? GetTopicById(post.TopicId);
+                var forum = topic.Forum ?? GetForumById(topic.ForumId);
+                var customer = post.Customer ?? _customerService.GetCustomerById(post.CustomerId);
+
+                UpdateForumStatistics(forum);
+                UpdateTopicStatistics(topic);
+                UpdateCustomerStatistics(customer);
+            }
         }
 
-        public virtual void DeletePost(ForumPost forumPost)
+        public virtual void DeletePost(ForumPost post)
         {
-            if (forumPost == null)
+            if (post == null)
             {
                 return;
             }
 
-            var forumTopicId = forumPost.TopicId;
-            var customerId = forumPost.CustomerId;
-            var forumTopic = GetTopicById(forumTopicId);
-            var forumId = forumTopic.ForumId;
+            var topic = post.ForumTopic ?? GetTopicById(post.TopicId);
+            var forum = topic.Forum ?? GetForumById(topic.ForumId);
+            var customer = post.Customer ?? _customerService.GetCustomerById(post.CustomerId);
 
             // Delete topic if it was the first post.
-            var deleteTopic = false;
-            var firstPost = forumTopic.GetFirstPost(this);
-            if (firstPost != null && firstPost.Id == forumPost.Id)
-            {
-                deleteTopic = true;
-            }
+            var firstPost = topic.GetFirstPost(this);
+            var deleteTopic = firstPost != null && firstPost.Id == post.Id;
 
             // Delete forum post.
-            _forumPostRepository.Delete(forumPost);
+            _forumPostRepository.Delete(post);
 
             // Delete topic.
             if (deleteTopic)
             {
-                DeleteTopic(forumTopic);
+                DeleteTopic(topic);
+            }
+            else
+            {
+                UpdateTopicStatistics(topic);
             }
 
-            if (!deleteTopic)
-            {
-                UpdateForumTopicStats(forumTopicId);
-            }
-            UpdateForumStats(forumId);
-            UpdateCustomerStats(customerId);
+            UpdateForumStatistics(forum);
+            UpdateCustomerStatistics(customer);
         }
 
         #endregion
 
         #region Private message
 
-        public virtual PrivateMessage GetPrivateMessageById(int privateMessageId)
+        public virtual PrivateMessage GetPrivateMessageById(int messageId)
         {
-            if (privateMessageId == 0)
+            if (messageId == 0)
             {
                 return null;
             }
 
-            var privateMessage = _forumPrivateMessageRepository.Table.FirstOrDefault(x => x.Id == privateMessageId);
+            var privateMessage = _forumPrivateMessageRepository.Table.FirstOrDefault(x => x.Id == messageId);
             return privateMessage;
         }
 
@@ -639,45 +746,45 @@ namespace SmartStore.Services.Forums
             return privateMessages;
         }
 
-        public virtual void InsertPrivateMessage(PrivateMessage privateMessage)
+        public virtual void InsertPrivateMessage(PrivateMessage message)
         {
-            Guard.NotNull(privateMessage, nameof(privateMessage));
+            Guard.NotNull(message, nameof(message));
 
-            _forumPrivateMessageRepository.Insert(privateMessage);
+            _forumPrivateMessageRepository.Insert(message);
 
-            var customerTo = _customerService.GetCustomerById(privateMessage.ToCustomerId);
+            var customerTo = _customerService.GetCustomerById(message.ToCustomerId);
             if (customerTo == null)
             {
                 throw new SmartException("Recipient could not be loaded");
             }
 
-			_genericAttributeService.SaveAttribute(customerTo, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, false, privateMessage.StoreId);
+			_genericAttributeService.SaveAttribute(customerTo, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, false, message.StoreId);
 
             if (_forumSettings.NotifyAboutPrivateMessages)
             {
-				_services.MessageFactory.SendPrivateMessageNotification(customerTo, privateMessage, _services.WorkContext.WorkingLanguage.Id);                
+				_services.MessageFactory.SendPrivateMessageNotification(customerTo, message, _services.WorkContext.WorkingLanguage.Id);                
             }
         }
 
-        public virtual void UpdatePrivateMessage(PrivateMessage privateMessage)
+        public virtual void UpdatePrivateMessage(PrivateMessage message)
         {
-            Guard.NotNull(privateMessage, nameof(privateMessage));
+            Guard.NotNull(message, nameof(message));
 
-            if (privateMessage.IsDeletedByAuthor && privateMessage.IsDeletedByRecipient)
+            if (message.IsDeletedByAuthor && message.IsDeletedByRecipient)
             {
-                _forumPrivateMessageRepository.Delete(privateMessage);
+                _forumPrivateMessageRepository.Delete(message);
             }
             else
             {
-                _forumPrivateMessageRepository.Update(privateMessage);
+                _forumPrivateMessageRepository.Update(message);
             }
         }
 
-        public virtual void DeletePrivateMessage(PrivateMessage privateMessage)
+        public virtual void DeletePrivateMessage(PrivateMessage message)
         {
-            if (privateMessage != null)
+            if (message != null)
             {
-                _forumPrivateMessageRepository.Delete(privateMessage);
+                _forumPrivateMessageRepository.Delete(message);
             }            
         }
 
@@ -685,14 +792,14 @@ namespace SmartStore.Services.Forums
 
         #region Subscription
 
-        public virtual ForumSubscription GetSubscriptionById(int forumSubscriptionId)
+        public virtual ForumSubscription GetSubscriptionById(int subscriptionId)
         {
-            if (forumSubscriptionId == 0)
+            if (subscriptionId == 0)
             {
                 return null;
             }
 
-            var forumSubscription = _forumSubscriptionRepository.Table.FirstOrDefault(x => x.Id == forumSubscriptionId);
+            var forumSubscription = _forumSubscriptionRepository.Table.FirstOrDefault(x => x.Id == subscriptionId);
             return forumSubscription;
         }
 
@@ -718,25 +825,25 @@ namespace SmartStore.Services.Forums
             return forumSubscriptions;
         }
 
-        public virtual void InsertSubscription(ForumSubscription forumSubscription)
+        public virtual void InsertSubscription(ForumSubscription subscription)
         {
-            Guard.NotNull(forumSubscription, nameof(forumSubscription));
+            Guard.NotNull(subscription, nameof(subscription));
 
-            _forumSubscriptionRepository.Insert(forumSubscription);
+            _forumSubscriptionRepository.Insert(subscription);
         }
 
-        public virtual void UpdateSubscription(ForumSubscription forumSubscription)
+        public virtual void UpdateSubscription(ForumSubscription subscription)
         {
-            Guard.NotNull(forumSubscription, nameof(forumSubscription));
+            Guard.NotNull(subscription, nameof(subscription));
 
-            _forumSubscriptionRepository.Update(forumSubscription);
+            _forumSubscriptionRepository.Update(subscription);
         }
 
-        public virtual void DeleteSubscription(ForumSubscription forumSubscription)
+        public virtual void DeleteSubscription(ForumSubscription subscription)
         {
-            if (forumSubscription != null)
+            if (subscription != null)
             {
-                _forumSubscriptionRepository.Delete(forumSubscription);
+                _forumSubscriptionRepository.Delete(subscription);
             }
         }
 
@@ -766,20 +873,18 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToEditTopic(Customer customer, ForumTopic topic)
         {
-            if (topic == null || customer == null || customer.IsGuest())
+            if (customer != null && topic != null)
             {
-                return false;
-            }
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
 
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToEditPosts)
-            {
-                var ownTopic = customer.Id == topic.CustomerId;
-                return ownTopic;
+                if (_forumSettings.AllowCustomersToEditPosts && topic.Published)
+                {
+                    var ownTopic = customer.Id == topic.CustomerId;
+                    return ownTopic;
+                }
             }
 
             return false;
@@ -787,17 +892,7 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToMoveTopic(Customer customer, ForumTopic topic)
         {
-            if (topic == null || customer == null)
-            {
-                return false;
-            }
-
-            if (customer.IsGuest())
-            {
-                return false;
-            }
-
-            if (customer.IsForumModerator())
+            if (customer != null && customer.IsForumModerator())
             {
                 return true;
             }
@@ -807,20 +902,18 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToDeleteTopic(Customer customer, ForumTopic topic)
         {
-            if (topic == null || customer == null || customer.IsGuest())
+            if (topic != null && customer != null)
             {
-                return false;
-            }
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
 
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToDeletePosts)
-            {
-                var ownTopic = customer.Id == topic.CustomerId;
-                return ownTopic;
+                if (_forumSettings.AllowCustomersToDeletePosts && topic.Published)
+                {
+                    var ownTopic = customer.Id == topic.CustomerId;
+                    return ownTopic;
+                }
             }
 
             return false;
@@ -833,7 +926,7 @@ namespace SmartStore.Services.Forums
                 return false;
             }
 
-            if (customer.IsGuest() && !_forumSettings.AllowGuestsToCreatePosts)
+            if (!_forumSettings.AllowGuestsToCreatePosts && customer.IsGuest())
             {
                 return false;
             }
@@ -843,20 +936,18 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToEditPost(Customer customer, ForumPost post)
         {
-            if (post == null || customer == null || customer.IsGuest())
+            if (post != null && customer != null)
             {
-                return false;
-            }
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
 
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToEditPosts)
-            {
-                var ownPost = customer.Id == post.CustomerId;
-                return ownPost;
+                if (_forumSettings.AllowCustomersToEditPosts && post.Published)
+                {
+                    var ownPost = customer.Id == post.CustomerId;
+                    return ownPost;
+                }
             }
 
             return false;
@@ -864,36 +955,19 @@ namespace SmartStore.Services.Forums
 
         public virtual bool IsCustomerAllowedToDeletePost(Customer customer, ForumPost post)
         {
-            if (post == null || customer == null || customer.IsGuest())
+            if (post != null && customer != null)
             {
-                return false;
+                if (customer.IsForumModerator())
+                {
+                    return true;
+                }
+
+                if (_forumSettings.AllowCustomersToDeletePosts && post.Published)
+                {
+                    var ownPost = customer.Id == post.CustomerId;
+                    return ownPost;
+                }
             }
-
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }
-
-            if (_forumSettings.AllowCustomersToDeletePosts)
-            {
-                var ownPost = customer.Id == post.CustomerId;
-                return ownPost;
-            }
-
-            return false;
-        }
-
-        public virtual bool IsCustomerAllowedToSetTopicPriority(Customer customer)
-        {
-            if (customer == null || customer.IsGuest())
-            {
-                return false;
-            }
-
-            if (customer.IsForumModerator())
-            {
-                return true;
-            }            
 
             return false;
         }

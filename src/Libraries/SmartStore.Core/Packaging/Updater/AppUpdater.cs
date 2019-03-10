@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using NuGet;
+using SmartStore.Core.Data;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
-using SmartStore.Core.Logging;
-using Log = SmartStore.Core.Logging;
-using NuGet;
-using NuGetPackageManager = NuGet.PackageManager;
-using SmartStore.Core.Data;
-using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Packaging
 {
-	public sealed class AppUpdater : DisposableObject
+    public sealed class AppUpdater : DisposableObject
 	{
 		public const string UpdatePackagePath = "~/App_Data/Update";
 		
@@ -214,7 +210,6 @@ namespace SmartStore.Core.Packaging
 
 		#endregion
 
-
 		#region Migrations
 
 		internal void ExecuteMigrations()
@@ -227,17 +222,23 @@ namespace SmartStore.Core.Packaging
 			var currentVersion = SmartStoreVersion.Version;
 			var prevVersion = DataSettings.Current.AppVersion ?? new Version(1, 0);
 
-			if (prevVersion >= currentVersion)
+            if (prevVersion >= currentVersion)
 				return;
 
-			if (prevVersion < new Version(2, 1))
-			{
-				// we introduced app migrations in V2.1. So any version prior 2.1
-				// has to perform the initial migration
-				MigrateInitial();
-			}
+            if (prevVersion < new Version(2, 1))
+            {
+                // we introduced app migrations in V2.1. So any version prior 2.1
+                // has to perform the initial migration
+                MigrateInitial();
+            }
 
-			DataSettings.Current.AppVersion = currentVersion;
+            if (prevVersion <= new Version(3, 1, 5, 0))
+            {
+                // We updated to Lucene.Net 4.8.
+                DeleteSearchIndex();
+            }
+
+            DataSettings.Current.AppVersion = currentVersion;
 			DataSettings.Current.Save();
 		}
 
@@ -415,8 +416,32 @@ namespace SmartStore.Core.Packaging
 			PluginFileParser.SaveInstalledPluginsFile(renamedPlugins);
 		}
 
-		#endregion
+        private void DeleteSearchIndex()
+        {
+			var tenantPath = CommonHelper.MapPath(DataSettings.Current.TenantPath);
 
+			try
+            {
+                var indexingDir = new DirectoryInfo(Path.Combine(tenantPath, "Indexing"));
+                if (indexingDir.Exists)
+                {
+                    indexingDir.Delete(true);
+                }
+            }
+            catch { }
+
+            try
+            {
+                var luceneDir = new DirectoryInfo(Path.Combine(tenantPath, "Lucene"));
+                if (luceneDir.Exists)
+                {
+                    luceneDir.Delete(true);
+                }
+            }
+            catch { }
+        }
+
+		#endregion
 
 		protected override void OnDispose(bool disposing)
 		{

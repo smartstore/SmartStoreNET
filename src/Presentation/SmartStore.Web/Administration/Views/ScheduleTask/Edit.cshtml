@@ -14,7 +14,7 @@
 
 	<div class="section-header">
 		<div class="title">
-			<i class="fa fa-clock-o"></i>
+			<i class="far fa-clock"></i>
 			@ViewBag.Title
 			<a href='@(returnUrl ?? Url.Action("List"))'>(@T("Common.Back"))</a>
 		</div>
@@ -120,12 +120,12 @@
 		@if (Model.LastHistoryEntry.Error.HasValue())
 		{
 			<tr>
-				<td class="adminTitle">
+				<td class="adminTitle text-danger">
 					@Html.SmartLabelFor(model => model.LastHistoryEntry.Error)
 				</td>
 				<td class="adminData">
 					<div class="form-control-plaintext">
-						<span class="text-danger">@Html.DisplayFor(model => model.LastHistoryEntry.Error)</span>
+                        <pre class="prettyprint xlang-java mt-1 mb-0" style="max-height: 200px; white-space: pre-wrap;">@Html.DisplayFor(model => model.LastHistoryEntry.Error)</pre>
 					</div>
 				</td>
 			</tr>
@@ -234,7 +234,7 @@
                 columns.Bound(x => x.Succeeded)
                     .ClientTemplate(
                         "<# if(Succeeded){ #>" + @Html.SymbolForBool("Succeeded") + "<span class='ml-1'>" + T("Common.Succeeded") + "</span><# } #>" +
-                        "<# if(!Succeeded){ #><div class='text-danger pr-2'><span class='font-weight-medium'>" + T("Common.Error") + ":</span> <span><#= Error #></span></div><# } #>");
+                        "<# if(!Succeeded){ #><div class='text-danger font-weight-medium'>" + T("Common.Error") + ":</div><pre class='prettyprint xlang-java mt-1 mb-0' style='max-height: 200px; white-space: pre-wrap;'><strong>" + T("Common.Error") + ": </strong> <span><#= Error #></span></pre><# } #>");
                 columns.Bound(x => x.MachineName);
                 columns.Command(commands =>
                 {

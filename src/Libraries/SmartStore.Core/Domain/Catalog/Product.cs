@@ -22,32 +22,21 @@ namespace SmartStore.Core.Domain.Catalog
 	{
 		#region static
 
-		private static readonly HashSet<string> _visibilityAffectingProductProps = new HashSet<string>();
-
-		static Product()
+		private static readonly HashSet<string> _visibilityAffectingProductProps = new HashSet<string>
 		{
-			AddPropsToSet(_visibilityAffectingProductProps,
-				x => x.AvailableEndDateTimeUtc,
-				x => x.AvailableStartDateTimeUtc,
-				x => x.Deleted,
-				x => x.LowStockActivityId,
-				x => x.LimitedToStores,
-				x => x.ManageInventoryMethodId,
-				x => x.MinStockQuantity,
-				x => x.Published,
-				x => x.SubjectToAcl,
-				x => x.VisibleIndividually);
-		}
+			nameof(Product.AvailableEndDateTimeUtc),
+			nameof(Product.AvailableStartDateTimeUtc),
+			nameof(Product.Deleted),
+			nameof(Product.LowStockActivityId),
+			nameof(Product.LimitedToStores),
+			nameof(Product.ManageInventoryMethodId),
+			nameof(Product.MinStockQuantity),
+			nameof(Product.Published),
+			nameof(Product.SubjectToAcl),
+			nameof(Product.VisibleIndividually)
+		};
 
-		static void AddPropsToSet(HashSet<string> props, params Expression<Func<Product, object>>[] lambdas)
-		{
-			foreach (var lambda in lambdas)
-			{
-				props.Add(lambda.ExtractPropertyInfo().Name);
-			}
-		}
-
-		public static HashSet<string> GetVisibilityAffectingPropertyNames()
+		public static IReadOnlyCollection<string> GetVisibilityAffectingPropertyNames()
 		{
 			return _visibilityAffectingProductProps;
 		}
@@ -721,26 +710,29 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether the entity is published
         /// </summary>
 		[DataMember]
+        [Index("IX_Product_Published_Deleted_IsSystemProduct", 1)]
 		public bool Published { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity has been deleted
         /// </summary>
 		[Index]
-        public bool Deleted { get; set; }
+        [Index("IX_Product_Published_Deleted_IsSystemProduct", 2)]
+		public bool Deleted { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entity is a system product.
 		/// </summary>
 		[DataMember]
-		[Index("Product_SystemName_IsSystemProduct", 2)]
+		[Index("IX_Product_SystemName_IsSystemProduct", 2)]
+        [Index("IX_Product_Published_Deleted_IsSystemProduct", 3)]
 		public bool IsSystemProduct { get; set; }
 
 		/// <summary>
 		/// Gets or sets the product system name.
 		/// </summary>
 		[DataMember]
-		[Index("Product_SystemName_IsSystemProduct", 1)]
+		[Index("IX_Product_SystemName_IsSystemProduct", 1)]
 		public string SystemName { get; set; }
 
 		/// <summary>

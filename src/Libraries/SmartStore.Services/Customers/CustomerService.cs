@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -14,29 +14,28 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Localization;
 using SmartStore.Core.Fakes;
+using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Messages;
 
 namespace SmartStore.Services.Customers
 {
-	public partial class CustomerService : ICustomerService
+    public partial class CustomerService : ICustomerService
     {
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<CustomerRole> _customerRoleRepository;
         private readonly IRepository<GenericAttribute> _gaRepository;
 		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
+        private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
         private readonly IGenericAttributeService _genericAttributeService;
 		private readonly RewardPointsSettings _rewardPointsSettings;
 		private readonly ICommonServices _services;
 		private readonly HttpContextBase _httpContext;
 		private readonly IUserAgent _userAgent;
 		private readonly CustomerSettings _customerSettings;
-		private readonly Lazy<IMessageModelProvider> _messageModelProvider;
 		private readonly Lazy<IGdprTool> _gdprTool;
 
 		public CustomerService(
@@ -44,26 +43,26 @@ namespace SmartStore.Services.Customers
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<GenericAttribute> gaRepository,
 			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
+            IRepository<ShoppingCartItem> shoppingCartItemRepository,
             IGenericAttributeService genericAttributeService,
 			RewardPointsSettings rewardPointsSettings,
 			ICommonServices services,
 			HttpContextBase httpContext,
 			IUserAgent userAgent,
 			CustomerSettings customerSettings,
-			Lazy<IMessageModelProvider> messageModelProvider,
 			Lazy<IGdprTool> gdprTool)
         {
             _customerRepository = customerRepository;
             _customerRoleRepository = customerRoleRepository;
             _gaRepository = gaRepository;
 			_rewardPointsHistoryRepository = rewardPointsHistoryRepository;
+            _shoppingCartItemRepository = shoppingCartItemRepository;
             _genericAttributeService = genericAttributeService;
 			_rewardPointsSettings = rewardPointsSettings;
 			_services = services;
 			_httpContext = httpContext;
 			_userAgent = userAgent;
 			_customerSettings = customerSettings;
-			_messageModelProvider = messageModelProvider;
 			_gdprTool = gdprTool;
 
 			T = NullLocalizer.Instance;
@@ -80,7 +79,41 @@ namespace SmartStore.Services.Customers
 		{
 			Guard.NotNull(q, nameof(q));
 
-			var query = _customerRepository.Table;
+            var isOrdered = false;
+            IQueryable<Customer> query = null;
+
+            if (q.OnlyWithCart)
+            {
+                var cartItemQuery = _shoppingCartItemRepository.TableUntracked.Expand(x => x.Customer);
+
+                if (q.CartType.HasValue)
+                {
+                    cartItemQuery = cartItemQuery.Where(x => x.ShoppingCartTypeId == (int)q.CartType.Value);
+                }
+
+                var groupQuery =
+                    from sci in cartItemQuery
+                    group sci by sci.CustomerId into grp
+                    select grp
+                        .OrderByDescending(x => x.CreatedOnUtc)
+                        .Select(x => new
+                        {
+                            x.Customer,
+                            x.CreatedOnUtc
+                        })
+                        .FirstOrDefault();
+
+                // We have to sort again because of paging.
+                query = groupQuery
+                    .OrderByDescending(x => x.CreatedOnUtc)
+                    .Select(x => x.Customer);
+
+                isOrdered = true;
+            }
+            else
+            {
+                query = _customerRepository.Table;
+            }
 
 			if (q.Email.HasValue())
 			{
@@ -149,6 +182,11 @@ namespace SmartStore.Services.Customers
 				query = query.Where(c => c.Deleted == q.Deleted.Value);
 			}
 
+            if (q.Active.HasValue)
+            {
+                query = query.Where(c => c.Active == q.Active.Value);
+            }
+
 			if (q.IsSystemAccount.HasValue)
 			{
 				query = q.IsSystemAccount.Value == true
@@ -167,9 +205,9 @@ namespace SmartStore.Services.Customers
 			{
 				query = query
 					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+					.Where(z => z.Attribute.KeyGroup == "Customer" &&
 						z.Attribute.Key == SystemCustomerAttributeNames.Phone &&
-						z.Attribute.Value.Contains(q.Phone)))
+						z.Attribute.Value.Contains(q.Phone))
 					.Select(z => z.Customer);
 			}
 
@@ -178,29 +216,18 @@ namespace SmartStore.Services.Customers
 			{
 				query = query
 					.Join(_gaRepository.Table, x => x.Id, y => y.EntityId, (x, y) => new { Customer = x, Attribute = y })
-					.Where((z => z.Attribute.KeyGroup == "Customer" &&
+					.Where(z => z.Attribute.KeyGroup == "Customer" &&
 						z.Attribute.Key == SystemCustomerAttributeNames.ZipPostalCode &&
-						z.Attribute.Value.Contains(q.ZipPostalCode)))
+						z.Attribute.Value.Contains(q.ZipPostalCode))
 					.Select(z => z.Customer);
 			}
 
-			if (q.OnlyWithCart)
-			{
-				int? sctId = null;
-				if (q.CartType.HasValue)
-				{
-					sctId = (int)q.CartType.Value;
-				}			
-
-				query = q.CartType.HasValue ?
-					query.Where(c => c.ShoppingCartItems.Where(x => x.ShoppingCartTypeId == sctId).Count() > 0) :
-					query.Where(c => c.ShoppingCartItems.Count() > 0);
-			}
-
-			query = query.OrderByDescending(c => c.CreatedOnUtc);
+            if (!isOrdered)
+            {
+                query = query.OrderByDescending(c => c.CreatedOnUtc);
+            }
 
 			var customers = new PagedList<Customer>(query, q.PageIndex, q.PageSize);
-
 			return customers;
 		}
 
@@ -217,7 +244,7 @@ namespace SmartStore.Services.Customers
 			return customers;
         }
 
-        public virtual IPagedList<Customer> GetOnlineCustomers(DateTime lastActivityFromUtc, int[] customerRoleIds,  int pageIndex,  int pageSize)
+        public virtual IPagedList<Customer> GetOnlineCustomers(DateTime lastActivityFromUtc, int[] customerRoleIds, int pageIndex, int pageSize)
         {
 			var q = new CustomerSearchQuery
 			{
@@ -549,7 +576,7 @@ namespace SmartStore.Services.Customers
 							select cGroup.FirstOrDefault();
 				query = query.OrderBy(c => c.Id);
 
-				var customers = query.Take(maxItemsToDelete).ToList();
+				var customers = query.Take(() => maxItemsToDelete).ToList();
 
 				int numberOfDeletedCustomers = 0;
 				foreach (var c in customers)

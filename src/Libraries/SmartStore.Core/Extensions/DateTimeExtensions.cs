@@ -49,6 +49,7 @@ namespace SmartStore
             {
                 value = DateTime.UtcNow;
             }
+
             DateTime d = value.Value.AddHours(1);
             return new DateTime(d.Year, d.Month, d.Day, d.Hour, 0, 0);
         }

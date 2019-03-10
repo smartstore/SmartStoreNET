@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Search;
@@ -18,20 +20,32 @@ namespace SmartStore.Services.Search
     public partial class LinqForumSearchService : SearchServiceBase, IForumSearchService
     {
         private readonly IRepository<ForumPost> _forumPostRepository;
+        private readonly IRepository<ForumTopic> _forumTopicRepository;
+        private readonly IRepository<Forum> _forumRepository;
+        private readonly IRepository<ForumGroup> _forumGroupRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
+        private readonly IRepository<AclRecord> _aclRepository;
         private readonly IForumService _forumService;
         private readonly ICommonServices _services;
         private readonly CustomerSettings _customerSettings;
 
         public LinqForumSearchService(
             IRepository<ForumPost> forumPostRepository,
+            IRepository<ForumTopic> forumTopicRepository,
+            IRepository<Forum> forumRepository,
+            IRepository<ForumGroup> forumGroupRepository,
             IRepository<StoreMapping> storeMappingRepository,
+            IRepository<AclRecord> aclRepository,
             IForumService forumService,
             ICommonServices services,
             CustomerSettings customerSettings)
 		{
             _forumPostRepository = forumPostRepository;
+            _forumTopicRepository = forumTopicRepository;
+            _forumRepository = forumRepository;
+            _forumGroupRepository = forumGroupRepository;
             _storeMappingRepository = storeMappingRepository;
+            _aclRepository = aclRepository;
             _forumService = forumService;
 			_services = services;
             _customerSettings = customerSettings;
@@ -51,6 +65,7 @@ namespace SmartStore.Services.Search
             var cnf = _customerSettings.CustomerNameFormat;
             var fields = searchQuery.Fields;
             var filters = new List<ISearchFilter>();
+            var customer = _services.WorkContext.CurrentCustomer;
             var query = baseQuery ?? _forumPostRepository.TableUntracked.Expand(x => x.ForumTopic);
 
             // Apply search term.
@@ -82,8 +97,48 @@ namespace SmartStore.Services.Search
                 }
             }
 
-            // Filters.
-            FlattenFilters(searchQuery.Filters, filters);
+            // Flatten filters.
+            foreach (var filter in searchQuery.Filters)
+            {
+                var combinedFilter = filter as ICombinedSearchFilter;
+                if (combinedFilter != null)
+                {
+                    // Find VisibleOnly combined filter and process it separately.
+                    var cf = combinedFilter.Filters.OfType<IAttributeSearchFilter>().ToArray();
+                    if (cf.Length == 2 && cf[0].FieldName == "published" && true == (bool)cf[0].Term && cf[1].FieldName == "customerid")
+                    {
+                        if (!customer.IsForumModerator())
+                        {
+                            query = query.Where(x => x.ForumTopic.Published && (x.Published || x.CustomerId == customer.Id));
+                        }
+                    }
+                    else
+                    {
+                        FlattenFilters(combinedFilter.Filters, filters);
+                    }
+                }
+                else
+                {
+                    filters.Add(filter);
+                }
+            }
+
+            if (!QuerySettings.IgnoreAcl)
+            {
+                var roleIds = GetIdList(filters, "roleid");
+                if (roleIds.Any())
+                {
+                    query =
+                        from fp in query
+                        join ft in _forumTopicRepository.TableUntracked on fp.TopicId equals ft.Id
+                        join ff in _forumRepository.Table on ft.ForumId equals ff.Id
+                        join fg in _forumGroupRepository.Table on ff.ForumGroupId equals fg.Id
+                        join a in _aclRepository.Table on new { a1 = fg.Id, a2 = "ForumGroup" } equals new { a1 = a.EntityId, a2 = a.EntityName } into fg_acl
+                        from a in fg_acl.DefaultIfEmpty()
+                        where !fg.SubjectToAcl || roleIds.Contains(a.CustomerRoleId)
+                        select fp;
+                }
+            }
 
             foreach (IAttributeSearchFilter filter in filters)
             {
@@ -120,6 +175,10 @@ namespace SmartStore.Services.Search
                 else if (filter.FieldName == "customerid")
                 {
                     query = query.Where(x => x.CustomerId == (int)filter.Term);
+                }
+                else if (filter.FieldName == "published")
+                {
+                    query = query.Where(x => x.Published == (bool)filter.Term);
                 }
                 else if (filter.FieldName == "createdon")
                 {
@@ -269,7 +328,8 @@ namespace SmartStore.Services.Search
 
                     // Limit the result. Do not allow to get all customers.
                     var maxChoices = descriptor.MaxChoicesCount > 0 ? descriptor.MaxChoicesCount : 20;
-                    var customers = customerQuery.Take(maxChoices * 3).ToList();
+                    var take = maxChoices * 3;
+                    var customers = customerQuery.Take(() => take).ToList();
 
                     foreach (var customer in customers)
                     {
@@ -341,9 +401,10 @@ namespace SmartStore.Services.Search
 
                 if (searchQuery.ResultFlags.HasFlag(SearchResultFlags.WithHits))
                 {
+                    var skip = searchQuery.PageIndex * searchQuery.Take;
                     query = query
-                        .Skip(searchQuery.PageIndex * searchQuery.Take)
-                        .Take(searchQuery.Take);
+                        .Skip(() => skip)
+                        .Take(() => searchQuery.Take);
 
                     var ids = query.Select(x => x.Id).ToArray();
                     hitsFactory = () => _forumService.GetPostsByIds(ids);

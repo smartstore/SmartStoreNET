@@ -56,14 +56,17 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V3.1.0 has been released on April 20, 2018. The highlights are:
+SmartStore.NET V3.1.5 has been released on 25 May, 2018. The highlights are:
 
 * **Wallet \***: Enables full or partial order payment via credit account. Includes REST-Api.
 * **[Liquid](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) template engine**: very flexible templating for e-mails and campaigns with autocompletion and syntax highlighting.
 * **Cash Rounding**: define money rounding rules on currency and payment method level.
 * **Modern, responsive backend**: migrated backend to Bootstrap 4, overhauled and improved the user interface.
-* **Enhanced MegaMenu \***: virtual dropdowns for surplus top-level categories and brands.
 * **RTL**: comprehensive RTL (Right-to-left) and bidi(rectional) support.
+* Search engine friendly topic URLs
+* Compliance with **EU-GDPR** requirements
+* **Enhanced MegaMenu \***: virtual dropdowns for surplus top-level categories and brands.
+* **Honeypot** bot detection for registration and contact forms.
 * **Amazon Pay**:
 	* Supports merchants registered in the USA and Japan
 	* External authentication via *Login with Amazon* button in shop frontend

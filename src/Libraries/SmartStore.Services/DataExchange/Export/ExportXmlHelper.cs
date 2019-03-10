@@ -752,7 +752,6 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("BasePriceAmount", entityPvac.BasePriceAmount.HasValue ? entityPvac.BasePriceAmount.Value.ToString(_culture) : "");
 					_writer.Write("BasePriceBaseAmount", entityPvac.BasePriceBaseAmount.HasValue ? entityPvac.BasePriceBaseAmount.Value.ToString() : "");
 					_writer.Write("AssignedPictureIds", entityPvac.AssignedPictureIds);
-					_writer.Write("DeliveryTimeId", entityPvac.DeliveryTimeId.HasValue ? entityPvac.DeliveryTimeId.Value.ToString() : "");
 					_writer.Write("IsActive", entityPvac.IsActive.ToString());
 
 					WriteDeliveryTime(combination.DeliveryTime, "DeliveryTime");
@@ -942,7 +941,15 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("LastLoginDateUtc", entity.LastLoginDateUtc.HasValue ? entity.LastLoginDateUtc.Value.ToString(_culture) : "");
 			_writer.Write("LastActivityDateUtc", entity.LastActivityDateUtc.ToString(_culture));
-			_writer.Write("RewardPointsBalance", ((int)customer._RewardPointsBalance).ToString());
+            //_writer.Write("Salutation", entity.Salutation); // TODO: marked as "for future use"
+            _writer.Write("Title", entity.Title);
+            _writer.Write("FirstName", entity.FirstName);
+            _writer.Write("LastName", entity.LastName);
+            _writer.Write("FullName", entity.FullName);
+            _writer.Write("Company", entity.Company);
+            _writer.Write("CustomerNumber", entity.CustomerNumber);
+            _writer.Write("BirthDate", entity.BirthDate.HasValue ? entity.BirthDate.Value.ToString(_culture) : "");
+            _writer.Write("RewardPointsBalance", ((int)customer._RewardPointsBalance).ToString());
 
 			if (customer.CustomerRoles != null)
 			{

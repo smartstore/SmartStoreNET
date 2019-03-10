@@ -35,7 +35,7 @@
             </a>
 
 			<button type="submit" id="delete-selected" class="btn btn-secondary btn-to-danger">
-				<i class="fa fa-trash-o"></i>
+				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.Delete.Selected")</span>
 			</button>
 
@@ -84,7 +84,7 @@
 			</div>
 		}
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group ml-auto">
-			<label>&nbsp;</label>
+			@Html.SmartLabel(string.Empty, string.Empty)
 			<button type="submit" id="search-products" value="search-products" class="btn btn-warning btn-block">
 				<span>@T("Admin.Common.ApplyFilter")</span>
 			</button>
@@ -215,11 +215,13 @@
 			});
 
 			//"Delete (selected)" button
-			$('#delete-selected').click(function (e) {
-				e.preventDefault();
-				//redirect to required URL
-				setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
-				return false;
+            $('#delete-selected').click(function (e) {
+                if (confirm(@T("Admin.Common.AskToProceed").JsText)) {
+                    e.preventDefault();
+                    //redirect to required URL
+                    setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
+                    return false;
+                }
 			});
 
 			//wire up checkboxes.

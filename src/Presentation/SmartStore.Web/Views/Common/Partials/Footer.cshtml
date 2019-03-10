@@ -15,12 +15,12 @@
 	var socialLinks = new List<Tuple<string, string>>();
 	if (Model.FacebookLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
+		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook-f"));
 	}
 
 	if (Model.GooglePlusLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
+		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus-g"));
 	}
 
 	if (Model.TwitterLink.HasValue())
@@ -30,7 +30,7 @@
 
 	if (Model.PinterestLink.HasValue())
 	{
-		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
+		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest-p"));
 	}
 
 	if (Model.YoutubeLink.HasValue())
@@ -57,7 +57,7 @@
 					@foreach (var link in socialLinks)
 					{
 						<a href="@link.Item1" target="_blank" class="btn x-btn-@(invserseFooter ? "clear" : "secondary") btn-circle btn-social btn-brand-@link.Item2">
-							<i class="fa fa-@link.Item2"></i>
+							<i class="fab fa-@link.Item2"></i>
 						</a>
 					}
 				</div>

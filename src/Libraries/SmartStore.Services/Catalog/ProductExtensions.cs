@@ -104,12 +104,11 @@ namespace SmartStore.Services.Catalog
 
 				if (data.Count > 0)
 				{
-					int id;
 					var ids = string.Join(",", data).SplitSafe(",").Distinct();
 
 					foreach (string str in ids)
 					{
-						if (int.TryParse(str, out id) && !pictureIds.Exists(i => i == id))
+						if (int.TryParse(str, out var id) && !pictureIds.Exists(i => i == id))
 							pictureIds.Add(id);
 					}
 				}
@@ -145,8 +144,11 @@ namespace SmartStore.Services.Catalog
             int productId1, int productId2)
         {
             foreach (CrossSellProduct crossSellProduct in source)
+            {
                 if (crossSellProduct.ProductId1 == productId1 && crossSellProduct.ProductId2 == productId2)
                     return crossSellProduct;
+            }
+
             return null;
         }
 
@@ -156,9 +158,12 @@ namespace SmartStore.Services.Catalog
 
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
-				if (product.StockQuantity <= 0 && product.BackorderMode == BackorderMode.NoBackorders)
-					return false;
+                if (product.StockQuantity <= 0 && product.BackorderMode == BackorderMode.NoBackorders)
+                {
+                    return false;
+                }
 			}
+
 			return true;
 		}
 
@@ -274,8 +279,7 @@ namespace SmartStore.Services.Catalog
                     .ToList()
                     .ForEach(qtyStr =>
                     {
-                        int qty = 0;
-                        if (int.TryParse(qtyStr.Trim(), out qty))
+                        if (int.TryParse(qtyStr.Trim(), out var qty))
                         {
                             result.Add(qty);
                         }
@@ -298,8 +302,7 @@ namespace SmartStore.Services.Catalog
 				.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(x => x.Trim()))
 			{
-				int id = 0;
-				if (int.TryParse(idStr, out id))
+				if (int.TryParse(idStr, out var id))
 					ids.Add(id);
 			}
 
@@ -399,33 +402,31 @@ namespace SmartStore.Services.Catalog
 		{
 			if (product != null && product.ProductType != ProductType.SimpleProduct)
 			{
-				string key = "Admin.Catalog.Products.ProductType.{0}.Label".FormatWith(product.ProductType.ToString());
+				var key = "Admin.Catalog.Products.ProductType.{0}.Label".FormatInvariant(product.ProductType.ToString());
 				return localizationService.GetResource(key);
 			}
-			return "";
+
+			return string.Empty;
 		}
 
 		public static bool CanBeBundleItem(this Product product)
 		{
-			return (product != null && product.ProductType == ProductType.SimpleProduct && !product.IsRecurring && !product.IsDownload);
+			return product != null && product.ProductType == ProductType.SimpleProduct && !product.IsRecurring && !product.IsDownload;
 		}
 
-		public static bool IsValid(this ProductBundleItemData bundleItemData)
-		{
-			return (bundleItemData != null && bundleItemData.Item != null);
-		}
-		public static bool FilterOut(this ProductBundleItemData bundleItemData, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
-		{
-			if (bundleItemData.IsValid() && value != null && bundleItemData.Item.FilterAttributes)
-			{
-				filter = bundleItemData.Item.AttributeFilters.FirstOrDefault(x => x.AttributeId == value.ProductVariantAttributeId && x.AttributeValueId == value.Id);
+        public static bool FilterOut(this ProductBundleItem bundleItem, ProductVariantAttributeValue value, out ProductBundleItemAttributeFilter filter)
+        {
+            if (bundleItem != null && value != null && bundleItem.FilterAttributes)
+            {
+                filter = bundleItem.AttributeFilters.FirstOrDefault(x => x.AttributeId == value.ProductVariantAttributeId && x.AttributeValueId == value.Id);
+                return filter == null;
+            }
 
-				return (filter == null);
-			}
-			filter = null;
-			return false;
-		}
-		public static string GetLocalizedName(this ProductBundleItem bundleItem)
+            filter = null;
+            return false;
+        }
+
+        public static string GetLocalizedName(this ProductBundleItem bundleItem)
 		{
 			if (bundleItem != null)
 			{
@@ -447,8 +448,10 @@ namespace SmartStore.Services.Catalog
 		public static ProductBundleItemOrderData ToOrderData(this ProductBundleItemData bundleItemData, decimal priceWithDiscount = decimal.Zero, 
 			string attributesXml = null, string attributesInfo = null)
 		{
-			if (!bundleItemData.IsValid())
-				return null;
+            if (bundleItemData == null || bundleItemData.Item == null)
+            {
+                return null;
+            }
 
 			var item = bundleItemData.Item;
 			string bundleItemName = item.GetLocalized(x => x.Name);
@@ -458,7 +461,7 @@ namespace SmartStore.Services.Catalog
 				BundleItemId = item.Id,
 				ProductId = item.ProductId,
 				Sku = item.Product.Sku,
-				ProductName = (bundleItemName ?? item.Product.GetLocalized(x => x.Name)),
+				ProductName = bundleItemName ?? item.Product.GetLocalized(x => x.Name),
 				ProductSeName = item.Product.GetSeName(),
 				VisibleIndividually = item.Product.VisibleIndividually,
 				Quantity = item.Quantity,

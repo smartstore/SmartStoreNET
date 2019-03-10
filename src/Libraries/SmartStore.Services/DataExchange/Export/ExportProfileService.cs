@@ -110,14 +110,14 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				else
 				{
-					// what we do here is to preset typical settings for feed creation
-					// but on the other hand they may be untypical for generic data export\exchange
+					// What we do here is to preset typical settings for feed creation
+					// but on the other hand they may be untypical for generic data export\exchange.
 					var projection = new ExportProjection
 					{
 						RemoveCriticalCharacters = true,
 						CriticalCharacters = "¼,½,¾",
 						PriceType = PriceDisplayType.PreSelectedPrice,
-						NoGroupedProducts = (features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false),
+						NoGroupedProducts = features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false,
 						OnlyIndividuallyVisibleAssociated = true,
 						DescriptionMerging = ExportDescriptionMerging.Description
 					};
@@ -221,12 +221,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public virtual void UpdateExportProfile(ExportProfile profile)
 		{
-			if (profile == null)
-				throw new ArgumentNullException("profile");
+			Guard.NotNull(profile, nameof(profile));
 
-			profile.FolderName = FileSystemHelper.ValidateRootPath(profile.FolderName);
+			profile.FolderName = PathHelper.NormalizeAppRelativePath(profile.FolderName);
 
-            if (!FileSystemHelper.IsSafeRootPath(profile.FolderName))
+            if (!PathHelper.IsSafeAppRootPath(profile.FolderName))
             {
                 throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.FolderName.Validate"));
             }
@@ -236,8 +235,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public virtual void DeleteExportProfile(ExportProfile profile, bool force = false)
 		{
-			if (profile == null)
-				throw new ArgumentNullException("profile");
+			Guard.NotNull(profile, nameof(profile));
 
 			if (!force && profile.IsSystemProfile)
 				throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.CannotDeleteSystemProfile"));

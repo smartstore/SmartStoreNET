@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Logging;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
@@ -35,7 +36,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
 		#region Fields & Constants
 
@@ -481,9 +482,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(new EfRepository<Store>(_ctx), NullEventPublisher.Instance, new SecuritySettings());
-					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
-
+					var storeService = new StoreService(new EfRepository<Store>(_ctx));
+					var storeContext = new WebStoreContext(new Work<IStoreService>(x => storeService));
+                    
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(
@@ -613,13 +614,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 			where TEntity : BaseEntity, ISlugSupported
 		{
 			var seoSettings = new SeoSettings { LoadAllUrlAliasesOnStartup = false };
+			var perfSettings = new PerformanceSettings();
 
 			if (_urlRecordService == null)
 			{
 				_urlRecordService = new UrlRecordService(
 					NullCache.Instance, 
 					new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false },
-					seoSettings);
+					seoSettings,
+					perfSettings);
 			}
 
 			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, seoSettings);

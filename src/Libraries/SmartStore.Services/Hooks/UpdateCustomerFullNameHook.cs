@@ -5,7 +5,6 @@ using Autofac;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Hooks
 {
@@ -14,10 +13,10 @@ namespace SmartStore.Services.Hooks
 	{
 		private static readonly HashSet<string> _candidateProps = new HashSet<string>(new string[] 
 		{
-			TypeHelper.NameOf<Customer>(x => x.Title),
-			TypeHelper.NameOf<Customer>(x => x.Salutation),
-			TypeHelper.NameOf<Customer>(x => x.FirstName),
-			TypeHelper.NameOf<Customer>(x => x.LastName)
+			nameof(Customer.Title),
+			nameof(Customer.Salutation),
+			nameof(Customer.FirstName),
+			nameof(Customer.LastName)
 		});
 
 		private readonly IComponentContext _ctx;

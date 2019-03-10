@@ -65,6 +65,8 @@ namespace SmartStore.Web.Controllers
             {
                 Id = topic.Id,
                 SystemName = topic.SystemName,
+                HtmlId = topic.HtmlId,
+                BodyCssClass = topic.BodyCssClass,
                 IsPasswordProtected = topic.IsPasswordProtected,
 				ShortTitle = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.ShortTitle),
 				Title = topic.IsPasswordProtected ? null : topic.GetLocalized(x => x.Title),
@@ -164,7 +166,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [HttpPost, ValidateInput(false)]
+        [HttpPost]
         public ActionResult Authenticate(int id, string password)
         {
             var authResult = false;

@@ -116,7 +116,7 @@ namespace SmartStore.Services.Catalog
             var category = GetCategoryById(categoryId);
             var subcategories = GetAllCategoriesByParentCategoryId(categoryId, true);
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccess(category);
+			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccessTo(category);
 
 			var categoryIds = new HashSet<int>(subcategories.Select(x => x.Id));
 			categoryIds.Add(categoryId);
@@ -433,6 +433,23 @@ namespace SmartStore.Services.Catalog
 			return _categoryRepository.GetByIdCached(categoryId, "db.category.id-" + categoryId);
 		}
 
+        public virtual IList<Category> GetCategoriesByIds(int[] categoryIds)
+        {
+            if (categoryIds == null || !categoryIds.Any())
+            {
+                return new List<Category>();
+            }
+
+            var query = from c in _categoryRepository.Table
+                        where categoryIds.Contains(c.Id)
+                        select c;
+
+            var categories = query.ToList();
+
+            // Sort by passed identifier sequence.
+            return categories.OrderBySequence(categoryIds).ToList();
+        }
+
         public virtual void InsertCategory(Category category)
         {
 			Guard.NotNull(category, nameof(category));
@@ -496,7 +513,7 @@ namespace SmartStore.Services.Catalog
             {
                 var query = from pc in _productCategoryRepository.Table
                             join p in _productRepository.Table on pc.ProductId equals p.Id
-                            where pc.CategoryId == categoryId && !p.Deleted && !p.IsSystemProduct && (showHidden || p.Published)
+                            where pc.CategoryId == categoryId && !p.Deleted && (showHidden || p.Published)
                             select pc;
 
                 if (!showHidden)
@@ -556,6 +573,11 @@ namespace SmartStore.Services.Catalog
 		public virtual Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
+
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductCategory>();
+            }
 
 			var query =
 				from pc in _productCategoryRepository.TableUntracked

@@ -50,7 +50,7 @@ namespace SmartStore.Services.Common
             {
                 //stored procedures are enabled and supported by the database. 
 
-                //TODO: find a better way to get table name
+                // TODO: find a better way to get table name
                 var tableName = typeof(T).Name;
                 var result = _dbContext.SqlQuery<decimal>(string.Format("SELECT IDENT_CURRENT('[{0}]')", tableName));
                 return Convert.ToInt32(result.FirstOrDefault());

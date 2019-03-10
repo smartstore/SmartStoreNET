@@ -10,7 +10,7 @@
 			</div>
 			<div class="card-footer d-flex p-0">
 				<a href="@Url.Action("AddressEdit", new { addressId = Model.BillingAddress.Id, orderId = Model.Id })" class="btn btn-warning btn-lg btn-flat rounded-0">
-					<i class="fa fa-pencil-square-o"></i>
+					<i class="far fa-pen-square"></i>
 					<span>@T("Admin.Common.Edit")</span>
 				</a>
 			</div>
@@ -25,11 +25,11 @@
 				</div>
 				<div class="card-footer d-flex p-0">
 					<a href="@Url.Action("AddressEdit", new { addressId = Model.ShippingAddress.Id, orderId = Model.Id })" class="btn btn-warning btn-lg btn-flat rounded-0">
-						<i class="fa fa-pencil-square-o"></i>
+						<i class="far fa-pen-square"></i>
 						<span>@T("Admin.Common.Edit")</span>
 					</a>
 					<a href="@Html.Raw(Model.ShippingAddressGoogleMapsUrl)" class="btn btn-warning btn-lg btn-flat rounded-0" target="_blank">
-						<i class="fa fa-google"></i>
+						<i class="fab fa-google"></i>
 						<span>@T("Admin.Orders.Fields.ShippingAddress.ViewOnGoogleMaps")</span>
 					</a>
 				</div>

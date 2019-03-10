@@ -133,6 +133,8 @@
 
         options = options || {};
 
+        var originalMatcher = $.fn.select2.defaults.defaults.matcher;
+
         return this.each(function () {
             var sel = $(this);
 
@@ -141,7 +143,7 @@
                 return;
             }
 
-            if (Modernizr.touchevents && !sel.hasClass("skin")) {
+            if (Modernizr.touchevents && !sel.hasClass("skin") && !sel.data("select-url")) {
                 if (sel.find('option[data-color], option[data-imageurl]').length === 0) {
                     // skip skinning if device is mobile and no rich content exists (color & image)
                     return;
@@ -178,16 +180,32 @@
                     var option = $(item.element),
                         imageUrl = option.data('imageurl'),
                         color = option.data('color'),
-                        hint = option.data('hint');
-
+                        hint = option.data('hint')
+                        icon = option.data('icon');
+                    
                     if (imageUrl) {
-                        return $('<span><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
+                        return $('<span class="choice-item"><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
                     }
                     else if (color) {
-                        return $('<span><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
+                        return $('<span class="choice-item"><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
                     }
                     else if (hint && isResult) {
                         return $('<span class="select2-option"><span>' + item.text + '</span><span class="option-hint muted float-right">' + hint + '</span></span>');
+                    }
+                    else if (icon) {
+                        var html = ['<span class="choice-item">'];
+                        var icons = _.isArray(icon) ? icon : [icon];
+                        var len = (isResult ? 2 : 0) || icons.length;
+
+                        for (i = 0; i < len; i++) {
+                            var iconClass = (i < icons.length ? icons[i] + " " : "far ") + "fa-fw mr-2 fs-h6";
+                            html.push('<i class="' + iconClass + '" />');
+                        }
+
+                        html.push(item.text);
+                        html.push('</span>');
+
+                        return html;
                     }
                     else {
                         return $('<span class="select2-option">' + item.text + '</span>');
@@ -207,7 +225,7 @@
                 templateSelection: function (item) {
                     return renderSelectItem(item, false);
                 },
-                closeOnSelect: !(sel.prop('multiple') || sel.data("tags")),
+                closeOnSelect: !sel.prop('multiple'), //|| sel.data("tags"),
                 adaptContainerCssClass: function (c) {
                     if (_.str.startsWith(c, "select-"))
                         return c;
@@ -219,6 +237,28 @@
                         return c;
                     else
                         return null;
+                },
+                matcher: function (params, data) {
+                    var fallback = true;
+                    var terms = $(data.element).data("terms");
+
+                    if (terms) {
+                        terms = _.isArray(terms) ? terms : [terms];
+                        if (terms.length > 0) {
+                            fallback = false;
+                            for (var i = 0; i < terms.length; i++) {
+                                if (terms[i].indexOf(params.term) > -1) {
+                                    return data;
+                                }
+                            }
+                        }
+                    }
+
+                    if (fallback) {
+                        return originalMatcher(params, data);
+                    }
+
+                    return null;
                 }
             };
 

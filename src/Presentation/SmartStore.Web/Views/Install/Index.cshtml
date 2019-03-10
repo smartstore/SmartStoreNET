@@ -24,6 +24,7 @@
 
     @* styles *@ 
 	<link href='~/Content/fontastic/fontastic.css' type='text/css' rel='stylesheet' />
+    <link href='~/Content/vendors/fa5/css/all.css' type='text/css' rel='stylesheet' />
 	<link href='~/Administration/Content/theme.scss' type='text/css' rel='stylesheet' />
 
     @* scripts (head) *@
@@ -39,258 +40,261 @@
 		}
 	</style>
 </head>
-<body class="container-main">
+<body>
 	<div id="page">
-		<header>
-			<nav id="navbar" class="navbar navbar-dark navbar-expand-sm content p-0">
-				<a class="navbar-brand mr-2" href="https://www.smartstore.com">
-					<img src="~/Content/images/smartstore.net-200-white.png" alt="SmartStore.NET" class="img-fluid" />
-				</a>
-				<div class="navbar-text h5 p-0 m-0 pl-1" style="line-height: 24px; height: 16px; vertical-align: bottom">
-					@ILS.GetResource("Title")
-				</div>
+		<div class="page-main">
 
-				<div class="collapse navbar-collapse ml-auto">
-					<ul class="navbar-nav ml-auto">
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title="Deutsch" data-toggle="dropdown" style="max-width: none">
-								<i class="icm icm-earth navbar-icon pr-1"></i>
-								<span style="text-transform: uppercase">@Model.AvailableLanguages.First(x => x.Selected).Text</span>
-							</a>
-							<div class="dropdown-menu dropdown-menu-right">
-								@foreach (var lang in Model.AvailableLanguages)
-								{
-									<a class="dropdown-item" href="@lang.Value">
-										<i class="icm icm-check@(!lang.Selected ? " invisible" : "")"></i>
-										<span>@lang.Text</span>
-									</a>
-								}
-							</div>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link navbar-tool" href="@Url.Action("RestartInstall", "Install")" title="@ILS.GetResource("RestartInstallation")" rel="nofollow">
-								<i class="icm icm-refresh navbar-icon"></i>
-							</a>
-						</li>
-					</ul>
-				</div>
-			</nav>
-		</header>
+			<header id="header">
+				<nav id="navbar" class="navbar navbar-dark navbar-expand-sm content p-0">
+					<a class="navbar-brand mx-0 mr-3" href="https://www.smartstore.com">
+						<img class="navbar-img" src="~/Administration/Content/images/smartstore.svg" alt="SmartStore.NET" />
+					</a>
+					<div class="navbar-text h5 p-0 m-0 pl-1" style="height: 20px; vertical-align: bottom">
+						@ILS.GetResource("Title")
+					</div>
 
-		<div id="content" class="content p-6">
-			<div class="cph pt-0">
-				@using (Ajax.BeginForm("Install", "Install", new AjaxOptions
-				{
-					Confirm = ILS.GetResource("ConfirmInstall"),
-					HttpMethod = "POST",
-					OnBegin = "Installation.onStart",
-					OnComplete = "Installation.onComplete",
-					OnFailure = "Installation.onFailure",
-					OnSuccess = "Installation.onSuccess"
-				}, new { @class = "form-horizontal", autocomplete = "on" }))
-				{
-					<div class="install-panel">
-						<div class="install-content">
-							<p class="lead">
-								@ILS.GetResource("Tooltip1").
-							</p>
-							<p class="lead mb-5">
-								@ILS.GetResource("Tooltip2").
-							</p>
+					<div class="collapse navbar-collapse ml-auto">
+						<ul class="navbar-nav ml-auto">
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title="Deutsch" data-toggle="dropdown" style="max-width: none">
+									<i class="icm icm-earth navbar-icon pr-1"></i>
+									<span style="text-transform: uppercase">@Model.AvailableLanguages.First(x => x.Selected).Text</span>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									@foreach (var lang in Model.AvailableLanguages)
+									{
+										<a class="dropdown-item" href="@lang.Value">
+											<i class="icm icm-check@(!lang.Selected ? " invisible" : "")"></i>
+											<span>@lang.Text</span>
+										</a>
+									}
+								</div>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link navbar-tool" href="@Url.Action("RestartInstall", "Install")" title="@ILS.GetResource("RestartInstallation")" rel="nofollow">
+									<i class="icm icm-refresh navbar-icon"></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</nav>
+			</header>
 
-							<!-- General -->
-							<fieldset class="mb-5">
-								<div class="heading mb-3">
-									<h2 class="heading-title text-muted">@ILS.GetResource("StoreInformation")</h2>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-form-label" for="AdminEmail">@ILS.GetResource("AdminEmail")</label>
-									<div class="col-md-9">
-										@Html.TextBoxFor(x => x.AdminEmail, new { @class = "form-control" })
-										@Html.ValidationMessageFor(x => x.AdminEmail)
-									</div>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-form-label" for="AdminPassword">@ILS.GetResource("AdminPassword")</label>
-									<div class="col-md-9">
-										@Html.PasswordFor(x => x.AdminPassword)
-										@Html.ValidationMessageFor(x => x.AdminPassword)
-									</div>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-form-label" for="ConfirmPassword">@ILS.GetResource("ConfirmPassword")</label>
-									<div class="col-md-9">
-										@Html.PasswordFor(x => x.ConfirmPassword)
-										@Html.ValidationMessageFor(x => x.ConfirmPassword)
-									</div>
-								</div>
-							</fieldset>
+			<div id="content" class="content" style="padding: 3rem !important">
+				<div class="cph">
+					@using (Ajax.BeginForm("Install", "Install", new AjaxOptions
+					{
+						Confirm = ILS.GetResource("ConfirmInstall"),
+						HttpMethod = "POST",
+						OnBegin = "Installation.onStart",
+						OnComplete = "Installation.onComplete",
+						OnFailure = "Installation.onFailure",
+						OnSuccess = "Installation.onSuccess"
+					}, new { @class = "form-horizontal", autocomplete = "on" }))
+					{
+						<div class="install-panel">
+							<div class="install-content">
+								<p class="fs-h6 text-muted">
+									@ILS.GetResource("Tooltip1").
+								</p>
+								<p class="fs-h6 text-muted mb-5">
+									@ILS.GetResource("Tooltip2").
+								</p>
 
-							<!-- Database -->
-							<fieldset class="mb-5">
-								<div class="heading mb-3">
-									<h2 class="heading-title text-muted">@ILS.GetResource("DatabaseInformation")</h2>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Database")</label>
-									<div class="col-md-9">
-										<select name="DataProvider" id="DataProvider" class="form-control">
-											<option value="sqlce">@ILS.GetResource("SqlCompact")</option>
-											<option value="sqlserver">@ILS.GetResource("SqlStandard") @ILS.GetResource("Recommended")</option>
-										</select>
-										@Html.ValidationMessageFor(x => x.DataProvider)
+								<!-- General -->
+								<fieldset class="mb-5">
+									<div class="heading mb-3">
+										<h2 class="heading-title text-muted">@ILS.GetResource("StoreInformation")</h2>
 									</div>
-								</div>
-								<div id="sqlConnectionInfo" style="display: none">
 									<div class="form-group row">
-										<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Connection")</label>
+										<label class="col-md-3 col-form-label" for="AdminEmail">@ILS.GetResource("AdminEmail")</label>
 										<div class="col-md-9">
-											<select name="SqlConnectionInfo" id="SqlConnectionInfo" class="form-control">
-												<option value="sqlconnectioninfo_values">@ILS.GetResource("ConnectionStringValues")</option>
-												<option value="sqlconnectioninfo_raw">@ILS.GetResource("RawConnectionString")</option>
-											</select>
-											@Html.ValidationMessageFor(x => x.SqlConnectionInfo)
+											@Html.TextBoxFor(x => x.AdminEmail, new { @class = "form-control" })
+											@Html.ValidationMessageFor(x => x.AdminEmail)
 										</div>
 									</div>
-
-									<div id="sqlDatabaseInfo">
-										<div class="form-group row">
-											<label class="col-md-3 col-form-label" for="SqlServerName">@ILS.GetResource("SqlServerName")</label>
-											<div class="col-md-9">
-												@Html.TextBoxFor(x => x.SqlServerName, new { @class = "form-control" })
-											</div>
-										</div>
-										<div class="form-group row">
-											<label class="col-md-3 col-form-label" for="SqlDatabaseName">@ILS.GetResource("DatabaseName")</label>
-											<div class="col-md-9">
-												<div class="form-row">
-													<div class="col">
-														@Html.TextBoxFor(x => x.SqlDatabaseName, new { @class = "form-control" })
-													</div>
-													<div class="col-auto">
-														<div class="form-check form-control-plaintext">
-															@Html.CheckBoxFor(x => x.SqlServerCreateDatabase, new { id = "SqlServerCreateDatabase", @class = "form-check-input" })
-															<label class="form-check-label" for="SqlServerCreateDatabase">@ILS.GetResource("CreateDatabaseIfDoesNotExist")</label>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="form-group row">
-											<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Authentication")</label>
-											<div class="col-md-9">
-												<select name="SqlAuthenticationType" id="SqlAuthenticationType" class="form-control">
-													<option value="sqlauthentication">@ILS.GetResource("SqlAuthentication")</option>
-													<option value="windowsauthentication">@ILS.GetResource("WindowsAuthentication")</option>
-												</select>
-												@Html.ValidationMessageFor(x => x.SqlAuthenticationType)
-											</div>
-										</div>
-										<div id="pnlSqlAuth">
-											<div class="form-group row">
-												<div class="col-md-9 offset-md-3">
-													<div class="form-row">
-														<div class="col-6">
-															<div class="has-icon">
-																@Html.TextBoxFor(x => x.SqlServerUsername, new { @class = "form-control", placeholder = ILS.GetResource("SqlServerUsername") })
-																<span class="input-group-icon text-muted"><i class="icm icm-user" style="line-height: inherit"></i></span>
-															</div>
-														</div>
-														<div class="col-6">
-															<div class="has-icon">
-																@Html.PasswordFor(x => x.SqlServerPassword, new { @class = "form-control", placeholder = ILS.GetResource("SqlServerPassword") })
-																<span class="input-group-icon text-muted"><i class="icm icm-shield" style="line-height: inherit"></i></span>
-															</div>
-															
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-
-									</div>
-
-									<div id="sqlDatabaseConnectionString">
-										<div class="form-group row">
-											<label class="col-md-3 col-form-label" for="DatabaseConnectionString">@ILS.GetResource("ConnectionString")</label>
-											<div class="col-md-9">
-												@Html.TextBoxFor(x => x.DatabaseConnectionString, new { @class = "form-control" })
-												<small class="form-text text-muted mt-2">
-													@ILS.GetResource("Example"):
-													Data Source=sqlServerName;Initial Catalog=dbName;Persist Security Info=True;User
-													ID=userName;Password=password
-													<br />
-													Find more info <a href="http://www.connectionstrings.com/" rel="nofollow" target="_blank">here</a>
-												</small>
-											</div>
-										</div>
-									</div>
-
 									<div class="form-group row">
-										<div class="col-12">
-											<hr />
+										<label class="col-md-3 col-form-label" for="AdminPassword">@ILS.GetResource("AdminPassword")</label>
+										<div class="col-md-9">
+											@Html.PasswordFor(x => x.AdminPassword)
+											@Html.ValidationMessageFor(x => x.AdminPassword)
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-md-3 col-form-label" for="ConfirmPassword">@ILS.GetResource("ConfirmPassword")</label>
+										<div class="col-md-9">
+											@Html.PasswordFor(x => x.ConfirmPassword)
+											@Html.ValidationMessageFor(x => x.ConfirmPassword)
+										</div>
+									</div>
+								</fieldset>
+
+								<!-- Database -->
+								<fieldset class="mb-5">
+									<div class="heading mb-3">
+										<h2 class="heading-title text-muted">@ILS.GetResource("DatabaseInformation")</h2>
+									</div>
+									<div class="form-group row">
+										<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Database")</label>
+										<div class="col-md-9">
+											<select name="DataProvider" id="DataProvider" class="form-control">
+												<option value="sqlce">@ILS.GetResource("SqlCompact")</option>
+												<option value="sqlserver">@ILS.GetResource("SqlStandard") @ILS.GetResource("Recommended")</option>
+											</select>
+											@Html.ValidationMessageFor(x => x.DataProvider)
+										</div>
+									</div>
+									<div id="sqlConnectionInfo" style="display: none">
+										<div class="form-group row">
+											<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Connection")</label>
+											<div class="col-md-9">
+												<select name="SqlConnectionInfo" id="SqlConnectionInfo" class="form-control">
+													<option value="sqlconnectioninfo_values">@ILS.GetResource("ConnectionStringValues")</option>
+													<option value="sqlconnectioninfo_raw">@ILS.GetResource("RawConnectionString")</option>
+												</select>
+												@Html.ValidationMessageFor(x => x.SqlConnectionInfo)
+											</div>
+										</div>
+
+										<div id="sqlDatabaseInfo">
+											<div class="form-group row">
+												<label class="col-md-3 col-form-label" for="SqlServerName">@ILS.GetResource("SqlServerName")</label>
+												<div class="col-md-9">
+													@Html.TextBoxFor(x => x.SqlServerName, new { @class = "form-control" })
+												</div>
+											</div>
+											<div class="form-group row">
+												<label class="col-md-3 col-form-label" for="SqlDatabaseName">@ILS.GetResource("DatabaseName")</label>
+												<div class="col-md-9">
+													<div class="form-row">
+														<div class="col">
+															@Html.TextBoxFor(x => x.SqlDatabaseName, new { @class = "form-control" })
+														</div>
+														<div class="col-auto">
+															<div class="form-check form-control-plaintext">
+																@Html.CheckBoxFor(x => x.SqlServerCreateDatabase, new { id = "SqlServerCreateDatabase", @class = "form-check-input" })
+																<label class="form-check-label" for="SqlServerCreateDatabase">@ILS.GetResource("CreateDatabaseIfDoesNotExist")</label>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="form-group row">
+												<label class="col-md-3 col-form-label" for="DataProvider">@ILS.GetResource("Authentication")</label>
+												<div class="col-md-9">
+													<select name="SqlAuthenticationType" id="SqlAuthenticationType" class="form-control">
+														<option value="sqlauthentication">@ILS.GetResource("SqlAuthentication")</option>
+														<option value="windowsauthentication">@ILS.GetResource("WindowsAuthentication")</option>
+													</select>
+													@Html.ValidationMessageFor(x => x.SqlAuthenticationType)
+												</div>
+											</div>
+											<div id="pnlSqlAuth">
+												<div class="form-group row">
+													<div class="col-md-9 offset-md-3">
+														<div class="form-row">
+															<div class="col-6">
+																<div class="has-icon">
+																	@Html.TextBoxFor(x => x.SqlServerUsername, new { @class = "form-control", placeholder = ILS.GetResource("SqlServerUsername") })
+																	<span class="input-group-icon text-muted"><i class="icm icm-user" style="line-height: inherit"></i></span>
+																</div>
+															</div>
+															<div class="col-6">
+																<div class="has-icon">
+																	@Html.PasswordFor(x => x.SqlServerPassword, new { @class = "form-control", placeholder = ILS.GetResource("SqlServerPassword") })
+																	<span class="input-group-icon text-muted"><i class="icm icm-shield" style="line-height: inherit"></i></span>
+																</div>
+
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+										</div>
+
+										<div id="sqlDatabaseConnectionString">
+											<div class="form-group row">
+												<label class="col-md-3 col-form-label" for="DatabaseConnectionString">@ILS.GetResource("ConnectionString")</label>
+												<div class="col-md-9">
+													@Html.TextBoxFor(x => x.DatabaseConnectionString, new { @class = "form-control" })
+													<small class="form-text text-muted mt-2">
+														@ILS.GetResource("Example"):
+														Data Source=sqlServerName;Initial Catalog=dbName;Persist Security Info=True;User
+														ID=userName;Password=password
+														<br />
+														Find more info <a href="http://www.connectionstrings.com/" rel="nofollow" target="_blank">here</a>
+													</small>
+												</div>
+											</div>
+										</div>
+
+										<div class="form-group row">
+											<div class="col-12">
+												<hr />
+											</div>
+										</div>
+										<div class="form-group row">
+											<div class="col-md-9 offset-md-3">
+												<div class="form-check mb-2">
+													@Html.CheckBoxFor(x => x.UseCustomCollation, new { id = "UseCustomCollation", @class = "form-check-input" })
+													<label class="form-check-label" for="UseCustomCollation">@ILS.GetResource("CustomCollation")</label>
+												</div>
+												@Html.TextBoxFor(x => x.Collation, new { disabled = "disabled", @class = "form-control" })
+											</div>
+										</div>
+									</div>
+								</fieldset>
+
+								<!-- Options -->
+								<fieldset class="mb-5">
+									<div class="heading mb-3">
+										<h2 class="heading-title text-muted">@ILS.GetResource("InstallOptions")</h2>
+									</div>
+									<div class="form-group row">
+										<label class="col-md-3 col-form-label" for="PrimaryLanguage">@ILS.GetResource("PrimaryLanguage")</label>
+										<div class="col-md-9">
+											@Html.DropDownListFor(x => x.PrimaryLanguage, Model.AvailableAppLanguages, new { @class = "form-control" })
+											@Html.ValidationMessageFor(x => x.PrimaryLanguage)
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-md-3 col-form-label" for="MediaStorage">@ILS.GetResource("MediaStorage.Label")</label>
+										<div class="col-md-9">
+											@Html.DropDownListFor(x => x.MediaStorage, Model.AvailableMediaStorages, new { @class = "form-control" })
+											@Html.ValidationMessageFor(x => x.MediaStorage)
+											<small class="form-text text-muted mt-2">
+												@ILS.GetResource("MediaStorage.Hint")
+											</small>
 										</div>
 									</div>
 									<div class="form-group row">
 										<div class="col-md-9 offset-md-3">
-											<div class="form-check mb-2">
-												@Html.CheckBoxFor(x => x.UseCustomCollation, new { id = "UseCustomCollation", @class = "form-check-input" })
-												<label class="form-check-label" for="UseCustomCollation">@ILS.GetResource("CustomCollation")</label>
+											<div class="form-check">
+												@Html.CheckBoxFor(x => x.InstallSampleData, new { id = "InstallSampleData", @class = "form-check-input" })
+												<label class="form-check-label" for="InstallSampleData">@ILS.GetResource("CreateSampleData")</label>
 											</div>
-											@Html.TextBoxFor(x => x.Collation, new { disabled = "disabled", @class = "form-control" })
 										</div>
 									</div>
-								</div>
-							</fieldset>
+								</fieldset>
 
-							<!-- Options -->
-							<fieldset class="mb-5">
-								<div class="heading mb-3">
-									<h2 class="heading-title text-muted">@ILS.GetResource("InstallOptions")</h2>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-form-label" for="PrimaryLanguage">@ILS.GetResource("PrimaryLanguage")</label>
-									<div class="col-md-9">
-										@Html.DropDownListFor(x => x.PrimaryLanguage, Model.AvailableAppLanguages, new { @class = "form-control" })
-										@Html.ValidationMessageFor(x => x.PrimaryLanguage)
-									</div>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-form-label" for="MediaStorage">@ILS.GetResource("MediaStorage.Label")</label>
-									<div class="col-md-9">
-										@Html.DropDownListFor(x => x.MediaStorage, Model.AvailableMediaStorages, new { @class = "form-control" })
-										@Html.ValidationMessageFor(x => x.MediaStorage)
-										<small class="form-text text-muted mt-2">
-											@ILS.GetResource("MediaStorage.Hint")
-										</small>
-									</div>
-								</div>
 								<div class="form-group row">
 									<div class="col-md-9 offset-md-3">
-										<div class="form-check">
-											@Html.CheckBoxFor(x => x.InstallSampleData, new { id = "InstallSampleData", @class = "form-check-input" })
-											<label class="form-check-label" for="InstallSampleData">@ILS.GetResource("CreateSampleData")</label>
+										<div id="messages" class="alert alert-danger hide">
+											<ul>
+												<!-- AJAX -->
+											</ul>
 										</div>
+										<button type="submit" id="install-button" class="btn btn-primary btn-lg btn-block btn-install fs-h4 font-weight-normal">
+											<i class="icm icm-download2"></i>
+											<span>@ILS.GetResource("Install")</span>
+										</button>
 									</div>
-								</div>
-							</fieldset>
-
-							<div class="form-group row">
-								<div class="col-md-9 offset-md-3">
-									<div id="messages" class="alert alert-danger hide">
-										<ul>
-											<!-- AJAX -->
-										</ul>
-									</div>
-									<button type="submit" id="install-button" class="btn btn-primary btn-lg btn-block btn-install fs-h4 font-weight-normal">
-										<i class="icm icm-download2"></i>
-										<span>@ILS.GetResource("Install")</span>
-									</button>
 								</div>
 							</div>
 						</div>
-					</div>
-				}
+					}
+				</div>
 			</div>
 		</div>
 	</div>

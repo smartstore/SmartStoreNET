@@ -13,8 +13,8 @@
 }
 
 .card-shadow {
-	//box-shadow: 1px 1px 2px rgba(#000, 0.07); 
-	box-shadow: 0 0 3px rgba(#000, .1);
+    // shim for .shadow-sm
+	box-shadow: $box-shadow-sm;
 }
 
 .card-body > p:last-child {
@@ -29,44 +29,52 @@
     margin-bottom: 0 !important;
 }
 
+.card-body.disabled { 
+    opacity: .5;
+}
 
 // "Real" responsive card decks & groups
 // Remove this, once BS4 natively supports responsive card decks & groups
 // ======================================================================
-
 @mixin card-deck-responsive($breakpoint) {
     $m: $card-deck-margin * 2;
+
     .card-deck {
         &.card-cols-#{$breakpoint}-1 .card {
             -ms-flex: 1 0 100% !important;
             flex: 1 0 calc(100% - #{$m}) !important;
             max-width: calc(100% - #{$m});
         }
+
         &.card-cols-#{$breakpoint}-2 .card {
             -ms-flex: 0 0 50% !important;
             flex: 0 0 calc(50% - #{$m}) !important;
             max-width: calc(50% - #{$m});
         }
-        &.card-cols-#{$breakpoint}-3 .card { 
-            -ms-flex: 0 0 33.333% !important; 
+
+        &.card-cols-#{$breakpoint}-3 .card {
+            -ms-flex: 0 0 33.333% !important;
             flex: 0 0 calc(33.333% - #{$m}) !important;
             max-width: calc(33.333% - #{$m});
         }
+
         &.card-cols-#{$breakpoint}-4 .card {
             -ms-flex: 0 0 25% !important;
             flex: 0 0 calc(25% - #{$m}) !important;
             max-width: calc(25% - #{$m});
         }
+
         &.card-cols-#{$breakpoint}-5 .card {
             -ms-flex: 0 0 20% !important;
             flex: 0 0 calc(20% - #{$m}) !important;
             max-width: calc(20% - #{$m});
         }
+
         &.card-cols-#{$breakpoint}-6 .card {
             -ms-flex: 0 0 16.666% !important;
             flex: 0 0 calc(16.666% - #{$m}) !important;
             max-width: calc(16.666% - #{$m});
-        }   
+        }
     }
 }
 

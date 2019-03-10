@@ -104,6 +104,11 @@ $yiq-contrasted-threshold:	164;
 $yiq-text-dark:				$gray-900;
 $yiq-text-light:			#fff;
 
+$spacer: 1.25rem;
+$spacers: ( 
+	6: ($spacer * 4.5)
+);
+
 $theme-colors: ( 
 	"gray": $gray-700 
 );
@@ -129,6 +134,12 @@ $display4-weight:               $font-weight-light;
 $btn-border-radius:             .125rem;
 $btn-border-radius-lg:          .1875rem;
 $btn-border-radius-sm:          .125rem;
+
+// Shadows
+
+$box-shadow-sm:               0 0 .625rem 0 rgba(#000, .05);
+$box-shadow:                  0 1rem 2.25rem rgba(#32325d, .03), 0 0.3125rem 1rem rgba(#000, .12);
+$box-shadow-lg:               0 1rem 3rem rgba(#000, .125);
 
 $input-box-shadow:              none;
 $input-focus-box-shadow:        none;
@@ -165,6 +176,8 @@ $btn-disabled-opacity:			0.5;
 
 // Dropdown
 
+$dropdown-box-shadow:			$box-shadow;
+$dropdown-border-color:			rgba(#000, 0.05); 
 $dropdown-link-active-color:    $dropdown-link-hover-color;
 $dropdown-link-active-bg:       darken($dropdown-link-hover-bg, 4%);
 
@@ -221,6 +234,16 @@ $list-group-action-active-bg:       $gray-200;
 // Nav
 
 $nav-tabs-link-active-color:		$gray-900;
+
+
+// Embeds (TODO: Use from v4.3 onwards)
+$embed-responsive-aspect-ratios: (
+  (21 9),
+  (16 9),
+  (16 10),
+  (4 3),
+  (1 1)
+);
 
 
 // Custom control

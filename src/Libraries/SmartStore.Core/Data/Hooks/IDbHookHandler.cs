@@ -6,16 +6,7 @@ namespace SmartStore.Core.Data.Hooks
 {
 	public interface IDbHookHandler
 	{
-		bool HasImportantLoadHooks();
 		bool HasImportantSaveHooks();
-
-		/// <summary>
-		/// Triggers all load hooks for a single entity
-		/// </summary>
-		/// <param name="importantHooksOnly">Whether to trigger only hooks marked with the <see cref="ImportantAttribute"/> attribute</param>
-		/// <param name="entity">The loaded entity</param>
-		/// <returns>The list of actually processed hook instances</returns>
-		IEnumerable<IDbLoadHook> TriggerLoadHooks(BaseEntity entity, bool importantHooksOnly);
 
 		/// <summary>
 		/// Triggers all pre action hooks
@@ -44,19 +35,9 @@ namespace SmartStore.Core.Data.Hooks
 			get { return s_instance; }
 		}
 
-		public bool HasImportantLoadHooks()
-		{
-			return false;
-		}
-
 		public bool HasImportantSaveHooks()
 		{
 			return false;
-		}
-
-		public IEnumerable<IDbLoadHook> TriggerLoadHooks(BaseEntity entity, bool importantHooksOnly)
-		{
-			return Enumerable.Empty<IDbLoadHook>();
 		}
 
 		public IEnumerable<IDbSaveHook> TriggerPreSaveHooks(IEnumerable<IHookedEntity> entries, bool importantHooksOnly, out bool anyStateChanged)

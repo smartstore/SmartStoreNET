@@ -75,7 +75,7 @@
 			// ImageDialog replacement with lots of sugar
 			context.memo('button.media', function () {
 				return ui.button({
-					contents: '<i class="fa fa-picture-o">',
+                    contents: '<i class="far fa-image">',
 					callback: function (btn) {
 						btn.data("placement", "bottom");
 						btn.data("trigger", "hover");
@@ -90,7 +90,7 @@
 
 			context.memo('button.imageAttributes', function () {
 				var button = ui.button({
-					contents: '<i class="fa fa-pencil"></i>',
+                    contents: '<i class="fa fa-pencil-alt"></i>',
 					callback: function (btn) {
 						btn.data("placement", "bottom");
 						btn.data("trigger", "hover");

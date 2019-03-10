@@ -220,7 +220,7 @@ namespace SmartStore.Admin.Models.Catalog
 		public bool IsTaxExempt { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.TaxCategory")]
-		public int TaxCategoryId { get; set; }
+		public int? TaxCategoryId { get; set; }
 		public IList<SelectListItem> AvailableTaxCategories { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ManageInventoryMethod")]
@@ -792,7 +792,7 @@ namespace SmartStore.Admin.Models.Catalog
 		{
 			RuleFor(x => x.Name).NotEmpty();
 
-			When(x => x.LoadedTabs != null && x.LoadedTabs.Contains("Inventory", StringComparer.OrdinalIgnoreCase), () =>
+            When(x => x.LoadedTabs != null && x.LoadedTabs.Contains("Inventory", StringComparer.OrdinalIgnoreCase), () =>
 			{
 				RuleFor(x => x.OrderMinimumQuantity).GreaterThan(0); // dont't remove "Admin.Validation.ValueGreaterZero" resource. It is used elsewhere.
 				RuleFor(x => x.OrderMaximumQuantity).GreaterThan(0);
@@ -810,9 +810,12 @@ namespace SmartStore.Admin.Models.Catalog
 					.GreaterThan(0).WithMessage(T("Admin.Catalog.Products.Fields.BasePriceAmount.Required"));
 			});
 
-            
+            RuleFor(x => x.TaxCategoryId)
+                .NotNull()  // Nullable required for IsTaxExempt.
+                .NotEqual(0)
+                .When(x => !x.IsTaxExempt);
         }
-	}
+    }
 
 	public partial class ProductVariantAttributeValueModelValidator : AbstractValidator<ProductModel.ProductVariantAttributeValueModel>
 	{

@@ -10,7 +10,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Name { get; set; }
 		public string ThumbnailUrl { get; set; }
 		public int GridPageSize { get; set; }
-		public int TotalRecords { get; set; }
 		public ExportEntityType EntityType { get; set; }
 		public bool LogFileExists { get; set; }
 		public bool UsernamesEnabled { get; set; }

@@ -108,6 +108,24 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowCustomersToVoteOnPosts)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowCustomersToVoteOnPosts, Html.CheckBoxFor(x => x.AllowCustomersToVoteOnPosts, new { data_toggler_for = "#pnlForumsEnabled .post-voting" }))
+                @Html.ValidationMessageFor(model => model.AllowCustomersToVoteOnPosts)
+            </td>
+        </tr>
+        <tr class="post-voting">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowGuestsToVoteOnPosts)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowGuestsToVoteOnPosts)
+                @Html.ValidationMessageFor(model => model.AllowGuestsToVoteOnPosts)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ForumEditor)
             </td>
             <td class="adminData">

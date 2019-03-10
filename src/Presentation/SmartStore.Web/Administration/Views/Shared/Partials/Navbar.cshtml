@@ -7,7 +7,7 @@
     var currentCustomer = this.WorkContext.CurrentCustomer;
     var currentLanguage = this.WorkContext.WorkingLanguage;
     var userName = (string)ViewBag.UserName;
-    var stores = (IList<Store>)ViewBag.Stores;
+    var stores = ((IList<Store>)ViewBag.Stores) ?? new List<Store>();
     string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
     string communityUrl = (currentLanguageCode == "de" ?
         "http://community.smartstore.com" :
@@ -39,7 +39,7 @@
 				<a class="nav-link dropdown-toggle navbar-tool" href="javascript:void(0)" title='@T("Admin.Common.Actions")' data-toggle="dropdown">
 					<i class="icm icm-cog navbar-icon"></i>
 				</a>
-				<div class="dropdown-menu dropdown-menu-right dropdown-menu-light-icons">
+				<div class="dropdown-menu dropdown-menu-right">
 					@foreach (var store in stores)
 					{
 						<a class="dropdown-item" href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
@@ -48,12 +48,12 @@
 						</a>
 					}
 					<a class="dropdown-item" href='@Url.Action("Preview", "Theme")'>
-						<i class="fa fa-fw fa-eye"></i>
+						<i class="far fa-fw fa-eye"></i>
 						@T("Admin.Configuration.Themes.PreviewMode")
 					</a>
 					<div class="dropdown-divider"></div>
 					<a class="dropdown-item" href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-						<i class="fa fa-fw fa-trash-o"></i>
+						<i class="far fa-fw fa-trash-alt"></i>
 						@T("Admin.Header.ClearCache")
 					</a>
 					<a class="dropdown-item" href="@Url.Action("ClearDatabaseCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
@@ -78,11 +78,11 @@
 						<span class="reddot" style="top: 25px; right: 7px"></span>
 					}
 				</a>
-				<div class="dropdown-menu dropdown-menu-right dropdown-menu-light-icons">
+				<div class="dropdown-menu dropdown-menu-right">
 					@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
 					{
 						<a class="dropdown-item" href='@Url.Action("CheckUpdate", new { area = "Admin" })'>
-							<i class="fa fa-fw fa-level-up"></i>
+							<i class="fa fa-fw fa-level-up-alt"></i>
 							<strong>@T("Admin.CheckUpdate.UpdateAvailable")</strong>
 							<span class="reddot" style="margin-left: 6px"></span>
 						</a>
@@ -113,13 +113,13 @@
 						</em>*@
 						<i class="icm icm-user navbar-icon"></i>
 					</a>
-					<div class="dropdown-menu dropdown-menu-right dropdown-menu-light-icons">
+					<div class="dropdown-menu dropdown-menu-right">
 						<a class="dropdown-item" href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
 							<i class="fa fa-fw fa-user"></i>
 							@T("Admin.Header.Account")
 						</a>
 						<a class="dropdown-item" href="@Url.Action("Logout", "Customer", new { area = "" })">
-							<i class="fa fa-fw fa-sign-out"></i>
+							<i class="fal fa-fw fa-sign-out-alt"></i>
 							@T("Admin.Header.Logout")
 						</a>
 					</div>

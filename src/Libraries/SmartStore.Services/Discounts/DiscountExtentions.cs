@@ -35,7 +35,7 @@ namespace SmartStore.Services.Discounts
 		/// <param name="discounts">List of discounts</param>
 		/// <param name="amount">Amount without discount (for percentage discounts)</param>
 		/// <returns>Discount that achieves the highest discount amount other than zero.</returns>
-		public static Discount GetPreferredDiscount(this IList<Discount> discounts, decimal amount)
+		public static Discount GetPreferredDiscount(this ICollection<Discount> discounts, decimal amount)
         {
             Discount preferredDiscount = null;
             decimal? maximumDiscountValue = null;

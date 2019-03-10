@@ -7,7 +7,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="fa fa-pencil-square-o"></i>
+            <i class="far fa-pen-square"></i>
             @T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.ContentManagement.MessageTemplates.BackToList") + ")", "List")
         </div>
         <div class="options">
@@ -16,7 +16,7 @@
 			@* CAUTION: saving a template to XML overwrites the original raw content *@
 			@*<button type="submit" name="save-in-file" value="save-in-file" class="btn btn-danger"><i class="fa fa-floppy-o"></i><span>Save as XML</span></button>*@
 			<a id="btn-preview-template" class="btn btn-secondary" href="@Url.Action("Preview", new { id = Model.Id, isCampaign = false })">
-				<i class="fa fa-eye"></i>
+				<i class="far fa-eye"></i>
 				<span>@T("Admin.Common.Preview")</span>
 			</a>
             <button type="submit" name="save" value="save" class="btn btn-warning">
@@ -25,11 +25,11 @@
 			</button>
             <button type="submit" name="save" value="save-continue" class="btn btn-secondary">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="message-template-copy" id="message-template-copy" class="btn btn-secondary" value="@T("Admin.ContentManagement.MessageTemplates.Copy")" onclick='return confirm(@T("Admin.Common.AskToProceed").JsText);'>
-                <i class="fa fa-files-o"></i>
+                <i class="far fa-copy"></i>
 				<span>@T("Admin.ContentManagement.MessageTemplates.Copy")</span>
             </button>
 			<button type="submit" name="message-template-delete" id="message-template-delete" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>
+				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.Delete")</span>
 			</button>
 

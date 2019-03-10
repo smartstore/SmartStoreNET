@@ -107,7 +107,7 @@ namespace SmartStore.Services.Stores
 			if (entity == null)
 				return new int[0];
 
-			return svc.GetStoresIdsWithAccess(typeof(T).Name, entity.Id);
+			return svc.GetStoresIdsWithAccess(entity.GetEntityName(), entity.Id);
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace SmartStore.Services.Stores
 			if (!entity.LimitedToStores)
 				return true;
 
-			return svc.Authorize(typeof(T).Name, entity.Id);
+			return svc.Authorize(entity.GetEntityName(), entity.Id);
 		}
 
 		/// <summary>
@@ -142,7 +142,7 @@ namespace SmartStore.Services.Stores
 			if (!entity.LimitedToStores)
 				return true;
 
-			return svc.Authorize(typeof(T).Name, entity.Id, storeId);
+			return svc.Authorize(entity.GetEntityName(), entity.Id, storeId);
 		}
 	}
 }

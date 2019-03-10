@@ -97,11 +97,6 @@ namespace SmartStore.Web
             {
                 model.AvatarLetter = 'G';
                 model.AvatarColor = "light";
-
-                if (customerSettings.DefaultAvatarEnabled)
-                {
-                    model.PictureUrl = pictureService.GetFallbackUrl(mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
-                }
             }
             else
             {
@@ -143,14 +138,7 @@ namespace SmartStore.Web
 
                 if (model.PictureUrl.IsEmpty())
                 {
-                    if (customerSettings.DefaultAvatarEnabled)
-                    {
-                        model.PictureUrl = pictureService.GetFallbackUrl(mediaSettings.AvatarPictureSize, FallbackPictureType.Avatar);
-                    }
-                    else
-                    {
-                        model.AvatarColor = customer.GetAvatarColor(genericAttributeService);
-                    }
+                    model.AvatarColor = customer.GetAvatarColor(genericAttributeService);
                 }
             }
 

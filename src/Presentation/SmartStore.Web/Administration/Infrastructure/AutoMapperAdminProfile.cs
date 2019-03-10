@@ -431,16 +431,19 @@ namespace SmartStore.Admin.Infrastructure
 			CreateMap<NewsLetterSubscriptionModel, NewsLetterSubscription>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.NewsLetterSubscriptionGuid, mo => mo.Ignore())
-				.ForMember(dest => dest.StoreId, mo => mo.Ignore());
-			//forums
-			CreateMap<ForumGroup, ForumGroupModel>()
-				.ForMember(dest => dest.Locales, mo => mo.Ignore())
-				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.ForumModels, mo => mo.Ignore());
-			CreateMap<ForumGroupModel, ForumGroup>()
+				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
+                .ForMember(dest => dest.WorkingLanguageId, mo => mo.Ignore());
+            //forums
+            CreateMap<ForumGroup, ForumGroupModel>()
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+                .ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
+                .ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
+                .ForMember(dest => dest.SelectedCustomerRoleIds, mo => mo.Ignore())
+                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+                .ForMember(dest => dest.ForumModels, mo => mo.Ignore());
+            CreateMap<ForumGroupModel, ForumGroup>()
 				.ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Forums, mo => mo.Ignore());
@@ -498,7 +501,10 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.StartDate, mo => mo.Ignore())
 				.ForMember(dest => dest.EndDate, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableLanguages, mo => mo.Ignore())
+                .ForMember(dest => dest.UsernamesEnabled, mo => mo.Ignore())
+                .ForMember(dest => dest.GridPageSize, mo => mo.Ignore());
 			CreateMap<PollModel, Poll>()
 				.ForMember(dest => dest.PollAnswers, mo => mo.Ignore())
 				.ForMember(dest => dest.Language, mo => mo.Ignore())
@@ -698,14 +704,12 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
 			CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
 				.ForMember(dest => dest.AvailableRegisterCustomerRoles, mo => mo.Ignore());
-			CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
-				.ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
-				.ForMember(dest => dest.PasswordMinLength, mo => mo.Ignore())
-				.ForMember(dest => dest.AvatarMaximumSizeBytes, mo => mo.Ignore())
-				.ForMember(dest => dest.DownloadableProductsValidateUser, mo => mo.Ignore())
-				.ForMember(dest => dest.OnlineCustomerMinutes, mo => mo.Ignore())
-				.ForMember(dest => dest.PrefillLoginUsername, mo => mo.Ignore())
-				.ForMember(dest => dest.PrefillLoginPwd, mo => mo.Ignore());
+            CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
+                .ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
+                .ForMember(dest => dest.PasswordMinLength, mo => mo.Ignore())
+                .ForMember(dest => dest.AvatarMaximumSizeBytes, mo => mo.Ignore())
+                .ForMember(dest => dest.DownloadableProductsValidateUser, mo => mo.Ignore())
+                .ForMember(dest => dest.OnlineCustomerMinutes, mo => mo.Ignore());
 			CreateMap<AddressSettings, CustomerUserSettingsModel.AddressSettingsModel>();
 			CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
 				.ForMember(dest => dest.Id, mo => mo.Ignore());

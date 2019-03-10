@@ -143,8 +143,16 @@ namespace SmartStore.Services.Media
 
 			if (!size.IsEmpty)
 			{
-				var scaleMode = ConvertScaleMode(query.ScaleMode);
-				processor.Resize(new ResizeLayer(size, resizeMode: scaleMode, upscale: false));
+				processor.Resize(new ResizeLayer(
+					size, 
+					resizeMode: ConvertScaleMode(query.ScaleMode),
+					anchorPosition: ConvertAnchorPosition(query.AnchorPosition), 
+					upscale: false));
+			}		
+
+			if (query.BackgroundColor.HasValue())
+			{
+				processor.BackgroundColor(ColorTranslator.FromHtml(query.BackgroundColor));
 			}
 
 			// Format
@@ -212,6 +220,31 @@ namespace SmartStore.Services.Media
 					return ResizeMode.Stretch;
 				default:
 					return ResizeMode.Max;
+			}
+		}
+
+		private AnchorPosition ConvertAnchorPosition(string anchor)
+		{
+			switch (anchor.EmptyNull().ToLower())
+			{
+				case "top":
+					return AnchorPosition.Top;
+				case "bottom":
+					return AnchorPosition.Bottom;
+				case "left":
+					return AnchorPosition.Left;
+				case "right":
+					return AnchorPosition.Right;
+				case "top-left":
+					return AnchorPosition.TopLeft;
+				case "top-right":
+					return AnchorPosition.TopRight;
+				case "bottom-left":
+					return AnchorPosition.BottomLeft;
+				case "bottom-right":
+					return AnchorPosition.BottomRight;
+				default:
+					return AnchorPosition.Center;
 			}
 		}
 	}

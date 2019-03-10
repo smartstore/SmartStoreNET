@@ -79,10 +79,10 @@
 			if (typeof url === 'string' && url.substr(0, 11) === 'javascript:')
 				url = '';
 
-			if (_.isUndefined(url) || url.length <= 0)
+			if (_.isUndefined(url) || url.length <= 1)
 				url = $(element).attr('data-url');
 
-			if (_.isUndefined(url) || url.length <= 0)
+			if (_.isUndefined(url) || url.length <= 1)
 				url = $(element).attr('data-button');
 		}
 		return url;

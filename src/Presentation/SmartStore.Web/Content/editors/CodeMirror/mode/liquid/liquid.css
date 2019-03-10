@@ -74,8 +74,8 @@
 .cm-hint-kind-2:before,
 .cm-hint-kind-tag:before,
 .cm-hint-kind-filter:before {
-	font-family: FontAwesome;
-	font-weight: normal;
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
 	font-style: normal;
 	display: inline-block;
 	width: 16px;

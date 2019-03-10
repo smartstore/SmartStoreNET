@@ -14,12 +14,22 @@ namespace SmartStore.Core.Domain.DataExchange
 		Order,
 		NewsLetterSubscription,
 		ShoppingCartItem
-	}
+    }
 
-	/// <summary>
-	/// Supported deployment types
-	/// </summary>
-	public enum ExportDeploymentType
+    /// <summary>
+    /// Supported related entity types (data without own export provider or importer).
+    /// </summary>
+    public enum RelatedEntityType
+    {
+        TierPrice = 0,
+        ProductVariantAttributeValue,
+        ProductVariantAttributeCombination
+    }
+
+    /// <summary>
+    /// Supported deployment types
+    /// </summary>
+    public enum ExportDeploymentType
 	{
 		FileSystem = 0,
 		Email,
@@ -137,7 +147,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Whether to export attribute combinations as products including parent product. Only effective with CanProjectAttributeCombinations.
 		/// </summary>
-		UsesAttributeCombinationParent = 1 << 14
+		UsesAttributeCombinationParent = 1 << 14,
+
+        /// <summary>
+        /// Whether to provide extra data units for related data
+        /// </summary>
+        UsesRelatedDataUnits = 1 << 15
 	}
 
 	/// <summary>

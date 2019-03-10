@@ -37,7 +37,7 @@ namespace SmartStore.Services.Localization
 	[Serializable]
 	public class LocalizedValue<T> : IHtmlString, IEquatable<LocalizedValue<T>>, IComparable, IComparable<LocalizedValue<T>>
 	{
-		private readonly T _value;
+		private T _value;
 		private readonly Language _requestLanguage;
 		private readonly Language _currentLanguage;
 
@@ -73,6 +73,11 @@ namespace SmartStore.Services.Localization
 		public bool BidiOverride
 		{
 			get { return _requestLanguage != _currentLanguage && _requestLanguage.Rtl != _currentLanguage.Rtl; }
+		}
+
+		public void ChangeValue(T value)
+		{
+			_value = value;
 		}
 
 		public static implicit operator T(LocalizedValue<T> obj)

@@ -265,7 +265,10 @@ namespace SmartStore.PayPal.Controllers
 						{
 							var orderNumber = "";
 							var orderNumberGuid = Guid.Empty;
-							values.TryGetValue("custom", out orderNumber);
+                            if (!values.TryGetValue("custom", out orderNumber) || orderNumber.IsEmpty())
+                            {
+                                return Content(string.Empty);
+                            }
 
 							try
 							{
@@ -325,10 +328,7 @@ namespace SmartStore.PayPal.Controllers
 							}
 							else
 							{
-								if (orderNumber.IsEmpty())
-									Logger.Warn(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnIrregular", "custom"));
-								else
-									Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
+    							Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
 							}
 						}
 						#endregion

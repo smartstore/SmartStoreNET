@@ -32,21 +32,27 @@
                     </p>
                 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.FriendEmail, new { @for = "FriendEmail" })
+                        @Html.LabelFor(model => model.FriendEmail, new { @for = "FriendEmail", @class = "col-form-label required" })
                         @Html.TextBoxFor(model => model.FriendEmail, new { @class = "friend-email form-control", placeholder = T("Wishlist.EmailAFriend.FriendEmail.Hint") })
                         @Html.ValidationMessageFor(model => model.FriendEmail)
                     </div>
 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.YourEmailAddress, new { @for = "YourEmailAddress" })
+                        @Html.LabelFor(model => model.YourEmailAddress, new { @for = "YourEmailAddress", @class = "col-form-label required" })
                         @Html.TextBoxFor(model => model.YourEmailAddress, new { @class = "your-email form-control", placeholder = T("Wishlist.EmailAFriend.YourEmailAddress.Hint") })
                         @Html.ValidationMessageFor(model => model.YourEmailAddress)
                     </div>
 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.PersonalMessage, new { @for = "PersonalMessage" })
+                        @Html.LabelFor(model => model.PersonalMessage, new { @for = "PersonalMessage", @class = "col-form-label" })
                         @Html.TextAreaFor(model => model.PersonalMessage, new { @class = "personal-message form-control", placeholder = T("Wishlist.EmailAFriend.PersonalMessage.Hint") })
                         @Html.ValidationMessageFor(model => model.PersonalMessage)
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-12 text-muted">
+                            @T("Common.FormFields.Required.Hint")
+                        </div>
                     </div>
 
 					@{ Html.RenderWidget("gdpr_consent"); }

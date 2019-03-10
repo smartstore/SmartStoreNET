@@ -399,7 +399,7 @@
 
 		<!-- Discount requirement template -->
 		<script id="discountRequirementTemplate" type="text/html">
-			<div id="editrequirement{{= discountRequirementId }}" class="card card-shadow discountreq-item">
+			<div id="editrequirement{{= discountRequirementId }}" class="card shadow-sm discountreq-item">
 				<div class="card-header text-truncate font-weight-medium d-flex align-items-center py-0 pr-0" title="{{= ruleName }}">
 					<div>{{= ruleName }}</div>
 					<div class="ml-auto">
@@ -409,7 +409,7 @@
 								name="deleterequirement{{= discountRequirementId }}" 
 								id="deleterequirement{{= discountRequirementId }}" 
 								onclick="deleteRequirement({{= discountRequirementId }})">
-							<i class="fa fa-trash-o"></i>
+							<i class="far fa-trash-alt"></i>
 						</button>
 					</div>
 				</div>
@@ -420,7 +420,7 @@
 		</script>
 
 		<script id="newDiscountRequirementTemplate" type="text/html">
-			<div id="newrequirement" class="card bg-light card-shadow card x-border-gray discountreq-add">
+			<div id="newrequirement" class="card bg-light shadow-sm card x-border-gray discountreq-add">
 				<div class="card-body">
 					<h4 class="mb-5 font-weight-medium text-primary">@T("Admin.Promotions.Discounts.Requirements.AddNew")</h4>
 					<div class="form-group">

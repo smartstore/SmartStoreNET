@@ -29,24 +29,38 @@ html {
 }
 
 body { 
-    background: $site-bg; 
-}
+    background: $site-bg;
 
-body.popup { 
-    padding: 1.25rem; 
-    background: $body-bg;
-}
+    &.popup { 
+        padding: 1.25rem; 
+        background: $body-bg;
+    }
 
-#header {
-    background-color: $header-bg;
+    &.bare {
+        padding: 0;
+        margin: 0;
+        background: $body-bg;
+        border: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 }
 
 #page {
     overflow-x: hidden;  
 }
 
+#header {
+    background-color: $header-bg;
+}
+
 #content-wrapper {
-    min-height: 600px;
+    min-height: 300px;
+}
+
+#content {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .page-main {
@@ -95,15 +109,18 @@ body.popup {
     right: 0;
     width: 36px;
     height: 36px;
-    border-radius: 3px 0 0 3px;
-    border: 1px solid rgba(0,0,0, 0.15);
+    border-radius: $border-radius 0 0 $border-radius;
+    border: 1px solid rgba(#000, 0.1);
     border-right-width: 0;
-    background: rgba(255,255,255, 0.9);
+    background: rgba(#fff, 0.9);
     color: $body-color !important;
     text-decoration: none;
     transform: translate3d(100%, 0, 0);
-    transition: transform .2s ease-in-out;
+    transition: all .5s ease;
+    opacity: 0;
+
     &.in {
         transform: translate3d(0, 0, 0) !important;
+        opacity: 1;
     }
 }

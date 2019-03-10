@@ -19,8 +19,9 @@ namespace SmartStore.Services.Catalog
 
 		// 0 = AttributeXml
 		private const string ATTRIBUTEVALUES_BY_XML_KEY = "parsedattributevalues-{0}";
+        private const string ATTRIBUTEVALUES_PATTERN_KEY = "parsedattributevalues-*";
 
-		private readonly IProductAttributeService _productAttributeService;
+        private readonly IProductAttributeService _productAttributeService;
 		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
 		private readonly IRequestCache _requestCache;
 
@@ -40,10 +41,12 @@ namespace SmartStore.Services.Catalog
 
 		#region Product attributes
 
-		public virtual void PrefetchProductVariantAttributes(IEnumerable<string> attributesXml)
+		public virtual int PrefetchProductVariantAttributes(IEnumerable<string> attributesXml)
 		{
-			if (attributesXml == null || !attributesXml.Any())
-				return;
+            if (attributesXml == null || !attributesXml.Any())
+            {
+                return 0;
+            }
 
 			// Determine uncached attributes
 			var unfetched = attributesXml
@@ -110,7 +113,9 @@ namespace SmartStore.Services.Catalog
 				var cacheKey = ATTRIBUTEVALUES_BY_XML_KEY.FormatInvariant(info.AttributesXml);
 				_requestCache.Put(cacheKey, cachedValues);
 			}
-		}
+
+            return unfetched.Length;
+        }
 
 		public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributesXml)
 		{
@@ -156,7 +161,12 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
+        public virtual void ClearCachedAttributeValues()
+        {
+            _requestCache.RemoveByPattern(ATTRIBUTEVALUES_PATTERN_KEY);
+        }
+
+        public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
 		{
 			var attrs = new Multimap<int, string>();
 			if (String.IsNullOrEmpty(attributesXml))

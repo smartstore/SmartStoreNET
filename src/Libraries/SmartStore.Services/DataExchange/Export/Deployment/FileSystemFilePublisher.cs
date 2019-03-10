@@ -19,7 +19,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				context.Result.LastError = context.T("Admin.DataExchange.Export.Deployment.CopyFileFailed");
 			}
 
-			context.Log.Info("Copied export data files to " + targetFolder);
+			context.Log.Info($"Copied export data files to {targetFolder}.");
 		}
 	}
 }

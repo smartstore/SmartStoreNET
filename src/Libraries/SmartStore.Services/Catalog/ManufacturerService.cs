@@ -121,6 +121,23 @@ namespace SmartStore.Services.Catalog
 			return _manufacturerRepository.GetByIdCached(manufacturerId, "db.manu.id-" + manufacturerId);
 		}
 
+        public virtual IList<Manufacturer> GetManufacturersByIds(int[] manufacturerIds)
+        {
+            if (manufacturerIds == null || !manufacturerIds.Any())
+            {
+                return new List<Manufacturer>();
+            }
+
+            var query = from m in _manufacturerRepository.Table
+                        where manufacturerIds.Contains(m.Id)
+                        select m;
+
+            var manufacturers = query.ToList();
+
+            // Sort by passed identifier sequence.
+            return manufacturers.OrderBySequence(manufacturerIds).ToList();
+        }
+
         public virtual void InsertManufacturer(Manufacturer manufacturer)
         {
             if (manufacturer == null)
@@ -174,9 +191,7 @@ namespace SmartStore.Services.Catalog
             {
                 var query = from pm in _productManufacturerRepository.Table
                             join p in _productRepository.Table on pm.ProductId equals p.Id
-                            where pm.ManufacturerId == manufacturerId &&
-                                  !p.Deleted && !p.IsSystemProduct &&
-								  (showHidden || p.Published)
+                            where pm.ManufacturerId == manufacturerId && !p.Deleted && (showHidden || p.Published)
                             orderby pm.DisplayOrder
                             select pm;
 
@@ -272,6 +287,11 @@ namespace SmartStore.Services.Catalog
 		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
+
+            if (!productIds.Any())
+            {
+                return new Multimap<int, ProductManufacturer>();
+            }
 
 			var query =
 				from pm in _productManufacturerRepository.TableUntracked

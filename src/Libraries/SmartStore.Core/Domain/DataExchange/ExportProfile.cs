@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Core.Domain
 {
-	public class ExportProfile : BaseEntity, ICloneable<ExportProfile>
+    public class ExportProfile : BaseEntity, ICloneable<ExportProfile>
 	{
 		private ICollection<ExportDeployment> _deployments;
 
@@ -52,10 +51,15 @@ namespace SmartStore.Core.Domain
 		/// </summary>
 		public bool Enabled { get; set; }
 
-		/// <summary>
-		/// The scheduling task identifier
-		/// </summary>
-		public int SchedulingTaskId { get; set; }
+        /// <summary>
+        /// Whether the export related data
+        /// </summary>
+        public bool ExportRelatedData { get; set; }
+
+        /// <summary>
+        /// The scheduling task identifier
+        /// </summary>
+        public int SchedulingTaskId { get; set; }
 
 		/// <summary>
 		/// XML with filtering information

@@ -88,7 +88,7 @@
 
 								<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
 								   class="btn btn-block btn-sm btn-secondary btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " d-none" : "")">
-									<i class="fa fa-file-text-o"></i>
+									<i class="far fa-file-alt"></i>
 									<span>@T("Admin.Configuration.ActivityLog")</span>
 								</a>
 							</td>

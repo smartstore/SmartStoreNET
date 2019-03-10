@@ -1,8 +1,6 @@
-﻿@model ImportProfileListModel
-
-@using SmartStore.Core.Domain.DataExchange;
+﻿@using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
-
+@model ImportProfileListModel
 @{
 	ViewBag.Title = T("Common.Import").Text;
 }
@@ -46,14 +44,14 @@
 							@profile.EntityTypeName
 						</td>
 						<td>
-							@if (profile.ExistingFileNames.Any())
+							@if (profile.ExistingFiles.Any())
 							{
 								<ul class="fa-ul mb-0 ml-0">
-									@foreach (var fileName in profile.ExistingFileNames)
+									@foreach (var file in profile.ExistingFiles.Where(x => !x.RelatedType.HasValue))
 									{
-										<li title="@fileName">
-											@Html.IconForFileExtension(Path.GetExtension(fileName), false)
-											<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = fileName })" download>@fileName</a>
+										<li title="@file.Name">
+											@Html.IconForFileExtension(file.Extension, false)
+											<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = file.Name })" download>@file.Name</a>
 										</li>
 									}
 								</ul>
@@ -95,7 +93,7 @@
 
 							<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
 							   class="btn btn-secondary btn-sm btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " d-none" : "")">
-								<i class="fa fa-file-text-o"></i>
+								<i class="far fa-file-alt"></i>
 								<span>@T("Admin.Configuration.ActivityLog")</span>
 							</a>
 						</td>
@@ -113,13 +111,12 @@ else
 	</div>
 }
 
-<form method="POST" action="@Url.Action("Create", "Import", new { area = "Admin" })">
-	@{Html.SmartStore().Window()
-		.Name("import-profile-dialog")
-		.Title(T("Common.Profile") + " - " + T("Admin.Common.AddNew"))
-		.RenderAtPageEnd(false)
-		.HtmlAttribute("data-profile", T("Common.Profile").Text)
-		.Content(@<text>
+@{Html.SmartStore().Window()
+	.Name("import-profile-dialog")
+	.Title(T("Common.Profile") + " - " + T("Admin.Common.AddNew"))
+	.HtmlAttribute("data-profile", T("Common.Profile").Text)
+	.Content(@<text>
+        <form method="POST" action="@Url.Action("Create", "Import", new { area = "Admin" })" class="import-profile-form">
 			<p class="text-muted">
 				@T("Admin.DataExchange.Import.ProfileCreationNote")
 			</p>
@@ -146,14 +143,14 @@ else
 					&nbsp;
 				</div>
 			</div>
-		</text>)
-		.FooterContent(@<text>
-			<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
-			<button type="submit" class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
-		</text>)
-		.Render();
-	}
-</form>
+        </form>
+	</text>)
+	.FooterContent(@<text>
+		<button class="btn btn-secondary btn-flat" data-dismiss="modal">@T("Common.Cancel")</button>
+		<button type="button" class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
+	</text>)
+	.Render();
+}
 
 <script>
 	window['onUploadCompleted'] = function (e, el, data) {
@@ -175,6 +172,11 @@ else
 			e.preventDefault();
 			$('#import-profile-dialog').modal('show');
 			return false;
+        });
+
+		// submit dialog form
+        $('#import-profile-dialog').on('click', '.btn-primary', function () {
+			$('#import-profile-dialog').find('.import-profile-form').submit();
 		});
 
 		// start task

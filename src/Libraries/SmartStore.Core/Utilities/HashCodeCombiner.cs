@@ -105,14 +105,12 @@ namespace SmartStore.Utilities
 			Add(fi.CreationTimeUtc);
 			Add(fi.LastWriteTimeUtc);
 
-			var file = fi as FileInfo;
-			if (file != null)
+			if (fi is FileInfo file)
 			{
 				Add(file.Length.GetHashCode());
 			}
 
-			var dir = fi as DirectoryInfo;
-			if (dir != null)
+			if (fi is DirectoryInfo dir)
 			{
 				foreach (var f in dir.GetFiles())
 				{

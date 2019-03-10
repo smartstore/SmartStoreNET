@@ -15,12 +15,22 @@
 }
 
 <div @Html.Attrs(Model.HtmlAttributes)>
-	<div class="col-auto">
-		<button class="btn btn-danger remove@(Model.ShowRemoveButton ? "" : " hide")">
+	<!-- The global progress information -->
+	<div class="fileupload-progress fade">
+		<!-- The global progress bar -->
+		<div class="progress">
+			<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+		</div>
+
+		@*<div class="progress-extended fs-xs text-muted text-truncate">&nbsp;</div>*@
+	</div>
+
+	<div class="fileupload-buttons">
+		<button class="btn btn-danger remove@(Model.ShowRemoveButton ? "" : " hide")@(Model.Compact ? " btn-sm" : "")">
 			<span>@Model.RemoveText</span>
 		</button>
 
-		<span class="btn btn-@(Model.ButtonOutlineStyle ? "outline-" : "")@Model.ButtonStyle.ToString().ToLower() fileinput-button">
+		<span class="btn btn-@(Model.ButtonOutlineStyle ? "outline-" : "")@Model.ButtonStyle.ToString().ToLower() fileinput-button@(Model.Compact ? " btn-sm" : "")">
 			@if (Model.IconCssClass.HasValue())
 			{
 				<i class="@Model.IconCssClass"></i>
@@ -29,37 +39,22 @@
 			<input type="file" id="@(Model.Id)-file" name="@(Model.Id)-file" />
 		</span>
 
-		<button class="btn btn-outline-secondary cancel hide">
+		<button class="btn btn-outline-secondary cancel hide@(Model.Compact ? " btn-sm" : "")">
 			<span>@Model.CancelText</span>
 		</button>
 	</div>
-
-	<div class="col">
-		<!-- The global progress information -->
-		<div class="fileupload-progress fade">
-			<!-- The global progress bar -->
-			<div class="progress">
-				<div class="progress-bar x-bg-gray" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
-			</div>
-
-			<!-- The extended global progress information -->
-			<div class="progress-extended fs-xs text-muted text-truncate">&nbsp;</div>
-		</div>
-	</div>
 </div>
 
-@using (Html.BeginZoneContent("end"))
-{
-	<script data-origin="FileUploader">
-		$(function () {
-			$('#@Model.Id').fileUploadWrapper({
-				onUploading: @Html.Raw(Model.OnUploadingHandlerName.HasValue() ? Model.OnUploadingHandlerName : "null"),
-				onUploadCompleted: @Html.Raw(Model.OnUploadCompletedHandlerName.HasValue() ? Model.OnUploadCompletedHandlerName : "null"),
-				onAborted: @Html.Raw(Model.OnAbortedHandlerName.HasValue() ? Model.OnAbortedHandlerName : "null"),
-				onError: @Html.Raw(Model.OnErrorHandlerName.HasValue() ? Model.OnErrorHandlerName : "null"),
-				onFileRemove: @Html.Raw(Model.OnFileRemoveHandlerName.HasValue() ? Model.OnFileRemoveHandlerName : "null"),
-				onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null")
-			});
-    });
-	</script>
-}
+
+<script data-origin="FileUploader">
+	$(function () {
+		$('#@Model.Id').fileUploadWrapper({
+			onUploading: @Html.Raw(Model.OnUploadingHandlerName.HasValue() ? Model.OnUploadingHandlerName : "null"),
+			onUploadCompleted: @Html.Raw(Model.OnUploadCompletedHandlerName.HasValue() ? Model.OnUploadCompletedHandlerName : "null"),
+			onAborted: @Html.Raw(Model.OnAbortedHandlerName.HasValue() ? Model.OnAbortedHandlerName : "null"),
+			onError: @Html.Raw(Model.OnErrorHandlerName.HasValue() ? Model.OnErrorHandlerName : "null"),
+			onFileRemove: @Html.Raw(Model.OnFileRemoveHandlerName.HasValue() ? Model.OnFileRemoveHandlerName : "null"),
+			onCompleted: @Html.Raw(Model.OnCompletedHandlerName.HasValue() ? Model.OnCompletedHandlerName : "null")
+		});
+});
+</script>

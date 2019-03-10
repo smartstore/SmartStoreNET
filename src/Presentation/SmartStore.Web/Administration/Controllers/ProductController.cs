@@ -256,7 +256,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.IsEsd = m.IsEsd;
 			p.IsTaxExempt = m.IsTaxExempt;
-			p.TaxCategoryId = m.TaxCategoryId;
+			p.TaxCategoryId = m.TaxCategoryId ?? 0;
 			p.CustomsTariffNumber = m.CustomsTariffNumber;
 			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
@@ -602,7 +602,7 @@ namespace SmartStore.Admin.Controllers
             {
                 if (product != null)
                 {
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccess(product);
+                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(product);
                 }
                 else
                 {
@@ -692,7 +692,7 @@ namespace SmartStore.Admin.Controllers
 			if (product != null)
 			{
 				model.CopyProductModel.Id = product.Id;
-				model.CopyProductModel.Name = "{0} {1}".FormatInvariant(T("Admin.Common.CopyOf"), product.Name);
+				model.CopyProductModel.Name = T("Admin.Common.CopyOf", product.Name);
 				model.CopyProductModel.Published = true;
 				model.CopyProductModel.CopyImages = true;
 			}
@@ -728,6 +728,12 @@ namespace SmartStore.Admin.Controllers
 					Selected = product != null && !setPredefinedValues && tc.Id == product.TaxCategoryId
 				});
 			}
+
+            // Do not pre-select a tax category that is not stored.
+            if (product != null && product.TaxCategoryId == 0)
+            {
+                model.AvailableTaxCategories.Insert(0, new SelectListItem { Text = T("Common.PleaseSelect"), Value = "", Selected = true });
+            }
 
             // delivery times
             var defaultDeliveryTime = _deliveryTimesService.GetDefaultDeliveryTime();
@@ -2370,17 +2376,29 @@ namespace SmartStore.Admin.Controllers
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
 				var productPictures = _productService.GetProductPicturesByProductId(productId);
+
 				var productPicturesModel = productPictures
 					.Select(x =>
 					{
-						return new ProductModel.ProductPictureModel
+						var pictureModel = new ProductModel.ProductPictureModel
 						{
 							Id = x.Id,
 							ProductId = x.ProductId,
 							PictureId = x.PictureId,
-							PictureUrl = _pictureService.GetUrl(x.PictureId),
 							DisplayOrder = x.DisplayOrder
 						};
+
+                        try
+                        {
+                            pictureModel.PictureUrl = _pictureService.GetUrl(x.PictureId);
+                        }
+                        catch (Exception ex)
+                        {
+                            // The user must always have the possibility to delete faulty images.
+                            Logger.Error(ex);
+                        }
+
+                        return pictureModel;
 					})
 					.ToList();
 
@@ -3368,14 +3386,29 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult ProductAttributeValueCreatePopup(string btnId, string formId, ProductModel.ProductVariantAttributeValueModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+            {
+                return AccessDeniedView();
+            }
 
 			var pva = _productAttributeService.GetProductVariantAttributeById(model.ProductVariantAttributeId);
-			if (pva == null)
-				return RedirectToAction("List", "Product");
+            if (pva == null)
+            {
+                return RedirectToAction("List", "Product");
+            }
 
-			if (ModelState.IsValid)
+            if (model.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage)
+            {
+                if (_productService.IsBundleItem(pva.ProductId))
+                {
+                    var product = _productService.GetProductById(pva.ProductId);
+                    var productName = product?.Name.NaIfEmpty();
+
+                    ModelState.AddModelError(string.Empty, T("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem", productName));
+                }
+            }
+
+            if (ModelState.IsValid)
 			{
 				var pvav = new ProductVariantAttributeValue
 				{
@@ -3389,17 +3422,18 @@ namespace SmartStore.Admin.Controllers
 					IsPreSelected = model.IsPreSelected,
 					DisplayOrder = model.DisplayOrder,
 					ValueTypeId = model.ValueTypeId,
-					LinkedProductId = model.LinkedProductId,
 					Quantity = model.Quantity
 				};
 
-				try
+                pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
+
+                try
 				{
 					_productAttributeService.InsertProductVariantAttributeValue(pvav);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 
@@ -3420,7 +3454,7 @@ namespace SmartStore.Admin.Controllers
 				return View(model);
 			}
 
-			//If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			return View(model);
 		}
 
@@ -3477,14 +3511,29 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult ProductAttributeValueEditPopup(string btnId, string formId, ProductModel.ProductVariantAttributeValueModel model)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+            {
+                return AccessDeniedView();
+            }
 
 			var pvav = _productAttributeService.GetProductVariantAttributeValueById(model.Id);
-			if (pvav == null)
-				return RedirectToAction("List", "Product");
+            if (pvav == null)
+            {
+                return RedirectToAction("List", "Product");
+            }
 
-			if (ModelState.IsValid)
+            if (model.ValueTypeId == (int)ProductVariantAttributeValueType.ProductLinkage)
+            {
+                if (_productService.IsBundleItem(pvav.ProductVariantAttribute.ProductId))
+                {
+                    var product = _productService.GetProductById(pvav.ProductVariantAttribute.ProductId);
+                    var productName = product?.Name.NaIfEmpty();
+
+                    ModelState.AddModelError(string.Empty, T("Admin.Catalog.Products.BundleItems.NoProductLinkageForBundleItem", productName));
+                }
+            }
+
+            if (ModelState.IsValid)
 			{
 				pvav.Name = model.Name;
 				pvav.Alias = model.Alias;
@@ -3496,11 +3545,7 @@ namespace SmartStore.Admin.Controllers
 				pvav.DisplayOrder = model.DisplayOrder;
 				pvav.ValueTypeId = model.ValueTypeId;
 				pvav.Quantity = model.Quantity;
-
-				if (pvav.ValueType == ProductVariantAttributeValueType.Simple)
-					pvav.LinkedProductId = 0;
-				else
-					pvav.LinkedProductId = model.LinkedProductId;
+                pvav.LinkedProductId = pvav.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
 				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
@@ -3510,9 +3555,9 @@ namespace SmartStore.Admin.Controllers
 
 					UpdateLocales(pvav, model);
 				}
-				catch (Exception exception)
+				catch (Exception ex)
 				{
-					ModelState.AddModelError("", exception.Message);
+					ModelState.AddModelError("", ex.Message);
 					return View(model);
 				}
 
@@ -3522,7 +3567,7 @@ namespace SmartStore.Admin.Controllers
 				return View(model);
 			}
 
-			//If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form.
 			return View(model);
 		}
 
@@ -3919,13 +3964,15 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult DeleteDownloadVersion(int downloadId, int productId)
         {
-            if (downloadId == 0)
-                NotifySuccess("Der Download wurde nicht gefunden.");
-
             var download = _downloadService.GetDownloadById(downloadId);
+            if (download == null)
+            {
+                return HttpNotFound();
+            }
+
             _downloadService.DeleteDownload(download);
 
-            NotifySuccess("Der Download wurde erfolgreich gelöscht.");
+            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
             return RedirectToAction("Edit", new { id = productId });
         }

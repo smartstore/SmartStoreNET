@@ -22,31 +22,31 @@ namespace SmartStore
 	    [SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
 	    public static MemberInfo ExtractMemberInfo(this LambdaExpression propertyAccessor)
         {
-            Guard.NotNull(propertyAccessor, nameof(propertyAccessor));
+			if (propertyAccessor == null)
+				throw new ArgumentNullException(nameof(propertyAccessor));
 
-            MemberInfo info;
+			MemberInfo info;
             try
             {
                 MemberExpression operand;
                 // o => o.PropertyOrField
                 LambdaExpression expression = propertyAccessor;
+				// If the property is not an Object, then the member access expression will be wrapped in a conversion expression
+				// (object)o.PropertyOrField
 
-                if (expression.Body is UnaryExpression)
-                {
-                    // If the property is not an Object, then the member access expression will be wrapped in a conversion expression
-                    // (object)o.PropertyOrField
-                    UnaryExpression body = (UnaryExpression)expression.Body;
-                    // o.PropertyOrField
-                    operand = (MemberExpression)body.Operand;
-                }
-                else
-                {
-                    // o.PropertyOrField
-                    operand = (MemberExpression)expression.Body;
-                }
+				if (expression.Body is UnaryExpression body)
+				{
+					// o.PropertyOrField
+					operand = (MemberExpression)body.Operand;
+				}
+				else
+				{
+					// o.PropertyOrField
+					operand = (MemberExpression)expression.Body;
+				}
 
-                // Member
-                MemberInfo member = operand.Member;
+				// Member
+				MemberInfo member = operand.Member;
                 info = member;
             }
             catch (Exception e)

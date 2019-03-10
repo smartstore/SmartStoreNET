@@ -36,7 +36,7 @@
     </div>
 
     <div class="page-body">
-        <div class="search-input mt-4 mb-5">
+        <div class="search-input mt-4">
             @if (Model.AllowFiltering && Model.SearchResult.Facets.Any())
             {
                 <div class="mb-4">
@@ -44,7 +44,7 @@
                 </div>
             }
 
-            <div class="w-75 mb-2">
+            <div class="w-75 mb-4">
                 @{ Html.RenderAction("SearchBox", "Boards"); }
             </div>
 
@@ -68,10 +68,10 @@
 			    </div>
 		    }
 
-		    @if (suggestions.Any() && (Model.AttemptedTerm.HasValue() || Model.TotalCount == 0))
+		    @if (suggestions.Any())
 		    {
 			    <p class="search-suggestions">
-				    <strong>@T("Search.DidYouMean")</strong>
+				    <strong>@(T(Model.AttemptedTerm.HasValue() || Model.TotalCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
 				    @{ 
 					    var links = string.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("BoardSearch", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
 				    }
@@ -139,26 +139,28 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var result = $('#ForumSearchResult');
+        var result = $('#ForumSearchResult'),
+            loading = false;
 
         // Sorting changed.
         $('.fsearch-actions').on('change', '.artlist-action-select', function (e) {
-		    var select = $(this),
-			    qname = select.data('qname'),
-			    url = select.data('url'),
-			    val = select.val();
+            var select = $(this),
+                qname = select.data('qname'),
+                url = select.data('url'),
+                val = select.val();
 
-		    var url = window.modifyUrl(url, qname, val);
-		    window.setLocation(url);
-	    });
+            url = window.modifyUrl(url, qname, val);
+            window.setLocation(url);
+        });
 
         // Auto load more search hits.
         $(document).scroll( function() {           
             var container = result.find('.load-more:not(.loading)');
 
-            if (container.visible(true, false, 'vertical')) {
+            if (container.visible(true, false, 'vertical') && !loading) {
                 var newPage = container.data('page'),
-                    url = window.modifyUrl(window.location.href, 'i', newPage);
+                    url = window.modifyUrl(window.location.href, 'i', newPage),
+                    html, processImmediately = false;
 
                 // IDs of already rendered topics, to avoid rendering them again when the list is extended.
                 var renderedTopicIds = result.find('tr.topic').map(function() {
@@ -167,6 +169,12 @@
 
                 //console.log(page + '. ' + url + '. ' + renderedTopicIds.toString());
 
+                setTimeout(function () {
+                    processImmediately = true;
+                    processSearchResult(html, container, newPage);
+                    html = null;
+                }, 100);
+
                 $.ajax({
                     cache: false,
                     type: 'POST',
@@ -174,31 +182,46 @@
                     url: url,
                     data: { renderedTopicIds: renderedTopicIds },
                     beforeSend: function () {
+                        loading = true;
                         container.addClass('loading').append(createCircularSpinner(20, true));
                     },
                     success: function (response) {
-                        // Replace empty tbody at table end by page representing tbody.
-                        container.replaceWith(response);
-
-                        // Update cumulative hit counter.
-                        $counter = $('#SearchHitsCount');
-                        $pageBody = result.find('tbody[data-page=' + newPage + ']');
-                        $counter.find('.cumulative-count').text($pageBody.data('cumulativehits'));
-                        if (!$pageBody.data('hasnextpage')) {
-                            $counter.find('.more-hits-sign').hide();
+                        if (processImmediately) {
+                            processSearchResult(response, container, newPage);
                         }
+                        else {
+                            html = response;
+                        }
+                    },
+                    complete: function () {
+                        loading = false;
                     },
                     error: function (objXml) {
                         result.find('.load-more:not(.loading)').removeClass('loading');
 
-                        if (objXml != null && objXml.responseText != null && objXml.responseText !== '') {
+                        if (objXml && objXml.responseText.length > 0) {
                             displayNotification(objXml.responseText, 'error');
-			            }
+                        }
                     }
-		        });
+                });
 
             }
         });
+
+        function processSearchResult(html, container, newPage) {
+            if (html && html.length > 0) {
+                // Replace empty tbody at table end by page representing tbody.
+                container.replaceWith(html);
+
+                // Update cumulative hit counter.
+                $counter = $('#SearchHitsCount');
+                $pageBody = result.find('tbody[data-page=' + newPage + ']');
+                $counter.find('.cumulative-count').text($pageBody.data('cumulativehits'));
+                if (!$pageBody.data('hasnextpage')) {
+                    $counter.find('.more-hits-sign').hide();
+                }
+            }
+        }
 
     });
 </script>

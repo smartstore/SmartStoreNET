@@ -11,6 +11,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Data.Setup;
+using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 
 namespace SmartStore.Data
@@ -18,8 +19,9 @@ namespace SmartStore.Data
 	[DbConfigurationType(typeof(SmartDbConfiguration))]
     public abstract partial class ObjectContextBase : DbContext, IDbContext
     {
-		private static bool? s_isSqlServer2012OrHigher = null;
-		
+		private static bool? _isSqlServer2012OrHigher = null;
+		private static int? _commandTimeoutInSeconds = CommonHelper.GetAppSetting<int?>("sm:EfCommandTimeout");
+
 		// Instance of the internal ObjectStateManager.TransactionManager
 		// required for detecting if EF performs change detection
 		private object _transactionManager;
@@ -32,7 +34,7 @@ namespace SmartStore.Data
 		{
 		}
 
-        protected ObjectContextBase(string nameOrConnectionString, string alias = null)
+		protected ObjectContextBase(string nameOrConnectionString, string alias = null)
             : base(nameOrConnectionString)
         {
 			this.HooksEnabled = true;
@@ -40,26 +42,10 @@ namespace SmartStore.Data
             this.Alias = null;
 			this.DbHookHandler = NullDbHookHandler.Instance;
 
-			if (DataSettings.DatabaseIsInstalled() && !DbSeedingMigrator<SmartObjectContext>.IsMigrating)
+			if (_commandTimeoutInSeconds >= 0 && DataSettings.Current.IsSqlServer)
 			{
-				//// listen to 'ObjectMaterialized' for load hooking
-				((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
+				Database.CommandTimeout = _commandTimeoutInSeconds;
 			}
-		}
-
-		private void ObjectMaterialized(object sender, ObjectMaterializedEventArgs e)
-		{
-			var entity = e.Entity as BaseEntity;
-			if (entity == null)
-				return;
-
-			var hookHandler = this.DbHookHandler;
-			var importantHooksOnly = !this.HooksEnabled && hookHandler.HasImportantLoadHooks();
-
-			if (IsHookableEntityType(entity.GetUnproxiedType()))
-			{
-				hookHandler.TriggerLoadHooks(entity, importantHooksOnly);
-			}	
 		}
 
 		public bool HooksEnabled
@@ -381,7 +367,7 @@ namespace SmartStore.Data
 
 		protected internal bool IsSqlServer2012OrHigher()
 		{
-			if (!s_isSqlServer2012OrHigher.HasValue)
+			if (!_isSqlServer2012OrHigher.HasValue)
 			{
 				try
 				{
@@ -390,15 +376,15 @@ namespace SmartStore.Data
 					var info = this.GetSqlServerInfo();
 					string productVersion = info.ProductVersion;
 					int version = productVersion.Split(new char[] { '.' })[0].ToInt();
-					s_isSqlServer2012OrHigher = version >= 11;
+					_isSqlServer2012OrHigher = version >= 11;
 				}
 				catch
 				{
-					s_isSqlServer2012OrHigher = false;
+					_isSqlServer2012OrHigher = false;
 				}
 			}
 			
-			return s_isSqlServer2012OrHigher.Value;
+			return _isSqlServer2012OrHigher.Value;
 		}
 
 		public TEntity Attach<TEntity>(TEntity entity) where TEntity : BaseEntity

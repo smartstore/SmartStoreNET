@@ -17,7 +17,6 @@ $offcanvas-z-index:                 99999;
 
 .canvas-slidable {
     z-index: 0;
-    transform: translate3d(0, 0, 0);
     transition: opacity $offcanvas-duration $offcanvas-easing,
                 transform $offcanvas-duration $offcanvas-easing;
 

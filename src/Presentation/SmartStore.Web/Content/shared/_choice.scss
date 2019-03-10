@@ -17,11 +17,16 @@
 	&:after { content: ' *' }
 }
 
+.choice-item {
+    display: inline-flex;
+    align-items: center;
+}
+
 .choice-item-img,
 .choice-item-color {
     display: inline-block;
     text-decoration: none !important;
-    margin-right: 0.25rem;
+    margin-right: 0.4rem;
     overflow: hidden;
 }
 
@@ -96,8 +101,7 @@
             text-align: center;
             vertical-align: middle;
 
-            font-family: FontAwesome;
-            content: "\f00c"; // check
+            @include fontawesome-font("\f00c", regular); // check
             color: #fff;
             font-size: 10px;
 

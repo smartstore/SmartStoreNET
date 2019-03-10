@@ -66,9 +66,8 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Autofac, Version=4.9.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.9.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -94,9 +93,8 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.SqlServer.Scripting.11.0.2100.61\lib\Microsoft.SqlServer.Smo.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -106,8 +104,8 @@
       <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -147,6 +145,7 @@
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
+    <Compile Include="Mapping\Forums\ForumPostVoteMap.cs" />
     <Compile Include="Mapping\Media\MediaStorageMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
@@ -622,6 +621,38 @@
     <Compile Include="Migrations\201809171309522_NewsletterSubscriptionLanguage.cs" />
     <Compile Include="Migrations\201809171309522_NewsletterSubscriptionLanguage.Designer.cs">
       <DependentUpon>201809171309522_NewsletterSubscriptionLanguage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809261026134_ForumGroupAcl.cs" />
+    <Compile Include="Migrations\201809261026134_ForumGroupAcl.Designer.cs">
+      <DependentUpon>201809261026134_ForumGroupAcl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810011954195_ForumPostVote.cs" />
+    <Compile Include="Migrations\201810011954195_ForumPostVote.Designer.cs">
+      <DependentUpon>201810011954195_ForumPostVote.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810231214068_DataExchangeEnhancements.cs" />
+    <Compile Include="Migrations\201810231214068_DataExchangeEnhancements.Designer.cs">
+      <DependentUpon>201810231214068_DataExchangeEnhancements.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811061745204_IsSystemProductIndex.cs" />
+    <Compile Include="Migrations\201811061745204_IsSystemProductIndex.Designer.cs">
+      <DependentUpon>201811061745204_IsSystemProductIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811082148279_LocalizedPropertyKeyGroupIndex.cs" />
+    <Compile Include="Migrations\201811082148279_LocalizedPropertyKeyGroupIndex.Designer.cs">
+      <DependentUpon>201811082148279_LocalizedPropertyKeyGroupIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811161142587_TaskHistoryErrorLength.cs" />
+    <Compile Include="Migrations\201811161142587_TaskHistoryErrorLength.Designer.cs">
+      <DependentUpon>201811161142587_TaskHistoryErrorLength.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811202204501_ProductIndexSeekExport.cs" />
+    <Compile Include="Migrations\201811202204501_ProductIndexSeekExport.Designer.cs">
+      <DependentUpon>201811202204501_ProductIndexSeekExport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.cs" />
+    <Compile Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.Designer.cs">
+      <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1119,6 +1150,30 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809171309522_NewsletterSubscriptionLanguage.resx">
       <DependentUpon>201809171309522_NewsletterSubscriptionLanguage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809261026134_ForumGroupAcl.resx">
+      <DependentUpon>201809261026134_ForumGroupAcl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810011954195_ForumPostVote.resx">
+      <DependentUpon>201810011954195_ForumPostVote.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810231214068_DataExchangeEnhancements.resx">
+      <DependentUpon>201810231214068_DataExchangeEnhancements.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811061745204_IsSystemProductIndex.resx">
+      <DependentUpon>201811061745204_IsSystemProductIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811082148279_LocalizedPropertyKeyGroupIndex.resx">
+      <DependentUpon>201811082148279_LocalizedPropertyKeyGroupIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811161142587_TaskHistoryErrorLength.resx">
+      <DependentUpon>201811161142587_TaskHistoryErrorLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811202204501_ProductIndexSeekExport.resx">
+      <DependentUpon>201811202204501_ProductIndexSeekExport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.resx">
+      <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

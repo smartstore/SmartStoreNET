@@ -26,7 +26,7 @@
             @if (Model.DisplayPdfInvoice)
             {
 				<a href="@Url.Action("print", new { id = Model.Id, pdf = true })" class="btn btn-secondary btn-sm pdf-order-button" rel="nofollow">
-					<i class="fa fa-file-pdf-o"></i>
+					<i class="far fa-file-pdf"></i>
 					<span>@T("Order.GetPDFInvoice")</span>
 				</a>
             }

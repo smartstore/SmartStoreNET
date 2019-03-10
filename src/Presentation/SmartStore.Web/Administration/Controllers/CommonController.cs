@@ -122,7 +122,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			var currentCustomer = _services.WorkContext.CurrentCustomer;
 
-			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
+			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().CustomerLoginType != CustomerLoginType.Email ? currentCustomer.Username : currentCustomer.Email;
 			ViewBag.Stores = _services.StoreService.GetAllStores();
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 			{
@@ -497,8 +497,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				var msg = T("Admin.System.Warnings.TaskScheduler.Fail", _taskScheduler.BaseUrl, exception.Message);
 
-				var xxx = T("Admin.System.Warnings.TaskScheduler.Fail");
-
 				model.Add(new SystemWarningModel
 				{
 					Level = SystemWarningLevel.Fail,
@@ -513,7 +511,7 @@ namespace SmartStore.Admin.Controllers
 			string sitemapUrl = null;
 			try
 			{
-				sitemapUrl = WebHelper.GetAbsoluteUrl(Url.RouteUrl("SitemapSEO"), this.Request);
+				sitemapUrl = WebHelper.GetAbsoluteUrl(Url.RouteUrl("XmlSitemap"), this.Request);
 				var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(sitemapUrl));
 				request.Method = "HEAD";
 				request.Timeout = 15000;
@@ -912,7 +910,7 @@ namespace SmartStore.Admin.Controllers
 						if ((!startDateValue.HasValue || startDateValue.Value < info.CreationTimeUtc) &&
 							(!endDateValue.HasValue || info.CreationTimeUtc < endDateValue.Value))
 						{
-							if (FileSystemHelper.Delete(fullPath))
+							if (FileSystemHelper.DeleteFile(fullPath))
 								++model.DeleteExportedFiles.NumberOfDeletedFiles;
 						}
 					}

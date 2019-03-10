@@ -132,10 +132,12 @@ namespace SmartStore.PayPal.Models
 			if (fromSettings)
 			{
 				MiniMapper.Map(settings, this);
-			}
+            }
 			else
 			{
-				MiniMapper.Map(this, settings);
+                TransactMode = TransactMode.AuthorizeAndCapture;
+
+                MiniMapper.Map(this, settings);
 				settings.ApiAccountName = ApiAccountName.TrimSafe();
 				settings.ApiAccountPassword = ApiAccountPassword.TrimSafe();
 				settings.ClientId = ClientId.TrimSafe();
@@ -159,13 +161,6 @@ namespace SmartStore.PayPal.Models
             if (addRule("Secret"))
             {
                 RuleFor(x => x.Secret).NotEmpty();
-            }
-
-            if (addRule("ThirdPartyPaymentMethods"))
-            {
-                RuleFor(x => x.ThirdPartyPaymentMethods)
-                    .Must(x => x == null || x.Count <= 5)
-                    .WithMessage(T("Plugins.Payments.PayPalPlus.ValidateThirdPartyPaymentMethods"));
             }
         }
     }

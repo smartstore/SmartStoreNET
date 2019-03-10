@@ -117,11 +117,28 @@ namespace SmartStore.Services.Media
 			set { Set("q", value); }
 		}
 
-		// TODO: (mc) make Enum
+		/// <summary>
+		/// max (default) | boxpad | crop | min | pad | stretch
+		/// </summary>
 		public string ScaleMode
 		{
 			get { return Get<string>("m"); }
 			set { Set("m", value); }
+		}
+
+		/// <summary>
+		/// center (default) | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right
+		/// </summary>
+		public string AnchorPosition
+		{
+			get { return Get<string>("pos"); }
+			set { Set("pos", value); }
+		}
+
+		public string BackgroundColor
+		{
+			get { return Get<string>("bg"); }
+			set { Set("bg", value); }
 		}
 
 		/// <summary>

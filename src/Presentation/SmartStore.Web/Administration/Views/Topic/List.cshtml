@@ -9,7 +9,7 @@
 
 <div class="section-header">
     <div class="title">
-        <i class="fa fa-file-o"></i>
+        <i class="far fa-file"></i>
         @T("Admin.ContentManagement.Topics")
     </div>
     <div class="options">
@@ -48,7 +48,7 @@
 	<div class="col-sm-6 col-xl-3 ml-auto form-group">
 		@if (Model.AvailableStores.Count > 1)
 		{
-			<label>&nbsp;</label>
+			@Html.SmartLabel(string.Empty, string.Empty)
 		}
 		
 		<button type="submit" id="btnSearch" value="btnSearch" class="btn btn-warning btn-block">

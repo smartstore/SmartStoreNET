@@ -81,7 +81,11 @@ namespace SmartStore.Collections
 				IProducerConsumerCollection<TValue> value;
 				if (!_items.TryGetValue(key, out value))
 				{
-					_items.TryAdd(key, _bagCreator(Enumerable.Empty<TValue>()));
+                    value = _bagCreator(Enumerable.Empty<TValue>());
+                    if (!_items.TryAdd(key, value))
+                    {
+                        value = null;
+                    }
 				}
 
 				return value;

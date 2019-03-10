@@ -1,17 +1,17 @@
 @functions{   
-    private DateTime? Value
-    {
-        get
-        {
-            DateTime? value = null;
-            if (ViewData.Model != null)
-            {
-                value = Convert.ToDateTime(ViewData.Model, System.Globalization.CultureInfo.CurrentCulture);
-            }
-            return value;
-        }
-    }
-	
+	private DateTime? Value
+	{
+		get
+		{
+			DateTime? value = null;
+			if (ViewData.Model != null)
+			{
+				value = Convert.ToDateTime(ViewData.Model, System.Globalization.CultureInfo.CurrentCulture);
+			}
+			return value;
+		}
+	}
+
 	private bool PickTime
 	{
 		get
@@ -29,6 +29,21 @@
 			return false;
 		}
 	}
+
+	private string CssClass
+	{
+		get
+		{
+			var cls = "input-group date datetimepicker-group";
+
+			if (ViewData.ContainsKey("size"))
+			{
+				cls += " input-group-" + ViewData["size"].Convert<string>();
+			}
+
+			return cls;
+		}
+	}
 }
 
 @{
@@ -41,10 +56,10 @@
     }
 }
 
-<div class="input-group date datetimepicker-group" id="@id-parent" data-date="@value" data-target-input="nearest">
+<div class="@CssClass" id="@id-parent" data-date="@value" data-target-input="nearest">
     @Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = format })
 	<div class="input-group-append input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
-		<span class="input-group-text"><i class="fa fa-calendar"></i></span>
+		<span class="input-group-text"><i class="fa fa-calendar-alt"></i></span>
 	</div>
 </div>
 

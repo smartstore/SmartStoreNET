@@ -1,6 +1,5 @@
-﻿@model ForumGroupModel
-
-@using Telerik.Web.Mvc.UI;
+﻿@using Telerik.Web.Mvc.UI;
+@model ForumGroupModel
 
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
@@ -8,9 +7,9 @@
 @Html.SmartStore().TabStrip().Name("forumgroup-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
-	//generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "forumgroup-edit", this.Html, this.Model));
 })
 
@@ -96,6 +95,11 @@
 			</td>
 		</tr>
 	</table>
+}
+
+@helper TabAcl()
+{
+	@Html.Partial("AclSelector", Model)
 }
 
 @helper TabStores()

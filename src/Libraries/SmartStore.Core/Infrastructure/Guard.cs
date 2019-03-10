@@ -8,17 +8,16 @@ using System.Linq.Expressions;
 
 namespace SmartStore
 {
-
     public class Guard
     {
-        private const string AgainstMessage = "Assertion evaluation failed with 'false'.";
-        private const string ImplementsMessage = "Type '{0}' must implement type '{1}'.";
-        private const string InheritsFromMessage = "Type '{0}' must inherit from type '{1}'.";
-        private const string IsTypeOfMessage = "Type '{0}' must be of type '{1}'.";
-        private const string IsEqualMessage = "Compared objects must be equal.";
-        private const string IsPositiveMessage = "Argument '{0}' must be a positive value. Value: '{1}'.";
-        private const string IsTrueMessage = "True expected for '{0}' but the condition was False.";
-        private const string NotNegativeMessage = "Argument '{0}' cannot be a negative value. Value: '{1}'.";
+        internal const string AgainstMessage = "Assertion evaluation failed with 'false'.";
+		internal const string ImplementsMessage = "Type '{0}' must implement type '{1}'.";
+		internal const string InheritsFromMessage = "Type '{0}' must inherit from type '{1}'.";
+		internal const string IsTypeOfMessage = "Type '{0}' must be of type '{1}'.";
+		internal const string IsEqualMessage = "Compared objects must be equal.";
+		internal const string IsPositiveMessage = "Argument '{0}' must be a positive value. Value: '{1}'.";
+		internal const string IsTrueMessage = "True expected for '{0}' but the condition was False.";
+		internal const string NotNegativeMessage = "Argument '{0}' cannot be a negative value. Value: '{1}'.";
 
         private Guard()
         {
@@ -36,7 +35,7 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static void NotEmpty(string arg, string argName)
 		{
-			if (arg.IsEmpty())
+			if (string.IsNullOrWhiteSpace(arg))
 				throw Error.Argument(argName, "String parameter '{0}' cannot be null or all whitespace.", argName);
 		}
 
@@ -44,7 +43,7 @@ namespace SmartStore
 		public static void NotEmpty<T>(ICollection<T> arg, string argName)
 		{
 			if (arg == null || !arg.Any())
-				throw Error.Argument(argName, "Collection cannot be null and must have at least one item.");
+				throw Error.Argument(argName, "Collection cannot be null and must contain at least one item.");
 		}
 
 		[DebuggerStepThrough]
@@ -117,6 +116,7 @@ namespace SmartStore
 		public static void IsEnumType(Type arg, string argName)
 		{
 			NotNull(arg, argName);
+
 			if (!arg.IsEnum)
 				throw Error.Argument(argName, "Type '{0}' must be a valid Enum type.", arg.FullName);
 		}
@@ -125,6 +125,7 @@ namespace SmartStore
 		public static void IsEnumType(Type enumType, object arg, string argName)
 		{
 			NotNull(arg, argName);
+
 			if (!Enum.IsDefined(enumType, arg))
 			{
 				throw Error.ArgumentOutOfRange(argName, "The value of the argument '{0}' provided for the enumeration '{1}' is invalid.", argName, enumType.FullName);
@@ -135,6 +136,7 @@ namespace SmartStore
 		public static void NotDisposed(DisposableObject arg, string argName)
 		{
 			NotNull(arg, argName);
+
 			if (arg.IsDisposed)
 				throw Error.ObjectDisposed(argName);
 		}
@@ -143,6 +145,7 @@ namespace SmartStore
 		public static void PagingArgsValid(int indexArg, int sizeArg, string indexArgName, string sizeArgName)
 		{
 			NotNegative<int>(indexArg, indexArgName, "PageIndex cannot be below 0");
+
 			if (indexArg > 0)
 			{
 				// if pageIndex is specified (> 0), PageSize CANNOT be 0 

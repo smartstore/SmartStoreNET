@@ -6,7 +6,7 @@ namespace SmartStore.Core.Domain.Customers
     {
 		public CustomerSettings()
 		{
-			UsernamesEnabled = true;
+			CustomerLoginType = CustomerLoginType.UsernameOrEmail;
             CustomerNumberMethod = CustomerNumberMethod.Disabled;
             CustomerNumberVisibility = CustomerNumberVisibility.None;
 			DefaultPasswordFormat = PasswordFormat.Hashed;
@@ -14,7 +14,6 @@ namespace SmartStore.Core.Domain.Customers
 			PasswordMinLength = 6;
 			UserRegistrationType = UserRegistrationType.Standard;
 			AvatarMaximumSizeBytes = 512000;
-			DefaultAvatarEnabled = false;
 			CustomerNameFormat = CustomerNameFormat.ShowFirstName;
 			CustomerNameFormatMaxLength = 64;
 			GenderEnabled = true;
@@ -26,11 +25,11 @@ namespace SmartStore.Core.Domain.Customers
 			FirstNameRequired = false;
 			LastNameRequired = false;
 		}
-		
-		/// <summary>
-        /// Gets or sets a value indicating whether usernames are used instead of emails
+
+        /// <summary>
+        /// Gets or sets a value indicating the customer login type
         /// </summary>
-        public bool UsernamesEnabled { get; set; }
+        public CustomerLoginType CustomerLoginType { get; set; }
 
         /// <summary>
         /// Gets or sets the customer number method
@@ -81,11 +80,6 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a maximum avatar size (in bytes)
         /// </summary>
         public int AvatarMaximumSizeBytes { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to display default user avatar.
-        /// </summary>
-        public bool DefaultAvatarEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers location is shown
@@ -260,9 +254,6 @@ namespace SmartStore.Core.Domain.Customers
         public bool FaxRequired { get; set; }
 
         #endregion
-
-        public string PrefillLoginUsername { get; set; }
-        public string PrefillLoginPwd { get; set; }
 
 		/// <summary>
 		/// Identifier of a customer role that new registered customers will be assigned to

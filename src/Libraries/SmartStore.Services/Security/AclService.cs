@@ -73,7 +73,7 @@ namespace SmartStore.Services.Security
 			Guard.NotNull(entity, nameof(entity));
 
 			int entityId = entity.Id;
-            string entityName = typeof(T).Name;
+            string entityName = entity.GetEntityName();
 
 			return GetAclRecordsFor(entityName, entityId);
         }
@@ -131,7 +131,7 @@ namespace SmartStore.Services.Security
                 throw new ArgumentOutOfRangeException(nameof(customerRoleId));
 
             int entityId = entity.Id;
-            string entityName = typeof(T).Name;
+            string entityName = entity.GetEntityName();
 
             var aclRecord = new AclRecord
             {
@@ -152,7 +152,7 @@ namespace SmartStore.Services.Security
 			ClearCacheSegment(aclRecord.EntityName, aclRecord.EntityId);
 		}
 
-		public virtual int[] GetCustomerRoleIdsWithAccess(string entityName, int entityId)
+		public virtual int[] GetCustomerRoleIdsWithAccessTo(string entityName, int entityId)
 		{
 			Guard.NotEmpty(entityName, nameof(entityName));
 
@@ -171,35 +171,38 @@ namespace SmartStore.Services.Security
 
 		public bool Authorize(string entityName, int entityId)
 		{
-			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer);
+			return Authorize(entityName, entityId, _workContext.Value.CurrentCustomer?.CustomerRoles);
 		}
 
-		public virtual bool Authorize(string entityName, int entityId, Customer customer)
+		public virtual bool Authorize(string entityName, int entityId, IEnumerable<CustomerRole> roles)
 		{
 			Guard.NotEmpty(entityName, nameof(entityName));
 
 			if (entityId <= 0)
 				return false;
 
-			if (customer == null)
-				return false;
-
 			if (!HasActiveAcl)
 				return true;
 
-			foreach (var role1 in customer.CustomerRoles.Where(cr => cr.Active))
+			if (roles == null)
+				return false;
+
+			foreach (var role in roles)
 			{
-				foreach (var role2Id in GetCustomerRoleIdsWithAccess(entityName, entityId))
+				if (!role.Active)
+					continue;
+
+				foreach (var role2Id in GetCustomerRoleIdsWithAccessTo(entityName, entityId))
 				{
-					if (role1.Id == role2Id)
+					if (role.Id == role2Id)
 					{
-						// yes, we have such permission
+						// Yes, we have such permission
 						return true;
 					}
 				}
 			}
 
-			// no permission granted
+			// No permission granted
 			return false;
 		}
 

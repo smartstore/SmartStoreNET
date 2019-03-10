@@ -137,17 +137,20 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost, ActionName("ReturnRequest")] 
-        [ValidateInput(false)]
         public ActionResult ReturnRequestSubmit(int id /* orderId */, SubmitReturnRequestModel model, FormCollection form)
         {
 			var order = _orderService.GetOrderById(id);
 			var customer = Services.WorkContext.CurrentCustomer;
 
-			if (order == null || order.Deleted || customer.Id != order.CustomerId)
+            if (order == null || order.Deleted || customer.Id != order.CustomerId)
+            {
                 return new HttpUnauthorizedResult();
+            }
 
             if (!_orderProcessingService.IsReturnRequestAllowed(order))
+            {
                 return RedirectToRoute("HomePage");
+            }
 
             foreach (var orderItem in order.OrderItems)
             {

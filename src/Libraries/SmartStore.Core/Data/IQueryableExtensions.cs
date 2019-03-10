@@ -9,7 +9,6 @@ namespace SmartStore
 {
 	public static class IQueryableExtensions
 	{
-
 		/// <summary>
 		/// Instructs the repository to eager load entities that may be in the type's association path.
 		/// </summary>
@@ -40,6 +39,5 @@ namespace SmartStore
 
 			return query.Include(path);
 		}
-
 	}
 }

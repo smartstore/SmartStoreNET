@@ -80,7 +80,7 @@ namespace SmartStore.Services.Security
 		/// <param name="entityName">Entity name to check permission for</param>
 		/// <param name="entityId">Entity id to check permission for</param>
 		/// <returns>Customer role identifiers</returns>
-		int[] GetCustomerRoleIdsWithAccess(string entityName, int entityId);
+		int[] GetCustomerRoleIdsWithAccessTo(string entityName, int entityId);
 
 		/// <summary>
 		/// Authorize ACL permission
@@ -91,15 +91,24 @@ namespace SmartStore.Services.Security
 		/// <returns>true - authorized; otherwise, false</returns>
 		bool Authorize(string entityName, int entityId);
 
+		///// <summary>
+		///// Authorize ACL permission
+		///// </summary>
+		///// <typeparam name="T">Type</typeparam>
+		///// <param name="entityName">Entity name to check permission for</param>
+		///// <param name="entityId">Entity id to check permission for</param>
+		///// <param name="customer">Customer</param>
+		///// <returns>true - authorized; otherwise, false</returns>
+		//bool Authorize(string entityName, int entityId, Customer customer);
+
 		/// <summary>
 		/// Authorize ACL permission
 		/// </summary>
-		/// <typeparam name="T">Type</typeparam>
 		/// <param name="entityName">Entity name to check permission for</param>
 		/// <param name="entityId">Entity id to check permission for</param>
-		/// <param name="customer">Customer</param>
+		/// <param name="roles">Roles to check access permission for. Inactive roles will be skipped.</param>
 		/// <returns>true - authorized; otherwise, false</returns>
-		bool Authorize(string entityName, int entityId, Customer customer);
+		bool Authorize(string entityName, int entityId, IEnumerable<CustomerRole> roles);
 	}
 
 	public static class IAclServiceExtensions
@@ -110,12 +119,17 @@ namespace SmartStore.Services.Security
 		/// <typeparam name="T">Type</typeparam>
 		/// <param name="entity">Entity</param>
 		/// <returns>Customer role identifiers</returns>
-		public static int[] GetCustomerRoleIdsWithAccess<T>(this IAclService aclService, T entity) where T : BaseEntity, IAclSupported
+		public static int[] GetCustomerRoleIdsWithAccessTo<T>(this IAclService aclService, T entity) where T : BaseEntity, IAclSupported
 		{
 			if (entity == null)
 				return new int[0];
 
-			return aclService.GetCustomerRoleIdsWithAccess(typeof(T).Name, entity.Id);
+			return aclService.GetCustomerRoleIdsWithAccessTo(entity.GetEntityName(), entity.Id);
+		}
+
+		public static bool Authorize(this IAclService aclService, string entityName, int entityId, Customer customer)
+		{
+			return aclService.Authorize(entityName, entityId, customer?.CustomerRoles);
 		}
 
 		/// <summary>
@@ -132,7 +146,7 @@ namespace SmartStore.Services.Security
 			if (!entity.SubjectToAcl)
 				return true;
 
-			return aclService.Authorize(typeof(T).Name, entity.Id);
+			return aclService.Authorize(entity.GetEntityName(), entity.Id);
 		}
 
 		/// <summary>
@@ -150,7 +164,25 @@ namespace SmartStore.Services.Security
 			if (!entity.SubjectToAcl)
 				return true;
 
-			return aclService.Authorize(typeof(T).Name, entity.Id, customer);
+			return aclService.Authorize(entity.GetEntityName(), entity.Id, customer?.CustomerRoles);
+		}
+
+		/// <summary>
+		/// Authorize ACL permission
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="roles">Roles to check access permission for. Inactive roles will be skipped.</param>
+		/// <returns>true - authorized; otherwise, false</returns>
+		public static bool Authorize<T>(this IAclService aclService, T entity, IEnumerable<CustomerRole> roles) where T : BaseEntity, IAclSupported
+		{
+			if (entity == null)
+				return false;
+
+			if (!entity.SubjectToAcl)
+				return true;
+
+			return aclService.Authorize(entity.GetEntityName(), entity.Id, roles);
 		}
 	}
 }

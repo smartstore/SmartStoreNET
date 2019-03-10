@@ -606,15 +606,14 @@ namespace SmartStore.Services.Customers.Importer
 								currentPictures.Add(picture);
 							}
 						}
-
-						var size = Size.Empty;
-						pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
+                        
 						pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
-							var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
-							if (picture != null)
+                            var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
+
+                            if (picture != null)
 							{
 								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
 							}

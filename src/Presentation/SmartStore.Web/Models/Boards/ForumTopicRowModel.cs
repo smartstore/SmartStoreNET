@@ -15,6 +15,7 @@ namespace SmartStore.Web.Models.Boards
         public string SeName { get; set; }
         public int FirstPostId { get; set; }
         public int LastPostId { get; set; }
+        public bool Published { get; set; }
 
         public ForumTopicType ForumTopicType { get; set; }
         public int NumPosts { get; set; }

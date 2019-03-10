@@ -131,7 +131,7 @@ namespace SmartStore.Services.Seo
 			Guard.NotNull(entity, nameof(entity));
 
 			return GetSeName(
-				typeof(T).Name,
+				entity.GetEntityName(),
 				entity.Id,
 				EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id,
 				EngineContext.Current.Resolve<IUrlRecordService>(),
@@ -156,7 +156,7 @@ namespace SmartStore.Services.Seo
 			Guard.NotNull(entity, nameof(entity));
 
 			return GetSeName(
-				typeof(T).Name,
+				entity.GetEntityName(),
 				entity.Id,
 				languageId, 
 				EngineContext.Current.Resolve<IUrlRecordService>(), 
@@ -185,7 +185,7 @@ namespace SmartStore.Services.Seo
 			Guard.NotNull(entity, nameof(entity));
 
 			return GetSeName(
-				typeof(T).Name,
+				entity.GetEntityName(),
 				entity.Id,
 				languageId,
 				urlRecordService,
@@ -298,7 +298,7 @@ namespace SmartStore.Services.Seo
             }
             
 			// ensure this sename is not reserved yet
-			string entityName = typeof(T).Name;
+			string entityName = entity.GetEntityName();
 			int i = 2;
 			var tempSeName = seName;
 
@@ -348,7 +348,7 @@ namespace SmartStore.Services.Seo
 				name,
 				seoSettings == null ? false : seoSettings.ConvertNonWesternChars,
 				seoSettings == null ? false : seoSettings.AllowUnicodeCharsInUrls,
-				seoSettings == null ? null : seoSettings.SeoNameCharConversion);
+				seoSettings?.SeoNameCharConversion);
 		}
 
         #endregion

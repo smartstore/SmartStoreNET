@@ -14,26 +14,36 @@
 		}
 	}
 
-	private string Postfix
+	private string CssClass
 	{
 		get
 		{
-			return ViewData["postfix"] as string;
+			var cls = "numerictextbox-group flex-grow-1";
+
+			if (TryGetMetadata<string>("size", out var size))
+			{
+				cls += " numerictextbox-group-" + size;
+			}
+
+			return cls;
 		}
 	}
 }
 
-<div class="numerictextbox-group flex-grow-1">
+<div class="@CssClass">
 	@(Html.Telerik().NumericTextBox<decimal>()
 			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
 			.EmptyMessage(T("Common.EnterValue"))
 			.Value(Value)
+			.MinValue(GetMetadata<decimal?>("min"))
+			.MaxValue(GetMetadata<decimal?>("max"))
+			.IncrementStep(GetMetadata<decimal?>("step") ?? 1)
 			.DecimalDigits(4)   //always display 4 digits
 	)
 
-	@if (Postfix.HasValue())
+	@if (TryGetMetadata<string>("postfix", out var postfix))
 	{
-		<span class="numerictextbox-postfix">@Postfix</span>
+		<span class="numerictextbox-postfix">@postfix</span>
 	}
 </div>
 

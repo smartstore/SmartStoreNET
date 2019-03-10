@@ -6,14 +6,11 @@ namespace SmartStore.Core.Domain.Media
     public enum FallbackPictureType
     {
 		NoFallback = 0,
+
 		/// <summary>
 		/// Entities (products, categories, manufacturers)
 		/// </summary>
 		Entity = 1,
-        /// <summary>
-        /// Avatar
-        /// </summary>
-        Avatar = 10,
     }
 
     public enum ThumbnailScaleMode

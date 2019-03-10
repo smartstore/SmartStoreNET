@@ -221,15 +221,14 @@ namespace SmartStore.Services.Catalog.Importer
 											currentPictures.Add(picture);
 										}
 									}
-
-									var size = Size.Empty;
-									pictureBinary = _pictureService.ValidatePicture(pictureBinary, image.MimeType, out size);
+                                    
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)
 									{
-										var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
-										if (picture != null)
+										//var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, size.Width, size.Height, false);
+                                        var picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false); ;
+                                        if (picture != null)
 										{
 											category.PictureId = picture.Id;
 											_categoryRepository.Update(category);

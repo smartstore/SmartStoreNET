@@ -1,18 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Web;
-using System.Web.Hosting;
 using DotLiquid;
 using DotLiquid.FileSystems;
 using DotLiquid.NamingConventions;
 using SmartStore.Core;
-using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
-using SmartStore.Utilities;
 
 namespace SmartStore.Templating.Liquid
 {
@@ -37,11 +34,11 @@ namespace SmartStore.Templating.Liquid
 			// Register Value type transformers
 			var allowedMoneyProps = new[] 
 			{
-				TypeHelper.NameOf<Money>(x => x.Amount),
-				TypeHelper.NameOf<Money>(x => x.RoundedAmount),
-				TypeHelper.NameOf<Money>(x => x.TruncatedAmount),
-				TypeHelper.NameOf<Money>(x => x.Formatted),
-				TypeHelper.NameOf<Money>(x => x.DecimalDigits)
+				nameof(Money.Amount),
+				nameof(Money.RoundedAmount),
+				nameof(Money.TruncatedAmount),
+				nameof(Money.Formatted),
+				nameof(Money.DecimalDigits)
 			};
 			Template.RegisterSafeType(typeof(Money), allowedMoneyProps, x => x);
 			

@@ -18,12 +18,6 @@ namespace SmartStore.Core.Search
 		ISearchHit Get(int id);
 
 		/// <summary>
-		/// Get search bits
-		/// </summary>
-		/// <returns>Search bits</returns>
-		ISearchBits GetBits();
-
-		/// <summary>
 		/// Get total number of search hits
 		/// </summary>
 		/// <returns>Total number of search hits</returns>

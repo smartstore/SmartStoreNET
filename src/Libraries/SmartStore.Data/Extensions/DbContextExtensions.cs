@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using SmartStore.Core;
 using System.Diagnostics;
+using SmartStore.Core.Data;
 
 namespace SmartStore
 {
@@ -92,7 +93,36 @@ namespace SmartStore
 				.ForEach(x => "{0} {1} {2}".FormatInvariant((x.Entity as BaseEntity).Id, x.State.ToString(), x.Entity.GetType().Name).Dump());
 		}
 
-		internal static SqlServerInfo GetSqlServerInfo(this DbContext context)
+        [Conditional("DEBUG")]
+        [DebuggerStepThrough]
+        public static void CreateSqlTimeout(this DbContext context)
+        {
+            var timeoutErrorSql =
+                "CREATE PROCEDURE [dbo].[GetTimeoutError]\r\n" +
+                "AS\r\n" +
+                "BEGIN\r\n" +
+                "  WAITFOR DELAY '00:01:00'\r\n" +
+                "  SELECT GETDATE()\r\n" +
+                "END";
+
+            var storedProcedureSql =
+                "IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[GetTimeoutError]') AND OBJECTPROPERTY(object_id,N'IsProcedure') = 1)" +
+                "BEGIN EXEC('" + timeoutErrorSql.Replace("'", "''") + "') END;";
+
+            context.Execute(storedProcedureSql);
+
+            var connectionString = DataSettings.Current.DataConnectionString;
+            using (var cmd = new System.Data.SqlClient.SqlCommand("GetTimeoutError", new System.Data.SqlClient.SqlConnection(connectionString)))
+            {
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandTimeout = 30;    // Seconds.
+
+                cmd.Connection.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        internal static SqlServerInfo GetSqlServerInfo(this DbContext context)
 		{
 			string sql = @"SELECT  
     SERVERPROPERTY('productversion') as 'ProductVersion', 

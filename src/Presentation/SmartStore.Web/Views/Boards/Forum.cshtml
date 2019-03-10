@@ -11,6 +11,7 @@
 
     var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
         .Name("paginator")
+        .QueryParam("page")
         .ShowSummary(false)
         .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
         .Alignment(PagerAlignment.Right);
@@ -58,7 +59,7 @@
     <div>
         <div class="actions my-3 row sm-gutters">
             <div class="col col-sm-auto mt-1 mt-sm-0">
-                <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic btn-block" rel="nofollow">
+                <a href="@Url.Action("TopicCreate", new { id = Model.Id })" class="btn btn-primary newtopic btn-block" rel="nofollow">
                     <i class="fa fa-plus"></i>
                     <span>@T("Forum.NewTopic")</span>
                 </a>
@@ -101,7 +102,7 @@
             }
             @foreach (var topic in Model.ForumTopics)
             {
-                <tr class="topic">
+                <tr class="topic@(topic.Published ? "" : " disabled")">
                     <td class="image">
                         @{ Html.RenderPartial("Customer.Avatar", topic.Avatar); }
                     </td>
@@ -134,6 +135,7 @@
                             @if (topic.NumPosts > Model.PostsPageSize)
                             {
                                 @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                    .QueryParam("page")
                                     .HtmlAttributes(new { @class = "topics-pager" })
                                     .WithRenderer<ForumTopicPagerRenderer>()
                                     .ShowPrevious(false)
@@ -144,7 +146,6 @@
                                     .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                             }
                         </div>
-
                     </td>
                     <td class="replies d-none d-md-table-cell">
                         @topic.NumReplies.ToString("N0")

@@ -166,7 +166,7 @@ namespace SmartStore.PayPal.Controllers
 				var provider = PaymentService.LoadPaymentMethodBySystemName(PayPalExpressProvider.SystemName, true);
 				var processor = provider != null ? provider.Value as PayPalExpressProvider : null;
 				if (processor == null)
-					throw new SmartException("PayPal Express Checkout module cannot be loaded");
+					throw new SmartException(T("Plugins.CannotLoadModule", T("Plugins.FriendlyName.Payments.PayPalExpress")));
 
 				var processPaymentRequest = new PayPalProcessPaymentRequest();
 
@@ -265,9 +265,9 @@ namespace SmartStore.PayPal.Controllers
 			var provider = PaymentService.LoadPaymentMethodBySystemName("Payments.PayPalExpress", true);
 			var processor = provider != null ? provider.Value as PayPalExpressProvider : null;
 			if (processor == null)
-				throw new SmartException("PayPal Express module cannot be loaded");
+                throw new SmartException(T("Plugins.CannotLoadModule", T("Plugins.FriendlyName.Payments.PayPalExpress")));
 
-			var resp = processor.GetExpressCheckoutDetails(token);
+            var resp = processor.GetExpressCheckoutDetails(token);
 
 			if (resp.Ack == AckCodeType.Success)
 			{

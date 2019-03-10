@@ -85,12 +85,6 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Common.Succeeded", "Succeeded", "Erfolgreich");
             builder.AddOrUpdate("Common.MachineName", "Machine name", "Maschinenname");
 
-            builder.AddOrUpdate("Admin.System.ScheduleTasks.RunPerMachine",
-                "Run per machine",
-                "Pro Maschine ausführen",
-                "Indicates whether the task is executed decidedly on each machine of a web farm.",
-                "Gibt an, ob die Aufgabe auf jeder Maschine einer Webfarm dezidiert ausgeführt wird.");
-
             builder.AddOrUpdate("Admin.System.ScheduleTasks.HistoryCleanupNote",
                 "The history is cleaned up once a day: maximum {0} entries and none older than {1} days.",
                 "Die Historie wird einmal täglich bereinigt: Maximal {0} Einträge und keine älter als {1} Tage.");

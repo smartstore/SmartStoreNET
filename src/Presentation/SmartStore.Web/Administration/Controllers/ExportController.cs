@@ -160,18 +160,32 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (System.IO.File.Exists(path) && !list.Any(x => x.FilePath == path))
 			{
-				var fi = new ExportFileDetailsModel.FileInfo();
-				fi.FilePath = path;
-				fi.FileName = Path.GetFileName(path);
-				fi.FileExtension = Path.GetExtension(path);
-				fi.DisplayOrder = (fi.FileExtension.IsCaseInsensitiveEqual(".zip") ? 0 : 1);
+                var fi = new ExportFileDetailsModel.FileInfo
+                {
+                    FilePath = path,
+                    FileName = Path.GetFileName(path),
+                    FileExtension = Path.GetExtension(path)
+                };
 
-				if (fileInfo != null)
+                fi.DisplayOrder = fi.FileExtension.IsCaseInsensitiveEqual(".zip") ? 0 : 1;
+
+                if (fileInfo != null)
 				{
-					if (fileInfo.Label.HasValue())
-						fi.Label = fileInfo.Label;
-					else if (fileInfo.IsDataFile)
-						fi.Label = T("Admin.Common.Data");
+                    fi.RelatedType = fileInfo.RelatedType;
+
+                    if (fileInfo.Label.HasValue())
+                    {
+                        fi.Label = fileInfo.Label;
+                    }
+                    else
+                    {
+                        fi.Label = T("Admin.Common.Data");
+
+                        if (fileInfo.RelatedType.HasValue)
+                        {
+                            fi.Label = string.Concat(fi.Label, " ", fileInfo.RelatedType.Value.GetLocalizedEnum(Services.Localization, Services.WorkContext));
+                        }
+                    }
 				}
 
 				if (store != null)
@@ -226,13 +240,10 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 
-				// add public files
-				ExportDeployment publicDeployment = null;
-
-				if (deployment == null)
-					publicDeployment = profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
-				else
-					publicDeployment = (deployment.DeploymentType == ExportDeploymentType.PublicFolder ? deployment : null);
+				// Add public files.
+				var publicDeployment = deployment == null
+					? profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder)
+				    : (deployment.DeploymentType == ExportDeploymentType.PublicFolder ? deployment : null);
 
 				if (publicDeployment != null)
 				{
@@ -255,7 +266,7 @@ namespace SmartStore.Admin.Controllers
 
 						foreach (var file in resultInfo.Files)
 						{
-							var store = (file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId));
+							var store = file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId);
 
 							AddFileInfo(
 								model.PublicFiles,
@@ -267,9 +278,9 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				NotifyError(exception);
+				NotifyError(ex);
 			}
 
 			return model;
@@ -342,12 +353,13 @@ namespace SmartStore.Admin.Controllers
 			model.FolderName = profile.FolderName;
 			model.FileNamePattern = profile.FileNamePattern;
 			model.Enabled = profile.Enabled;
+            model.ExportRelatedData = profile.ExportRelatedData;
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 			model.IsTaskRunning = lastHistoryEntry?.IsRunning ?? false;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogPath());
-			model.HasActiveProvider = (provider != null);
+			model.HasActiveProvider = provider != null;
 			model.FileNamePatternDescriptions = T("Admin.DataExchange.Export.FileNamePatternDescriptions").Text.SplitSafe(";");
 
 			model.Provider = new ExportProfileModel.ProviderModel();
@@ -403,7 +415,7 @@ namespace SmartStore.Admin.Controllers
 			
 			model.AvailableCompletedEmailAddresses = new MultiSelectList(profile.CompletedEmailAddresses.SplitSafe(","));
 
-			// projection
+			// Projection.
 			model.Projection = new ExportProjectionModel
 			{
 				StoreId = projection.StoreId,
@@ -448,7 +460,7 @@ namespace SmartStore.Admin.Controllers
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
 
-			// filtering
+			// Filtering.
 			model.Filter = new ExportFilterModel
 			{
 				StoreId = filter.StoreId,
@@ -497,7 +509,7 @@ namespace SmartStore.Admin.Controllers
                 model.Filter.AvailableLanguages.Add(new SelectListItem { Text = lang.Name, Value = lang.Id.ToString() });
             }
 
-            // deployment
+            // Deployment.
             model.Deployments = profile.Deployments
 				.Select(x =>
 				{
@@ -612,9 +624,9 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 				}
-				catch (Exception exc)
+				catch (Exception ex)
 				{
-					NotifyError(exc);
+					NotifyError(ex);
 				}
 			}
 		}
@@ -822,6 +834,7 @@ namespace SmartStore.Admin.Controllers
 			profile.FileNamePattern = model.FileNamePattern;
 			profile.FolderName = model.FolderName;
 			profile.Enabled = model.Enabled;
+            profile.ExportRelatedData = model.ExportRelatedData;
 			profile.Offset = model.Offset;
 			profile.Limit = model.Limit ?? 0;
 			profile.BatchSize = model.BatchSize ?? 0;
@@ -922,9 +935,9 @@ namespace SmartStore.Admin.Controllers
 					profile.ProviderConfigData = XmlHelper.Serialize(model.CustomProperties["ProviderConfigData"], configInfo.ModelType);
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				NotifyError(exc);
+				NotifyError(ex);
 			}
 
 			_exportService.UpdateExportProfile(profile);
@@ -966,16 +979,22 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Preview(int id)
 		{
-			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
-				return AccessDeniedView();
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+            {
+                return AccessDeniedView();
+            }
 
 			var profile = _exportService.GetExportProfileById(id);
-			if (profile == null)
-				return RedirectToAction("List");
+            if (profile == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider == null || provider.Metadata.IsHidden)
-				return RedirectToAction("List");
+            if (provider == null || provider.Metadata.IsHidden)
+            {
+                return RedirectToAction("List");
+            }
 
 			if (!profile.Enabled)
 			{
@@ -985,7 +1004,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var request = new DataExportRequest(profile, provider);
-			var totalRecords = _dataExporter.GetDataCount(request);
 
 			var model = new ExportPreviewModel
 			{
@@ -994,16 +1012,15 @@ namespace SmartStore.Admin.Controllers
 				ThumbnailUrl = GetThumbnailUrl(provider),
 				GridPageSize = DataExporter.PageSize,
 				EntityType = provider.Value.EntityType,
-				TotalRecords = totalRecords,
 				LogFileExists = System.IO.File.Exists(profile.GetExportLogPath()),
-				UsernamesEnabled = _customerSettings.Value.UsernamesEnabled
+				UsernamesEnabled = _customerSettings.Value.CustomerLoginType != CustomerLoginType.Email
 			};
 
 			return View(model);
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult PreviewList(GridCommand command, int id, int totalRecords)
+		public ActionResult PreviewList(GridCommand command, int id)
 		{
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
@@ -1021,19 +1038,20 @@ namespace SmartStore.Admin.Controllers
 				return new JsonResult { Data = Enumerable.Empty<ExportPreviewProductModel>() };
 			}
 
-			var request = new DataExportRequest(profile, provider);
-			var normalizedTotal = profile.Limit > 0 && totalRecords > profile.Limit
-				? profile.Limit
-				: totalRecords;
-			var pageIndex = command.Page - 1;
-			object gridData = null;
+            object gridData = null;
+            var pageIndex = command.Page - 1;
+            var request = new DataExportRequest(profile, provider);
+            var result = _dataExporter.Preview(request, pageIndex);
 
-			if (provider.Value.EntityType == ExportEntityType.Product)
+            var normalizedTotal = profile.Limit > 0 && result.TotalRecords > profile.Limit
+				? profile.Limit
+				: result.TotalRecords;
+
+            if (provider.Value.EntityType == ExportEntityType.Product)
 			{
 				var models = new List<ExportPreviewProductModel>();
-				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				foreach (var item in items)
+				foreach (var item in result.Data)
 				{
 					var product = item.Entity as Product;
 					var model = new ExportPreviewProductModel();
@@ -1049,14 +1067,14 @@ namespace SmartStore.Admin.Controllers
 					model.AdminComment = item.AdminComment;
 					models.Add(model);
 				}
+
 				gridData = new GridModel<ExportPreviewProductModel> { Data = models, Total = normalizedTotal };
 			}
 			else if (provider.Value.EntityType == ExportEntityType.Order)
 			{
 				var models = new List<ExportPreviewOrderModel>();
-				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				foreach (var item in items)
+				foreach (var item in result.Data)
 				{
 					var model = new ExportPreviewOrderModel();
 					model.Id = item.Id;
@@ -1071,14 +1089,14 @@ namespace SmartStore.Admin.Controllers
 					model.StoreName = (string)item.Store.Name;
 					models.Add(model);
 				}
+
 				gridData = new GridModel<ExportPreviewOrderModel> { Data = models, Total = normalizedTotal };
 			}
 			else if (provider.Value.EntityType == ExportEntityType.Category)
 			{
 				var models = new List<ExportPreviewCategoryModel>();
-				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				foreach (var item in items)
+				foreach (var item in result.Data)
 				{
 					var category = item.Entity as Category;
 					var model = new ExportPreviewCategoryModel();
@@ -1096,9 +1114,8 @@ namespace SmartStore.Admin.Controllers
 			else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
 			{
 				var models = new List<ExportPreviewManufacturerModel>();
-				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				foreach (var item in items)
+				foreach (var item in result.Data)
 				{
 					var model = new ExportPreviewManufacturerModel();
 					model.Id = item.Id;
@@ -1108,14 +1125,14 @@ namespace SmartStore.Admin.Controllers
 					model.LimitedToStores = item.LimitedToStores;
 					models.Add(model);
 				}
+
 				gridData = new GridModel<ExportPreviewManufacturerModel> { Data = models, Total = normalizedTotal };
 			}
 			else if (provider.Value.EntityType == ExportEntityType.Customer)
 			{
 				var models = new List<ExportPreviewCustomerModel>();
-				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				foreach (var item in items)
+				foreach (var item in result.Data)
 				{
 					var customer = item.Entity as Customer;
 					var customerRoles = item.CustomerRoles as List<dynamic>;
@@ -1132,14 +1149,14 @@ namespace SmartStore.Admin.Controllers
 					model.Username = customer.Username;
 					models.Add(model);
 				}
+
 				gridData = new GridModel<ExportPreviewCustomerModel> { Data = models, Total = normalizedTotal };
 			}
 			else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
 			{
 				var models = new List<ExportPreviewNewsLetterSubscriptionModel>();
-				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				foreach (var item in items)
+				foreach (var item in result.Data)
 				{
 					var subscription = item.Entity as NewsLetterSubscription;
 					var model = new ExportPreviewNewsLetterSubscriptionModel();
@@ -1150,18 +1167,17 @@ namespace SmartStore.Admin.Controllers
 					model.StoreName = (string)item.Store.Name;
 					models.Add(model);
 				}
-				gridData = new GridModel<ExportPreviewNewsLetterSubscriptionModel> { Data = models, Total = normalizedTotal };
+			
+                gridData = new GridModel<ExportPreviewNewsLetterSubscriptionModel> { Data = models, Total = normalizedTotal };
 			}
 			else if (provider.Value.EntityType == ExportEntityType.ShoppingCartItem)
 			{
 				var guest = T("Admin.Customers.Guest").Text;
 				var cartTypeName = ShoppingCartType.ShoppingCart.GetLocalizedEnum(Services.Localization, Services.WorkContext);
 				var wishlistTypeName = ShoppingCartType.Wishlist.GetLocalizedEnum(Services.Localization, Services.WorkContext);
-
 				var models = new List<ExportPreviewShoppingCartItemModel>();
-				var items = _dataExporter.Preview(request, pageIndex, totalRecords);
 
-				foreach (var item in items)
+				foreach (var item in result.Data)
 				{
 					var cartItem = item.Entity as ShoppingCartItem;
 					var model = new ExportPreviewShoppingCartItemModel();
@@ -1183,6 +1199,7 @@ namespace SmartStore.Admin.Controllers
 					model.StoreName = (string)item.Store.Name;
 					models.Add(model);
 				}
+
 				gridData = new GridModel<ExportPreviewShoppingCartItemModel> { Data = models, Total = normalizedTotal };
 			}
 
@@ -1192,15 +1209,18 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Execute(int id, string selectedIds)
 		{
-			// permissions checked internally by DataExporter
-
+			// Permissions checked internally by DataExporter.
 			var profile = _exportService.GetExportProfileById(id);
-			if (profile == null)
-				return RedirectToAction("List");
+            if (profile == null)
+            {
+                return RedirectToAction("List");
+            }
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider == null || provider.Metadata.IsHidden)
-				return RedirectToAction("List");
+            if (provider == null || provider.Metadata.IsHidden)
+            {
+                return RedirectToAction("List");
+            }
 
 			var taskParams = new Dictionary<string, string>
 			{
@@ -1208,16 +1228,20 @@ namespace SmartStore.Admin.Controllers
 				{ TaskExecutor.CurrentStoreIdParamName, Services.StoreContext.CurrentStore.Id.ToString() }
 			};
 
-			if (selectedIds.HasValue())
-				taskParams.Add("SelectedIds", selectedIds);
+            if (selectedIds.HasValue())
+            {
+                taskParams.Add("SelectedIds", selectedIds);
+            }
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
 			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress.DataExportTask"));
 
 			var referrer = Services.WebHelper.GetUrlReferrer();
-			if (referrer.HasValue())
-				return Redirect(referrer);
+            if (referrer.HasValue())
+            {
+                return Redirect(referrer);
+            }
 
 			return RedirectToAction("List");
         }

@@ -14,9 +14,7 @@ namespace SmartStore.Services.DataExchange.Export
 	{
 		DataExportResult Export(DataExportRequest request, CancellationToken cancellationToken);
 
-		IList<dynamic> Preview(DataExportRequest request, int pageIndex, int? totalRecords = null);
-
-		int GetDataCount(DataExportRequest request);
+        DataExportPreviewResult Preview(DataExportRequest request, int pageIndex);
 
 		/// <summary>
 		/// Creates a product export context for fast retrieval (eager loading) of product navigation properties

@@ -79,7 +79,6 @@
         
     }   
 }
-
 </ul>
 
 
@@ -88,7 +87,7 @@
     var isFirst = true;
 	var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
     
-    <ul class='dropdown-menu dropdown-menu-light-icons'>
+    <ul class='dropdown-menu'>
     @foreach (var node in nodes)
     {
         var item = node.Value;
@@ -118,10 +117,10 @@
             <a class="dropdown-item" href="@GetNodeLink(node)">
 				@if (hasIcons)
 				{
-					var iconClass = "fa fa-fw";
+					var iconClass = "fa-fw";
 					if (node.Value.Icon.HasValue())
 					{
-						iconClass += " fa-" + node.Value.Icon;
+						iconClass += " " + node.Value.Icon;
 					}
 					<i class='@iconClass'></i>
 				}

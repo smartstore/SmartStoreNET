@@ -258,6 +258,9 @@ namespace SmartStore.Services.Messages
 				case ForumPost x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
+                case ForumPostVote x:
+                    modelPart = CreateModelPart(x, messageContext);
+                    break;
 				case Forum x:
 					modelPart = CreateModelPart(x, messageContext);
 					break;
@@ -596,12 +599,13 @@ namespace SmartStore.Services.Messages
 			var email = part.FindEmail();
 			var pwdRecoveryToken = part.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken).NullEmpty();
 			var accountActivationToken = part.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken).NullEmpty();
+            var customerVatStatus = (VatNumberStatus)part.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
 
-			int rewardPointsBalance = part.GetRewardPointsBalance();
+            int rewardPointsBalance = part.GetRewardPointsBalance();
 			decimal rewardPointsAmountBase = _services.Resolve<IOrderTotalCalculationService>().ConvertRewardPointsToAmount(rewardPointsBalance);
 			decimal rewardPointsAmount = _services.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _services.WorkContext.WorkingCurrency);
 
-			var m = new Dictionary<string, object>
+            var m = new Dictionary<string, object>
 			{
 				["Id"] = part.Id,
 				["CustomerGuid"] = part.CustomerGuid,
@@ -615,7 +619,7 @@ namespace SmartStore.Services.Messages
 
 				["FullName"] = GetDisplayNameForCustomer(part).NullEmpty(),
 				["VatNumber"] = part.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber).NullEmpty(),
-				["VatNumberStatus"] = part.GetAttribute<VatNumberStatus>(SystemCustomerAttributeNames.VatNumberStatusId).GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
+				["VatNumberStatus"] = customerVatStatus.GetLocalizedEnum(_services.Localization, messageContext.Language.Id).NullEmpty(),
 				["CustomerNumber"] = part.CustomerNumber.NullEmpty(),
 				["IsRegistered"] = part.IsRegistered(),
 
@@ -664,7 +668,7 @@ namespace SmartStore.Services.Messages
 			var message = (string)null;
 			if (part.Message.HasValue())
 			{
-				message = HtmlUtils.FormatText(part.Message, true, false, false, false, false, false);
+				message = HtmlUtils.StripTags(part.Message);
 			}
 			m["Message"] = message;
 
@@ -742,7 +746,7 @@ namespace SmartStore.Services.Messages
 			var m = new Dictionary<string, object>
 			{
 				{ "Title", part.Title.NullEmpty() },
-				{ "Text", HtmlUtils.FormatText(part.ReviewText, true, false, false, false, false, false).NullEmpty() },
+				{ "Text", HtmlUtils.StripTags(part.ReviewText).NullEmpty() },
 				{ "Rating", part.Rating }
 			};
 
@@ -836,7 +840,7 @@ namespace SmartStore.Services.Messages
 			{
 				{  "NewsTitle", part.NewsItem.Title.NullEmpty() },
 				{  "Title", part.CommentTitle.NullEmpty() },
-				{  "Text", HtmlUtils.FormatText(part.CommentText, true, false, false, false, false, false).NullEmpty() },
+				{  "Text", HtmlUtils.StripTags(part.CommentText).NullEmpty() },
 				{  "NewsUrl", BuildRouteUrl("NewsItem", new { SeName = part.NewsItem.GetSeName(messageContext.Language.Id) }, messageContext) }
 			};
 
@@ -887,7 +891,27 @@ namespace SmartStore.Services.Messages
 			return m;
 		}
 
-		protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
+        protected virtual object CreateModelPart(ForumPostVote part, MessageContext messageContext)
+        {
+            Guard.NotNull(messageContext, nameof(messageContext));
+            Guard.NotNull(part, nameof(part));
+
+            var m = new Dictionary<string, object>
+            {
+                { "ForumPostId", part.ForumPostId },
+                { "Vote", part.Vote },
+                { "TopicId", part.ForumPost.TopicId },
+                { "TopicSubject", part.ForumPost.ForumTopic.Subject.NullEmpty() },
+            };
+
+            ApplyCustomerContentPart(m, part, messageContext);
+
+            PublishModelPartCreatedEvent(part, m);
+
+            return m;
+        }
+
+        protected virtual object CreateModelPart(Forum part, MessageContext messageContext)
 		{
 			Guard.NotNull(messageContext, nameof(messageContext));
 			Guard.NotNull(part, nameof(part));

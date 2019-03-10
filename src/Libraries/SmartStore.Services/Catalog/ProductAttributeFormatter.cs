@@ -113,7 +113,7 @@ namespace SmartStore.Services.Catalog
                                 //encode (if required)
                                 if (htmlEncode)
                                     attributeName = HttpUtility.HtmlEncode(attributeName);
-                                pvaAttribute = string.Format("{0}: {1}", attributeName, HtmlUtils.FormatText(valueStr, false, true, false, false, false, false));
+                                pvaAttribute = string.Format("{0}: {1}", attributeName, HtmlUtils.ConvertPlainTextToHtml(valueStr.HtmlEncode()));
                                 //we never encode multiline textbox input
                             }
                             else if (pva.AttributeControlType == AttributeControlType.FileUpload)

@@ -1,7 +1,7 @@
 ﻿@model ProductEmailAFriendModel
 
 @using SmartStore.Web.Models.Catalog;
-
+@using SmartStore.Services.Customers;
 @{
     Layout = "_Layout";
 
@@ -14,27 +14,35 @@
     <div class="page-title">
         <h1>@T("Products.EmailAFriend.Title")</h1>
     </div>
+
+    @if (CommonServices.WorkContext.CurrentCustomer.IsGuest() && !Model.AllowChangedCustomerEmail)
+    {
+        <div class="alert alert-danger mb-4">
+            @T("Products.EmailAFriend.LoginNote", Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl }))
+        </div>
+    }
+
     <div class="page-body">
 
         @using (Html.BeginForm("EmailAFriend", null, FormMethod.Post, new { @class = "form-horizontal" }))
-        {                  
-            <fieldset>       
+        {
+            <fieldset>
                 <legend>
-					<a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" @Html.LanguageAttributes(Model.ProductName) class="product">@Model.ProductName</a>
-				</legend>
-                    
+                    <a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" @Html.LanguageAttributes(Model.ProductName) class="product">@Model.ProductName</a>
+                </legend>
+
                 <p class="message-error">
                     @Html.ValidationSummary(true)
                 </p>
-                     
+
                 <div class="form-group">
-                    @Html.LabelFor(model => model.FriendEmail, new { @for = "FriendEmail" })
+                    @Html.LabelFor(model => model.FriendEmail, new { @for = "FriendEmail", @class = "col-form-label required" })
                     @Html.TextBoxFor(model => model.FriendEmail, new { @class = "fullname form-control", placeholder = T("Products.EmailAFriend.FriendEmail.Hint") })
                     @Html.ValidationMessageFor(model => model.FriendEmail, null, new { @class = "text-danger" })
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.YourEmailAddress, new { @for = "YourEmailAddress" })
+                    @Html.LabelFor(model => model.YourEmailAddress, new { @for = "YourEmailAddress", @class = "col-form-label required" })
                     @if (Model.AllowChangedCustomerEmail)
                     {
                         @Html.TextBoxFor(model => model.YourEmailAddress, new { @class = "fullname form-control", placeholder = T("Products.EmailAFriend.YourEmailAddress.Hint") })
@@ -47,27 +55,33 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.PersonalMessage, new { @for = "PersonalMessage" })
+                    @Html.LabelFor(model => model.PersonalMessage, new { @for = "PersonalMessage", @class = "col-form-label" })
                     @Html.TextAreaFor(model => model.PersonalMessage, new { @class = "personal-message form-control", placeholder = T("Products.EmailAFriend.PersonalMessage.Hint") })
                     @Html.ValidationMessageFor(model => model.PersonalMessage, null, new { @class = "text-danger" })
                 </div>
 
-				@{ Html.RenderWidget("gdpr_consent"); }
+                <div class="form-group">
+                    <div class="col-12 text-muted">
+                        @T("Common.FormFields.Required.Hint")
+                    </div>
+                </div>
+
+                @{ Html.RenderWidget("gdpr_consent"); }
 
                 @if (Model.DisplayCaptcha)
                 {
-					<div class="form-group">
-						<div class="captcha-box">
-							@Html.Raw(Html.GenerateCaptcha())
-						</div>
-					</div>
+                    <div class="form-group">
+                        <div class="captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
+                    </div>
                 }
 
                 <div class="form-group">
                     <button type="submit" name="send-email" class="btn btn-primary send-email-a-friend-button">
-						<i class="fa fa-envelope"></i>
+                        <i class="fa fa-envelope"></i>
                         <span>@T("Products.EmailAFriend.Button")</span>
-					</button>
+                    </button>
                 </div>
             </fieldset>
         }

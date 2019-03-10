@@ -18,7 +18,7 @@
 		@foreach (var item in Model.Root.Children.Where(x => x.Value.Visible).Select(x => x.Value))
 		{
 			<a href="@item.Url" rel="nofollow" class="list-group-item list-group-item-action@(selItem.IsCaseInsensitiveEqual(item.Id) ? " active" : "")">
-                <i class="fa fa-fw fa-@item.Icon list-group-item-icon"></i>
+                <i class="fal fa-fw fa-@item.Icon list-group-item-icon"></i>
                 <span>@item.Text</span>
                 @if (item.BadgeText.HasValue())
                 {

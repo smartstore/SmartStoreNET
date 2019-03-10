@@ -12,7 +12,7 @@ using System.Web.Script.Serialization;
 namespace SmartStore.Admin.Models.Messages
 {
     [Validator(typeof(MessageTemplateValidator))]
-    public class MessageTemplateModel : EntityModelBase, ILocalizedModel<MessageTemplateLocalizedModel>, IStoreSelector
+    public class MessageTemplateModel : TabbableModel, ILocalizedModel<MessageTemplateLocalizedModel>, IStoreSelector
     {
         public MessageTemplateModel()
         {

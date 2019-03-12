@@ -28,7 +28,7 @@
             @if (Model.IsCustomerAllowedToEditTopic)
 			{
 				<a href="@Url.Action("TopicEdit", new { id = Model.Id })" class="btn btn-secondary" rel="nofollow">
-					<i class="far fa-pen-square"></i>
+					<i class="far fa-edit"></i>
                     <span>@T("Forum.EditTopic")</span>
 				</a>
 			}

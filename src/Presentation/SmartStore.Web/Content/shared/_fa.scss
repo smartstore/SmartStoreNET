@@ -2,13 +2,14 @@
 /// <reference path="_mixins.scss" />
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
-/*.fa,
-.fal,
-.far,
-.fas,
-.fab {
-    font-size: $icon-font-size-base;
-}*/
+@if ($icon-font-size-base != 'inherit') {
+    // Specificity: DON'T combine these selectors!
+    .fa     { font-size: $icon-font-size-base; }
+    .fal    { font-size: $icon-font-size-base; }
+    .far    { font-size: $icon-font-size-base; }
+    .fas    { font-size: $icon-font-size-base; }
+    .fab    { font-size: $icon-font-size-base; }
+}
 
 @if $fa-use-pro == false {
     // Shim for light icons

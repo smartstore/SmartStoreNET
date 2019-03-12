@@ -101,7 +101,7 @@ namespace SmartStore.Web.Framework.UI
             using (SHA256 sha = new SHA256Managed())
             {
                 var hashInput = "";
-                foreach (var file in files.OrderBy(x => x))
+                foreach (var file in files)
                 {
                     hashInput += file;
                     hashInput += ",";

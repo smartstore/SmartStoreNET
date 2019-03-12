@@ -19,7 +19,7 @@
         <div class="d-flex align-items-center">
             @if (Model.IsCurrentCustomerAllowedToEditPost)
             {
-                <i class="far fa-pen-square"></i>
+                <i class="far fa-edit"></i>
                 @Html.ActionLink(T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
             }
                 

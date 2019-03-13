@@ -837,6 +837,10 @@
     <Content Include="Content\editors\summernote\summernote-bs4.min.js" />
     <Content Include="Content\fontastic\fontastic.css" />
     <Content Include="Content\fontastic\fonts\fontastic.svg" />
+    <Content Include="Content\Images\grip-h.png" />
+    <Content Include="Content\Images\grip-ne.png" />
+    <Content Include="Content\Images\grip-se.png" />
+    <Content Include="Content\Images\grip-v.png" />
     <Content Include="Content\placeholder.txt" />
     <Content Include="Content\print-rtl.css" />
     <Content Include="Content\vendors\aos\js\aos.js" />

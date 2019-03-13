@@ -4,41 +4,6 @@
 // Mixins
 // ========================================================================
 
-@mixin scrim-gradient($start-color: #000, $direction: 'to bottom', $radial: false) {
-    $coords: (
-        0: 1,
-        19: 0.738,
-        34: 0.541,
-        47: 0.382,
-        56.5: 0.278,
-        65: 0.194,
-        73: 0.126,
-        80.2: 0.075,
-        86.1: 0.042,
-        91: 0.021,
-        95.2: 0.008,
-        98.2: 0.002,
-        100: 0
-    );
-
-    $hue: hue($start-color);
-    $saturation: saturation($start-color);
-    $lightness: lightness($start-color);
-    $stops: ();
-
-    @each $colorstop, $alpha in $coords {
-        $stop: hsla($hue, $saturation, $lightness, $alpha) percentage($colorstop/100);
-        $stops: append($stops, $stop, comma);
-    }
-
-    @if $radial == true {
-        background: radial-gradient(unquote($direction), $stops);
-    }
-    @else {
-        background: linear-gradient(unquote($direction), $stops);
-    }   
-}
-
 @mixin center($xy: xy) {
     @if $xy == xy {
         left: 50%;
@@ -194,6 +159,41 @@
 
 // Functions
 // ===============================================
+
+@function scrim-gradient($start-color: #000, $direction: 'to bottom', $radial: false) {
+    $coords: (
+        0: 1,
+        19: 0.738,
+        34: 0.541,
+        47: 0.382,
+        56.5: 0.278,
+        65: 0.194,
+        73: 0.126,
+        80.2: 0.075,
+        86.1: 0.042,
+        91: 0.021,
+        95.2: 0.008,
+        98.2: 0.002,
+        100: 0
+    );
+
+    $hue: hue($start-color);
+    $saturation: saturation($start-color);
+    $lightness: lightness($start-color);
+    $stops: ();
+
+    @each $colorstop, $alpha in $coords {
+        $stop: hsla($hue, $saturation, $lightness, $alpha) percentage($colorstop/100);
+        $stops: append($stops, $stop, comma);
+    }
+
+    @if $radial == true {
+        @return radial-gradient(unquote(#{ $direction }), #{ $stops });
+    }
+    @else {
+        @return linear-gradient(unquote(#{ $direction }), #{ $stops });
+    }   
+}
 
 @function color-yiq-ex($color, $text-dark: $yiq-text-dark, $text-light: $yiq-text-light) {
 	$r: red($color);

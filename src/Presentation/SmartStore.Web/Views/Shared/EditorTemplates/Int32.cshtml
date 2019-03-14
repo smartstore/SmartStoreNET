@@ -34,6 +34,8 @@
 	@(Html.Telerik().IntegerTextBox()
 			.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
 			.EmptyMessage(T("Common.EnterValue"))
+            .ButtonTitleUp(T("Common.IncreaseValue"))
+            .ButtonTitleDown(T("Common.DecreaseValue"))
 			.MinValue(GetMetadata<int?>("min"))
 			.MaxValue(GetMetadata<int?>("max"))
 			.IncrementStep(GetMetadata<int?>("step") ?? 1)

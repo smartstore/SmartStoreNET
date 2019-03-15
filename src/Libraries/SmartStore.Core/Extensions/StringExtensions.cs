@@ -1087,11 +1087,8 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string HighlightKeywords(this string input, string keywords, string preMatch = "<strong>", string postMatch = "</strong>")
 		{
-			if (preMatch == null)
-				throw new ArgumentNullException(nameof(preMatch));
-
-			if (postMatch == null)
-				throw new ArgumentNullException(nameof(postMatch));
+            Guard.NotNull(preMatch, nameof(preMatch));
+            Guard.NotNull(postMatch, nameof(postMatch));
 
 			if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(keywords))
 			{
@@ -1107,7 +1104,7 @@ namespace SmartStore
 			if (!string.IsNullOrWhiteSpace(pattern))
 			{
 				var rg = new Regex(pattern, RegexOptions.IgnoreCase);
-				input = rg.Replace(input, m => preMatch + m.Value + postMatch);
+				input = rg.Replace(input, m => preMatch + m.Value.EmptyNull().HtmlEncode() + postMatch);
 			}
 
 			return input;

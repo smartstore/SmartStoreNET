@@ -39,7 +39,13 @@ namespace SmartStore.Web.Framework.UI.Blocks
 
 			JsonConvert.PopulateObject(json, block);
 
-			return block;
+            if (block is IBindableBlock bindableBlock)
+            {
+                bindableBlock.BindEntityName = entity.BindEntityName;
+                bindableBlock.BindEntityId = entity.BindEntityId;
+            }
+
+            return block;
 		}
 
 		public virtual bool IsValid(T block)
@@ -65,9 +71,16 @@ namespace SmartStore.Web.Framework.UI.Blocks
 			};
 
 			entity.Model = JsonConvert.SerializeObject(block, Formatting.None, settings);
-		}
 
-		public virtual string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity)
+            // save BindEntintyName & BindEntintyId
+            if (block is IBindableBlock bindableBlock)
+            {
+                entity.BindEntityId = bindableBlock.BindEntityId;
+                entity.BindEntityName = bindableBlock.BindEntityName;
+            }
+        }
+
+        public virtual string Clone(IBlockEntity sourceEntity, IBlockEntity clonedEntity)
 		{
 			return sourceEntity.Model;
 		}

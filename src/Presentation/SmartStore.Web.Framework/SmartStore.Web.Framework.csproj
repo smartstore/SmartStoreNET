@@ -299,6 +299,8 @@
     <Compile Include="Theming\WebViewPageHelper.cs" />
     <Compile Include="UI\Blocks\BlockMetadata.cs" />
     <Compile Include="UI\Blocks\BlockHandlerBase.cs" />
+    <Compile Include="UI\Blocks\IBindableBlock.cs" />
+    <Compile Include="UI\Blocks\IBindableBlockHandler.cs" />
     <Compile Include="UI\Blocks\IBlockHandler.cs" />
     <Compile Include="UI\Blocks\IBlockEntity.cs" />
     <Compile Include="UI\Blocks\IBlockContainer.cs" />

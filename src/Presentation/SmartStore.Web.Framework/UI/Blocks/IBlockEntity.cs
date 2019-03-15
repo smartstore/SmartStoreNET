@@ -19,5 +19,7 @@ namespace SmartStore.Web.Framework.UI.Blocks
         string Custom4 { get; set; }
         string Custom5 { get; set; }
 
+        string BindEntityName { get; set; }
+        int? BindEntityId { get; set; }
     }
 }

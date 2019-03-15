@@ -36,7 +36,7 @@
         : Enum.GetValues(typeof(LinkType)).Cast<LinkType>().ToArray();
 }
 
-<div id="link-builder-@rnd">
+<div id="link-builder-@rnd" class="link-builder">
     <div class="d-flex flex-nowrap input-group">
         @* Template control that receives the link expression. *@
         @Html.TextBox("", Value, new { type = "hidden" })

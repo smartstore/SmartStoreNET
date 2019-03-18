@@ -1,4 +1,4 @@
-﻿namespace SmartStore.Web.Framework.UI.Blocks
+﻿namespace SmartStore.Services.Cms.Blocks
 {
     public interface IBindableBlock : IBlock
     {

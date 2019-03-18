@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartStore.Web.Framework.UI.Blocks
+namespace SmartStore.Services.Cms.Blocks
 {
     /// <summary>
     /// Specifies whether a property refers to an asset to be included in the story export.

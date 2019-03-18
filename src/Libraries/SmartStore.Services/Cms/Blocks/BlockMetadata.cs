@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartStore.Web.Framework.UI.Blocks
+namespace SmartStore.Services.Cms.Blocks
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 	public sealed class BlockAttribute : Attribute

@@ -196,6 +196,15 @@
     <Compile Include="Catalog\Modelling\ProductVariantQueryItem.cs" />
     <Compile Include="Catalog\Modelling\ProductVariantQueryModelBinder.cs" />
     <Compile Include="Catalog\PriceCalculationContext.cs" />
+    <Compile Include="Cms\Blocks\BlockHandlerBase.cs" />
+    <Compile Include="Cms\Blocks\BlockMetadata.cs" />
+    <Compile Include="Cms\Blocks\IBindableBlock.cs" />
+    <Compile Include="Cms\Blocks\IBindableBlockHandler.cs" />
+    <Compile Include="Cms\Blocks\IBlock.cs" />
+    <Compile Include="Cms\Blocks\IBlockContainer.cs" />
+    <Compile Include="Cms\Blocks\IBlockEntity.cs" />
+    <Compile Include="Cms\Blocks\IBlockHandler.cs" />
+    <Compile Include="Cms\Blocks\StoryAssetAttribute.cs" />
     <Compile Include="Cms\ILinkResolver.cs" />
     <Compile Include="Cms\LinkResolver.cs" />
     <Compile Include="Cms\LinkResolverResult.cs" />

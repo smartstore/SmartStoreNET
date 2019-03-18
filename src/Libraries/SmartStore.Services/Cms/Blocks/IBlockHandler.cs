@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 
-namespace SmartStore.Web.Framework.UI.Blocks
+namespace SmartStore.Services.Cms.Blocks
 {
 	public enum StoryViewMode
 	{

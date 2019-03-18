@@ -753,8 +753,10 @@ namespace SmartStore.Admin.Controllers
 						{
 							var stream = new FileStream(path, FileMode.Open);
 
-							var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
-							result.FileDownloadName = Path.GetFileName(path);
+							var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path))
+							{
+								FileDownloadName = Path.GetFileName(path)
+							};
 
 							return result;
 						}

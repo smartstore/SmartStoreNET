@@ -7,12 +7,10 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using Newtonsoft.Json;
-using SmartStore.Services;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
-using SmartStore.Web.Framework.Localization;
 
-namespace SmartStore.Web.Framework.UI.Blocks
+namespace SmartStore.Services.Cms.Blocks
 {
 	public abstract class BlockHandlerBase<T> : IBlockHandler<T> where T : IBlock
 	{
@@ -129,28 +127,5 @@ namespace SmartStore.Web.Framework.UI.Blocks
         }
 
         protected abstract RouteInfo GetRoute(IBlockContainer element, string template);
-
-		/// <summary>
-		/// Add locales for localizable entities
-		/// </summary>
-		/// <typeparam name="TLocalizedModelLocal">Localizable model</typeparam>
-		/// <param name="languageService">Language service</param>
-		/// <param name="locales">Locales</param>
-		/// <param name="configure">Configure action</param>
-		protected virtual void AddLocales<TLocalizedModelLocal>(IList<TLocalizedModelLocal> locales, Action<TLocalizedModelLocal, int> configure) where TLocalizedModelLocal : ILocalizedModelLocal
-		{
-			var languageService = Services.Resolve<ILanguageService>();
-
-			foreach (var language in languageService.GetAllLanguages(true))
-			{
-				var locale = Activator.CreateInstance<TLocalizedModelLocal>();
-				locale.LanguageId = language.Id;
-				if (configure != null)
-				{
-					configure.Invoke(locale, locale.LanguageId);
-				}
-				locales.Add(locale);
-			}
-		}
 	}
 }

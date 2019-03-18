@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Routing;
 
-namespace SmartStore.Web.Framework.UI.Blocks
+namespace SmartStore.Services.Cms.Blocks
 {
 	public interface IBlock
 	{

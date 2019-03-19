@@ -58,42 +58,47 @@
 	</div>
 
     <div class="page-body">
-		@if (encodedAttemptedTerm.HasValue())
-		{
-			<div class="alert alert-warning">
-				@T("Search.TermCorrectedHint", "<strong>\"" + encodedTerm + "\"</strong>", "<strong>\"" + encodedAttemptedTerm + "\"</strong>")
-			</div>
-		}
+        @if (encodedAttemptedTerm.HasValue())
+        {
+            <div class="alert alert-warning">
+                @T("Search.TermCorrectedHint", "<strong>\"" + encodedTerm + "\"</strong>", "<strong>\"" + encodedAttemptedTerm + "\"</strong>")
+            </div>
+        }
 
-		@if (Model.Error.HasValue())
-		{
-			<div class="alert alert-danger">
-				@Model.Error
-			</div>
-		}
-		else if (Model.TotalProductsCount == 0)
-		{
-			<div class="alert alert-warning">
-				@T("Search.NoResultsText")
-			</div>
-		}
+        @if (Model.Error.HasValue())
+        {
+            <div class="alert alert-danger">
+                @Model.Error
+            </div>
+        }
+        else if (Model.TotalProductsCount == 0)
+        {
+            <div class="alert alert-warning">
+                @T("Search.NoResultsText")
+            </div>
+        }
 
-		@if (suggestions.Any())
-		{
-			<p class="search-suggestions">
-				<strong>@(T(encodedAttemptedTerm.HasValue() || Model.TotalProductsCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
-				@{ 
-					var links = String.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("Search", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
-				}
-				@Html.Raw(links)
-			</p>
-		}
+        @if (suggestions.Any())
+        {
+            <p class="search-suggestions">
+                <strong>@(T(encodedAttemptedTerm.HasValue() || Model.TotalProductsCount == 0 ? "Search.DidYouMean" : "Search.RelatedSearchTerms")):</strong>
+                @{
+                    var links = String.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("Search", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
+                }
+                @Html.Raw(links)
+            </p>
+        }
+
+        @{ Html.RenderWidget("search_results_before");}
 
         <div class="search-results">
             @if (Model.TotalProductsCount > 0)
             {
-				Html.RenderPartial("Product.List", Model.TopProducts);
+                Html.RenderPartial("Product.List", Model.TopProducts);
             }
         </div>
+
+        @{ Html.RenderWidget("search_results_after");}
+
     </div>
 </div>

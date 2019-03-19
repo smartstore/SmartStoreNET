@@ -720,9 +720,6 @@
 
             builder.AddOrUpdate("Common.IncreaseValue", "Increase value", "Wert erhöhen");
             builder.AddOrUpdate("Common.DecreaseValue", "Decrease value", "Wert verringern");
-            builder.AddOrUpdate("Common.Category", "Category", "Warengruppe");
-            builder.AddOrUpdate("Common.Manufacturer", "Manufacturer", "Hersteller");
-
             builder.AddOrUpdate("Common.QueryString", "Query string", "Query String");
         }
     }

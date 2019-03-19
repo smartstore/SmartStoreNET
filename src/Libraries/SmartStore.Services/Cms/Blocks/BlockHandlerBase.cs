@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using Newtonsoft.Json;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 
@@ -16,6 +17,8 @@ namespace SmartStore.Services.Cms.Blocks
 	public abstract class BlockHandlerBase<T> : IBlockHandler<T> where T : IBlock
 	{
 		public ICommonServices Services { get; set; }
+
+        public ILogger Logger { get; set; }
 
 		public ILocalizedEntityService LocalizedEntityService { get; set; }
 
@@ -129,7 +132,12 @@ namespace SmartStore.Services.Cms.Blocks
 
 			var viewResult = FindFirstView(element.Metadata, templates, viewContext, out var searchedLocations);
 
-			// TODO: ErrHandling (?)
+            if (viewResult == null)
+            {
+                var msg = string.Format("No template found for '{0}'. Searched locations:\n{1}.", string.Join(", ", templates), string.Join("\n", searchedLocations));
+                Logger.Debug(msg);
+                throw new FileNotFoundException(msg);
+            }
 
 			var viewData = new ViewDataDictionary(element.Block);
 			viewData.TemplateInfo.HtmlFieldPrefix = "Block";

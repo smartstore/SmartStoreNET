@@ -565,7 +565,7 @@ namespace SmartStore.Services.Customers
 				// no forum topics
 				query = JoinWith<ForumTopic>(query, x => x.CustomerId);
 
-				//don't delete system accounts
+				// don't delete system accounts
 				query = query.Where(c => !c.IsSystemAccount);
 
 				// only distinct items
@@ -585,8 +585,7 @@ namespace SmartStore.Services.Customers
 					{
 						// delete attributes (using GenericAttributeService would incorporate caching... which is bad in long running processes)
 						var gaQuery = from ga in _gaRepository.Table
-									  where ga.EntityId == c.Id &&
-									  ga.KeyGroup == "Customer"
+									  where ga.EntityId == c.Id && ga.KeyGroup == "Customer"
 									  select ga;
 						var attributes = gaQuery.ToList();
 

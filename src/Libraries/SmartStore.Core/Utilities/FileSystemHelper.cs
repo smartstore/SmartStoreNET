@@ -123,26 +123,31 @@ namespace SmartStore.Utilities
 			{
 				try
 				{
-					foreach (var file in dir.EnumerateFiles().Where(fi => fi.LastWriteTime < olderThanDate))
+					foreach (var fsi in dir.EnumerateFileSystemInfos())
 					{
-						if (file.LastWriteTimeUtc >= olderThanDate)
-							continue;
-
-						if (exceptFileNames.Any(x => x.IsCaseInsensitiveEqual(file.Name)))
-							continue;
-
-						if (file.IsReadOnly)
+						if (fsi is FileInfo file)
 						{
-							file.IsReadOnly = false;
+							if (file.LastWriteTimeUtc >= olderThanDate)
+								continue;
+
+							if (exceptFileNames.Any(x => x.IsCaseInsensitiveEqual(file.Name)))
+								continue;
+
+							if (file.IsReadOnly)
+							{
+								file.IsReadOnly = false;
+							}
+
+							file.Delete();
 						}
-						
-						file.Delete();
+						else if (fsi is DirectoryInfo subDir)
+						{
+							ClearDirectory(subDir, true, olderThan, exceptFileNames);
+						}
+
 					}
 
-					foreach (var subDir in dir.EnumerateDirectories())
-					{
-						ClearDirectory(subDir, true, olderThan, exceptFileNames);
-					}
+					break;
 				}
 				catch (Exception ex)
 				{
@@ -154,9 +159,9 @@ namespace SmartStore.Utilities
 			{
 				try
 				{
-					if (dir.EnumerateFileSystemInfos().Any())
+					if (!dir.EnumerateFileSystemInfos().Any())
 					{
-						dir.Delete();
+						dir.Delete(true);
 					}
 				}
 				catch (Exception ex)

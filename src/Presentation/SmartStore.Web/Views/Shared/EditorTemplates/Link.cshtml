@@ -39,7 +39,7 @@
 <div id="link-builder-@rnd" class="link-builder">
     <div class="d-flex flex-nowrap input-group">
         @* Template control that receives the link expression. *@
-        @Html.TextBox("", Value, new { type = "hidden" })
+        @Html.TextBox("", link.GetExpression(false), new { type = "hidden" })
         @* 1. prepend type selector. *@
         <div class="input-group-prepend type-container">
 		    <button id="btn-type-@rnd" type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
@@ -54,6 +54,13 @@
                         <span>@info.name</span>
                     </a>
                 }
+                <div class="qs-menu-container">
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item link-type" href="#" data-type="query-string">
+                        <i class="fas @(link.QueryString.HasValue() ? "fa-check text-success" : "fa-minus text-muted")"></i>
+                        <span>@T("Common.QueryString")</span>
+                    </a>
+                </div>
             </div>
         </div>
         @* 2. main control. *@
@@ -97,9 +104,27 @@
                 }
             </div>
         }
+        <div class="flex-grow-1 link-control hide" data-type="query-string">
+            <input id="lb-query-string-@rnd" type="text" class="form-control transferable resettable" value="@link.QueryString" />
+        </div>
         @* 3. append additional controls. *@
         @if (allowedTypes.Contains(LinkType.Product))
         {
+	        <script>
+                function lbPickerSelectionCompleted@(rnd)(ids, selectedItems) {
+                    var val = 'product:' + ids[0];
+                    var qs = $('#lb-query-string-@rnd').val() || '';
+                    while (qs.startsWith('?')) {
+                        qs = qs.substring(1);
+                    }
+                    if (!_.isEmpty(qs)) {
+                        val = val + '?' + qs;
+                    }
+                    $('#@id').val(val);
+                    $('#lb-product-name-@rnd').val(selectedItems[0].name);
+                    return true;
+                }
+	        </script>
             <div class="input-group-append link-control@(link.Type == LinkType.Product ? "" : " hide")" data-type="product">
 		        @(Html.SmartStore().EntityPicker()
                     .HtmlAttribute("id", "lb-product-picker-" + rnd.ToString())
@@ -107,7 +132,7 @@
                     .AppendMode(false)
                     .DialogTitle(T("Common.Entity.SelectProduct").Text.EncodeJsString('\'', false))
                     .Caption(T("Common.Search").Text.EncodeJsString('\'', false))
-                    .OnSelectionCompleted("function (ids, selectedItems) { $('#" + id + "').val('product:' + ids[0]); $('#lb-product-name-" + rnd + "').val(selectedItems[0].name); return true; }"))
+                    .OnSelectionCompleted("lbPickerSelectionCompleted" + rnd.ToString()))
             </div>
         }
         @if (allowedTypes.Contains(LinkType.File))
@@ -131,8 +156,9 @@
 <script>
     $(document).ready(function () {
         var container = $('#link-builder-@(rnd)'),
-            input = container.find('#@(id)'),
-            controls = container.find('div.link-control');
+            ctrl = container.find('#@(id)'),
+            controls = container.find('div.link-control'),
+            qsCtrl = container.find('#lb-query-string-@rnd');
 
         // Set type selector to initial type from current expression.
         updateTypeInfo(container.find('a[data-type="@(link.Type.ToString().ToLower())"]'));
@@ -145,19 +171,24 @@
 		container.on('click', '.link-type', function (e) {
             e.preventDefault();
             var el = $(this),
-                type = el.data('type'),
-                newCtrl = controls.filter('[data-type="' + type + '"]');
+                newCtrl = controls.filter('[data-type="' + el.data('type') + '"]');
 
             controls.hide();
             newCtrl.show();
             updateTypeInfo(el);
+            
             _.delay(function () { newCtrl.first().find(':input:first:not([readonly])').focus() }, 100);
         });
 
-        // Reset value.
+        // Reset all values.
         container.on('click', 'button.btn-reset', function () {
-            input.val('');
+            ctrl.val('');
+            qsCtrl.val('');
             controls.find('.resettable:visible').val('').trigger('change');
+
+            container.find('.link-type[data-type="query-string"]').find('i:first')
+                .attr('class', 'fas fa-minus text-muted');
+
             // TODO: find a better way to do this.
             var select2 = controls.find('.select2:visible');
             if (select2.length) {
@@ -190,27 +221,58 @@
         // Build expression and transfer to token input.
         container.on('change', '.transferable', function () {
             $el = $(this);
-            var val = $el.val();
-            if (_.isEmpty(val)) {
-                input.val('');
+            var type = $el.closest('.link-control').data('type');
+            var val, qs = getQueryString();
+
+            // Get link excluding query string.
+            if (type === 'query-string') {
+                val = ctrl.val();
+                var index = val.indexOf('?');
+                if (index !== -1) {
+                    val = val.substring(0, index);
+                }
             }
             else {
-                var type = $el.closest('.link-control').data('type');
-                input.val(type === 'url' ? val : (type + ':' + val));
+                val = $el.val();
+                if (!_.isEmpty(val) && type !== 'url') {
+                    val = type + ':' + val;
+                }
             }
-            //console.log('change ' + input.val());
+
+            if (type !== 'url' && !_.isEmpty(val) && !_.isEmpty(qs)) {
+                val = (val || '') + '?' + qs;
+            }
+
+            container.find('.link-type[data-type="query-string"]').find('i:first')
+                .attr('class', _.isEmpty(qs) ? 'fas fa-minus text-muted' : 'fas fa-check text-success');
+
+            ctrl.val(val);
+            //console.log('change ' + ctrl.val());
         });
 
-        function updateTypeInfo(el) {
-            if (el) {
-                var btn = $('#btn-type-@(rnd)'),
-                    icon = el.find('i').first().attr('class').replace('fa-fw ', ''),
-                    name = el.find('span').first().text();
 
-                btn.find('i').attr('class', icon);
-                btn.attr('title', name);
-            }
+        function updateTypeInfo(el) {
+            if (!el) return;
+
+            var type = el.data('type');
+            if (type === 'query-string') return;
+
+            var btn = $('#btn-type-@(rnd)'),
+                icon = el.find('i').first().attr('class').replace('fa-fw ', ''),
+                name = el.find('span').first().text();
+
+            btn.find('i').attr('class', icon);
+            btn.attr('title', name);
+
+            container.find('.qs-menu-container').toggle(type !== 'url');
         }
 
+        function getQueryString() {
+            var val = qsCtrl.val() || '';
+            while (val.startsWith('?')) {
+                val = val.substring(1);
+            }
+            return val;
+        }
     });
 </script>

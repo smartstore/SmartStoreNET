@@ -116,9 +116,10 @@ namespace SmartStore.Services.Cms
                         d.Link = d.Label = url;
                         break;
                     case LinkType.File:
-                    default:
                         d.Link = d.Label = d.Value.ToString();
                         break;
+                    default:
+                        throw new SmartException("Unknown link builder type.");
                 }
 
                 return d;
@@ -130,6 +131,7 @@ namespace SmartStore.Services.Cms
                 Status = data.Status,
                 Value = data.Value,
                 Link = data.Link,
+                QueryString = data.QueryString,
                 Label = data.Label
             };
 
@@ -163,7 +165,8 @@ namespace SmartStore.Services.Cms
 
                 if (index != -1 && Enum.TryParse(linkExpression.Substring(0, index), true, out LinkType type))
                 {
-                    var value = linkExpression.Substring(index + 1);
+                    var rawValue = linkExpression.Substring(index + 1);
+                    rawValue.SplitToPair(out var value, out var queryString, "?");
 
                     switch (type)
                     {
@@ -172,11 +175,13 @@ namespace SmartStore.Services.Cms
                         case LinkType.Manufacturer:
                         case LinkType.Topic:
                             var id = value.ToInt();
-                            return new LinkResolverData { Type = type, Value = id != 0 ? (object)id : value };
-                        case LinkType.Url:
+                            return new LinkResolverData { Type = type, Value = id != 0 ? (object)id : value, QueryString = queryString };
                         case LinkType.File:
+                            return new LinkResolverData { Type = type, Value = value, QueryString = queryString };
+                        case LinkType.Url:
+                            return new LinkResolverData { Type = type, Value = rawValue };
                         default:
-                            return new LinkResolverData { Type = type, Value = value };
+                            throw new SmartException("Unknown link builder type.");
                     }
                 }
             }

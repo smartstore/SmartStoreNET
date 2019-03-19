@@ -85,7 +85,7 @@ namespace SmartStore.Services.Tests.Orders
             _services.Expect(x => x.StoreContext).Return(_storeContext);
             _services.Expect(x => x.WorkContext).Return(_workContext);
 
-            var pluginFinder = new PluginFinder();
+            var pluginFinder = PluginFinder.Current;
 
 			_shoppingCartSettings = new ShoppingCartSettings();
 			_catalogSettings = new CatalogSettings();

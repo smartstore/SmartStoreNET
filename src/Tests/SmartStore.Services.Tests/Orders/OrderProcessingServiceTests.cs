@@ -107,7 +107,7 @@ namespace SmartStore.Services.Tests.Orders
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 
-            var pluginFinder = new PluginFinder();
+            var pluginFinder = PluginFinder.Current;
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();

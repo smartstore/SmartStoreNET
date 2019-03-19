@@ -100,8 +100,8 @@ namespace SmartStore.Web.Framework
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
 			// plugins
-			var pluginFinder = new PluginFinder();
-			builder.RegisterInstance(pluginFinder).As<IPluginFinder>().SingleInstance();
+			var pluginFinder = PluginFinder.Current;
+			builder.RegisterInstance(pluginFinder);
 			builder.RegisterType<PluginMediator>();
 
 			// modules

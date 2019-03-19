@@ -21,6 +21,7 @@ namespace SmartStore.Services.Cms.Blocks
 
 	public interface IBlockMetadata
 	{
+		string AreaName { get; }
 		string SystemName { get; }
 		string FriendlyName { get; }
 		string Icon { get; }
@@ -33,6 +34,7 @@ namespace SmartStore.Services.Cms.Blocks
 
 	public class BlockMetadata : IBlockMetadata
 	{
+		public string AreaName { get; set; }
 		public string SystemName { get; set; }
 		public string FriendlyName { get; set; }
 		public string Icon { get; set; }

@@ -9,7 +9,9 @@ namespace SmartStore.Services.Cms
         Manufacturer,
         Topic,
         Url = 20,
-        File = 30
+        File = 30,
+        Route = 40,
+        Action
     }
 
     public enum LinkStatus

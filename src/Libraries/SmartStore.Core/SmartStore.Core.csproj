@@ -210,6 +210,8 @@
     <Compile Include="Domain\Catalog\QuantiyControlType.cs" />
     <Compile Include="Domain\Catalog\IPagingOptions.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
+    <Compile Include="Domain\Cms\Menu.cs" />
+    <Compile Include="Domain\Cms\MenuItem.cs" />
     <Compile Include="Domain\Common\PerformanceSettings.cs" />
     <Compile Include="Domain\Customers\CustomerLoginType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />

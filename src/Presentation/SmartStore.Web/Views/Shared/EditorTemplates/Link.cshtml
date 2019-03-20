@@ -33,13 +33,13 @@
     var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
     var allowedTypes = arr.Any()
         ? arr.Select(x => (LinkType)Enum.Parse(typeof(LinkType), x, true)).ToArray()
-        : Enum.GetValues(typeof(LinkType)).Cast<LinkType>().ToArray();
+        : new LinkType[] { LinkType.Product, LinkType.Category, LinkType.Manufacturer, LinkType.Topic, LinkType.File, LinkType.Url };
 }
 
 <div id="link-builder-@rnd" class="link-builder">
     <div class="d-flex flex-nowrap input-group">
         @* Template control that receives the link expression. *@
-        @Html.TextBox("", link.GetExpression(false), new { type = "hidden" })
+        @Html.TextBox("", Value, new { type = "hidden" })
         @* 1. prepend type selector. *@
         <div class="input-group-prepend type-container">
 		    <button id="btn-type-@rnd" type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
@@ -239,6 +239,7 @@
                 }
             }
 
+            // Append query string.
             if (type !== 'url' && !_.isEmpty(val) && !_.isEmpty(qs)) {
                 val = (val || '') + '?' + qs;
             }

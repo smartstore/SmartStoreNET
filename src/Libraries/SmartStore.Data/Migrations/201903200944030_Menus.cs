@@ -3,6 +3,8 @@ namespace SmartStore.Data.Migrations
     using System.Data.Entity.Migrations;
     using System.Web.Hosting;
     using SmartStore.Core.Data;
+    using SmartStore.Core.Domain.Customers;
+    using SmartStore.Core.Domain.Security;
     using SmartStore.Data.Setup;
     using SmartStore.Data.Utilities;
 
@@ -76,6 +78,16 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
+            var permissionMigrator = new PermissionMigrator(context);
+
+            permissionMigrator.AddPermission(new PermissionRecord
+            {
+                Name = "Admin area. Manage Menus",
+                SystemName = "ManageMenus",
+                Category = "Content Management"
+            }, new string[] { SystemCustomerRoleNames.Administrators });
+
+
             if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
             {
                 DataMigrator.CreateSystemMenus(context);

@@ -206,8 +206,10 @@
     <Compile Include="Cms\Blocks\IBlockHandler.cs" />
     <Compile Include="Cms\Blocks\StoryAssetAttribute.cs" />
     <Compile Include="Cms\ILinkResolver.cs" />
+    <Compile Include="Cms\IMenuService.cs" />
     <Compile Include="Cms\LinkResolver.cs" />
     <Compile Include="Cms\LinkResolverResult.cs" />
+    <Compile Include="Cms\MenuService.cs" />
     <Compile Include="Common\IUserAgent.cs" />
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />

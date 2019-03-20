@@ -721,6 +721,14 @@
             builder.AddOrUpdate("Common.IncreaseValue", "Increase value", "Wert erhöhen");
             builder.AddOrUpdate("Common.DecreaseValue", "Decrease value", "Wert verringern");
             builder.AddOrUpdate("Common.QueryString", "Query string", "Query String");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus", "Menus", "Menüs");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.SystemName", 
+                "System name",
+                "Systemname",
+                "The system name of the menu.",
+                "Der Systemname des Menüs.");
         }
     }
 }

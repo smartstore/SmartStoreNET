@@ -251,14 +251,16 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<PollService>().As<IPollService>().InstancePerRequest();
 			builder.RegisterType<BlogService>().As<IBlogService>().InstancePerRequest();
-			builder.RegisterType<WidgetService>().As<IWidgetService>().InstancePerRequest();
 			builder.RegisterType<TopicService>().As<ITopicService>().InstancePerRequest();
 			builder.RegisterType<NewsService>().As<INewsService>().InstancePerRequest();
 
-			builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerRequest();
+            builder.RegisterType<WidgetService>().As<IWidgetService>().InstancePerRequest();
+            builder.RegisterType<MenuService>().As<IMenuService>().InstancePerRequest();
+            builder.RegisterType<LinkResolver>().As<ILinkResolver>().InstancePerRequest();
+
+            builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerRequest();
 			builder.RegisterType<XmlSitemapGenerator>().As<IXmlSitemapGenerator>().InstancePerRequest();
 			builder.RegisterType<PageAssetsBuilder>().As<IPageAssetsBuilder>().InstancePerRequest();
-            builder.RegisterType<LinkResolver>().As<ILinkResolver>().InstancePerRequest();
 
             builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();
 			builder.RegisterType<SyncMappingService>().As<ISyncMappingService>().InstancePerRequest();

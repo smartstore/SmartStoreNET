@@ -186,6 +186,7 @@
     <Compile Include="Controllers\CustomerRoleController.cs" />
     <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\QuantityUnitController.cs" />
     <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
     <Compile Include="Models\Localization\AvailableLanguageModel.cs" />
     <Compile Include="Models\Localization\CheckAvailableResourcesResult.cs" />
+    <Compile Include="Models\Menus\MenuListModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
@@ -582,6 +584,7 @@
     <Content Include="Views\Setting\Payment.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SelectList.cshtml" />
     <Content Include="Views\Product\_CreateOrUpdate.Downloads.cshtml" />
+    <Content Include="Views\Menu\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

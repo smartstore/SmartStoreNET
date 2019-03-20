@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -47,6 +47,7 @@
 * Santander instalment purchase.
 * #1542 Pages: Added options to set body CSS class and Html Id.
 * Web-API: Added endpoints for ProductSpecificationAttribute.
+* Trusted Shops: Added new Trustbadge display for mobile devices
 
 ### Improvements
 * (Perf) Significantly increased query performance for products with a lot of category assignments (> 10).
@@ -75,6 +76,7 @@
 * #1560 Tell-a-Friend and anonymous user: render alert box and tell guest to login to use this function
 * #1571 Compare products only shows one specification attribute option
 * #1539 Allow signing in with both e-mail and username 
+* Trusted Shops: Trustbadge won't be displayed in Popups & Iframes anymore
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

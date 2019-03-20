@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
@@ -9,23 +10,24 @@ namespace SmartStore.Core.Domain.Cms
     /// <summary>
     /// Represents a menu.
     /// </summary>
-    public class Menu : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IAclSupported
+    [Table("MenuRecord")]
+    public class MenuRecord : BaseEntity, ILocalizedEntity, IStoreMappingSupported, IAclSupported
     {
-        private ICollection<MenuItem> _items;
+        private ICollection<MenuItemRecord> _items;
 
         /// <summary>
         /// /// Gets or sets the menu items.
         /// </summary>
-        public virtual ICollection<MenuItem> Items
+        public virtual ICollection<MenuItemRecord> Items
         {
-            get { return _items ?? (_items = new HashSet<MenuItem>()); }
+            get { return _items ?? (_items = new HashSet<MenuItemRecord>()); }
             protected set { _items = value; }
         }
 
         /// <summary>
         /// Gets or sets the system name. It identifies the menu.
         /// </summary>
-        [Index("IX_Menu_SystemName_IsSystemMenu", Order = 0)]
+        [Required, StringLength(400), Index("IX_Menu_SystemName_IsSystemMenu", Order = 0)]
         public string SystemName { get; set; }
 
         /// <summary>
@@ -37,6 +39,7 @@ namespace SmartStore.Core.Domain.Cms
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
+        [StringLength(400)]
         public string Title { get; set; }
 
         /// <summary>

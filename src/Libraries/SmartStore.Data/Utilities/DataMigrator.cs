@@ -454,8 +454,8 @@ namespace SmartStore.Data.Utilities
             const string linkBuilderProvider = "LinkBuilder";
             const string routeNameProvider = "RouteName";
 
-            var menuSet = ctx.Set<Menu>();
-            var menuItemSet = ctx.Set<MenuItem>();
+            var menuSet = ctx.Set<MenuRecord>();
+            var menuItemSet = ctx.Set<MenuItemRecord>();
             var defaultLang = ctx.Set<Language>().OrderBy(x => x.DisplayOrder).First();
             var manufacturerCount = ctx.Set<Manufacturer>().Count();
             var order = 0;
@@ -506,7 +506,7 @@ namespace SmartStore.Data.Utilities
 
             #region Footer menu
 
-            var footerInfo = menuSet.Add(new Menu
+            var footerInfo = menuSet.Add(new MenuRecord
             {
                 SystemName = "FooterInformation",
                 IsSystemMenu = true,
@@ -514,7 +514,7 @@ namespace SmartStore.Data.Utilities
                 Title = "Footer - " + GetResource("Footer.Info")
             });
 
-            var footerService = menuSet.Add(new Menu
+            var footerService = menuSet.Add(new MenuRecord
             {
                 SystemName = "FooterService",
                 IsSystemMenu = true,
@@ -522,7 +522,7 @@ namespace SmartStore.Data.Utilities
                 Title = "Footer - " + GetResource("Footer.Service")
             });
 
-            var footerCompany = menuSet.Add(new Menu
+            var footerCompany = menuSet.Add(new MenuRecord
             {
                 SystemName = "FooterCompany",
                 IsSystemMenu = true,
@@ -532,38 +532,38 @@ namespace SmartStore.Data.Utilities
 
             ctx.SaveChanges();
 
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
                 SystemName = routeNameProvider,
-                Model = "route:ManufacturerList",
+                Model = "ManufacturerList",
                 Title = GetResource("Manufacturers.List"),
                 DisplayOrder = ++order,
                 Published = manufacturerCount > 0
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
                 SystemName = routeNameProvider,
-                Model = "route:RecentlyAddedProducts",
+                Model = "RecentlyAddedProducts",
                 Title = GetResource("Products.NewProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
                 SystemName = routeNameProvider,
-                Model = "route:RecentlyViewedProducts",
+                Model = "RecentlyViewedProducts",
                 Title = GetResource("Products.RecentlyViewedProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
                 SystemName = routeNameProvider,
-                Model = "route:CompareProducts",
+                Model = "CompareProducts",
                 Title = GetResource("Products.Compare.List"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
@@ -572,33 +572,33 @@ namespace SmartStore.Data.Utilities
             ctx.SaveChanges();
             order = 0;
 
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
                 SystemName = routeNameProvider,
-                Model = "route:contactus",
+                Model = "contactus",
                 Title = GetResource("ContactUs"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
                 SystemName = routeNameProvider,
-                Model = "route:Blog",
+                Model = "Blog",
                 Title = GetResource("Blog"),
                 DisplayOrder = ++order,
                 Published = GetSetting("BlogSettings.Enabled", false)
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
                 SystemName = routeNameProvider,
-                Model = "route:Boards",
+                Model = "Boards",
                 Title = GetResource("Forum.Forums"),
                 DisplayOrder = ++order,
                 Published = GetSetting("ForumSettings.ForumsEnabled", false)
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
                 SystemName = linkBuilderProvider,
@@ -606,7 +606,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("ShippingReturns"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
                 SystemName = linkBuilderProvider,
@@ -618,7 +618,7 @@ namespace SmartStore.Data.Utilities
             ctx.SaveChanges();
             order = 0;
 
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
                 SystemName = linkBuilderProvider,
@@ -626,7 +626,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("AboutUs"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
                 SystemName = linkBuilderProvider,
@@ -634,7 +634,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("Imprint"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
                 SystemName = linkBuilderProvider,
@@ -642,7 +642,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("Disclaimer"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
                 SystemName = linkBuilderProvider,
@@ -650,7 +650,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("PrivacyNotice"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
                 SystemName = linkBuilderProvider,
@@ -661,11 +661,11 @@ namespace SmartStore.Data.Utilities
 
             if (GetSetting("CustomerSettings.UserRegistrationType", "").IsCaseInsensitiveEqual("Disabled"))
             {
-                menuItemSet.Add(new MenuItem
+                menuItemSet.Add(new MenuItemRecord
                 {
                     MenuId = footerCompany.Id,
                     SystemName = routeNameProvider,
-                    Model = "route:Login",
+                    Model = "Login",
                     Title = GetResource("Account.Login"),
                     DisplayOrder = ++order
                 });
@@ -678,7 +678,7 @@ namespace SmartStore.Data.Utilities
 
             #region Help & Service
 
-            var serviceMenu = menuSet.Add(new Menu
+            var serviceMenu = menuSet.Add(new MenuRecord
             {
                 SystemName = "HelpAndService",
                 IsSystemMenu = true,
@@ -688,50 +688,50 @@ namespace SmartStore.Data.Utilities
 
             ctx.SaveChanges();
 
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = routeNameProvider,
-                Model = "route:RecentlyAddedProducts",
+                Model = "RecentlyAddedProducts",
                 Title = GetResource("Products.NewProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = routeNameProvider,
-                Model = "route:ManufacturerList",
+                Model = "ManufacturerList",
                 Title = GetResource("Manufacturers.List"),
                 DisplayOrder = ++order,
                 Published = manufacturerCount > 0
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = routeNameProvider,
-                Model = "route:RecentlyViewedProducts",
+                Model = "RecentlyViewedProducts",
                 Title = GetResource("Products.RecentlyViewedProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = routeNameProvider,
-                Model = "route:CompareProducts",
+                Model = "CompareProducts",
                 Title = GetResource("Products.Compare.List"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
             });
 
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 IsDivider = true
             });
 
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = linkBuilderProvider,
@@ -739,7 +739,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("AboutUs"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = linkBuilderProvider,
@@ -747,7 +747,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("Disclaimer"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = linkBuilderProvider,
@@ -755,7 +755,7 @@ namespace SmartStore.Data.Utilities
                 Title = GetResource("ShippingReturns"),
                 DisplayOrder = ++order
             });
-            menuItemSet.Add(new MenuItem
+            menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
                 SystemName = linkBuilderProvider,

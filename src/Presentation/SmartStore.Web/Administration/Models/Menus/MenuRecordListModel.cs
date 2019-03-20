@@ -5,7 +5,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Menus
 {
-    public class MenuListModel : ModelBase
+    public class MenuRecordListModel : ModelBase
     {
         [SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
         public int SearchStoreId { get; set; }

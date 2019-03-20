@@ -139,8 +139,6 @@
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionsSetMap.cs" />
-    <Compile Include="Mapping\Cms\MenuItemMap.cs" />
-    <Compile Include="Mapping\Cms\MenuMap.cs" />
     <Compile Include="Mapping\Customers\WalletHistoryMap.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
@@ -656,9 +654,9 @@
     <Compile Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.Designer.cs">
       <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201903200944030_Menus.cs" />
-    <Compile Include="Migrations\201903200944030_Menus.Designer.cs">
-      <DependentUpon>201903200944030_Menus.cs</DependentUpon>
+    <Compile Include="Migrations\201903202044425_Menus.cs" />
+    <Compile Include="Migrations\201903202044425_Menus.Designer.cs">
+      <DependentUpon>201903202044425_Menus.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1181,8 +1179,8 @@
     <EmbeddedResource Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.resx">
       <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201903200944030_Menus.resx">
-      <DependentUpon>201903200944030_Menus.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201903202044425_Menus.resx">
+      <DependentUpon>201903202044425_Menus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

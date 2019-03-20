@@ -4,8 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
-using Newtonsoft.Json;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -120,27 +118,6 @@ namespace SmartStore.Services.Cms
                     case LinkType.File:
                         d.Link = d.Label = d.Value.ToString();
                         break;
-                    case LinkType.Route:
-                        var routeName = d.Value.ToString();
-                        if (!string.IsNullOrEmpty(routeName))
-                        {
-                            d.Label = routeName;
-                            d.Link = _urlHelper.RouteUrl(routeName);
-                        }
-                        break;
-                    case LinkType.Action:
-                        var dic = d.Value as RouteValueDictionary;
-                        if (dic != null)
-                        {
-                            var action = dic.Get("action") as string;
-                            var controller = dic.Get("controller") as string;
-                            if (!string.IsNullOrEmpty(action) && !string.IsNullOrEmpty(controller))
-                            {
-                                d.Link = _urlHelper.Action(action, controller, dic);
-                                d.Label = string.Concat(controller, ".", action);
-                            }
-                        }
-                        break;
                     default:
                         throw new SmartException("Unknown link builder type.");
                 }
@@ -202,19 +179,7 @@ namespace SmartStore.Services.Cms
                         case LinkType.Url:
                             return new LinkResolverData { Type = type, Value = rawValue };
                         case LinkType.File:
-                        case LinkType.Route:
                             return new LinkResolverData { Type = type, Value = value, QueryString = queryString };
-                        case LinkType.Action:
-                            RouteValueDictionary dic = null;
-                            if (value.HasValue())
-                            {
-                                try
-                                {
-                                    dic = JsonConvert.DeserializeObject<RouteValueDictionary>(value);
-                                }
-                                catch { }
-                            }
-                            return new LinkResolverData { Type = type, Value = dic, QueryString = queryString };
                         default:
                             throw new SmartException("Unknown link builder type.");
                     }

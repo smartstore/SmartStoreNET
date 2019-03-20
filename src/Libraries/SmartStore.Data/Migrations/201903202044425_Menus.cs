@@ -13,7 +13,25 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.MenuItem",
+                "dbo.MenuRecord",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        SystemName = c.String(nullable: false, maxLength: 400),
+                        IsSystemMenu = c.Boolean(nullable: false),
+                        Title = c.String(maxLength: 400),
+                        Published = c.Boolean(nullable: false),
+                        LimitedToStores = c.Boolean(nullable: false),
+                        SubjectToAcl = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .Index(t => new { t.SystemName, t.IsSystemMenu }, name: "IX_Menu_SystemName_IsSystemMenu")
+                .Index(t => t.Published, name: "IX_Menu_Published")
+                .Index(t => t.LimitedToStores, name: "IX_Menu_LimitedToStores")
+                .Index(t => t.SubjectToAcl, name: "IX_Menu_SubjectToAcl");
+            
+            CreateTable(
+                "dbo.MenuItemRecord",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
@@ -33,45 +51,27 @@ namespace SmartStore.Data.Migrations
                         CssClass = c.String(maxLength: 100),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Menu", t => t.MenuId, cascadeDelete: true)
+                .ForeignKey("dbo.MenuRecord", t => t.MenuId, cascadeDelete: true)
                 .Index(t => t.MenuId)
                 .Index(t => t.ParentItemId, name: "IX_MenuItem_ParentItemId")
                 .Index(t => t.Published, name: "IX_MenuItem_Published")
                 .Index(t => t.DisplayOrder, name: "IX_MenuItem_DisplayOrder");
             
-            CreateTable(
-                "dbo.Menu",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        SystemName = c.String(nullable: false, maxLength: 400),
-                        IsSystemMenu = c.Boolean(nullable: false),
-                        Title = c.String(maxLength: 400),
-                        Published = c.Boolean(nullable: false),
-                        LimitedToStores = c.Boolean(nullable: false),
-                        SubjectToAcl = c.Boolean(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .Index(t => new { t.SystemName, t.IsSystemMenu }, name: "IX_Menu_SystemName_IsSystemMenu")
-                .Index(t => t.Published, name: "IX_Menu_Published")
-                .Index(t => t.LimitedToStores, name: "IX_Menu_LimitedToStores")
-                .Index(t => t.SubjectToAcl, name: "IX_Menu_SubjectToAcl");
-            
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.MenuItem", "MenuId", "dbo.Menu");
-            DropIndex("dbo.Menu", "IX_Menu_SubjectToAcl");
-            DropIndex("dbo.Menu", "IX_Menu_LimitedToStores");
-            DropIndex("dbo.Menu", "IX_Menu_Published");
-            DropIndex("dbo.Menu", "IX_Menu_SystemName_IsSystemMenu");
-            DropIndex("dbo.MenuItem", "IX_MenuItem_DisplayOrder");
-            DropIndex("dbo.MenuItem", "IX_MenuItem_Published");
-            DropIndex("dbo.MenuItem", "IX_MenuItem_ParentItemId");
-            DropIndex("dbo.MenuItem", new[] { "MenuId" });
-            DropTable("dbo.Menu");
-            DropTable("dbo.MenuItem");
+            DropForeignKey("dbo.MenuItemRecord", "MenuId", "dbo.MenuRecord");
+            DropIndex("dbo.MenuItemRecord", "IX_MenuItem_DisplayOrder");
+            DropIndex("dbo.MenuItemRecord", "IX_MenuItem_Published");
+            DropIndex("dbo.MenuItemRecord", "IX_MenuItem_ParentItemId");
+            DropIndex("dbo.MenuItemRecord", new[] { "MenuId" });
+            DropIndex("dbo.MenuRecord", "IX_Menu_SubjectToAcl");
+            DropIndex("dbo.MenuRecord", "IX_Menu_LimitedToStores");
+            DropIndex("dbo.MenuRecord", "IX_Menu_Published");
+            DropIndex("dbo.MenuRecord", "IX_Menu_SystemName_IsSystemMenu");
+            DropTable("dbo.MenuItemRecord");
+            DropTable("dbo.MenuRecord");
         }
 
         public bool RollbackOnFailure => true;

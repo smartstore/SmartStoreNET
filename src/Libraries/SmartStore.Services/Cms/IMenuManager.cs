@@ -3,25 +3,25 @@ using SmartStore.Core.Domain.Cms;
 
 namespace SmartStore.Services.Cms
 {
-    public partial interface IMenuService
+    public partial interface IMenuManager
     {
         /// <summary>
         /// Inserts a menu.
         /// </summary>
         /// <param name="menu">Menu entity.</param>
-        void InsertMenu(Menu menu);
+        void InsertMenu(MenuRecord menu);
 
         /// <summary>
         /// Updates a menu.
         /// </summary>
         /// <param name="menu">Menu entity.</param>
-        void UpdateMenu(Menu menu);
+        void UpdateMenu(MenuRecord menu);
 
         /// <summary>
         /// Deletes a menu.
         /// </summary>
         /// <param name="menu">Menu entity.</param>
-        void DeleteMenu(Menu menu);
+        void DeleteMenu(MenuRecord menu);
 
         /// <summary>
         /// Gets all menus.
@@ -32,7 +32,7 @@ namespace SmartStore.Services.Cms
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
         /// <returns>Menu entities.</returns>
-        IPagedList<Menu> GetAllMenus(
+        IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
             int storeId = 0, 
             bool showHidden = false, 
@@ -46,6 +46,6 @@ namespace SmartStore.Services.Cms
         /// <param name="storeId">Store identifier.</param>
         /// <param name="checkPermission"></param>
         /// <param name="menu">Menu entity.</param>
-        Menu GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true);
+        MenuRecord GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true);
     }
 }

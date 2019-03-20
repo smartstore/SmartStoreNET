@@ -210,8 +210,9 @@
     <Compile Include="Domain\Catalog\QuantiyControlType.cs" />
     <Compile Include="Domain\Catalog\IPagingOptions.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
-    <Compile Include="Domain\Cms\Menu.cs" />
-    <Compile Include="Domain\Cms\MenuItem.cs" />
+    <Compile Include="Domain\Cms\MenuRecord.cs" />
+    <Compile Include="Domain\Cms\MenuItemRecord.cs" />
+    <Compile Include="Domain\Cms\WidgetSettings.cs" />
     <Compile Include="Domain\Common\PerformanceSettings.cs" />
     <Compile Include="Domain\Customers\CustomerLoginType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
@@ -389,7 +390,6 @@
     <Compile Include="ComponentModel\SerializationUtils.cs" />
     <Compile Include="Domain\Catalog\BackInStockSubscription.cs" />
     <Compile Include="Domain\Catalog\SmartStoreProductVariantAttributeCombination.cs" />
-    <Compile Include="Domain\Cms\WidgetSettings.cs" />
     <Compile Include="Domain\Common\AddressSettings.cs" />
     <Compile Include="Domain\Common\GenericAttribute.cs" />
     <Compile Include="Domain\Orders\Events.cs" />

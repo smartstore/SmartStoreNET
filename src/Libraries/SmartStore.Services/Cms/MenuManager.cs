@@ -8,15 +8,15 @@ using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Cms
 {
-    public partial class MenuService : IMenuService
+    public partial class MenuManager : IMenuManager
     {
-        private readonly IRepository<Menu> _menuRepository;
+        private readonly IRepository<MenuRecord> _menuRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<AclRecord> _aclRepository;
         private readonly ICommonServices _services;
 
-        public MenuService(
-            IRepository<Menu> menuRepository,
+        public MenuManager(
+            IRepository<MenuRecord> menuRepository,
             IRepository<StoreMapping> storeMappingRepository,
             IRepository<AclRecord> aclRepository,
             ICommonServices services)
@@ -31,21 +31,21 @@ namespace SmartStore.Services.Cms
 
         public DbQuerySettings QuerySettings { get; set; }
 
-        public virtual void InsertMenu(Menu menu)
+        public virtual void InsertMenu(MenuRecord menu)
         {
-            Guard.NotNull(menu, nameof(Menu));
+            Guard.NotNull(menu, nameof(MenuRecord));
 
             _menuRepository.Insert(menu);
         }
 
-        public virtual void UpdateMenu(Menu menu)
+        public virtual void UpdateMenu(MenuRecord menu)
         {
-            Guard.NotNull(menu, nameof(Menu));
+            Guard.NotNull(menu, nameof(MenuRecord));
 
             _menuRepository.Update(menu);
         }
 
-        public virtual void DeleteMenu(Menu menu)
+        public virtual void DeleteMenu(MenuRecord menu)
         {
             if (menu != null)
             {
@@ -53,7 +53,7 @@ namespace SmartStore.Services.Cms
             }
         }
 
-        public virtual IPagedList<Menu> GetAllMenus(
+        public virtual IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
             int storeId = 0,
             bool showHidden = false,
@@ -61,10 +61,10 @@ namespace SmartStore.Services.Cms
             int pageSize = int.MaxValue)
         {
             var query = BuildMenuQuery(systemName, storeId, showHidden);
-            return new PagedList<Menu>(query, pageIndex, pageSize);
+            return new PagedList<MenuRecord>(query, pageIndex, pageSize);
         }
 
-        public virtual Menu GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true)
+        public virtual MenuRecord GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true)
         {
             if (systemName.IsEmpty())
             {
@@ -80,10 +80,10 @@ namespace SmartStore.Services.Cms
             return result;
         }
 
-        protected virtual IQueryable<Menu> BuildMenuQuery(string systemName, int storeId, bool showHidden)
+        protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool showHidden)
         {
             var applied = false;
-            var entityName = nameof(Menu);
+            var entityName = nameof(MenuRecord);
             var query = _menuRepository.Table.Where(x => showHidden || x.Published);
 
             if (systemName.HasValue())

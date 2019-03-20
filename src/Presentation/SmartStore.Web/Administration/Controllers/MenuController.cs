@@ -12,11 +12,11 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class MenuController : AdminControllerBase
     {
-        private readonly IMenuService _menuService;
+        private readonly IMenuManager _menuService;
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
-            IMenuService menuService,
+            IMenuManager menuService,
             AdminAreaSettings adminAreaSettings)
         {
             _menuService = menuService;
@@ -36,7 +36,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             var stores = Services.StoreService.GetAllStores();
-            var model = new MenuListModel
+            var model = new MenuRecordListModel
             {
                 GridPageSize = _adminAreaSettings.GridPageSize
             };

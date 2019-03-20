@@ -255,6 +255,21 @@ namespace SmartStore
 
             return ctx;
         }
-	}
 
+        public static bool IsBareBonePage(this ControllerContext controllerContext)
+        {
+            var ctx = controllerContext.GetMasterControllerContext();
+
+            if (ctx is ViewContext viewContext)
+            {
+                // IsPopUp or Framed
+                if (viewContext.ViewBag.IsPopup == true || viewContext.ViewBag.Framed == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 }

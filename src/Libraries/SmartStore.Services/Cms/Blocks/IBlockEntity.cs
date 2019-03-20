@@ -2,6 +2,9 @@
 
 namespace SmartStore.Services.Cms.Blocks
 {
+	/// <summary>
+	/// Represents a block instance's storage data.
+	/// </summary>
 	public interface IBlockEntity
 	{
 		int Id { get; set; }

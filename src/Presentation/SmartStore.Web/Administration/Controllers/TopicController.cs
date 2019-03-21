@@ -223,7 +223,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        public ActionResult Create(TopicModel model, bool continueEditing)
+        public ActionResult Create(TopicModel model, bool continueEditing, FormCollection form)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
                 return AccessDeniedView();
@@ -250,6 +250,8 @@ namespace SmartStore.Admin.Controllers
 				SaveStoreMappings(topic, model);
 				SaveAclMappings(topic, model);
 				UpdateLocales(topic, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, topic, form));
 
                 NotifySuccess(T("Admin.ContentManagement.Topics.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = topic.Id }) : RedirectToAction("List");
@@ -351,16 +353,20 @@ namespace SmartStore.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageTopics))
+            {
                 return AccessDeniedView();
+            }
 
             var topic = _topicService.GetTopicById(id);
             if (topic == null)
-                return RedirectToAction("List");
+            {
+                return HttpNotFound();
+            }
 
             if (topic.IsSystemTopic)
             {
                 NotifyError(T("Admin.ContentManagement.Topics.CannotBeDeleted"));
-                return RedirectToAction("List");
+                return RedirectToAction("Edit", new { id = topic.Id });
             }
             
             _topicService.DeleteTopic(topic);

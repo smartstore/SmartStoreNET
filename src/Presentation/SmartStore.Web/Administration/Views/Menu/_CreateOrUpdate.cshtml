@@ -1,0 +1,78 @@
+﻿@using SmartStore.Admin.Models.Menus
+@model MenuRecordModel
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.IsSystemMenu)
+
+@Html.SmartStore().TabStrip().Name("menu-edit").Style(TabsStyle.Material).Items(x =>
+{
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
+	
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "menu-edit", this.Html, this.Model));
+})
+
+@helper TabInfo()
+{ 
+    <table class="adminContent mb-3">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SystemName)
+            </td>
+            <td class="adminData">
+				@Html.TextBoxFor(model => model.SystemName, Model.IsSystemMenu ? new { @readonly = "readonly" } : null )
+                @Html.ValidationMessageFor(model => model.SystemName)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </td>
+            <td class="adminData">
+				@Html.CheckBoxFor(model => model.Published, Model.IsSystemMenu ? new { @readonly = "readonly" } : null )
+                @Html.ValidationMessageFor(model => model.Published)
+            </td>
+        </tr>
+    </table>
+    
+    @(Html.LocalizedEditor<MenuRecordModel, MenuRecordLocalizedModel>("menu-info-localized",
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].Title)
+                    </td>
+					<td class="adminData">
+						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+						@Html.HiddenFor(model => model.Locales[item].LanguageId, new { id = Html.FieldIdFor(model => model.Locales[item].LanguageId) + "_1" })
+
+						@Html.EditorFor(model => model.Locales[item].Title)
+						@Html.ValidationMessageFor(model => model.Locales[item].Title)
+					</td>
+                </tr>
+            </table>
+            ,
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Title)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.Title)
+                        @Html.ValidationMessageFor(model => model.Title)
+                    </td>
+                </tr>
+            </table>
+        ))
+}
+
+@helper TabStores()
+{
+	@Html.Partial("StoreSelector", Model)
+}
+
+@helper TabAcl()
+{
+	@Html.Partial("AclSelector", Model)
+}

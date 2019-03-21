@@ -64,6 +64,16 @@ namespace SmartStore.Services.Cms
             return new PagedList<MenuRecord>(query, pageIndex, pageSize);
         }
 
+        public virtual MenuRecord GetMenuById(int id)
+        {
+            if (id == 0)
+            {
+                return null;
+            }
+
+            return _menuRepository.GetById(id);
+        }
+
         public virtual MenuRecord GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true)
         {
             if (systemName.IsEmpty())

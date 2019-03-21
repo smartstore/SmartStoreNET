@@ -40,12 +40,19 @@ namespace SmartStore.Services.Cms
             int pageSize = int.MaxValue);
 
         /// <summary>
+        /// Gets a menu by identifier.
+        /// </summary>
+        /// <param name="id">Menu identifier.</param>
+        /// <returns>Menu entity.</returns>
+        MenuRecord GetMenuById(int id);
+
+        /// <summary>
         /// Gets a menu by system name.
         /// </summary>
         /// <param name="systemName">Menu system name.</param>
         /// <param name="storeId">Store identifier.</param>
         /// <param name="checkPermission"></param>
-        /// <param name="menu">Menu entity.</param>
+        /// <returns>Menu entity.</returns>
         MenuRecord GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true);
     }
 }

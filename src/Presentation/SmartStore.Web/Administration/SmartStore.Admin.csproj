@@ -587,6 +587,9 @@
     <Content Include="Views\Shared\EditorTemplates\SelectList.cshtml" />
     <Content Include="Views\Product\_CreateOrUpdate.Downloads.cshtml" />
     <Content Include="Views\Menu\List.cshtml" />
+    <Content Include="Views\Menu\Edit.cshtml" />
+    <Content Include="Views\Menu\Create.cshtml" />
+    <Content Include="Views\Menu\_CreateOrUpdate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

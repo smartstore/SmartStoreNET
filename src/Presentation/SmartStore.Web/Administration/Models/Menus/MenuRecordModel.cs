@@ -4,13 +4,19 @@ using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Menus
 {
     [Validator(typeof(MenuRecordValidator))]
-    public class MenuRecordModel : EntityModelBase, IStoreSelector, IAclSelector
+    public class MenuRecordModel : TabbableModel, ILocalizedModel<MenuRecordLocalizedModel>, IStoreSelector, IAclSelector
     {
+        public MenuRecordModel()
+        {
+            Locales = new List<MenuRecordLocalizedModel>();
+        }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.SystemName")]
         public string SystemName { get; set; }
 
@@ -32,13 +38,24 @@ namespace SmartStore.Admin.Models.Menus
         public bool SubjectToAcl { get; set; }
         public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
+
+        public IList<MenuRecordLocalizedModel> Locales { get; set; }
     }
 
+
+    public class MenuRecordLocalizedModel : ILocalizedModelLocal
+    {
+        public int LanguageId { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Title")]
+        public string Title { get; set; }
+    }
 
     public partial class MenuRecordValidator : AbstractValidator<MenuRecordModel>
     {
         public MenuRecordValidator(Localizer T)
         {
+            RuleFor(x => x.SystemName).NotEmpty();
         }
     }
 }

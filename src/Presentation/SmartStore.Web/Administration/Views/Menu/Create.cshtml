@@ -1,0 +1,24 @@
+﻿@using SmartStore.Admin.Models.Menus
+@model MenuRecordModel
+@{    
+	ViewBag.Title = T("Admin.ContentManagement.AddMenu");
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            @T("Admin.ContentManagement.AddMenu") @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="fa fa-check"></i>
+				<span>@T("Admin.Common.Save")</span>
+			</button>
+            <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
+				<span>@T("Admin.Common.SaveContinue")</span>
+			</button>
+        </div>
+    </div>
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
+}

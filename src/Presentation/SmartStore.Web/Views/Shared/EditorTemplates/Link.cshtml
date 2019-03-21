@@ -35,7 +35,7 @@
         ? arr.Select(x => (LinkType)Enum.Parse(typeof(LinkType), x, true)).ToArray()
         : new LinkType[] { LinkType.Product, LinkType.Category, LinkType.Manufacturer, LinkType.Topic, LinkType.File, LinkType.Url };
 
-    Html.AddScriptParts("~/Scripts/smartstore.linkbuilder.js");
+    Html.AddScriptParts(true, "~/Scripts/smartstore.linkbuilder.js");
 }
 
 <div id="link-builder-@rnd" class="link-builder" data-field-id="@id" data-current-type="@link.Type.ToString().ToLower()">

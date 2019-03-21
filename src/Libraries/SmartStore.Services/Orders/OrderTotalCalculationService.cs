@@ -1250,9 +1250,9 @@ namespace SmartStore.Services.Orders
 
             resultTemp = resultTemp.RoundIfEnabledFor(currency);
 
-			// Return null if we have errors
 			var roundingAmount = decimal.Zero;
             var roundingAmountConverted = decimal.Zero;
+            // Return null if we have errors:
             var orderTotal = shoppingCartShipping.HasValue ? resultTemp : (decimal?)null;
             var orderTotalConverted = orderTotal;
 			var appliedCreditBalance = decimal.Zero;

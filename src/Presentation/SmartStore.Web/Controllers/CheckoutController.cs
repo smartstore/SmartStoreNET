@@ -610,37 +610,43 @@ namespace SmartStore.Web.Controllers
         
         public ActionResult ShippingMethod()
         {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var store = _storeContext.CurrentStore;
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			if (cart.Count == 0)
+            if (cart.Count == 0)
+            {
                 return RedirectToRoute("ShoppingCart");
+            }
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if (customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+            {
                 return new HttpUnauthorizedResult();
+            }
 
             if (!cart.RequiresShipping())
             {
-				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute<ShippingOption>(customer, SystemCustomerAttributeNames.SelectedShippingOption, null, store.Id);
 
                 return RedirectToAction("PaymentMethod");
             }
-                        
-            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
 
-            var checkoutState = _httpContext.GetCheckoutState();
-            if (checkoutState.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
-                checkoutState.CustomProperties["HasOnlyOneActiveShippingMethod"] = shippingOptions.Count == 1;
-            else
-                checkoutState.CustomProperties.Add("HasOnlyOneActiveShippingMethod", shippingOptions.Count == 1);
-            
-            if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
+            var response = _shippingService.GetShippingOptions(cart, customer.ShippingAddress, "", store.Id);
+            var options = response.ShippingOptions;
+            var state = _httpContext.GetCheckoutState();
+
+            if (state.CustomProperties.ContainsKey("HasOnlyOneActiveShippingMethod"))
             {
-                _genericAttributeService.SaveAttribute<ShippingOption>(
-                    _workContext.CurrentCustomer, 
-                    SystemCustomerAttributeNames.SelectedShippingOption, 
-                    shippingOptions.FirstOrDefault(), 
-                    _storeContext.CurrentStore.Id);
+                state.CustomProperties["HasOnlyOneActiveShippingMethod"] = options.Count == 1;
+            }
+            else
+            {
+                state.CustomProperties.Add("HasOnlyOneActiveShippingMethod", options.Count == 1);
+            }
+            
+            if (options.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption && response.Success)
+            {
+                _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedShippingOption, options.FirstOrDefault(), store.Id);
 
 				var referrer = Services.WebHelper.GetUrlReferrer();
 				if (referrer.EndsWith("/PaymentMethod") || referrer.EndsWith("/Confirm"))
@@ -651,7 +657,6 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("PaymentMethod");
             }
 
-            //model
             var model = PrepareShippingMethodModel(cart);
             return View(model);
         }

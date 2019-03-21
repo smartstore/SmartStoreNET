@@ -271,7 +271,9 @@
     <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
     <Compile Include="Models\Localization\AvailableLanguageModel.cs" />
     <Compile Include="Models\Localization\CheckAvailableResourcesResult.cs" />
+    <Compile Include="Models\Menus\MenuItemRecordModel.cs" />
     <Compile Include="Models\Menus\MenuRecordListModel.cs" />
+    <Compile Include="Models\Menus\MenuRecordModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\Messages\MessageTemplatePreviewModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />

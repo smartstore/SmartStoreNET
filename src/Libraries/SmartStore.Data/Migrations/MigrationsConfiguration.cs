@@ -729,6 +729,85 @@
                 "Systemname",
                 "The system name of the menu.",
                 "Der Systemname des Menüs.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Title",
+                "Title",
+                "Titel",
+                "Specifies the title.",
+                "Legt den Titel fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Published",
+                "Published",
+                "Veröffentlicht",
+                "Specifies whether the menu is visible in the shop.",
+                "Legt fest, ob das Menü im Shop sichtbar ist.");
+
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ParentItem",
+                "Parent menu item",
+                "Übergeordnetes Menüelement",
+                "Specifies the parent menu item. Leave the field empty to create a first-level menu item.",
+                "Legt das übergeordnete Menüelement fest. Lassen Sie das Feld leer, um ein Menüelement erster Ebene zu erzeugen.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.Provider",
+                "Provider",
+                "Provider",
+                "Specifies the provider.",
+                "Legt den Provider fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ShortDescription",
+                "Short description",
+                "Kurzbeschreibung",
+                "Specifies a short description. Used as the title attribute for the menu link.",
+                "Legt eine Kurzbeschreibung fest. Wird als Title-Attribut für den Menü-Link verwendet.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.Published",
+                "Published",
+                "Veröffentlicht",
+                "Specifies whether the menu item is visible in the shop.",
+                "Legt fest, ob das Menüelement im Shop sichtbar ist.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.DisplayOrder",
+                "Display order",
+                "Reihenfolge",
+                "Specifies the order of the menu item within a menu level.",
+                "Legt die Reihenfolge des Menüelements innerhalb einer Menüebene fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.IsDivider",
+                "Dividing line",
+                "Trennungslinie",
+                "Forces an output as a dividing line.",
+                "Erzwingt eine Ausgabe als Trennungslinie.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ShowExpanded",
+                "Show expanded",
+                "Geöffnet anzeigen",
+                "If selected and this menu item has children, the menu will initially appear expanded.",
+                "Legt fest, ob das Menü anfänglich geöffnet ist, sofern es Kindelemente besitzt.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.NoFollow",
+                "No follow",
+                "No follow",
+                "Sets the menu link to 'no follow' via HTML attribute.",
+                "Legt den Menü-Link per HTML-Attribut auf 'no follow' fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.NewWindow",
+                "New window",
+                "Neues fenster",
+                "Specifies that the menu link is to be opened in a new window.",
+                "Legt fest, dass der Menü-Link in einem neuen Fenster geöffnet werden soll.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.HtmlId",
+                "HTML ID",
+                "HTML ID",
+                "Sets the HTML ID attribute for the menu link.",
+                "Legt das HTML ID Attribut für den Menü-Link fest.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.CssClass",
+                "CSS class",
+                "CSS Klasse",
+                "Sets a CSS class for the menu link.",
+                "Legt eine CSS Klasse für den Menü-Link fest.");
         }
     }
 }

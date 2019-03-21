@@ -1,5 +1,4 @@
-﻿@using Telerik.Web.Mvc.UI
-@using SmartStore.Admin.Models.Menus
+﻿@using SmartStore.Admin.Models.Menus
 @model MenuRecordListModel
 @{    
 	ViewBag.Title = T("Admin.ContentManagement.Menus").Text;
@@ -22,8 +21,8 @@
 	@if (Model.AvailableStores.Count > 1)
 	{
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
-			@Html.SmartLabelFor(x => x.SearchStoreId)
-			@Html.DropDownList("SearchStoreId", Model.AvailableStores, T("Admin.Common.All"))
+			@Html.SmartLabelFor(x => x.StoreId)
+			@Html.DropDownList("StoreId", Model.AvailableStores, T("Admin.Common.All"))
 		</div>
 	}
 	<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -39,35 +38,21 @@
 	</div>
 </div>
 
-@*<div>
-	@(Html.Telerik().Grid<MenuModel>()
+<div>
+	@(Html.Telerik().Grid<MenuRecordModel>()
 			.Name("menus-grid")
 			.Columns(columns =>
 			{
 				columns.Bound(x => x.SystemName)
 					.Width(280)
-					.Template(x => Html.ActionLink(x.SystemName, "Edit", new { id = x.Id }))
 					.ClientTemplate("<a href='Edit/<#= Id #>'><#= SystemName #></a>");
 				columns.Bound(x => x.Title);
-				columns.Bound(x => x.IsPasswordProtected)
-					.Template(item => @Html.SymbolForBool(item.IsPasswordProtected))
-					.ClientTemplate(@Html.SymbolForBool("IsPasswordProtected"))
+				columns.Bound(x => x.Published)
+					.ClientTemplate(@Html.SymbolForBool("Published"))
 					.Centered();
-				columns.Bound(x => x.IncludeInSitemap)
-					.Template(item => @Html.SymbolForBool(item.IncludeInSitemap))
-					.ClientTemplate(@Html.SymbolForBool("IncludeInSitemap"))
-					.Centered();
-				columns.Bound(x => x.RenderAsWidget)
-					.Template(item => @Html.SymbolForBool(item.RenderAsWidget))
-					.ClientTemplate(@Html.SymbolForBool("RenderAsWidget"))
-					.Centered();
-				columns.Bound(x => x.WidgetZone);
 				columns.Bound(x => x.LimitedToStores)
-					.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 					.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
 					.Hidden(Model.AvailableStores.Count <= 1)
-					.Centered();
-				columns.Bound(x => x.Priority)
 					.Centered();
 			})
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Menu"))
@@ -75,7 +60,7 @@
 			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 			.PreserveGridState()
 			.EnableCustomBinding(true))
-</div>*@
+</div>
 
 <script type="text/javascript">
 	$(document).ready(function () {
@@ -89,7 +74,7 @@
 
 	function onDataBinding(e) {
 		var searchModel = {
-			SearchStoreId: $('#@Html.FieldIdFor(model => model.SearchStoreId)').val(),
+			StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
 			SystemName: $('#@Html.FieldIdFor(model => model.SystemName)').val()
 		};
 		e.data = searchModel;

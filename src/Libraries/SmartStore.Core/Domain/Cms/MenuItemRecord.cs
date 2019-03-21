@@ -70,7 +70,7 @@ namespace SmartStore.Core.Domain.Cms
         public bool IsDivider { get; set; }
 
         /// <summary>
-        /// If selected and this menu item has children, the menu will always appear expanded.
+        /// If selected and this menu item has children, the menu will initially appear expanded.
         /// </summary>
         public bool ShowExpanded { get; set; }
 

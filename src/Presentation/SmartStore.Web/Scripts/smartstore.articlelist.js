@@ -48,7 +48,7 @@
 			url = select.data('url'),
 			val = select.val();
 
-		var url = window.modifyUrl(url, qname, val);
+		url = window.modifyUrl(url, qname, val);
 
 		window.setLocation(url);
 	});

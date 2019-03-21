@@ -34,15 +34,19 @@
     var allowedTypes = arr.Any()
         ? arr.Select(x => (LinkType)Enum.Parse(typeof(LinkType), x, true)).ToArray()
         : new LinkType[] { LinkType.Product, LinkType.Category, LinkType.Manufacturer, LinkType.Topic, LinkType.File, LinkType.Url };
+
+    Html.AddScriptParts("~/Scripts/smartstore.linkbuilder.js");
 }
 
-<div id="link-builder-@rnd" class="link-builder">
+<div id="link-builder-@rnd" class="link-builder" data-field-id="@id" data-current-type="@link.Type.ToString().ToLower()">
     <div class="d-flex flex-nowrap input-group">
+
         @* Template control that receives the link expression. *@
-        @Html.TextBox("", Value, new { type = "hidden" })
+        @Html.Hidden("", Value)
+
         @* 1. prepend type selector. *@
         <div class="input-group-prepend type-container">
-		    <button id="btn-type-@rnd" type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
+		    <button type="button" class="btn btn-secondary btn-icon dropdown-toggle" data-toggle="dropdown" title="">
 			    <i class="fa fa-link"></i>
 		    </button>
             <div class="dropdown-menu">
@@ -63,11 +67,13 @@
                 </div>
             </div>
         </div>
+
         @* 2. main control. *@
         @foreach (var type in allowedTypes)
         {
             var label = link.Type == type ? link.Label : string.Empty;
             var value = link.Type == type && link.Value != null ? link.Value.ToString() : string.Empty;
+
             <div class="flex-grow-1 link-control@(link.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
                 @if (type == LinkType.Product)
                 {
@@ -104,27 +110,14 @@
                 }
             </div>
         }
+
         <div class="flex-grow-1 link-control hide" data-type="query-string">
-            <input id="lb-query-string-@rnd" type="text" class="form-control transferable resettable" value="@link.QueryString" />
+            <input id="lb-query-string-@rnd" type="text" class="form-control transferable resettable query-string" value="@link.QueryString" />
         </div>
+
         @* 3. append additional controls. *@
         @if (allowedTypes.Contains(LinkType.Product))
         {
-	        <script>
-                function lbPickerSelectionCompleted@(rnd)(ids, selectedItems) {
-                    var val = 'product:' + ids[0];
-                    var qs = $('#lb-query-string-@rnd').val() || '';
-                    while (qs.startsWith('?')) {
-                        qs = qs.substring(1);
-                    }
-                    if (!_.isEmpty(qs)) {
-                        val = val + '?' + qs;
-                    }
-                    $('#@id').val(val);
-                    $('#lb-product-name-@rnd').val(selectedItems[0].name);
-                    return true;
-                }
-	        </script>
             <div class="input-group-append link-control@(link.Type == LinkType.Product ? "" : " hide")" data-type="product">
 		        @(Html.SmartStore().EntityPicker()
                     .HtmlAttribute("id", "lb-product-picker-" + rnd.ToString())
@@ -135,6 +128,7 @@
                     .OnSelectionCompleted("lbPickerSelectionCompleted" + rnd.ToString()))
             </div>
         }
+
         @if (allowedTypes.Contains(LinkType.File))
         {
             <div class="input-group-append link-control@(link.Type == LinkType.File ? "" : " hide")" data-type="file">
@@ -144,6 +138,7 @@
                 </a>
             </div>
         }
+
         @* 4. append reset button. *@
         <div class="input-group-append">
 			<button type="button" class="btn btn-secondary btn-to-danger btn-reset" title="@T("Common.Remove")">
@@ -154,6 +149,37 @@
 </div>
 
 <script>
+    $(function () {
+        $('#link-builder-@(rnd)').linkBuilder();
+    });
+
+    @if (allowedTypes.Contains(LinkType.Product))
+    {
+        <text>        
+            function lbPickerSelectionCompleted@(rnd)(ids, selectedItems) {
+                var val = 'product:' + ids[0];
+                var qs = $('#lb-query-string-@rnd').val() || '';
+
+                while (qs.startsWith('?')) {
+                    qs = qs.substring(1);
+                }
+
+                if (!_.isEmpty(qs)) {
+                    val = val + '?' + qs;
+                }
+
+                $('#@id').val(val);
+                $('#lb-product-name-@rnd').val(selectedItems[0].name);
+
+                return true;
+            }
+        </text>
+    }
+</script>
+
+
+
+@*<script>
     $(function () {
         var container = $('#link-builder-@(rnd)'),
             ctrl = container.find('#@(id)'),
@@ -253,7 +279,6 @@
             //console.log('change ' + ctrl.val());
         });
 
-
         function updateTypeInfo(el) {
             if (!el) return;
 
@@ -278,4 +303,4 @@
             return val;
         }
     });
-</script>
+</script>*@

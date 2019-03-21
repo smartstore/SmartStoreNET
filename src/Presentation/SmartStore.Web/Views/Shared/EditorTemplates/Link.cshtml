@@ -161,7 +161,9 @@
             qsCtrl = container.find('#lb-query-string-@rnd');
 
         // Set type selector to initial type from current expression.
-        updateTypeInfo(container.find('a[data-type="@(link.Type.ToString().ToLower())"]'));
+        _.delay(function () {
+            updateTypeInfo(container.find('a[data-type="@(link.Type.ToString().ToLower())"]'));
+        }, 100);
 
         // Init controls.
         controls.find('select').selectWrapper();

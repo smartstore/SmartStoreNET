@@ -35,8 +35,13 @@ namespace SmartStore.Web.Framework
     {
         public static MvcHtmlString Hint(this HtmlHelper helper, string value)
         {
-            // create a
-            var a = new TagBuilder("a");
+			if (String.IsNullOrEmpty(value))
+			{
+				return MvcHtmlString.Empty;
+			}
+
+			// create a
+			var a = new TagBuilder("a");
             a.MergeAttribute("href", "#");
             a.MergeAttribute("onclick", "return false;");
             //a.MergeAttribute("rel", "tooltip");

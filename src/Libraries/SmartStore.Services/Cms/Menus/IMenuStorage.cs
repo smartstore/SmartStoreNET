@@ -54,5 +54,34 @@ namespace SmartStore.Services.Cms
         /// <param name="checkPermission"></param>
         /// <returns>Menu entity.</returns>
         MenuRecord GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true);
+
+        #region Menu items
+
+        /// <summary>
+        /// Inserts a menu item.
+        /// </summary>
+        /// <param name="item">Menu item entity.</param>
+        void InsertMenuItem(MenuItemRecord item);
+
+        /// <summary>
+        /// Updates a menu item.
+        /// </summary>
+        /// <param name="item">Menu item entity.</param>
+        void UpdateMenuItem(MenuItemRecord item);
+
+        /// <summary>
+        /// Deletes a menu item.
+        /// </summary>
+        /// <param name="item">Menu item entity.</param>
+        void DeleteMenuItem(MenuItemRecord item);
+
+        /// <summary>
+        /// Gets a menu item by identifier.
+        /// </summary>
+        /// <param name="id">Menu item identifier.</param>
+        /// <returns>Menu item entity.</returns>
+        MenuItemRecord GetMenuItemById(int id);
+
+        #endregion
     }
 }

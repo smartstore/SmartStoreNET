@@ -11,17 +11,20 @@ namespace SmartStore.Services.Cms
     public partial class MenuStorage : IMenuStorage
     {
         private readonly IRepository<MenuRecord> _menuRepository;
+        private readonly IRepository<MenuItemRecord> _menuItemRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<AclRecord> _aclRepository;
         private readonly ICommonServices _services;
 
         public MenuStorage(
             IRepository<MenuRecord> menuRepository,
+            IRepository<MenuItemRecord> menuItemRepository,
             IRepository<StoreMapping> storeMappingRepository,
             IRepository<AclRecord> aclRepository,
             ICommonServices services)
         {
             _menuRepository = menuRepository;
+            _menuItemRepository = menuItemRepository;
             _storeMappingRepository = storeMappingRepository;
             _aclRepository = aclRepository;
             _services = services;
@@ -90,6 +93,44 @@ namespace SmartStore.Services.Cms
             return result;
         }
 
+        #region Menu items
+
+        public virtual void InsertMenuItem(MenuItemRecord item)
+        {
+            Guard.NotNull(item, nameof(MenuRecord));
+
+            _menuItemRepository.Insert(item);
+        }
+
+        public virtual void UpdateMenuItem(MenuItemRecord item)
+        {
+            Guard.NotNull(item, nameof(MenuRecord));
+
+            _menuItemRepository.Update(item);
+        }
+
+        public virtual void DeleteMenuItem(MenuItemRecord item)
+        {
+            if (item != null)
+            {
+                _menuItemRepository.Delete(item);
+            }
+        }
+
+        public virtual MenuItemRecord GetMenuItemById(int id)
+        {
+            if (id == 0)
+            {
+                return null;
+            }
+
+            return _menuItemRepository.GetById(id);
+        }
+
+        #endregion
+
+        #region Utilities
+
         protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool showHidden)
         {
             var applied = false;
@@ -142,5 +183,7 @@ namespace SmartStore.Services.Cms
 
             return query;
         }
+
+        #endregion
     }
 }

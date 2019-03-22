@@ -726,6 +726,10 @@
             builder.AddOrUpdate("Admin.ContentManagement.AddMenu", "Add menu", "Menü hinzufügen");
             builder.AddOrUpdate("Admin.ContentManagement.EditMenu", "Edit menu", "Menü bearbeiten");
 
+            builder.AddOrUpdate("Admin.ContentManagement.MenuLinks", "Menu links", "Menü Links");
+            builder.AddOrUpdate("Admin.ContentManagement.AddMenuItem", "Add menu link", "Menü Link hinzufügen");
+            builder.AddOrUpdate("Admin.ContentManagement.EditMenuItem", "Edit menu link", "Menü Link bearbeiten");
+
             builder.AddOrUpdate("Admin.ContentManagement.Menus.CannotBeDeleted",
                 "This menu is required by your shop and can therefore not be deleted.",
                 "Dieses Menü wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.");

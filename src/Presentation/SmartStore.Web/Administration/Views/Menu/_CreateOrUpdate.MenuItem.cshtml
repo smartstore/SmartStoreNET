@@ -1,0 +1,162 @@
+﻿@using SmartStore.Admin.Models.Menus
+@model MenuItemRecordModel
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.MenuId)
+
+<div id="menu-item-container">
+    <div class="adminContent mb-3">
+        <div class="adminRow not-for-divider">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.SystemName)
+            </div>
+            <div class="adminData">
+			    TODO: Editor by provider
+                @Html.HiddenFor(model => model.SystemName)
+                @Html.HiddenFor(model => model.Model)
+                @Html.ValidationMessageFor(model => model.SystemName)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.ParentItemId)
+            </div>
+            <div class="adminData">
+			    TODO: Parent ID Combo
+                @Html.HiddenFor(model => model.ParentItemId)
+                @Html.ValidationMessageFor(model => model.ParentItemId)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.Published)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.Published)
+                @Html.ValidationMessageFor(model => model.Published)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.IsDivider)
+            </div>
+            <div class="adminData">
+                @Html.CheckBoxFor(model => model.IsDivider, new { data_toggler_for = "#menu-item-container .not-for-divider", data_toggler_reverse = "true" })
+                @Html.ValidationMessageFor(model => model.IsDivider)
+            </div>
+        </div>
+    </div>
+
+    <div class="not-for-divider">
+    @(Html.LocalizedEditor<MenuItemRecordModel, MenuItemRecordLocalizedModel>("menu-item-localized",
+            @<div class="adminContent">
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].Title)
+                    </div>
+				    <div class="adminData">
+					    @*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
+					    @Html.HiddenFor(model => model.Locales[item].LanguageId, new { id = Html.FieldIdFor(model => model.Locales[item].LanguageId) + "_1" })
+
+					    @Html.EditorFor(model => model.Locales[item].Title)
+					    @Html.ValidationMessageFor(model => model.Locales[item].Title)
+				    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].ShortDescription)
+                    </div>
+				    <div class="adminData wide">
+                        @Html.TextAreaFor(model => Model.Locales[item].ShortDescription, new { rows = 1 })
+					    @Html.ValidationMessageFor(model => model.Locales[item].ShortDescription)
+				    </div>
+                </div>
+            </div>
+            ,
+            @<div class="adminContent">
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Title)
+                    </div>
+                    <div class="adminData">
+                        @Html.EditorFor(model => model.Title)
+                        @Html.ValidationMessageFor(model => model.Title)
+                    </div>
+                </div>
+                <div class="adminRow">
+                    <div class="adminTitle">
+                        @Html.SmartLabelFor(model => model.ShortDescription)
+                    </div>
+                    <div class="adminData wide">
+                        @Html.TextAreaFor(model => Model.ShortDescription, new { rows = 1 })
+                        @Html.ValidationMessageFor(model => model.ShortDescription)
+                    </div>
+                </div>
+            </div>
+        ))
+    </div>
+
+    <div class="adminContent">
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.DisplayOrder)
+                @Html.ValidationMessageFor(model => model.DisplayOrder)
+            </div>
+        </div>
+        <div class="adminRow not-for-divider">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowExpanded)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.ShowExpanded)
+                @Html.ValidationMessageFor(model => model.ShowExpanded)
+            </div>
+        </div>
+        <div class="adminRow not-for-divider">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.NoFollow)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.NoFollow)
+                @Html.ValidationMessageFor(model => model.NoFollow)
+            </div>
+        </div>
+        <div class="adminRow not-for-divider">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.NewWindow)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.NewWindow)
+                @Html.ValidationMessageFor(model => model.NewWindow)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.HtmlId)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.HtmlId)
+                @Html.ValidationMessageFor(model => model.HtmlId)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.CssClass)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.CssClass)
+                @Html.ValidationMessageFor(model => model.CssClass)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+	});
+</script>

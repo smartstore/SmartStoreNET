@@ -2,10 +2,12 @@
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
+using SmartStore.Collections;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Models.Menus
 {
@@ -28,18 +30,20 @@ namespace SmartStore.Admin.Models.Menus
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Published")]
         public bool Published { get; set; }
 
-        // Store mapping
+        // Store mapping.
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }
         public IEnumerable<SelectListItem> AvailableStores { get; set; }
         public int[] SelectedStoreIds { get; set; }
 
-        // ACL
+        // ACL.
         public bool SubjectToAcl { get; set; }
         public IEnumerable<SelectListItem> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
 
         public IList<MenuRecordLocalizedModel> Locales { get; set; }
+
+        public TreeNode<MenuItem> Items { get; set; }
     }
 
 

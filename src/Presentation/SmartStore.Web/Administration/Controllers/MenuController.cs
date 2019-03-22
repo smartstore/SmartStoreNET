@@ -21,7 +21,7 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class MenuController : AdminControllerBase
     {
-        private readonly IMenuStorage _menuManager;
+        private readonly IMenuStorage _menuStorage;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IStoreMappingService _storeMappingService;
@@ -30,7 +30,7 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
-            IMenuStorage menuManager,
+            IMenuStorage menuStorage,
             ILanguageService languageService,
             ILocalizedEntityService localizedEntityService,
             IStoreMappingService storeMappingService,
@@ -38,7 +38,7 @@ namespace SmartStore.Admin.Controllers
             ICustomerService customerService,
             AdminAreaSettings adminAreaSettings)
         {
-            _menuManager = menuManager;
+            _menuStorage = menuStorage;
             _languageService = languageService;
             _localizedEntityService = localizedEntityService;
             _storeMappingService = storeMappingService;
@@ -75,7 +75,7 @@ namespace SmartStore.Admin.Controllers
 
             if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
-                var items = _menuManager.GetAllMenus(model.SystemName, model.StoreId, true, command.Page - 1, command.PageSize);
+                var items = _menuStorage.GetAllMenus(model.SystemName, model.StoreId, true, command.Page - 1, command.PageSize);
 
                 gridModel.Data = items.Select(x =>
                 {
@@ -126,7 +126,7 @@ namespace SmartStore.Admin.Controllers
             {                
                 var menu = MiniMapper.Map<MenuRecordModel, MenuRecord>(model);
 
-                _menuManager.InsertMenu(menu);
+                _menuStorage.InsertMenu(menu);
 
                 SaveStoreMappings(menu, model);
                 SaveAclMappings(menu, model);
@@ -150,7 +150,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var menu = _menuManager.GetMenuById(id);
+            var menu = _menuStorage.GetMenuById(id);
             if (menu == null)
             {
                 return HttpNotFound();
@@ -169,7 +169,6 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
-        [ValidateInput(false)]
         public ActionResult Edit(MenuRecordModel model, bool continueEditing, FormCollection form)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
@@ -177,7 +176,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var menu = _menuManager.GetMenuById(model.Id);
+            var menu = _menuStorage.GetMenuById(model.Id);
             if (menu == null)
             {
                 return HttpNotFound();
@@ -187,7 +186,7 @@ namespace SmartStore.Admin.Controllers
             {
                 MiniMapper.Map(model, menu);
 
-                _menuManager.UpdateMenu(menu);
+                _menuStorage.UpdateMenu(menu);
 
                 SaveStoreMappings(menu, model);
                 SaveAclMappings(menu, model);
@@ -212,7 +211,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var menu = _menuManager.GetMenuById(id);
+            var menu = _menuStorage.GetMenuById(id);
             if (menu == null)
             {
                 return HttpNotFound();
@@ -224,13 +223,132 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("Edit", new { id = menu.Id });
             }
 
-            _menuManager.DeleteMenu(menu);
+            _menuStorage.DeleteMenu(menu);
 
             NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
             return RedirectToAction("List");
         }
 
         #region Menu items
+
+        public ActionResult CreateItem()
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            {
+                return AccessDeniedView();
+            }
+
+            var model = new MenuItemRecordModel();
+            PrepareModel(model, null, false);
+            AddLocales(_languageService, model.Locales);
+
+            return View(model);
+        }
+
+        // Do not name parameter "model" because of property of same name.
+        [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing)
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            {
+                return AccessDeniedView();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var item = MiniMapper.Map<MenuItemRecordModel, MenuItemRecord>(itemModel);
+
+                _menuStorage.InsertMenuItem(item);
+
+                UpdateLocales(item, itemModel);
+
+                NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+                return continueEditing ? RedirectToAction("EditItem", new { id = item.Id }) : RedirectToAction("Edit", new { id = item.MenuId });
+            }
+
+            PrepareModel(itemModel, null, false);
+
+            return View(itemModel);
+        }
+
+        public ActionResult EditItem(int id)
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            {
+                return AccessDeniedView();
+            }
+
+            var item = _menuStorage.GetMenuItemById(id);
+            if (item == null)
+            {
+                return HttpNotFound();
+            }
+
+            var model = MiniMapper.Map<MenuItemRecord, MenuItemRecordModel>(item);
+
+            PrepareModel(model, item, false);
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.Title = item.GetLocalized(x => x.Title, languageId, false, false);
+                locale.ShortDescription = item.GetLocalized(x => x.ShortDescription, languageId, false, false);
+            });
+
+            return View(model);
+        }
+
+        // Do not name parameter "model" because of property of same name.
+        [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing)
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            {
+                return AccessDeniedView();
+            }
+
+            var item = _menuStorage.GetMenuItemById(itemModel.Id);
+            if (item == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                MiniMapper.Map(itemModel, item);
+
+                _menuStorage.UpdateMenuItem(item);
+
+                UpdateLocales(item, itemModel);
+
+                NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+                return continueEditing ? RedirectToAction("EditItem", new { id = item.Id }) : RedirectToAction("Edit", new { id = item.MenuId });
+            }
+
+            PrepareModel(itemModel, item, true);
+
+            return View(itemModel);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteItem(int id)
+        {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            {
+                return AccessDeniedView();
+            }
+
+            var item = _menuStorage.GetMenuItemById(id);
+            if (item == null)
+            {
+                return HttpNotFound();
+            }
+
+            var menuId = item.MenuId;
+            _menuStorage.DeleteMenuItem(item);
+
+            NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+            return RedirectToAction("Edit", new { id = menuId });
+        }
 
         #endregion
 
@@ -248,11 +366,24 @@ namespace SmartStore.Admin.Controllers
             model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
         }
 
+        private void PrepareModel(MenuItemRecordModel model, MenuItemRecord menu, bool excludeProperties)
+        {
+        }
+
         private void UpdateLocales(MenuRecord menu, MenuRecordModel model)
         {
             foreach (var localized in model.Locales)
             {
                 _localizedEntityService.SaveLocalizedValue(menu, x => x.Title, localized.Title, localized.LanguageId);
+            }
+        }
+
+        private void UpdateLocales(MenuItemRecord item, MenuItemRecordModel model)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(item, x => x.Title, localized.Title, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(item, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
             }
         }
 

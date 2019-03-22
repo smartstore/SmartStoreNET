@@ -255,7 +255,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<NewsService>().As<INewsService>().InstancePerRequest();
 
             builder.RegisterType<WidgetService>().As<IWidgetService>().InstancePerRequest();
-            builder.RegisterType<MenuManager>().As<IMenuManager>().InstancePerRequest();
+            builder.RegisterType<MenuStorage>().As<IMenuStorage>().InstancePerRequest();
             builder.RegisterType<LinkResolver>().As<ILinkResolver>().InstancePerRequest();
 
             builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerRequest();

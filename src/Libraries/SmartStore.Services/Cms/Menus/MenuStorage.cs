@@ -8,14 +8,14 @@ using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Cms
 {
-    public partial class MenuManager : IMenuManager
+    public partial class MenuStorage : IMenuStorage
     {
         private readonly IRepository<MenuRecord> _menuRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<AclRecord> _aclRepository;
         private readonly ICommonServices _services;
 
-        public MenuManager(
+        public MenuStorage(
             IRepository<MenuRecord> menuRepository,
             IRepository<StoreMapping> storeMappingRepository,
             IRepository<AclRecord> aclRepository,

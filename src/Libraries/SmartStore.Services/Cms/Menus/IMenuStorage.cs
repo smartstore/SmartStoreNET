@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Cms;
 
 namespace SmartStore.Services.Cms
 {
-    public partial interface IMenuManager
+    public partial interface IMenuStorage
     {
         /// <summary>
         /// Inserts a menu.

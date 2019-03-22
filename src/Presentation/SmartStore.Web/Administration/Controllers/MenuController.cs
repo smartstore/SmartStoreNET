@@ -21,7 +21,7 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class MenuController : AdminControllerBase
     {
-        private readonly IMenuManager _menuManager;
+        private readonly IMenuStorage _menuManager;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IStoreMappingService _storeMappingService;
@@ -30,7 +30,7 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
-            IMenuManager menuManager,
+            IMenuStorage menuManager,
             ILanguageService languageService,
             ILocalizedEntityService localizedEntityService,
             IStoreMappingService storeMappingService,

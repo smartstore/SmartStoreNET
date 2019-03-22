@@ -29,6 +29,7 @@
     var rnd = CommonHelper.GenerateRandomInteger();
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
     var link = this.CommonServices.Resolve<ILinkResolver>().Resolve(Value);
+    var hideQueryString = GetMetadata<bool>("hideQueryString");
 
     var arr = GetMetadata<string>("allowedTypes").SplitSafe(",");
     var allowedTypes = arr.Any()
@@ -58,13 +59,16 @@
                         <span>@info.name</span>
                     </a>
                 }
-                <div class="qs-menu-container">
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item link-type" href="#" data-type="query-string">
-                        <i class="fas @(link.QueryString.HasValue() ? "fa-check text-success" : "fa-minus text-muted")"></i>
-                        <span>@T("Common.QueryString")</span>
-                    </a>
-                </div>
+                @if (!hideQueryString)
+                {
+                    <div class="qs-menu-container">
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item link-type" href="#" data-type="query-string">
+                            <i class="fas @(link.QueryString.HasValue() ? "fa-check text-success" : "fa-minus text-muted")"></i>
+                            <span>@T("Common.QueryString")</span>
+                        </a>
+                    </div>
+                }
             </div>
         </div>
 
@@ -77,7 +81,7 @@
             <div class="flex-grow-1 link-control@(link.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
                 @if (type == LinkType.Product)
                 {
-                    <input id="lb-product-name-@rnd" type="text" class="form-control resettable" value="@label" readonly />
+                    <input type="text" class="form-control resettable product-picker-input" value="@label" readonly />
                 }
                 else if (type == LinkType.Category)
                 {
@@ -112,7 +116,7 @@
         }
 
         <div class="flex-grow-1 link-control hide" data-type="query-string">
-            <input id="lb-query-string-@rnd" type="text" class="form-control transferable resettable query-string" value="@link.QueryString" />
+            <input type="text" class="form-control transferable resettable query-string" value="@link.QueryString" />
         </div>
 
         @* 3. append additional controls. *@
@@ -157,8 +161,9 @@
     {
         <text>        
             function lbPickerSelectionCompleted@(rnd)(ids, selectedItems) {
+                var cnt = $("#link-builder-@rnd");
                 var val = 'product:' + ids[0];
-                var qs = $('#lb-query-string-@rnd').val() || '';
+                var qs = cnt.find(".query-string").val() || '';
 
                 while (qs.startsWith('?')) {
                     qs = qs.substring(1);
@@ -168,8 +173,8 @@
                     val = val + '?' + qs;
                 }
 
-                $('#@id').val(val);
-                $('#lb-product-name-@rnd').val(selectedItems[0].name);
+                $('#@id').val(val).trigger("change");
+                cnt.find(".product-picker-input").val(selectedItems[0].name);
 
                 return true;
             }

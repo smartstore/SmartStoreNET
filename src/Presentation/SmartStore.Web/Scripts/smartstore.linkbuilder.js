@@ -91,7 +91,7 @@
                 // update queryStringIcon to indicate whether a query string is set
                 self.queryStringIcon.attr('class', _.isEmpty(qs) ? 'fas fa-minus text-muted' : 'fas fa-check text-success');
 
-                self.templateValueField.val(val);
+                self.templateValueField.val(val).trigger("change");
                 //console.log('change ' + self.templateValueField.val());
             });
 

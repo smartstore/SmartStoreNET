@@ -1387,6 +1387,29 @@ table.payment-method-features td {
 	}
 }
 
+//
+// Menus
+// --------------------------------------------------------------
+
+.menu-item-list .list-group {
+    .list-group-item {
+        overflow: visible;
+
+        .item-commands {
+            opacity: 0;
+            transition: opacity 0.05s linear;
+        }
+
+        &:hover .item-commands {
+            opacity: 1;
+        }
+    }
+
+    .sub-item:last-child {
+        border-bottom: 0 none;
+    }
+}
+
 
 //
 // Misc
@@ -1406,11 +1429,6 @@ table.payment-method-features td {
 		border: 1px solid #646464;
 	}
 }
-
-
-//
-// Misc
-// --------------------------------------------------------------
 
 .cke_chrome.cke_focus {
     border-color: $input-focus-border-color;

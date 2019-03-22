@@ -1,19 +1,48 @@
-﻿@using SmartStore.Admin.Models.Menus
+﻿@using SmartStore.Collections
+@using SmartStore.Admin.Models.Menus
 @model MenuRecordModel
 @{    
 }
-
-<div class="adminContent">
-    <div class="adminSeparator">
-		<div class="admin-config-group">
-			<div class="title">@T("Admin.ContentManagement.MenuLinks")</div>
-		</div>
+<h4 class="h5 mt-4">@T("Admin.ContentManagement.MenuLinks")</h4>
+@if (Model.Root != null)
+{
+    <div class="menu-item-list">
+        <div class="list-group">
+            @foreach (var item in Model.Root.Children)
+            {
+                @ItemGroup(item, 1)
+            }
+        </div>
     </div>
-</div>
+}
 
-<div>
-    TODO: bootstrap list groups.
-</div>
+@helper ItemGroup(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node, int level)
+{
+    var indentStyle = level != 0 ? " style=\"padding-left: {0}px;\"".FormatInvariant(level == 1 ? 20 : level * 30) : "";
+    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2@(level == 1 ? "" : " sub-item")"@Html.Raw(indentStyle)>
+        <div class="item-text">@node.Value.Text</div>
+        <div class="item-commands">
+			<button type="button" class="btn btn-sm btn-light btn-to-primary btn-item-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<i class="fa fa-ellipsis-v"></i>
+			</button>
+			<div class="dropdown-menu dropdown-menu-right">
+			    @*<a class="menu-item-command dropdown-item" href="#" data-action="">
+				    <i class="fa fa-angle-up"></i>
+				    <span>xyz</span>
+			    </a>*@
+            </div>
+        </div>
+    </div>
+    if (node.HasChildren)
+    {
+        <div class="list-group">
+            @foreach (var child in node.Children)
+            {
+                @ItemGroup(child, level + 1);
+            }
+        </div>
+    }
+}
 
 <script type="text/javascript">
 	$(document).ready(function () {

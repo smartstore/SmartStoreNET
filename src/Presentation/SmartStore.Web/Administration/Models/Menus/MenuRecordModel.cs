@@ -43,7 +43,7 @@ namespace SmartStore.Admin.Models.Menus
 
         public IList<MenuRecordLocalizedModel> Locales { get; set; }
 
-        public TreeNode<MenuItem> Items { get; set; }
+        public TreeNode<MenuItem> Root { get; set; }
     }
 
 

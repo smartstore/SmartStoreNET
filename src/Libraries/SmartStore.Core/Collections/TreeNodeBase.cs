@@ -40,13 +40,10 @@ namespace SmartStore.Collections
 				{
 					var map = GetIdNodeMap();
 
-					if (_id != value)
+					if (_id != null && map.ContainsKey(_id))
 					{
-						if (_id != null && map.ContainsKey(_id))
-						{
-							// Remove old id from map
-							map.Remove(_id);
-						}
+						// Remove old id from map
+						map.Remove(_id);
 					}
 
 					if (value != null)

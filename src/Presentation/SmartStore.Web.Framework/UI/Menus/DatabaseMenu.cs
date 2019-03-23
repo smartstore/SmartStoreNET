@@ -7,38 +7,31 @@ using SmartStore.Collections;
 using SmartStore.Services;
 using SmartStore.Services.Cms;
 
-
 namespace SmartStore.Web.Framework.UI
 {
 	/// <summary>
 	/// A generic implementation of <see cref="IMenu" /> which represents a
 	/// <see cref="MenuRecord"/> entity retrieved by <see cref="IMenuStorage"/>.
 	/// </summary>
-	public partial class GenericMenu : MenuBase
+	internal class DatabaseMenu : IMenu
 	{
-		private readonly string _name;
-		private readonly IMenuStorage _storage;
+		public string Name => throw new NotImplementedException();
 
-		public GenericMenu(string name)
-		{
-			Guard.NotEmpty(name, nameof(name));
+		public TreeNode<MenuItem> Root => throw new NotImplementedException();
 
-			_name = name;
+		public bool ApplyPermissions => throw new NotImplementedException();
 
-			// TODO: 
-		}
-
-		public override string Name
-		{
-			get { return _name; }
-		}
-
-		protected override string GetCacheKey()
+		public void ClearCache()
 		{
 			throw new NotImplementedException();
 		}
 
-		protected override TreeNode<MenuItem> Build()
+		public IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false)
 		{
 			throw new NotImplementedException();
 		}

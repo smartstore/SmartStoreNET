@@ -7,8 +7,8 @@ namespace SmartStore.Web.Framework.UI
 	/// <summary>
 	/// A hierarchical navigation menu
 	/// </summary>
-	public interface IMenu
-	{
+	public interface IMenu // INFO: replaces ISiteMap
+	{	
 		/// <summary>
 		/// Gets the menu system name (e.g. main, footer, service, admin etc.)
 		/// </summary>

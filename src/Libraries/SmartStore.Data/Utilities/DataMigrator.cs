@@ -451,8 +451,9 @@ namespace SmartStore.Data.Utilities
                 throw new ArgumentException("Passed context must be an instance of type '{0}'.".FormatInvariant(typeof(SmartObjectContext)), nameof(context));
             }
 
-            const string linkBuilderProvider = "LinkBuilder";
-            const string routeNameProvider = "RouteName";
+            const string entityProvider = "entity";
+            const string routeProvider = "route";
+            const string routeTemplate = "{{\"routename\":\"{0}\"}}";
 
             var menuSet = ctx.Set<MenuRecord>();
             var menuItemSet = ctx.Set<MenuItemRecord>();
@@ -535,8 +536,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeNameProvider,
-                Model = "ManufacturerList",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("ManufacturerList"),
                 Title = GetResource("Manufacturers.List"),
                 DisplayOrder = ++order,
                 Published = manufacturerCount > 0
@@ -544,8 +545,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeNameProvider,
-                Model = "RecentlyAddedProducts",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
                 Title = GetResource("Products.NewProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
@@ -553,8 +554,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeNameProvider,
-                Model = "RecentlyViewedProducts",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
                 Title = GetResource("Products.RecentlyViewedProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
@@ -562,8 +563,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeNameProvider,
-                Model = "CompareProducts",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("CompareProducts"),
                 Title = GetResource("Products.Compare.List"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
@@ -575,16 +576,16 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = routeNameProvider,
-                Model = "contactus",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("contactus"),
                 Title = GetResource("ContactUs"),
                 DisplayOrder = ++order
             });
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = routeNameProvider,
-                Model = "Blog",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("Blog"),
                 Title = GetResource("Blog"),
                 DisplayOrder = ++order,
                 Published = GetSetting("BlogSettings.Enabled", false)
@@ -592,8 +593,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = routeNameProvider,
-                Model = "Boards",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("Boards"),
                 Title = GetResource("Forum.Forums"),
                 DisplayOrder = ++order,
                 Published = GetSetting("ForumSettings.ForumsEnabled", false)
@@ -601,7 +602,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:shippinginfo",
                 Title = GetResource("ShippingReturns"),
                 DisplayOrder = ++order
@@ -609,7 +610,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:paymentinfo",
                 Title = GetResource("Paymentinfo"),
                 DisplayOrder = ++order
@@ -621,7 +622,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:aboutus",
                 Title = GetResource("AboutUs"),
                 DisplayOrder = ++order
@@ -629,7 +630,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:imprint",
                 Title = GetResource("Imprint"),
                 DisplayOrder = ++order
@@ -637,7 +638,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:disclaimer",
                 Title = GetResource("Disclaimer"),
                 DisplayOrder = ++order
@@ -645,7 +646,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:privacyinfo",
                 Title = GetResource("PrivacyNotice"),
                 DisplayOrder = ++order
@@ -653,7 +654,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:conditionsofuse",
                 Title = GetResource("ConditionsOfUse"),
                 DisplayOrder = ++order
@@ -664,8 +665,8 @@ namespace SmartStore.Data.Utilities
                 menuItemSet.Add(new MenuItemRecord
                 {
                     MenuId = footerCompany.Id,
-                    SystemName = routeNameProvider,
-                    Model = "Login",
+                    SystemName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("Login"),
                     Title = GetResource("Account.Login"),
                     DisplayOrder = ++order
                 });
@@ -691,8 +692,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeNameProvider,
-                Model = "RecentlyAddedProducts",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
                 Title = GetResource("Products.NewProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
@@ -700,8 +701,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeNameProvider,
-                Model = "ManufacturerList",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("ManufacturerList"),
                 Title = GetResource("Manufacturers.List"),
                 DisplayOrder = ++order,
                 Published = manufacturerCount > 0
@@ -709,8 +710,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeNameProvider,
-                Model = "RecentlyViewedProducts",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
                 Title = GetResource("Products.RecentlyViewedProducts"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
@@ -718,8 +719,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeNameProvider,
-                Model = "CompareProducts",
+                SystemName = routeProvider,
+                Model = routeTemplate.FormatInvariant("CompareProducts"),
                 Title = GetResource("Products.Compare.List"),
                 DisplayOrder = ++order,
                 Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
@@ -734,7 +735,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:aboutus",
                 Title = GetResource("AboutUs"),
                 DisplayOrder = ++order
@@ -742,7 +743,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:disclaimer",
                 Title = GetResource("Disclaimer"),
                 DisplayOrder = ++order
@@ -750,7 +751,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:shippinginfo",
                 Title = GetResource("ShippingReturns"),
                 DisplayOrder = ++order
@@ -758,7 +759,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = linkBuilderProvider,
+                SystemName = entityProvider,
                 Model = "topic:conditionsofuse",
                 Title = GetResource("ConditionsOfUse"),
                 DisplayOrder = ++order

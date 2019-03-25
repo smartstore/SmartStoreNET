@@ -17,7 +17,7 @@
             <button type="submit" name="save" value="save-continue" class="btn btn-secondary">
 				<span>@T("Admin.Common.SaveContinue")</span>
 			</button>
-            <button type="submit" name="menu-delete" value="menu-delete" id="menu-delete" class="btn btn-danger">
+            <button type="submit" name="delete-menu" value="delete-menu" id="delete-menu" class="btn btn-danger">
 				<i class="far fa-trash-alt"></i>
 				<span>@T("Admin.Common.Delete")</span>
 			</button>
@@ -26,4 +26,4 @@
 
     Html.RenderPartial("_CreateOrUpdate", Model);
 }
-@Html.DeleteConfirmation("menu-delete")
+@Html.DeleteConfirmation("delete-menu")

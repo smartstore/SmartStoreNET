@@ -1,0 +1,81 @@
+﻿@using SmartStore.Collections
+@using SmartStore.Admin.Models.Menus
+@model MenuRecordModel
+
+@if (Model.ItemTree.HasChildren)
+{
+    <div class="list-group">
+        @foreach (var item in Model.ItemTree.Children)
+        {
+            @ItemGroup(item, 1)
+        }
+        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2" style="padding-left: 20px;">
+            <div class="item-text">
+                @AddRootItem()
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <div>
+            @T("Admin.ContentManagement.Menus.NoMenuItemsAvailable")
+        </div>
+        <div class="mt-2">
+            @AddRootItem()
+        </div>
+    </div>
+}
+
+@helper AddRootItem()
+{
+	<a id="add-root-menu-item" class="btn btn-sm btn-primary menu-item-command" href="#" data-action="add-item" 
+        data-url="@Url.Action("CreateItem", "Menu", new { menuId = Model.Id, parentItemId = 0, btnId = "btn-refresh", area = "Admin" })">
+		<i class="fa fa-plus"></i>
+		<span>@T("Admin.ContentManagement.AddMenuItem")</span>
+	</a>
+}
+
+@helper ItemGroup(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node, int level)
+{
+    var indentStyle = level != 0 ? " style=\"padding-left: {0}px;\"".FormatInvariant(level == 1 ? 20 : level * 30) : "";
+
+    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2@(level == 1 ? "" : " sub-item")"@Html.Raw(indentStyle)>
+        <div class="item-text">
+		    <a class="menu-item-command@(!node.Value.Enabled || !node.Value.Visible ? " muted" : "")" href="#" data-action="edit-item" 
+               data-url="@Url.Action("EditItem", new { id = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
+                <span>@node.Value.Text</span>
+		    </a>
+        </div>
+        <div class="item-commands">
+			<button type="button" class="btn btn-sm btn-light btn-to-primary btn-item-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<i class="fa fa-ellipsis-v"></i>
+			</button>
+			<div class="dropdown-menu dropdown-menu-right">
+			    <a class="menu-item-command dropdown-item" href="#" data-action="add-item" 
+                   data-url="@Url.Action("CreateItem", new { menuId = Model.Id, parentItemId = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
+				    <i class="fa fa-plus"></i>
+				    <span>@T("Admin.ContentManagement.AddMenuItem")</span>
+			    </a>
+			    <a class="menu-item-command dropdown-item" href="#" data-action="edit-item" data-url="@Url.Action("EditItem", new { id = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
+				    <i class="far fa-edit"></i>
+				    <span>@T("Common.Edit")</span>
+			    </a>
+			    <a class="menu-item-command dropdown-item" href="#" data-action="delete-item" data-url="@Url.Action("DeleteItem", new { id = node.Value.EntityId, area = "Admin" })">
+				    <i class="far fa-trash-alt"></i>
+				    <span>@T("Common.Delete")</span>
+			    </a>
+            </div>
+        </div>
+    </div>
+    if (node.HasChildren)
+    {
+        <div class="list-group">
+            @foreach (var child in node.Children)
+            {
+                @ItemGroup(child, level + 1);
+            }
+        </div>
+    }
+}

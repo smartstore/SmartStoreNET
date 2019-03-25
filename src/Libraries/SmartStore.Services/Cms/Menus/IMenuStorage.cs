@@ -29,13 +29,15 @@ namespace SmartStore.Services.Cms
         /// <param name="systemName">Menu system name.</param>
         /// <param name="storeId">Store identifier. 0 to get menus for all stores.</param>
         /// <param name="showHidden">Whether to get hidden menus.</param>
+        /// <param name="withItems">Whether to include menu items.</param>
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
         /// <returns>Menu entities.</returns>
         IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
             int storeId = 0, 
-            bool showHidden = false, 
+            bool showHidden = false,
+            bool withItems = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue);
 
@@ -43,17 +45,9 @@ namespace SmartStore.Services.Cms
         /// Gets a menu by identifier.
         /// </summary>
         /// <param name="id">Menu identifier.</param>
+        /// <param name="withItems">Whether to include menu items.</param>
         /// <returns>Menu entity.</returns>
-        MenuRecord GetMenuById(int id);
-
-        /// <summary>
-        /// Gets a menu by system name.
-        /// </summary>
-        /// <param name="systemName">Menu system name.</param>
-        /// <param name="storeId">Store identifier.</param>
-        /// <param name="checkPermission"></param>
-        /// <returns>Menu entity.</returns>
-        MenuRecord GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true);
+        MenuRecord GetMenuById(int id, bool withItems = false);
 
         #region Menu items
 
@@ -73,7 +67,8 @@ namespace SmartStore.Services.Cms
         /// Deletes a menu item.
         /// </summary>
         /// <param name="item">Menu item entity.</param>
-        void DeleteMenuItem(MenuItemRecord item);
+        /// <param name="deleteChilds">Whether to delete all child items too.</param>
+        void DeleteMenuItem(MenuItemRecord item, bool deleteChilds = true);
 
         /// <summary>
         /// Gets a menu item by identifier.

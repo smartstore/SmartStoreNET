@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Cms
 {
@@ -60,37 +61,29 @@ namespace SmartStore.Services.Cms
             string systemName = null,
             int storeId = 0,
             bool showHidden = false,
+            bool withItems = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue)
         {
-            var query = BuildMenuQuery(systemName, storeId, showHidden);
+            var query = BuildMenuQuery(systemName, storeId, showHidden, withItems);
             return new PagedList<MenuRecord>(query, pageIndex, pageSize);
         }
 
-        public virtual MenuRecord GetMenuById(int id)
+        public virtual MenuRecord GetMenuById(int id, bool withItems = false)
         {
             if (id == 0)
             {
                 return null;
             }
 
-            return _menuRepository.GetById(id);
-        }
+            var query = _menuRepository.Table;
 
-        public virtual MenuRecord GetMenuBySystemName(string systemName, int storeId = 0, bool checkPermission = true)
-        {
-            if (systemName.IsEmpty())
+            if (withItems)
             {
-                return null;
+                query = query.Include(x => x.Items);
             }
 
-            var query = BuildMenuQuery(systemName, storeId, !checkPermission);
-            var rolesIdent = checkPermission
-                ? "0"
-                : _services.WorkContext.CurrentCustomer.GetRolesIdent();
-
-            var result = query.FirstOrDefaultCached("db.manu.bysysname-{0}-{1}-{2}".FormatInvariant(systemName, storeId, rolesIdent));
-            return result;
+            return query.FirstOrDefault(x => x.Id == id);
         }
 
         #region Menu items
@@ -109,11 +102,42 @@ namespace SmartStore.Services.Cms
             _menuItemRepository.Update(item);
         }
 
-        public virtual void DeleteMenuItem(MenuItemRecord item)
+        public virtual void DeleteMenuItem(MenuItemRecord item, bool deleteChilds = true)
         {
-            if (item != null)
+            if (item == null)
+            {
+                return;
+            }
+
+            if (!deleteChilds)
             {
                 _menuItemRepository.Delete(item);
+                return;
+            }
+
+            var ids = new HashSet<int> { item.Id };
+            GetChildIds(item.Id);
+
+            foreach (var chunk in ids.Slice(200))
+            {
+                var items = _menuItemRepository.Table.Where(x => chunk.Contains(x.Id)).ToList();
+
+                _menuItemRepository.DeleteRange(items);
+            }
+
+            void GetChildIds(int parentId)
+            {
+                var childIds = _menuItemRepository.TableUntracked
+                    .Where(x => x.ParentItemId == parentId)
+                    .Select(x => x.Id)
+                    .ToList();
+
+                if (childIds.Any())
+                {
+                    ids.AddRange(childIds);
+
+                    childIds.Each(x => GetChildIds(x));
+                }
             }
         }
 
@@ -131,11 +155,18 @@ namespace SmartStore.Services.Cms
 
         #region Utilities
 
-        protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool showHidden)
+        protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool showHidden, bool withItems)
         {
             var applied = false;
             var entityName = nameof(MenuRecord);
-            var query = _menuRepository.Table.Where(x => showHidden || x.Published);
+            var query = _menuRepository.Table;
+
+            if (withItems)
+            {
+                query = query.Include(x => x.Items);
+            }
+
+            query = query.Where(x => showHidden || x.Published);
 
             if (systemName.HasValue())
             {

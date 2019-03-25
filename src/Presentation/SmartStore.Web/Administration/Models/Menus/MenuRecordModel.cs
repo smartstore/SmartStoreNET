@@ -17,6 +17,7 @@ namespace SmartStore.Admin.Models.Menus
         public MenuRecordModel()
         {
             Locales = new List<MenuRecordLocalizedModel>();
+            ItemTree = new TreeNode<MenuItem>(new MenuItem());
         }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.SystemName")]
@@ -43,7 +44,7 @@ namespace SmartStore.Admin.Models.Menus
 
         public IList<MenuRecordLocalizedModel> Locales { get; set; }
 
-        public TreeNode<MenuItem> Root { get; set; }
+        public TreeNode<MenuItem> ItemTree { get; set; }
     }
 
 

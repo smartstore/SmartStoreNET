@@ -2,12 +2,14 @@
 @model MenuItemRecordModel
 @{    
 	ViewBag.Title = T("Admin.ContentManagement.AddMenuItem");
+
+    Layout = "_AdminPopupLayout";
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.ContentManagement.AddMenuItem") @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.MenuId })
+            @T("Admin.ContentManagement.AddMenuItem")
         </div>
         <div class="options">
             <button type="submit" name="save-item" value="save-item" class="btn btn-primary">
@@ -20,5 +22,5 @@
         </div>
     </div>
 
-    Html.RenderPartial("_CreateOrUpdate.MenuItem", Model);
+    Html.RenderPartial("_CreateOrUpdate.Item", Model);
 }

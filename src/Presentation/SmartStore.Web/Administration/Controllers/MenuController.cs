@@ -78,7 +78,7 @@ namespace SmartStore.Admin.Controllers
 
             if (Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
-                var items = _menuStorage.GetAllMenus(model.SystemName, model.StoreId, true, command.Page - 1, command.PageSize);
+                var items = _menuStorage.GetAllMenus(model.SystemName, model.StoreId, true, false, command.Page - 1, command.PageSize);
 
                 gridModel.Data = items.Select(x =>
                 {
@@ -234,23 +234,58 @@ namespace SmartStore.Admin.Controllers
 
         #region Menu items
 
-        public ActionResult CreateItem()
+        // Ajax.
+        public ActionResult ItemList(int id)
+        {
+            var model = new MenuRecordModel
+            {
+                Id = id,
+                ItemTree = GetItemList(id)
+            };
+
+            return PartialView(model);
+        }
+
+        // Do not use model binding because of input validation.
+        public ActionResult CreateItem(int menuId, int parentItemId, string btnId)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
                 return AccessDeniedView();
             }
 
-            var model = new MenuItemRecordModel();
-            PrepareModel(model, null, false);
+            var menu = _menuStorage.GetMenuById(menuId, true);
+            if (menu == null)
+            {
+                return HttpNotFound();
+            }
+
+            var model = new MenuItemRecordModel
+            {
+                MenuId = menuId,
+                ParentItemId = parentItemId
+            };
+
+            PrepareModel(model, null);
             AddLocales(_languageService, model.Locales);
+
+            // Preset max display order to always insert item at the end.
+            var item = menu.Items.Where(x => x.ParentItemId == parentItemId)
+                .OrderByDescending(x => x.DisplayOrder)
+                .FirstOrDefault();
+            if (item != null)
+            {
+                model.DisplayOrder = item.DisplayOrder + 1;
+            }
+
+            ViewBag.BtnId = btnId;
 
             return View(model);
         }
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
-        public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing)
+        public ActionResult CreateItem(MenuItemRecordModel itemModel, string btnId, bool continueEditing)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -262,19 +297,25 @@ namespace SmartStore.Admin.Controllers
                 var item = MiniMapper.Map<MenuItemRecordModel, MenuItemRecord>(itemModel);
 
                 _menuStorage.InsertMenuItem(item);
+                itemModel.Id = item.Id;
 
                 UpdateLocales(item, itemModel);
 
-                NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-                return continueEditing ? RedirectToAction("EditItem", new { id = item.Id }) : RedirectToAction("Edit", new { id = item.MenuId });
-            }
+                ViewBag.btnId = btnId;
+                ViewBag.RefreshPage = true;
+                ViewBag.CloseWindow = !continueEditing;
 
-            PrepareModel(itemModel, null, false);
+                if (continueEditing)
+                {
+                    PrepareModel(itemModel, item);
+                    NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+                }
+            }
 
             return View(itemModel);
         }
 
-        public ActionResult EditItem(int id)
+        public ActionResult EditItem(int id, string btnId)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -289,7 +330,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = MiniMapper.Map<MenuItemRecord, MenuItemRecordModel>(item);
 
-            PrepareModel(model, item, false);
+            PrepareModel(model, item);
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -297,12 +338,14 @@ namespace SmartStore.Admin.Controllers
                 locale.ShortDescription = item.GetLocalized(x => x.ShortDescription, languageId, false, false);
             });
 
+            ViewBag.BtnId = btnId;
+
             return View(model);
         }
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
-        public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing)
+        public ActionResult EditItem(MenuItemRecordModel itemModel, string btnId, bool continueEditing)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -323,11 +366,16 @@ namespace SmartStore.Admin.Controllers
 
                 UpdateLocales(item, itemModel);
 
-                NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-                return continueEditing ? RedirectToAction("EditItem", new { id = item.Id }) : RedirectToAction("Edit", new { id = item.MenuId });
-            }
+                ViewBag.btnId = btnId;
+                ViewBag.RefreshPage = true;
+                ViewBag.CloseWindow = !continueEditing;
 
-            PrepareModel(itemModel, item, true);
+                if (continueEditing)
+                {
+                    PrepareModel(itemModel, item);
+                    NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+                }
+            }
 
             return View(itemModel);
         }
@@ -350,6 +398,13 @@ namespace SmartStore.Admin.Controllers
             _menuStorage.DeleteMenuItem(item);
 
             NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+
+            if (Request.IsAjaxRequest())
+            {
+                var model = GetItemList(menuId);
+                return PartialView("ItemList", model);
+            }
+
             return RedirectToAction("Edit", new { id = menuId });
         }
 
@@ -357,37 +412,72 @@ namespace SmartStore.Admin.Controllers
 
         #region Utilities
 
-        private void PrepareModel(MenuRecordModel model, MenuRecord menu, bool excludeProperties)
+        private void PrepareModel(MenuRecordModel model, MenuRecord entity, bool excludeProperties)
         {
             if (!excludeProperties)
             {
-                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(menu);
-                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(menu);
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(entity);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
             }
 
             model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
-        }
 
-        private void PrepareModel(MenuItemRecordModel model, MenuItemRecord menu, bool excludeProperties)
-        {
-        }
-
-        private void UpdateLocales(MenuRecord menu, MenuRecordModel model)
-        {
-            foreach (var localized in model.Locales)
+            if (entity != null)
             {
-                _localizedEntityService.SaveLocalizedValue(menu, x => x.Title, localized.Title, localized.LanguageId);
+                model.ItemTree = GetItemList(entity.Id);
             }
         }
 
-        private void UpdateLocales(MenuItemRecord item, MenuItemRecordModel model)
+        private void PrepareModel(MenuItemRecordModel model, MenuItemRecord entity)
+        {
+        }
+
+        private void UpdateLocales(MenuRecord entity, MenuRecordModel model)
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(item, x => x.Title, localized.Title, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(item, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(entity, x => x.Title, localized.Title, localized.LanguageId);
             }
+        }
+
+        private void UpdateLocales(MenuItemRecord entity, MenuItemRecordModel model)
+        {
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(entity, x => x.Title, localized.Title, localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(entity, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
+            }
+        }
+
+        private TreeNode<MenuItem> GetItemList(int id)
+        {
+            return new TreeNode<MenuItem>(new MenuItem { Text = "Root" }, new List<TreeNode<MenuItem>>
+            {
+                new TreeNode<MenuItem>(new MenuItem { Text = "Item 1", EntityId = 1 }),
+                new TreeNode<MenuItem>(new MenuItem { Text = "Item 2", EntityId = 3 }),
+                new TreeNode<MenuItem>(new MenuItem { Text = "Item 3", EntityId = 4 }, new List<TreeNode<MenuItem>>
+                {
+                    new TreeNode<MenuItem>(new MenuItem { Text = "Sub 1", EntityId = 7 }),
+                    new TreeNode<MenuItem>(new MenuItem { Text = "Sub 2", EntityId = 8, Visible = false }),
+                    new TreeNode<MenuItem>(new MenuItem { Text = "Sub 3", EntityId = 10 }, new List<TreeNode<MenuItem>>
+                    {
+                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 1", EntityId = 13 }),
+                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 2", EntityId = 15 }),
+                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 3", EntityId = 16 }, new List<TreeNode<MenuItem>>
+                        {
+                            new TreeNode<MenuItem>(new MenuItem { Text = "Sub 1", EntityId = 17 }),
+                            new TreeNode<MenuItem>(new MenuItem { Text = "Sub 2", EntityId = 9 })
+                        }),
+                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 4", EntityId = 11 }),
+                        new TreeNode<MenuItem>(new MenuItem { EntityId = 21, Attributes = new Dictionary<string, object> { { "IsDivider", true } } }),
+                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 5", EntityId = 12 }),
+                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 6", EntityId = 18 })
+                    })
+                }),
+                new TreeNode<MenuItem>(new MenuItem { Text = "Item 4", EntityId = 19 }),
+                new TreeNode<MenuItem>(new MenuItem { Text = "Item 5", EntityId = 20 })
+            });
         }
 
         #endregion

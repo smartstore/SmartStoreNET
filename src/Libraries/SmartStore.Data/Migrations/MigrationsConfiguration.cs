@@ -730,6 +730,10 @@
             builder.AddOrUpdate("Admin.ContentManagement.AddMenuItem", "Add menu link", "Menü Link hinzufügen");
             builder.AddOrUpdate("Admin.ContentManagement.EditMenuItem", "Edit menu link", "Menü Link bearbeiten");
 
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.NoMenuItemsAvailable",
+                "There are no menu links available.",
+                "Es sind keine Menü Links vorhanden.");
+
             builder.AddOrUpdate("Admin.ContentManagement.Menus.CannotBeDeleted",
                 "This menu is required by your shop and can therefore not be deleted.",
                 "Dieses Menü wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.");
@@ -784,10 +788,10 @@
                 "Legt die Reihenfolge des Menüelements innerhalb einer Menüebene fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.IsDivider",
-                "Dividing line",
-                "Trennungslinie",
-                "Forces an output as a dividing line.",
-                "Erzwingt eine Ausgabe als Trennungslinie.");
+                "Divider",
+                "Trennelement",
+                "Forces an output as a divider.",
+                "Erzwingt eine Ausgabe als Trennelement.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ShowExpanded",
                 "Show expanded",
@@ -802,10 +806,10 @@
                 "Legt den Menü-Link per HTML-Attribut auf 'no follow' fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.NewWindow",
-                "New window",
-                "Neues fenster",
-                "Specifies that the menu link is to be opened in a new window.",
-                "Legt fest, dass der Menü-Link in einem neuen Fenster geöffnet werden soll.");
+                "New tab",
+                "Neues Tab",
+                "Specifies that the menu link is to be opened in a new tab.",
+                "Legt fest, dass der Menü-Link in einem neuen Tab geöffnet werden soll.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.HtmlId",
                 "HTML ID",

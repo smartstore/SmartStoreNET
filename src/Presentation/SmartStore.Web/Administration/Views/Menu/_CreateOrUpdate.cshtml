@@ -66,10 +66,11 @@
             </div>
         ))
 
-    if (Model.Id > 0)
-    {
-        @Html.Partial("_MenuItemList", Model)
-    }
+    <button type="button" class="d-none" id="btn-refresh" data-url="@Url.Action("ItemList", "Menu", new { id = Model.Id })"></button>
+    <h4 class="h5 mt-4">@T("Admin.ContentManagement.MenuLinks")</h4>
+    <div id="menu-items" class="menu-item-list">
+        @Html.Partial("ItemList", Model)
+    </div>
 }
 
 @helper TabStores()
@@ -81,3 +82,38 @@
 {
 	@Html.Partial("AclSelector", Model)
 }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        // Reload item list.
+        $('#btn-refresh').on('click', function () {
+            $(this).doAjax({
+                callbackSuccess: function (response) {
+					$('#menu-items').html(response);
+				}
+			});
+        });
+
+        // Process item command.
+        $('#menu-items').on('click', '.menu-item-command', function (e) {
+            e.preventDefault();
+            var el = $(this);
+            switch (el.data('action')) {
+                case 'add-item':
+                case 'edit-item':
+                    window.openPopup(el.data('url'), true, true);
+                    break;
+                case 'delete-item':
+					el.doAjax({
+						type: 'POST',
+						ask: @T("Admin.Common.AskToProceed").JsText,
+						callbackSuccess: function (response) {
+							$('#menu-items').html(response);
+						}
+					});
+                    break;
+            }
+        });
+	});
+</script>

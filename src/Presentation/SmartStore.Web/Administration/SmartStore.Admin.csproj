@@ -590,10 +590,10 @@
     <Content Include="Views\Menu\Edit.cshtml" />
     <Content Include="Views\Menu\Create.cshtml" />
     <Content Include="Views\Menu\_CreateOrUpdate.cshtml" />
-    <Content Include="Views\Menu\_MenuItemList.cshtml" />
-    <Content Include="Views\Menu\_CreateOrUpdate.MenuItem.cshtml" />
+    <Content Include="Views\Menu\_CreateOrUpdate.Item.cshtml" />
     <Content Include="Views\Menu\EditItem.cshtml" />
     <Content Include="Views\Menu\CreateItem.cshtml" />
+    <Content Include="Views\Menu\ItemList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

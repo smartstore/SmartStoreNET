@@ -75,7 +75,6 @@ namespace SmartStore.Admin.Models.Menus
     {
         public MenuItemRecordValidator(Localizer T)
         {
-            RuleFor(x => x.MenuId).NotEqual(0);
             RuleFor(x => x.SystemName).NotEmpty();
         }
     }

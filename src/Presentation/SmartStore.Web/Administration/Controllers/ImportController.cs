@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Web.Mvc;
@@ -733,9 +734,15 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List");
 		}
 
+        [HttpGet]
 		public ActionResult DownloadImportFile(int id, string name)
 		{
-			string message = null;
+            if (PathHelper.HasInvalidFileNameChars(name))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid file name.");
+            }
+
+            string message = null;
 
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
@@ -744,8 +751,10 @@ namespace SmartStore.Admin.Controllers
 				{
 					var path = Path.Combine(profile.GetImportFolder(true), name);
 
-					if (!System.IO.File.Exists(path))
-						path = Path.Combine(profile.GetImportFolder(false), name);
+                    if (!System.IO.File.Exists(path))
+                    {
+                        path = Path.Combine(profile.GetImportFolder(false), name);
+                    }
 
 					if (System.IO.File.Exists(path))
 					{

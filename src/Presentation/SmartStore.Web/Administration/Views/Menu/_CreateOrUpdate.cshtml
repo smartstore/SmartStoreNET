@@ -67,7 +67,7 @@
         ))
 
     <button type="button" class="d-none" id="btn-refresh" data-url="@Url.Action("ItemList", "Menu", new { id = Model.Id })"></button>
-    <h4 class="h5 mt-4">@T("Admin.ContentManagement.MenuLinks")</h4>
+    <h4 class="h5 mt-5">@T("Admin.ContentManagement.MenuLinks")</h4>
     <div id="menu-items" class="menu-item-list">
         @Html.Partial("ItemList", Model)
     </div>

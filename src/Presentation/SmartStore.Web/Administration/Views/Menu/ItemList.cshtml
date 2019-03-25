@@ -22,9 +22,9 @@ else
         <div>
             @T("Admin.ContentManagement.Menus.NoMenuItemsAvailable")
         </div>
-        <div class="mt-2">
-            @AddRootItem()
-        </div>
+    </div>
+    <div>
+        @AddRootItem()
     </div>
 }
 
@@ -33,7 +33,7 @@ else
 	<a id="add-root-menu-item" class="btn btn-sm btn-primary menu-item-command" href="#" data-action="add-item" 
         data-url="@Url.Action("CreateItem", "Menu", new { menuId = Model.Id, parentItemId = 0, btnId = "btn-refresh", area = "Admin" })">
 		<i class="fa fa-plus"></i>
-		<span>@T("Admin.ContentManagement.AddMenuItem")</span>
+		<span>@T("Admin.ContentManagement.AddMenuItem")&hellip;</span>
 	</a>
 }
 
@@ -55,16 +55,17 @@ else
 			<div class="dropdown-menu dropdown-menu-right">
 			    <a class="menu-item-command dropdown-item" href="#" data-action="add-item" 
                    data-url="@Url.Action("CreateItem", new { menuId = Model.Id, parentItemId = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
-				    <i class="fa fa-plus"></i>
-				    <span>@T("Admin.ContentManagement.AddMenuItem")</span>
-			    </a>
-			    <a class="menu-item-command dropdown-item" href="#" data-action="edit-item" data-url="@Url.Action("EditItem", new { id = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
-				    <i class="far fa-edit"></i>
-				    <span>@T("Common.Edit")</span>
+				    <i class="fa fa-fw fa-plus"></i>
+				    <span>@T("Admin.ContentManagement.AddMenuItem")&hellip;</span>
 			    </a>
 			    <a class="menu-item-command dropdown-item" href="#" data-action="delete-item" data-url="@Url.Action("DeleteItem", new { id = node.Value.EntityId, area = "Admin" })">
-				    <i class="far fa-trash-alt"></i>
+				    <i class="far fa-fw fa-trash-alt"></i>
 				    <span>@T("Common.Delete")</span>
+			    </a>
+                <div class="dropdown-divider"></div>
+			    <a class="menu-item-command dropdown-item" href="#" data-action="edit-item" data-url="@Url.Action("EditItem", new { id = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
+				    <i class="far fa-fw fa-edit"></i>
+				    <span>@T("Common.Edit")&hellip;</span>
 			    </a>
             </div>
         </div>

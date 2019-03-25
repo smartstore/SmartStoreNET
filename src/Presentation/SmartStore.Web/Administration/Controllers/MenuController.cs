@@ -452,32 +452,7 @@ namespace SmartStore.Admin.Controllers
 
         private TreeNode<MenuItem> GetItemList(int id)
         {
-            return new TreeNode<MenuItem>(new MenuItem { Text = "Root" }, new List<TreeNode<MenuItem>>
-            {
-                new TreeNode<MenuItem>(new MenuItem { Text = "Item 1", EntityId = 1 }),
-                new TreeNode<MenuItem>(new MenuItem { Text = "Item 2", EntityId = 3 }),
-                new TreeNode<MenuItem>(new MenuItem { Text = "Item 3", EntityId = 4 }, new List<TreeNode<MenuItem>>
-                {
-                    new TreeNode<MenuItem>(new MenuItem { Text = "Sub 1", EntityId = 7 }),
-                    new TreeNode<MenuItem>(new MenuItem { Text = "Sub 2", EntityId = 8, Visible = false }),
-                    new TreeNode<MenuItem>(new MenuItem { Text = "Sub 3", EntityId = 10 }, new List<TreeNode<MenuItem>>
-                    {
-                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 1", EntityId = 13 }),
-                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 2", EntityId = 15 }),
-                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 3", EntityId = 16 }, new List<TreeNode<MenuItem>>
-                        {
-                            new TreeNode<MenuItem>(new MenuItem { Text = "Sub 1", EntityId = 17 }),
-                            new TreeNode<MenuItem>(new MenuItem { Text = "Sub 2", EntityId = 9 })
-                        }),
-                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 4", EntityId = 11 }),
-                        new TreeNode<MenuItem>(new MenuItem { EntityId = 21, Attributes = new Dictionary<string, object> { { "IsDivider", true } } }),
-                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 5", EntityId = 12 }),
-                        new TreeNode<MenuItem>(new MenuItem { Text = "Sub 6", EntityId = 18 })
-                    })
-                }),
-                new TreeNode<MenuItem>(new MenuItem { Text = "Item 4", EntityId = 19 }),
-                new TreeNode<MenuItem>(new MenuItem { Text = "Item 5", EntityId = 20 })
-            });
+            return new TreeNode<MenuItem>(new MenuItem { Text = "Root" });
         }
 
         #endregion

@@ -22,6 +22,8 @@ namespace SmartStore.Core.Caching
 		private readonly MemoryCache _cache;
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
+		private string _currentScope;
+
 		public MemoryCacheManager()
 		{
 			_cache = new MemoryCache("SmartStore");
@@ -54,27 +56,40 @@ namespace SmartStore.Core.Caching
 
 		public T Get<T>(string key)
 		{
-			T value;
-			TryGet(key, out value);
+			TryGet(key, out T value);
 			
 			return value;
 		}
 
         public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null)
         {
-			T value;
 
-			if (TryGet(key, out value))
+			if (TryGet(key, out T value))
 			{
 				return value;
 			}
 
 			lock (String.Intern(key))
 			{
-				// atomic operation must be outer locked
+				// Atomic operation must be outer locked
 				if (!TryGet(key, out value))
 				{
-					value = acquirer();
+					string parentScope = null;
+
+					try
+					{
+						// Push scope
+						parentScope = _currentScope;
+						_currentScope = key;
+
+						value = acquirer();
+					}
+					finally
+					{
+						// Pop scope
+						_currentScope = parentScope;
+					}
+		
 					Put(key, value, duration);
 					return value;
 				}
@@ -85,9 +100,7 @@ namespace SmartStore.Core.Caching
 
 		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
 		{
-			T value;
-
-			if (TryGet(key, out value))
+			if (TryGet(key, out T value))
 			{
 				return value;
 			}

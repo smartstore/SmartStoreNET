@@ -132,7 +132,8 @@ namespace SmartStore.Services.Cms
                 Value = data.Value,
                 Link = data.Link,
                 QueryString = data.QueryString,
-                Label = data.Label
+                Label = data.Label,
+                Id = data.Id
             };
 
             // Check ACL and limited to stores.

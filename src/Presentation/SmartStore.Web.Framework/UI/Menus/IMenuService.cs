@@ -1,10 +1,9 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
 {
-	public interface IMenuService // INFO: replaces ISiteMapService
+    public partial interface IMenuService // INFO: replaces ISiteMapService
 	{
 		IMenu GetMenu(string name);
 		TreeNode<MenuItem> GetRootNode(string menuName);

@@ -89,6 +89,7 @@ using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Framework.UI.Menus;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
@@ -809,10 +810,10 @@ namespace SmartStore.Web.Framework
 	{
 		private readonly ITypeFinder _typeFinder;
 
-		public UiModule(ITypeFinder typeFinder)
+        public UiModule(ITypeFinder typeFinder)
 		{
 			_typeFinder = typeFinder;
-		}
+        }
 
 		protected override void Load(ContainerBuilder builder)
 		{
@@ -841,7 +842,27 @@ namespace SmartStore.Web.Framework
 			{
 				builder.RegisterType(type).As<ISiteMap>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
 			}
-		}
+
+            // Menus.
+            builder.RegisterType<MenuService>().As<IMenuService>().InstancePerRequest();
+            
+            var menuResolverTypes = _typeFinder.FindClassesOfType<IMenuResolver>(ignoreInactivePlugins: true);
+            foreach (var type in menuResolverTypes)
+            {
+                builder.RegisterType(type).As<IMenuResolver>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
+            }
+
+            var menuItemProviderTypes = _typeFinder.FindClassesOfType<IMenuItemProvider>(ignoreInactivePlugins: true);
+            foreach (var type in menuItemProviderTypes)
+            {
+                var systemName = type.GetAttribute<SystemNameAttribute>(false)?.Name.EmptyNull();
+                var registration = builder.RegisterType(type).As<IMenuItemProvider>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
+                registration.WithMetadata<MenuItemMetadata>(m =>
+                {
+                    m.For(em => em.SystemName, systemName);
+                });
+            }
+        }
 	}
 
 	public class IOModule : Module

@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.UI
 {
-	public class DatabaseMenuResolver : IMenuResolver
+    public class DatabaseMenuResolver : IMenuResolver
 	{
-		public bool Exists(string menuName)
-		{
-			// TODO: Check whether a menu with passed name exists in the database.
-			// Make it FAST, e.g. by caching the existing menu names in a HashSet (don't forget invalidation).
+        protected readonly IMenuStorage _menuStorage;
 
-			throw new NotImplementedException();
+        public DatabaseMenuResolver(IMenuStorage menuStorage)
+        {
+            _menuStorage = menuStorage;
+        }
+
+        public bool Exists(string menuName)
+		{
+            return _menuStorage.MenuExists(menuName);
 		}
 
 		public IMenu Resolve(string name)
 		{
-			// TODO: Resolve menus from database > MenuRecord
-
-			throw new NotImplementedException();
+            
+            return null;
 		}
 	}
 }

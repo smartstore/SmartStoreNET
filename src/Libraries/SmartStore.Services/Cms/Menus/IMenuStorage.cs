@@ -49,6 +49,13 @@ namespace SmartStore.Services.Cms
         /// <returns>Menu entity.</returns>
         MenuRecord GetMenuById(int id, bool withItems = false);
 
+        /// <summary>
+        /// Checks whether the menu exists.
+        /// </summary>
+        /// <param name="systemName">Menu system name.</param>
+        /// <returns><c>true</c> the menu exists, <c>false</c> the menu doesn't exist.</returns>
+        bool MenuExists(string systemName);
+
         #region Menu items
 
         /// <summary>

@@ -32,6 +32,7 @@ namespace SmartStore.Services.Cms
 
         public LinkStatus Status { get; set; }
         public string Label { get; set; }
+        public int Id { get; set; }
 
         public string Link
         {
@@ -88,7 +89,6 @@ namespace SmartStore.Services.Cms
     [Serializable]
     public partial class LinkResolverData : LinkResolverResult
     {
-        public int Id { get; set; }
         public bool SubjectToAcl { get; set; }
         public bool LimitedToStores { get; set; }
     }

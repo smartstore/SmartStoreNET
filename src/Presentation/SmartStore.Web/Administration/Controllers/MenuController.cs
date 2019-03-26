@@ -30,6 +30,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
         private readonly ICustomerService _customerService;
+        private readonly IMenuService _menuService;
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
@@ -39,6 +40,7 @@ namespace SmartStore.Admin.Controllers
             IStoreMappingService storeMappingService,
             IAclService aclService,
             ICustomerService customerService,
+            IMenuService menuService,
             AdminAreaSettings adminAreaSettings)
         {
             _menuStorage = menuStorage;
@@ -47,6 +49,7 @@ namespace SmartStore.Admin.Controllers
             _storeMappingService = storeMappingService;
             _aclService = aclService;
             _customerService = customerService;
+            _menuService = menuService;
             _adminAreaSettings = adminAreaSettings;
         }
 
@@ -237,11 +240,14 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult ItemList(int id)
         {
+            var menu = _menuStorage.GetMenuById(id);
+
             var model = new MenuRecordModel
             {
-                Id = id,
-                ItemTree = GetItemList(id)
+                Id = id
             };
+
+            model.ItemTree = GetItemTree(menu);
 
             return PartialView(model);
         }
@@ -401,7 +407,7 @@ namespace SmartStore.Admin.Controllers
 
             if (Request.IsAjaxRequest())
             {
-                var model = GetItemList(menuId);
+                var model = GetItemTree(_menuStorage.GetMenuById(menuId));
                 return PartialView("ItemList", model);
             }
 
@@ -425,7 +431,7 @@ namespace SmartStore.Admin.Controllers
 
             if (entity != null)
             {
-                model.ItemTree = GetItemList(entity.Id);
+                model.ItemTree = GetItemTree(entity);
             }
         }
 
@@ -450,9 +456,11 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        private TreeNode<MenuItem> GetItemList(int id)
+        private TreeNode<MenuItem> GetItemTree(MenuRecord menu)
         {
-            return new TreeNode<MenuItem>(new MenuItem { Text = "Root" });
+            var root = _menuService.GetRootNode(menu?.SystemName);
+
+            return root ?? new TreeNode<MenuItem>(new MenuItem { Text = "Root" });
         }
 
         #endregion

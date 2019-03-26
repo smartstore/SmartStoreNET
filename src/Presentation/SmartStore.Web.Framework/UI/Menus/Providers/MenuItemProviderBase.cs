@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Collections;
+﻿using SmartStore.Collections;
 using SmartStore.Core.Domain.Cms;
 
 namespace SmartStore.Web.Framework.UI
 {
-	public abstract class MenuItemProviderBase : IMenuItemProvider
+    public abstract class MenuItemProviderBase : IMenuItemProvider
 	{
 		public virtual void Append(TreeNode<MenuItem> parent, MenuItemRecord entity)
 		{
@@ -21,16 +16,41 @@ namespace SmartStore.Web.Framework.UI
 		}
 
 		/// <summary>
-		/// Converts the passed menu item entity to a <see cref="MenuItem"/> object
+		/// Converts the passed menu item entity to a <see cref="MenuItem"/> object.
 		/// </summary>
 		/// <param name="entity">The entity to convert.</param>
-		/// <returns></returns>
+		/// <returns>Menu item.</returns>
 		protected virtual MenuItem ConvertToMenuItem(MenuItemRecord entity)
 		{
 			var menuItem = new MenuItem
 			{
-				// TODO: convert
+				Text = entity.Title,
+                Visible = entity.Published
 			};
+
+            // TODO: support divider elements.
+            //menuItem.Attributes.Add("IsDivider", entity.IsDivider);
+
+            if (entity.NoFollow)
+            {
+                menuItem.LinkHtmlAttributes.Add("rel", "nofollow");
+            }
+            if (entity.ShortDescription.HasValue())
+            {
+                menuItem.LinkHtmlAttributes.Add("title", entity.ShortDescription);
+            }
+            if (entity.NewWindow)
+            {
+                menuItem.LinkHtmlAttributes.Add("target", "_blank");
+            }
+            if (entity.HtmlId.HasValue())
+            {
+                menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
+            }
+            if (entity.CssClass.HasValue())
+            {
+                menuItem.LinkHtmlAttributes.Add("class", entity.CssClass);
+            }
 
 			return menuItem;
 		}

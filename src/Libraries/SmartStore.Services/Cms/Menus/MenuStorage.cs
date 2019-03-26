@@ -11,6 +11,8 @@ namespace SmartStore.Services.Cms
 {
     public partial class MenuStorage : IMenuStorage
     {
+        private const string MENU_SYSTEMNAME_CACHE_KEY = "SmartStore.Menu.Storage.SystemNames";
+
         private readonly IRepository<MenuRecord> _menuRepository;
         private readonly IRepository<MenuItemRecord> _menuItemRepository;
         private readonly IRepository<StoreMapping> _storeMappingRepository;
@@ -40,21 +42,34 @@ namespace SmartStore.Services.Cms
             Guard.NotNull(menu, nameof(MenuRecord));
 
             _menuRepository.Insert(menu);
+
+            _services.Cache.Remove(MENU_SYSTEMNAME_CACHE_KEY);
         }
 
         public virtual void UpdateMenu(MenuRecord menu)
         {
             Guard.NotNull(menu, nameof(MenuRecord));
 
+            var oldSystemName = menu.SystemName;
+
             _menuRepository.Update(menu);
+
+            if (oldSystemName != menu.SystemName)
+            {
+                _services.Cache.Remove(MENU_SYSTEMNAME_CACHE_KEY);
+            }
         }
 
         public virtual void DeleteMenu(MenuRecord menu)
         {
-            if (menu != null)
+            if (menu == null)
             {
-                _menuRepository.Delete(menu);
+                return;
             }
+
+            _menuRepository.Delete(menu);
+
+            _services.Cache.Remove(MENU_SYSTEMNAME_CACHE_KEY);
         }
 
         public virtual IPagedList<MenuRecord> GetAllMenus(
@@ -84,6 +99,22 @@ namespace SmartStore.Services.Cms
             }
 
             return query.FirstOrDefault(x => x.Id == id);
+        }
+
+        public virtual bool MenuExists(string systemName)
+        {
+            if (systemName.IsEmpty())
+            {
+                return false;
+            }
+
+            var data = _services.Cache.Get(MENU_SYSTEMNAME_CACHE_KEY, () =>
+            {
+                var systemNames = _menuRepository.TableUntracked.Select(x => x.SystemName).ToList();
+                return new HashSet<string>(systemNames);
+            });
+
+            return data.Contains(systemName);
         }
 
         #region Menu items

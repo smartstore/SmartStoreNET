@@ -108,13 +108,12 @@ namespace SmartStore.Services.Cms
                 return false;
             }
 
-            var data = _services.Cache.Get(MENU_SYSTEMNAME_CACHE_KEY, () =>
-            {
-                var systemNames = _menuRepository.TableUntracked.Select(x => x.SystemName).ToList();
-                return new HashSet<string>(systemNames);
-            });
+			var data = _services.Cache.GetHashSet(MENU_SYSTEMNAME_CACHE_KEY, () =>
+			{
+				return _menuRepository.TableUntracked.Select(x => x.SystemName).ToArray();
+			});
 
-            return data.Contains(systemName);
+			return data.Contains(systemName);
         }
 
         #region Menu items

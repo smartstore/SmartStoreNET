@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Security;
@@ -43,7 +44,11 @@ namespace SmartStore.Services.Cms
 
             _menuRepository.Insert(menu);
 
-            _services.Cache.Remove(MENU_SYSTEMNAME_CACHE_KEY);
+			var systemNames = GetMenuSystemNames(false);
+			if (systemNames != null && menu.Published)
+			{
+				systemNames.Add(menu.SystemName);
+			}
         }
 
         public virtual void UpdateMenu(MenuRecord menu)
@@ -52,24 +57,37 @@ namespace SmartStore.Services.Cms
 
             var oldSystemName = menu.SystemName;
 
+			var modProps = _services.DbContext.GetModifiedProperties(menu);
+
             _menuRepository.Update(menu);
 
-            if (oldSystemName != menu.SystemName)
-            {
-                _services.Cache.Remove(MENU_SYSTEMNAME_CACHE_KEY);
-            }
+			var systemNames = GetMenuSystemNames(false);
+			if (systemNames != null)
+			{
+				if (modProps.TryGetValue(nameof(menu.Published), out var original) && original.Convert<bool>() == true)
+				{
+					systemNames.Remove(menu.SystemName);
+				}
+				else if (modProps.TryGetValue(nameof(menu.SystemName), out original))
+				{
+					systemNames.Remove((string)original);
+					systemNames.Add(menu.SystemName);
+				}
+			}
         }
 
         public virtual void DeleteMenu(MenuRecord menu)
         {
             if (menu == null)
-            {
                 return;
-            }
 
             _menuRepository.Delete(menu);
 
-            _services.Cache.Remove(MENU_SYSTEMNAME_CACHE_KEY);
+			var systemNames = GetMenuSystemNames(false);
+			if (systemNames != null)
+			{
+				systemNames.Remove(menu.SystemName);
+			}
         }
 
         public virtual IPagedList<MenuRecord> GetAllMenus(
@@ -108,12 +126,7 @@ namespace SmartStore.Services.Cms
                 return false;
             }
 
-			var data = _services.Cache.GetHashSet(MENU_SYSTEMNAME_CACHE_KEY, () =>
-			{
-				return _menuRepository.TableUntracked.Select(x => x.SystemName).ToArray();
-			});
-
-			return data.Contains(systemName);
+			return GetMenuSystemNames(true).Contains(systemName);
         }
 
         #region Menu items
@@ -181,11 +194,27 @@ namespace SmartStore.Services.Cms
             return _menuItemRepository.GetById(id);
         }
 
-        #endregion
+		#endregion
 
-        #region Utilities
+		#region Utilities
 
-        protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool showHidden, bool withItems)
+		private ISet GetMenuSystemNames(bool create)
+		{
+			if (create || _services.Cache.Contains(MENU_SYSTEMNAME_CACHE_KEY))
+			{
+				return _services.Cache.GetHashSet(MENU_SYSTEMNAME_CACHE_KEY, () =>
+				{
+					return _menuRepository.TableUntracked
+						.Where(x => x.Published)
+						.Select(x => x.SystemName)
+						.ToArray();
+				});
+			}
+
+			return null;
+		}
+
+		protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool showHidden, bool withItems)
         {
             var applied = false;
             var entityName = nameof(MenuRecord);
@@ -245,6 +274,6 @@ namespace SmartStore.Services.Cms
             return query;
         }
 
-        #endregion
-    }
+		#endregion
+	}
 }

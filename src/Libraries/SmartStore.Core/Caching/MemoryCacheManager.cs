@@ -174,10 +174,21 @@ namespace SmartStore.Core.Caching
 			RemoveByPattern("*");
         }
 
-		public virtual ISet GetHashSet(string key)
+		public virtual ISet GetHashSet(string key, Func<IEnumerable<string>> acquirer = null)
 		{
-			var set = Get(key, () => new MemorySet(this));
-			return set;
+			var result = Get(key, () => 
+			{
+				var set = new MemorySet(this);
+				var items = acquirer?.Invoke();
+				if (items != null)
+				{
+					set.AddRange(items);
+				}
+
+				return set;
+			});
+
+			return result;
 		}
 
 		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration)

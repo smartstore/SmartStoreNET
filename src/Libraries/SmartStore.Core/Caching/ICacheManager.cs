@@ -44,8 +44,9 @@ namespace SmartStore.Core.Caching
 		/// a new set is created and put to cache automatically
 		/// </summary>
 		/// <param name="key">The set cache item key</param>
+		/// <param name="acquirer">Optional acquirer callback that is invoked when requested set does not exist yet.</param>
 		/// <returns>Cached item value</returns>
-		ISet GetHashSet(string key);
+		ISet GetHashSet(string key, Func<IEnumerable<string>> acquirer = null);
 
 		/// <summary>
 		/// Adds a cache item with the specified key

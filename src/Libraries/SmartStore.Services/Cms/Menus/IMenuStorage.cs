@@ -1,4 +1,5 @@
-﻿using SmartStore.Core;
+﻿using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Cms;
 
 namespace SmartStore.Services.Cms
@@ -84,6 +85,14 @@ namespace SmartStore.Services.Cms
         /// <param name="withMenu">Whether to include menu and menu item entities.</param>
         /// <returns>Menu item entity.</returns>
         MenuItemRecord GetMenuItemById(int id, bool withMenu = false);
+
+        /// <summary>
+        /// Sort menu items for tree representation.
+        /// </summary>
+        /// <param name="items">Menu items.</param>
+        /// <param name="includeItemsWithoutExistingParent">Whether to include menu items without existing parent menu item.</param>
+        /// <returns></returns>
+        IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = true);
 
         #endregion
     }

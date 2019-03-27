@@ -456,7 +456,7 @@ namespace SmartStore.Admin.Controllers
                 }
             }
 
-            // List to select parent item.
+            // Create list for selecting parent item.
             var itemTree = GetItemTree(menu);
             itemTree.Traverse(x =>
             {
@@ -497,11 +497,7 @@ namespace SmartStore.Admin.Controllers
         private TreeNode<MenuItem> GetItemTree(MenuRecord menu)
         {
             // We cannot use IMenuService because it always loads the tree for current store.
-            var entities = menu.Items
-                .OrderBy(x => x.ParentItemId)
-                .ThenBy(x => x.DisplayOrder)
-                .ThenBy(x => x.Title);
-
+            var entities = _menuStorage.SortForTree(menu.Items);
             var parent = new TreeNode<MenuItem>(new MenuItem { Text = menu.GetLocalized(x => x.Title) });
             MenuItemRecord prevItem = null;
 

@@ -53,11 +53,7 @@ namespace SmartStore.Web.Framework.UI
                 return new TreeNode<MenuItem>(new MenuItem { Text = Name });
             }
 
-            var entities = menu.Items
-                .OrderBy(x => x.ParentItemId)
-                .ThenBy(x => x.DisplayOrder)
-                .ThenBy(x => x.Title);
-
+            var entities = _menuStorage.SortForTree(menu.Items, false);
             var parent = new TreeNode<MenuItem>(new MenuItem { Text = menu.GetLocalized(x => x.Title) });
             MenuItemRecord prevItem = null;
 

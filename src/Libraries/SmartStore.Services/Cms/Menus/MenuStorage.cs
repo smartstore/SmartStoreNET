@@ -213,11 +213,49 @@ namespace SmartStore.Services.Cms
             return query.FirstOrDefault(x => x.Id == id);
         }
 
-		#endregion
+        public virtual IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = true)
+        {
+            Guard.NotNull(items, nameof(items));
 
-		#region Utilities
+            var result = new List<MenuItemRecord>();
 
-		private ISet GetMenuSystemNames(bool create)
+            var entities = items
+                .OrderBy(x => x.ParentItemId)
+                .ThenBy(x => x.DisplayOrder)
+                .ThenBy(x => x.Title)
+                .ToArray();
+
+            SortChildItems(0);
+
+            if (includeItemsWithoutExistingParent && result.Count != entities.Length)
+            {
+                foreach (var entity in entities)
+                {
+                    if (result.FirstOrDefault(x => x.Id == entity.Id) == null)
+                    {
+                        result.Add(entity);
+                    }
+                }
+            }
+
+            return result;
+
+            void SortChildItems(int parentItemId)
+            {
+                var childItems = entities.Where(x => x.ParentItemId == parentItemId).ToArray();
+                foreach (var item in childItems)
+                {
+                    result.Add(item);
+                    SortChildItems(item.Id);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Utilities
+
+        private ISet GetMenuSystemNames(bool create)
 		{
 			if (create || _services.Cache.Contains(MENU_SYSTEMNAME_CACHE_KEY))
 			{

@@ -1,5 +1,6 @@
 ﻿using SmartStore.Collections;
 using SmartStore.Core.Domain.Cms;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -22,22 +23,22 @@ namespace SmartStore.Web.Framework.UI
 		/// <returns>Menu item.</returns>
 		protected virtual MenuItem ConvertToMenuItem(MenuItemRecord entity)
 		{
+            var shortDescription = entity.GetLocalized(x => x.ShortDescription);
+
 			var menuItem = new MenuItem
 			{
-				Text = entity.Title,
+                EntityId = entity.Id,
+				Text = entity.GetLocalized(x => x.Title),
                 Visible = entity.Published
 			};
-
-            // TODO: support divider elements.
-            //menuItem.Attributes.Add("IsDivider", entity.IsDivider);
 
             if (entity.NoFollow)
             {
                 menuItem.LinkHtmlAttributes.Add("rel", "nofollow");
             }
-            if (entity.ShortDescription.HasValue())
+            if (shortDescription.HasValue())
             {
-                menuItem.LinkHtmlAttributes.Add("title", entity.ShortDescription);
+                menuItem.LinkHtmlAttributes.Add("title", shortDescription);
             }
             if (entity.NewWindow)
             {
@@ -52,7 +53,9 @@ namespace SmartStore.Web.Framework.UI
                 menuItem.LinkHtmlAttributes.Add("class", entity.CssClass);
             }
 
-			return menuItem;
+            // TODO: entity.ShowExpanded
+
+            return menuItem;
 		}
 
 		/// <summary>

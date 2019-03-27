@@ -28,7 +28,7 @@ namespace SmartStore.Services.Cms
         /// </summary>
         /// <param name="systemName">Menu system name.</param>
         /// <param name="storeId">Store identifier. 0 to get menus for all stores.</param>
-        /// <param name="showHidden">Whether to get hidden menus.</param>
+        /// <param name="includeHidden">Whether to include hidden menus.</param>
         /// <param name="withItems">Whether to include menu items.</param>
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
@@ -36,7 +36,7 @@ namespace SmartStore.Services.Cms
         IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
             int storeId = 0, 
-            bool showHidden = false,
+            bool includeHidden = false,
             bool withItems = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue);
@@ -81,8 +81,9 @@ namespace SmartStore.Services.Cms
         /// Gets a menu item by identifier.
         /// </summary>
         /// <param name="id">Menu item identifier.</param>
+        /// <param name="withMenu">Whether to include menu and menu item entities.</param>
         /// <returns>Menu item entity.</returns>
-        MenuItemRecord GetMenuItemById(int id);
+        MenuItemRecord GetMenuItemById(int id, bool withMenu = false);
 
         #endregion
     }

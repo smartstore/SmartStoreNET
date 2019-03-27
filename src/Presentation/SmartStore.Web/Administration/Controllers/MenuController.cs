@@ -30,7 +30,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
         private readonly ICustomerService _customerService;
-        private readonly IMenuService _menuService;
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
@@ -40,7 +39,6 @@ namespace SmartStore.Admin.Controllers
             IStoreMappingService storeMappingService,
             IAclService aclService,
             ICustomerService customerService,
-            IMenuService menuService,
             AdminAreaSettings adminAreaSettings)
         {
             _menuStorage = menuStorage;
@@ -49,7 +47,6 @@ namespace SmartStore.Admin.Controllers
             _storeMappingService = storeMappingService;
             _aclService = aclService;
             _customerService = customerService;
-            _menuService = menuService;
             _adminAreaSettings = adminAreaSettings;
         }
 
@@ -114,7 +111,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             var model = new MenuRecordModel();
-            PrepareModel(model, null, false);
+            PrepareModel(model, null);
             AddLocales(_languageService, model.Locales);
 
             return View(model);
@@ -144,7 +141,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = menu.Id }) : RedirectToAction("List");
             }
 
-            PrepareModel(model, null, false);
+            PrepareModel(model, null);
 
             return View(model);
         }
@@ -156,7 +153,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var menu = _menuStorage.GetMenuById(id);
+            var menu = _menuStorage.GetMenuById(id, true);
             if (menu == null)
             {
                 return HttpNotFound();
@@ -164,7 +161,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = MiniMapper.Map<MenuRecord, MenuRecordModel>(menu);
 
-            PrepareModel(model, menu, false);
+            PrepareModel(model, menu);
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -182,7 +179,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var menu = _menuStorage.GetMenuById(model.Id);
+            var menu = _menuStorage.GetMenuById(model.Id, true);
             if (menu == null)
             {
                 return HttpNotFound();
@@ -204,7 +201,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", menu.Id) : RedirectToAction("List");
             }
 
-            PrepareModel(model, menu, true);
+            PrepareModel(model, menu);
 
             return View(model);
         }
@@ -240,7 +237,12 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult ItemList(int id)
         {
-            var menu = _menuStorage.GetMenuById(id);
+            var menu = _menuStorage.GetMenuById(id, true);
+            if (menu == null)
+            {
+                NotifyError(T("Admin.Common.ResourceNotFound"));
+                return new EmptyResult();
+            }
 
             var model = new MenuRecordModel
             {
@@ -275,15 +277,6 @@ namespace SmartStore.Admin.Controllers
             PrepareModel(model, null);
             AddLocales(_languageService, model.Locales);
 
-            // Preset max display order to always insert item at the end.
-            var item = menu.Items.Where(x => x.ParentItemId == parentItemId)
-                .OrderByDescending(x => x.DisplayOrder)
-                .FirstOrDefault();
-            if (item != null)
-            {
-                model.DisplayOrder = item.DisplayOrder + 1;
-            }
-
             ViewBag.BtnId = btnId;
 
             return View(model);
@@ -301,6 +294,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var item = MiniMapper.Map<MenuItemRecordModel, MenuItemRecord>(itemModel);
+                item.ParentItemId = itemModel.ParentItemId ?? 0;
 
                 _menuStorage.InsertMenuItem(item);
                 itemModel.Id = item.Id;
@@ -313,9 +307,13 @@ namespace SmartStore.Admin.Controllers
 
                 if (continueEditing)
                 {
-                    PrepareModel(itemModel, item);
+                    PrepareModel(itemModel, null);
                     NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
                 }
+            }
+            else
+            {
+                PrepareModel(itemModel, null);
             }
 
             return View(itemModel);
@@ -328,13 +326,14 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var item = _menuStorage.GetMenuItemById(id);
+            var item = _menuStorage.GetMenuItemById(id, true);
             if (item == null)
             {
                 return HttpNotFound();
             }
 
             var model = MiniMapper.Map<MenuItemRecord, MenuItemRecordModel>(item);
+            model.ParentItemId = item.ParentItemId == 0 ? (int?)null : item.ParentItemId;
 
             PrepareModel(model, item);
 
@@ -358,7 +357,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var item = _menuStorage.GetMenuItemById(itemModel.Id);
+            var item = _menuStorage.GetMenuItemById(itemModel.Id, continueEditing);
             if (item == null)
             {
                 return HttpNotFound();
@@ -367,6 +366,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 MiniMapper.Map(itemModel, item);
+                item.ParentItemId = itemModel.ParentItemId ?? 0;
 
                 _menuStorage.UpdateMenuItem(item);
 
@@ -381,6 +381,10 @@ namespace SmartStore.Admin.Controllers
                     PrepareModel(itemModel, item);
                     NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
                 }
+            }
+            else
+            {
+                PrepareModel(itemModel, item);
             }
 
             return View(itemModel);
@@ -407,8 +411,7 @@ namespace SmartStore.Admin.Controllers
 
             if (Request.IsAjaxRequest())
             {
-                var model = GetItemTree(_menuStorage.GetMenuById(menuId));
-                return PartialView("ItemList", model);
+                return ItemList(menuId);
             }
 
             return RedirectToAction("Edit", new { id = menuId });
@@ -418,25 +421,60 @@ namespace SmartStore.Admin.Controllers
 
         #region Utilities
 
-        private void PrepareModel(MenuRecordModel model, MenuRecord entity, bool excludeProperties)
+        private void PrepareModel(MenuRecordModel model, MenuRecord entity)
         {
-            if (!excludeProperties)
+            if (entity != null)
             {
-                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(entity);
-                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
+                if (ModelState.IsValid)
+                {
+                    model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(entity);
+                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
+                }
+
+                model.ItemTree = GetItemTree(entity);
             }
 
             model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
-
-            if (entity != null)
-            {
-                model.ItemTree = GetItemTree(entity);
-            }
         }
 
         private void PrepareModel(MenuItemRecordModel model, MenuItemRecord entity)
         {
+            var menu = entity != null
+                ? entity.Menu
+                : _menuStorage.GetMenuById(model.MenuId, true);
+
+            // Preset max display order to always insert item at the end.
+            if (entity == null)
+            {
+                var item = menu.Items.Where(x => x.ParentItemId == model.ParentItemId)
+                    .OrderByDescending(x => x.DisplayOrder)
+                    .FirstOrDefault();
+                if (item != null)
+                {
+                    model.DisplayOrder = item.DisplayOrder + 1;
+                }
+            }
+
+            // List to select parent item.
+            var itemTree = GetItemTree(menu);
+            itemTree.Traverse(x =>
+            {
+                if (entity != null && entity.Id == x.Value.EntityId)
+                {
+                    // Element cannot be parent itself.
+                }
+                else
+                {
+                    var path = string.Join(" » ", x.Trail.Skip(1).Select(y => y.Value.Text));
+                    model.AllItems.Add(new SelectListItem
+                    {
+                        Text = path,
+                        Value = x.Value.EntityId.ToString(),
+                        Selected = entity != null && entity.ParentItemId == x.Value.EntityId
+                    });
+                }
+            });
         }
 
         private void UpdateLocales(MenuRecord entity, MenuRecordModel model)
@@ -458,9 +496,53 @@ namespace SmartStore.Admin.Controllers
 
         private TreeNode<MenuItem> GetItemTree(MenuRecord menu)
         {
-            var root = _menuService.GetRootNode(menu?.SystemName);
+            // We cannot use IMenuService because it always loads the tree for current store.
+            var entities = menu.Items
+                .OrderBy(x => x.ParentItemId)
+                .ThenBy(x => x.DisplayOrder)
+                .ThenBy(x => x.Title);
 
-            return root ?? new TreeNode<MenuItem>(new MenuItem { Text = "Root" });
+            var parent = new TreeNode<MenuItem>(new MenuItem { Text = menu.GetLocalized(x => x.Title) });
+            MenuItemRecord prevItem = null;
+
+            foreach (var entity in entities)
+            {
+                // Get parent.
+                if (prevItem != null)
+                {
+                    if (entity.ParentItemId != parent.Value.EntityId)
+                    {
+                        if (entity.ParentItemId == prevItem.Id)
+                        {
+                            // Level +1.
+                            parent = parent.LastChild;
+                        }
+                        else
+                        {
+                            // Level -x.
+                            while (!parent.IsRoot)
+                            {
+                                if (parent.Value.EntityId == entity.ParentItemId)
+                                {
+                                    break;
+                                }
+                                parent = parent.Parent;
+                            }
+                        }
+                    }
+                }
+
+                parent.Append(new MenuItem
+                {
+                    EntityId = entity.Id,
+                    Text = entity.GetLocalized(x => x.Title),
+                    Visible = entity.Published
+                });
+
+                prevItem = entity;
+            }
+
+            return parent;
         }
 
         #endregion

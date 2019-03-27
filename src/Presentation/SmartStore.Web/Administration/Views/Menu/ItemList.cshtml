@@ -7,7 +7,7 @@
     <div class="list-group">
         @foreach (var item in Model.ItemTree.Children)
         {
-            @ItemGroup(item, 1)
+            @ItemGroup(item, 0, 20)
         }
         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2" style="padding-left: 20px;">
             <div class="item-text">
@@ -37,11 +37,11 @@ else
 	</a>
 }
 
-@helper ItemGroup(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node, int level)
+@helper ItemGroup(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node, int level, int padding)
 {
-    var indentStyle = level != 0 ? " style=\"padding-left: {0}px;\"".FormatInvariant(level == 1 ? 20 : level * 30) : "";
+    var indentStyle = level != 0 ? " style=\"padding-left: {0}px;\"".FormatInvariant(padding) : "";
 
-    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2@(level == 1 ? "" : " sub-item")"@Html.Raw(indentStyle)>
+    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2@(level == 0 ? "" : " sub-item")"@Html.Raw(indentStyle)>
         <div class="item-text">
 		    <a class="menu-item-command@(!node.Value.Enabled || !node.Value.Visible ? " muted" : "")" href="#" data-action="edit-item" 
                data-url="@Url.Action("EditItem", new { id = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
@@ -75,7 +75,7 @@ else
         <div class="list-group">
             @foreach (var child in node.Children)
             {
-                @ItemGroup(child, level + 1);
+                @ItemGroup(child, level + 1, padding + 30);
             }
         </div>
     }

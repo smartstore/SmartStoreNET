@@ -23,8 +23,7 @@
                 @Html.SmartLabelFor(model => model.ParentItemId)
             </div>
             <div class="adminData">
-			    TODO: Parent ID Combo
-                @Html.HiddenFor(model => model.ParentItemId)
+                @Html.DropDownListFor(model => model.ParentItemId, Model.AllItems, T("Common.Unspecified"))
                 @Html.ValidationMessageFor(model => model.ParentItemId)
             </div>
         </div>

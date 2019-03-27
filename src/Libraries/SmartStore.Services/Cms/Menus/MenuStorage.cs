@@ -93,12 +93,12 @@ namespace SmartStore.Services.Cms
         public virtual IPagedList<MenuRecord> GetAllMenus(
             string systemName = null,
             int storeId = 0,
-            bool showHidden = false,
+            bool includeHidden = false,
             bool withItems = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue)
         {
-            var query = BuildMenuQuery(systemName, storeId, showHidden, withItems);
+            var query = BuildMenuQuery(systemName, storeId, includeHidden, withItems);
             return new PagedList<MenuRecord>(query, pageIndex, pageSize);
         }
 
@@ -135,12 +135,24 @@ namespace SmartStore.Services.Cms
         {
             Guard.NotNull(item, nameof(MenuRecord));
 
+            // Prevent inconsistent tree structure.
+            if (item.ParentItemId != 0 && item.ParentItemId == item.Id)
+            {
+                item.ParentItemId = 0;
+            }
+
             _menuItemRepository.Insert(item);
         }
 
         public virtual void UpdateMenuItem(MenuItemRecord item)
         {
             Guard.NotNull(item, nameof(MenuRecord));
+
+            // Prevent inconsistent tree structure.
+            if (item.ParentItemId != 0 && item.ParentItemId == item.Id)
+            {
+                item.ParentItemId = 0;
+            }
 
             _menuItemRepository.Update(item);
         }
@@ -184,14 +196,21 @@ namespace SmartStore.Services.Cms
             }
         }
 
-        public virtual MenuItemRecord GetMenuItemById(int id)
+        public virtual MenuItemRecord GetMenuItemById(int id, bool withMenu = false)
         {
             if (id == 0)
             {
                 return null;
             }
 
-            return _menuItemRepository.GetById(id);
+            var query = _menuItemRepository.Table;
+
+            if (withMenu)
+            {
+                query = query.Include(x => x.Menu.Items);
+            }
+
+            return query.FirstOrDefault(x => x.Id == id);
         }
 
 		#endregion
@@ -214,7 +233,7 @@ namespace SmartStore.Services.Cms
 			return null;
 		}
 
-		protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool showHidden, bool withItems)
+		protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool includeHidden, bool withItems)
         {
             var applied = false;
             var entityName = nameof(MenuRecord);
@@ -225,7 +244,7 @@ namespace SmartStore.Services.Cms
                 query = query.Include(x => x.Items);
             }
 
-            query = query.Where(x => showHidden || x.Published);
+            query = query.Where(x => includeHidden || x.Published);
 
             if (systemName.HasValue())
             {
@@ -245,7 +264,7 @@ namespace SmartStore.Services.Cms
                 applied = true;
             }
 
-            if (!showHidden && !QuerySettings.IgnoreAcl)
+            if (!includeHidden && !QuerySettings.IgnoreAcl)
             {
                 var allowedRoleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 

@@ -24,11 +24,8 @@ namespace SmartStore.Web.Framework.UI
                 return;
             }
 
-            // TBD: to resolve for what roles, what language, what store?
+            // Always resolve against current store, current customer and working language.
             var result = _linkResolver.Resolve(entity.Model);
-
-            node.Id = string.Concat(result.Type.ToString().ToLower(), ".", result.Id);
-			node.Value.EntityId = result.Id;
 			node.Value.Url = result.Link;
 
 			// TBD: What about cache invalidation? We would also have two levels of caching:

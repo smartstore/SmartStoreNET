@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
 using SmartStore.Core.Localization;
@@ -14,13 +15,15 @@ namespace SmartStore.Admin.Models.Menus
         public MenuItemRecordModel()
         {
             Locales = new List<MenuItemRecordLocalizedModel>();
+            AllItems = new List<SelectListItem>();
         }
 
         public int MenuId { get; set; }
         public string Model { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.ParentItem")]
-        public int ParentItemId { get; set; }
+        public int? ParentItemId { get; set; }
+        public IList<SelectListItem> AllItems { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.Provider")]
         public string SystemName { get; set; }

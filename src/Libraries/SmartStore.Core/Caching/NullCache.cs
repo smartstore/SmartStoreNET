@@ -47,12 +47,12 @@ namespace SmartStore.Core.Caching
 		}
 
 
-		public ISet GetHashSet(string key)
+		public ISet GetHashSet(string key, Func<IEnumerable<string>> acquirer = null)
 		{
 			return new MemorySet(this);
 		}
 
-		public void Put(string key, object value, TimeSpan? duration = null)
+		public void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null)
 		{
 		}
 

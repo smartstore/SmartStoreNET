@@ -56,74 +56,66 @@ namespace SmartStore.Core.Caching
 
 		public T Get<T>(string key)
 		{
-			TryGet(key, out T value);
-			
-			return value;
+			using (CacheAcquireContext.Begin(key))
+			{
+				TryGet(key, out T value);
+				return value;
+			}
 		}
 
         public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null)
         {
-
-			if (TryGet(key, out T value))
+			using (CacheAcquireContext.Begin(key))
 			{
-				return value;
-			}
-
-			lock (String.Intern(key))
-			{
-				// Atomic operation must be outer locked
-				if (!TryGet(key, out value))
+				if (TryGet(key, out T value))
 				{
-					string parentScope = null;
-
-					try
-					{
-						// Push scope
-						parentScope = _currentScope;
-						_currentScope = key;
-
-						value = acquirer();
-					}
-					finally
-					{
-						// Pop scope
-						_currentScope = parentScope;
-					}
-		
-					Put(key, value, duration);
 					return value;
 				}
-			}
 
-			return value;
+				lock (String.Intern(key))
+				{
+					// Atomic operation must be outer locked
+					if (!TryGet(key, out value))
+					{
+						value = acquirer();
+						Put(key, value, duration, CacheAcquireContext.Current.DependentKeys);
+						return value;
+					}
+				}
+
+				return value;
+			}
 		}
 
 		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
 		{
-			if (TryGet(key, out T value))
+			using (CacheAcquireContext.Begin(key))
 			{
-				return value;
-			}
-
-			// get the async (semaphore) locker specific to this key
-			var keyLock = AsyncLock.Acquire(key);
-
-			using (await keyLock.LockAsync())
-			{
-				if (!TryGet(key, out value))
+				if (TryGet(key, out T value))
 				{
-					value = await acquirer().ConfigureAwait(false);
-					Put(key, value, duration);
 					return value;
 				}
-			}
 
-			return value;
+				// get the async (semaphore) locker specific to this key
+				var keyLock = AsyncLock.Acquire(key);
+
+				using (await keyLock.LockAsync())
+				{
+					if (!TryGet(key, out value))
+					{
+						value = await acquirer().ConfigureAwait(false);
+						Put(key, value, duration, CacheAcquireContext.Current.DependentKeys);
+						return value;
+					}
+				}
+
+				return value;
+			}
 		}
 
-		public void Put(string key, object value, TimeSpan? duration = null)
+		public void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null)
 		{
-			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration));
+			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration, dependencies));
 		}
 
         public bool Contains(string key)
@@ -191,7 +183,7 @@ namespace SmartStore.Core.Caching
 			return result;
 		}
 
-		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration)
+		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration, IEnumerable<string> dependencies)
 		{
 			var absoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration;
 
@@ -199,12 +191,17 @@ namespace SmartStore.Core.Caching
 			{
 				absoluteExpiration = DateTime.UtcNow + duration.Value;
 			}
-
+			
 			var cacheItemPolicy = new CacheItemPolicy
 			{
 				AbsoluteExpiration = absoluteExpiration,
 				SlidingExpiration = ObjectCache.NoSlidingExpiration
 			};
+
+			if (dependencies != null && dependencies.Any())
+			{
+				cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
+			}
 
 			return cacheItemPolicy;
 		}

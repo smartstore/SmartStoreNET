@@ -54,7 +54,11 @@ namespace SmartStore.Core.Caching
 		/// <param name="key">Key</param>
 		/// <param name="value">Value</param>
 		/// <param name="duration">Absolute expiration time</param>
-		void Put(string key, object value, TimeSpan? duration = null);
+		/// <param name="dependencies">
+		/// Optional sequence of cache entry keys on which this entry is to depend.
+		/// If one of the dependent entries change, this entry will be removed from cache automatically.
+		/// </param>
+		void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached

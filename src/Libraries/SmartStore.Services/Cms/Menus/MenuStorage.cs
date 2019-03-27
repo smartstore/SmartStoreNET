@@ -12,7 +12,7 @@ namespace SmartStore.Services.Cms
 {
     public partial class MenuStorage : IMenuStorage
     {
-        private const string MENU_SYSTEMNAME_CACHE_KEY = "SmartStore.Menu.Storage.SystemNames";
+        private const string MENU_SYSTEMNAME_CACHE_KEY = "MenuStorage:SystemNames";
 
         private readonly IRepository<MenuRecord> _menuRepository;
         private readonly IRepository<MenuItemRecord> _menuItemRepository;

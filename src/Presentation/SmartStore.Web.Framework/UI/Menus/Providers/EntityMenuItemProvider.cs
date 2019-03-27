@@ -24,7 +24,7 @@ namespace SmartStore.Web.Framework.UI
                 return;
             }
 
-            // TODO: to resolve for what roles, what language, what store?
+            // TBD: to resolve for what roles, what language, what store?
             var result = _linkResolver.Resolve(entity.Model);
 
             node.Id = string.Concat(result.Type.ToString().ToLower(), ".", result.Id);

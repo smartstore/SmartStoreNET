@@ -77,7 +77,7 @@ namespace SmartStore.Core.Localization
 
 			if (cache)
 			{
-				_cache.Put(cacheKey, result, TimeSpan.FromHours(24));
+				_cache.Put(cacheKey, result, TimeSpan.FromHours(24), true);
 			}
 
 			if (result.HasValue())

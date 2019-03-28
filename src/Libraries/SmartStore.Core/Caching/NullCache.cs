@@ -52,7 +52,7 @@ namespace SmartStore.Core.Caching
 			return new MemorySet(this);
 		}
 
-		public void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null)
+		public void Put(string key, object value, TimeSpan? duration = null, bool independent = false)
 		{
 		}
 

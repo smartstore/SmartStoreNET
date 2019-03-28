@@ -92,13 +92,11 @@ namespace SmartStore.Web.Models.Catalog
 				Badges = new List<Badge>();
 			}
 
-			//public ProductSummaryModel Parent { get; private set; }
 			public ProductSummaryModel Parent
 			{
 				get
 				{
-					ProductSummaryModel parent;
-					_parent.TryGetTarget(out parent);
+					_parent.TryGetTarget(out var parent);
 					return parent;
 				}
 			}

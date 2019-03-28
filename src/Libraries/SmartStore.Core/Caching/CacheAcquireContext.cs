@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using SmartStore.Utilities;
 
@@ -9,26 +10,39 @@ namespace SmartStore.Core.Caching
 		private readonly CacheAcquireContext _parent;
 		private readonly HashSet<string> _dependentKeys = new HashSet<string>();
 
+		private readonly static ConcurrentStack<CacheAcquireContext> _stack = new ConcurrentStack<CacheAcquireContext>();
+
 		private CacheAcquireContext(string key, CacheAcquireContext parent)
 		{
 			Key = key;
 			_parent = parent;
 
-			if (parent != null)
-				parent._dependentKeys.Add(key);
+			if (_parent != null && !string.IsNullOrWhiteSpace(key))
+				_parent._dependentKeys.Add(key);
 		}
 
-		public static CacheAcquireContext Current { get; set; }
+		public static CacheAcquireContext Current
+		{
+			get
+			{
+				_stack.TryPeek(out var current);
+				return current;
+			}
+		}
 
 		public static IDisposable Begin(string key)
 		{
-			Current = new CacheAcquireContext(key, Current);
-			var action = new ActionDisposable(() => 
-			{
-				Current = Current?._parent;
-			});
+			return ActionDisposable.Empty;
 
-			return action;
+			//_stack.TryPeek(out var current);
+			//_stack.Push(new CacheAcquireContext(key, current));
+
+			//var action = new ActionDisposable(() =>
+			//{
+			//	_stack.TryPop(out _);
+			//});
+
+			//return action;
 		}
 
 		public string Key { get; set; }

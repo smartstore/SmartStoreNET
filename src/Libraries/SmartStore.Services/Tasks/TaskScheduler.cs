@@ -105,14 +105,14 @@ namespace SmartStore.Services.Tasks
 		{
 			string authToken = Guid.NewGuid().ToString();
 
-			_cache.Put(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1));
+			_cache.Put(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1), true);
 
 			return authToken;
 		}
 
 		private string GenerateAuthTokenCacheKey(string authToken)
 		{
-			return "Scheduler.AuthToken." + authToken;
+			return "Scheduler:AuthToken:" + authToken;
 		}
 
         public bool VerifyAuthToken(string authToken)

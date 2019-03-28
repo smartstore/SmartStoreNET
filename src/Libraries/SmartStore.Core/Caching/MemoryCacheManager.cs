@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SmartStore.Utilities;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace SmartStore.Core.Caching
 {
@@ -21,8 +22,6 @@ namespace SmartStore.Core.Caching
 
 		private readonly MemoryCache _cache;
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
-
-		private string _currentScope;
 
 		public MemoryCacheManager()
 		{
@@ -71,14 +70,14 @@ namespace SmartStore.Core.Caching
 				{
 					return value;
 				}
-
+				
 				lock (String.Intern(key))
 				{
 					// Atomic operation must be outer locked
 					if (!TryGet(key, out value))
 					{
 						value = acquirer();
-						Put(key, value, duration, CacheAcquireContext.Current.DependentKeys);
+						Put(key, value, duration);
 						return value;
 					}
 				}
@@ -104,7 +103,7 @@ namespace SmartStore.Core.Caching
 					if (!TryGet(key, out value))
 					{
 						value = await acquirer().ConfigureAwait(false);
-						Put(key, value, duration, CacheAcquireContext.Current.DependentKeys);
+						Put(key, value, duration);
 						return value;
 					}
 				}
@@ -113,9 +112,9 @@ namespace SmartStore.Core.Caching
 			}
 		}
 
-		public void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null)
+		public void Put(string key, object value, TimeSpan? duration = null, bool independent = false)
 		{
-			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration, dependencies));
+			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration, independent ? null : CacheAcquireContext.Current?.DependentKeys));
 		}
 
         public bool Contains(string key)
@@ -197,15 +196,24 @@ namespace SmartStore.Core.Caching
 				AbsoluteExpiration = absoluteExpiration,
 				SlidingExpiration = ObjectCache.NoSlidingExpiration
 			};
-
+			
 			if (dependencies != null && dependencies.Any())
 			{
-				cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
+				//cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
 			}
+
+			//cacheItemPolicy.RemovedCallback = OnRemoveEntry;
 
 			return cacheItemPolicy;
 		}
 
+		private void OnRemoveEntry(CacheEntryRemovedArguments args)
+		{
+			if (args.RemovedReason == CacheEntryRemovedReason.ChangeMonitorChanged)
+			{
+				Debug.WriteLine("MEMCACHE: remove depending entry '{0}'.".FormatInvariant(args.CacheItem.Key));
+			}
+		}
 
 		protected override void OnDispose(bool disposing)
 		{

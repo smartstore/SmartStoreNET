@@ -152,7 +152,7 @@ namespace SmartStore.Services.Configuration
 
 		public virtual T GetSettingByKey<T>(
 			string key, 
-			T defaultValue = default(T), 
+			T defaultValue = default, 
 			int storeId = 0, 
 			bool loadSharedValueIfNotFound = false)
         {
@@ -162,9 +162,7 @@ namespace SmartStore.Services.Configuration
 
 			var cacheKey = CreateCacheKey(key, storeId);
 
-			CachedSetting cachedSetting;
-
-			if (settings.TryGetValue(cacheKey, out cachedSetting))
+			if (settings.TryGetValue(cacheKey, out CachedSetting cachedSetting))
 			{
 				return cachedSetting.Value.Convert<T>();
 			}
@@ -313,10 +311,9 @@ namespace SmartStore.Services.Configuration
 			var str = value.Convert<string>();
 			var allSettings = GetAllCachedSettings();
 			var cacheKey = CreateCacheKey(key, storeId);
-			CachedSetting cachedSetting;
 			var insert = false;
 
-			if (allSettings.TryGetValue(cacheKey, out cachedSetting))
+			if (allSettings.TryGetValue(cacheKey, out CachedSetting cachedSetting))
 			{
 				var setting = GetSettingById(cachedSetting.Id);
 				if (setting != null)

@@ -18,7 +18,7 @@ namespace SmartStore.Services.Cms
 {
     public partial class LinkResolver : ILinkResolver
     {
-        private const string LINKRESOLVER_KEY = "SmartStore.linkresolver-{0}-{1}";
+        private const string LINKRESOLVER_KEY = "linkresolver:{0}-{1}";
 
         protected readonly ICommonServices _services;
         protected readonly IUrlRecordService _urlRecordService;

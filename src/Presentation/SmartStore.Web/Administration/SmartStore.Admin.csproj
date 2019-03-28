@@ -594,6 +594,8 @@
     <Content Include="Views\Menu\EditItem.cshtml" />
     <Content Include="Views\Menu\CreateItem.cshtml" />
     <Content Include="Views\Menu\ItemList.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\MenuItem.entity.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\MenuItem.route.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

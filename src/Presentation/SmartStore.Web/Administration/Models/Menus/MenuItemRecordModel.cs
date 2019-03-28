@@ -16,6 +16,7 @@ namespace SmartStore.Admin.Models.Menus
         {
             Locales = new List<MenuItemRecordLocalizedModel>();
             AllItems = new List<SelectListItem>();
+            AllProviders = new List<SelectListItem>();
         }
 
         public int MenuId { get; set; }
@@ -25,8 +26,9 @@ namespace SmartStore.Admin.Models.Menus
         public int? ParentItemId { get; set; }
         public IList<SelectListItem> AllItems { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.Provider")]
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.LinkTarget")]
         public string SystemName { get; set; }
+        public IList<SelectListItem> AllProviders { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Title")]
         public string Title { get; set; }
@@ -78,7 +80,6 @@ namespace SmartStore.Admin.Models.Menus
     {
         public MenuItemRecordValidator(Localizer T)
         {
-            RuleFor(x => x.SystemName).NotEmpty();
         }
     }
 }

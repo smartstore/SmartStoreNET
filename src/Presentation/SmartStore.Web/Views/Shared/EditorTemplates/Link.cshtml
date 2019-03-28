@@ -76,7 +76,9 @@
         @foreach (var type in allowedTypes)
         {
             var label = link.Type == type ? link.Label : string.Empty;
-            var value = link.Type == type && link.Value != null ? link.Value.ToString() : string.Empty;
+            var value = link.Type == type && link.Value != null 
+                ? (type == LinkType.Topic ? link.Id.ToString() : link.Value.ToString()) 
+                : string.Empty;
 
             <div class="flex-grow-1 link-control@(link.Type == type ? "" : " hide")" data-type="@type.ToString().ToLower()">
                 @if (type == LinkType.Product)

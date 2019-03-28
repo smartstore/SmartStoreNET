@@ -738,6 +738,19 @@
                 "This menu is required by your shop and can therefore not be deleted.",
                 "Dieses Menü wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.");
 
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.Entity",
+                "Product, category, manufacturer, topic, URL or file",
+                "Produkt, Warengruppe, Hersteller, Seite, URL oder Datei");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.Route", "Route", "Route");
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.RouteName", "Route name", "Name der Route");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.Catalog", "Category tree", "Warengruppenbaum");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.CatalogNote",
+                "The category tree is dynamically integrated into the menu.",
+                "Der Warengruppenbaum wird dynamisch in das Menü eingebunden.");
+
             builder.AddOrUpdate("Admin.ContentManagement.Menus.SystemName", 
                 "System name",
                 "Systemname",
@@ -763,11 +776,11 @@
                 "Specifies the parent menu item. Leave the field empty to create a first-level menu item.",
                 "Legt das übergeordnete Menüelement fest. Lassen Sie das Feld leer, um ein Menüelement erster Ebene zu erzeugen.");
 
-            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.Provider",
-                "Provider",
-                "Provider",
-                "Specifies the provider.",
-                "Legt den Provider fest.");
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.LinkTarget",
+                "Link target",
+                "Link Ziel",
+                "Specifies the link target.",
+                "Legt das Ziel des Links fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ShortDescription",
                 "Short description",

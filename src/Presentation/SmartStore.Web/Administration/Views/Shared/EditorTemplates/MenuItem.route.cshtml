@@ -1,0 +1,40 @@
+﻿@using Newtonsoft.Json
+@model string
+@{
+    var rnd = CommonHelper.GenerateRandomInteger();
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var routeNameFieldId = string.Concat("RouteName", rnd);
+    var rawValue = ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
+    var routeName = string.Empty;
+
+    try
+    {
+        if (rawValue.HasValue())
+        {
+            var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(rawValue);
+            if (routeValues.TryGetValue("routename", out var val))
+            {
+                routeName = val as string;
+            }
+        }
+    }
+    catch { }
+}
+<div class="menu-item-route">
+    @Html.Hidden("", rawValue)
+    <input id="@routeNameFieldId" type="text" class="form-control" value="@routeName" placeholder="@T("Admin.ContentManagement.Menus.Provider.RouteName")" />
+</div>
+
+<script>
+    $(function () {
+        $('#@routeNameFieldId').on('change', function () {
+            var container = $(this).closest('.menu-item-route'),
+                ctrl = container.find('#@(id)'),
+                val = ctrl.val();
+
+            var routeValues = _.isEmpty(val) ? { routename: ''} : JSON.parse(val);
+            routeValues.routename = $(this).val();
+            ctrl.val(JSON.stringify(routeValues));
+        });
+    });
+</script>

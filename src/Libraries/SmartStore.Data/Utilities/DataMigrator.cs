@@ -729,7 +729,8 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                IsDivider = true
+                IsDivider = true,
+                DisplayOrder = ++order,
             });
 
             menuItemSet.Add(new MenuItemRecord

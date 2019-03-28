@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Menus;
@@ -30,6 +31,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
         private readonly ICustomerService _customerService;
+        private readonly IEnumerable<Lazy<IMenuItemProvider, MenuItemMetadata>> _menuItemProviders;
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
@@ -39,6 +41,7 @@ namespace SmartStore.Admin.Controllers
             IStoreMappingService storeMappingService,
             IAclService aclService,
             ICustomerService customerService,
+            IEnumerable<Lazy<IMenuItemProvider, MenuItemMetadata>> menuItemProviders,
             AdminAreaSettings adminAreaSettings)
         {
             _menuStorage = menuStorage;
@@ -47,6 +50,7 @@ namespace SmartStore.Admin.Controllers
             _storeMappingService = storeMappingService;
             _aclService = aclService;
             _customerService = customerService;
+            _menuItemProviders = menuItemProviders;
             _adminAreaSettings = adminAreaSettings;
         }
 
@@ -126,7 +130,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             if (ModelState.IsValid)
-            {                
+            {
                 var menu = MiniMapper.Map<MenuRecordModel, MenuRecord>(model);
 
                 _menuStorage.InsertMenu(menu);
@@ -252,6 +256,33 @@ namespace SmartStore.Admin.Controllers
             model.ItemTree = GetItemTree(menu);
 
             return PartialView(model);
+        }
+
+        // Ajax.
+        public ActionResult LinkInputEditor(int id, string provider)
+        {
+            var html = string.Empty;
+            var model = string.Empty;
+
+            var item = _menuStorage.GetMenuItemById(id);
+            if (item != null && item.SystemName.IsCaseInsensitiveEqual(provider))
+            {
+                model = item.Model;
+            }
+
+            if (provider.HasValue() && (provider == "entity" || provider == "route"))
+            {
+                var dataDic = new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "Model" } };
+                var viewName = $"~/Administration/Views/Shared/EditorTemplates/MenuItem.{provider}.cshtml";
+                html = this.RenderPartialViewToString(viewName, model, dataDic);
+            }
+
+            if (html.IsEmpty())
+            {
+                html = "<input type='hidden' name='Model' id='Model' value='{0}' />".FormatInvariant(model.HtmlEncode());
+            }
+
+            return Json(new { success = true, html });
         }
 
         // Do not use model binding because of input validation.
@@ -462,9 +493,9 @@ namespace SmartStore.Admin.Controllers
             {
                 if (entity != null && entity.Id == x.Value.EntityId)
                 {
-                    // Element cannot be parent itself.
+                    // Ignore. Element cannot be parent itself.
                 }
-                else
+                else if (x.Value.Text.HasValue())
                 {
                     var path = string.Join(" » ", x.Trail.Skip(1).Select(y => y.Value.Text));
                     model.AllItems.Add(new SelectListItem
@@ -475,6 +506,16 @@ namespace SmartStore.Admin.Controllers
                     });
                 }
             });
+
+            // Create list of available item providers.
+            model.AllProviders = _menuItemProviders
+                .Select(x => new SelectListItem
+                {
+                    Text = T("Admin.ContentManagement.Menus.Provider." + x.Metadata.SystemName),
+                    Value = x.Metadata.SystemName,
+                    Selected = entity != null ? x.Metadata.SystemName.IsCaseInsensitiveEqual(entity.SystemName) : false
+                })
+                .ToList();
         }
 
         private void UpdateLocales(MenuRecord entity, MenuRecordModel model)

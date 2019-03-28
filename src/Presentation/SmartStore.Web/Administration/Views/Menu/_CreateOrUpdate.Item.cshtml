@@ -1,5 +1,9 @@
 ﻿@using SmartStore.Admin.Models.Menus
 @model MenuItemRecordModel
+@{
+    // Fixes "linkBuilder is not a function" when using RenderPartialViewToString.
+    Html.AddScriptParts(true, "~/Scripts/smartstore.linkbuilder.js");
+}
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -12,10 +16,13 @@
                 @Html.SmartLabelFor(model => model.SystemName)
             </div>
             <div class="adminData">
-			    TODO: Editor by provider
-                @Html.HiddenFor(model => model.SystemName)
-                @Html.HiddenFor(model => model.Model)
+			    @Html.DropDownListFor(model => model.SystemName, Model.AllProviders, T("Common.Unspecified"))
                 @Html.ValidationMessageFor(model => model.SystemName)
+
+                <div id="provider-editor" class="mt-2"></div>
+                <div id="catalog-provider-note" class="alert alert-info hide">
+                    @T("Admin.ContentManagement.Menus.Provider.CatalogNote")
+                </div>
             </div>
         </div>
         <div class="adminRow">
@@ -154,8 +161,30 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    $(function () {
+<script>
+    $(document).ready(function () {
 
-	});
+        // Provider changed.
+        $('#@Html.FieldIdFor(model => model.SystemName)').change(function () {
+            var provider = $(this).val(),
+                editor = $('#provider-editor'),
+                url = '@Url.Action("LinkInputEditor", new { id = Model.Id })?provider=' + encodeURIComponent(provider);
+
+            $('#catalog-provider-note').toggle(provider === 'catalog');
+
+            if (!_.isEmpty(provider) && provider !== 'catalog') {
+                $({}).doAjax({
+                    url: url,
+                    smallIcon: editor,
+                    callbackSuccess: function (response) {
+                        editor.html(response.html);
+                    }
+                });
+            }
+            else {
+                editor.html('<input type="hidden" name="Model" id="Model" />');
+            }
+        }).trigger('change');
+
+    });
 </script>

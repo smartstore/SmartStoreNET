@@ -26,27 +26,32 @@ namespace SmartStore.Services.Cms.Blocks
         int? BindEntityId { get; set; }
 
         /// <summary>
-        /// Returns a value to indictae whether the block can be bound.
+        /// Returns a value to indicate whether the block can be bound. A block can be bound
+		/// if both <see cref="BindEntityName"/> and <see cref="BindEntityId"/> have values.
+		/// However, this property does not indicate whether the bound entity actually exists.
         /// </summary>
         bool CanBind { get; }
 
-        /// <summary>
-        /// Returns a value to indictae whether the dataitem is already loaded.
-        /// </summary>
-        bool IsLoaded { get; }
+		/// <summary>
+		/// Returns a value to indicate whether the binding source (<see cref="DataItem"/>) has been loaded from the store already.
+		/// </summary>
+		bool IsLoaded { get; }
 
         /// <summary>
         /// The data item of the bound entity.
         /// </summary>
         IDictionary<string, object> DataItem { get; set; }
 
-        /// <summary>
-        /// Returns a value to indictae whether the block is already bound
-        /// </summary>
-        bool IsBound { get; set; }
+		/// <summary>
+		/// Returns a value to indicate whether the block has been bound already.
+		/// A block is considered bound if the binding source dictionary has been
+		/// applied to the block instance's bindable properties.
+		/// </summary>
+		bool IsBound { get; set; }
 
         /// <summary>
-        /// Resets the data item of the bound entity
+        /// Resets the data item of the bound entity. AFter calling this method,
+		/// <see cref="DataItem"/> is <c>null</c>, <see cref="IsLoaded"/> and <see cref="IsBound"/> are <c>false</c>.
         /// </summary>
         void Reset();
     }

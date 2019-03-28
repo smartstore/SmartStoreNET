@@ -1678,7 +1678,7 @@ namespace SmartStore.Web.Controllers
                 var model = new ShoppingCartModel();
                 PrepareShoppingCartModel(model, cart);
                 cartHtml = this.RenderPartialViewToString("CartItems", model);
-                totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                 cartItemCount = cart.Count;
 				showCheckoutButtons = model.IsValidMinOrderSubtotal;
 			}
@@ -2254,7 +2254,7 @@ namespace SmartStore.Web.Controllers
                     var model = new ShoppingCartModel();
                     PrepareShoppingCartModel(model, cart);
                     cartHtml = this.RenderPartialViewToString("CartItems", model);
-                    totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                    totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
 					showCheckoutButtons = model.IsValidMinOrderSubtotal;
 				}
             }
@@ -2454,7 +2454,7 @@ namespace SmartStore.Web.Controllers
                             cart = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
                             PrepareShoppingCartModel(model, cart);
                             cartHtml = this.RenderPartialViewToString("CartItems", model);
-                            totalsHtml = InvokeAction("OrderTotals", "ShoppingCart", new RouteValueDictionary(new { isEditable = true }));
+                            totalsHtml = this.InvokeAction("OrderTotals", routeValues: new RouteValueDictionary(new { isEditable = true })).ToString();
                             message = _localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist");
                             cartItemCount = cart.Count;
                         }
@@ -2556,21 +2556,5 @@ namespace SmartStore.Web.Controllers
         }
 
         #endregion
-
-        // TODO: (mc) duplicate of output cache plugin method, find a place for it and remove duplicates
-        private string InvokeAction(string actionName, string controllerName, RouteValueDictionary routeValues)
-        {
-            var viewContext = new ViewContext(
-                   ControllerContext,
-                   new WebFormView(ControllerContext, "tmp"),
-                   ViewData,
-                   TempData,
-                   TextWriter.Null
-            );
-
-            var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
-
-            return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
-        }
     }
 }

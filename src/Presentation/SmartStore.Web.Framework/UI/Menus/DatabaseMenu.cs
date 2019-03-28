@@ -54,7 +54,8 @@ namespace SmartStore.Web.Framework.UI
             }
 
             var entities = _menuStorage.SortForTree(menu.Items, false);
-            var parent = new TreeNode<MenuItem>(new MenuItem { Text = menu.GetLocalized(x => x.Title) });
+            var root = new TreeNode<MenuItem>(new MenuItem { Text = menu.GetLocalized(x => x.Title) });
+            var parent = root;
             MenuItemRecord prevItem = null;
 
             foreach (var entity in entities)
@@ -99,7 +100,7 @@ namespace SmartStore.Web.Framework.UI
                 prevItem = entity;
             }
 
-            return parent;
+            return root;
         }
 
         protected override string GetCacheKey()

@@ -1395,6 +1395,10 @@ table.payment-method-features td {
     .list-group-item {
         overflow: visible;
 
+        .menu-item-command i {
+            margin-right: 2px;
+        }
+
         .item-commands {
             opacity: 0;
             transition: opacity 0.05s linear;

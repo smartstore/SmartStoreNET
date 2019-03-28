@@ -39,13 +39,18 @@ else
 
 @helper ItemGroup(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node, int level, int padding)
 {
+    var item = node.Value;
     var indentStyle = level != 0 ? " style=\"padding-left: {0}px;\"".FormatInvariant(padding) : "";
 
     <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2@(level == 0 ? "" : " sub-item")"@Html.Raw(indentStyle)>
         <div class="item-text">
-		    <a class="menu-item-command@(!node.Value.Enabled || !node.Value.Visible ? " muted" : "")" href="#" data-action="edit-item" 
-               data-url="@Url.Action("EditItem", new { id = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
-                <span>@node.Value.Text</span>
+		    <a class="menu-item-command@(!item.Enabled || !item.Visible ? " muted" : "")" href="#" data-action="edit-item" 
+               data-url="@Url.Action("EditItem", new { id = item.EntityId, btnId = "btn-refresh", area = "Admin" })">
+                @if (item.Icon.HasValue())
+                {
+                    <i class="muted fa-fw @item.Icon" title="@item.BadgeText"></i>
+                }
+                <span>@item.Text</span>
 		    </a>
         </div>
         <div class="item-commands">
@@ -54,16 +59,16 @@ else
 			</button>
 			<div class="dropdown-menu dropdown-menu-right">
 			    <a class="menu-item-command dropdown-item" href="#" data-action="add-item" 
-                   data-url="@Url.Action("CreateItem", new { menuId = Model.Id, parentItemId = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
+                   data-url="@Url.Action("CreateItem", new { menuId = Model.Id, parentItemId = item.EntityId, btnId = "btn-refresh", area = "Admin" })">
 				    <i class="fa fa-fw fa-plus"></i>
 				    <span>@T("Admin.ContentManagement.AddMenuItem")&hellip;</span>
 			    </a>
-			    <a class="menu-item-command dropdown-item" href="#" data-action="delete-item" data-url="@Url.Action("DeleteItem", new { id = node.Value.EntityId, area = "Admin" })">
+			    <a class="menu-item-command dropdown-item" href="#" data-action="delete-item" data-url="@Url.Action("DeleteItem", new { id = item.EntityId, area = "Admin" })">
 				    <i class="far fa-fw fa-trash-alt"></i>
 				    <span>@T("Common.Delete")</span>
 			    </a>
                 <div class="dropdown-divider"></div>
-			    <a class="menu-item-command dropdown-item" href="#" data-action="edit-item" data-url="@Url.Action("EditItem", new { id = node.Value.EntityId, btnId = "btn-refresh", area = "Admin" })">
+			    <a class="menu-item-command dropdown-item" href="#" data-action="edit-item" data-url="@Url.Action("EditItem", new { id = item.EntityId, btnId = "btn-refresh", area = "Admin" })">
 				    <i class="far fa-fw fa-edit"></i>
 				    <span>@T("Common.Edit")&hellip;</span>
 			    </a>

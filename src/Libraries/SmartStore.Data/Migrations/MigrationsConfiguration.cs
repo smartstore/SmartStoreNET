@@ -739,13 +739,13 @@
                 "Dieses Menü wird von Ihrem Shop benötigt und kann daher nicht gelöscht werden.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.Entity",
-                "Product, category, manufacturer, topic, URL or file",
-                "Produkt, Warengruppe, Hersteller, Seite, URL oder Datei");
+                "Object or URL",
+                "Objekt oder URL");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.Route", "Route", "Route");
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.RouteName", "Route name", "Name der Route");
 
-            builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.Catalog", "Category tree", "Warengruppenbaum");
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.Catalog", "Categories", "Warengruppen");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Provider.CatalogNote",
                 "The category tree is dynamically integrated into the menu.",

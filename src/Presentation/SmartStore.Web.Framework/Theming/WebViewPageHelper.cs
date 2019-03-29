@@ -12,6 +12,7 @@ using SmartStore.Web.Framework.Filters;
 using SmartStore.Core.Domain;
 using SmartStore.Services.Customers;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -42,6 +43,7 @@ namespace SmartStore.Web.Framework.Theming
 		public IThemeRegistry ThemeRegistry { get; set; }
 		public IThemeContext ThemeContext { get; set; }
 		public IMobileDeviceHelper MobileDeviceHelper { get; set; }
+		public ILinkResolver LinkResolver { get; set; }
 
 		public void Initialize(ViewContext viewContext)
 		{

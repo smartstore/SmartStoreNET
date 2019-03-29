@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 
 namespace SmartStore.Services.Cms
 {
@@ -20,7 +21,7 @@ namespace SmartStore.Services.Cms
         Hidden
     }
 
-    public partial class LinkResolverResult
+    public class LinkResolverResult : IHtmlString
     {
         private string _link;
 
@@ -83,7 +84,17 @@ namespace SmartStore.Services.Cms
 
             return result;
         }
-    }
+
+		public string ToHtmlString()
+		{
+			return this.Link;
+		}
+
+		public override string ToString()
+		{
+			return this.Link;
+		}
+	}
 
     [Serializable]
     public partial class LinkResolverData : LinkResolverResult

@@ -10,6 +10,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
+using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -109,8 +110,16 @@ namespace SmartStore.Web.Framework.Theming
                 return _helper.Services.WorkContext;
             }
         }
-        
-        public override void InitHelpers()
+
+		public ILinkResolver LinkResolver
+		{
+			get
+			{
+				return _helper.LinkResolver;
+			}
+		}
+
+		public override void InitHelpers()
         {
             base.InitHelpers();
 

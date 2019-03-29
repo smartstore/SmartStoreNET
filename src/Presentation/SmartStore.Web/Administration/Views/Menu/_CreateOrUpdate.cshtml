@@ -66,11 +66,14 @@
             </div>
         ))
 
-    <button type="button" class="d-none" id="btn-refresh" data-url="@Url.Action("ItemList", "Menu", new { id = Model.Id })"></button>
-    <h4 class="h5 mt-5">@T("Admin.ContentManagement.MenuLinks")</h4>
-    <div id="menu-items" class="menu-item-list">
-        @Html.Partial("ItemList", Model)
-    </div>
+    if (Model.Id > 0)
+    {
+        <button type="button" class="d-none" id="btn-refresh" data-url="@Url.Action("ItemList", "Menu", new { id = Model.Id })"></button>
+        <h4 class="h5 mt-5">@T("Admin.ContentManagement.MenuLinks")</h4>
+        <div id="menu-items" class="menu-item-list">
+            @Html.Partial("ItemList", Model)
+        </div>
+    }
 }
 
 @helper TabStores()
@@ -83,9 +86,8 @@
 	@Html.Partial("AclSelector", Model)
 }
 
-<script type="text/javascript">
-    $(document).ready(function () {
-
+<script>
+    $(function() {
         // Reload item list.
         $('#btn-refresh').on('click', function () {
             $(this).doAjax({

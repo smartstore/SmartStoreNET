@@ -1391,9 +1391,10 @@ table.payment-method-features td {
 // Menus
 // --------------------------------------------------------------
 
-.menu-item-list .list-group {
+.menu-item-list {
     .list-group-item {
         overflow: visible;
+        padding-left: 0px;
 
         .menu-item-command i {
             margin-right: 2px;
@@ -1409,7 +1410,7 @@ table.payment-method-features td {
         }
     }
 
-    .sub-item:last-child {
+    :not(:last-child) .sub-item:last-child {
         border-bottom: 0 none;
     }
 }

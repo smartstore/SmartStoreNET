@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Cms
 {
@@ -44,11 +45,11 @@ namespace SmartStore.Services.Cms
 
             _menuRepository.Insert(menu);
 
-			var systemNames = GetMenuSystemNames(false);
-			if (systemNames != null && menu.Published)
-			{
-				systemNames.Add(menu.SystemName);
-			}
+            var systemNames = GetMenuSystemNames(false);
+            if (systemNames != null && menu.Published)
+            {
+                systemNames.Add(menu.SystemName);
+            }
         }
 
         public virtual void UpdateMenu(MenuRecord menu)
@@ -57,23 +58,23 @@ namespace SmartStore.Services.Cms
 
             var oldSystemName = menu.SystemName;
 
-			var modProps = _services.DbContext.GetModifiedProperties(menu);
+            var modProps = _services.DbContext.GetModifiedProperties(menu);
 
             _menuRepository.Update(menu);
 
-			var systemNames = GetMenuSystemNames(false);
-			if (systemNames != null)
-			{
-				if (modProps.TryGetValue(nameof(menu.Published), out var original) && original.Convert<bool>() == true)
-				{
-					systemNames.Remove(menu.SystemName);
-				}
-				else if (modProps.TryGetValue(nameof(menu.SystemName), out original))
-				{
-					systemNames.Remove((string)original);
-					systemNames.Add(menu.SystemName);
-				}
-			}
+            var systemNames = GetMenuSystemNames(false);
+            if (systemNames != null)
+            {
+                if (modProps.TryGetValue(nameof(menu.Published), out var original) && original.Convert<bool>() == true)
+                {
+                    systemNames.Remove(menu.SystemName);
+                }
+                else if (modProps.TryGetValue(nameof(menu.SystemName), out original))
+                {
+                    systemNames.Remove((string)original);
+                    systemNames.Add(menu.SystemName);
+                }
+            }
         }
 
         public virtual void DeleteMenu(MenuRecord menu)
@@ -83,11 +84,11 @@ namespace SmartStore.Services.Cms
 
             _menuRepository.Delete(menu);
 
-			var systemNames = GetMenuSystemNames(false);
-			if (systemNames != null)
-			{
-				systemNames.Remove(menu.SystemName);
-			}
+            var systemNames = GetMenuSystemNames(false);
+            if (systemNames != null)
+            {
+                systemNames.Remove(menu.SystemName);
+            }
         }
 
         public virtual IPagedList<MenuRecord> GetAllMenus(
@@ -100,6 +101,21 @@ namespace SmartStore.Services.Cms
         {
             var query = BuildMenuQuery(systemName, storeId, includeHidden, withItems);
             return new PagedList<MenuRecord>(query, pageIndex, pageSize);
+        }
+
+        public virtual MenuRecord GetMenuBySystemName(
+            string systemName,
+            int storeId = 0,
+            bool includeHidden = false)
+        {
+            if (systemName.IsEmpty())
+            {
+                return null;
+            }
+
+            var query = BuildMenuQuery(systemName, storeId, includeHidden, true);
+            var result = query.FirstOrDefaultCached("db.menu.bysysname-{0}-{1}-{2}".FormatInvariant(systemName, storeId, includeHidden));
+            return result;
         }
 
         public virtual MenuRecord GetMenuById(int id, bool withItems = false)

@@ -43,6 +43,18 @@ namespace SmartStore.Services.Cms
             int pageSize = int.MaxValue);
 
         /// <summary>
+        /// Gets a menu by system name.
+        /// </summary>
+        /// <param name="systemName">Menu system name.</param>
+        /// <param name="storeId">Store identifier. 0 to get menus for all stores.</param>
+        /// <param name="includeHidden">Whether to include hidden menus.</param>
+        /// <param name="menu">Menu entity.</param>
+        MenuRecord GetMenuBySystemName(
+            string systemName,
+            int storeId = 0,
+            bool includeHidden = false);
+
+        /// <summary>
         /// Gets a menu by identifier.
         /// </summary>
         /// <param name="id">Menu identifier.</param>

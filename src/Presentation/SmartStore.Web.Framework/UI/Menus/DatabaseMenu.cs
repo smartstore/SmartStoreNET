@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Cms;
@@ -45,9 +44,7 @@ namespace SmartStore.Web.Framework.UI
 
         protected override TreeNode<MenuItem> Build()
         {
-            var storeId = _querySettings.IgnoreMultiStore ? 0 : Services.StoreContext.CurrentStore.Id;
-            var menu = _menuStorage.GetAllMenus(Name, storeId, false, true, 0, 1).FirstOrDefault();
-
+            var menu = _menuStorage.GetMenuBySystemName(Name, Services.StoreContext.CurrentStore.Id, false);
             if (menu == null)
             {
                 return new TreeNode<MenuItem>(new MenuItem { Text = Name });

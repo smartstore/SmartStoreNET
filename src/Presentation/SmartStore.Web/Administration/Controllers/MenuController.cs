@@ -273,7 +273,7 @@ namespace SmartStore.Admin.Controllers
             if (provider.HasValue() && (provider == "entity" || provider == "route"))
             {
                 var dataDic = new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "Model" } };
-                var viewName = $"~/Administration/Views/Shared/EditorTemplates/MenuItem.{provider}.cshtml";
+                var viewName = $"EditorTemplates/MenuItem.{provider}";
                 html = this.RenderPartialViewToString(viewName, model, dataDic);
             }
 

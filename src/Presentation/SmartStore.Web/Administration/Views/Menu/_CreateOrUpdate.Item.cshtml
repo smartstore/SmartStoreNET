@@ -163,7 +163,6 @@
 
 <script>
     $(document).ready(function () {
-
         // Provider changed.
         $('#@Html.FieldIdFor(model => model.SystemName)').change(function () {
             var provider = $(this).val(),
@@ -185,6 +184,5 @@
                 editor.html('<input type="hidden" name="Model" id="Model" />');
             }
         }).trigger('change');
-
     });
 </script>

@@ -36,8 +36,12 @@ namespace SmartStore.Web.Framework.UI
 
 		public IMenu Resolve(string name)
 		{
-            var menu = new DatabaseMenu(name, _services, _menuStorage, _menuPublisher, QuerySettings, _menuItemProviders);
-            return menu;
+            return new DatabaseMenu(name, 
+				_services, 
+				_menuStorage, 
+				_menuPublisher, 
+				QuerySettings, 
+				_menuItemProviders);
 		}
 	}
 }

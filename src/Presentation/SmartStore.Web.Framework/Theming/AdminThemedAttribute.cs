@@ -15,18 +15,20 @@ namespace SmartStore.Web.Framework.Theming
 	/// </remarks>
 	public class AdminThemedAttribute : FilterAttribute, IResultFilter
 	{
+		public readonly static string[] ExtraAreaViewLocations = new string[]
+		{
+			"~/Administration/Views/{1}/{0}",
+			"~/Administration/Views/Shared/{0}"
+		};
+
 		public virtual void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (filterContext == null || filterContext.Result == null)
+			if (filterContext?.Result == null)
 				return;
 
 			// add extra view location formats to all view results (even the partial ones)
 			// {0} is appended by view engine
-			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[]
-			{
-				"~/Administration/Views/{1}/{0}",
-				"~/Administration/Views/Shared/{0}"
-			};
+			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = ExtraAreaViewLocations;
 		}
 
 		public virtual void OnResultExecuted(ResultExecutedContext filterContext)

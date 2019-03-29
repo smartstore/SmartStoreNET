@@ -185,6 +185,12 @@ namespace SmartStore.Web.Framework.Theming
 				// "ExtraAreaViewLocations" gets injected by AdminThemedAttribute
 				var extraAreaViewLocations = controllerContext.RouteData.DataTokens["ExtraAreaViewLocations"] as string[];
 
+				if (isAdminArea && extraAreaViewLocations == null && controllerContext.HttpContext.Request.IsAjaxRequest())
+				{
+					// In admin area AJAX requests DataTokens["ExtraAreaViewLocations"] is not set.
+					extraAreaViewLocations = AdminThemedAttribute.ExtraAreaViewLocations;
+				}
+
 				if (extraAreaViewLocations != null && extraAreaViewLocations.Length > 0)
 				{
 					var newLocations = areaLocations.ToList();

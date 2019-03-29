@@ -88,9 +88,8 @@ namespace SmartStore.Web.Framework.UI
                 // Add to parent.
                 if (entity.SystemName.HasValue() && _menuItemProviders.TryGetValue(entity.SystemName, out var provider))
                 {
-                    var providerBase = provider.Value as MenuItemProviderBase;
-                    providerBase.Append(parent, entity);
-                }
+					provider.Value.Append(parent, entity);
+				}
                 else
                 {
                     // TODO: Convert and append native items too (divider etc.)...

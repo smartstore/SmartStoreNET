@@ -1,5 +1,7 @@
 ﻿@using Newtonsoft.Json
+
 @model string
+
 @{
     var rnd = CommonHelper.GenerateRandomInteger();
     var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
@@ -12,7 +14,8 @@
         if (rawValue.HasValue())
         {
             var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(rawValue);
-            if (routeValues.TryGetValue("routename", out var val))
+			object val;
+            if (routeValues.TryGetValue("routename", out val))
             {
                 routeName = val as string;
             }

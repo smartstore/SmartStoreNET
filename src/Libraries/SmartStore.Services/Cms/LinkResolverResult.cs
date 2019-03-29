@@ -20,15 +20,14 @@ namespace SmartStore.Services.Cms
         Hidden
     }
 
-
-    [Serializable]
     public partial class LinkResolverResult
     {
         private string _link;
 
         public LinkType Type { get; set; }
         public object Value { get; set; }
-        public string QueryString { get; set; }
+		public string Slug { get; set; }
+		public string QueryString { get; set; }
 
         public LinkStatus Status { get; set; }
         public string Label { get; set; }

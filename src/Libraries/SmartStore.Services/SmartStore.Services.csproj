@@ -206,6 +206,7 @@
     <Compile Include="Cms\Blocks\IBlockHandler.cs" />
     <Compile Include="Cms\Blocks\StoryAssetAttribute.cs" />
     <Compile Include="Cms\ILinkResolver.cs" />
+    <Compile Include="Cms\LinkResolverInvalidator.cs" />
     <Compile Include="Cms\Menus\IMenuStorage.cs" />
     <Compile Include="Cms\LinkResolver.cs" />
     <Compile Include="Cms\LinkResolverResult.cs" />

@@ -18,9 +18,19 @@ namespace SmartStore.Services.Cms
 {
     public partial class LinkResolver : ILinkResolver
     {
-        private const string LINKRESOLVER_KEY = "linkresolver:{0}-{1}";
+		/// <remarks>
+		/// {0} : Expression w/o q
+		/// {1} : q
+		/// {2} : LanguageId
+		/// {3} : Store
+		/// {4} : RolesIdent
+		/// </remarks>
+		internal const string LINKRESOLVER_KEY = "linkresolver:{0}-{1}-{2}-{3}";
 
-        protected readonly ICommonServices _services;
+		// 0: Expression
+		internal const string LINKRESOLVER_PATTERN_KEY = "linkresolver:{0}-*";
+
+		protected readonly ICommonServices _services;
         protected readonly IUrlRecordService _urlRecordService;
         protected readonly ILocalizedEntityService _localizedEntityService;
         protected readonly IAclService _aclService;
@@ -69,86 +79,98 @@ namespace SmartStore.Services.Cms
                 storeId = _services.StoreContext.CurrentStore.Id;
             }
 
-            var data = _services.Cache.Get(LINKRESOLVER_KEY.FormatInvariant(linkExpression, languageId), () =>
-            {
-                var d = Parse(linkExpression);
+			var d = Parse(linkExpression);
 
-                switch (d.Type)
-                {
-                    case LinkType.Product:
-						GetEntityData<Product>(d, languageId, x => new ResolverEntitySummary
-						{
-							Name = x.Name,
-							Published = x.Published,
-							Deleted = x.Deleted,
-							SubjectToAcl = x.SubjectToAcl,
-							LimitedToStores = x.LimitedToStores
-						});
-						break;
-					case LinkType.Category:
-						GetEntityData<Category>(d, languageId, x => new ResolverEntitySummary
-						{
-							Name = x.Name,
-							Published = x.Published,
-							Deleted = x.Deleted,
-							SubjectToAcl = x.SubjectToAcl,
-							LimitedToStores = x.LimitedToStores
-						});
-						break;
-					case LinkType.Manufacturer:
-                        GetEntityData<Manufacturer>(d, languageId, x => new ResolverEntitySummary
-                        {
-                            Name = x.Name,
-                            Published = x.Published,
-                            Deleted = x.Deleted,
-                            LimitedToStores = x.LimitedToStores
-                        });
-                        break;
-                    case LinkType.Topic:
-                        GetEntityData<Topic>(d, languageId, x => null);
-                        break;
-                    case LinkType.Url:
-                        var url = d.Value.ToString();
-                        if (url.EmptyNull().StartsWith("~"))
-                        {
-                            url = VirtualPathUtility.ToAbsolute(url);
-                        }
-                        d.Link = d.Label = url;
-                        break;
-                    case LinkType.File:
-                        d.Link = d.Label = d.Value.ToString();
-                        break;
-                    default:
-                        throw new SmartException("Unknown link builder type.");
-                }
+			if (d.Type == LinkType.Url)
+			{
+				var url = d.Value.ToString();
+				if (url.EmptyNull().StartsWith("~"))
+				{
+					url = VirtualPathUtility.ToAbsolute(url);
+				}
+				d.Link = d.Label = url;
+			}
+			else if (d.Type == LinkType.File)
+			{
+				d.Link = d.Label = d.Value.ToString();
+			}
+			else
+			{
+				var cacheKey = LINKRESOLVER_KEY.FormatInvariant(
+					d.Link,
+					d.QueryString.EmptyNull(),
+					languageId,
+					storeId,
+					string.Join(",", roles.Where(x => x.Active).Select(x => x.Id)));
 
-                return d;
-            });
+				_services.Cache.Get(cacheKey, () =>
+				{
+					switch (d.Type)
+					{
+						case LinkType.Product:
+							GetEntityData<Product>(d, languageId, x => new ResolverEntitySummary
+							{
+								Name = x.Name,
+								Published = x.Published,
+								Deleted = x.Deleted,
+								SubjectToAcl = x.SubjectToAcl,
+								LimitedToStores = x.LimitedToStores
+							});
+							break;
+						case LinkType.Category:
+							GetEntityData<Category>(d, languageId, x => new ResolverEntitySummary
+							{
+								Name = x.Name,
+								Published = x.Published,
+								Deleted = x.Deleted,
+								SubjectToAcl = x.SubjectToAcl,
+								LimitedToStores = x.LimitedToStores
+							});
+							break;
+						case LinkType.Manufacturer:
+							GetEntityData<Manufacturer>(d, languageId, x => new ResolverEntitySummary
+							{
+								Name = x.Name,
+								Published = x.Published,
+								Deleted = x.Deleted,
+								LimitedToStores = x.LimitedToStores
+							});
+							break;
+						case LinkType.Topic:
+							GetEntityData<Topic>(d, languageId, x => null);
+							break;
+						default:
+							throw new SmartException("Unknown link builder type.");
+					}
+
+					return d;
+				});
+			}
 
             var result = new LinkResolverResult
             {
-                Type = data.Type,
-                Status = data.Status,
-                Value = data.Value,
-                Link = data.Link,
-                QueryString = data.QueryString,
-                Label = data.Label,
-                Id = data.Id
+                Type = d.Type,
+                Status = d.Status,
+                Value = d.Value,
+                Link = d.Link,
+                QueryString = d.QueryString,
+                Label = d.Label,
+                Id = d.Id
             };
 
             // Check ACL and limited to stores.
-            switch (data.Type)
+            switch (d.Type)
             {
                 case LinkType.Product:
                 case LinkType.Category:
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
-                    var entityName = data.Type.ToString();
-                    if (data.LimitedToStores && data.Status == LinkStatus.Ok && !QuerySettings.IgnoreMultiStore && !_storeMappingService.Authorize(entityName, data.Id, storeId))
+                    var entityName = d.Type.ToString();
+                    if (d.LimitedToStores && d.Status == LinkStatus.Ok && !QuerySettings.IgnoreMultiStore && !_storeMappingService.Authorize(entityName, d.Id, storeId))
                     {
                         result.Status = LinkStatus.NotFound;
                     }
-                    else if (data.SubjectToAcl && data.Status == LinkStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, data.Id, roles))
+                    else if (d.SubjectToAcl && d.Status == LinkStatus.Ok && !QuerySettings.IgnoreAcl && !_aclService.Authorize(entityName, d.Id, roles))
                     {
                         result.Status = LinkStatus.Forbidden;
                     }
@@ -244,7 +266,7 @@ namespace SmartStore.Services.Cms
                 data.Status = summary.Deleted
                     ? LinkStatus.NotFound
                     : summary.Published ? LinkStatus.Ok : LinkStatus.Hidden;
-
+				
                 if (data.Type == LinkType.Topic)
                 {
                     data.Label = _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "ShortTitle").NullEmpty() ??
@@ -256,10 +278,10 @@ namespace SmartStore.Services.Cms
                     data.Label = _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "Name").NullEmpty() ?? summary.Name;
                 }
 
-                var slug = _urlRecordService.GetActiveSlug(data.Id, entityName, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(data.Id, entityName, 0);
-                if (!string.IsNullOrEmpty(slug))
+                data.Slug = _urlRecordService.GetActiveSlug(data.Id, entityName, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(data.Id, entityName, 0);
+                if (!string.IsNullOrEmpty(data.Slug))
                 {
-                    data.Link = _urlHelper.RouteUrl(entityName, new { SeName = slug });
+                    data.Link = _urlHelper.RouteUrl(entityName, new { SeName = data.Slug });
                 }
             }
             else
@@ -269,7 +291,6 @@ namespace SmartStore.Services.Cms
             }
         }
     }
-
 
     internal class ResolverEntitySummary
     {

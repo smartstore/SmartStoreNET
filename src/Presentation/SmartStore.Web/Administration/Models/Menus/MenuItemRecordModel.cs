@@ -12,13 +12,6 @@ namespace SmartStore.Admin.Models.Menus
     [Validator(typeof(MenuItemRecordValidator))]
     public class MenuItemRecordModel : EntityModelBase, ILocalizedModel<MenuItemRecordLocalizedModel>
     {
-        public MenuItemRecordModel()
-        {
-            Locales = new List<MenuItemRecordLocalizedModel>();
-            AllItems = new List<SelectListItem>();
-            AllProviders = new List<SelectListItem>();
-        }
-
         public int MenuId { get; set; }
         public string Model { get; set; }
 
@@ -28,7 +21,6 @@ namespace SmartStore.Admin.Models.Menus
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.LinkTarget")]
         public string SystemName { get; set; }
-        public IList<SelectListItem> AllProviders { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Title")]
         public string Title { get; set; }
@@ -80,6 +72,7 @@ namespace SmartStore.Admin.Models.Menus
     {
         public MenuItemRecordValidator(Localizer T)
         {
+            RuleFor(x => x.SystemName).NotEmpty();
         }
     }
 }

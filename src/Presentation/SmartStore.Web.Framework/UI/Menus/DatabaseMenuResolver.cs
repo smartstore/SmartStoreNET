@@ -29,6 +29,8 @@ namespace SmartStore.Web.Framework.UI
 
         public DbQuerySettings QuerySettings { get; set; }
 
+        public int Order => 1;
+
         public bool Exists(string menuName)
 		{
             return _menuStorage.MenuExists(menuName);

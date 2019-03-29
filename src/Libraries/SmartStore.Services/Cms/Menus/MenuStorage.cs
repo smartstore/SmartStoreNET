@@ -238,7 +238,6 @@ namespace SmartStore.Services.Cms
             var entities = items
                 .OrderBy(x => x.ParentItemId)
                 .ThenBy(x => x.DisplayOrder)
-                .ThenBy(x => x.Title)
                 .ToArray();
 
             SortChildItems(0);

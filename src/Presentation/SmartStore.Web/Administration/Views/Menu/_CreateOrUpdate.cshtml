@@ -1,9 +1,9 @@
 ﻿@using SmartStore.Admin.Models.Menus
 @model MenuRecordModel
 
-@Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.IsSystemMenu)
+@Html.ValidationSummary(false)
 
 @Html.SmartStore().TabStrip().Name("menu-edit").Style(TabsStyle.Material).Items(x =>
 {
@@ -68,10 +68,25 @@
 
     if (Model.Id > 0)
     {
-        <button type="button" class="d-none" id="btn-refresh" data-url="@Url.Action("ItemList", "Menu", new { id = Model.Id })"></button>
-        <h4 class="h5 mt-5">@T("Admin.ContentManagement.MenuLinks")</h4>
-        <div id="menu-items" class="menu-item-list">
-            @Html.Partial("ItemList", Model)
+        <div id="menu-items-container">
+            <h4 class="h4 mt-5">@T("Admin.ContentManagement.MenuLinks")</h4>
+
+            <button type="button" class="btn btn-secondary btn-to-primary mb-1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	            <i class="fa fa-plus"></i>
+	            <span>@T("Admin.ContentManagement.AddMenuItem")</span>
+            </button>
+		    <div class="dropdown-menu">
+                @foreach (var provider in Model.AllProviders)
+                {
+			        <a class="dropdown-item" href="@Url.Action("CreateItem", new { systemName = provider.Value, menuId = Model.Id, parentItemId = 0, area = "Admin" })">
+				        <span>@provider.Text</span>
+			        </a>
+                }
+            </div>
+
+            <div id="menu-items" class="menu-item-list">
+                @Html.Partial("ItemList", Model)
+            </div>
         </div>
     }
 }
@@ -87,25 +102,12 @@
 }
 
 <script>
-    $(function() {
-        // Reload item list.
-        $('#btn-refresh').on('click', function () {
-            $(this).doAjax({
-                callbackSuccess: function (response) {
-					$('#menu-items').html(response);
-				}
-			});
-        });
-
+    $(function () {
         // Process item command.
-        $('#menu-items').on('click', '.menu-item-command', function (e) {
+        $('#menu-items-container').on('click', '.menu-item-command', function (e) {
             e.preventDefault();
             var el = $(this);
             switch (el.data('action')) {
-                case 'add-item':
-                case 'edit-item':
-                    window.openPopup(el.data('url'), true, true);
-                    break;
                 case 'delete-item':
 					el.doAjax({
 						type: 'POST',
@@ -116,6 +118,7 @@
 					});
                     break;
             }
+            return false;
         });
 	});
 </script>

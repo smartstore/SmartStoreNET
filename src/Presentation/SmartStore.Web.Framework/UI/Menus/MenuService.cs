@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Collections;
 
@@ -6,14 +7,14 @@ namespace SmartStore.Web.Framework.UI.Menus
 {
     public partial class MenuService : IMenuService
     {
-        protected readonly IEnumerable<IMenuResolver> _menuResolvers;
+        protected readonly IMenuResolver[] _menuResolvers;
 
         private TreeNode<MenuItem> _currentNode;
         private bool _currentNodeResolved;
 
         public MenuService(IEnumerable<IMenuResolver> menuResolvers)
         {
-            _menuResolvers = menuResolvers;
+            _menuResolvers = menuResolvers.OrderBy(x => x.Order).ToArray();
         }
 
         public virtual IMenu GetMenu(string name)

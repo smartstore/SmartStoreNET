@@ -166,7 +166,6 @@ namespace SmartStore.Admin.Controllers
             var model = MiniMapper.Map<MenuRecord, MenuRecordModel>(menu);
 
             PrepareModel(model, menu);
-
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Title = menu.GetLocalized(x => x.Title, languageId, false, false);
@@ -258,35 +257,8 @@ namespace SmartStore.Admin.Controllers
             return PartialView(model);
         }
 
-        // Ajax.
-        public ActionResult LinkInputEditor(int id, string provider)
-        {
-            var html = string.Empty;
-            var model = string.Empty;
-
-            var item = _menuStorage.GetMenuItemById(id);
-            if (item != null && item.SystemName.IsCaseInsensitiveEqual(provider))
-            {
-                model = item.Model;
-            }
-
-            if (provider.HasValue() && (provider == "entity" || provider == "route"))
-            {
-                var dataDic = new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "Model" } };
-                var viewName = $"EditorTemplates/MenuItem.{provider}";
-                html = this.RenderPartialViewToString(viewName, model, dataDic);
-            }
-
-            if (html.IsEmpty())
-            {
-                html = "<input type='hidden' name='Model' id='Model' value='{0}' />".FormatInvariant(model.HtmlEncode());
-            }
-
-            return Json(new { success = true, html });
-        }
-
         // Do not use model binding because of input validation.
-        public ActionResult CreateItem(int menuId, int parentItemId, string btnId)
+        public ActionResult CreateItem(string systemName, int menuId, int parentItemId)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -301,6 +273,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new MenuItemRecordModel
             {
+                SystemName = systemName,
                 MenuId = menuId,
                 ParentItemId = parentItemId,
                 Published = true
@@ -309,14 +282,12 @@ namespace SmartStore.Admin.Controllers
             PrepareModel(model, null);
             AddLocales(_languageService, model.Locales);
 
-            ViewBag.BtnId = btnId;
-
             return View(model);
         }
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
-        public ActionResult CreateItem(MenuItemRecordModel itemModel, string btnId, bool continueEditing)
+        public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -329,29 +300,24 @@ namespace SmartStore.Admin.Controllers
                 item.ParentItemId = itemModel.ParentItemId ?? 0;
 
                 _menuStorage.InsertMenuItem(item);
-                itemModel.Id = item.Id;
 
                 UpdateLocales(item, itemModel);
-
-                ViewBag.btnId = btnId;
-                ViewBag.RefreshPage = true;
-                ViewBag.CloseWindow = !continueEditing;
+                NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 if (continueEditing)
                 {
-                    PrepareModel(itemModel, null);
-                    NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+                    return RedirectToAction("EditItem", new { id = item.Id });
                 }
+
+                return RedirectToAction("Edit", new { id = item.MenuId });
             }
-            else
-            {
-                PrepareModel(itemModel, null);
-            }
+
+            PrepareModel(itemModel, null);
 
             return View(itemModel);
         }
 
-        public ActionResult EditItem(int id, string btnId)
+        public ActionResult EditItem(int id)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -368,21 +334,18 @@ namespace SmartStore.Admin.Controllers
             model.ParentItemId = item.ParentItemId == 0 ? (int?)null : item.ParentItemId;
 
             PrepareModel(model, item);
-
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Title = item.GetLocalized(x => x.Title, languageId, false, false);
                 locale.ShortDescription = item.GetLocalized(x => x.ShortDescription, languageId, false, false);
             });
 
-            ViewBag.BtnId = btnId;
-
             return View(model);
         }
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
-        public ActionResult EditItem(MenuItemRecordModel itemModel, string btnId, bool continueEditing)
+        public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -403,21 +366,17 @@ namespace SmartStore.Admin.Controllers
                 _menuStorage.UpdateMenuItem(item);
 
                 UpdateLocales(item, itemModel);
-
-                ViewBag.btnId = btnId;
-                ViewBag.RefreshPage = true;
-                ViewBag.CloseWindow = !continueEditing;
+                NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 if (continueEditing)
                 {
-                    PrepareModel(itemModel, item);
-                    NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+                    return RedirectToAction("EditItem", new { id = item.Id });
                 }
+
+                return RedirectToAction("Edit", new { id = item.MenuId });
             }
-            else
-            {
-                PrepareModel(itemModel, item);
-            }
+
+            PrepareModel(itemModel, item);
 
             return View(itemModel);
         }
@@ -463,15 +422,27 @@ namespace SmartStore.Admin.Controllers
                     model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
                 }
 
+                model.AllProviders = _menuItemProviders
+                    .Select(x => new SelectListItem
+                    {
+                        Text = T("Providers.MenuItems.FriendlyName." + x.Metadata.SystemName),
+                        Value = x.Metadata.SystemName
+                    })
+                    .ToList();
+
                 model.ItemTree = GetItemTree(entity);
             }
 
+            model.Locales = new List<MenuRecordLocalizedModel>();
             model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
         }
 
         private void PrepareModel(MenuItemRecordModel model, MenuItemRecord entity)
         {
+            model.Locales = new List<MenuItemRecordLocalizedModel>();
+            model.AllItems = new List<SelectListItem>();
+
             var menu = entity != null
                 ? entity.Menu
                 : _menuStorage.GetMenuById(model.MenuId, true);
@@ -494,7 +465,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     // Ignore. Element cannot be parent itself.
                 }
-                else if (x.Value.Text.HasValue())
+                else if (!x.Value.IsGroupHeader)
                 {
                     var path = string.Join(" » ", x.Trail.Skip(1).Select(y => y.Value.Text));
                     model.AllItems.Add(new SelectListItem
@@ -505,16 +476,6 @@ namespace SmartStore.Admin.Controllers
                     });
                 }
             });
-
-            // Create list of available item providers.
-            model.AllProviders = _menuItemProviders
-                .Select(x => new SelectListItem
-                {
-                    Text = T("Admin.ContentManagement.Menus.Provider." + x.Metadata.SystemName),
-                    Value = x.Metadata.SystemName,
-                    Selected = entity != null ? x.Metadata.SystemName.IsCaseInsensitiveEqual(entity.SystemName) : false
-                })
-                .ToList();
         }
 
         private void UpdateLocales(MenuRecord entity, MenuRecordModel model)
@@ -539,8 +500,8 @@ namespace SmartStore.Admin.Controllers
             var resources = new Dictionary<string, string>
             {
                 { "divider", T("Admin.ContentManagement.Menus.Item.IsDivider") },
-                { "route", T("Admin.ContentManagement.Menus.Provider.Route") },
-                { "catalog", T("Admin.ContentManagement.Menus.Provider.Catalog") },
+                { "route", T("Providers.MenuItems.FriendlyName.Route") },
+                { "catalog", T("Providers.MenuItems.FriendlyName.Catalog") },
                 { "product", T("Common.Entity.Product") },
                 { "category", T("Common.Entity.Category") },
                 { "manufacturer", T("Common.Entity.Manufacturer") },

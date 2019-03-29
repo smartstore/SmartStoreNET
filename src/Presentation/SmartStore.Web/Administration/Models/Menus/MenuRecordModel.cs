@@ -14,12 +14,6 @@ namespace SmartStore.Admin.Models.Menus
     [Validator(typeof(MenuRecordValidator))]
     public class MenuRecordModel : TabbableModel, ILocalizedModel<MenuRecordLocalizedModel>, IStoreSelector, IAclSelector
     {
-        public MenuRecordModel()
-        {
-            Locales = new List<MenuRecordLocalizedModel>();
-            ItemTree = new TreeNode<MenuItem>(new MenuItem());
-        }
-
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.SystemName")]
         public string SystemName { get; set; }
 
@@ -43,7 +37,7 @@ namespace SmartStore.Admin.Models.Menus
         public int[] SelectedCustomerRoleIds { get; set; }
 
         public IList<MenuRecordLocalizedModel> Locales { get; set; }
-
+        public IList<SelectListItem> AllProviders { get; set; }
         public TreeNode<MenuItem> ItemTree { get; set; }
     }
 

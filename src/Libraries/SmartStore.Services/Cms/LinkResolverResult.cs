@@ -25,10 +25,19 @@ namespace SmartStore.Services.Cms
     {
         private string _link;
 
-        public LinkType Type { get; set; }
+		/// <summary>
+		/// The raw expression without query string
+		/// </summary>
+		public string Expression { get; set; }
+
+		/// <summary>
+		/// The query string part
+		/// </summary>
+		public string QueryString { get; set; }
+
+		public LinkType Type { get; set; }
         public object Value { get; set; }
 		public string Slug { get; set; }
-		public string QueryString { get; set; }
 
         public LinkStatus Status { get; set; }
         public string Label { get; set; }
@@ -97,9 +106,19 @@ namespace SmartStore.Services.Cms
 	}
 
     [Serializable]
-    public partial class LinkResolverData : LinkResolverResult
+    public partial class LinkResolverData : LinkResolverResult, ICloneable<LinkResolverData>
     {
         public bool SubjectToAcl { get; set; }
         public bool LimitedToStores { get; set; }
-    }
+
+		public LinkResolverData Clone()
+		{
+			return (LinkResolverData)this.MemberwiseClone();
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.MemberwiseClone();
+		}
+	}
 }

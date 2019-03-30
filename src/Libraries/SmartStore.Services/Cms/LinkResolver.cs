@@ -20,10 +20,9 @@ namespace SmartStore.Services.Cms
     {
 		/// <remarks>
 		/// {0} : Expression w/o q
-		/// {1} : q
-		/// {2} : LanguageId
-		/// {3} : Store
-		/// {4} : RolesIdent
+		/// {1} : LanguageId
+		/// {2} : Store
+		/// {3} : RolesIdent
 		/// </remarks>
 		internal const string LINKRESOLVER_KEY = "linkresolver:{0}-{1}-{2}-{3}";
 
@@ -97,18 +96,19 @@ namespace SmartStore.Services.Cms
 			else
 			{
 				var cacheKey = LINKRESOLVER_KEY.FormatInvariant(
-					d.Link,
-					d.QueryString.EmptyNull(),
+					d.Expression,
 					languageId,
 					storeId,
 					string.Join(",", roles.Where(x => x.Active).Select(x => x.Id)));
 
-				_services.Cache.Get(cacheKey, () =>
+				d = _services.Cache.Get(cacheKey, () =>
 				{
-					switch (d.Type)
+					var d2 = d.Clone();
+
+					switch (d2.Type)
 					{
 						case LinkType.Product:
-							GetEntityData<Product>(d, languageId, x => new ResolverEntitySummary
+							GetEntityData<Product>(d2, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
 								Published = x.Published,
@@ -118,7 +118,7 @@ namespace SmartStore.Services.Cms
 							});
 							break;
 						case LinkType.Category:
-							GetEntityData<Category>(d, languageId, x => new ResolverEntitySummary
+							GetEntityData<Category>(d2, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
 								Published = x.Published,
@@ -128,7 +128,7 @@ namespace SmartStore.Services.Cms
 							});
 							break;
 						case LinkType.Manufacturer:
-							GetEntityData<Manufacturer>(d, languageId, x => new ResolverEntitySummary
+							GetEntityData<Manufacturer>(d2, languageId, x => new ResolverEntitySummary
 							{
 								Name = x.Name,
 								Published = x.Published,
@@ -137,13 +137,13 @@ namespace SmartStore.Services.Cms
 							});
 							break;
 						case LinkType.Topic:
-							GetEntityData<Topic>(d, languageId, x => null);
+							GetEntityData<Topic>(d2, languageId, x => null);
 							break;
 						default:
 							throw new SmartException("Unknown link builder type.");
 					}
 
-					return d;
+					return d2;
 				});
 			}
 
@@ -180,36 +180,74 @@ namespace SmartStore.Services.Cms
             return result;
         }
 
+		private bool TokenizeExpression(string expression, out string type, out string path, out string query)
+		{
+			type = null;
+			path = null;
+			query = null;
+
+			if (string.IsNullOrWhiteSpace(expression))
+			{
+				return false;
+			}
+
+			var colonIndex = expression.IndexOf(':');
+			if (colonIndex > -1)
+			{
+				type = expression.Substring(0, colonIndex);
+				if (type.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+				{
+					type = null;
+					colonIndex = -1;
+				}	
+			}
+
+			path = expression.Substring(colonIndex + 1);
+
+			var qmIndex = path.IndexOf('?');
+			if (qmIndex > -1)
+			{
+				query = path.Substring(qmIndex + 1);
+				path = path.Substring(0, qmIndex);
+			}
+
+			return true;
+		}
+
         protected virtual LinkResolverData Parse(string linkExpression)
         {
-            if (!string.IsNullOrWhiteSpace(linkExpression))
-            {
-                var index = linkExpression.IndexOf(':');
+			if (TokenizeExpression(linkExpression, out var type, out var path, out var query))
+			{
+				if (!string.IsNullOrWhiteSpace(type) && Enum.TryParse(type, true, out LinkType linkType))
+				{
+					var result = new LinkResolverData { Type = linkType, Expression = string.Concat(type, ":", path) };
 
-                if (index != -1 && Enum.TryParse(linkExpression.Substring(0, index), true, out LinkType type))
-                {
-                    var rawValue = linkExpression.Substring(index + 1);
-                    rawValue.SplitToPair(out var value, out var queryString, "?", true);
+					switch (linkType)
+					{
+						case LinkType.Product:
+						case LinkType.Category:
+						case LinkType.Manufacturer:
+						case LinkType.Topic:
+							var id = path.ToInt();
+							result.Value = id != 0 ? (object)id : path;
+							result.QueryString = query;
+							break;
+						case LinkType.Url:
+							result.Value = path + (query.HasValue() ? "?" + query : "");
+							break;
+						case LinkType.File:
+							result.Value = path;
+							result.QueryString = query;
+							break;
+						default:
+							throw new SmartException("Unknown link builder type.");
+					}
 
-                    switch (type)
-                    {
-                        case LinkType.Product:
-                        case LinkType.Category:
-                        case LinkType.Manufacturer:
-                        case LinkType.Topic:
-                            var id = value.ToInt();
-                            return new LinkResolverData { Type = type, Value = id != 0 ? (object)id : value, QueryString = queryString };
-                        case LinkType.Url:
-                            return new LinkResolverData { Type = type, Value = rawValue };
-                        case LinkType.File:
-                            return new LinkResolverData { Type = type, Value = value, QueryString = queryString };
-                        default:
-                            throw new SmartException("Unknown link builder type.");
-                    }
-                }
-            }
+					return result;
+				}
+			}
 
-            return new LinkResolverData { Type = LinkType.Url, Value = linkExpression.EmptyNull() };
+			return new LinkResolverData { Type = LinkType.Url, Value = linkExpression.EmptyNull() };
         }
 
         internal void GetEntityData<T>(LinkResolverData data, int languageId, Expression<Func<T, ResolverEntitySummary>> selector) where T : BaseEntity

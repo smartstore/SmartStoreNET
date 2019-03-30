@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
@@ -46,6 +47,56 @@ namespace SmartStore.Web.Framework
 		{
 			var pictureService = EngineContext.Current.Resolve<IPictureService>();
 			return pictureService.GetUrl(picture, targetSize, fallbackType, host);
+		}
+
+		/// <summary>
+		/// Resolves a link to a system internal entity like product, topic, category or manufacturer.
+		/// </summary>
+		/// <param name="expression">A link expression as supported by the <see cref="ILinkResolver"/></param>
+		/// <param name="q">Optional query string, which should be appended to the resolved link.</param>
+		/// <returns>Link</returns>
+		/// <remarks>
+		/// This method returns an empty string in following cases:
+		/// - the requested entity does not exist.
+		/// - the current user has no permission to acces the entity.
+		/// </remarks>
+		public static IHtmlString Entity(this UrlHelper urlHelper, string expression, string q = null)
+		{
+			Guard.NotEmpty(expression, nameof(expression));
+
+			var linkResolver = EngineContext.Current.Resolve<ILinkResolver>();
+			var link = linkResolver.Resolve(expression);
+
+			if (link.Status == LinkStatus.Ok)
+			{
+				return link;
+			}
+
+			return MvcHtmlString.Empty;
+		}
+
+		/// <summary>
+		/// Resolves a link label for a system internal entity like product, topic, category or manufacturer.
+		/// The label is either the entity short title, title or name, whichever is applicable.
+		/// </summary>
+		/// <param name="expression">A link expression as supported by the <see cref="ILinkResolver"/></param>
+		/// <returns>Label</returns>
+		/// <remarks>
+		/// This method returns an empty string if the requested entity does not exist.
+		/// </remarks>
+		public static IHtmlString EntityLabel(this UrlHelper urlHelper, string expression)
+		{
+			Guard.NotEmpty(expression, nameof(expression));
+
+			var linkResolver = EngineContext.Current.Resolve<ILinkResolver>();
+			var link = linkResolver.Resolve(expression);
+
+			if (link.Status == LinkStatus.Ok || link.Status == LinkStatus.Forbidden)
+			{
+				return MvcHtmlString.Create(link.Label);
+			}
+
+			return MvcHtmlString.Empty;
 		}
 
 		public static string TopicUrl(this UrlHelper urlHelper, string systemName, bool popup = false)

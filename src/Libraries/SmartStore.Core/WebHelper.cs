@@ -629,8 +629,9 @@ namespace SmartStore.Core
 		/// <summary>
 		/// Prepends protocol and host to the given (relative) url
 		/// </summary>
+		/// <param name="protocol">Changes the protocol if passed.</param>
 		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
-		public static string GetAbsoluteUrl(string url, HttpRequestBase request, bool enforceScheme = false)
+		public static string GetAbsoluteUrl(string url, HttpRequestBase request, bool enforceScheme = false, string protocol = null)
 		{
 			Guard.NotEmpty(url, nameof(url));
 			Guard.NotNull(request, nameof(request));
@@ -645,10 +646,12 @@ namespace SmartStore.Core
 				return url;
 			}
 
+			protocol = protocol ?? request.Url.Scheme;
+
 			if (url.StartsWith("//"))
 			{
 				return enforceScheme 
-					? String.Concat(request.Url.Scheme, ":", url)
+					? String.Concat(protocol, ":", url)
 					: url;
 			}
 
@@ -657,7 +660,7 @@ namespace SmartStore.Core
 				url = VirtualPathUtility.ToAbsolute(url);
 			}
 
-			url = string.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
+			url = string.Format("{0}://{1}{2}", protocol, request.Url.Authority, url);
 			return url;
 		}
 

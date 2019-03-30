@@ -21,7 +21,7 @@ namespace SmartStore.Services.Cms
         Hidden
     }
 
-    public class LinkResolverResult : IHtmlString
+    public class LinkResolverResult
     {
         private string _link;
 
@@ -93,11 +93,6 @@ namespace SmartStore.Services.Cms
 
             return result;
         }
-
-		public string ToHtmlString()
-		{
-			return this.Link;
-		}
 
 		public override string ToString()
 		{

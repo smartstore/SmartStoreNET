@@ -9,9 +9,9 @@
 	Html.AddBodyCssClass("no-offcanvas-cart");
 
 	var termsLinkTemplate = "<a class='terms-trigger read' href='{0}' data-toggle='modal' data-target='#terms-of-service-modal'>";
-	var termsLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("conditionsofuse", true));
-	var disclaimerLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("disclaimer", true));
-	var privacyLink = termsLinkTemplate.FormatInvariant(Url.TopicUrl("privacyinfo", true));
+	var termsLink = termsLinkTemplate.FormatInvariant(Url.Topic("conditionsofuse", true));
+	var disclaimerLink = termsLinkTemplate.FormatInvariant(Url.Topic("disclaimer", true));
+	var privacyLink = termsLinkTemplate.FormatInvariant(Url.Topic("privacyinfo", true));
 	var terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink, privacyLink);
 
 	var consentZoneContent = Html.Widget("checkout_submit_data_consent", false).ToHtmlString();

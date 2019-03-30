@@ -1872,7 +1872,7 @@ namespace SmartStore.Web.Controllers
 
             if (cart.RequiresShipping())
             {
-				var shippingInfoUrl = Url.TopicUrl("ShippingInfo");
+				var shippingInfoUrl = Url.Topic("ShippingInfo").ToString();
 				if (shippingInfoUrl.HasValue())
 				{
 					model.EstimateShipping.ShippingInfoUrl = shippingInfoUrl;

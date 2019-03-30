@@ -1,16 +1,16 @@
 ﻿@model FooterModel
 
 @using SmartStore.Web.Models.Common;
+@using SmartStore.Services.Cms;
 
 @{ 
-	var footerLinks = new List<Tuple<string, string>>
+	var footerLinks = new List<LinkResolverResult>
 	{
-		// Item1 = TopicUrl, Item2 = LinkText
-		new Tuple<string, string>(Url.TopicUrl("aboutus"), Url.TopicLinkText("aboutus")),
-		new Tuple<string, string>(Url.TopicUrl("imprint"), Url.TopicLinkText("imprint")),
-		new Tuple<string, string>(Url.TopicUrl("disclaimer"), Url.TopicLinkText("disclaimer")),
-		new Tuple<string, string>(Url.TopicUrl("privacyinfo"), Url.TopicLinkText("privacyinfo")),
-		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), Url.TopicLinkText("conditionsofuse"))
+		LinkResolver.Resolve("topic:aboutus"),
+		LinkResolver.Resolve("topic:imprint"),
+		LinkResolver.Resolve("topic:disclaimer"),
+		LinkResolver.Resolve("topic:privacyinfo"),
+		LinkResolver.Resolve("topic:conditionsofuse")
 	};
 
 	var socialLinks = new List<Tuple<string, string>>();
@@ -116,8 +116,8 @@
 								Html.RenderWidget("footer_col_2_before");
 
 								var contactUsUrl = Url.RouteUrl("contactus");
-								var shippingInfoUrl = Url.TopicUrl("shippinginfo");
-								var paymentInfoUrl = Url.TopicUrl("paymentinfo");
+								var shippingInfoLink = LinkResolver.Resolve("topic:shippinginfo");
+								var paymentInfoLink = LinkResolver.Resolve("topic:paymentinfo");
 							}
 
 							@if (contactUsUrl.HasValue())
@@ -132,13 +132,13 @@
 							{
 								<li><a class="footer-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
 							}
-							@if (shippingInfoUrl.HasValue())
+							@if (shippingInfoLink.Status == LinkStatus.Ok)
 							{
-								<li><a class="footer-link" href="@shippingInfoUrl">@Url.TopicLinkText("shippinginfo")</a></li>
+								<li><a class="footer-link" href="@shippingInfoLink.Link">@shippingInfoLink.Label</a></li>
 							}
-							@if (paymentInfoUrl.HasValue())
+							@if (paymentInfoLink.Status == LinkStatus.Ok)
 							{
-								<li><a class="footer-link" href="@paymentInfoUrl">@Url.TopicLinkText("paymentinfo")</a></li>
+								<li><a class="footer-link" href="@paymentInfoLink.Link">@paymentInfoLink.Label</a></li>
 							}
 
                             @{ Html.RenderWidget("footer_col_2_after"); }
@@ -161,9 +161,9 @@
 
 							@foreach (var link in footerLinks)
 							{
-								if (link.Item1.HasValue())
+								if (link.Status == LinkStatus.Ok)
 								{
-									<li><a class="footer-link" href="@link.Item1">@link.Item2</a></li>
+									<li><a class="footer-link" href="@link.Link">@link.Label</a></li>
 								}
 							}
 

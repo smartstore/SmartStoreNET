@@ -226,7 +226,7 @@ namespace SmartStore.Web.Controllers
 				
 				if (settings.MapLegalInfo)
 				{
-					var shippingInfoUrl = _urlHelper.TopicUrl("shippinginfo");
+					var shippingInfoUrl = _urlHelper.Topic("shippinginfo").ToString();
                     legalInfo = shippingInfoUrl.HasValue()
                         ? T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoUrl)
                         : T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);

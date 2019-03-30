@@ -430,7 +430,7 @@ namespace SmartStore.Web.Controllers
                 DisplayLoginLink = _customerSettings.UserRegistrationType == UserRegistrationType.Disabled
             };
 
-			var shippingInfoUrl = Url.TopicUrl("shippinginfo");
+			var shippingInfoUrl = Url.Topic("shippinginfo").ToString();
 			if (shippingInfoUrl.HasValue())
 			{
 				model.LegalInfo = T("Tax.LegalInfoFooter", taxInfo, shippingInfoUrl);
@@ -476,7 +476,7 @@ namespace SmartStore.Web.Controllers
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
                 IsAuthenticated = customer.IsRegistered(),
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				HasContactUsPage = Url.TopicUrl("ContactUs").HasValue(),
+				HasContactUsPage = Url.Topic("ContactUs").ToString().HasValue(),
                 DisplayLoginLink = _customerSettings.UserRegistrationType != UserRegistrationType.Disabled
             };
             
@@ -834,16 +834,11 @@ namespace SmartStore.Web.Controllers
 			if (!_privacySettings.CookieConsentBadgetext.HasValue())
 			{
 				// loads default value if it's empty (must be done this way as localized values can't be initial values of settings)
-				model.BadgeText = T("CookieConsent.BadgeText", 
-					_services.StoreContext.CurrentStore.Name, 
-					Url.RouteUrl("Topic", new { SeName = Url.TopicSeName("PrivacyInfo") }));
+				model.BadgeText = T("CookieConsent.BadgeText", _services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
 			}
 			else
 			{
-				model.BadgeText = _privacySettings.GetLocalized(x => x.CookieConsentBadgetext).Value.FormatWith(
-					_services.StoreContext.CurrentStore.Name,
-					Url.RouteUrl("Topic", new { SeName = Url.TopicSeName("PrivacyInfo") })
-				);
+				model.BadgeText = _privacySettings.GetLocalized(x => x.CookieConsentBadgetext).Value.FormatWith(_services.StoreContext.CurrentStore.Name, Url.Topic("PrivacyInfo"));
 			}
 			
 			var consentCookie = this.Request.Cookies[CookieConsent.CONSENT_COOKIE_NAME];

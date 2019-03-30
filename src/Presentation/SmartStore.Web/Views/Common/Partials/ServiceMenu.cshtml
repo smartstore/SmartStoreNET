@@ -1,16 +1,17 @@
 ﻿@model ServiceMenuModel
+
 @using SmartStore.Web.Models.Common;
+@using SmartStore.Services.Cms;
 
 @{
 	Html.RenderWidget("servicemenu_before");
 
-	var links = new List<Tuple<string, string>>
+	var links = new List<LinkResolverResult>
 	{
-		// Item1 = TopicUrl, Item2 = LinkText
-		new Tuple<string, string>(Url.TopicUrl("aboutus"), Url.TopicLinkText("aboutus")),
-		new Tuple<string, string>(Url.TopicUrl("disclaimer"), Url.TopicLinkText("disclaimer")),
-		new Tuple<string, string>(Url.TopicUrl("shippinginfo"), Url.TopicLinkText("shippinginfo")),
-		new Tuple<string, string>(Url.TopicUrl("conditionsofuse"), Url.TopicLinkText("conditionsofuse"))
+		LinkResolver.Resolve("topic:aboutus"),
+		LinkResolver.Resolve("topic:disclaimer"),
+		LinkResolver.Resolve("topic:shippinginfo"),
+		LinkResolver.Resolve("topic:conditionsofuse")
 	};
 }
 
@@ -35,9 +36,9 @@
 
 @foreach (var link in links)
 {
-	if (link.Item1.HasValue())
+	if (link.Status == LinkStatus.Ok)
 	{
-		<a href="@link.Item1" class="dropdown-item">@link.Item2</a>
+		<a href="@link.Link" class="dropdown-item">@link.Label</a>
 	}
 }
 

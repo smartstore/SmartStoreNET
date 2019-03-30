@@ -987,7 +987,7 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-				var shippingInfoUrl = _urlHelper.TopicUrl("ShippingInfo");
+				var shippingInfoUrl = _urlHelper.Topic("ShippingInfo").ToString();
 
 				if (shippingInfoUrl.IsEmpty())
 				{

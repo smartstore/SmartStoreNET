@@ -23,12 +23,12 @@ namespace SmartStore.Core.Caching
 			get { return false; }
 		}
 
-		public T Get<T>(string key)
+		public T Get<T>(string key, bool independent = false)
 		{
 			return default(T);
 		}
 
-		public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null)
+		public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false)
 		{
 			if (acquirer == null)
 			{
@@ -37,7 +37,7 @@ namespace SmartStore.Core.Caching
 			return acquirer();
 		}
 
-		public Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
+		public Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false)
 		{
 			if (acquirer == null)
 			{
@@ -52,7 +52,7 @@ namespace SmartStore.Core.Caching
 			return new MemorySet(this);
 		}
 
-		public void Put(string key, object value, TimeSpan? duration = null, bool independent = false)
+		public void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null)
 		{
 		}
 

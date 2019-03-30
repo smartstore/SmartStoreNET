@@ -311,7 +311,7 @@ namespace SmartStore.Services.Seo
 
 						return result;
 					}
-				});
+				}, independent: true);
 
 				var key = GenerateKey(entityId, entityName, languageId);
 				if (!allActiveSlugs.TryGetValue(key, out slug))
@@ -539,7 +539,7 @@ namespace SmartStore.Services.Seo
 
 					return dict;
 				}
-			});
+			}, independent: true);
 		}
 
 		/// <summary>

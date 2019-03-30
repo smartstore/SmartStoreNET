@@ -20,11 +20,13 @@ namespace SmartStore.Core.Caching
 		// which is bad if we intentionally wanted to save NULL values.
 		public const string FakeNull = "__[NULL]__";
 
+		private readonly ICacheScopeAccessor _scopeAccessor;
 		private readonly MemoryCache _cache;
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-		public MemoryCacheManager()
+		public MemoryCacheManager(ICacheScopeAccessor scopeAccessor)
 		{
+			_scopeAccessor = scopeAccessor;
 			_cache = new MemoryCache("SmartStore");
 		}
 
@@ -33,7 +35,7 @@ namespace SmartStore.Core.Caching
 			get { return false; }
 		}
 
-		private bool TryGet<T>(string key, out T value)
+		private bool TryGet<T>(string key, bool independent, out T value)
 		{
 			value = default(T);
 
@@ -41,6 +43,12 @@ namespace SmartStore.Core.Caching
 
 			if (obj != null)
 			{
+				// Make the parent scope's entry depend on this
+				if (!independent)
+				{
+					_scopeAccessor.PropagateKey(key);
+				}	
+
 				if (obj.Equals(FakeNull))
 				{
 					return true;
@@ -53,68 +61,65 @@ namespace SmartStore.Core.Caching
 			return false;
 		}
 
-		public T Get<T>(string key)
+		public T Get<T>(string key, bool independent = false)
 		{
-			using (CacheAcquireContext.Begin(key))
-			{
-				TryGet(key, out T value);
-				return value;
-			}
+			TryGet(key, independent, out T value);
+			return value;
 		}
 
-        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null)
+        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null, bool independent = false)
         {
-			using (CacheAcquireContext.Begin(key))
+			if (TryGet(key, independent, out T value))
 			{
-				if (TryGet(key, out T value))
-				{
-					return value;
-				}
+				return value;
+			}
 				
-				lock (String.Intern(key))
+			lock (String.Intern(key))
+			{
+				// Atomic operation must be outer locked
+				if (!TryGet(key, independent, out value))
 				{
-					// Atomic operation must be outer locked
-					if (!TryGet(key, out value))
+					using (_scopeAccessor.BeginScope(key))
 					{
 						value = acquirer();
-						Put(key, value, duration);
+						Put(key, value, duration, _scopeAccessor.Current.Dependencies);
 						return value;
 					}
 				}
-
-				return value;
 			}
+
+			return value;
 		}
 
-		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
+		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null, bool independent = false)
 		{
-			using (CacheAcquireContext.Begin(key))
+			if (TryGet(key, independent, out T value))
 			{
-				if (TryGet(key, out T value))
-				{
-					return value;
-				}
+				return value;
+			}
 
-				// get the async (semaphore) locker specific to this key
-				var keyLock = AsyncLock.Acquire(key);
+			// Get the async (semaphore) locker specific to this key
+			var keyLock = AsyncLock.Acquire(key);
 
-				using (await keyLock.LockAsync())
+			using (await keyLock.LockAsync())
+			{
+				if (!TryGet(key, independent, out value))
 				{
-					if (!TryGet(key, out value))
+					using (_scopeAccessor.BeginScope(key))
 					{
 						value = await acquirer().ConfigureAwait(false);
-						Put(key, value, duration);
+						Put(key, value, duration, _scopeAccessor.Current.Dependencies);
 						return value;
 					}
 				}
-
-				return value;
 			}
+
+			return value;
 		}
 
-		public void Put(string key, object value, TimeSpan? duration = null, bool independent = false)
+		public void Put(string key, object value, TimeSpan? duration = null, IEnumerable<string> dependencies = null)
 		{
-			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration, independent ? null : CacheAcquireContext.Current?.DependentKeys));
+			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration, dependencies));
 		}
 
         public bool Contains(string key)
@@ -199,10 +204,10 @@ namespace SmartStore.Core.Caching
 			
 			if (dependencies != null && dependencies.Any())
 			{
-				//cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
+				cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
 			}
 
-			//cacheItemPolicy.RemovedCallback = OnRemoveEntry;
+			cacheItemPolicy.RemovedCallback = OnRemoveEntry;
 
 			return cacheItemPolicy;
 		}

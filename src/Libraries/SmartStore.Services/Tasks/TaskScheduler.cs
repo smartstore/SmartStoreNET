@@ -105,7 +105,7 @@ namespace SmartStore.Services.Tasks
 		{
 			string authToken = Guid.NewGuid().ToString();
 
-			_cache.Put(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1), true);
+			_cache.Put(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1));
 
 			return authToken;
 		}

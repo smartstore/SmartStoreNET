@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.UI
                 node.Value.Text = result.Label;
             }
 
-            // Only apply MenuItemRecord.Published for edit mode.
+            // For edit mode, only apply MenuItemRecord.Published.
             if (!request.Origin.IsCaseInsensitiveEqual("EditMenu"))
             {
                 node.Value.Visible = result.Status == LinkStatus.Ok;

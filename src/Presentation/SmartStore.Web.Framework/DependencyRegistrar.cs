@@ -853,6 +853,12 @@ namespace SmartStore.Web.Framework
                 builder.RegisterType(type).As<IMenuResolver>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
             }
 
+            var menuTypes = _typeFinder.FindClassesOfType<IMenu>(ignoreInactivePlugins: true);
+            foreach (var type in menuTypes)
+            {
+                builder.RegisterType(type).As<IMenu>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
+            }
+
             var menuItemProviderTypes = _typeFinder.FindClassesOfType<IMenuItemProvider>(ignoreInactivePlugins: true);
             foreach (var type in menuItemProviderTypes)
             {

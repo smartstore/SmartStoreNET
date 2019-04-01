@@ -717,6 +717,7 @@
             builder.AddOrUpdate("Common.BottomLeft", "Bottom left", "Links unten");
             builder.AddOrUpdate("Common.BottomRight", "Bottom right", "Rechts unten");
             builder.AddOrUpdate("Common.Center", "Center", "Mitte");
+            builder.AddOrUpdate("Common.NoTitle", "No title", "Ohne Titel");
 
             builder.AddOrUpdate("Common.IncreaseValue", "Increase value", "Wert erhöhen");
             builder.AddOrUpdate("Common.DecreaseValue", "Decrease value", "Wert verringern");

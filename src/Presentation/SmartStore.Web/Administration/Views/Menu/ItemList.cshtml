@@ -57,7 +57,14 @@ else
         }
         <div class="item-text"@Html.Raw(indentStyle)>
 		    <a class="@(!item.Visible ? "muted" : "")" href="@Url.Action("EditItem", new { id = item.EntityId, area = "Admin" })">
-                <span>@item.Text</span>
+                @if (item.Text.HasValue())
+                {
+                    <span>@item.Text</span>
+                }
+                else
+                {
+                    <span class="font-italic">[@T("Common.NoTitle")]</span>
+                }
 		    </a>
         </div>
     </div>

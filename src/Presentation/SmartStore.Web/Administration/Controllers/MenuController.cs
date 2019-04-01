@@ -239,13 +239,8 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult ItemList(int id)
         {
-            var model = new MenuRecordModel
-            {
-                Id = id
-            };
-
-            var entities = _menuStorage.GetMenuItems(id, 0, true);
-            model.ItemTree = entities.GetTree("EditMenu", _menuItemProviders, true);
+            var model = new MenuRecordModel { Id = id };
+            PrepareModel(model, null);
 
             return PartialView(model);
         }
@@ -407,29 +402,26 @@ namespace SmartStore.Admin.Controllers
 
         private void PrepareModel(MenuRecordModel model, MenuRecord entity)
         {
-            if (entity != null)
+            if (entity != null && ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(entity);
-                    model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
-                }
-
-                model.AllProviders = _menuItemProviders.Values
-                    .Select(x => new SelectListItem
-                    {
-                        Text = T("Providers.MenuItems.FriendlyName." + x.Metadata.ProviderName),
-                        Value = x.Metadata.ProviderName
-                    })
-                    .ToList();
-
-                var entities = _menuStorage.GetMenuItems(entity.Id, 0, true);
-                model.ItemTree = entities.GetTree("EditMenu", _menuItemProviders, true);
+                model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(entity);
+                model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
             }
 
             model.Locales = new List<MenuRecordLocalizedModel>();
             model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
+
+            model.AllProviders = _menuItemProviders.Values
+                .Select(x => new SelectListItem
+                {
+                    Text = T("Providers.MenuItems.FriendlyName." + x.Metadata.ProviderName),
+                    Value = x.Metadata.ProviderName
+                })
+                .ToList();
+
+            var entities = _menuStorage.GetMenuItems(model.Id, 0, true);
+            model.ItemTree = entities.GetTree("EditMenu", _menuItemProviders, true);
         }
 
         private void PrepareModel(MenuItemRecordModel model, MenuItemRecord entity)

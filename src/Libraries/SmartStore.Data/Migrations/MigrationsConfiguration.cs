@@ -744,6 +744,7 @@
             builder.AddOrUpdate("Providers.MenuItems.FriendlyName.Catalog", "Categories", "Warengruppen");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.RouteName", "Route name", "Name der Route");
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.RouteValues", "Route values (JSON)", "Route Werte (JSON)");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.CatalogNote",
                 "The category tree is dynamically integrated into the menu.",

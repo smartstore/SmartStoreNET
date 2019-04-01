@@ -77,6 +77,7 @@
 * #1571 Compare products only shows one specification attribute option
 * #1539 Allow signing in with both e-mail and username 
 * Trusted Shops: Trustbadge won't be displayed in Popups & Iframes anymore
+* #1461 Admin Grid: filter dialog will be displayed entirely even when grid has no data to display 
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.

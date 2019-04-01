@@ -52,7 +52,11 @@ namespace SmartStore.Web.Framework
 		{
 			try
 			{
-				var value = _httpContext.Request.RequestContext.RouteData?.DataTokens?.Get(OverriddenStoreIdKey);
+				// Reduce thrown exceptions in console
+				if (_httpContext.Handler == null)
+					return null;
+
+				var value = _httpContext.Request?.RequestContext?.RouteData?.DataTokens?.Get(OverriddenStoreIdKey);
 				if (value != null)
 				{
 					return (int)value;

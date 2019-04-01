@@ -75,10 +75,14 @@ namespace SmartStore.Core.Logging
 		protected internal void TryAddExtendedThreadInfo(LoggingEvent loggingEvent)
 		{
 			HttpRequest httpRequest = null;
+			bool httpRequestReady = HttpContext.Current?.Handler != null;
 
 			try
 			{
-				httpRequest = HttpContext.Current.Request;
+				if (httpRequestReady)
+				{
+					httpRequest = HttpContext.Current.Request;
+				}		
 			}
 			catch
 			{
@@ -104,10 +108,9 @@ namespace SmartStore.Core.Logging
 					{
 						var container = EngineContext.Current.ContainerManager;
 
-						IWorkContext workContext;
 
 						// CustomerId
-						if (container.TryResolve<IWorkContext>(null, out workContext))
+						if (container.TryResolve<IWorkContext>(null, out IWorkContext workContext))
 						{
 							try
 							{
@@ -119,10 +122,9 @@ namespace SmartStore.Core.Logging
 							}
 						}
 
-						IWebHelper webHelper;
 
 						// Url & stuff
-						if (container.TryResolve<IWebHelper>(null, out webHelper))
+						if (container.TryResolve<IWebHelper>(null, out IWebHelper webHelper))
 						{
 							try
 							{

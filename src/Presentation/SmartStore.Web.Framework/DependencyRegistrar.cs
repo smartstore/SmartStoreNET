@@ -724,7 +724,7 @@ namespace SmartStore.Web.Framework
 
 		static bool IsRequestValid()
 		{
-			if (HttpContext.Current == null)
+			if (HttpContext.Current?.Handler == null)
 				return false;
 
 			try
@@ -732,7 +732,7 @@ namespace SmartStore.Web.Framework
 				// The "Request" property throws at application startup on IIS integrated pipeline mode
 				var req = HttpContext.Current.Request;
 			}
-			catch (Exception)
+			catch
 			{
 				return false;
 			}

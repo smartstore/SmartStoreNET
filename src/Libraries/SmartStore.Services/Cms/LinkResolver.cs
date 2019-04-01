@@ -228,8 +228,16 @@ namespace SmartStore.Services.Cms
 						case LinkType.Category:
 						case LinkType.Manufacturer:
 						case LinkType.Topic:
-							var id = path.ToInt();
-							result.Value = id != 0 ? (object)id : path;
+							if (int.TryParse(path, out var id))
+							{
+								// Reduce thrown exceptions in console
+								result.Value = id;
+							}
+							else
+							{
+								result.Value = path;
+							}
+
 							result.QueryString = query;
 							break;
 						case LinkType.Url:

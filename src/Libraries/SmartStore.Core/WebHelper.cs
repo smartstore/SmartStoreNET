@@ -182,12 +182,9 @@ namespace SmartStore.Core
 
             try
             {
-				if (_httpContext != null && _httpContext.Request != null)
+				if (_httpContext.Handler != null && _httpContext?.Request?.ServerVariables[name] != null)
 				{
-					if (_httpContext.Request.ServerVariables[name] != null)
-					{
-						result = _httpContext.Request.ServerVariables[name];
-					}
+					result = _httpContext.Request.ServerVariables[name];
 				}
             }
             catch

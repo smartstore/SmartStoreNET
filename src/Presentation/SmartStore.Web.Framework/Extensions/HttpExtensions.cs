@@ -215,10 +215,10 @@ namespace SmartStore
 
 		internal static HttpCookie GetPreviewModeCookie(this HttpContextBase context, bool createIfMissing)
 		{
-			if (context == null)
+			if (context?.Handler == null)
 				return null;
 
-			var cookie = context.Request.Cookies.Get("sm.PreviewModeOverrides");
+			var cookie = context.Request?.Cookies?.Get("sm.PreviewModeOverrides");
 			
 			if (cookie == null && createIfMissing)
 			{

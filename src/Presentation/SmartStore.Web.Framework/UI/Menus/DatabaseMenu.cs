@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Cms;
@@ -35,7 +36,7 @@ namespace SmartStore.Web.Framework.UI
 
             _menuStorage = menuStorage;
             _querySettings = querySettings;
-            _menuItemProviders = menuItemProviders.ToDictionarySafe(x => x.Metadata.SystemName, x => x);
+            _menuItemProviders = menuItemProviders.ToDictionarySafe(x => x.Metadata.ProviderName, x => x);
         }
 
         public override string Name { get; }
@@ -44,14 +45,14 @@ namespace SmartStore.Web.Framework.UI
 
         protected override TreeNode<MenuItem> Build()
         {
-            var menu = _menuStorage.GetMenuBySystemName(Name, Services.StoreContext.CurrentStore.Id, false);
+            var menu = _menuStorage.GetMenuBySystemName(Name, Services.StoreContext.CurrentStore.Id);
             if (menu == null)
             {
                 return new TreeNode<MenuItem>(new MenuItem { Text = Name });
             }
 
-            var entities = _menuStorage.SortForTree(menu.Items, false);
-            var root = new TreeNode<MenuItem>(new MenuItem { Text = menu.GetLocalized(x => x.Title) });
+            var entities = _menuStorage.SortForTree(menu.Items);
+            var root = new TreeNode<MenuItem>(new MenuItem { Text = entities.First().Menu.GetLocalized(x => x.Title) });
             var parent = root;
             MenuItemRecord prevItem = null;
 
@@ -83,17 +84,17 @@ namespace SmartStore.Web.Framework.UI
                 }
 
                 // Add to parent.
-                if (entity.SystemName.HasValue() && _menuItemProviders.TryGetValue(entity.SystemName, out var provider))
+                if (entity.ProviderName.HasValue() && _menuItemProviders.TryGetValue(entity.ProviderName, out var provider))
                 {
-					provider.Value.Append(parent, entity);
-				}
-                else
-                {
-                    // TODO: Convert and append native items too (divider etc.)...
-                    //menuItem.Attributes.Add("IsDivider", entity.IsDivider);
-                }
+                    provider.Value.Append(new MenuItemProviderRequest
+                    {
+                        Origin = "DatabaseMenu",
+                        Parent = parent,
+                        Entity = entity
+                    });
 
-                prevItem = entity;
+                    prevItem = entity;
+                }
             }
 
             return root;

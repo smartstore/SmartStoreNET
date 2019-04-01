@@ -783,7 +783,13 @@
                 "Short description",
                 "Kurzbeschreibung",
                 "Specifies a short description. Used as the title attribute for the menu link.",
-                "Legt eine Kurzbeschreibung fest. Wird als Title-Attribut für den Menü-Link verwendet.");
+                "Legt eine Kurzbeschreibung fest. Wird als Title-Attribut für das Menüelement verwendet.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.PermissionNames",
+                "Permission names",
+                "Rechtenamen",
+                "Specifies right names (comma-separated). The menu item is not displayed for users without the corresponding permission.",
+                "Legt Rechtenamen fest (kommagetrennt). Das Menülement wird für Nutzer ohne betreffenden Rechts nicht angezeigt.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.Published",
                 "Published",
@@ -797,11 +803,11 @@
                 "Specifies the order of the menu item within a menu level.",
                 "Legt die Reihenfolge des Menüelements innerhalb einer Menüebene fest.");
 
-            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.IsDivider",
-                "Divider",
-                "Trennelement",
-                "Forces an output as a divider.",
-                "Erzwingt eine Ausgabe als Trennelement.");
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.BeginGroup",
+                "Begin group",
+                "Gruppe beginnen",
+                "For the first menu item, the option causes a heading according to the short description. For subsequent elements, a separator element is inserted above.",
+                "Beim ersten Menüelement bewirkt die Option eine Überschrift gemäß der Kurzbeschreibung. Für nachfolgende Elemente wird oberhalb ein Trennelement eingefügt.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ShowExpanded",
                 "Show expanded",
@@ -813,25 +819,31 @@
                 "No follow",
                 "No follow",
                 "Sets the menu link to 'no follow' via HTML attribute.",
-                "Legt den Menü-Link per HTML-Attribut auf 'no follow' fest.");
+                "Legt das Menüelement per HTML-Attribut auf 'no follow' fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.NewWindow",
                 "New tab",
                 "Neues Tab",
                 "Specifies that the menu link is to be opened in a new tab.",
-                "Legt fest, dass der Menü-Link in einem neuen Tab geöffnet werden soll.");
+                "Legt fest, dass der Menü Link in einem neuen Tab geöffnet werden soll.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.Icon",
+                "Icon",
+                "Icon",
+                "Specifies an optional icon.",
+                "Legt ein optionales Icon fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.HtmlId",
                 "HTML ID",
                 "HTML ID",
                 "Sets the HTML ID attribute for the menu link.",
-                "Legt das HTML ID Attribut für den Menü-Link fest.");
+                "Legt das HTML ID Attribut für das Menüelement fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.CssClass",
                 "CSS class",
                 "CSS Klasse",
                 "Sets a CSS class for the menu link.",
-                "Legt eine CSS Klasse für den Menü-Link fest.");
+                "Legt eine CSS Klasse für das Menüelement fest.");
         }
     }
 }

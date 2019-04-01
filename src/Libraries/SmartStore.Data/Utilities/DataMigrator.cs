@@ -466,6 +466,7 @@ namespace SmartStore.Data.Utilities
                 "Footer.Service",
                 "Footer.Company",
                 "Manufacturers.List",
+                "Admin.Catalog.Categories",
                 "Products.NewProducts",
                 "Products.RecentlyViewedProducts",
                 "Products.Compare.List",
@@ -505,7 +506,16 @@ namespace SmartStore.Data.Utilities
                 .ToList()
                 .ToDictionarySafe(x => x.Name, x => x.Value);
 
-            #region Footer menu
+
+            #region System menus
+
+            var mainMenu = menuSet.Add(new MenuRecord
+            {
+                SystemName = "Main",
+                IsSystemMenu = true,
+                Published = true,
+                Title = GetResource("Admin.Catalog.Categories")
+            });
 
             var footerInfo = menuSet.Add(new MenuRecord
             {
@@ -531,12 +541,31 @@ namespace SmartStore.Data.Utilities
                 Title = "Footer - " + GetResource("Footer.Company")
             });
 
+            var serviceMenu = menuSet.Add(new MenuRecord
+            {
+                SystemName = "HelpAndService",
+                IsSystemMenu = true,
+                Published = true,
+                Title = GetResource("Menu.ServiceMenu")
+            });
+
             ctx.SaveChanges();
+
+            #endregion
+
+            #region Main and footer menus
+
+            menuItemSet.Add(new MenuItemRecord
+            {
+                MenuId = mainMenu.Id,
+                ProviderName = "catalog",
+                Published = true
+            });
 
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("ManufacturerList"),
                 Title = GetResource("Manufacturers.List"),
                 DisplayOrder = ++order,
@@ -545,7 +574,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
                 Title = GetResource("Products.NewProducts"),
                 DisplayOrder = ++order,
@@ -554,7 +583,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
                 Title = GetResource("Products.RecentlyViewedProducts"),
                 DisplayOrder = ++order,
@@ -563,7 +592,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerInfo.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("CompareProducts"),
                 Title = GetResource("Products.Compare.List"),
                 DisplayOrder = ++order,
@@ -576,7 +605,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("contactus"),
                 Title = GetResource("ContactUs"),
                 DisplayOrder = ++order
@@ -584,7 +613,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("Blog"),
                 Title = GetResource("Blog"),
                 DisplayOrder = ++order,
@@ -593,7 +622,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("Boards"),
                 Title = GetResource("Forum.Forums"),
                 DisplayOrder = ++order,
@@ -602,7 +631,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:shippinginfo",
                 Title = GetResource("ShippingReturns"),
                 DisplayOrder = ++order
@@ -610,7 +639,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerService.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:paymentinfo",
                 Title = GetResource("Paymentinfo"),
                 DisplayOrder = ++order
@@ -622,7 +651,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:aboutus",
                 Title = GetResource("AboutUs"),
                 DisplayOrder = ++order
@@ -630,7 +659,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:imprint",
                 Title = GetResource("Imprint"),
                 DisplayOrder = ++order
@@ -638,7 +667,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:disclaimer",
                 Title = GetResource("Disclaimer"),
                 DisplayOrder = ++order
@@ -646,7 +675,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:privacyinfo",
                 Title = GetResource("PrivacyNotice"),
                 DisplayOrder = ++order
@@ -654,7 +683,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = footerCompany.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:conditionsofuse",
                 Title = GetResource("ConditionsOfUse"),
                 DisplayOrder = ++order
@@ -665,7 +694,7 @@ namespace SmartStore.Data.Utilities
                 menuItemSet.Add(new MenuItemRecord
                 {
                     MenuId = footerCompany.Id,
-                    SystemName = routeProvider,
+                    ProviderName = routeProvider,
                     Model = routeTemplate.FormatInvariant("Login"),
                     Title = GetResource("Account.Login"),
                     DisplayOrder = ++order
@@ -679,20 +708,10 @@ namespace SmartStore.Data.Utilities
 
             #region Help & Service
 
-            var serviceMenu = menuSet.Add(new MenuRecord
-            {
-                SystemName = "HelpAndService",
-                IsSystemMenu = true,
-                Published = true,
-                Title = GetResource("Menu.ServiceMenu")
-            });
-
-            ctx.SaveChanges();
-
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
                 Title = GetResource("Products.NewProducts"),
                 DisplayOrder = ++order,
@@ -701,7 +720,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("ManufacturerList"),
                 Title = GetResource("Manufacturers.List"),
                 DisplayOrder = ++order,
@@ -710,7 +729,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
                 Title = GetResource("Products.RecentlyViewedProducts"),
                 DisplayOrder = ++order,
@@ -719,7 +738,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = routeProvider,
+                ProviderName = routeProvider,
                 Model = routeTemplate.FormatInvariant("CompareProducts"),
                 Title = GetResource("Products.Compare.List"),
                 DisplayOrder = ++order,
@@ -729,22 +748,16 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                IsDivider = true,
-                DisplayOrder = ++order,
-            });
-
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:aboutus",
                 Title = GetResource("AboutUs"),
-                DisplayOrder = ++order
+                DisplayOrder = ++order,
+                BeginGroup = true
             });
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:disclaimer",
                 Title = GetResource("Disclaimer"),
                 DisplayOrder = ++order
@@ -752,7 +765,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:shippinginfo",
                 Title = GetResource("ShippingReturns"),
                 DisplayOrder = ++order
@@ -760,7 +773,7 @@ namespace SmartStore.Data.Utilities
             menuItemSet.Add(new MenuItemRecord
             {
                 MenuId = serviceMenu.Id,
-                SystemName = entityProvider,
+                ProviderName = entityProvider,
                 Model = "topic:conditionsofuse",
                 Title = GetResource("ConditionsOfUse"),
                 DisplayOrder = ++order

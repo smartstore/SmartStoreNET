@@ -229,7 +229,7 @@ namespace SmartStore.Services.Cms
             return query.FirstOrDefault(x => x.Id == id);
         }
 
-        public virtual IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = true)
+        public virtual IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = false)
         {
             Guard.NotNull(items, nameof(items));
 
@@ -286,7 +286,7 @@ namespace SmartStore.Services.Cms
 			return null;
 		}
 
-		protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool includeHidden, bool withItems)
+        protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool includeHidden, bool withItems)
         {
             var applied = false;
             var entityName = nameof(MenuRecord);
@@ -346,6 +346,6 @@ namespace SmartStore.Services.Cms
             return query;
         }
 
-		#endregion
-	}
+        #endregion
+    }
 }

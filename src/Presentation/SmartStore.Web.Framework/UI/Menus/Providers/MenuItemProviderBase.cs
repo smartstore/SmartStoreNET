@@ -6,14 +6,25 @@ namespace SmartStore.Web.Framework.UI
 {
     public abstract class MenuItemProviderBase : IMenuItemProvider
 	{
-		public virtual void Append(TreeNode<MenuItem> parent, MenuItemRecord entity)
+		public virtual void Append(MenuItemProviderRequest request)
 		{
-			Guard.NotNull(parent, nameof(parent));
-			Guard.NotNull(entity, nameof(entity));
+            Guard.NotNull(request, nameof(request));
+            Guard.NotNull(request.Parent, nameof(request.Parent));
+			Guard.NotNull(request.Entity, nameof(request.Entity));
 
-			var menuItem = parent.Append(ConvertToMenuItem(entity));
+            // Add group header item.
+            if (request.Entity.BeginGroup && !request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+            {
+                request.Parent.Append(new MenuItem
+                {
+                    IsGroupHeader = true,
+                    Text = request.Entity.ShortDescription
+                });
+            }
+
+			var node = request.Parent.Append(ConvertToMenuItem(request.Entity));
 			
-			ApplyLink(menuItem, entity);
+			ApplyLink(request, node);
 		}
 
 		/// <summary>
@@ -29,7 +40,9 @@ namespace SmartStore.Web.Framework.UI
 			{
                 EntityId = entity.Id,
 				Text = entity.GetLocalized(x => x.Title),
-                Visible = entity.Published
+                Visible = entity.Published,
+                Icon = entity.Icon,
+                PermissionNames = entity.PermissionNames
 			};
 
             if (entity.NoFollow)
@@ -53,16 +66,16 @@ namespace SmartStore.Web.Framework.UI
                 menuItem.LinkHtmlAttributes.Add("class", entity.CssClass);
             }
 
-            // TODO: entity.ShowExpanded
+            // For future use: entity.ShowExpanded
 
             return menuItem;
 		}
 
-		/// <summary>
-		/// Generates and applies the link to the converted <see cref="MenuItem"/> object.
-		/// </summary>
-		/// <param name="node">The newly created menu item node to apply the generated link to.</param>
-		/// <param name="entity">The entity contains information about the type of link.</param>
-		protected abstract void ApplyLink(TreeNode<MenuItem> node, MenuItemRecord entity);
+        /// <summary>
+        /// Generates and applies the link to the converted <see cref="MenuItem"/> object.
+        /// </summary>
+        /// <param name="request">Contains information about the request to the provider.</param>
+        /// <param name="node">The newly created menu item node to apply the generated link to.</param>
+        protected abstract void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node);
 	}
 }

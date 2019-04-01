@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Linq;
-using SmartStore.Core.Logging;
-using SmartStore.Collections;
-using SmartStore.Services;
 using System.Collections.Generic;
-using SmartStore.Services.Cms;
+using System.Linq;
+using SmartStore.Collections;
+using SmartStore.Core.Logging;
+using SmartStore.Services;
 
 namespace SmartStore.Web.Framework.UI
 {
-	public abstract class MenuBase : IMenu
+    public abstract class MenuBase : IMenu
 	{
 		/// <summary>
 		/// Key for Menu caching
@@ -47,8 +46,7 @@ namespace SmartStore.Web.Framework.UI
 							DoApplyPermissions(root);
 						}
 
-						// Event (TODO: SiteMapBuiltEvent > MenuBuiltEvent
-						//Services.EventPublisher.Publish(new SiteMapBuiltEvent(this.Name, root));
+						Services.EventPublisher.Publish(new MenuBuiltEvent(this.Name, root));
 
 						return root;
 					}

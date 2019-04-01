@@ -103,8 +103,8 @@ namespace SmartStore.Services.Cms
         /// </summary>
         /// <param name="items">Menu items.</param>
         /// <param name="includeItemsWithoutExistingParent">Whether to include menu items without existing parent menu item.</param>
-        /// <returns></returns>
-        IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = true);
+        /// <returns>Menu item entities.</returns>
+        IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = false);
 
         #endregion
     }

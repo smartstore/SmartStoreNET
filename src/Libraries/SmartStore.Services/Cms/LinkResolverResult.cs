@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web;
 
 namespace SmartStore.Services.Cms
 {
@@ -68,30 +67,6 @@ namespace SmartStore.Services.Cms
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Creates the full link expression including type, value and query string.
-        /// </summary>
-        /// <param name="includeQueryString">Whether to include the query string.</param>
-        /// <returns>Link expression.</returns>
-        public string GetExpression(bool includeQueryString = true)
-        {
-            if (Value == null)
-            {
-                return string.Empty;
-            }
-
-            var result = Type == LinkType.Url
-                ? Value.ToString()
-                : string.Concat(Type.ToString().ToLower(), ":", Value.ToString());
-
-            if (includeQueryString && Type != LinkType.Url && !string.IsNullOrWhiteSpace(QueryString))
-            {
-                return string.Concat(result, "?", QueryString);
-            }
-
-            return result;
         }
 
 		public override string ToString()

@@ -139,7 +139,12 @@ namespace SmartStore.Collections
 					break;
 			}
 
-			return (TMetadata)metadata;
+            if (metadata != null)
+            {
+                return (TMetadata)metadata;
+            }
+
+            return default(TMetadata);
 		}
 
 		private bool TryGetMetadataForNode(TreeNodeBase<T> node, string key, out object metadata)

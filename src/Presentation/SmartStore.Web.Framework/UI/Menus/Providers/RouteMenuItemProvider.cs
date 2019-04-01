@@ -1,7 +1,6 @@
 ﻿using System.Web.Routing;
 using Newtonsoft.Json;
 using SmartStore.Collections;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Web.Framework.UI
@@ -9,16 +8,16 @@ namespace SmartStore.Web.Framework.UI
     [SystemName("route")]
 	public class RouteMenuItemProvider : MenuItemProviderBase
 	{
-		protected override void ApplyLink(TreeNode<MenuItem> node, MenuItemRecord entity)
+		protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
 		{
-            if (entity.Model.IsEmpty())
+            if (request.Entity.Model.IsEmpty())
             {
                 return;
             }
 
             try
             {
-                var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(entity.Model);
+                var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(request.Entity.Model);
                 var routeName = string.Empty;
 
                 if (routeValues.TryGetValue("routename", out var val))

@@ -78,7 +78,7 @@
 		    <div class="dropdown-menu">
                 @foreach (var provider in Model.AllProviders)
                 {
-			        <a class="dropdown-item" href="@Url.Action("CreateItem", new { systemName = provider.Value, menuId = Model.Id, parentItemId = 0, area = "Admin" })">
+			        <a class="dropdown-item" href="@Url.Action("CreateItem", new { providerName = provider.Value, menuId = Model.Id, parentItemId = 0, area = "Admin" })">
 				        <span>@provider.Text</span>
 			        </a>
                 }

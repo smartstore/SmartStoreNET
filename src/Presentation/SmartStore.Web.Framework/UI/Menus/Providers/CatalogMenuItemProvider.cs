@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Collections;
-using SmartStore.Core.Domain.Cms;
+﻿using SmartStore.Collections;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Web.Framework.UI
 {
-	[SystemName("catalog")]
+    [SystemName("catalog")]
 	public class CatalogMenuItemProvider : MenuItemProviderBase
 	{
-		public override void Append(TreeNode<MenuItem> parent, MenuItemRecord entity)
+		public override void Append(MenuItemProviderRequest request)
 		{
+            if (request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+            {
+                base.Append(request);
+            }
+            else
+            {
+            }
+
 			// INFO: Replaces CatalogSiteMap to a large extent and appends 
 			// all catalog nodes (without root) to the passed parent node.
 
@@ -30,9 +32,9 @@ namespace SmartStore.Web.Framework.UI
 			// We need a mechanism to control those restrictions.
 		}
 
-		protected override void ApplyLink(TreeNode<MenuItem> node, MenuItemRecord entity)
+		protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
 		{
-			// Void, does nothing here
+			// Void, does nothing here.
 		}
 	}
 }

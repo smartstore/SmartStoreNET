@@ -20,7 +20,7 @@ namespace SmartStore.Admin.Models.Menus
         public IList<SelectListItem> AllItems { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.LinkTarget")]
-        public string SystemName { get; set; }
+        public string ProviderName { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Title")]
         public string Title { get; set; }
@@ -28,14 +28,17 @@ namespace SmartStore.Admin.Models.Menus
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.ShortDescription")]
         public string ShortDescription { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.PermissionNames")]
+        public string PermissionNames { get; set; }
+
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.Published")]
         public bool Published { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.IsDivider")]
-        public bool IsDivider { get; set; }
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.BeginGroup")]
+        public bool BeginGroup { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.ShowExpanded")]
         public bool ShowExpanded { get; set; }
@@ -45,6 +48,9 @@ namespace SmartStore.Admin.Models.Menus
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.NewWindow")]
         public bool NewWindow { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.Icon")]
+        public string Icon { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.HtmlId")]
         public string HtmlId { get; set; }
@@ -72,7 +78,7 @@ namespace SmartStore.Admin.Models.Menus
     {
         public MenuItemRecordValidator(Localizer T)
         {
-            RuleFor(x => x.SystemName).NotEmpty();
+            RuleFor(x => x.ProviderName).NotEmpty();
         }
     }
 }

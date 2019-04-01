@@ -4,17 +4,16 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.MenuId)
+@Html.HiddenFor(model => model.ProviderName)
 
 <div id="menu-item-container">
     <div class="adminContent mb-3">
-        <div class="adminRow not-for-divider">
+        <div class="adminRow">
             <div class="adminTitle">
-                @Html.SmartLabelFor(model => model.SystemName)
+                @Html.SmartLabelFor(model => model.ProviderName)
             </div>
             <div class="adminData">
-                <div id="provider-editor">
-                    @Html.Editor("Model", "MenuItem." + Model.SystemName, "Model")
-                </div>
+                @Html.Editor("Model", "MenuItem." + Model.ProviderName, "Model")
             </div>
         </div>
         <div class="adminRow">
@@ -35,18 +34,9 @@
                 @Html.ValidationMessageFor(model => model.Published)
             </div>
         </div>
-        <div class="adminRow">
-            <div class="adminTitle">
-                @Html.SmartLabelFor(model => model.IsDivider)
-            </div>
-            <div class="adminData">
-                @Html.CheckBoxFor(model => model.IsDivider, new { data_toggler_for = "#menu-item-container .not-for-divider", data_toggler_reverse = "true" })
-                @Html.ValidationMessageFor(model => model.IsDivider)
-            </div>
-        </div>
     </div>
 
-    <div class="not-for-divider">
+    <div>
     @(Html.LocalizedEditor<MenuItemRecordModel, MenuItemRecordLocalizedModel>("menu-item-localized",
             @<div class="adminContent">
                 <div class="adminRow">
@@ -105,7 +95,36 @@
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
             </div>
         </div>
-        <div class="adminRow not-for-divider">
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.BeginGroup)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.BeginGroup)
+                @Html.ValidationMessageFor(model => model.BeginGroup)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.PermissionNames)
+            </div>
+            <div class="adminData">
+                @Html.EditorFor(model => model.PermissionNames)
+                @Html.ValidationMessageFor(model => model.PermissionNames)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.Icon)
+            </div>
+            <div class="adminData">
+                @*TODO: better control like selectbox.*@
+                @Html.EditorFor(model => model.Icon)
+                @Html.ValidationMessageFor(model => model.Icon)
+            </div>
+        </div>
+        @*For later use.
+        <div class="adminRow">
             <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowExpanded)
             </div>
@@ -113,8 +132,8 @@
                 @Html.EditorFor(model => model.ShowExpanded)
                 @Html.ValidationMessageFor(model => model.ShowExpanded)
             </div>
-        </div>
-        <div class="adminRow not-for-divider">
+        </div>*@
+        <div class="adminRow">
             <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.NoFollow)
             </div>
@@ -123,7 +142,7 @@
                 @Html.ValidationMessageFor(model => model.NoFollow)
             </div>
         </div>
-        <div class="adminRow not-for-divider">
+        <div class="adminRow">
             <div class="adminTitle">
                 @Html.SmartLabelFor(model => model.NewWindow)
             </div>

@@ -29,10 +29,10 @@ namespace SmartStore.Core.Domain.Cms
         public int ParentItemId { get; set; }
 
         /// <summary>
-        /// Gets or sets the system name. It identifies the related provider.
+        /// Gets or sets the provider name.
         /// </summary>
-        [StringLength(400)]
-        public string SystemName { get; set; }
+        [StringLength(100)]
+        public string ProviderName { get; set; }
 
         /// <summary>
         /// Gets or sets the model.
@@ -53,6 +53,12 @@ namespace SmartStore.Core.Domain.Cms
         public string ShortDescription { get; set; }
 
         /// <summary>
+        /// Gets or sets permission names.
+        /// </summary>
+        [MaxLength]
+        public string PermissionNames { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the menu item is published.
         /// </summary>
         [Index("IX_MenuItem_Published")]
@@ -65,9 +71,9 @@ namespace SmartStore.Core.Domain.Cms
         public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the menu item is a divider.
+        /// Gets or sets a value indicating whether the menu item has a divider or a group header.
         /// </summary>
-        public bool IsDivider { get; set; }
+        public bool BeginGroup { get; set; }
 
         /// <summary>
         /// If selected and this menu item has children, the menu will initially appear expanded.
@@ -83,6 +89,12 @@ namespace SmartStore.Core.Domain.Cms
         /// Gets or sets the blank target link attribute.
         /// </summary>
         public bool NewWindow { get; set; }
+
+        /// <summary>
+        /// Gets or sets HTML id attribute.
+        /// </summary>
+        [StringLength(100)]
+        public string Icon { get; set; }
 
         /// <summary>
         /// Gets or sets HTML id attribute.

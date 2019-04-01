@@ -2,6 +2,6 @@
 {
     public class MenuItemMetadata
     {
-        public string SystemName { get; set; }
+        public string ProviderName { get; set; }
     }
 }

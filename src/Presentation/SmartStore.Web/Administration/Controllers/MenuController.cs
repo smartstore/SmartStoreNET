@@ -31,7 +31,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
         private readonly ICustomerService _customerService;
-        private readonly IEnumerable<Lazy<IMenuItemProvider, MenuItemMetadata>> _menuItemProviders;
+        private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemMetadata>> _menuItemProviders;
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
@@ -50,7 +50,7 @@ namespace SmartStore.Admin.Controllers
             _storeMappingService = storeMappingService;
             _aclService = aclService;
             _customerService = customerService;
-            _menuItemProviders = menuItemProviders;
+            _menuItemProviders = menuItemProviders.ToDictionarySafe(x => x.Metadata.ProviderName, x => x);
             _adminAreaSettings = adminAreaSettings;
         }
 
@@ -258,7 +258,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Do not use model binding because of input validation.
-        public ActionResult CreateItem(string systemName, int menuId, int parentItemId)
+        public ActionResult CreateItem(string providerName, int menuId, int parentItemId)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -273,7 +273,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = new MenuItemRecordModel
             {
-                SystemName = systemName,
+                ProviderName = providerName,
                 MenuId = menuId,
                 ParentItemId = parentItemId,
                 Published = true
@@ -352,7 +352,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-            var item = _menuStorage.GetMenuItemById(itemModel.Id, continueEditing);
+            var item = _menuStorage.GetMenuItemById(itemModel.Id, true);
             if (item == null)
             {
                 return HttpNotFound();
@@ -422,11 +422,11 @@ namespace SmartStore.Admin.Controllers
                     model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
                 }
 
-                model.AllProviders = _menuItemProviders
+                model.AllProviders = _menuItemProviders.Values
                     .Select(x => new SelectListItem
                     {
-                        Text = T("Providers.MenuItems.FriendlyName." + x.Metadata.SystemName),
-                        Value = x.Metadata.SystemName
+                        Text = T("Providers.MenuItems.FriendlyName." + x.Metadata.ProviderName),
+                        Value = x.Metadata.ProviderName
                     })
                     .ToList();
 
@@ -450,7 +450,8 @@ namespace SmartStore.Admin.Controllers
             // Preset max display order to always insert item at the end.
             if (entity == null)
             {
-                var item = menu.Items.Where(x => x.ParentItemId == model.ParentItemId)
+                var item = menu.Items
+                    .Where(x => x.ParentItemId == model.ParentItemId)
                     .OrderByDescending(x => x.DisplayOrder)
                     .FirstOrDefault();
 
@@ -497,20 +498,7 @@ namespace SmartStore.Admin.Controllers
 
         private TreeNode<MenuItem> GetItemTree(MenuRecord menu)
         {
-            var resources = new Dictionary<string, string>
-            {
-                { "divider", T("Admin.ContentManagement.Menus.Item.IsDivider") },
-                { "route", T("Providers.MenuItems.FriendlyName.Route") },
-                { "catalog", T("Providers.MenuItems.FriendlyName.Catalog") },
-                { "product", T("Common.Entity.Product") },
-                { "category", T("Common.Entity.Category") },
-                { "manufacturer", T("Common.Entity.Manufacturer") },
-                { "topic", T("Common.Entity.Topic") },
-                { "file", T("Common.File") },
-                { "url", T("Common.Url") }
-            };
-
-            var entities = _menuStorage.SortForTree(menu.Items);
+            var entities = _menuStorage.SortForTree(menu.Items, true);
             var root = new TreeNode<MenuItem>(new MenuItem { Text = menu.GetLocalized(x => x.Title) });
             var parent = root;
             MenuItemRecord prevItem = null;
@@ -542,68 +530,17 @@ namespace SmartStore.Admin.Controllers
                     }
                 }
 
-                var item = new MenuItem
+                if (entity.ProviderName.HasValue() && _menuItemProviders.TryGetValue(entity.ProviderName, out var provider))
                 {
-                    EntityId = entity.Id,
-                    Text = entity.GetLocalized(x => x.Title),
-                    Visible = entity.Published
-                };
+                    provider.Value.Append(new MenuItemProviderRequest
+                    {
+                        Origin = "EditMenu",
+                        Parent = parent,
+                        Entity = entity
+                    });
 
-                #region Icon & title
-
-                if (entity.IsDivider)
-                {
-                    item.BadgeText = resources["divider"];
-                    item.Icon = "fas fa-minus";
+                    prevItem = entity;
                 }
-                else if (entity.SystemName.IsCaseInsensitiveEqual("route"))
-                {
-                    item.BadgeText = resources["route"];
-                    item.Icon = "fas fa-directions";
-                }
-                else if (entity.SystemName.IsCaseInsensitiveEqual("catalog"))
-                {
-                    item.BadgeText = resources["catalog"];
-                    item.Icon = "fa fa-sitemap";
-                }
-                else if (entity.SystemName.IsCaseInsensitiveEqual("entity") && entity.Model.HasValue())
-                {
-                    if (entity.Model.StartsWith("product:"))
-                    {
-                        item.BadgeText = resources["product"];
-                        item.Icon = "fa fa-cube";
-                    }
-                    else if (entity.Model.StartsWith("category:"))
-                    {
-                        item.BadgeText = resources["category"];
-                        item.Icon = "fa fa-sitemap";
-                    }
-                    else if (entity.Model.StartsWith("manufacturer:"))
-                    {
-                        item.BadgeText = resources["manufacturer"];
-                        item.Icon = "far fa-building";
-                    }
-                    else if (entity.Model.StartsWith("topic:"))
-                    {
-                        item.BadgeText = resources["topic"];
-                        item.Icon = "far fa-file";
-                    }
-                    else if (entity.Model.StartsWith("file:"))
-                    {
-                        item.BadgeText = resources["file"];
-                        item.Icon = "far fa-folder-open";
-                    }
-                    else
-                    {
-                        item.BadgeText = resources["url"];
-                        item.Icon = "fa fa-link";
-                    }
-                }
-
-                #endregion
-
-                parent.Append(item);
-                prevItem = entity;
             }
 
             return root;

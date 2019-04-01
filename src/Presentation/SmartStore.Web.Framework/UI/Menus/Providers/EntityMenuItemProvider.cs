@@ -1,5 +1,4 @@
 ﻿using SmartStore.Collections;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Cms;
 
@@ -17,19 +16,27 @@ namespace SmartStore.Web.Framework.UI
             _linkResolver = linkResolver;
         }
 
-        protected override void ApplyLink(TreeNode<MenuItem> node, MenuItemRecord entity)
+        protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
 		{
-            if (entity.Model.IsEmpty())
+            if (request.Entity.Model.IsEmpty())
             {
                 return;
             }
 
             // Always resolve against current store, current customer and working language.
-            var result = _linkResolver.Resolve(entity.Model);
+            var result = _linkResolver.Resolve(request.Entity.Model);
 			node.Value.Url = result.Link;
 
-			// TBD: What about cache invalidation? We would also have two levels of caching:
-			// One in the LinkResolver and one in the menu system.
-		}
-	}
+            if (node.Value.Text.IsEmpty())
+            {
+                node.Value.Text = result.Label;
+            }
+
+            // Only apply MenuItemRecord.Published for edit mode.
+            if (!request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+            {
+                node.Value.Visible = result.Status == LinkStatus.Ok;
+            }
+        }
+    }
 }

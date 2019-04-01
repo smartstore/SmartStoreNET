@@ -30,7 +30,6 @@ namespace SmartStore.Services.Cms
         /// <param name="systemName">Menu system name.</param>
         /// <param name="storeId">Store identifier. 0 to get menus for all stores.</param>
         /// <param name="includeHidden">Whether to include hidden menus.</param>
-        /// <param name="withItems">Whether to include menu items.</param>
         /// <param name="pageIndex">Page index.</param>
         /// <param name="pageSize">Page size.</param>
         /// <returns>Menu entities.</returns>
@@ -38,29 +37,15 @@ namespace SmartStore.Services.Cms
             string systemName = null,
             int storeId = 0, 
             bool includeHidden = false,
-            bool withItems = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue);
-
-        /// <summary>
-        /// Gets a menu by system name.
-        /// </summary>
-        /// <param name="systemName">Menu system name.</param>
-        /// <param name="storeId">Store identifier. 0 to get menus for all stores.</param>
-        /// <param name="includeHidden">Whether to include hidden menus.</param>
-        /// <param name="menu">Menu entity.</param>
-        MenuRecord GetMenuBySystemName(
-            string systemName,
-            int storeId = 0,
-            bool includeHidden = false);
 
         /// <summary>
         /// Gets a menu by identifier.
         /// </summary>
         /// <param name="id">Menu identifier.</param>
-        /// <param name="withItems">Whether to include menu items.</param>
-        /// <returns>Menu entity.</returns>
-        MenuRecord GetMenuById(int id, bool withItems = false);
+        /// <returns>Menu item entity.</returns>
+        MenuRecord GetMenuById(int id);
 
         /// <summary>
         /// Checks whether the menu exists.
@@ -94,17 +79,26 @@ namespace SmartStore.Services.Cms
         /// Gets a menu item by identifier.
         /// </summary>
         /// <param name="id">Menu item identifier.</param>
-        /// <param name="withMenu">Whether to include menu and menu item entities.</param>
         /// <returns>Menu item entity.</returns>
-        MenuItemRecord GetMenuItemById(int id, bool withMenu = false);
+        MenuItemRecord GetMenuItemById(int id);
 
         /// <summary>
-        /// Sort menu items for tree representation.
+        /// Gets menu items.
         /// </summary>
-        /// <param name="items">Menu items.</param>
-        /// <param name="includeItemsWithoutExistingParent">Whether to include menu items without existing parent menu item.</param>
+        /// <param name="menuId">Menu item identifier.</param>
+        /// <param name="storeId">Store identifier. 0 to get menus for all stores.</param>
+        /// <param name="includeHidden">Whether to include hidden menus.</param>
         /// <returns>Menu item entities.</returns>
-        IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = false);
+        IList<MenuItemRecord> GetMenuItems(int menuId, int storeId = 0, bool includeHidden = false);
+
+        /// <summary>
+        /// Gets menu items.
+        /// </summary>
+        /// <param name="systemName">Menu system name.</param>
+        /// <param name="storeId">Store identifier. 0 to get menus for all stores.</param>
+        /// <param name="includeHidden">Whether to include hidden menus.</param>
+        /// <returns>Menu item entities.</returns>
+        IList<MenuItemRecord> GetMenuItems(string systemName, int storeId = 0, bool includeHidden = false);
 
         #endregion
     }

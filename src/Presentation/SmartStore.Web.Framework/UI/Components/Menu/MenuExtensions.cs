@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Cms;
 
 namespace SmartStore.Web.Framework.UI
-{	
-	public static class MenuExtensions
+{
+    public static class MenuExtensions
 	{
 		public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
 		{
@@ -71,5 +70,107 @@ namespace SmartStore.Web.Framework.UI
 
 			return state;
 		}
-	}
+
+        /// <summary>
+        /// Converts a list of menu items into a tree.
+        /// </summary>
+        /// <param name="origin">Origin of the tree.</param>
+        /// <param name="items">List of menu items.</param>
+        /// <param name="itemProviders">Menu item providers.</param>
+        /// <param name="includeItemsWithoutExistingParent">Whether to include menu items without existing parent menu item.</param>
+        /// <returns>Tree of menu items.</returns>
+        public static TreeNode<MenuItem> GetTree(
+            this IList<MenuItemRecord> items,
+            string origin,
+            IDictionary<string, Lazy<IMenuItemProvider, MenuItemMetadata>> itemProviders,
+            bool includeItemsWithoutExistingParent = false)
+        {
+            Guard.NotNull(items, nameof(items));
+            Guard.NotNull(itemProviders, nameof(itemProviders));
+
+            var root = new TreeNode<MenuItem>(new MenuItem());
+            if (!items.Any())
+            {
+                return root;
+            }
+
+            var parent = root;
+            MenuItemRecord prevItem = null;
+
+            items = items.SortForTree(includeItemsWithoutExistingParent);
+
+            foreach (var item in items)
+            {
+                // Get parent.
+                if (prevItem != null)
+                {
+                    if (item.ParentItemId != parent.Value.EntityId)
+                    {
+                        if (item.ParentItemId == prevItem.Id)
+                        {
+                            // Level +1.
+                            parent = parent.LastChild;
+                        }
+                        else
+                        {
+                            // Level -x.
+                            while (!parent.IsRoot)
+                            {
+                                if (parent.Value.EntityId == item.ParentItemId)
+                                {
+                                    break;
+                                }
+                                parent = parent.Parent;
+                            }
+                        }
+                    }
+                }
+
+                // Add to parent.
+                if (item.ProviderName.HasValue() && itemProviders.TryGetValue(item.ProviderName, out var provider))
+                {
+                    provider.Value.Append(new MenuItemProviderRequest
+                    {
+                        Origin = origin,
+                        Parent = parent,
+                        Entity = item
+                    });
+
+                    prevItem = item;
+                }
+            }
+
+            return root;
+        }
+
+        private static IList<MenuItemRecord> SortForTree(this IList<MenuItemRecord> items, bool includeItemsWithoutExistingParent)
+        {
+            var result = new List<MenuItemRecord>();
+
+            SortChildItems(0);
+
+            if (includeItemsWithoutExistingParent && result.Count != items.Count)
+            {
+                foreach (var item in items)
+                {
+                    if (result.FirstOrDefault(x => x.Id == item.Id) == null)
+                    {
+                        result.Add(item);
+                    }
+                }
+            }
+
+            return result;
+
+            void SortChildItems(int parentItemId)
+            {
+                var childItems = items.Where(x => x.ParentItemId == parentItemId).ToArray();
+                foreach (var item in childItems)
+                {
+                    result.Add(item);
+                    SortChildItems(item.Id);
+                }
+            }
+        }
+    }
 }

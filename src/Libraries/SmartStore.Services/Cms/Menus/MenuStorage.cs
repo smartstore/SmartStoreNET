@@ -95,44 +95,21 @@ namespace SmartStore.Services.Cms
             string systemName = null,
             int storeId = 0,
             bool includeHidden = false,
-            bool withItems = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue)
         {
-            var query = BuildMenuQuery(systemName, storeId, includeHidden, withItems);
+            var query = BuildMenuQuery(0, systemName, storeId, includeHidden);
             return new PagedList<MenuRecord>(query, pageIndex, pageSize);
         }
 
-        public virtual MenuRecord GetMenuBySystemName(
-            string systemName,
-            int storeId = 0,
-            bool includeHidden = false)
-        {
-            if (systemName.IsEmpty())
-            {
-                return null;
-            }
-
-            var query = BuildMenuQuery(systemName, storeId, includeHidden, true);
-            var result = query.FirstOrDefaultCached("db.menu.bysysname-{0}-{1}-{2}".FormatInvariant(systemName, storeId, includeHidden));
-            return result;
-        }
-
-        public virtual MenuRecord GetMenuById(int id, bool withItems = false)
+        public virtual MenuRecord GetMenuById(int id)
         {
             if (id == 0)
             {
                 return null;
             }
 
-            var query = _menuRepository.Table;
-
-            if (withItems)
-            {
-                query = query.Include(x => x.Items);
-            }
-
-            return query.FirstOrDefault(x => x.Id == id);
+            return _menuRepository.GetByIdCached(id, "db.menurecord.id-" + id);
         }
 
         public virtual bool MenuExists(string systemName)
@@ -212,58 +189,36 @@ namespace SmartStore.Services.Cms
             }
         }
 
-        public virtual MenuItemRecord GetMenuItemById(int id, bool withMenu = false)
+        public virtual MenuItemRecord GetMenuItemById(int id)
         {
             if (id == 0)
             {
                 return null;
             }
 
-            var query = _menuItemRepository.Table;
-
-            if (withMenu)
-            {
-                query = query.Include(x => x.Menu.Items);
-            }
-
-            return query.FirstOrDefault(x => x.Id == id);
+            return _menuItemRepository.GetByIdCached(id, "db.menuitemrecord.id-" + id);
         }
 
-        public virtual IList<MenuItemRecord> SortForTree(IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent = false)
+        public virtual IList<MenuItemRecord> GetMenuItems(int menuId, int storeId = 0, bool includeHidden = false)
         {
-            Guard.NotNull(items, nameof(items));
-
-            var result = new List<MenuItemRecord>();
-
-            var entities = items
-                .OrderBy(x => x.ParentItemId)
-                .ThenBy(x => x.DisplayOrder)
-                .ToArray();
-
-            SortChildItems(0);
-
-            if (includeItemsWithoutExistingParent && result.Count != entities.Length)
+            if (menuId == 0)
             {
-                foreach (var entity in entities)
-                {
-                    if (result.FirstOrDefault(x => x.Id == entity.Id) == null)
-                    {
-                        result.Add(entity);
-                    }
-                }
+                return new List<MenuItemRecord>();
             }
 
-            return result;
+            var query = BuildMenuItemQuery(menuId, null, storeId, includeHidden);
+            return query.ToList();
+        }
 
-            void SortChildItems(int parentItemId)
+        public virtual IList<MenuItemRecord> GetMenuItems(string systemName, int storeId = 0, bool includeHidden = false)
+        {
+            if (systemName.IsEmpty())
             {
-                var childItems = entities.Where(x => x.ParentItemId == parentItemId).ToArray();
-                foreach (var item in childItems)
-                {
-                    result.Add(item);
-                    SortChildItems(item.Id);
-                }
+                return new List<MenuItemRecord>();
             }
+
+            var query = BuildMenuItemQuery(0, systemName, storeId, includeHidden);
+            return query.ToList();
         }
 
         #endregion
@@ -286,18 +241,22 @@ namespace SmartStore.Services.Cms
 			return null;
 		}
 
-        protected virtual IQueryable<MenuRecord> BuildMenuQuery(string systemName, int storeId, bool includeHidden, bool withItems)
+        protected virtual IQueryable<MenuRecord> BuildMenuQuery(
+            int id,
+            string systemName,
+            int storeId,
+            bool includeHidden,
+            bool groupBy = true,
+            bool sort = true)
         {
             var applied = false;
             var entityName = nameof(MenuRecord);
-            var query = _menuRepository.Table;
+            var query = _menuRepository.Table.Where(x => includeHidden || x.Published);
 
-            if (withItems)
+            if (id != 0)
             {
-                query = query.Include(x => x.Items);
+                query = query.Where(x => x.Id == id);
             }
-
-            query = query.Where(x => includeHidden || x.Published);
 
             if (systemName.HasValue())
             {
@@ -332,7 +291,7 @@ namespace SmartStore.Services.Cms
                 applied = true;
             }
 
-            if (applied)
+            if (applied && groupBy)
             {
                 query = 
                     from x in query
@@ -341,7 +300,33 @@ namespace SmartStore.Services.Cms
                     select grp.FirstOrDefault();
             }
 
-            query = query.OrderBy(x => x.SystemName).ThenBy(x => x.Title);
+            if (sort)
+            {
+                query = query.OrderBy(x => x.SystemName).ThenBy(x => x.Title);
+            }
+
+            return query;
+        }
+
+        protected virtual IQueryable<MenuItemRecord> BuildMenuItemQuery(
+            int menuId,
+            string systemName,
+            int storeId,
+            bool includeHidden)
+        {
+            var singleMenu = menuId != 0 || (systemName.HasValue() && storeId != 0);
+            var menuQuery = BuildMenuQuery(menuId, systemName, storeId, includeHidden, !singleMenu, !singleMenu);
+
+            if (singleMenu)
+            {
+                menuQuery = menuQuery.Take(1);
+            }
+
+            var query =
+                from m in menuQuery
+                join mi in _menuItemRepository.Table on m.Id equals mi.MenuId
+                orderby mi.ParentItemId, mi.DisplayOrder
+                select mi;
 
             return query;
         }

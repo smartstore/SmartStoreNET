@@ -14,6 +14,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Modelling;
 using Telerik.Web.Mvc;
 using SmartStore.Templating;
 using SmartStore.Web.Framework;
@@ -195,9 +196,9 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.LastModelTree = Services.Resolve<IMessageModelProvider>().GetLastModelTree(template);
 		}
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
-        public ActionResult Edit(MessageTemplateModel model, bool continueEditing)
+        public ActionResult Edit(MessageTemplateModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
                 return AccessDeniedView();
@@ -221,6 +222,8 @@ namespace SmartStore.Admin.Controllers
                 
 				// locales
                 UpdateLocales(messageTemplate, model);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(model, messageTemplate, form));
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");

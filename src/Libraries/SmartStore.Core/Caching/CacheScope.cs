@@ -17,6 +17,11 @@ namespace SmartStore.Core.Caching
 
 		public void AddDependency(string key)
 		{
+			if (key == null)
+			{
+				return;
+			}
+
 			if (_dependencies == null)
 			{
 				_dependencies = new HashSet<string>();

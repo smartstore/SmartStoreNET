@@ -1,24 +1,24 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.SessionState;
-using SmartStore.Core.Domain.Media;
-using SmartStore.Core.IO;
-using SmartStore.Services.Media;
-using SmartStore.Services.Common;
-using SmartStore.Core.Logging;
-using SmartStore.Utilities;
-using System.IO;
-using SmartStore.Core.Async;
-using SmartStore.Core.Events;
-using SmartStore.Web.Framework.Security;
 using SmartStore.Core.Data;
-using SmartStore.Web.Framework.Filters;
-using System.Net;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Events;
+using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Common;
+using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
+using SmartStore.Utilities.Threading;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Controllers
 {
@@ -315,11 +315,8 @@ namespace SmartStore.Web.Controllers
 			{
 				if (!cachedImage.Exists)
 				{
-					// get the async (semaphore) locker specific to this key
-					var keyLock = AsyncLock.Acquire("lock" + cachedImage.Path);
-
 					// Lock concurrent requests to same resource
-					using (await keyLock.LockAsync())
+					using (await KeyedLock.LockAsync("MediaController.HandleImage." + cachedImage.Path))
 					{
 						_imageCache.RefreshInfo(cachedImage);
 

@@ -4,12 +4,11 @@ using System.Runtime.Caching;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
-using SmartStore.Core.Async;
-using System.Collections;
 using System.Collections.Generic;
 using SmartStore.Utilities;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.Caching
 {
@@ -44,7 +43,7 @@ namespace SmartStore.Core.Caching
 			if (obj != null)
 			{
 				// Make the parent scope's entry depend on this
-				if (!independent)
+				if (true /*!independent*/)
 				{
 					_scopeAccessor.PropagateKey(key);
 				}	
@@ -73,8 +72,9 @@ namespace SmartStore.Core.Caching
 			{
 				return value;
 			}
-				
-			lock (String.Intern(key))
+
+			// Get the (semaphore) locker specific to this key
+			using (KeyedLock.Lock(key))
 			{
 				// Atomic operation must be outer locked
 				if (!TryGet(key, independent, out value))
@@ -99,9 +99,7 @@ namespace SmartStore.Core.Caching
 			}
 
 			// Get the async (semaphore) locker specific to this key
-			var keyLock = AsyncLock.Acquire(key);
-
-			using (await keyLock.LockAsync())
+			using (await KeyedLock.LockAsync(key))
 			{
 				if (!TryGet(key, independent, out value))
 				{
@@ -204,7 +202,7 @@ namespace SmartStore.Core.Caching
 			
 			if (dependencies != null && dependencies.Any())
 			{
-				cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
+				cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies.Where(x => true /* x != null*/)));
 			}
 
 			cacheItemPolicy.RemovedCallback = OnRemoveEntry;

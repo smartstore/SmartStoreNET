@@ -50,7 +50,7 @@ namespace SmartStore.Services.Cms.Blocks
 		bool IsBound { get; set; }
 
         /// <summary>
-        /// Resets the data item of the bound entity. AFter calling this method,
+        /// Resets the data item of the bound entity. After calling this method,
 		/// <see cref="DataItem"/> is <c>null</c>, <see cref="IsLoaded"/> and <see cref="IsBound"/> are <c>false</c>.
         /// </summary>
         void Reset();

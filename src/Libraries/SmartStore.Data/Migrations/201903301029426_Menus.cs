@@ -49,6 +49,7 @@ namespace SmartStore.Data.Migrations
                         NoFollow = c.Boolean(nullable: false),
                         NewWindow = c.Boolean(nullable: false),
                         Icon = c.String(maxLength: 100),
+                        Style = c.String(maxLength: 10),
                         HtmlId = c.String(maxLength: 100),
                         CssClass = c.String(maxLength: 100),
                     })

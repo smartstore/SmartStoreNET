@@ -118,8 +118,7 @@
                 @Html.SmartLabelFor(model => model.Icon)
             </div>
             <div class="adminData">
-                @*TODO: better control like selectbox.*@
-                @Html.EditorFor(model => model.Icon)
+                @{ Html.RenderPartial("FontAwesomeIcon", Model); }
                 @Html.ValidationMessageFor(model => model.Icon)
             </div>
         </div>

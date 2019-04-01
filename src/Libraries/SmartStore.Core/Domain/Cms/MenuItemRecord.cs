@@ -91,10 +91,16 @@ namespace SmartStore.Core.Domain.Cms
         public bool NewWindow { get; set; }
 
         /// <summary>
-        /// Gets or sets HTML id attribute.
+        /// Gets or sets fontawesome icon class.
         /// </summary>
         [StringLength(100)]
         public string Icon { get; set; }
+
+        /// <summary>
+        /// Gets or sets fontawesome icon style.
+        /// </summary>
+        [StringLength(10)]
+        public string Style { get; set; }
 
         /// <summary>
         /// Gets or sets HTML id attribute.

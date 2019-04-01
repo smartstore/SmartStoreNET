@@ -6,11 +6,12 @@ using SmartStore.Core.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Models.Menus
 {
     [Validator(typeof(MenuItemRecordValidator))]
-    public class MenuItemRecordModel : EntityModelBase, ILocalizedModel<MenuItemRecordLocalizedModel>
+    public class MenuItemRecordModel : EntityModelBase, IIcon, ILocalizedModel<MenuItemRecordLocalizedModel>
     {
         public int MenuId { get; set; }
         public string Model { get; set; }
@@ -51,6 +52,8 @@ namespace SmartStore.Admin.Models.Menus
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.Icon")]
         public string Icon { get; set; }
+
+        public string Style { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.HtmlId")]
         public string HtmlId { get; set; }

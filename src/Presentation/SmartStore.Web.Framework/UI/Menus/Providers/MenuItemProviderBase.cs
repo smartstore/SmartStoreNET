@@ -6,7 +6,9 @@ namespace SmartStore.Web.Framework.UI
 {
     public abstract class MenuItemProviderBase : IMenuItemProvider
 	{
-		public virtual void Append(MenuItemProviderRequest request)
+        public IIconExplorer IconExplorer { get; set; }
+
+        public virtual void Append(MenuItemProviderRequest request)
 		{
             Guard.NotNull(request, nameof(request));
             Guard.NotNull(request.Parent, nameof(request.Parent));
@@ -64,6 +66,11 @@ namespace SmartStore.Web.Framework.UI
             if (entity.CssClass.HasValue())
             {
                 menuItem.LinkHtmlAttributes.Add("class", entity.CssClass);
+            }
+
+            if (entity.Icon.HasValue())
+            {
+                menuItem.Icon = IconExplorer.GetIconByName(entity.Icon).GetCssClass(entity.Style);
             }
 
             // For future use: entity.ShowExpanded

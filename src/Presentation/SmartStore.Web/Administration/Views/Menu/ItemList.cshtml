@@ -49,13 +49,11 @@ else
 			    </a>
             </div>
         </div>
-        @if (item.Icon.HasValue())
-        {
-            <div class="item-icon mr-1">
-                <i class="fa-fw @item.Icon"></i>
-            </div>
-        }
         <div class="item-text"@Html.Raw(indentStyle)>
+            @if (item.Icon.HasValue())
+            {
+                <i class="mr-1 fa-fw @item.Icon"></i>
+            }
 		    <a class="@(!item.Visible ? "muted" : "")" href="@Url.Action("EditItem", new { id = item.EntityId, area = "Admin" })">
                 @if (item.Text.HasValue())
                 {
@@ -73,7 +71,7 @@ else
         <div class="list-group">
             @foreach (var child in node.Children)
             {
-                @ItemGroup(child, level + 1, padding + 30);
+                @ItemGroup(child, level + 1, padding + 40);
             }
         </div>
     }

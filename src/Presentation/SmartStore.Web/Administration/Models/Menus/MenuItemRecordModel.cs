@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
@@ -30,7 +31,8 @@ namespace SmartStore.Admin.Models.Menus
         public string ShortDescription { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.PermissionNames")]
-        public string PermissionNames { get; set; }
+        [UIHint("AccessPermissions")]
+        public string[] PermissionNames { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.Published")]
         public bool Published { get; set; }

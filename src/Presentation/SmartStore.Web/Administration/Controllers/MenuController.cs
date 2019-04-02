@@ -286,6 +286,7 @@ namespace SmartStore.Admin.Controllers
             {
                 var item = MiniMapper.Map<MenuItemRecordModel, MenuItemRecord>(itemModel);
                 item.ParentItemId = itemModel.ParentItemId ?? 0;
+                item.PermissionNames = string.Join(",", itemModel.PermissionNames ?? new string[0]).NullEmpty();
 
                 _menuStorage.InsertMenuItem(item);
 
@@ -320,6 +321,7 @@ namespace SmartStore.Admin.Controllers
 
             var model = MiniMapper.Map<MenuItemRecord, MenuItemRecordModel>(item);
             model.ParentItemId = item.ParentItemId == 0 ? (int?)null : item.ParentItemId;
+            model.PermissionNames = item.PermissionNames.SplitSafe(",");
 
             PrepareModel(model, item);
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
@@ -350,6 +352,7 @@ namespace SmartStore.Admin.Controllers
             {
                 MiniMapper.Map(itemModel, item);
                 item.ParentItemId = itemModel.ParentItemId ?? 0;
+                item.PermissionNames = string.Join(",", itemModel.PermissionNames ?? new string[0]).NullEmpty();
 
                 _menuStorage.UpdateMenuItem(item);
 

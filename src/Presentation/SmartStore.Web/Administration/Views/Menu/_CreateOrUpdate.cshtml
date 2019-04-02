@@ -45,7 +45,7 @@
                     </div>
 					<div class="adminData">
 						@*IMPORTANT: Do not delete, this hidden element contains the id to assign localized values to the corresponding language *@
-						@Html.HiddenFor(model => model.Locales[item].LanguageId, new { id = Html.FieldIdFor(model => model.Locales[item].LanguageId) + "_1" })
+						@Html.HiddenFor(model => model.Locales[item].LanguageId)
 
 						@Html.EditorFor(model => model.Locales[item].Title)
 						@Html.ValidationMessageFor(model => model.Locales[item].Title)
@@ -71,7 +71,7 @@
         <div id="menu-items-container">
             <h4 class="h4 mt-5">@T("Admin.ContentManagement.MenuLinks")</h4>
 
-            <button type="button" class="btn btn-secondary btn-to-primary mb-1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-secondary btn-to-primary mb-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	            <i class="fa fa-plus"></i>
 	            <span>@T("Admin.ContentManagement.AddMenuItem")</span>
             </button>

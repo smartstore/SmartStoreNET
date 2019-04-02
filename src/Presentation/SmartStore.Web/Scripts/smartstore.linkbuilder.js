@@ -16,7 +16,6 @@
             self.controls = $el.find(".link-control");
             self.templateValueField = $el.find("#" + $el.data("field-id"));
             self.queryStringCtrl = $el.find(".query-string");
-            self.queryStringIcon = $el.find('.link-type[data-type="query-string"] > i');
 
             // set type selector to initial type from current expression
             _.delay(function () {
@@ -39,7 +38,6 @@
         currentType: null,
         templateValueField: null,
         queryStringCtrl: null,
-        queryStringIcon: null,
 
         initControl: function () {
 
@@ -63,13 +61,13 @@
             });
 
             // build expression & transfer to editor template value field
-            $el.on("change", ".transferable", function (e) {
-                var $el = $(this),
-                    type = $el.closest('.link-control').data('type'),
+            $el.on("change", ".transferable", function () {
+                var ctrl = $(this),
+                    type = ctrl.closest('.link-control').data('type') || '',
                     val, qs = self._getQueryString();
 
                 // get link excluding query string
-                if (type === 'query-string') {
+                if (ctrl.hasClass('query-string')) {
                     val = self.templateValueField.val();
                     var index = val.indexOf('?');
                     if (index !== -1) {
@@ -77,7 +75,7 @@
                     }
                 }
                 else {
-                    val = $el.val();
+                    val = ctrl.val();
                     if (!_.isEmpty(val) && type !== 'url') {
                         val = type + ':' + val;
                     }
@@ -88,24 +86,26 @@
                     val = (val || '') + '?' + qs;
                 }
 
-                // update queryStringIcon to indicate whether a query string is set
-                self.queryStringIcon.attr('class', _.isEmpty(qs) ? 'fas fa-minus text-muted' : 'fas fa-check text-success');
+                self._updateQueryStringIcon(!_.isEmpty(qs));
 
                 self.templateValueField.val(val).trigger("change");
                 //console.log('change ' + self.templateValueField.val());
             });
 
             // reset control
-            $el.on("click", ".btn-reset", function (e) {
-                
+            $el.on("click", ".btn-reset", function () {                
                 self.templateValueField.val('');
                 self.queryStringCtrl.val('');
                 self.controls.find('.resettable:visible').val('').trigger('change');
-                self.queryStringIcon.attr('class', 'fas fa-minus text-muted');
+                self._updateQueryStringIcon(false);
 
-                var select2 = self.controls.not("hide").find(".select2-hidden-accessible");
-                if (select2.length > 0) {
-                    select2.select2("val", "");
+                // Really reset select2 completely.
+                var select2 = self.controls.find('.select2:visible');
+                if (select2.length) {
+                    var label = select2.find('.selection .select2-selection__rendered');
+                    if (label.length) {
+                        label.removeAttr('title').html('');
+                    }
                 }
             });
 
@@ -129,30 +129,30 @@
             });
         },
 
-        _updateTypeInfo: function (el) {
+        _updateTypeInfo: function (elem) {
+            if (!elem) return;
 
-            if (!el) return;
+            var cnt = $(this.element),
+                type = elem.data('type');
 
-            var self = this,
-                $el = $(self.element);
-
-            var type = el.data('type');
-            if (type === 'query-string')
-                return;
-
-            var btn = $el.find('.dropdown-toggle'),
-                icon = el.find('i').attr('class').replace('fa-fw ', ''),
-                name = el.find('span').text();
+            var btn = cnt.find('.dropdown-toggle'),
+                icon = elem.find('i').attr('class').replace('fa-fw ', ''),
+                name = elem.find('span').text();
 
             btn.find('i').attr('class', icon);
             btn.attr('title', name);
 
-            $el.find('.qs-menu-container').toggle(type !== 'url');
+            cnt.find('.btn-query-string').toggle(type !== 'url');
+        },
+
+        _updateQueryStringIcon: function (hasQueryString) {
+            $(this.element).find('.btn-query-string > i')
+                .removeClass('text-muted text-success')
+                .addClass(hasQueryString ? 'text-success' : 'text-muted');
         },
 
         _getQueryString: function () {
-            var self = this;
-            var val = self.queryStringCtrl.val() || '';
+            var val = this.queryStringCtrl.val() || '';
 
             while (val.startsWith('?')) {
                 val = val.substring(1);

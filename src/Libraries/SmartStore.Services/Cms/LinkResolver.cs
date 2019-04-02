@@ -79,6 +79,7 @@ namespace SmartStore.Services.Cms
             }
 
 			var d = Parse(linkExpression);
+            var queryString = d.QueryString;
 
 			if (d.Type == LinkType.Url)
 			{
@@ -153,7 +154,7 @@ namespace SmartStore.Services.Cms
                 Status = d.Status,
                 Value = d.Value,
                 Link = d.Link,
-                QueryString = d.QueryString,
+                QueryString = queryString,
                 Label = d.Label,
                 Id = d.Id
             };

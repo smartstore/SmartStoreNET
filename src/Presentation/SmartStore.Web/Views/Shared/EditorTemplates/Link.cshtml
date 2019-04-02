@@ -41,7 +41,6 @@
 
 <div id="link-builder-@rnd" class="link-builder" data-field-id="@id" data-current-type="@link.Type.ToString().ToLower()">
     <div class="d-flex flex-nowrap input-group">
-
         @* Template control that receives the link expression. *@
         @Html.Hidden("", Value)
 
@@ -58,16 +57,6 @@
                         <i class="fa-fw @info.icon"></i>
                         <span>@info.name</span>
                     </a>
-                }
-                @if (!hideQueryString)
-                {
-                    <div class="qs-menu-container">
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item link-type" href="#" data-type="query-string">
-                            <i class="fas @(link.QueryString.HasValue() ? "fa-check text-success" : "fa-minus text-muted")"></i>
-                            <span>@T("Common.QueryString")</span>
-                        </a>
-                    </div>
                 }
             </div>
         </div>
@@ -117,10 +106,6 @@
             </div>
         }
 
-        <div class="flex-grow-1 link-control hide" data-type="query-string">
-            <input type="text" class="form-control transferable resettable query-string" value="@link.QueryString" />
-        </div>
-
         @* 3. append additional controls. *@
         @if (allowedTypes.Contains(LinkType.Product))
         {
@@ -145,11 +130,23 @@
             </div>
         }
 
-        @* 4. append reset button. *@
+        @* 4. append additional buttons. *@
         <div class="input-group-append">
 			<button type="button" class="btn btn-secondary btn-to-danger btn-reset" title="@T("Common.Remove")">
 				<i class="fa fa-times"></i>
 			</button>
+            @if (!hideQueryString)
+            {
+                <button type="button" class="btn btn-secondary btn-query-string@(link.Type == LinkType.Url ? " hide" : "")" 
+                        title="@T("Common.QueryString")" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-hashtag @(link.QueryString.HasValue() ? "text-success" : "text-muted")"></i>
+			    </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <div class="px-2">
+                        <input type="text" class="form-control transferable resettable query-string" value="@link.QueryString" placeholder="@T("Common.QueryString")" style="width: 350px;" />
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

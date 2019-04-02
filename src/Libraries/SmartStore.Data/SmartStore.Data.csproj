@@ -658,6 +658,10 @@
     <Compile Include="Migrations\201903301029426_Menus.Designer.cs">
       <DependentUpon>201903301029426_Menus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904020426156_FixStylColumnUnique.cs" />
+    <Compile Include="Migrations\201904020426156_FixStylColumnUnique.Designer.cs">
+      <DependentUpon>201904020426156_FixStylColumnUnique.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -1181,6 +1185,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903301029426_Menus.resx">
       <DependentUpon>201903301029426_Menus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904020426156_FixStylColumnUnique.resx">
+      <DependentUpon>201904020426156_FixStylColumnUnique.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

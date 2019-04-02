@@ -40,8 +40,13 @@ namespace SmartStore.Utilities.Threading
 
 		public static IDisposable Lock(object key)
 		{
+			return Lock(key, _noTimeout);
+		}
+
+		public static IDisposable Lock(object key, TimeSpan timeout)
+		{
 			var keyedLock = GetOrCreateLock(key);
-			keyedLock.Semaphore.Wait();
+			keyedLock.Semaphore.Wait(timeout);
 			return new Releaser(keyedLock);
 		}
 

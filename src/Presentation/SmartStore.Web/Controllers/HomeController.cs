@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Email;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Search;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Common;
-using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
@@ -73,7 +68,7 @@ namespace SmartStore.Web.Controllers
 		[GdprConsent]
 		public ActionResult ContactUs()
 		{
-            var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
+			var topic = _topicService.Value.GetTopicBySystemName("ContactUs", 0, false);
 
             var model = new ContactUsModel
 			{

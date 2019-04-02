@@ -114,12 +114,12 @@ $ocm-selected-color:                    $warning;
             right: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            @include fontawesome('\f105');
+            @include fontawesome('\f054');
             color: #646464;
-            font-size: 20px;
-            width: 20px;
-			height: 20px;
-			min-height: 20px;
+            font-size: 16px;
+            width: 16px;
+			height: 16px;
+			min-height: 16px;
             text-align: center;
         }
 

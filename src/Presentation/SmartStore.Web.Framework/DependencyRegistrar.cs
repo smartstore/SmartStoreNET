@@ -554,7 +554,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<RequestCache>().As<IRequestCache>().InstancePerRequest();
 
 			// Model/Business cache (application scoped)
-			builder.RegisterType<CacheScopeAccessor>().As<ICacheScopeAccessor>().SingleInstance();
+			builder.RegisterType<CacheScopeAccessor>().As<ICacheScopeAccessor>().InstancePerRequest();
 			builder.RegisterType<MemoryCacheManager>().As<ICacheManager>().SingleInstance();
 			builder.RegisterType<NullCache>().Named<ICacheManager>("null").SingleInstance();
 

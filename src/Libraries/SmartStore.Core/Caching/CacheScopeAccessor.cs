@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
 	public class CacheScopeAccessor : ICacheScopeAccessor
 	{
-		private readonly ConcurrentStack<CacheScope> _stack = new ConcurrentStack<CacheScope>();
+		private readonly Stack<CacheScope> _stack = new Stack<CacheScope>();
 
 		public CacheScopeAccessor()
 		{
@@ -16,8 +16,8 @@ namespace SmartStore.Core.Caching
 		{
 			get
 			{
-				_stack.TryPeek(out var current);
-				return current;
+				_stack.TryPeek(out var result);
+				return result;
 			}
 		}
 
@@ -43,6 +43,7 @@ namespace SmartStore.Core.Caching
 			var action = new ActionDisposable(() =>
 			{
 				_stack.TryPop(out _);
+
 				if (!independent)
 				{
 					PropagateKey(key);

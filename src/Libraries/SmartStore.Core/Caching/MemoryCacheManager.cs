@@ -9,6 +9,7 @@ using SmartStore.Utilities;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using SmartStore.Utilities.Threading;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Core.Caching
 {
@@ -19,14 +20,19 @@ namespace SmartStore.Core.Caching
 		// which is bad if we intentionally wanted to save NULL values.
 		public const string FakeNull = "__[NULL]__";
 
-		private readonly ICacheScopeAccessor _scopeAccessor;
-		private readonly MemoryCache _cache;
+		private readonly Work<ICacheScopeAccessor> _scopeAccessor;
+		private MemoryCache _cache;
 		private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-		public MemoryCacheManager(ICacheScopeAccessor scopeAccessor)
+		public MemoryCacheManager(Work<ICacheScopeAccessor> scopeAccessor)
 		{
 			_scopeAccessor = scopeAccessor;
-			_cache = new MemoryCache("SmartStore");
+			_cache = CreateCache();
+		}
+
+		private MemoryCache CreateCache()
+		{
+			return new MemoryCache("SmartStore");
 		}
 
 		public bool IsDistributedCache
@@ -43,9 +49,9 @@ namespace SmartStore.Core.Caching
 			if (obj != null)
 			{
 				// Make the parent scope's entry depend on this
-				if (true /*!independent*/)
+				if (!independent)
 				{
-					_scopeAccessor.PropagateKey(key);
+					_scopeAccessor.Value.PropagateKey(key);
 				}	
 
 				if (obj.Equals(FakeNull))
@@ -79,10 +85,10 @@ namespace SmartStore.Core.Caching
 				// Atomic operation must be outer locked
 				if (!TryGet(key, independent, out value))
 				{
-					using (_scopeAccessor.BeginScope(key))
+					using (_scopeAccessor.Value.BeginScope(key))
 					{
 						value = acquirer();
-						Put(key, value, duration, _scopeAccessor.Current.Dependencies);
+						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
 						return value;
 					}
 				}
@@ -103,10 +109,10 @@ namespace SmartStore.Core.Caching
 			{
 				if (!TryGet(key, independent, out value))
 				{
-					using (_scopeAccessor.BeginScope(key))
+					using (_scopeAccessor.Value.BeginScope(key))
 					{
 						value = await acquirer().ConfigureAwait(false);
-						Put(key, value, duration, _scopeAccessor.Current.Dependencies);
+						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
 						return value;
 					}
 				}
@@ -142,31 +148,34 @@ namespace SmartStore.Core.Caching
 			}
 
 			var wildcard = new Wildcard(pattern, RegexOptions.IgnoreCase);
-			return keys.Where(x => wildcard.IsMatch(x));
+			return keys.Where(x => wildcard.IsMatch(x)).ToArray();
 		}
 
 		public int RemoveByPattern(string pattern)
         {
-            var keysToRemove = Keys(pattern);
-			int count = 0;
-
 			lock (_cache)
 			{
+				var keysToRemove = Keys(pattern);
+				int count = 0;
+
 				// lock atomic operation
 				foreach (string key in keysToRemove)
 				{
 					_cache.Remove(key);
 					count++;
 				}
-			}
 
-			return count;
+				return count;
+			}	
 		}
 
         public void Clear()
         {
-			RemoveByPattern("*");
-        }
+			// Faster way of clearing cache: https://stackoverflow.com/questions/8043381/how-do-i-clear-a-system-runtime-caching-memorycache
+			var oldCache = Interlocked.Exchange(ref _cache, CreateCache());
+			oldCache.Dispose();
+			GC.Collect();
+		}
 
 		public virtual ISet GetHashSet(string key, Func<IEnumerable<string>> acquirer = null)
 		{
@@ -202,21 +211,26 @@ namespace SmartStore.Core.Caching
 			
 			if (dependencies != null && dependencies.Any())
 			{
-				cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies.Where(x => true /* x != null*/)));
+				// INFO: we can only depend on existing items, otherwise this entry will be removed immediately.
+				dependencies = dependencies.Where(x => x != null && _cache.Contains(x));
+				if (dependencies.Any())
+				{
+					cacheItemPolicy.ChangeMonitors.Add(_cache.CreateCacheEntryChangeMonitor(dependencies));
+				}	
 			}
 
-			cacheItemPolicy.RemovedCallback = OnRemoveEntry;
+			//cacheItemPolicy.RemovedCallback = OnRemoveEntry;
 
 			return cacheItemPolicy;
 		}
 
-		private void OnRemoveEntry(CacheEntryRemovedArguments args)
-		{
-			if (args.RemovedReason == CacheEntryRemovedReason.ChangeMonitorChanged)
-			{
-				Debug.WriteLine("MEMCACHE: remove depending entry '{0}'.".FormatInvariant(args.CacheItem.Key));
-			}
-		}
+		//private void OnRemoveEntry(CacheEntryRemovedArguments args)
+		//{
+		//	if (args.RemovedReason == CacheEntryRemovedReason.ChangeMonitorChanged)
+		//	{
+		//		Debug.WriteLine("MEMCACHE: remove depending entry '{0}'.".FormatInvariant(args.CacheItem.Key));
+		//	}
+		//}
 
 		protected override void OnDispose(bool disposing)
 		{

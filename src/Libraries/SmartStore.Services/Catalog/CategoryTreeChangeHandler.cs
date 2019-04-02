@@ -104,7 +104,7 @@ namespace SmartStore.Services.Catalog
 
 				if (modProps.Keys.Any(x => _h.Contains(x)))
 				{
-					// Hierarchy affecting properties has changed. Nuke every tree.
+					// Hierarchy affecting properties has changed. Nuke each tree.
 					cache.RemoveByPattern(CategoryService.CATEGORY_TREE_PATTERN_KEY);
 					PublishEvent(CategoryTreeChangeReason.Hierarchy);
 					_invalidated = true;

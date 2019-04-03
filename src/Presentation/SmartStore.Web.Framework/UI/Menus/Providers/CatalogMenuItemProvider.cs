@@ -70,28 +70,31 @@ namespace SmartStore.Web.Framework.UI
 			// Void, does nothing here.
 		}
 
-        private TreeNode<MenuItem> ConvertNode(TreeNode<ICategoryNode> node, MenuItemRecord entity, IDictionary<int, PictureInfo> allPictureInfos)
+        private TreeNode<MenuItem> ConvertNode(
+            TreeNode<ICategoryNode> categoryNode,
+            MenuItemRecord entity,
+            IDictionary<int, PictureInfo> allPictureInfos)
         {
-            var cat = node.Value;
-            var name = cat.Id > 0 ? cat.GetLocalized(x => x.Name) : null;
+            var node = categoryNode.Value;
+            var name = node.Id > 0 ? node.GetLocalized(x => x.Name) : null;
 
             var menuItem = new MenuItem
             {
-                EntityId = cat.Id,
-                Text = name?.Value ?? cat.Name,
+                EntityId = node.Id,
+                Text = name?.Value ?? node.Name,
                 Rtl = name?.CurrentLanguage?.Rtl ?? false,
-                BadgeText = cat.Id > 0 ? cat.GetLocalized(x => x.BadgeText) : null,
-                BadgeStyle = (BadgeStyle)cat.BadgeStyle,
-                RouteName = cat.Id > 0 ? "Category" : "HomePage"
+                BadgeText = node.Id > 0 ? node.GetLocalized(x => x.BadgeText) : null,
+                BadgeStyle = (BadgeStyle)node.BadgeStyle,
+                RouteName = node.Id > 0 ? "Category" : "HomePage"
             };
 
-            if (cat.Id > 0)
+            if (node.Id > 0)
             {
-                menuItem.RouteValues.Add("SeName", cat.GetSeName());
+                menuItem.RouteValues.Add("SeName", node.GetSeName());
 
-                if (cat.ParentCategoryId == 0 && cat.Published && cat.PictureId != null)
+                if (node.ParentCategoryId == 0 && node.Published && node.PictureId != null)
                 {
-                    menuItem.ImageId = cat.PictureId;
+                    menuItem.ImageId = node.PictureId;
                 }
             }
 
@@ -111,12 +114,12 @@ namespace SmartStore.Web.Framework.UI
 
             var convertedNode = new TreeNode<MenuItem>(menuItem)
             {
-                Id = node.Id
+                Id = categoryNode.Id
             };
 
-            if (node.HasChildren)
+            if (categoryNode.HasChildren)
             {
-                foreach (var childNode in node.Children)
+                foreach (var childNode in categoryNode.Children)
                 {
                     convertedNode.Append(ConvertNode(childNode, entity, allPictureInfos));
                 }

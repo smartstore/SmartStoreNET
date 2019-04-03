@@ -26,6 +26,17 @@ namespace SmartStore.Web.Framework.UI
             var result = _linkResolver.Resolve(request.Entity.Model);
 			node.Value.Url = result.Link;
 
+            switch (result.Type)
+            {
+                case LinkType.Product:
+                case LinkType.Category:
+                case LinkType.Manufacturer:
+                case LinkType.Topic:
+                    node.Value.EntityId = result.Id;
+                    node.Value.EntityName = result.Type.ToString();
+                    break;
+            }
+
             if (node.Value.Text.IsEmpty())
             {
                 node.Value.Text = result.Label;

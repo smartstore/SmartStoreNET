@@ -71,7 +71,7 @@ namespace SmartStore.Core.Infrastructure
 					Type[] types = null;
 					try
 					{
-						types = a.GetTypes();
+						types = a.GetExportedTypes();
 					}
 					catch
 					{

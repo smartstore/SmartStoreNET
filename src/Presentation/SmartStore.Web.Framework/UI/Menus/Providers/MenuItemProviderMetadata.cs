@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Core.Domain.Cms;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -22,7 +23,7 @@ namespace SmartStore.Web.Framework.UI
 
         /// <summary>
         /// Indicates that the provider appends multiple items to the tree.
-        /// The corresponding MenuItemRecord cannot have child elements and certain properties such as title, short description etc. are ignored. 
+        /// The corresponding <see cref="MenuItemRecord"/> cannot have child elements and certain properties such as title, short description etc. are ignored. 
         /// </summary>
         public bool AppendsMultipleItems { get; set; }
     }

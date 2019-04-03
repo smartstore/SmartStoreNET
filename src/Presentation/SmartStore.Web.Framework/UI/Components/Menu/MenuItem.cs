@@ -14,11 +14,12 @@ namespace SmartStore.Web.Framework.UI
 		/// If this menu item refers to an entity, the id of the backed entity (like category, products e.g.)
 		/// </summary>
 		public int EntityId { get; set; }
+        public string EntityName { get; set; }
 
-		/// <summary>
-		/// The total count of contained elements (like the count of products within a category)
-		/// </summary>
-		public int? ElementsCount { get; set; }
+        /// <summary>
+        /// The total count of contained elements (like the count of products within a category)
+        /// </summary>
+        public int? ElementsCount { get; set; }
 
         public string Id { get; set; }
 

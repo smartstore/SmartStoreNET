@@ -81,6 +81,7 @@ namespace SmartStore.Web.Framework.UI
             var menuItem = new MenuItem
             {
                 EntityId = node.Id,
+                EntityName = nameof(Category),
                 Text = name?.Value ?? node.Name,
                 Rtl = name?.CurrentLanguage?.Rtl ?? false,
                 BadgeText = node.Id > 0 ? node.GetLocalized(x => x.BadgeText) : null,

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SmartStore.Core.Data;
+﻿using Autofac;
 using SmartStore.Services;
 using SmartStore.Services.Cms;
 
@@ -8,26 +6,16 @@ namespace SmartStore.Web.Framework.UI
 {
     public class DatabaseMenuResolver : IMenuResolver
 	{
-        protected readonly ICommonServices _services;
+        protected readonly IComponentContext _ctx;
         protected readonly IMenuStorage _menuStorage;
-        protected readonly IMenuPublisher _menuPublisher;
-        protected readonly IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
 
         public DatabaseMenuResolver(
-            ICommonServices services,
-            IMenuStorage menuStorage,
-            IMenuPublisher menuPublisher,
-            IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> menuItemProviders)
+            IComponentContext ctx,
+            IMenuStorage menuStorage)
         {
-            _services = services;
+            _ctx = ctx;
             _menuStorage = menuStorage;
-            _menuPublisher = menuPublisher;
-            _menuItemProviders = menuItemProviders;
-
-            QuerySettings = DbQuerySettings.Default;
         }
-
-        public DbQuerySettings QuerySettings { get; set; }
 
         public int Order => 1;
 
@@ -38,12 +26,8 @@ namespace SmartStore.Web.Framework.UI
 
 		public IMenu Resolve(string name)
 		{
-            return new DatabaseMenu(name, 
-				_services, 
-				_menuStorage, 
-				_menuPublisher, 
-				QuerySettings, 
-				_menuItemProviders);
+            var menu = _ctx.ResolveNamed<IMenu>("database", new NamedParameter("menuName", name));
+            return menu;
 		}
 	}
 }

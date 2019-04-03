@@ -853,6 +853,8 @@ namespace SmartStore.Web.Framework
                 builder.RegisterType(type).As<IMenuResolver>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
             }
 
+            builder.RegisterType<DatabaseMenu>().Named<IMenu>("database").InstancePerDependency();
+
             var menuTypes = _typeFinder.FindClassesOfType<IMenu>(ignoreInactivePlugins: true);
             foreach (var type in menuTypes)
             {

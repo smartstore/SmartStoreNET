@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.UI
     {
         private readonly IMenuStorage _menuStorage;
         private readonly DbQuerySettings _querySettings;
-        private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemMetadata>> _menuItemProviders;
+        private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
 
         public DatabaseMenu(
             string menuName,
@@ -24,7 +24,7 @@ namespace SmartStore.Web.Framework.UI
             IMenuStorage menuStorage,
             IMenuPublisher menuPublisher,
             DbQuerySettings querySettings,
-            IEnumerable<Lazy<IMenuItemProvider, MenuItemMetadata>> menuItemProviders)
+            IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> menuItemProviders)
         {
             Guard.NotEmpty(menuName, nameof(menuName));
 

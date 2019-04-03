@@ -7,7 +7,7 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.ContentManagement.EditMenuItem") - @Model.Title @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "Edit", new { id = Model.MenuId })
+            @T("Admin.ContentManagement.EditMenuItem") - @Model.Title @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.MenuId })
         </div>
         <div class="options">
             <button type="submit" name="save-item" value="save-item" class="btn btn-warning">

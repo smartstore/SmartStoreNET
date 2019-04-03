@@ -16,14 +16,18 @@
         if (rawValue.HasValue())
         {
             var routeValues = JsonConvert.DeserializeObject<RouteValueDictionary>(rawValue);
-			object val;
+            object val;
             if (routeValues.TryGetValue("routename", out val))
             {
                 routeName = val as string;
                 routeValues.Remove("routename");
             }
 
-            routeValuesStr = JsonConvert.SerializeObject(routeValues);
+            routeValuesStr = JsonConvert.SerializeObject(routeValues).EmptyNull();
+            if (routeValuesStr == "{}")
+            {
+                routeValuesStr = string.Empty;
+            }
         }
     }
     catch { }

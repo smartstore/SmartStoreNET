@@ -36,36 +36,41 @@ namespace SmartStore.Web.Framework.UI
 		/// <returns>Menu item.</returns>
 		protected virtual MenuItem ConvertToMenuItem(MenuItemRecord entity)
 		{
+            var title = entity.GetLocalized(x => x.Title);
             var shortDescription = entity.GetLocalized(x => x.ShortDescription);
 
 			var menuItem = new MenuItem
 			{
                 EntityId = entity.Id,
-				Text = entity.GetLocalized(x => x.Title),
+				Text = title,
                 Visible = entity.Published,
-                Icon = entity.Icon,
+                Rtl = title?.CurrentLanguage?.Rtl ?? false,
                 PermissionNames = entity.PermissionNames
-			};
+            };
+
+            if (shortDescription.HasValue())
+            {
+                menuItem.LinkHtmlAttributes.Add("title", shortDescription);
+            }
 
             if (entity.NoFollow)
             {
                 menuItem.LinkHtmlAttributes.Add("rel", "nofollow");
             }
-            if (shortDescription.HasValue())
-            {
-                menuItem.LinkHtmlAttributes.Add("title", shortDescription);
-            }
+
             if (entity.NewWindow)
             {
                 menuItem.LinkHtmlAttributes.Add("target", "_blank");
             }
-            if (entity.HtmlId.HasValue())
-            {
-                menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
-            }
+
             if (entity.CssClass.HasValue())
             {
                 menuItem.LinkHtmlAttributes.Add("class", entity.CssClass);
+            }
+
+            if (entity.HtmlId.HasValue())
+            {
+                menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
             }
 
             if (entity.Icon.HasValue())

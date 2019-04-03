@@ -80,9 +80,9 @@ namespace SmartStore.Web.Framework.UI
         /// <param name="includeItemsWithoutExistingParent">Whether to include menu items without existing parent menu item.</param>
         /// <returns>Tree of menu items.</returns>
         public static TreeNode<MenuItem> GetTree(
-            this IList<MenuItemRecord> items,
+            this IEnumerable<MenuItemRecord> items,
             string origin,
-            IDictionary<string, Lazy<IMenuItemProvider, MenuItemMetadata>> itemProviders,
+            IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> itemProviders,
             bool includeItemsWithoutExistingParent = false)
         {
             Guard.NotNull(items, nameof(items));
@@ -143,13 +143,13 @@ namespace SmartStore.Web.Framework.UI
             return root;
         }
 
-        private static IList<MenuItemRecord> SortForTree(this IList<MenuItemRecord> items, bool includeItemsWithoutExistingParent)
+        private static IList<MenuItemRecord> SortForTree(this IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent)
         {
             var result = new List<MenuItemRecord>();
 
             SortChildItems(0);
 
-            if (includeItemsWithoutExistingParent && result.Count != items.Count)
+            if (includeItemsWithoutExistingParent && result.Count != items.Count())
             {
                 foreach (var item in items)
                 {

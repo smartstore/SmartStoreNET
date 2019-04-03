@@ -1,11 +1,10 @@
 ﻿using System.Web.Routing;
 using Newtonsoft.Json;
 using SmartStore.Collections;
-using SmartStore.Core.Plugins;
 
 namespace SmartStore.Web.Framework.UI
 {
-    [SystemName("route")]
+    [MenuItemProvider("route")]
 	public class RouteMenuItemProvider : MenuItemProviderBase
 	{
 		protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)

@@ -30,7 +30,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IStoreMappingService _storeMappingService;
         private readonly IAclService _aclService;
         private readonly ICustomerService _customerService;
-        private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemMetadata>> _menuItemProviders;
+        private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
         private readonly AdminAreaSettings _adminAreaSettings;
 
         public MenuController(
@@ -40,7 +40,7 @@ namespace SmartStore.Admin.Controllers
             IStoreMappingService storeMappingService,
             IAclService aclService,
             ICustomerService customerService,
-            IEnumerable<Lazy<IMenuItemProvider, MenuItemMetadata>> menuItemProviders,
+            IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> menuItemProviders,
             AdminAreaSettings adminAreaSettings)
         {
             _menuStorage = menuStorage;
@@ -429,15 +429,22 @@ namespace SmartStore.Admin.Controllers
 
         private void PrepareModel(MenuItemRecordModel model, MenuItemRecord entity)
         {
-            var entities = _menuStorage.GetMenuItems(model.MenuId, 0, true);
+            Lazy<IMenuItemProvider, MenuItemProviderMetadata> provider = null;
+            var entities = _menuStorage.GetMenuItems(model.MenuId, 0, true).ToDictionary(x => x.Id, x => x);
 
             model.Locales = new List<MenuItemRecordLocalizedModel>();
             model.AllItems = new List<SelectListItem>();
+
+            if (_menuItemProviders.TryGetValue(model.ProviderName, out provider))
+            {
+                model.ProviderAppendsMultipleItems = provider.Metadata.AppendsMultipleItems;
+            }
 
             // Preset max display order to always insert item at the end.
             if (entity == null && entities.Any())
             {
                 var item = entities
+                    .Select(x => x.Value)
                     .Where(x => x.ParentItemId == model.ParentItemId)
                     .OrderByDescending(x => x.DisplayOrder)
                     .FirstOrDefault();
@@ -446,13 +453,19 @@ namespace SmartStore.Admin.Controllers
             }
 
             // Create list for selecting parent item.
-            var tree = entities.GetTree("EditMenu", _menuItemProviders, true);
+            var tree = entities.Values.GetTree("EditMenu", _menuItemProviders, true);
 
             tree.Traverse(x =>
             {
                 if (entity != null && entity.Id == x.Value.EntityId)
                 {
                     // Ignore. Element cannot be parent itself.
+                }
+                else if (entities.TryGetValue(x.Value.EntityId, out var record) && 
+                    _menuItemProviders.TryGetValue(record.ProviderName, out provider) &&
+                    provider.Metadata.AppendsMultipleItems)
+                {
+                    // Ignore. Element cannot have child nodes.
                 }
                 else if (!x.Value.IsGroupHeader)
                 {

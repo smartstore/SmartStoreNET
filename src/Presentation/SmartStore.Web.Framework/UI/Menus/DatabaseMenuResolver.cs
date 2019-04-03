@@ -11,13 +11,13 @@ namespace SmartStore.Web.Framework.UI
         protected readonly ICommonServices _services;
         protected readonly IMenuStorage _menuStorage;
         protected readonly IMenuPublisher _menuPublisher;
-        protected readonly IEnumerable<Lazy<IMenuItemProvider, MenuItemMetadata>> _menuItemProviders;
+        protected readonly IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
 
         public DatabaseMenuResolver(
             ICommonServices services,
             IMenuStorage menuStorage,
             IMenuPublisher menuPublisher,
-            IEnumerable<Lazy<IMenuItemProvider, MenuItemMetadata>> menuItemProviders)
+            IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> menuItemProviders)
         {
             _services = services;
             _menuStorage = menuStorage;

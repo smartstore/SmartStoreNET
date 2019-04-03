@@ -16,6 +16,7 @@ namespace SmartStore.Admin.Models.Menus
     {
         public int MenuId { get; set; }
         public string Model { get; set; }
+        public bool ProviderAppendsMultipleItems { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.ParentItem")]
         public int? ParentItemId { get; set; }

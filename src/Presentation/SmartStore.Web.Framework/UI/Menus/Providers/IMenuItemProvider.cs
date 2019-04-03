@@ -15,10 +15,19 @@ namespace SmartStore.Web.Framework.UI
 
     public class MenuItemProviderRequest
     {
+        /// <summary>
+        /// Represents the origin for the creation of the tree.
+        /// </summary>
         public string Origin { get; set; }
 
+        /// <summary>
+        /// Node to which items are to be appended.
+        /// </summary>
         public TreeNode<MenuItem> Parent { get; set; }
 
+        /// <summary>
+        /// Entity that is converted to a menu item.
+        /// </summary>
         public MenuItemRecord Entity { get; set; }
     }
 }

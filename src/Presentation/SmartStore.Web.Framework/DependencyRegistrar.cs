@@ -862,11 +862,12 @@ namespace SmartStore.Web.Framework
             var menuItemProviderTypes = _typeFinder.FindClassesOfType<IMenuItemProvider>(ignoreInactivePlugins: true);
             foreach (var type in menuItemProviderTypes)
             {
-                var providerName = type.GetAttribute<SystemNameAttribute>(false)?.Name.EmptyNull();
+                var attribute = type.GetAttribute<MenuItemProviderAttribute>(false);
                 var registration = builder.RegisterType(type).As<IMenuItemProvider>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
-                registration.WithMetadata<MenuItemMetadata>(m =>
+                registration.WithMetadata<MenuItemProviderMetadata>(m =>
                 {
-                    m.For(em => em.ProviderName, providerName);
+                    m.For(em => em.ProviderName, attribute.ProviderName);
+                    m.For(em => em.AppendsMultipleItems, attribute.AppendsMultipleItems);
                 });
             }
         }

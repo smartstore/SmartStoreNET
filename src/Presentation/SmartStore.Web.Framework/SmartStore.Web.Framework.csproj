@@ -377,7 +377,7 @@
     <Compile Include="UI\Menus\DatabaseMenuResolver.cs" />
     <Compile Include="UI\Menus\DependencyMenuResolver.cs" />
     <Compile Include="UI\Menus\IMenuResolver.cs" />
-    <Compile Include="UI\Menus\Providers\MenuItemMetadata.cs" />
+    <Compile Include="UI\Menus\Providers\MenuItemProviderMetadata.cs" />
     <Compile Include="UI\Menus\Providers\RouteMenuItemProvider.cs" />
     <Compile Include="UI\Menus\IMenu.cs" />
     <Compile Include="UI\Menus\DatabaseMenu.cs" />

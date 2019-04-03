@@ -11,14 +11,13 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities.Threading;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Infrastructure
 {
 	public class CatalogSiteMap : SiteMapBase
 	{
-		private static object s_lock = new object();
-
 		const string SiteMapName = "catalog";
 
 		private readonly ICategoryService _categoryService;
@@ -73,7 +72,7 @@ namespace SmartStore.Web.Infrastructure
 					{
 						if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
 						{
-							lock (s_lock)
+							using (KeyedLock.Lock("Menu.ResolveElementCounts." + SiteMapName))
 							{
 								if (curNode.Children.Any(x => !x.Value.ElementsCount.HasValue))
 								{

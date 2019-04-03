@@ -14,7 +14,7 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 {
 	public static class WebApiCachingUserData
 	{
-		private static object _lock = new object();
+		private static readonly object _lock = new object();
 
 		/// <remarks>
 		/// Lazy storing... fired on app shut down. Note that items with CacheItemPriority.NotRemovable are not removed when the cache is emptied.
@@ -60,7 +60,7 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 			}
 		}
 
-		public static string Key { get { return "WebApiUserData"; } }
+		public static string Key { get; } = "WebApiUserData";
 
 		public static void Remove()
 		{

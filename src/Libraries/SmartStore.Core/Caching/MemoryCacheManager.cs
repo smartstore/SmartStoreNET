@@ -111,8 +111,8 @@ namespace SmartStore.Core.Caching
 				{
 					using (_scopeAccessor.Value.BeginScope(key))
 					{
-						value = await acquirer().ConfigureAwait(false);
-						Put(key, value, duration, _scopeAccessor.Value.Current?.Dependencies);
+						value = await acquirer();
+						Put(key, value, duration, _scopeAccessor.Value.Current.Dependencies);
 						return value;
 					}
 				}

@@ -890,17 +890,19 @@ namespace SmartStore.Admin.Controllers
         {
             if (_services.Permissions.Authorize(StandardPermissionProvider.ManageLanguages))
             {
-                var ctx = new LanguageDownloadContext(setId);
-                ctx.AvailableResources = await CheckAvailableResources();
+				var ctx = new LanguageDownloadContext(setId)
+				{
+					AvailableResources = await CheckAvailableResources()
+				};
 
-                if (ctx.AvailableResources.Resources.Any())
+				if (ctx.AvailableResources.Resources.Any())
                 {
                     var task = AsyncRunner.Run(
                         (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),
                         ctx,
                         CancellationToken.None,
                         TaskCreationOptions.None,
-                        TaskScheduler.Default).ConfigureAwait(false);
+                        TaskScheduler.Default);
                 }
             }
 

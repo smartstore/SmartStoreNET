@@ -175,6 +175,7 @@
     <Compile Include="Collections\ConcurrentMultimap.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
+    <Compile Include="Collections\SyncedCollection.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\FastInvoker.cs" />
@@ -281,7 +282,7 @@
     <Compile Include="IO\LockFile\LockFileManager.cs" />
     <Compile Include="IAuditable.cs" />
     <Compile Include="ITransient.cs" />
-    <Compile Include="Collections\MostRecentlyUsedList.cs" />
+    <Compile Include="Collections\TrimmedBuffer.cs" />
     <Compile Include="Localization\ILocalizationFileResolver.cs" />
     <Compile Include="Localization\LocalizationFileResolver.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />

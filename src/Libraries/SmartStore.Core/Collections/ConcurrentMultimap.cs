@@ -16,9 +16,9 @@ namespace SmartStore.Collections
 	/// <typeparam name="TValue">The type of value.</typeparam>
 	[JsonConverter(typeof(ConcurrentMultiMapConverter))]
 	[Serializable]
-	public class ConcurrentMultimap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ICollection<TValue>>>
+	public class ConcurrentMultimap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, SyncedCollection<TValue>>>
 	{
-		private readonly ConcurrentDictionary<TKey, ICollection<TValue>> _dict;
+		private readonly ConcurrentDictionary<TKey, SyncedCollection<TValue>> _dict;
 		private readonly Func<IEnumerable<TValue>, ICollection<TValue>> _collectionCreator;
 
 		public ConcurrentMultimap()
@@ -51,25 +51,28 @@ namespace SmartStore.Collections
 			Func<IEnumerable<TValue>, ICollection<TValue>> collectionCreator)
 		{
 			_collectionCreator = collectionCreator;
-			_dict = new ConcurrentDictionary<TKey, ICollection<TValue>>(
+			_dict = new ConcurrentDictionary<TKey, SyncedCollection<TValue>>(
 				ConvertItems(items),
 				comparer ?? EqualityComparer<TKey>.Default);
 		}
 
-		private IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> ConvertItems(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items)
+		private IEnumerable<KeyValuePair<TKey, SyncedCollection<TValue>>> ConvertItems(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items)
 		{
 			if (items == null)
 				yield break;
 
 			foreach (var item in items)
 			{
-				yield return new KeyValuePair<TKey, ICollection<TValue>>(item.Key, CreateCollection(item.Value));
+				yield return new KeyValuePair<TKey, SyncedCollection<TValue>>(item.Key, CreateCollection(item.Value));
 			}
 		}
 
-		protected virtual ICollection<TValue> CreateCollection(IEnumerable<TValue> values)
+		protected virtual SyncedCollection<TValue> CreateCollection(IEnumerable<TValue> values)
 		{
-			return (_collectionCreator ?? Multimap<TKey, TValue>.DefaultCollectionCreator)(values ?? Enumerable.Empty<TValue>());
+			var creator = _collectionCreator ?? Multimap<TKey, TValue>.DefaultCollectionCreator;
+			var col = creator(values ?? Enumerable.Empty<TValue>());
+
+			return col.AsSynchronized();
 		}
 
 		/// <summary>
@@ -111,7 +114,7 @@ namespace SmartStore.Collections
 		/// Gets the collection of values stored under the specified key.
 		/// </summary>
 		/// <param name="key">The key.</param>
-		public virtual ICollection<TValue> this[TKey key]
+		public virtual SyncedCollection<TValue> this[TKey key]
 		{
 			get
 			{
@@ -129,11 +132,11 @@ namespace SmartStore.Collections
 		}
 
 		/// <summary>
-		/// Gets all value collections as readonly to prevent non-blocking list operations.
+		/// Gets all value collections.
 		/// </summary>
-		public virtual IEnumerable<IEnumerable<TValue>> Values
+		public virtual ICollection<SyncedCollection<TValue>> Values
 		{
-			get { return _dict.Values.Select(x => x.AsReadOnly()); }
+			get { return _dict.Values; }
 		}
 
 		/// <summary>
@@ -145,7 +148,7 @@ namespace SmartStore.Collections
 		{
 			if (!GetOrCreateValues(key, new[] { value }, out var col))
 			{
-				ExecuteCollectionAction(col, x => x.Add(value));
+				col.Add(value);
 			}
 		}
 
@@ -160,7 +163,7 @@ namespace SmartStore.Collections
 
 			if (!GetOrCreateValues(key, values, out var col))
 			{
-				ExecuteCollectionAction(col, x => x.AddRange(values));
+				col.AddRange(values);
 			}
 		}
 
@@ -178,14 +181,11 @@ namespace SmartStore.Collections
 			var col = _dict[key];
 			var removed = false;
 
-			ExecuteCollectionAction(col, x => 
+			removed = col.Remove(value);
+			if (col.Count == 0)
 			{
-				removed = col.Remove(value);
-				if (col.Count == 0)
-				{
-					_dict.TryRemove(key, out _);
-				}
-			});
+				_dict.TryRemove(key, out _);
+			}
 
 			return removed;
 		}
@@ -204,14 +204,7 @@ namespace SmartStore.Collections
 
 			if (_dict.TryGetValue(key, out var col))
 			{
-				ExecuteCollectionAction(col, x =>
-				{
-					foreach (var value in values)
-					{
-						if (col.Remove(value))
-							numRemoved++;
-					}
-				});
+				numRemoved = col.RemoveRange(values);
 			}
 
 			return numRemoved > 0;
@@ -222,7 +215,7 @@ namespace SmartStore.Collections
 		/// </summary>
 		/// <param name="key">The key.</param>
 		/// <returns><c>True</c> if any such values existed; otherwise <c>false</c>.</returns>
-		public virtual bool TryRemoveAll(TKey key, out ICollection<TValue> collection)
+		public virtual bool TryRemoveAll(TKey key, out SyncedCollection<TValue> collection)
 		{
 			return _dict.TryRemove(key, out collection);
 		}
@@ -269,13 +262,13 @@ namespace SmartStore.Collections
 		/// Returns an enumerator that iterates through the multimap.
 		/// </summary>
 		/// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the multimap.</returns>
-		public virtual IEnumerator<KeyValuePair<TKey, ICollection<TValue>>> GetEnumerator()
+		public virtual IEnumerator<KeyValuePair<TKey, SyncedCollection<TValue>>> GetEnumerator()
 		{
 			foreach (var pair in _dict)
 				yield return pair;
 		}
 
-		private bool GetOrCreateValues(TKey key, IEnumerable<TValue> initial, out ICollection<TValue> col)
+		private bool GetOrCreateValues(TKey key, IEnumerable<TValue> initial, out SyncedCollection<TValue> col)
 		{
 			// Return true when created
 			var created = false;
@@ -287,30 +280,6 @@ namespace SmartStore.Collections
 			});
 
 			return created;
-		}
-
-		private void ExecuteCollectionAction(ICollection<TValue> col, Action<ICollection<TValue>> action)
-		{
-			bool lockTaken = false;
-			try
-			{
-				var isBlocking = col is SynchronizedCollection<TValue>;
-
-				if (!isBlocking)
-				{
-					// Don't take lock on an already blocking collection.
-					Monitor.Enter(col, ref lockTaken);
-				}
-
-				action(col);
-			}
-			finally
-			{
-				if (lockTaken)
-				{
-					Monitor.Exit(col);
-				}
-			}
 		}
 
 		#region Static members

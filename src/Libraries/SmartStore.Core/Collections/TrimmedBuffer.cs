@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SmartStore.Collections
 {
-	public class TrimmedBuffer<T> : ICollection<T>
+	public sealed class TrimmedBuffer<T> : ICollection<T>
 	{
 		private readonly int _maxSize;
 		private readonly List<T> _list;
@@ -54,15 +54,15 @@ namespace SmartStore.Collections
 			}
 		}
 
-		public T this[int key]
+		public T this[int index]
 		{
 			get
 			{
-				return _list[key];
+				return _list[index];
 			}
 			set
 			{
-				_list[key] = value;
+				_list[index] = value;
 			}
 		}
 

@@ -77,9 +77,9 @@
 
                     navElems.on("click", function (e) {
                         var link = $(this).find(".nav-link");
-                        var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
+                        var openedMenuSelector = $(".nav-item.active .nav-link").data("target");
 
-                        if (opendMenuSelector != link.data("target")) {
+                        if (openedMenuSelector != link.data("target")) {
                             e.preventDefault();
                             closeNow($(".nav-item.active .nav-link"));
                             tryOpen(link);
@@ -201,11 +201,6 @@
 				}
 
                 megamenuContainer.evenIfHidden(function (el) {
-                    var scrollCorrection = null;
-                    var lastVisibleElem = null;
-                    var firstVisibleElem = null;
-                    var isFirstItemVisible = true;
-                    var isLastItemVisible = false;
 
                     megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow:hidden; position:relative;" />');
 
@@ -333,9 +328,8 @@
 
                     // on touch
                     if (Modernizr.touchevents) {
-                        megamenu.tapstart(function () {
+                        megamenu.tapmove(function () {
                             closeNow($(".nav-item.active .nav-link"));
-                        }).tapmove(function () {
 							updateNavState();
                         });
                     }

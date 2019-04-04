@@ -136,7 +136,13 @@ $mixed-megamenu-bg:             $megamenu-bg;
     }
 }
 .touchevents .megamenu .nav-slider {
-	overflow-x: auto !important;
+    overflow-x: auto !important;
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
+}
+.touchevents .megamenu .nav-slider::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
 }
 
 // horizontal navbar navigation buttons

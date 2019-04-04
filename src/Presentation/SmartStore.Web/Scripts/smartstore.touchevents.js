@@ -34,7 +34,8 @@
 	// The reason that we need to do this is because Chrome annoyingly
 	// purports support for touch events even if the underlying hardware
 	// does not!
-	var touchCapable = ('ontouchstart' in window),
+
+	var touchCapable = Modernizr.touchevents, // ('ontouchstart' in window),
 
         settings = {
         	tap_pixel_range: 5,

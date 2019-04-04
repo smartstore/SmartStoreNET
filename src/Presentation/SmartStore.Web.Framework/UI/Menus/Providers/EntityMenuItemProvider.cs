@@ -1,4 +1,5 @@
 ﻿using SmartStore.Collections;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.UI
@@ -13,7 +14,11 @@ namespace SmartStore.Web.Framework.UI
         public EntityMenuItemProvider(ILinkResolver linkResolver)
         {
             _linkResolver = linkResolver;
+
+            T = NullLocalizer.Instance;
         }
+
+        public Localizer T { get; set; }
 
         protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
 		{
@@ -26,25 +31,34 @@ namespace SmartStore.Web.Framework.UI
             var result = _linkResolver.Resolve(request.Entity.Model);
 			node.Value.Url = result.Link;
 
+            if (node.Value.Text.IsEmpty())
+            {
+                node.Value.Text = result.Label;
+            }
+
             switch (result.Type)
             {
                 case LinkType.Product:
                 case LinkType.Category:
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
-                    node.Value.EntityId = result.Id;
+                    if (!request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+                    {
+                        node.Value.EntityId = result.Id;
+                    }
                     node.Value.EntityName = result.Type.ToString();
                     break;
             }
 
-            if (node.Value.Text.IsEmpty())
+            if (request.Origin.IsCaseInsensitiveEqual("EditMenu"))
             {
-                node.Value.Text = result.Label;
+                var info = result.Type.GetLinkTypeInfo();
+                node.Value.BadgeText = T(info.ResKey);
+                node.Value.Icon = info.Icon;
             }
-
-            // For edit mode, only apply MenuItemRecord.Published.
-            if (!request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+            else
             {
+                // For edit mode, only apply MenuItemRecord.Published.
                 node.Value.Visible = result.Status == LinkStatus.Ok;
             }
         }

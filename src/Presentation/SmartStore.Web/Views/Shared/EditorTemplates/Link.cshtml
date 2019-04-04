@@ -3,26 +3,6 @@
 @functions
 {
     private string Value => ViewData.Model != null ? Convert.ToString(ViewData.Model) : null;
-
-    private dynamic GetTypeInfos(LinkType type)
-    {
-        switch (type)
-        {
-            case LinkType.Product:
-                return new { icon = "fa fa-cube", name = T("Common.Entity.Product").Text };
-            case LinkType.Category:
-                return new { icon = "fa fa-sitemap", name = T("Common.Entity.Category").Text };
-            case LinkType.Manufacturer:
-                return new { icon = "far fa-building", name = T("Common.Entity.Manufacturer").Text };
-            case LinkType.Topic:
-                return new { icon = "far fa-file", name = T("Common.Entity.Topic").Text };
-            case LinkType.File:
-                return new { icon = "far fa-folder-open", name = T("Common.File").Text };
-            case LinkType.Url:
-            default:
-                return new { icon = "fa fa-link", name = T("Common.Url").Text };
-        }
-    }
 }
 
 @{
@@ -52,10 +32,10 @@
             <div class="dropdown-menu">
                 @foreach (var type in allowedTypes)
                 {
-                    var info = GetTypeInfos(type);
+                    var info = type.GetLinkTypeInfo();
                     <a class="dropdown-item link-type" href="#" data-type="@type.ToString().ToLower()">
-                        <i class="fa-fw @info.icon"></i>
-                        <span>@info.name</span>
+                        <i class="fa-fw @info.Icon"></i>
+                        <span>@T(info.ResKey)</span>
                     </a>
                 }
             </div>

@@ -69,7 +69,7 @@ namespace SmartStore.Services.Cms
             }
         }
 
-		public override string ToString()
+        public override string ToString()
 		{
 			return this.Link;
 		}
@@ -91,4 +91,29 @@ namespace SmartStore.Services.Cms
 			return this.MemberwiseClone();
 		}
 	}
+
+
+    public static class LinkResolverExtensions
+    {
+        public static (string Icon, string ResKey) GetLinkTypeInfo(this LinkType type)
+        {
+            switch (type)
+            {
+                case LinkType.Product:
+                    return ("fa fa-cube", "Common.Entity.Product");
+                case LinkType.Category:
+                    return ("fa fa-sitemap", "Common.Entity.Category");
+                case LinkType.Manufacturer:
+                    return ("far fa-building", "Common.Entity.Manufacturer");
+                case LinkType.Topic:
+                    return ("far fa-file", "Common.Entity.Topic");
+                case LinkType.Url:
+                    return ("fa fa-link", "Common.Url");
+                case LinkType.File:
+                    return ("far fa-folder-open", "Common.File");
+                default:
+                    throw new SmartException("Unknown link builder type.");
+            }
+        }
+    }
 }

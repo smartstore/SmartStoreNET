@@ -3,6 +3,7 @@ using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Cms;
+using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
@@ -26,13 +27,21 @@ namespace SmartStore.Web.Framework.UI
             _services = services;
             _categoryService = categoryService;
             _pictureService = pictureService;
+
+            T = NullLocalizer.Instance;
         }
+
+        public Localizer T { get; set; }
 
         public override void Append(MenuItemProviderRequest request)
 		{
             if (request.Origin.IsCaseInsensitiveEqual("EditMenu"))
             {
-                base.Append(request);
+                var item = ConvertToMenuItem(request.Entity);
+                item.BadgeText = T("Providers.MenuItems.FriendlyName.Catalog");
+                item.Icon = "fa fa-sitemap";
+
+                request.Parent.Append(item);
             }
             else
             {

@@ -58,13 +58,14 @@ namespace SmartStore.Web.Framework.UI
 
         public override void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false)
         {
-            if (curNode == null || !curNode.Value.EntityName.IsCaseInsensitiveEqual(nameof(Category)))
+            if (curNode == null)
             {
                 return;
             }
 
             try
             {
+                // Only consider child elements of type category.
                 Func<TreeNode<MenuItem>, bool> predicate = x => !x.Value.ElementsCount.HasValue && x.Value.EntityName.IsCaseInsensitiveEqual(nameof(Category));
 
                 using (Services.Chronometer.Step($"DatabaseMenu.ResolveElementsCount() for {curNode.Value.Text.EmptyNull()}"))

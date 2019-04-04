@@ -469,7 +469,7 @@ namespace SmartStore.Services.Messages
 			var host = messageContext.BaseUri.ToString();
 			var logoInfo = _services.PictureService.GetPictureInfo(messageContext.Store.LogoPictureId);
 
-			// Issue: https://github.com/smartstoreag/SmartStoreNET/issues/1321
+			// Issue: https://github.com/smartstore/SmartStoreNET/issues/1321
 
 			var m = new Dictionary<string, object>
 			{

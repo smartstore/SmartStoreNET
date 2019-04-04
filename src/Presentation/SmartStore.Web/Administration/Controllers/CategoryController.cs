@@ -317,7 +317,7 @@ namespace SmartStore.Admin.Controllers
 
 			var mainList = query.ToList();
 
-			var mruList = new MostRecentlyUsedList<string>(
+			var mruList = new TrimmedBuffer<string>(
 				_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
 				_catalogSettings.MostRecentlyUsedCategoriesMaxSize)
 				.Reverse()

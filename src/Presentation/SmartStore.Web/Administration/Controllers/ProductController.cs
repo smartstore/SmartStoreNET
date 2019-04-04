@@ -1556,8 +1556,10 @@ namespace SmartStore.Admin.Controllers
 
 				_categoryService.InsertProductCategory(productCategory);
 
-				var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
-					model.Category, _catalogSettings.MostRecentlyUsedCategoriesMaxSize);
+				var mru = new TrimmedBuffer<string>(
+					_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+					model.Category, 
+					_catalogSettings.MostRecentlyUsedCategoriesMaxSize);
 
 				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedCategories, mru.ToString());
 			}
@@ -1582,8 +1584,10 @@ namespace SmartStore.Admin.Controllers
 
 				if (categoryChanged)
 				{
-					var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
-						model.Category, _catalogSettings.MostRecentlyUsedCategoriesMaxSize);
+					var mru = new TrimmedBuffer<string>(
+						_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+						model.Category, 
+						_catalogSettings.MostRecentlyUsedCategoriesMaxSize);
 
 					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedCategories, mru.ToString());
 				}
@@ -1664,8 +1668,10 @@ namespace SmartStore.Admin.Controllers
 
 				_manufacturerService.InsertProductManufacturer(productManufacturer);
 
-				var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-					model.Manufacturer, _catalogSettings.MostRecentlyUsedManufacturersMaxSize);
+				var mru = new TrimmedBuffer<string>(
+					_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+					model.Manufacturer, 
+					_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
 
 				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedManufacturers, mru.ToString());
 			}
@@ -1691,8 +1697,10 @@ namespace SmartStore.Admin.Controllers
 
 				if (manufacturerChanged)
 				{
-					var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
-						model.Manufacturer, _catalogSettings.MostRecentlyUsedManufacturersMaxSize);
+					var mru = new TrimmedBuffer<string>(
+						_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+						model.Manufacturer, 
+						_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
 
 					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedManufacturers, mru.ToString());
 				}

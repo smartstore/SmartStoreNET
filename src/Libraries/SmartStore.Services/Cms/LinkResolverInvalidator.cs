@@ -25,9 +25,11 @@ namespace SmartStore.Services.Cms
 			nameof(Topic.Title),
 			nameof(Topic.ShortTitle),
 			nameof(Product.Name),
-			nameof(Category.Published),
-			nameof(Product.Deleted),
-			nameof(StoreMapping.StoreId),
+            nameof(Product.Deleted),
+            nameof(Product.MainPictureId),
+            nameof(Category.Published),
+            nameof(Category.PictureId),
+            nameof(StoreMapping.StoreId),
 			nameof(UrlRecord.IsActive),
 			nameof(UrlRecord.Slug)
 		};

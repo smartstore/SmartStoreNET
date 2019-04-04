@@ -22,14 +22,10 @@ namespace SmartStore.Web.Framework.UI
 
         protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
 		{
-            if (request.Entity.Model.IsEmpty())
-            {
-                return;
-            }
-
             // Always resolve against current store, current customer and working language.
             var result = _linkResolver.Resolve(request.Entity.Model);
 			node.Value.Url = result.Link;
+            node.Value.ImageId = result.PictureId;
 
             if (node.Value.Text.IsEmpty())
             {
@@ -42,7 +38,11 @@ namespace SmartStore.Web.Framework.UI
                 case LinkType.Category:
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
-                    if (!request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+                    if (request.IsMenuEditing)
+                    {
+                        // Info: node.Value.EntityId is MenuItemRecord.Id for editing MenuItemRecord.
+                    }
+                    else
                     {
                         node.Value.EntityId = result.Id;
                     }
@@ -50,11 +50,17 @@ namespace SmartStore.Web.Framework.UI
                     break;
             }
 
-            if (request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+            if (request.IsMenuEditing)
             {
                 var info = result.Type.GetLinkTypeInfo();
-                node.Value.BadgeText = T(info.ResKey);
+                node.Value.Summary = T(info.ResKey);
                 node.Value.Icon = info.Icon;
+
+                if (node.Value.Url.IsEmpty())
+                {
+                    node.Value.Text = null;
+                    node.Value.ResKey = "Admin.ContentManagement.Menus.SpecifyLinkTarget";
+                }
             }
             else
             {

@@ -1,5 +1,4 @@
 ﻿using SmartStore.Collections;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
@@ -15,7 +14,7 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotNull(request.Entity, nameof(request.Entity));
 
             // Add group header item.
-            if (request.Entity.BeginGroup && !request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+            if (request.Entity.BeginGroup && !request.IsMenuEditing)
             {
                 request.Parent.Append(new MenuItem
                 {
@@ -24,7 +23,7 @@ namespace SmartStore.Web.Framework.UI
                 });
             }
 
-			var node = request.Parent.Append(ConvertToMenuItem(request.Entity));
+			var node = request.Parent.Append(ConvertToMenuItem(request));
 			
 			ApplyLink(request, node);
 		}
@@ -34,8 +33,9 @@ namespace SmartStore.Web.Framework.UI
 		/// </summary>
 		/// <param name="entity">The entity to convert.</param>
 		/// <returns>Menu item.</returns>
-		protected virtual MenuItem ConvertToMenuItem(MenuItemRecord entity)
+		protected virtual MenuItem ConvertToMenuItem(MenuItemProviderRequest request)
 		{
+            var entity = request.Entity;
             var title = entity.GetLocalized(x => x.Title);
             var shortDescription = entity.GetLocalized(x => x.ShortDescription);
 
@@ -73,7 +73,7 @@ namespace SmartStore.Web.Framework.UI
                 menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
             }
 
-            if (entity.Icon.HasValue())
+            if (entity.Icon.HasValue() && !request.IsMenuEditing)
             {
                 menuItem.Icon = IconExplorer.GetIconByName(entity.Icon).GetCssClass(entity.Style);
             }

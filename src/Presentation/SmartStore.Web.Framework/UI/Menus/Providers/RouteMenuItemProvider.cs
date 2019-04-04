@@ -17,12 +17,6 @@ namespace SmartStore.Web.Framework.UI
 
         protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
 		{
-            if (request.Origin.IsCaseInsensitiveEqual("EditMenu"))
-            {
-                node.Value.BadgeText = T("Providers.MenuItems.FriendlyName.Route");
-                node.Value.Icon = "fas fa-directions";
-            }
-
             try
             {
                 if (request.Entity.Model.HasValue())
@@ -46,7 +40,19 @@ namespace SmartStore.Web.Framework.UI
                     }
                 }
             }
-            catch { }			
-		}
-	}
+            catch { }
+
+            if (request.IsMenuEditing)
+            {
+                node.Value.Summary = T("Providers.MenuItems.FriendlyName.Route");
+                node.Value.Icon = "fas fa-directions";
+
+                if (!node.Value.HasRoute())
+                {
+                    node.Value.Text = null;
+                    node.Value.ResKey = "Admin.ContentManagement.Menus.SpecifyLinkTarget";
+                }
+            }
+        }
+    }
 }

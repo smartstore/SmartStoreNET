@@ -35,10 +35,10 @@ namespace SmartStore.Web.Framework.UI
 
         public override void Append(MenuItemProviderRequest request)
 		{
-            if (request.Origin.IsCaseInsensitiveEqual("EditMenu"))
+            if (request.IsMenuEditing)
             {
-                var item = ConvertToMenuItem(request.Entity);
-                item.BadgeText = T("Providers.MenuItems.FriendlyName.Catalog");
+                var item = ConvertToMenuItem(request);
+                item.Summary = T("Providers.MenuItems.FriendlyName.Catalog");
                 item.Icon = "fa fa-sitemap";
 
                 request.Parent.Append(item);

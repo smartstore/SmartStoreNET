@@ -115,7 +115,8 @@ namespace SmartStore.Services.Cms
 								Published = x.Published,
 								Deleted = x.Deleted,
 								SubjectToAcl = x.SubjectToAcl,
-								LimitedToStores = x.LimitedToStores
+								LimitedToStores = x.LimitedToStores,
+                                PictureId = x.MainPictureId
 							});
 							break;
 						case LinkType.Category:
@@ -125,7 +126,8 @@ namespace SmartStore.Services.Cms
 								Published = x.Published,
 								Deleted = x.Deleted,
 								SubjectToAcl = x.SubjectToAcl,
-								LimitedToStores = x.LimitedToStores
+								LimitedToStores = x.LimitedToStores,
+                                PictureId = x.PictureId
 							});
 							break;
 						case LinkType.Manufacturer:
@@ -134,7 +136,8 @@ namespace SmartStore.Services.Cms
 								Name = x.Name,
 								Published = x.Published,
 								Deleted = x.Deleted,
-								LimitedToStores = x.LimitedToStores
+								LimitedToStores = x.LimitedToStores,
+                                PictureId = x.PictureId
 							});
 							break;
 						case LinkType.Topic:
@@ -156,7 +159,8 @@ namespace SmartStore.Services.Cms
                 Link = d.Link,
                 QueryString = queryString,
                 Label = d.Label,
-                Id = d.Id
+                Id = d.Id,
+                PictureId = d.PictureId
             };
 
             // Check ACL and limited to stores.
@@ -310,6 +314,7 @@ namespace SmartStore.Services.Cms
                 data.Id = summary.Id != 0 ? summary.Id : data.Id;
                 data.SubjectToAcl = summary.SubjectToAcl;
                 data.LimitedToStores = summary.LimitedToStores;
+                data.PictureId = summary.PictureId;
                 data.Status = summary.Deleted
                     ? LinkStatus.NotFound
                     : summary.Published ? LinkStatus.Ok : LinkStatus.Hidden;
@@ -347,5 +352,6 @@ namespace SmartStore.Services.Cms
         public bool Published { get; set; }
         public bool SubjectToAcl { get; set; }
         public bool LimitedToStores { get; set; }
+        public int? PictureId { get; set; }
     }
 }

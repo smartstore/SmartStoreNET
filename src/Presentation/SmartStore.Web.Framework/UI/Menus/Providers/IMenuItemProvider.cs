@@ -29,5 +29,10 @@ namespace SmartStore.Web.Framework.UI
         /// Entity that is converted to a menu item.
         /// </summary>
         public MenuItemRecord Entity { get; set; }
+
+        /// <summary>
+        /// Inidicates whether the request is for backend menu editing.
+        /// </summary>
+        public bool IsMenuEditing => Origin.IsCaseInsensitiveEqual("EditMenu");
     }
 }

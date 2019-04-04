@@ -25,22 +25,23 @@ namespace SmartStore.Services.Cms
         private string _link;
 
 		/// <summary>
-		/// The raw expression without query string
+		/// The raw expression without query string.
 		/// </summary>
 		public string Expression { get; set; }
 
 		/// <summary>
-		/// The query string part
+		/// The query string part.
 		/// </summary>
 		public string QueryString { get; set; }
 
 		public LinkType Type { get; set; }
         public object Value { get; set; }
-		public string Slug { get; set; }
 
         public LinkStatus Status { get; set; }
         public string Label { get; set; }
         public int Id { get; set; }
+        public int? PictureId { get; set; }
+        public string Slug { get; set; }
 
         public string Link
         {

@@ -20,7 +20,8 @@ namespace SmartStore.Collections
 		private readonly Func<IEnumerable<TValue>, ICollection<TValue>> _collectionCreator;
         private readonly bool _isReadonly = false;
 
-		internal readonly static Func<IEnumerable<TValue>, ICollection<TValue>> DefaultCollectionCreator = x => new List<TValue>(x ?? Enumerable.Empty<TValue>());
+		internal readonly static Func<IEnumerable<TValue>, ICollection<TValue>> DefaultCollectionCreator = 
+			x => new List<TValue>(x ?? Enumerable.Empty<TValue>());
 
 		public Multimap()
             : this(EqualityComparer<TKey>.Default)
@@ -81,7 +82,6 @@ namespace SmartStore.Collections
 			Guard.NotNull(items, nameof(items));
 
 			_dict = new Dictionary<TKey, ICollection<TValue>>(comparer ?? EqualityComparer<TKey>.Default);
-			_collectionCreator = DefaultCollectionCreator;
 
 			if (items != null)
 			{
@@ -147,9 +147,9 @@ namespace SmartStore.Collections
             get { return _dict.Keys; }
         }
 
-        /// <summary>
-        /// Gets the collection of collections of values.
-        /// </summary>
+		/// <summary>
+		/// Gets all value collections.
+		/// </summary>
 		public virtual ICollection<ICollection<TValue>> Values
         {
             get { return _dict.Values; }

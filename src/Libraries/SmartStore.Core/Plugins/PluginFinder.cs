@@ -11,9 +11,11 @@ namespace SmartStore.Core.Plugins
 		private readonly IDictionary<string, PluginDescriptor> _nameMap = new Dictionary<string, PluginDescriptor>(StringComparer.InvariantCultureIgnoreCase);
 		private readonly IDictionary<Assembly, PluginDescriptor> _assemblyMap = new Dictionary<Assembly, PluginDescriptor>();
 
+		private static readonly object _lock = new object();
+
 		private PluginFinder()
 		{
-			lock (_plugins)
+			lock (_lock)
 			{
 				LoadPlugins();
 			}

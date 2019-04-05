@@ -466,7 +466,7 @@ namespace SmartStore.Web.Controllers
         {
 			var customer = _services.WorkContext.CurrentCustomer;
 
-            var model = new MenuModel
+            var model = new MenuBarModel
             {
                 RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
 				NewsEnabled = _newsSettings.Enabled,

@@ -2,7 +2,7 @@
 
 namespace SmartStore.Web.Models.Common
 {
-    public partial class MenuModel : ModelBase
+    public partial class MenuBarModel : ModelBase
     {
 		public bool NewsEnabled { get; set; }
         public bool BlogEnabled { get; set; }

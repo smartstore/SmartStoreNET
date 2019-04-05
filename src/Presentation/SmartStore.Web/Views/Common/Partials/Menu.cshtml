@@ -1,4 +1,4 @@
-﻿@model MenuModel
+﻿@model MenuBarModel
 @using SmartStore.Web.Models.Common;
 @{
     string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });

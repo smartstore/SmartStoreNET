@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
 {
-	public class NavigationModel
+    public class MenuModel
 	{
 		private TreeNode<MenuItem> _selectedNode;
 		private bool _seekedSelectedNode;

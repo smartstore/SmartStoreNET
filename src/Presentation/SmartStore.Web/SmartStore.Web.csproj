@@ -401,7 +401,7 @@
     <Compile Include="Models\Customer\RegisterModel.cs" />
     <Compile Include="Models\Customer\LoginModel.cs" />
     <Compile Include="Models\Common\ServiceMenuModel.cs" />
-    <Compile Include="Models\Common\MenuModel.cs" />
+    <Compile Include="Models\Common\MenuBarModel.cs" />
     <Compile Include="Models\Common\ContactUsModel.cs" />
     <Compile Include="Models\Common\TaxTypeSelectorModel.cs" />
     <Compile Include="Models\Common\CurrencyModel.cs" />

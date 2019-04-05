@@ -1359,13 +1359,13 @@ namespace SmartStore.Web.Controllers
 			}
 		}
 
-		public NavigationModel PrepareCategoryNavigationModel(int currentCategoryId, int currentProductId)
+		public MenuModel PrepareCategoryMenuModel(int currentCategoryId, int currentProductId)
 		{
 			var root = GetCategoryMenu();
 		
 			var breadcrumb = GetCategoryBreadCrumb(currentCategoryId, currentProductId);
 
-			var model = new NavigationModel
+			var model = new MenuModel
 			{
 				Root = root,
 				Path = breadcrumb

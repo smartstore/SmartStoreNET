@@ -539,7 +539,7 @@ namespace SmartStore.Services.Catalog
             }
 
             // Tier prices.
-            if (product.HasTierPrices && includeDiscounts && bundleItem == null)
+            if (product.HasTierPrices && includeDiscounts && !(bundleItem != null && bundleItem.Item != null))
             {
 				var tierPrice = GetMinimumTierPrice(product, customer, quantity, context);
                 var discountAmountTest = GetDiscountAmount(product, customer, additionalCharge, quantity, out var appliedDiscountTest, bundleItem);

@@ -134,7 +134,8 @@
                     });
                 }
 
-				function alignDrop(popper, drop, container) {
+                function alignDrop(popper, drop, container) {
+
 					var nav = $(".navbar-nav", container),
 						left,
 						right,
@@ -142,8 +143,15 @@
 						dropWidth = drop.width(),
 						containerWidth = container.width();
 
-					if (!rtl) {
-						left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+                    if (!rtl) {
+
+                        if (!Modernizr.touchevents) {
+                            left = Math.ceil(popper.position().left + parseInt(nav.css('margin-left')));
+                        }
+                        else {
+                            left = Math.ceil(popper.position().left + nav.position().left);
+                        }
+                        
 						right = "auto";
 
 						if (left < 0) {
@@ -155,8 +163,14 @@
 						}
 					}
 					else {
-						left = "auto";
-						right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
+                        left = "auto";
+
+                        if (!Modernizr.touchevents) {
+                            right = Math.ceil(containerWidth - (popper.position().left + popperWidth));
+                        }
+                        else {
+                            right = Math.ceil(popper.position().right + nav.position().left);
+                        }
 
 						if (right < 0) {
 							right = 0;
@@ -179,14 +193,15 @@
 
 					// jQuery does not accept "!important"
 					drop[0].style.setProperty('left', left, 'important');
-					drop[0].style.setProperty('right', right, 'important');
+                    drop[0].style.setProperty('right', right, 'important');
 				}
 
                 // correct dropdown position
                 if (isSimple) {
-					var event = Modernizr.touchevents ? "click" : "mouseenter";
+                    var event = Modernizr.touchevents ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
+                        
 						var navItem = $(this);
 						var targetSelector = navItem.find(".nav-link").data("target");
 						if (!targetSelector)
@@ -302,7 +317,7 @@
 						if (Modernizr.touchevents) {
 							navWidth = nav.width();
 							var offset = nav.position().left;
-							curMarginStart = rtl ? (offset - 1) * -1 : offset;
+                            curMarginStart = rtl ? (offset - 1) * -1 : offset;
 						}
 						else {
 							navWidth = megamenu.width();
@@ -330,10 +345,10 @@
                     if (Modernizr.touchevents) {
                         megamenu.tapmove(function () {
                             closeNow($(".nav-item.active .nav-link"));
-							updateNavState();
+                            updateNavState();
                         });
                     }
-
+                    
                     function onPageResized() {
                     	updateNavState();
 

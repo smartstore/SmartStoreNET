@@ -134,7 +134,8 @@ namespace SmartStore.Services.Orders
 			int[] shippingStatusIds,
 			string billingEmail,
 			string orderNumber,
-			string billingName = null)
+			string billingName = null,
+            string[] paymentMethods = null)
 		{
 			var query = _orderRepository.Table;
 
@@ -173,6 +174,11 @@ namespace SmartStore.Services.Orders
 			if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
 				query = query.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
 
+            if (paymentMethods != null && paymentMethods.Any())
+            {
+                query = query.Where(x => paymentMethods.Contains(x.PaymentMethodSystemName));
+            }
+
 			query = query.Where(x => !x.Deleted);
 
 			return query;
@@ -180,10 +186,11 @@ namespace SmartStore.Services.Orders
 
 		public virtual IPagedList<Order> SearchOrders(int storeId, int customerId, DateTime? startTime, DateTime? endTime, 
 			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null)
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null,
+            string[] paymentMethods = null)
         {
 			var query = GetOrders(storeId, customerId, startTime, endTime, orderStatusIds, paymentStatusIds, shippingStatusIds,
-				billingEmail, orderNumber, billingName);
+				billingEmail, orderNumber, billingName, paymentMethods);
 
 			query = query.OrderByDescending(x => x.CreatedOnUtc);
 

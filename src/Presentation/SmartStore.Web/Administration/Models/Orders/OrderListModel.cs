@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -15,6 +14,7 @@ namespace SmartStore.Admin.Models.Orders
             AvailablePaymentStatuses = new List<SelectListItem>();
             AvailableShippingStatuses = new List<SelectListItem>();
 			AvailableStores = new List<SelectListItem>();
+            AvailablePaymentMethods = new List<SelectListItem>();
         }
 
         [SmartResourceDisplayName("Admin.Orders.List.StartDate")]
@@ -42,6 +42,9 @@ namespace SmartStore.Admin.Models.Orders
 		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int StoreId { get; set; }
 
+        [SmartResourceDisplayName("Order.PaymentMethod")]
+        public string PaymentMethods { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.List.OrderGuid")]
         [AllowHtml]
         public string OrderGuid { get; set; }
@@ -60,5 +63,6 @@ namespace SmartStore.Admin.Models.Orders
         public IList<SelectListItem> AvailablePaymentStatuses { get; set; }
         public IList<SelectListItem> AvailableShippingStatuses { get; set; }
 		public IList<SelectListItem> AvailableStores { get; set; }
+        public IList<SelectListItem> AvailablePaymentMethods { get; set; }
     }
 }

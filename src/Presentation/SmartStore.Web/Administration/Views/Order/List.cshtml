@@ -74,6 +74,10 @@
 			@Html.SmartLabelFor(model => model.OrderNumber)
 			@Html.EditorFor(model => Model.OrderNumber)
 		</div>
+		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+			@Html.SmartLabelFor(model => model.PaymentMethods)
+			@Html.DropDownList("PaymentMethods", Model.AvailablePaymentMethods, null, new { multiple = "multiple", @class = "form-control" })
+		</div>
 		@if (Model.AvailableStores.Count > 1)
 		{
 			<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
@@ -85,7 +89,6 @@
 		{
 			<div class="col-xl-3"></div>
 		}
-		<div class="col-xl-3"></div>
 		<div class="col-sm-6 col-lg-4 col-xl-3 form-group">
 			@Html.SmartLabelFor(model => model.OrderStatusIds)
 			@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple", @class = "form-control" })
@@ -252,7 +255,8 @@
 				ShippingStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.ShippingStatusIds)').val()).join(),
 				StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
 				OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val(),
-				OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val()
+                OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val(),
+                PaymentMethods: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentMethods)').val()).join(),
 			};
 			e.data = searchModel;
 		}

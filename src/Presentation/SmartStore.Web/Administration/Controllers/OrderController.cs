@@ -880,19 +880,48 @@ namespace SmartStore.Admin.Controllers
         public ActionResult List(OrderListModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+            {
                 return AccessDeniedView();
+            }
 
-			var allStores = Services.StoreService.GetAllStores();
+            var allStores = Services.StoreService.GetAllStores();
+            var paymentMethods = _paymentService.LoadAllPaymentMethods();
 
-			model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
+            model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
             model.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 
-			model.AvailableStores = allStores
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
+            model.AvailableStores = allStores
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+                .ToList();
 
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
+            model.AvailablePaymentMethods = paymentMethods
+                .Select(x => new SelectListItem
+                {
+                    Text = _pluginMediator.GetLocalizedFriendlyName(x.Metadata).NullEmpty() ?? x.Metadata.FriendlyName.NullEmpty(),
+                    Value = x.Metadata.SystemName
+                })
+                .ToList();
+
+            var paymentMethodsCounts = model.AvailablePaymentMethods
+                .GroupBy(x => x.Text)
+                .Select(x => new { Name = x.Key, Count = x.Count() })
+                .ToDictionarySafe(x => x.Name, x => x.Count);                
+
+            model.AvailablePaymentMethods = model.AvailablePaymentMethods
+                .OrderBy(x => x.Text)
+                .Select(x =>
+                {
+                    if (paymentMethodsCounts[x.Text] > 1)
+                    {
+                        x.Text = "{0} ({1})".FormatInvariant(x.Text, x.Value);
+                    }
+
+                    return x;
+                })
+                .ToList();
+
+            model.GridPageSize = _adminAreaSettings.GridPageSize;
 
 			return View(model);
 		}
@@ -917,7 +946,7 @@ namespace SmartStore.Admin.Controllers
 				Provider<IPaymentMethod> paymentMethod = null;
 
 				var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
-					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
+					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName, model.PaymentMethods.SplitSafe(","));
 
 				gridModel.Data = orders.Select(x =>
 				{

@@ -43,6 +43,8 @@ namespace SmartStore.Services.Cms
         {
             Guard.NotNull(menu, nameof(MenuRecord));
 
+            menu.SystemName = menu.SystemName.ToValidPath();
+
             _menuRepository.Insert(menu);
 
             var systemNames = GetMenuSystemNames(false);
@@ -56,7 +58,7 @@ namespace SmartStore.Services.Cms
         {
             Guard.NotNull(menu, nameof(MenuRecord));
 
-            var oldSystemName = menu.SystemName;
+            menu.SystemName = menu.SystemName.ToValidPath();
 
             var modProps = _services.DbContext.GetModifiedProperties(menu);
 

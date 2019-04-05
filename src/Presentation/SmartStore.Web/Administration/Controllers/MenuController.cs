@@ -120,7 +120,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(MenuRecordModel model, bool continueEditing, FormCollection form)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
@@ -173,7 +173,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(MenuRecordModel model, bool continueEditing, FormCollection form)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Do not name parameter "model" because of property of same name.
-        [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
         public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
@@ -334,7 +334,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         // Do not name parameter "model" because of property of same name.
-        [HttpPost, ParameterBasedOnFormName("save-item-continue", "continueEditing")]
+        [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
         public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))

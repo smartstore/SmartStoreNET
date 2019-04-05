@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
@@ -8,7 +7,7 @@ using SmartStore.Services.Media;
 
 namespace SmartStore.Web.Framework
 {
-	public static class UrlHelperExtensions
+    public static class UrlHelperExtensions
     {
         public static string LogOn(this UrlHelper urlHelper, string returnUrl)
         {
@@ -136,12 +135,5 @@ namespace SmartStore.Web.Framework
 
 			return string.Empty;
 		}
-	}
-
-	[Serializable]
-	public class TopicLinkData
-	{
-		public string SeName { get; set; }
-		public string LinkText { get; set; }
 	}
 }

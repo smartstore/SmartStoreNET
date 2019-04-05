@@ -219,6 +219,11 @@ namespace SmartStore.Services.Cms
 			return true;
 		}
 
+        protected virtual string GetLocalized(int entityId, string localeKeyGroup, string localeKey, int languageId, string defaultValue)
+        {
+            return _localizedEntityService.GetLocalizedValue(languageId, entityId, localeKeyGroup, localeKey).NullEmpty() ?? defaultValue.NullEmpty();
+        }
+
         protected virtual LinkResolverData Parse(string linkExpression)
         {
 			if (TokenizeExpression(linkExpression, out var type, out var path, out var query))
@@ -292,6 +297,8 @@ namespace SmartStore.Services.Cms
                 {
                     Id = x.Id,
                     Name = x.SystemName,
+                    Title = x.Title,
+                    ShortTitle = x.ShortTitle,
                     Published = x.IsPublished,
                     SubjectToAcl = x.SubjectToAcl,
                     LimitedToStores = x.LimitedToStores
@@ -321,13 +328,13 @@ namespace SmartStore.Services.Cms
 				
                 if (data.Type == LinkType.Topic)
                 {
-                    data.Label = _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "ShortTitle").NullEmpty() ??
-                        _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "Title").NullEmpty() ??
-                        summary.Name;
+                    data.Label = GetLocalized(data.Id, entityName, "ShortTitle", languageId, summary.ShortTitle)
+                        ?? GetLocalized(data.Id, entityName, "Title", languageId, summary.Title)
+                        ?? summary.Name;
                 }
                 else
                 {
-                    data.Label = _localizedEntityService.GetLocalizedValue(languageId, data.Id, entityName, "Name").NullEmpty() ?? summary.Name;
+                    data.Label = GetLocalized(data.Id, entityName, "Name", languageId, summary.Name);
                 }
 
                 data.Slug = _urlRecordService.GetActiveSlug(data.Id, entityName, languageId).NullEmpty() ?? _urlRecordService.GetActiveSlug(data.Id, entityName, 0);
@@ -348,6 +355,8 @@ namespace SmartStore.Services.Cms
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Title { get; set; }
+        public string ShortTitle { get; set; }
         public bool Deleted { get; set; }
         public bool Published { get; set; }
         public bool SubjectToAcl { get; set; }

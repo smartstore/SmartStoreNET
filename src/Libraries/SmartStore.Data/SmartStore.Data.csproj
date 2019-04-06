@@ -131,6 +131,9 @@
     <Compile Include="Caching\EfDbCache.cs" />
     <Compile Include="Caching\DbCacheEntry.cs" />
     <Compile Include="Caching\DbCachingPolicy.cs" />
+    <Compile Include="Caching\EfDbModelStore.cs" />
+    <Compile Include="Caching\EfViewCacheFactory.cs" />
+    <Compile Include="Caching\EfMappingViewCache.cs" />
     <Compile Include="Caching\IDbCache.cs" />
     <Compile Include="Caching\DbCacheExtensions.cs" />
     <Compile Include="Caching\QueryRegistrar.cs" />

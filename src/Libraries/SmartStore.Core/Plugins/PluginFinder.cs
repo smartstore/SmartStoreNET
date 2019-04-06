@@ -35,7 +35,7 @@ namespace SmartStore.Core.Plugins
 			foreach (var plugin in plugins)
 			{
 				_nameMap[plugin.SystemName] = plugin;
-				_assemblyMap[plugin.ReferencedAssembly] = plugin;
+				_assemblyMap[plugin.Assembly.Assembly] = plugin;
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace SmartStore.Core.Plugins
 		public virtual IEnumerable<T> GetPlugins<T>(bool installedOnly = true) where T : class, IPlugin
         {
             foreach (var plugin in _plugins)
-                if (typeof(T).IsAssignableFrom(plugin.PluginType))
+                if (typeof(T).IsAssignableFrom(plugin.PluginClrType))
                     if (!installedOnly || plugin.Installed)
 						yield return plugin.Instance<T>();
         }
@@ -75,7 +75,7 @@ namespace SmartStore.Core.Plugins
 			where T : class, IPlugin
         {
             foreach (var plugin in _plugins)
-                if (typeof(T).IsAssignableFrom(plugin.PluginType))
+                if (typeof(T).IsAssignableFrom(plugin.PluginClrType))
                     if (!installedOnly || plugin.Installed)
 						yield return plugin;
         }
@@ -121,7 +121,7 @@ namespace SmartStore.Core.Plugins
 			{
 				if (!installedOnly || descriptor.Installed)
 				{
-					if (typeof(T).IsAssignableFrom(descriptor.PluginType))
+					if (typeof(T).IsAssignableFrom(descriptor.PluginClrType))
 						return descriptor;
 				}
 			}

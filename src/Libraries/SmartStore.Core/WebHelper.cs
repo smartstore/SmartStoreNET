@@ -496,10 +496,7 @@ namespace SmartStore.Core
 				File.Delete(Path.Combine(userCacheDir, "MVC-ControllerTypeCache.xml"));
 				File.Delete(Path.Combine(userCacheDir, "MVC-AreaRegistrationTypeCache.xml"));
 			}
-			catch
-			{
-
-			}
+			catch { }
 		}
 
 		private bool TryWriteBinFolder()

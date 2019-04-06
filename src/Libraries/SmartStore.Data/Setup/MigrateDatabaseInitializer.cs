@@ -5,6 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using SmartStore.Core.Data;
+using SmartStore.Data.Caching;
 using SmartStore.Data.Migrations;
 using SmartStore.Utilities;
 
@@ -96,10 +97,11 @@ namespace SmartStore.Data.Setup
 			}
 			else
 			{
-				var coreConfig = config as MigrationsConfiguration;
-				if (coreConfig != null && context is SmartObjectContext)
+				////// DB is up-to-date and no migration ran.
+				//EfViewCacheFactory.SetContext(context);
+
+				if (config is MigrationsConfiguration coreConfig && context is SmartObjectContext)
 				{
-					// DB is up-to-date and no migration ran.
 					// Call the main Seed method anyway (on every startup),
 					// we could have locale resources or settings to add/update.
 					coreConfig.SeedDatabase(context as SmartObjectContext);

@@ -16,6 +16,7 @@ using SmartStore.Core.Packaging;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Data;
+using System.Threading.Tasks;
 
 // Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
 // SEE THIS POST for full details of what this does
@@ -109,9 +110,8 @@ namespace SmartStore.Core.Plugins
 
 			DynamicModuleUtility.RegisterModule(typeof(AutofacRequestLifetimeHttpModule));
 
-			#region Plugins
-
 			var incompatiblePlugins = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			var dirty = false;
 
 			using (Locker.GetWriteLock())
             {
@@ -122,68 +122,21 @@ namespace SmartStore.Core.Plugins
 
 				// If plugins state is dirty, we copy files over to the dynamic folder,
 				// otherwise we just reference the previously copied file.
-				var dirty = DetectAndCleanStalePlugins(compatiblePlugins);
+				dirty = DetectAndCleanStalePlugins(compatiblePlugins);
 
-				foreach (var plugin in plugins)
+				//// Perf: Initialize/probe all plugins in parallel
+				//plugins.AsParallel().ForAll(x => DeployPlugin(x, dirty));
+
+				// Retry when failed, because during parallel execution assembly loading MAY fail.
+				// Therefore we retry initialization for failed plugins, but sequentially this time.
+				foreach (var p in plugins)
 				{
-					if (plugin.Incompatible)
-					{
-						incompatiblePlugins.Add(plugin.SystemName);
-						continue;
-					}
-					else
-					{
-						_referencedPlugins[plugin.SystemName] = plugin;
-					}
+					// INFO: this seems redundant, but it's ok: 
+					// DeployPlugin() only probes assemblies that are not loaded yet.
+					DeployPlugin(p, dirty);
 
-					try
-					{
-						// Shadow copy main plugin assembly
-						plugin.ReferencedAssembly = Probe(plugin.OriginalAssemblyFile, dirty);
-
-						// Shadow copy other referenced plugin local assemblies
-						if (plugin.ReferencedLocalAssemblyFiles != null)
-						{
-							foreach (var assemblyFile in plugin.ReferencedLocalAssemblyFiles)
-							{
-								Probe(assemblyFile, dirty);
-							}
-						}
-
-						if (!plugin.Installed)
-						{
-							_inactiveAssemblies.Add(plugin.ReferencedAssembly);
-						}
-
-						// Initialize: Find IPlugin, IPreApplicationStart, IConfigurable etc.
-						ActivatePlugin(plugin);
-					}
-					catch (UnauthorizedAccessException)
-					{
-						// Throw the exception if its UnauthorizedAccessException as this will 
-						// be because we most likely cannot copy to the dynamic folder.
-						throw;
-					}
-					catch (ReflectionTypeLoadException ex)
-					{
-						var msg = string.Empty;
-						foreach (var e in ex.LoaderExceptions)
-						{
-							msg += e.Message + Environment.NewLine;
-						}
-
-						HandlePluginActivationException(ex, plugin, msg, incompatiblePlugins);
-					}
-					catch (Exception ex)
-					{
-						var msg = string.Empty;
-						for (var e = ex; e != null; e = e.InnerException)
-						{
-							msg += e.Message + Environment.NewLine;
-						}
-
-						HandlePluginActivationException(ex, plugin, msg, incompatiblePlugins);
-					}
+					// Finalize
+					FinalizePlugin(p);
 				}
 
 				if (dirty && DataSettings.DatabaseIsInstalled())
@@ -199,7 +152,64 @@ namespace SmartStore.Core.Plugins
 				IncompatiblePlugins = incompatiblePlugins.AsReadOnly();
 			}
 
-			#endregion
+			void DeployPlugin(PluginDescriptor p, bool shadowCopy)
+			{
+				if (p.Incompatible)
+				{
+					// Do nothing if plugin is incompatible
+					return;
+				}
+				
+				// First copy referenced local assemblies (if any)
+				for (int i = 0; i < p.ReferencedLocalAssemblies.Length; ++i)
+				{
+					var refAr = p.ReferencedLocalAssemblies[i];
+					if (refAr.Assembly == null)
+					{
+						Probe(refAr, p, shadowCopy);
+					}
+				}
+
+				// Then copy main plugin assembly
+				var ar = p.Assembly;
+				if (ar.Assembly == null)
+				{
+					Probe(ar, p, shadowCopy);
+					if (ar.Assembly != null)
+					{
+						// Activate (even if uninstalled): Find IPlugin, IPreApplicationStart, IConfigurable etc.
+						ActivatePlugin(p);
+					}
+				}
+			}
+
+			void FinalizePlugin(PluginDescriptor p)
+			{
+				_referencedPlugins[p.SystemName] = p;
+
+				if (p.Incompatible)
+				{
+					incompatiblePlugins.Add(p.SystemName);
+					return;
+				}
+
+				var firstFailedAssembly = p.ReferencedLocalAssemblies.FirstOrDefault(x => x.ActivationException != null);
+				if (firstFailedAssembly == null && p.Assembly.ActivationException != null)
+				{
+					firstFailedAssembly = p.Assembly;
+				}
+				if (firstFailedAssembly != null)
+				{
+					Debug.WriteLine(firstFailedAssembly.ActivationException.Message);
+					p.Incompatible = true;
+					incompatiblePlugins.Add(p.SystemName);
+				}
+
+				if ((!p.Installed || firstFailedAssembly != null) && p.Assembly.Assembly != null)
+				{
+					_inactiveAssemblies.Add(p.Assembly.Assembly);
+				}
+			}
 		}
 
 		/// <summary>
@@ -216,7 +226,7 @@ namespace SmartStore.Core.Plugins
 			if (!pluginsDir.Exists)
 			{
 				pluginsDir.Create();
-				yield break;
+				return Enumerable.Empty<PluginDescriptor>();
 			}
 
 			// Determine all plugin folders: ~/Plugins/{SystemName}
@@ -225,17 +235,14 @@ namespace SmartStore.Core.Plugins
 				.OrderBy(x => x.Name)
 				.ToArray();
 
-			var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile();
+			var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile().AsSynchronized();
 
 			// Load/activate all plugins
-			foreach (var d in allPluginDirs)
-			{
-				var descriptor = LoadPluginDescriptor(d, installedPluginSystemNames);
-				if (descriptor != null)
-				{
-					yield return descriptor;
-				}
-			}
+			return allPluginDirs
+				.AsParallel()
+				.AsOrdered()
+				.Select(d => LoadPluginDescriptor(d, installedPluginSystemNames))
+				.Where(x => x != null);
 		}
 
 		private static PluginDescriptor LoadPluginDescriptor(DirectoryInfo d, ICollection<string> installedPluginSystemNames)
@@ -282,9 +289,9 @@ namespace SmartStore.Core.Plugins
 				.ToDictionarySafe(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
 			// Set 'OriginalAssemblyFile' property
-			descriptor.OriginalAssemblyFile = pluginBinaries.Get(descriptor.PluginFileName);
+			descriptor.Assembly.OriginalFile = pluginBinaries.Get(descriptor.PluginFileName);
 
-			if (descriptor.OriginalAssemblyFile == null)
+			if (descriptor.Assembly.OriginalFile == null)
 			{
 				throw new SmartException("The main assembly '{0}' for plugin '{1}' could not be found.".FormatInvariant(descriptor.PluginFileName, descriptor.SystemName));
 			}
@@ -294,7 +301,7 @@ namespace SmartStore.Core.Plugins
 				.Where(x => !x.Key.IsCaseInsensitiveEqual(descriptor.PluginFileName))
 				.Select(x => x.Value);
 
-			descriptor.ReferencedLocalAssemblyFiles = otherAssemblyFiles.ToArray();
+			descriptor.ReferencedLocalAssemblies = otherAssemblyFiles.Select(x => new AssemblyReference { OriginalFile = x }).ToArray();
 
 			return descriptor;
 		}
@@ -302,15 +309,15 @@ namespace SmartStore.Core.Plugins
 		private static void ActivatePlugin(PluginDescriptor plugin)
 		{
 			// Init plugin type (only one plugin per assembly is allowed)
-			var exportedTypes = plugin.ReferencedAssembly.ExportedTypes;
 			bool pluginFound = false;
 			bool preStarterFound = !plugin.Installed;
+			var exportedTypes = plugin.Assembly.Assembly.GetExportedTypes();
 
 			foreach (var t in exportedTypes)
 			{
 				if (typeof(IPlugin).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract)
 				{
-					plugin.PluginType = t;
+					plugin.PluginClrType = t;
 					plugin.IsConfigurable = typeof(IConfigurable).IsAssignableFrom(t);
 					pluginFound = true;
 				}
@@ -330,22 +337,6 @@ namespace SmartStore.Core.Plugins
 					break;
 				}
 			}
-		}
-
-		private static void HandlePluginActivationException(Exception ex, PluginDescriptor plugin, string msg, ICollection<string> incompatiblePlugins)
-		{
-			msg = "Error loading plugin '{0}'".FormatInvariant(plugin.SystemName) + Environment.NewLine + msg;
-
-			var fail = new SmartException(msg, ex);
-			Debug.WriteLine(fail.Message);
-
-			if (plugin.ReferencedAssembly != null)
-			{
-				_inactiveAssemblies.Add(plugin.ReferencedAssembly);
-			}
-
-			plugin.ActivationException = fail;
-			incompatiblePlugins.Add(plugin.SystemName);
 		}
 
         /// <summary>
@@ -527,51 +518,96 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// Perform file deploy
         /// </summary>
-        /// <param name="plugin">Plugin main dll file info</param>
+        /// <param name="ar">Assembly reference to probe</param>
 		/// <returns>Reference to the shadow copied Assembly</returns>
-        private static Assembly Probe(FileInfo plugin, bool performShadowCopy)
+        private static Assembly Probe(AssemblyReference ar, PluginDescriptor d, bool shadowCopy)
         {
-			if (plugin.Directory == null || plugin.Directory.Parent == null)
+			var file = ar.OriginalFile;	
+
+			try
 			{
-				throw new InvalidOperationException("The plugin directory for the " + plugin.Name +
-													" file exists in a folder outside of the allowed SmartStore folder hierarchy");
+				if (file.Directory == null || file.Directory.Parent == null)
+				{
+					throw new InvalidOperationException("The plugin directory for the " + file.Name +
+														" file exists in a folder outside of the allowed SmartStore folder hierarchy");
+				}
+
+				ar.File = InitializeFullTrust(file, shadowCopy);
+
+				// We can now register the plugin definition
+				ar.Assembly = Assembly.Load(AssemblyName.GetAssemblyName(ar.File.FullName));
+
+				// Add the reference to the build manager
+				if (ar.Assembly != null)
+				{
+					// Loading assembly can fail in parallel loops.
+					// In this case, we'll probe again later in a sequential loop.
+					BuildManager.AddReferencedAssembly(ar.Assembly);
+				}
+
+				ar.ActivationException = null;
+			}
+			catch (UnauthorizedAccessException)
+			{
+				// Throw the exception if its UnauthorizedAccessException as this will 
+				// be because we most likely cannot copy to the dynamic folder.
+				throw;
+			}
+			catch (ReflectionTypeLoadException ex)
+			{
+				var msg = string.Empty;
+				foreach (var e in ex.LoaderExceptions)
+				{
+					msg += e.Message + Environment.NewLine;
+				}
+
+				ar.ActivationException = CreateException(msg, ex);
+			}
+			catch (Exception ex)
+			{
+				var msg = string.Empty;
+				for (var e = ex; e != null; e = e.InnerException)
+				{
+					msg += e.Message + Environment.NewLine;
+				}
+
+				ar.ActivationException = CreateException(msg, ex);
 			}
 
-			var probedPlugin = InitializeFullTrust(plugin, performShadowCopy);
+			return ar.Assembly;
 
-			// We can now register the plugin definition
-			var probedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(probedPlugin.FullName));
-
-			// Add the reference to the build manager
-			BuildManager.AddReferencedAssembly(probedAssembly);
-
-			return probedAssembly;
-        }
+			Exception CreateException(string message, Exception innerException)
+			{
+				return new SmartException(
+					"Error loading plugin '{0}'".FormatInvariant(d.SystemName) + Environment.NewLine + message, 
+					innerException);
+			}
+		}
 
         /// <summary>
         /// Used to initialize plugins when running in Full Trust
         /// </summary>
-        /// <param name="plugin">Plugin main dll file</param>
+        /// <param name="dll">Plugin dll file</param>
         /// <returns>Shadow copied file</returns>
-        private static FileInfo InitializeFullTrust(FileInfo plugin, bool performShadowCopy)
+        private static FileInfo InitializeFullTrust(FileInfo dll, bool shadowCopy)
         {
-            var probedPlugin = new FileInfo(Path.Combine(_shadowCopyDir.FullName, plugin.Name));
+            var probedDll = new FileInfo(Path.Combine(_shadowCopyDir.FullName, dll.Name));
 
 			// If instructed to not perform the copy, just return the path to where it is supposed to be
-			if (!performShadowCopy && probedPlugin.Exists)
-				return probedPlugin;
+			if (!shadowCopy && probedDll.Exists)
+				return probedDll;
 
 			try
             {
-                File.Copy(plugin.FullName, probedPlugin.FullName, true);
+                File.Copy(dll.FullName, probedDll.FullName, true);
             }
 			catch (UnauthorizedAccessException)
 			{
-				throw new UnauthorizedAccessException(string.Format("Access to the path '{0}' is denied, ensure that read, write and modify permissions are allowed.", probedPlugin.Directory.FullName));
+				throw new UnauthorizedAccessException(string.Format("Access to the path '{0}' is denied, ensure that read, write and modify permissions are allowed.", probedDll.Directory.FullName));
 			}
 			catch (IOException)
             {
-                Debug.WriteLine(probedPlugin.FullName + " is locked, attempting to rename");
+                Debug.WriteLine(probedDll.FullName + " is locked, attempting to rename");
 
                 // This occurs when the files are locked,
                 // For some reason devenv locks plugin files some times and for another crazy reason you are allowed to rename them
@@ -579,23 +615,23 @@ namespace SmartStore.Core.Plugins
                 try
                 {
 					// If all else fails during the cleanup and we cannot copy over so we need to rename with a GUID
-					var deleteName = GetNewDeleteName(probedPlugin);
-					File.Move(probedPlugin.FullName, deleteName);
+					var deleteName = GetNewDeleteName(probedDll);
+					File.Move(probedDll.FullName, deleteName);
                 }
 				catch (UnauthorizedAccessException)
 				{
-					throw new UnauthorizedAccessException(string.Format("Access to the path '{0}' is denied, ensure that read, write and modify permissions are allowed.", probedPlugin.Directory.FullName));
+					throw new UnauthorizedAccessException(string.Format("Access to the path '{0}' is denied, ensure that read, write and modify permissions are allowed.", probedDll.Directory.FullName));
 				}
 				catch (IOException exc)
                 {
-                    throw new IOException(probedPlugin.FullName + " rename failed, cannot initialize plugin", exc);
+                    throw new IOException(probedDll.FullName + " rename failed, cannot initialize plugin", exc);
                 }
 
                 // OK, we've made it this so far, now retry the shadow copy
-                File.Copy(plugin.FullName, probedPlugin.FullName, true);
+                File.Copy(dll.FullName, probedDll.FullName, true);
             }
 
-            return probedPlugin;
+            return probedDll;
         }
 
         /// <summary>

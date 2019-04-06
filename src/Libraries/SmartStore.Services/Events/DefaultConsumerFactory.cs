@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Events
 {
@@ -29,7 +30,7 @@ namespace SmartStore.Services.Events
 
 				if (isActive && (resolveAsyncs == null || (resolveAsyncs.Value == isAsync)))
 				{
-					if (pluginDescriptor == null || IsActiveForStore(pluginDescriptor, _services.StoreContext.CurrentStore.Id))
+					if (pluginDescriptor == null || IsActiveForStore(pluginDescriptor))
 					{
 						yield return consumer.Value;
 					}
@@ -46,8 +47,14 @@ namespace SmartStore.Services.Events
 			}
 		}
 
-		private bool IsActiveForStore(PluginDescriptor plugin, int storeId)
+		private bool IsActiveForStore(PluginDescriptor plugin)
 		{
+			int storeId = 0;
+			if (EngineContext.Current.IsFullyInitialized)
+			{
+				storeId = _services.StoreContext.CurrentStore.Id;
+			}
+
 			if (storeId == 0)
 			{
 				return true;

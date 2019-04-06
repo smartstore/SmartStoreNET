@@ -6,6 +6,9 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data.Caching;
 using System.Web.Hosting;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.DependencyResolution;
+using SmartStore.Utilities;
 
 namespace SmartStore.Data
 {
@@ -13,6 +16,10 @@ namespace SmartStore.Data
 	{
 		public SmartDbConfiguration()
 		{
+			//// DB model caching
+			//var modelStore = new EfDbModelStore(CommonHelper.MapPath("~/App_Data/EfCache"));
+			//AddDependencyResolver(new SingletonDependencyResolver<DbModelStore>(modelStore));
+
 			IEfDataProvider provider = null;
 			try
 			{
@@ -22,7 +29,7 @@ namespace SmartStore.Data
 			{
 				/* SmartStore is not installed yet! */
 			}
-
+			
 			if (provider != null)
 			{
 				base.SetDefaultConnectionFactory(provider.GetConnectionFactory());

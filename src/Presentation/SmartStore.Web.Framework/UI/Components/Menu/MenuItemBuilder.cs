@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public class MenuItemBuilder : NavigationItemBuilder<MenuItem, MenuItemBuilder>
     {
         private readonly IList<string> _permissionNames;

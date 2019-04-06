@@ -302,7 +302,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			try
 			{
 				var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(GoogleMerchantCenterFeedPlugin.SystemName);
-				var fileDir = Path.Combine(descriptor.OriginalAssemblyFile.Directory.FullName, "Files");
+				var fileDir = Path.Combine(descriptor.Assembly.OriginalFile.Directory.FullName, "Files");
 				var fileName = "taxonomy.{0}.txt".FormatInvariant(_services.WorkContext.WorkingLanguage.LanguageCulture ?? "de-DE");
 				var path = Path.Combine(fileDir, fileName);
 				var filter = searchTerm.HasValue();

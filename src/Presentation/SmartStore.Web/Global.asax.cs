@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -7,6 +8,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.WebPages;
 using AutoMapper;
+using FluentValidation;
 using FluentValidation.Mvc;
 using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Msie;
@@ -17,6 +19,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Tasks;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
@@ -25,9 +28,6 @@ using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.Validators;
-using System.Net;
-using FluentValidation;
-using SmartStore.Web.Framework;
 
 namespace SmartStore.Web
 {

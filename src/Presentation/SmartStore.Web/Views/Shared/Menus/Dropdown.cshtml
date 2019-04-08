@@ -21,10 +21,17 @@
 
 @helper CreateDropdown(IEnumerable<TreeNode<MenuItem>> nodes)
 {
+    if (!nodes.Any())
+    {
+        return;
+    }
+
+    object obj = null;
     var isFirst = true;
+    var isRtl = nodes.First().Value.Rtl;
     var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
 
-    <div class="dropdown-menu">
+    <div class="dropdown-menu @(isRtl ? "dropdown-menu-left" : "dropdown-menu-right")">
         @*@{ Html.RenderWidget("servicemenu_before"); }*@
 
         @foreach (var node in nodes)
@@ -37,11 +44,11 @@
 
             var itemText = node.GetItemText(T);
             var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
-            var imageUrl = item.ImageUrl;
-            if (!imageUrl.HasValue())
-            {
-                imageUrl = "~/Administration/Content/images/ap-default-white.png";
-            }
+            var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
+            var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
+            var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
+            var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+            var imageUrl = item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png";
 
             if (item.IsGroupHeader)
             {
@@ -57,11 +64,15 @@
                 continue;
             }
 
-            <a href="@itemUrl" class="dropdown-item">
-				@if (hasIcons)
-				{
-					<i class="fa-fw@(item.Icon.HasValue() ? " {0}".FormatInvariant(item.Icon) : "")"></i>
-				}
+            <a href="@itemUrl" class="dropdown-item" 
+                @Html.Attr("id", linkId, linkId.HasValue())
+                @Html.Attr("rel", relAttr, relAttr.HasValue())
+                @Html.Attr("target", target, target.HasValue())
+                @Html.Attr("title", shortDescription, shortDescription.HasValue())>
+		        @if (hasIcons)
+		        {
+			        <i class="fa-fw@(item.Icon.HasValue() ? " {0}".FormatInvariant(item.Icon) : "")"></i>
+		        }
                 <span>@itemText</span>
             </a>
             if (node.HasChildren)

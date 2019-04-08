@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.UI
                 request.Parent.Append(new MenuItem
                 {
                     IsGroupHeader = true,
-                    Text = request.Entity.ShortDescription
+                    Text = request.Entity.GetLocalized(x => x.ShortDescription)
                 });
             }
 

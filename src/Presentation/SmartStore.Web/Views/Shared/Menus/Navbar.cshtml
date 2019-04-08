@@ -1,0 +1,90 @@
+﻿@using SmartStore.Collections
+@using SmartStore.Web.Framework.UI
+@model MenuModel
+@{
+    var root = Model.Root;
+    if (root == null)
+    {
+        return;
+    }
+
+    var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
+    var renderMoreItem = false;
+    var rtl = WorkContext.WorkingLanguage.Rtl;
+}
+
+@functions {
+    private string GetNodeLink(TreeNode<MenuItem> node)
+    {
+        return node.Value.GenerateUrl(this.Url);
+    }
+
+    private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
+    {
+        var liClasses = new List<string>();
+
+        liClasses.Add("nav-item");
+
+        if (node.Depth <= 1 && node.HasChildren)
+        {
+            liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
+        }
+
+        if ((state & NodePathState.Expanded) == NodePathState.Expanded)
+        {
+            liClasses.Add("expanded");
+        }
+
+        if ((state & NodePathState.Selected) == NodePathState.Selected)
+        {
+            liClasses.Add("selected");
+        }
+
+        return liClasses.Count > 0 ? string.Join(" ", liClasses) : null;
+    }
+}
+
+<div class="cms-menu cms-menu-navbar" data-menu-name="@(Model.Name?.ToLower())">
+    <div class="megamenu-nav megamenu-nav--prev @(rtl ? "omega" : "alpha")">
+	    <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="far fa-chevron-left"></i></a>
+    </div>
+
+    <ul class="navbar-nav flex-row flex-nowrap" 
+        data-selected-menu-item="@currentNavItem" 
+        data-current-category-id="@CurrentCategoryId" 
+        data-current-product-id="@CurrentProductId"
+        data-current-manufacturer-id="@CurrentManufacturerId">
+
+        @*@{ Html.RenderWidget("mainmenu_before_first_item"); }*@
+
+        @foreach (var node in root.Children)
+        {
+            var item = node.Value;
+            if (!item.Visible || node.GetMetadata<bool>("spare", false))
+            {
+                if (node.GetMetadata<bool>("spare", false))
+                {
+                    renderMoreItem = true;
+                }
+                continue;
+            }
+
+
+        }
+
+        @if (renderMoreItem)
+        {
+            <li class="nav-item dropdown" data-id="-1">
+                <a href="#" class="nav-link dropdown-toggle" aria-expanded="false" data-target="#dropdown-menu--1">
+                    @T("CatalogMenu.MoreLink")
+                </a>
+            </li>
+        }
+
+        @{ Html.RenderWidget("mainmenu_after_last_item"); }
+    </ul>
+
+    <div class="megamenu-nav megamenu-nav--next @(rtl ? "alpha" : "omega")">
+	    <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="far fa-chevron-right"></i></a>
+    </div>
+</div>

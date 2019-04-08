@@ -47,6 +47,7 @@
             var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
             var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
             var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
+            var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
             var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
             var imageUrl = item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png";
 
@@ -64,21 +65,17 @@
                 continue;
             }
 
-            <a href="@itemUrl" class="dropdown-item" 
+            <a href="@itemUrl" class="dropdown-item menu-link@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")" 
                 @Html.Attr("id", linkId, linkId.HasValue())
                 @Html.Attr("rel", relAttr, relAttr.HasValue())
                 @Html.Attr("target", target, target.HasValue())
                 @Html.Attr("title", shortDescription, shortDescription.HasValue())>
 		        @if (hasIcons)
 		        {
-			        <i class="fa-fw@(item.Icon.HasValue() ? " {0}".FormatInvariant(item.Icon) : "")"></i>
+			        <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
 		        }
                 <span>@itemText</span>
             </a>
-            if (node.HasChildren)
-            {
-                @CreateDropdown(node.Children)
-            }
 
             isFirst = false;
         }

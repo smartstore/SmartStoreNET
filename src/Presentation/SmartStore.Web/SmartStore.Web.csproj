@@ -1819,6 +1819,8 @@
     <Content Include="Views\Shared\Partials\_Assets.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Link.cshtml" />
     <Content Include="Views\Shared\Menus\Dropdown.cshtml" />
+    <Content Include="Views\Shared\Menus\LinkList.cshtml" />
+    <Content Include="Views\Shared\Menus\Navbar.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

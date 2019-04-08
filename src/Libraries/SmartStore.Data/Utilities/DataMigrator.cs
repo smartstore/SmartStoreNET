@@ -636,7 +636,7 @@ namespace SmartStore.Data.Utilities
                     Model = routeTemplate.FormatInvariant("Blog"),
                     Title = GetResource("Blog"),
                     DisplayOrder = ++order,
-                    Published = GetSetting("BlogSettings.Enabled", false)
+                    Published = GetSetting("BlogSettings.Enabled", true)
                 });
                 menuItemSet.Add(new MenuItemRecord
                 {
@@ -645,7 +645,7 @@ namespace SmartStore.Data.Utilities
                     Model = routeTemplate.FormatInvariant("Boards"),
                     Title = GetResource("Forum.Forums"),
                     DisplayOrder = ++order,
-                    Published = GetSetting("ForumSettings.ForumsEnabled", false)
+                    Published = GetSetting("ForumSettings.ForumsEnabled", true)
                 });
                 menuItemSet.Add(new MenuItemRecord
                 {

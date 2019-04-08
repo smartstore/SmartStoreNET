@@ -94,7 +94,8 @@
         color: $footer-color;
     }
 
-    a.footer-link {
+    a.footer-link,
+    a.menu-link {
         color: $footer-color-muted;
         &:hover { color: $ftmh; }
     }
@@ -119,7 +120,8 @@
         color: $footer-inverse-color;
     }
 
-    a.footer-link {
+    a.footer-link,
+    a.menu-link {
         color: $footer-inverse-color-muted;
         &:hover { color: $ftmh; }
     }

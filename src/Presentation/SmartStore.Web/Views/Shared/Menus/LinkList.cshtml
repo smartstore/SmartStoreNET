@@ -1,0 +1,67 @@
+﻿@using SmartStore.Web.Framework.UI
+@model MenuModel
+@{
+    var root = Model.Root;
+    if (root == null)
+    {
+        return;
+    }
+
+    object obj = null;
+    var isFirst = true;
+    var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
+}
+
+<div class="cms-menu cms-menu-linklist" data-menu-name="@(Model.Name?.ToLower())">
+    <ul class="list-unstyled">
+        @*@{ Html.RenderWidget("footer_col_1_before"); }*@
+
+        @foreach (var node in root.Children)
+        {
+            var item = node.Value;
+            if (!item.Visible)
+            {
+                continue;
+            }
+
+            var itemText = node.GetItemText(T);
+            var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
+            var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
+            var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
+            var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
+            var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
+            var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+            var imageUrl = item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png";
+
+            if (item.IsGroupHeader)
+            {
+                if (!isFirst)
+                {
+                    <li><hr /></li>
+                }
+                if (item.Text.HasValue() && item.Text != "[SKIP]")
+                {
+                    <li class="h4 mt-2">@itemText</li>
+                }
+                isFirst = false;
+                continue;
+            }
+
+            <li>
+                <a href="@itemUrl" class="menu-link@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")" 
+                    @Html.Attr("id", linkId, linkId.HasValue())
+                    @Html.Attr("rel", relAttr, relAttr.HasValue())
+                    @Html.Attr("target", target, target.HasValue())
+                    @Html.Attr("title", shortDescription, shortDescription.HasValue())>
+		            @if (hasIcons)
+		            {
+			            <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
+		            }
+                    <span>@itemText</span>
+                </a>
+            </li>
+        }
+
+        @*@{ Html.RenderWidget("footer_col_1_after"); }*@
+    </ul>
+</div>

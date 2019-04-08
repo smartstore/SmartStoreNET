@@ -73,10 +73,13 @@
 
 			<div class="col-md-3">
 				<nav class="footer-links nav-collapsible">
-					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">@T("Footer.Info")</h4>
+					<h4 class="footer-title nav-toggler collapsed" data-toggle="collapse" data-target="#footer-info" aria-controls="footer-info" aria-expanded="false">
+                        @T("Footer.Info")
+                    </h4>
 					<div class="collapse nav-collapse" id="footer-info">
+                        @(Html.SmartStore().Menu("FooterInformation", "Menus/LinkList"))
+@{/*
 						<ul class="list-unstyled">
-
                             @{ Html.RenderWidget("footer_col_1_before"); }
 
 							@if (Model.ManufacturerEnabled)
@@ -97,8 +100,8 @@
 							}
 
                             @{ Html.RenderWidget("footer_col_1_after"); }
-
 						</ul>
+*/}
 					</div>
 				</nav>
 			</div>
@@ -110,8 +113,9 @@
                         <span class="d-md-none">@T("Footer.Service.Mobile")</span>
                     </h4>
 					<div class="collapse nav-collapse" id="footer-service">
+                        @(Html.SmartStore().Menu("FooterService", "Menus/LinkList"))
+@{/*
 						<ul class="list-unstyled">
-
                             @{ 
 								Html.RenderWidget("footer_col_2_before");
 
@@ -142,8 +146,8 @@
 							}
 
                             @{ Html.RenderWidget("footer_col_2_after"); }
-
 						</ul>
+*/}
 					</div>
 				</nav>
 			</div>
@@ -155,8 +159,9 @@
                         <span class="d-md-none">@T("Footer.Company.Mobile")</span>
                     </h4>
 					<div class="collapse nav-collapse" id="footer-company">
+                        @(Html.SmartStore().Menu("FooterCompany", "Menus/LinkList"))
+@{/*
 						<ul class="list-unstyled">
-
                             @{ Html.RenderWidget("footer_col_3_before"); }
 
 							@foreach (var link in footerLinks)
@@ -173,8 +178,8 @@
                             }
 
                             @{ Html.RenderWidget("footer_col_3_after"); }
-
 						</ul>
+*/}
 					</div>
 				</nav>
 			</div>

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Web.Mvc;
 using System.ComponentModel;
+using System.Web.Mvc;
 using SmartStore.Core;
 
 namespace SmartStore.Web.Framework.UI
-{  
+{
     public class ComponentFactory<TModel> : IHideObjectMembers
     {
         public ComponentFactory(HtmlHelper<TModel> helper)
@@ -56,7 +56,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual PagerBuilder<TModel> Pager(IPageable model)
         {
-            Guard.NotNull(model, "model");
+            Guard.NotNull(model, nameof(model));
             return new PagerBuilder<TModel>(new Pager(), this.HtmlHelper).Model(model);
         }
 
@@ -69,6 +69,16 @@ namespace SmartStore.Web.Framework.UI
 		{
 			return new FileUploaderBuilder<TModel>(new FileUploader(), this.HtmlHelper);
 		}
+
+        public virtual MenuBuilder<TModel> Menu(string name, string viewName = null)
+        {
+            Guard.NotEmpty(name, nameof(name));
+
+            return new MenuBuilder<TModel>(new Menu(), HtmlHelper)
+                .Name(name)
+                .ViewName(viewName)
+                .WithRenderer(new MenuRenderer());
+        }
 
 		#endregion
 	}

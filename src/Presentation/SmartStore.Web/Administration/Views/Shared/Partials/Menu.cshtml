@@ -14,23 +14,6 @@
         }
         return node.Value.GenerateUrl(this.ViewContext.RequestContext);
     }
-
-    public string GetItemText(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node)
-    {
-        string result = null;
-        
-        if (node.Value.ResKey.HasValue())
-        {
-            result = T(node.Value.ResKey).ToHtmlString();
-		}
-
-		if (!result.HasValue() || result.IsCaseInsensitiveEqual(node.Value.ResKey))
-        {
-            result = node.Value.Text;
-        }
-
-        return result;
-    }
 }
 
 <ul class="navbar-nav">
@@ -50,14 +33,13 @@
             imageUrl = "~/Administration/Content/images/ap-default-white.png";
         }
 
-        string itemText = GetItemText(node);
+        var itemText = node.GetItemText(T);
+        var itemUrl = GetNodeLink(node);
 
         if (ViewBag.SelectedMenuItem == itemText)
         {
             //item.Selected = true;
         }
-
-        var itemUrl = GetNodeLink(node);
 
         <li data-id="nav-@item.Id" class="nav-item@(node.HasChildren ? " dropdown" : "")@(item.Id == "dashboard" ? " dropdown d-none d-md-block" : "")">
 			<a class="nav-link@(node.HasChildren ? " dropdown-toggle" : "")" href="@itemUrl" @Html.Attr("data-toggle", "dropdown", node.HasChildren)>
@@ -97,7 +79,7 @@
             continue;
         }
         
-        string itemText = GetItemText(node);
+        var itemText = node.GetItemText(T);
 
         if (item.IsGroupHeader)
         {

@@ -23,7 +23,8 @@
             <a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
 		}
 
-        <div class="dropdown service-links">
+        @(Html.SmartStore().Menu("HelpAndService", "Menus/Dropdown"))
+        @*<div class="dropdown service-links">
             <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
 				<span>@T("Menu.ServiceMenu")</span>
                 <i class="fal fa-angle-down menubar-caret"></i>
@@ -34,7 +35,7 @@
 					Html.RenderAction("ServiceMenu", "Common", new { area = "" });
                 } 
             </div>
-        </div>
+        </div>*@
 
         @if (Model.IsCustomerImpersonated)
         {

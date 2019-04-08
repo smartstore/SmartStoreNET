@@ -1,0 +1,77 @@
+﻿@using SmartStore.Collections
+@using SmartStore.Web.Framework.UI
+@model MenuModel
+@{
+    var root = Model.Root;
+    if (root == null)
+    {
+        return;
+    }
+}
+
+<div class="cms-menu" data-menu-name="@(Model.Name?.ToLower())">
+    <div class="dropdown">
+        <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+		    <span>@root.GetItemText(T)</span>
+            <i class="fal fa-angle-down menubar-caret"></i>
+        </a>
+        @CreateDropdown(root.Children)
+    </div>
+</div>
+
+@helper CreateDropdown(IEnumerable<TreeNode<MenuItem>> nodes)
+{
+    var isFirst = true;
+    var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
+
+    <div class="dropdown-menu">
+        @*@{ Html.RenderWidget("servicemenu_before"); }*@
+
+        @foreach (var node in nodes)
+        {
+            var item = node.Value;
+            if (!item.Visible)
+            {
+                continue;
+            }
+
+            var itemText = node.GetItemText(T);
+            var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
+            var imageUrl = item.ImageUrl;
+            if (!imageUrl.HasValue())
+            {
+                imageUrl = "~/Administration/Content/images/ap-default-white.png";
+            }
+
+            if (item.IsGroupHeader)
+            {
+                if (!isFirst)
+                {
+                    <div class="dropdown-divider"></div>
+                }
+                if (item.Text.HasValue() && item.Text != "[SKIP]")
+                {
+                    <div class="dropdown-header h6">@itemText</div>
+                }
+                isFirst = false;
+                continue;
+            }
+
+            <a href="@itemUrl" class="dropdown-item">
+				@if (hasIcons)
+				{
+					<i class="fa-fw@(item.Icon.HasValue() ? " {0}".FormatInvariant(item.Icon) : "")"></i>
+				}
+                <span>@itemText</span>
+            </a>
+            if (node.HasChildren)
+            {
+                @CreateDropdown(node.Children)
+            }
+
+            isFirst = false;
+        }
+
+        @*@{ Html.RenderWidget("servicemenu_after"); }*@
+    </div>
+}

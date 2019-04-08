@@ -15,8 +15,10 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
+using SmartStore.Data.Setup;
 using SmartStore.Utilities;
 using EfState = System.Data.Entity.EntityState;
 
@@ -455,12 +457,6 @@ namespace SmartStore.Data.Utilities
             const string routeProvider = "route";
             const string routeTemplate = "{{\"routename\":\"{0}\"}}";
 
-            var menuSet = ctx.Set<MenuRecord>();
-            var menuItemSet = ctx.Set<MenuItemRecord>();
-            var defaultLang = ctx.Set<Language>().OrderBy(x => x.DisplayOrder).First();
-            var manufacturerCount = ctx.Set<Manufacturer>().Count();
-            var order = 0;
-
             var resourceNames = new string[] {
                 "Footer.Info",
                 "Footer.Service",
@@ -494,296 +490,320 @@ namespace SmartStore.Data.Utilities
                 "CustomerSettings.UserRegistrationType"
             };
 
-            var resources = ctx.Set<LocaleStringResource>().AsNoTracking()
-                .Where(x => x.LanguageId == defaultLang.Id && resourceNames.Contains(x.ResourceName))
-                .Select(x => new { x.ResourceName, x.ResourceValue })
-                .ToList()
-                .ToDictionarySafe(x => x.ResourceName, x => x.ResourceValue);
+            Dictionary<string, string> resources = null;
+            Dictionary<string, string> settings = null;
 
-            var settings = ctx.Set<Setting>().AsNoTracking()
-                .Where(x => x.StoreId == 0 && settingNames.Contains(x.Name))
-                .Select(x => new { x.Name, x.Value })
-                .ToList()
-                .ToDictionarySafe(x => x.Name, x => x.Value);
+            using (var scope = new DbContextScope(ctx: context, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+            {
+                var permissionMigrator = new PermissionMigrator(ctx);
+                permissionMigrator.AddPermission(new PermissionRecord
+                {
+                    Name = "Admin area. Manage Menus",
+                    SystemName = "ManageMenus",
+                    Category = "Content Management"
+                }, new string[] { SystemCustomerRoleNames.Administrators });
 
+                var menuSet = context.Set<MenuRecord>();
+                var menuItemSet = context.Set<MenuItemRecord>();
+                var defaultLang = context.Set<Language>().OrderBy(x => x.DisplayOrder).First();
+                var manufacturerCount = context.Set<Manufacturer>().Count();
+                var order = 0;
 
-            #region System menus
+                resources = context.Set<LocaleStringResource>().AsNoTracking()
+                    .Where(x => x.LanguageId == defaultLang.Id && resourceNames.Contains(x.ResourceName))
+                    .Select(x => new { x.ResourceName, x.ResourceValue })
+                    .ToList()
+                    .ToDictionarySafe(x => x.ResourceName, x => x.ResourceValue);
 
-            var mainMenu = menuSet.Add(new MenuRecord
-            {
-                SystemName = "Main",
-                IsSystemMenu = true,
-                Published = true,
-                Title = GetResource("Admin.Catalog.Categories")
-            });
+                settings = context.Set<Setting>().AsNoTracking()
+                    .Where(x => x.StoreId == 0 && settingNames.Contains(x.Name))
+                    .Select(x => new { x.Name, x.Value })
+                    .ToList()
+                    .ToDictionarySafe(x => x.Name, x => x.Value);
 
-            var footerInfo = menuSet.Add(new MenuRecord
-            {
-                SystemName = "FooterInformation",
-                IsSystemMenu = true,
-                Published = true,
-                Title = "Footer - " + GetResource("Footer.Info")
-            });
+                #region System menus
 
-            var footerService = menuSet.Add(new MenuRecord
-            {
-                SystemName = "FooterService",
-                IsSystemMenu = true,
-                Published = true,
-                Title = "Footer - " + GetResource("Footer.Service")
-            });
+                var mainMenu = menuSet.Add(new MenuRecord
+                {
+                    SystemName = "Main",
+                    IsSystemMenu = true,
+                    Published = true,
+                    Template = "Navbar",
+                    Title = GetResource("Admin.Catalog.Categories")
+                });
 
-            var footerCompany = menuSet.Add(new MenuRecord
-            {
-                SystemName = "FooterCompany",
-                IsSystemMenu = true,
-                Published = true,
-                Title = "Footer - " + GetResource("Footer.Company")
-            });
+                var footerInfo = menuSet.Add(new MenuRecord
+                {
+                    SystemName = "FooterInformation",
+                    IsSystemMenu = true,
+                    Published = true,
+                    Template = "LinkList",
+                    Title = "Footer - " + GetResource("Footer.Info")
+                });
 
-            var serviceMenu = menuSet.Add(new MenuRecord
-            {
-                SystemName = "HelpAndService",
-                IsSystemMenu = true,
-                Published = true,
-                Title = GetResource("Menu.ServiceMenu")
-            });
+                var footerService = menuSet.Add(new MenuRecord
+                {
+                    SystemName = "FooterService",
+                    IsSystemMenu = true,
+                    Published = true,
+                    Template = "LinkList",
+                    Title = "Footer - " + GetResource("Footer.Service")
+                });
 
-            ctx.SaveChanges();
+                var footerCompany = menuSet.Add(new MenuRecord
+                {
+                    SystemName = "FooterCompany",
+                    IsSystemMenu = true,
+                    Published = true,
+                    Template = "LinkList",
+                    Title = "Footer - " + GetResource("Footer.Company")
+                });
 
-            #endregion
+                var serviceMenu = menuSet.Add(new MenuRecord
+                {
+                    SystemName = "HelpAndService",
+                    IsSystemMenu = true,
+                    Published = true,
+                    Template = "Dropdown",
+                    Title = GetResource("Menu.ServiceMenu")
+                });
 
-            #region Main and footer menus
+                scope.Commit();
 
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = mainMenu.Id,
-                ProviderName = "catalog",
-                Published = true
-            });
+                #endregion
 
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerInfo.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("ManufacturerList"),
-                Title = GetResource("Manufacturers.List"),
-                DisplayOrder = ++order,
-                Published = manufacturerCount > 0
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerInfo.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
-                Title = GetResource("Products.NewProducts"),
-                DisplayOrder = ++order,
-                Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerInfo.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
-                Title = GetResource("Products.RecentlyViewedProducts"),
-                DisplayOrder = ++order,
-                Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerInfo.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("CompareProducts"),
-                Title = GetResource("Products.Compare.List"),
-                DisplayOrder = ++order,
-                Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
-            });
+                #region Main and footer menus
 
-            ctx.SaveChanges();
-            order = 0;
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = mainMenu.Id,
+                    ProviderName = "catalog",
+                    Published = true
+                });
 
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerService.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("contactus"),
-                Title = GetResource("ContactUs"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerService.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("Blog"),
-                Title = GetResource("Blog"),
-                DisplayOrder = ++order,
-                Published = GetSetting("BlogSettings.Enabled", false)
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerService.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("Boards"),
-                Title = GetResource("Forum.Forums"),
-                DisplayOrder = ++order,
-                Published = GetSetting("ForumSettings.ForumsEnabled", false)
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerService.Id,
-                ProviderName = entityProvider,
-                Model = "topic:shippinginfo",
-                Title = GetResource("ShippingReturns"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerService.Id,
-                ProviderName = entityProvider,
-                Model = "topic:paymentinfo",
-                Title = GetResource("Paymentinfo"),
-                DisplayOrder = ++order
-            });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerInfo.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("ManufacturerList"),
+                    Title = GetResource("Manufacturers.List"),
+                    DisplayOrder = ++order,
+                    Published = manufacturerCount > 0
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerInfo.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
+                    Title = GetResource("Products.NewProducts"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerInfo.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
+                    Title = GetResource("Products.RecentlyViewedProducts"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerInfo.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("CompareProducts"),
+                    Title = GetResource("Products.Compare.List"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
+                });
 
-            ctx.SaveChanges();
-            order = 0;
+                scope.Commit();
+                order = 0;
 
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerCompany.Id,
-                ProviderName = entityProvider,
-                Model = "topic:aboutus",
-                Title = GetResource("AboutUs"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerCompany.Id,
-                ProviderName = entityProvider,
-                Model = "topic:imprint",
-                Title = GetResource("Imprint"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerCompany.Id,
-                ProviderName = entityProvider,
-                Model = "topic:disclaimer",
-                Title = GetResource("Disclaimer"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerCompany.Id,
-                ProviderName = entityProvider,
-                Model = "topic:privacyinfo",
-                Title = GetResource("PrivacyNotice"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = footerCompany.Id,
-                ProviderName = entityProvider,
-                Model = "topic:conditionsofuse",
-                Title = GetResource("ConditionsOfUse"),
-                DisplayOrder = ++order
-            });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerService.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("contactus"),
+                    Title = GetResource("ContactUs"),
+                    DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerService.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("Blog"),
+                    Title = GetResource("Blog"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("BlogSettings.Enabled", false)
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerService.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("Boards"),
+                    Title = GetResource("Forum.Forums"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("ForumSettings.ForumsEnabled", false)
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerService.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:shippinginfo",
+                    Title = GetResource("ShippingReturns"),
+                    DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerService.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:paymentinfo",
+                    Title = GetResource("Paymentinfo"),
+                    DisplayOrder = ++order
+                });
 
-            if (GetSetting("CustomerSettings.UserRegistrationType", "").IsCaseInsensitiveEqual("Disabled"))
-            {
+                scope.Commit();
+                order = 0;
+
                 menuItemSet.Add(new MenuItemRecord
                 {
                     MenuId = footerCompany.Id,
-                    ProviderName = routeProvider,
-                    Model = routeTemplate.FormatInvariant("Login"),
-                    Title = GetResource("Account.Login"),
+                    ProviderName = entityProvider,
+                    Model = "topic:aboutus",
+                    Title = GetResource("AboutUs"),
                     DisplayOrder = ++order
                 });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerCompany.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:imprint",
+                    Title = GetResource("Imprint"),
+                    DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerCompany.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:disclaimer",
+                    Title = GetResource("Disclaimer"),
+                    DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerCompany.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:privacyinfo",
+                    Title = GetResource("PrivacyNotice"),
+                    DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = footerCompany.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:conditionsofuse",
+                    Title = GetResource("ConditionsOfUse"),
+                    DisplayOrder = ++order
+                });
+
+                if (GetSetting("CustomerSettings.UserRegistrationType", "").IsCaseInsensitiveEqual("Disabled"))
+                {
+                    menuItemSet.Add(new MenuItemRecord
+                    {
+                        MenuId = footerCompany.Id,
+                        ProviderName = routeProvider,
+                        Model = routeTemplate.FormatInvariant("Login"),
+                        Title = GetResource("Account.Login"),
+                        DisplayOrder = ++order
+                    });
+                }
+
+                scope.Commit();
+                order = 0;
+
+                #endregion
+
+                #region Help & Service
+
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
+                    Title = GetResource("Products.NewProducts"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("ManufacturerList"),
+                    Title = GetResource("Manufacturers.List"),
+                    DisplayOrder = ++order,
+                    Published = manufacturerCount > 0
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
+                    Title = GetResource("Products.RecentlyViewedProducts"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = routeProvider,
+                    Model = routeTemplate.FormatInvariant("CompareProducts"),
+                    Title = GetResource("Products.Compare.List"),
+                    DisplayOrder = ++order,
+                    Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
+                });
+
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:aboutus",
+                    Title = GetResource("AboutUs"),
+                    DisplayOrder = ++order,
+                    BeginGroup = true
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:disclaimer",
+                    Title = GetResource("Disclaimer"),
+                    DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:shippinginfo",
+                    Title = GetResource("ShippingReturns"),
+                    DisplayOrder = ++order
+                });
+                menuItemSet.Add(new MenuItemRecord
+                {
+                    MenuId = serviceMenu.Id,
+                    ProviderName = entityProvider,
+                    Model = "topic:conditionsofuse",
+                    Title = GetResource("ConditionsOfUse"),
+                    DisplayOrder = ++order
+                });
+
+                scope.Commit();
+                order = 0;
+
+                #endregion
+
             }
-
-            ctx.SaveChanges();
-            order = 0;
-
-            #endregion
-
-            #region Help & Service
-
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("RecentlyAddedProducts"),
-                Title = GetResource("Products.NewProducts"),
-                DisplayOrder = ++order,
-                Published = GetSetting("CatalogSettings.RecentlyAddedProductsEnabled", true)
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("ManufacturerList"),
-                Title = GetResource("Manufacturers.List"),
-                DisplayOrder = ++order,
-                Published = manufacturerCount > 0
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("RecentlyViewedProducts"),
-                Title = GetResource("Products.RecentlyViewedProducts"),
-                DisplayOrder = ++order,
-                Published = GetSetting("CatalogSettings.RecentlyViewedProductsEnabled", true)
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = routeProvider,
-                Model = routeTemplate.FormatInvariant("CompareProducts"),
-                Title = GetResource("Products.Compare.List"),
-                DisplayOrder = ++order,
-                Published = GetSetting("CatalogSettings.CompareProductsEnabled", true)
-            });
-
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = entityProvider,
-                Model = "topic:aboutus",
-                Title = GetResource("AboutUs"),
-                DisplayOrder = ++order,
-                BeginGroup = true
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = entityProvider,
-                Model = "topic:disclaimer",
-                Title = GetResource("Disclaimer"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = entityProvider,
-                Model = "topic:shippinginfo",
-                Title = GetResource("ShippingReturns"),
-                DisplayOrder = ++order
-            });
-            menuItemSet.Add(new MenuItemRecord
-            {
-                MenuId = serviceMenu.Id,
-                ProviderName = entityProvider,
-                Model = "topic:conditionsofuse",
-                Title = GetResource("ConditionsOfUse"),
-                DisplayOrder = ++order
-            });
-
-            ctx.SaveChanges();
-            order = 0;
-
-            #endregion
-
 
             #region Utilities
 

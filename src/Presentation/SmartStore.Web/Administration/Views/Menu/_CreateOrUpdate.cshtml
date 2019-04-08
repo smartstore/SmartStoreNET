@@ -5,6 +5,10 @@
 @Html.HiddenFor(model => model.IsSystemMenu)
 @Html.ValidationSummary(false)
 
+@*TODO:*@
+@Html.HiddenFor(model => model.Template)
+@Html.HiddenFor(model => model.WidgetZone)
+
 @Html.SmartStore().TabStrip().Name("menu-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);

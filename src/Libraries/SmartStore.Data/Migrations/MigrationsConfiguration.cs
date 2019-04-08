@@ -760,6 +760,18 @@
                 "The system name of the menu.",
                 "Der Systemname des Menüs.");
 
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.Template",
+                "Design template",
+                "Design Vorlage",
+                "The template defines the way how the menu is displayed.",
+                "Über die Vorlage wird die Darstellungsart des Menüs festgelegt.");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.WidgetZone",
+                "Widget zone",
+                "Widget Zone",
+                "Specifies widget zones in which the menu should be displayed.",
+                "Legt Widget Zonen fest, in denen das Menü dargestellt werden soll.");
+
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Title",
                 "Title",
                 "Titel",

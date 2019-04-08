@@ -3,8 +3,6 @@ namespace SmartStore.Data.Migrations
     using System.Data.Entity.Migrations;
     using System.Web.Hosting;
     using SmartStore.Core.Data;
-    using SmartStore.Core.Domain.Customers;
-    using SmartStore.Core.Domain.Security;
     using SmartStore.Data.Setup;
     using SmartStore.Data.Utilities;
 
@@ -19,6 +17,8 @@ namespace SmartStore.Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         SystemName = c.String(nullable: false, maxLength: 400),
                         IsSystemMenu = c.Boolean(nullable: false),
+                        Template = c.String(maxLength: 400),
+                        WidgetZone = c.String(maxLength: 4000),
                         Title = c.String(maxLength: 400),
                         Published = c.Boolean(nullable: false),
                         LimitedToStores = c.Boolean(nullable: false),
@@ -81,16 +81,6 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
-            var permissionMigrator = new PermissionMigrator(context);
-
-            permissionMigrator.AddPermission(new PermissionRecord
-            {
-                Name = "Admin area. Manage Menus",
-                SystemName = "ManageMenus",
-                Category = "Content Management"
-            }, new string[] { SystemCustomerRoleNames.Administrators });
-
-
             if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
             {
                 DataMigrator.CreateSystemMenus(context);

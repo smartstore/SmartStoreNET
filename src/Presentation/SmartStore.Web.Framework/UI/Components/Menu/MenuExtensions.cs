@@ -3,12 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Cms;
+using SmartStore.Core.Localization;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
     public static class MenuExtensions
 	{
-		public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
+        public static string GetItemText(this TreeNode<MenuItem> node, Localizer localizer)
+        {
+            string result = null;
+
+            if (node.Value.ResKey.HasValue())
+            {
+                result = localizer(node.Value.ResKey).Text;
+            }
+
+            if (!result.HasValue() || result.IsCaseInsensitiveEqual(node.Value.ResKey))
+            {
+                result = node.Value.Text;
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
 		{
 			var breadcrumb = node.Trail.Where(x => !x.IsRoot);
 			return breadcrumb;
@@ -88,11 +107,22 @@ namespace SmartStore.Web.Framework.UI
             Guard.NotNull(items, nameof(items));
             Guard.NotNull(itemProviders, nameof(itemProviders));
 
-            var root = new TreeNode<MenuItem>(new MenuItem());
             if (!items.Any())
             {
-                return root;
+                return new TreeNode<MenuItem>(new MenuItem());
             }
+
+            // Prepare root node. It represents the MenuRecord.
+            var menu = items.First().Menu;
+            var rootItem = new MenuItem
+            {
+                EntityId = menu.Id,
+                Text = menu.GetLocalized(x => x.Title)
+            };
+            var root = new TreeNode<MenuItem>(rootItem)
+            {
+                Id = menu.SystemName
+            };
 
             var parent = root;
             MenuItemRecord prevItem = null;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
 using FluentValidation.Attributes;
@@ -18,6 +19,13 @@ namespace SmartStore.Admin.Models.Menus
         public string SystemName { get; set; }
 
         public bool IsSystemMenu { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.Template")]
+        public string Template { get; set; }
+
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.WidgetZone")]
+        [UIHint("WidgetZone")]
+        public string[] WidgetZone { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Title")]
         public string Title { get; set; }

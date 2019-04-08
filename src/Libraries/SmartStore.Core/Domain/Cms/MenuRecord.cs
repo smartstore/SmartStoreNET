@@ -37,6 +37,18 @@ namespace SmartStore.Core.Domain.Cms
         public bool IsSystemMenu { get; set; }
 
         /// <summary>
+        /// Gets or sets the menu template name.
+        /// </summary>
+        [StringLength(400)]
+        public string Template { get; set; }
+
+        /// <summary>
+        /// Gets or sets the widget zone name.
+        /// </summary>
+        [StringLength(4000)]
+        public string WidgetZone { get; set; }
+
+        /// <summary>
         /// Gets or sets the title.
         /// </summary>
         [StringLength(400)]

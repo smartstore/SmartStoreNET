@@ -22,6 +22,8 @@ namespace SmartStore.Admin.Models.Menus
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Template")]
         public string Template { get; set; }
+        public bool IsCustomTemplate { get; set; }
+        public IList<SelectListItem> AllTemplates { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.WidgetZone")]
         [UIHint("WidgetZone")]

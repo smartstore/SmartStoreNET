@@ -131,6 +131,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var menu = MiniMapper.Map<MenuRecordModel, MenuRecord>(model);
+                menu.WidgetZone = string.Join(",", model.WidgetZone ?? new string[0]).NullEmpty();
 
                 _menuStorage.InsertMenu(menu);
 
@@ -163,6 +164,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             var model = MiniMapper.Map<MenuRecord, MenuRecordModel>(menu);
+            model.WidgetZone = menu.WidgetZone.SplitSafe(",");
 
             PrepareModel(model, menu);
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
@@ -190,6 +192,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 MiniMapper.Map(model, menu);
+                menu.WidgetZone = string.Join(",", model.WidgetZone ?? new string[0]).NullEmpty();
 
                 _menuStorage.UpdateMenu(menu);
 
@@ -405,15 +408,23 @@ namespace SmartStore.Admin.Controllers
 
         private void PrepareModel(MenuRecordModel model, MenuRecord entity)
         {
+            var templateNames = new string[] { "LinkList", "ListGroup", "Dropdown", "Navbar" };
+
             if (entity != null && ModelState.IsValid)
             {
                 model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(entity);
                 model.SelectedCustomerRoleIds = _aclService.GetCustomerRoleIdsWithAccessTo(entity);
+
+                model.IsCustomTemplate = entity.Template.HasValue() && !templateNames.Contains(entity.Template);
             }
 
             model.Locales = new List<MenuRecordLocalizedModel>();
             model.AvailableStores = Services.StoreService.GetAllStores().ToSelectListItems(model.SelectedStoreIds);
             model.AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).ToSelectListItems(model.SelectedCustomerRoleIds);
+
+            model.AllTemplates = templateNames
+                .Select(x => new SelectListItem { Text = x, Value = x, Selected = x.IsCaseInsensitiveEqual(entity?.Template) })
+                .ToList();
 
             model.AllProviders = _menuItemProviders.Values
                 .Select(x => new SelectListItem

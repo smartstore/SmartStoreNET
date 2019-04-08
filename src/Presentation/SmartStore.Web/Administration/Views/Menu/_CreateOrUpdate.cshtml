@@ -5,10 +5,6 @@
 @Html.HiddenFor(model => model.IsSystemMenu)
 @Html.ValidationSummary(false)
 
-@*TODO:*@
-@Html.HiddenFor(model => model.Template)
-@Html.HiddenFor(model => model.WidgetZone)
-
 @Html.SmartStore().TabStrip().Name("menu-edit").Style(TabsStyle.Material).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
@@ -37,6 +33,33 @@
             <div class="adminData">
 				@Html.CheckBoxFor(model => model.Published, Model.IsSystemMenu ? new { @readonly = "readonly" } : null )
                 @Html.ValidationMessageFor(model => model.Published)
+            </div>
+        </div>
+        <div class="adminRow">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.Template)
+            </div>
+            <div class="adminData">
+                <select id="@Html.IdFor(x => x.Template)" name="@Html.NameFor(x => x.Template)" class="form-control" data-tags="true" data-minimum-results-for-search="0">
+			        @if (Model.IsCustomTemplate)
+			        {
+				        <option value="@Model.Template" selected="selected">@Model.Template</option>
+			        }
+                    @foreach (var template in Model.AllTemplates)
+                    {
+                        <option value="@template.Value" @Html.Attr("selected", "selected", !Model.IsCustomTemplate && template.Selected)>@template.Text</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.Template)
+            </div>
+        </div>
+        <div class="adminRow@(Model.IsSystemMenu ? " d-none" : "")">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.WidgetZone)
+            </div>
+            <div class="adminData">
+				@Html.EditorFor(model => model.WidgetZone)
+				@Html.ValidationMessageFor(model => model.WidgetZone)
             </div>
         </div>
     </div>

@@ -56,7 +56,7 @@
 					.Centered();
 			})
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Menu"))
-			.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+			.ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowDataBound("onRowDataBound"))
 			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 			.PreserveGridState()
 			.EnableCustomBinding(true))
@@ -78,5 +78,11 @@
 			SystemName: $('#@Html.FieldIdFor(model => model.SystemName)').val()
 		};
 		e.data = searchModel;
-	}
+    }
+
+    function onRowDataBound(e) {
+	    if (!e.dataItem.Published) {
+		    $(e.row).find('td').wrapInner('<span class="muted" />');
+	    }
+    }
 </script>

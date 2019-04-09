@@ -10,7 +10,14 @@ namespace SmartStore.Web.Framework.UI
 {
     public static class MenuExtensions
 	{
-        public static string GetItemText(this TreeNode<MenuItem> node, Localizer localizer)
+		public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
+		{
+			Guard.NotNull(node, nameof(node));
+
+			return node.Trail.Where(x => !x.IsRoot);
+		}
+
+		public static string GetItemText(this TreeNode<MenuItem> node, Localizer localizer)
         {
             string result = null;
 

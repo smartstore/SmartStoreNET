@@ -98,7 +98,7 @@ namespace SmartStore.Data.Setup
 			else
 			{
 				// DB is up-to-date and no migration ran.
-				EfViewCacheFactory.SetContext(context);
+				EfMappingViewCacheFactory.SetContext(context);
 
 				if (config is MigrationsConfiguration coreConfig && context is SmartObjectContext)
 				{

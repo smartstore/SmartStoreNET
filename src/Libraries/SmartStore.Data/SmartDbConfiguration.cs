@@ -17,7 +17,9 @@ namespace SmartStore.Data
 		public SmartDbConfiguration()
 		{
 			// DB model caching
-			var modelStore = new EfDbModelStore(CommonHelper.MapPath("~/App_Data/EfCache"));
+			var cacheLocation = CommonHelper.MapPath("~/App_Data/EfCache");
+			System.IO.Directory.CreateDirectory(cacheLocation);
+			var modelStore = new EfDbModelStore(cacheLocation);
 			AddDependencyResolver(new SingletonDependencyResolver<DbModelStore>(modelStore));
 
 			IEfDataProvider provider = null;

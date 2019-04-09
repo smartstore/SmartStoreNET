@@ -13,7 +13,8 @@ namespace SmartStore.Data.Caching
 	{
 		public EfDbModelStore(string location)
 			: base(location)
-		{ }
+		{
+		}
 
 		public override DbCompiledModel TryLoad(Type contextType)
 		{

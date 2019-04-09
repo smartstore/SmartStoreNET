@@ -13,7 +13,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Data.Caching
 {
-	public class EfViewCacheFactory : DbMappingViewCacheFactory
+	public class EfMappingViewCacheFactory : DbMappingViewCacheFactory
 	{
 		private readonly static ConcurrentDictionary<DbMappingViewCacheFactory, StorageMappingItemCollection> _lookup =
 			new ConcurrentDictionary<DbMappingViewCacheFactory, StorageMappingItemCollection>();
@@ -21,7 +21,7 @@ namespace SmartStore.Data.Caching
 		private readonly string _viewFilePath;
 		private readonly static object _lock = new object();
 
-		private EfViewCacheFactory(string viewFilePath)
+		private EfMappingViewCacheFactory(string viewFilePath)
 		{
 			_viewFilePath = viewFilePath;
 		}
@@ -56,7 +56,7 @@ namespace SmartStore.Data.Caching
 			var itemCollection = (StorageMappingItemCollection)objectContext.MetadataWorkspace.GetItemCollection(DataSpace.CSSpace);
 			var type = ctx.GetType();
 			var filePath = Path.Combine(CommonHelper.MapPath("~/App_Data/EfCache"), type.Namespace + "." + type.Name + ".views");
-			var factory = new EfViewCacheFactory(filePath);
+			var factory = new EfMappingViewCacheFactory(filePath);
 
 			itemCollection.MappingViewCacheFactory = factory;
 			_lookup.TryAdd(factory, itemCollection);

@@ -16,9 +16,9 @@ namespace SmartStore.Data
 	{
 		public SmartDbConfiguration()
 		{
-			//// DB model caching
-			//var modelStore = new EfDbModelStore(CommonHelper.MapPath("~/App_Data/EfCache"));
-			//AddDependencyResolver(new SingletonDependencyResolver<DbModelStore>(modelStore));
+			// DB model caching
+			var modelStore = new EfDbModelStore(CommonHelper.MapPath("~/App_Data/EfCache"));
+			AddDependencyResolver(new SingletonDependencyResolver<DbModelStore>(modelStore));
 
 			IEfDataProvider provider = null;
 			try

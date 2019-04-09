@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Entity.Infrastructure.MappingViews;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.Entity.Core.Mapping;
-using System.Diagnostics;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Core.Mapping;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.MappingViews;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+using SmartStore.Utilities;
 
 namespace SmartStore.Data.Caching
 {
@@ -17,6 +17,14 @@ namespace SmartStore.Data.Caching
 	{
 		private readonly static ConcurrentDictionary<DbMappingViewCacheFactory, StorageMappingItemCollection> _lookup =
 			new ConcurrentDictionary<DbMappingViewCacheFactory, StorageMappingItemCollection>();
+
+		private readonly string _viewFilePath;
+		private readonly static object _lock = new object();
+
+		private EfViewCacheFactory(string viewFilePath)
+		{
+			_viewFilePath = viewFilePath;
+		}
 
 		public static void SetContext<TContext>()
 			where TContext : DbContext, new()
@@ -46,7 +54,9 @@ namespace SmartStore.Data.Caching
 
 			var objectContext = ((IObjectContextAdapter)ctx).ObjectContext;
 			var itemCollection = (StorageMappingItemCollection)objectContext.MetadataWorkspace.GetItemCollection(DataSpace.CSSpace);
-			var factory = new EfViewCacheFactory();
+			var type = ctx.GetType();
+			var filePath = Path.Combine(CommonHelper.MapPath("~/App_Data/EfCache"), type.Namespace + "." + type.Name + ".views");
+			var factory = new EfViewCacheFactory(filePath);
 
 			itemCollection.MappingViewCacheFactory = factory;
 			_lookup.TryAdd(factory, itemCollection);
@@ -87,21 +97,16 @@ namespace SmartStore.Data.Caching
 
 			var hash = mappingItemCollection.ComputeMappingHashValue(conceptualModelContainerName, storeModelContainerName);
 
-			//var viewsXml = Load(conceptualModelContainerName, storeModelContainerName);
-			//if (viewsXml != null)
-			//{
-			//	var viewsForMapping = GetViewsForMapping(viewsXml, conceptualModelContainerName, storeModelContainerName);
-
-			//	if (viewsForMapping != null && (string)viewsForMapping.Attribute("hash") == hash)
-			//	{
-			//		return new MappingViewCache(viewsForMapping);
-			//	}
-			//}
+			var cachedViews = Load();
+			if (cachedViews != null && cachedViews.Hash == hash)
+			{
+				return new EfMappingViewCache(cachedViews);
+			}
 
 			var views = GenerateViews(mappingItemCollection, conceptualModelContainerName, storeModelContainerName);
 
-			//viewsXml = CreateOrUpdateViewsXml(viewsXml, hash, conceptualModelContainerName, storeModelContainerName, views);
-			//Save(viewsXml);
+			cachedViews = CreateCachedViews(hash, views);
+			Save(cachedViews);
 
 			return new EfMappingViewCache(hash, views);
 		}
@@ -120,6 +125,46 @@ namespace SmartStore.Data.Caching
 		{
 			var errors = new List<EdmSchemaError>();
 			return mappingItemCollection.GenerateViews(conceptualModelContainerName, storeModelContainerName, errors);
+		}
+
+		private EfMappingView CreateCachedViews(string hash, Dictionary<EntitySetBase, DbMappingView> views)
+		{
+			return new EfMappingView
+			{
+				Hash = hash,
+				Views = views.ToDictionary(k => EfMappingViewCache.GetExtentFullName(k.Key), v => v.Value)
+			};
+		}
+
+		private EfMappingView Load()
+		{
+			try
+			{
+				lock (_lock)
+				{
+					if (File.Exists(_viewFilePath))
+					{
+						var json = File.ReadAllText(_viewFilePath);
+						return JsonConvert.DeserializeObject<EfMappingView>(json);
+					}
+				}
+			}
+			catch { }
+
+			return null;
+		}
+
+		private void Save(EfMappingView view)
+		{
+			try
+			{
+				lock (_lock)
+				{
+					var json = JsonConvert.SerializeObject(view);
+					File.WriteAllText(_viewFilePath, json);
+				}
+			}
+			catch { }
 		}
 	}
 }

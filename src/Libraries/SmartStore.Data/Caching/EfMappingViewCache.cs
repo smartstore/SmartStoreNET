@@ -13,9 +13,10 @@ namespace SmartStore.Data.Caching
 		private readonly string _hash;
 		private readonly Dictionary<string, DbMappingView> _views;
 
-		public EfMappingViewCache(object json)
+		public EfMappingViewCache(EfMappingView cachedView)
 		{
-			// TODO
+			_hash = cachedView.Hash;
+			_views = cachedView.Views;
 		}
 
 		public EfMappingViewCache(string hash, Dictionary<EntitySetBase, DbMappingView> views)
@@ -38,9 +39,18 @@ namespace SmartStore.Data.Caching
 			return mappingView;
 		}
 
-		private string GetExtentFullName(EntitySetBase entitySet)
+		internal static string GetExtentFullName(EntitySetBase entitySet)
 		{
 			return entitySet.EntityContainer.Name + "." + entitySet.Name;
 		}
+	}
+
+	/// <summary>
+	/// For JSON serialization
+	/// </summary>
+	public sealed class EfMappingView
+	{
+		public string Hash { get; set; }
+		public Dictionary<string, DbMappingView> Views { get; set; }
 	}
 }

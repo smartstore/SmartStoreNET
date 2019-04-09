@@ -1314,8 +1314,8 @@ namespace SmartStore.Web.Controllers
 
 				if (node != null)
 				{
-					var path = node.GetBreadcrumb().ToList();
-					return path;
+					var path = node.Trail.Where(x => !x.IsRoot).ToList();
+                    return path;
 				}
 
 				return new List<TreeNode<MenuItem>>();

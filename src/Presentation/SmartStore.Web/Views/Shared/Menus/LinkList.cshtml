@@ -10,6 +10,7 @@
     object obj = null;
     var isFirst = true;
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
+    var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
 }
 
 <div class="cms-menu cms-menu-linklist" data-menu-name="@(Model.Name?.ToLower())">
@@ -31,7 +32,6 @@
             var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
             var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
             var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
-            var imageUrl = item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png";
 
             if (item.IsGroupHeader)
             {
@@ -39,9 +39,9 @@
                 {
                     <li><hr /></li>
                 }
-                if (item.Text.HasValue() && item.Text != "[SKIP]")
+                if (itemText.HasValue() && item.Text != "[SKIP]")
                 {
-                    <li class="h4 mt-2">@itemText</li>
+                    <li class="menu-header h4 mt-2">@itemText</li>
                 }
                 isFirst = false;
                 continue;
@@ -57,9 +57,15 @@
 		            {
 			            <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
 		            }
+                    else if (hasImages)
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                    }
                     <span>@itemText</span>
                 </a>
             </li>
+
+            isFirst = false;
         }
 
         @*@{ Html.RenderWidget("footer_col_1_after"); }*@

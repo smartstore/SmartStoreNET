@@ -27,12 +27,6 @@ namespace SmartStore.Web.Framework.UI
             return result;
         }
 
-        public static IEnumerable<TreeNode<MenuItem>> GetBreadcrumb(this TreeNode<MenuItem> node)
-		{
-			var breadcrumb = node.Trail.Where(x => !x.IsRoot);
-			return breadcrumb;
-		}
-
 		/// <summary>
 		/// Gets the state of <c>node</c> within the passed <c>currentPath</c>, which is the navigation breadcrumb.
 		/// </summary>

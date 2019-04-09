@@ -1,0 +1,63 @@
+﻿@using SmartStore.Web.Framework.UI
+@model MenuModel
+@{
+    var root = Model.Root;
+    if (root == null)
+    {
+        return;
+    }
+
+    object obj = null;
+    var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
+    var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
+    var headerText = root.GetItemText(T);
+    var selectedItemId = root.SelectNode(x => x.Value.Selected)?.Value?.Id;
+}
+
+<div class="cms-menu cms-menu-listgroup" data-menu-name="@(Model.Name?.ToLower())">
+    <div class="card">
+        @if (headerText.HasValue())
+        {
+            <h5 class="card-header" style="border-bottom: none;">
+                @headerText
+            </h5>
+        }
+        <div class="list-group list-group-flush has-icons">
+            @*@{ Html.RenderWidget("myaccount_menu_firstitem_before"); }*@
+
+		    @foreach (var node in Model.Root.Children.Where(x => x.Value.Visible))
+		    {
+                var item = node.Value;
+                var itemText = node.GetItemText(T);
+                var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
+                var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
+                var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
+                var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
+                var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
+                var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+
+			    <a href="@item.Url" class="list-group-item list-group-item-action menu-link@(item.Id.IsCaseInsensitiveEqual(selectedItemId) ? " active" : "")@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")"
+                    @Html.Attr("id", linkId, linkId.HasValue())
+                    @Html.Attr("rel", relAttr, relAttr.HasValue())
+                    @Html.Attr("target", target, target.HasValue())
+                    @Html.Attr("title", shortDescription, shortDescription.HasValue())>
+		            @if (hasIcons)
+                    {
+			            <i class="fal fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "") list-group-item-icon"></i>
+                    }
+                    else if (hasImages)
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                    }
+                    <span>@itemText</span>
+                    @if (item.BadgeText.HasValue())
+                    {
+                        <span class="badge badge-pill badge-@item.BadgeStyle.ToString().ToLower() ml-auto">@Html.Raw(item.BadgeText)</span>
+                    }
+                </a>
+		    }
+
+            @*@{ Html.RenderWidget("myaccount_menu_lastitem_after"); }*@
+        </div>
+    </div>
+</div>

@@ -30,6 +30,7 @@
     var isFirst = true;
     var isRtl = nodes.First().Value.Rtl;
     var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
+    var hasImages = nodes.Any(x => x.Value.ImageUrl.HasValue());
 
     <div class="dropdown-menu @(isRtl ? "dropdown-menu-left" : "dropdown-menu-right")">
         @*@{ Html.RenderWidget("servicemenu_before"); }*@
@@ -49,7 +50,6 @@
             var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
             var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
             var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
-            var imageUrl = item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png";
 
             if (item.IsGroupHeader)
             {
@@ -57,9 +57,9 @@
                 {
                     <div class="dropdown-divider"></div>
                 }
-                if (item.Text.HasValue() && item.Text != "[SKIP]")
+                if (itemText.HasValue() && item.Text != "[SKIP]")
                 {
-                    <div class="dropdown-header h6">@itemText</div>
+                    <div class="dropdown-header menu-header h6">@itemText</div>
                 }
                 isFirst = false;
                 continue;
@@ -71,9 +71,13 @@
                 @Html.Attr("target", target, target.HasValue())
                 @Html.Attr("title", shortDescription, shortDescription.HasValue())>
 		        @if (hasIcons)
-		        {
+                {
 			        <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
-		        }
+                }
+                else if (hasImages)
+                {
+                    <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                }
                 <span>@itemText</span>
             </a>
 

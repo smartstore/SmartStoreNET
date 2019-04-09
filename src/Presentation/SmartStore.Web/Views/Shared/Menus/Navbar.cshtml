@@ -8,17 +8,18 @@
         return;
     }
 
-    var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null ? Model.SelectedNode.Parent.Value.EntityId : Model.SelectedNode.Value.EntityId;
+    var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null 
+        ? Model.SelectedNode.Parent.Value.EntityId 
+        : Model.SelectedNode.Value.EntityId;
     var renderMoreItem = false;
     var rtl = WorkContext.WorkingLanguage.Rtl;
+    var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
+    var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
+    var isFirst = true;
+    object obj = null;
 }
 
 @functions {
-    private string GetNodeLink(TreeNode<MenuItem> node)
-    {
-        return node.Value.GenerateUrl(this.Url);
-    }
-
     private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
     {
         var liClasses = new List<string>();
@@ -69,7 +70,54 @@
                 continue;
             }
 
+            var itemText = node.GetItemText(T);
+            var itemUrl = item.GenerateUrl(this.Url);
+            var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
+            var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
+            var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
+            var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+            var itemState = node.GetNodePathState(Model.Path);
+            var isMegaMenuActive = node.GetMetadata<bool?>("IsMegaMenuActive", false);
+            var isDropDownActive = (isMegaMenuActive == null ? true : (bool)isMegaMenuActive) && node.HasChildren;
 
+            if (item.IsGroupHeader)
+            {
+                if (!isFirst)
+                {
+                    <li><hr /></li>
+                }
+                if (itemText.HasValue() && item.Text != "[SKIP]")
+                {
+                    <li class="menu-header h4 mt-2">@itemText</li>
+                }
+                isFirst = false;
+                continue;
+            }
+
+            <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.EntityId" data-id="@item.EntityId">
+                <a href="@itemUrl" class="menu-link nav-link@(isDropDownActive ? " dropdown-toggle" : "")@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")"
+                    @Html.Attr("rel", relAttr, relAttr.HasValue())
+                    @Html.Attr("target", target, target.HasValue())
+                    @Html.Attr("title", shortDescription, shortDescription.HasValue())
+                    @Html.Attr("aria-expanded", "false", isDropDownActive)
+                    @Html.Attr("data-target", "#dropdown-menu-{0}".FormatInvariant(item.EntityId), isDropDownActive)>
+                    @if (hasIcons)
+                    {
+	                    <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
+                    }
+                    else if (hasImages)
+                    {
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                    }
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
+                </a>
+                @if (item.BadgeText.HasValue())
+                {
+                    <label class="badge badge-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+                }
+            </li>
+
+            isFirst = false;
         }
 
         @if (renderMoreItem)
@@ -81,7 +129,7 @@
             </li>
         }
 
-        @{ Html.RenderWidget("mainmenu_after_last_item"); }
+        @*@{ Html.RenderWidget("mainmenu_after_last_item"); }*@
     </ul>
 
     <div class="megamenu-nav megamenu-nav--next @(rtl ? "alpha" : "omega")">

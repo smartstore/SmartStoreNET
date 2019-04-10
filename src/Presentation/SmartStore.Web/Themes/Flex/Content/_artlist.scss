@@ -619,6 +619,13 @@ $art-border-color:              #ddd;
         padding-right: $grid-gutter-width / 2;
     }
 
+    @include media-breakpoint-up(xs) {
+        &.artlist-1-col .art {
+            flex-basis: 100% !important;
+            max-width: initial !important;
+        }
+    }
+
     @include media-breakpoint-up(sm) {
         &.artlist-4-cols,
         &.artlist-5-cols,

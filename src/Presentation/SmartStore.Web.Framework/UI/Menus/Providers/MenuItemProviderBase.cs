@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework.UI
 		{
             var entity = request.Entity;
             var title = entity.GetLocalized(x => x.Title);
-            var shortDescription = entity.GetLocalized(x => x.ShortDescription);
+            string shortDescription = entity.GetLocalized(x => x.ShortDescription);
 
 			var menuItem = new MenuItem
 			{

@@ -30,6 +30,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -443,7 +444,8 @@ namespace SmartStore.Web.Controllers
 			var hint = _services.Settings.GetSettingByKey<string>("Rnd_SmCopyrightHint", string.Empty, store.Id);
 			if (hint.IsEmpty())
 			{
-				hint = s_hints[new Random().Next(s_hints.Length)];
+				hint = s_hints[CommonHelper.GenerateRandomInteger(0, s_hints.Length - 1)];
+				
 				_services.Settings.SetSetting<string>("Rnd_SmCopyrightHint", hint, store.Id);
 			}
 

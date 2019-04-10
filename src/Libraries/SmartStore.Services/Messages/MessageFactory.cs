@@ -22,6 +22,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Templating;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
@@ -626,7 +627,7 @@ namespace SmartStore.Services.Messages
 			if (count > 0)
 			{
 				// Fetch a random one
-				var skip = new Random().Next(count);
+				var skip = CommonHelper.GenerateRandomInteger(0, count);
 				result = query.OrderBy(x => x.Id).Skip(() => skip).FirstOrDefault();
 			}
 			else

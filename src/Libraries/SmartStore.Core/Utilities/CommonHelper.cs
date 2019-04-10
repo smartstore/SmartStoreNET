@@ -19,6 +19,7 @@ namespace SmartStore.Utilities
     public static partial class CommonHelper
     {
 		private static bool? _isDevEnvironment;
+		private readonly static Random _random = new Random();
 		
 		/// <summary>
         /// Generate random digit code
@@ -27,12 +28,14 @@ namespace SmartStore.Utilities
         /// <returns>Result string</returns>
         public static string GenerateRandomDigitCode(int length)
         {
-            var random = new Random();
-            string str = string.Empty;
-            for (int i = 0; i < length; i++)
-                str = String.Concat(str, random.Next(10).ToString());
-            return str;
-        }
+			var buffer = new int[length];
+			for (int i = 0; i < length; ++i)
+			{
+				buffer[i] = _random.Next(10);
+			}
+
+			return string.Join("", buffer);
+		}
 
 		/// <summary>
 		/// Returns an random interger number within a specified rage

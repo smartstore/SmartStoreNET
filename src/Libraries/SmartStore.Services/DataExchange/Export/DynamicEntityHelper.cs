@@ -31,6 +31,7 @@ using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Export
 {
@@ -106,7 +107,7 @@ namespace SmartStore.Services.DataExchange.Export
 					string[] appendText = ctx.Projection.AppendDescriptionText.SplitSafe(",");
 					if (appendText.Length > 0)
 					{
-						var rnd = new Random().Next(0, appendText.Length - 1);
+						var rnd = CommonHelper.GenerateRandomInteger(0, appendText.Length - 1);
 						description = description.Grow(appendText.SafeGet(rnd), " ");
 					}
 				}

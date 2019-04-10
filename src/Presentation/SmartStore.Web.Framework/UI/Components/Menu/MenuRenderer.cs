@@ -1,5 +1,4 @@
 ﻿using System.Web.Mvc.Html;
-using SmartStore.Collections;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.UI
@@ -32,13 +31,16 @@ namespace SmartStore.Web.Framework.UI
 
         protected virtual MenuModel CreateModel()
         {
-            var root = _menuService.GetMenu(Component.Name)?.Root;
+            var model = new MenuModel { Name = Component.Name };
+            var menu = _menuService.GetMenu(Component.Name);
 
-            var model = new MenuModel
+            if (menu != null)
             {
-                Name = Component.Name,
-                Root = root ?? new TreeNode<MenuItem>(new MenuItem())
-            };
+                model.Root = menu.Root;
+                model.Path = menu.GetCurrentBreadcrumb();
+
+                menu.ResolveElementCounts(model.SelectedNode, false);
+            }
 
             return model;
         }

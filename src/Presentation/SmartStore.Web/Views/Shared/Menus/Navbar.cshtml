@@ -70,15 +70,15 @@
                 continue;
             }
 
+            var itemState = node.GetNodePathState(Model.Path);
+            var isMegaMenuActive = node.GetMetadata<bool?>("IsMegaMenuActive", false);
+            var isDropDownActive = (isMegaMenuActive == null ? true : (bool)isMegaMenuActive) && node.HasChildren;
             var itemText = node.GetItemText(T);
             var itemUrl = item.GenerateUrl(this.Url);
             var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
             var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
             var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
             var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
-            var itemState = node.GetNodePathState(Model.Path);
-            var isMegaMenuActive = node.GetMetadata<bool?>("IsMegaMenuActive", false);
-            var isDropDownActive = (isMegaMenuActive == null ? true : (bool)isMegaMenuActive) && node.HasChildren;
 
             if (item.IsGroupHeader)
             {

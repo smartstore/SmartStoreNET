@@ -1314,14 +1314,14 @@ namespace SmartStore.Web.Controllers
 
 				if (node != null)
 				{
-					var path = node.Trail.Where(x => !x.IsRoot).ToList();
+					var path = node.GetBreadcrumb().ToList();
                     return path;
 				}
 
 				return new List<TreeNode<MenuItem>>();
 			});
 
-			return breadcrumb;
+            return breadcrumb;
 		}
 
 		public IList<ProductSpecificationModel> PrepareProductSpecificationModel(Product product)

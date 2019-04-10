@@ -104,7 +104,12 @@ namespace SmartStore.Web.Framework.UI
 		{
 		}
 
-		public IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus()
+        public virtual IList<TreeNode<MenuItem>> GetCurrentBreadcrumb()
+        {
+            return new List<TreeNode<MenuItem>>();
+        }
+
+        public IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus()
 		{
 			var cache = Services.Cache;
 			var keys = cache.Keys(MENU_PATTERN_KEY.FormatInvariant(this.Name));

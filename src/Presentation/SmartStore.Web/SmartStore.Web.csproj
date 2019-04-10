@@ -1822,6 +1822,7 @@
     <Content Include="Views\Shared\Menus\LinkList.cshtml" />
     <Content Include="Views\Shared\Menus\Navbar.cshtml" />
     <Content Include="Views\Shared\Menus\ListGroup.cshtml" />
+    <Content Include="Views\Shared\Menus\Main.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

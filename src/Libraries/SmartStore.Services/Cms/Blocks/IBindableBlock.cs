@@ -61,6 +61,7 @@ namespace SmartStore.Services.Cms.Blocks
         public virtual string BindEntityName { get; set; }
         public virtual int? BindEntityId { get; set; }
 
+        [JsonIgnore]
         public bool CanBind
         {
             get
@@ -69,13 +70,16 @@ namespace SmartStore.Services.Cms.Blocks
             }
         }
 
+        [JsonIgnore]
         public bool IsLoaded
         {
             get { return DataItem != null; }
         }
 
+        [JsonIgnore]
         public IDictionary<string, object> DataItem { get; set; }
 
+        [JsonIgnore]
         public bool IsBound { get; set; }
 
         public void Reset()

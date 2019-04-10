@@ -283,7 +283,7 @@ namespace SmartStore.Web.Framework
 
 			if (servicesProperty == null)
 				return;
-
+			
 			registration.Metadata.Add("Property.ICommonServices", new FastProperty(servicesProperty));
 
 			registration.Activated += (sender, e) =>
@@ -1224,8 +1224,8 @@ namespace SmartStore.Web.Framework
             BindingFlags.Static | BindingFlags.NonPublic);
 
         public IEnumerable<IComponentRegistration> RegistrationsFor(
-                Service service,
-                Func<Service, IEnumerable<IComponentRegistration>> registrations)
+			Service service,
+			Func<Service, IEnumerable<IComponentRegistration>> registrations)
         {
             if (service is TypedService ts && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
             {

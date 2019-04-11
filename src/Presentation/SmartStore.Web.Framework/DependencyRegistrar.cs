@@ -875,7 +875,7 @@ namespace SmartStore.Web.Framework
 
             if (DataSettings.DatabaseIsInstalled())
             {
-                builder.RegisterType<UserMenuFilter>().AsActionFilterFor<PublicControllerBase>();
+                builder.RegisterType<UserMenuFilter>().AsResultFilterFor<SmartController>();
             }
         }
 	}

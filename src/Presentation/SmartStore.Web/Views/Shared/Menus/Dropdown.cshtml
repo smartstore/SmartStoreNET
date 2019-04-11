@@ -1,101 +1,90 @@
-﻿@using SmartStore.Collections
+﻿@model MenuModel
+
+@using SmartStore.Collections
 @using SmartStore.Web.Framework.UI
-@model MenuModel
+
 @{
-    var root = Model.Root;
-    if (root == null)
-    {
-        return;
-    }
+	var root = Model.Root;
+	if (root == null)
+	{
+		return;
+	}
 
-    // Support both cases: the dropdown-link is Model.Root or the first item if it has children.
-    if (root.HasChildren && root.Children.Count == 1 && root.FirstChild.HasChildren)
-    {
-        root = root.FirstChild;
-    }
+	// Support both cases: the dropdown-link is Model.Root or the first item if it has children.
+	if (root.HasChildren && root.Children.Count == 1 && root.FirstChild.HasChildren)
+	{
+		root = root.FirstChild;
+	}
 
-    object obj = null;
-    var item = root.Value;
-    var itemText = root.GetItemText(T);
-    var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
-    var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
-    var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+	object obj = null;
+	var item = root.Value;
+
+	item.LinkHtmlAttributes.PrependCssClass("menubar-link");
 }
 
 <div class="cms-menu cms-menu-dropdown" data-menu-name="@(Model.Name?.ToLower())">
-    <div class="dropdown">
-        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" rel="nofollow" 
-           class="menubar-link@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")"
-           @Html.Attr("id", linkId, linkId.HasValue())
-           @Html.Attr("title", shortDescription, shortDescription.HasValue())>
-		    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@itemText</span>
-            <i class="fal fa-angle-down menubar-caret"></i>
-        </a>
-        @CreateDropdown(root.Children)
-    </div>
+	<div class="dropdown">
+		<a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" rel="nofollow" @Html.Attrs(item.LinkHtmlAttributes)>
+			<span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@root.GetItemText(T)</span>
+			<i class="fal fa-angle-down menubar-caret"></i>
+		</a>
+		@CreateDropdown(root.Children)
+	</div>
 </div>
 
 @helper CreateDropdown(IEnumerable<TreeNode<MenuItem>> nodes)
 {
-    if (!nodes.Any())
-    {
-        return;
-    }
+	if (!nodes.Any())
+	{
+		return;
+	}
 
-    object obj = null;
-    var isFirst = true;
-    var rtl = WorkContext.WorkingLanguage.Rtl;
-    var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
-    var hasImages = nodes.Any(x => x.Value.ImageUrl.HasValue());
+	var isFirst = true;
+	var rtl = WorkContext.WorkingLanguage.Rtl;
+	var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
+	var hasImages = nodes.Any(x => x.Value.ImageUrl.HasValue());
 
-    <div class="dropdown-menu @(rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
-        @foreach (var node in nodes)
-        {
-            var item = node.Value;
-            if (!item.Visible)
-            {
-                continue;
-            }
+	<div class="dropdown-menu @(rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
+		@foreach (var node in nodes)
+		{
+			var item = node.Value;
+			if (!item.Visible)
+			{
+				continue;
+			}
 
-            var itemText = node.GetItemText(T);
-            var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
-            var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
-            var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
-            var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
-            var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
-            var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+			var itemText = node.GetItemText(T);
+			var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
+			
+			item.LinkHtmlAttributes.PrependCssClass("dropdown-item menu-link");
 
-            if (item.IsGroupHeader)
-            {
-                if (!isFirst)
-                {
-                    <div class="dropdown-divider"></div>
-                }
-                if (itemText.HasValue() && item.Text != "[SKIP]")
-                {
-                    <div class="dropdown-header menu-header h6">@itemText</div>
-                }
-                isFirst = false;
-                continue;
-            }
+			if (item.IsGroupHeader)
+			{
+				if (!isFirst)
+				{
+					<div class="dropdown-divider"></div>
+				}
+				if (itemText.HasValue() && item.Text != "[SKIP]")
+				{
+					<div class="dropdown-header menu-header h6">@itemText</div>
+				}
+				isFirst = false;
+				continue;
+			}
 
-            <a href="@itemUrl" class="dropdown-item menu-link@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")" 
-                @Html.Attr("id", linkId, linkId.HasValue())
-                @Html.Attr("rel", relAttr, relAttr.HasValue())
-                @Html.Attr("target", target, target.HasValue())
-                @Html.Attr("title", shortDescription, shortDescription.HasValue())>
-		        @if (hasIcons)
-                {
-			        <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
-                }
-                else if (hasImages)
-                {
-                    <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
-                }
-                <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
-            </a>
+			<a href="@itemUrl" @Html.Attrs(item.LinkHtmlAttributes)>
+				@if (hasIcons)
+				{
+					<i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
+				}
+				else if (hasImages)
+				{
+					<img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+				}
+				<span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
+			</a>
 
-            isFirst = false;
-        }
-    </div>
+			isFirst = false;
+		}
+	</div>
 }

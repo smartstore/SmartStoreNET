@@ -14,37 +14,37 @@
         }
     </nav>
 
-    <nav class="menubar-group ml-auto">
-        
-        @{ Html.RenderWidget("header_menu_before"); }
+	<nav class="menubar-group ml-auto">
 
-        @if (Model.HasContactUsPage)
+		@{ Html.RenderWidget("header_menu_before"); }
+
+		@if (Model.HasContactUsPage)
 		{
-            <a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
+			<a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
 		}
 
-        @(Html.SmartStore().Menu("HelpAndService", "Menus/Dropdown"))
-        @*<div class="dropdown service-links">
-            <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+		@{ Html.SmartStore().Menu("HelpAndService", "Menus/Dropdown").Render(); }
+		@*<div class="dropdown service-links">
+			<a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
 				<span>@T("Menu.ServiceMenu")</span>
-                <i class="fal fa-angle-down menubar-caret"></i>
-            </a>
+				<i class="fal fa-angle-down menubar-caret"></i>
+			</a>
 
-            <div class="dropdown-menu">
-                @{
+			<div class="dropdown-menu">
+				@{
 					Html.RenderAction("ServiceMenu", "Common", new { area = "" });
-                } 
-            </div>
-        </div>*@
+				}
+			</div>
+		</div>*@
 
-        @if (Model.IsCustomerImpersonated)
-        {
-            <a class="menubar-link" href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
-                <i class="fal fa-sign-out-alt menubar-icon"></i>
+		@if (Model.IsCustomerImpersonated)
+		{
+			<a class="menubar-link" href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
+				<i class="fal fa-sign-out-alt menubar-icon"></i>
 				<span>@Model.CustomerEmailUsername</span>
-            </a>
-        }
-    </nav>
+			</a>
+		}
+	</nav>
 
     <nav class="menubar-group menubar-group--special">
         @if (Model.NewsEnabled)

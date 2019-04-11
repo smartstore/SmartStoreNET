@@ -15,7 +15,7 @@ namespace SmartStore.Services.Cms
 {
     public partial class MenuStorage : IMenuStorage
     {
-        private const string MENU_SYSTEMNAME_CACHE_KEY = "MenuStorage:SystemNames";
+        private const string MENU_ALLSYSTEMNAMEs_CACHE_KEY = "MenuStorage:SystemNames";
         private const string MENU_USER_CACHE_KEY = "MenuStorage:Menus:User-{0}-{1}";
         private const string MENU_PATTERN_KEY = "MenuStorage:Menus:*";
 
@@ -121,7 +121,7 @@ namespace SmartStore.Services.Cms
             return new PagedList<MenuRecord>(query, pageIndex, pageSize);
         }
 
-        public virtual IList<MenuInfo> GetUserMenusInfo(IEnumerable<CustomerRole> roles = null, int storeId = 0)
+        public virtual IEnumerable<MenuInfo> GetUserMenuInfos(IEnumerable<CustomerRole> roles = null, int storeId = 0)
         {
             if (roles == null)
             {
@@ -201,7 +201,9 @@ namespace SmartStore.Services.Cms
             }
 
             _menuItemRepository.Insert(item);
-        }
+
+			_services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
+		}
 
         public virtual void UpdateMenuItem(MenuItemRecord item)
         {
@@ -214,7 +216,9 @@ namespace SmartStore.Services.Cms
             }
 
             _menuItemRepository.Update(item);
-        }
+
+			_services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
+		}
 
         public virtual void DeleteMenuItem(MenuItemRecord item, bool deleteChilds = true)
         {
@@ -226,20 +230,22 @@ namespace SmartStore.Services.Cms
             if (!deleteChilds)
             {
                 _menuItemRepository.Delete(item);
-                return;
             }
+			else
+			{
+				var ids = new HashSet<int> { item.Id };
+				GetChildIds(item.Id, ids);
 
-            var ids = new HashSet<int> { item.Id };
-            GetChildIds(item.Id);
+				foreach (var chunk in ids.Slice(200))
+				{
+					var items = _menuItemRepository.Table.Where(x => chunk.Contains(x.Id)).ToList();
+					_menuItemRepository.DeleteRange(items);
+				}
+			}
 
-            foreach (var chunk in ids.Slice(200))
-            {
-                var items = _menuItemRepository.Table.Where(x => chunk.Contains(x.Id)).ToList();
+			_services.Cache.RemoveByPattern(MENU_PATTERN_KEY);
 
-                _menuItemRepository.DeleteRange(items);
-            }
-
-            void GetChildIds(int parentId)
+			void GetChildIds(int parentId, HashSet<int> ids)
             {
                 var childIds = _menuItemRepository.TableUntracked
                     .Where(x => x.ParentItemId == parentId)
@@ -249,8 +255,7 @@ namespace SmartStore.Services.Cms
                 if (childIds.Any())
                 {
                     ids.AddRange(childIds);
-
-                    childIds.Each(x => GetChildIds(x));
+                    childIds.Each(x => GetChildIds(x, ids));
                 }
             }
         }
@@ -293,9 +298,9 @@ namespace SmartStore.Services.Cms
 
         private ISet GetMenuSystemNames(bool create)
 		{
-			if (create || _services.Cache.Contains(MENU_SYSTEMNAME_CACHE_KEY))
+			if (create || _services.Cache.Contains(MENU_ALLSYSTEMNAMEs_CACHE_KEY))
 			{
-				return _services.Cache.GetHashSet(MENU_SYSTEMNAME_CACHE_KEY, () =>
+				return _services.Cache.GetHashSet(MENU_ALLSYSTEMNAMEs_CACHE_KEY, () =>
 				{
 					return _menuRepository.TableUntracked
 						.Where(x => x.Published)

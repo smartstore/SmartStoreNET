@@ -1,14 +1,17 @@
 ﻿using System.Web.Mvc;
+using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public class UserMenuFilter : IActionFilter, IResultFilter
+    public class UserMenuFilter : IResultFilter
     {
-        private readonly IMenuService _menuService;
+		private readonly IWidgetProvider _widgetProvider;
+		private readonly IMenuStorage _menuStorage;
 
-        public UserMenuFilter(IMenuService menuService)
+        public UserMenuFilter(IWidgetProvider widgetProvider, IMenuStorage menuStorage)
         {
-            _menuService = menuService;
+            _widgetProvider = widgetProvider;
+			_menuStorage = menuStorage;
         }
 
         public void OnResultExecuting(ResultExecutingContext filterContext)
@@ -18,19 +21,29 @@ namespace SmartStore.Web.Framework.UI
                 return;
             }
 
-            _menuService.ProcessMenus();
+            ProcessUserMenus();
         }
 
         public void OnResultExecuted(ResultExecutedContext filterContext)
         {
         }
 
-        public void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-        }
+		/// <summary>
+		/// Registers actions to render user menus in widget zones.
+		/// </summary>
+		private void ProcessUserMenus()
+		{
+			var menusInfo = _menuStorage.GetUserMenuInfos();
 
-        public void OnActionExecuted(ActionExecutedContext filterContext)
-        {
-        }
-    }
+			foreach (var info in menusInfo)
+			{
+				_widgetProvider.RegisterAction(
+					info.WidgetZones,
+					"UserMenu",
+					"Common",
+					new { area = "", systemName = info.SystemName, template = info.Template },
+					info.DisplayOrder);
+			}
+		}
+	}
 }

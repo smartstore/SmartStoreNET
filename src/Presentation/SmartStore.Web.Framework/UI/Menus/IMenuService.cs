@@ -3,17 +3,45 @@ using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public partial interface IMenuService // INFO: replaces ISiteMapService
+	/// <summary>
+	/// Main service for menus
+	/// </summary>
+	public partial interface IMenuService
 	{
+		/// <summary>
+		/// Gets a menu instance
+		/// </summary>
+		/// <param name="name">Name of a code-based or a persisted user menu.</param>
+		/// <returns>Menu instance</returns>
 		IMenu GetMenu(string name);
-		TreeNode<MenuItem> GetRootNode(string menuName);
-		TreeNode<MenuItem> GetCurrentNode(string menuName, ControllerContext controllerContext);
-		void ResolveElementCounts(string menuName, TreeNode<MenuItem> curNode, bool deep = false);
-		void ClearCache(string menuName);
 
-        /// <summary>
-        /// Registers actions to render user menus in widget zones.
-        /// </summary>
-        void ProcessMenus();
+		/// <summary>
+		/// Gets the root node of a menu
+		/// </summary>
+		/// <param name="menuName">Name of a code-based or a persisted user menu.</param>
+		/// <returns>The root menu item node.</returns>
+		TreeNode<MenuItem> GetRootNode(string menuName);
+
+		/// <summary>
+		/// Resolves the current node
+		/// </summary>
+		/// <param name="menuName">Name of a code-based or a persisted user menu.</param>
+		/// <param name="controllerContext">Controller context</param>
+		/// <returns>The current menu item node.</returns>
+		TreeNode<MenuItem> ResolveCurrentNode(string menuName, ControllerContext controllerContext);
+
+		/// <summary>
+		/// Resolves all element counts for a tree subset, e.g. resolves the number of products in categories.
+		/// </summary>
+		/// <param name="menuName">Name of a code-based or a persisted user menu.</param>
+		/// <param name="curNode">The node to begin resolution.</param>
+		/// <param name="deep"><c>true</c>: process ALL children of <paramref name="curNode"/>, <c>false:</c> process only direct children of <paramref name="curNode"/>.</param>
+		void ResolveElementCounts(string menuName, TreeNode<MenuItem> curNode, bool deep = false);
+
+		/// <summary>
+		/// Removes all cached menu variations for <paramref name="menuName"/>
+		/// </summary>
+		/// <param name="menuName">Name of a code-based or a persisted user menu.</param>
+		void ClearCache(string menuName);
     }
 }

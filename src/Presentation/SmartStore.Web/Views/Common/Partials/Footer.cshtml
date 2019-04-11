@@ -77,7 +77,7 @@
                         @T("Footer.Info")
                     </h4>
 					<div class="collapse nav-collapse" id="footer-info">
-                        @(Html.SmartStore().Menu("FooterInformation", "Menus/LinkList"))
+                        @{ Html.SmartStore().Menu("FooterInformation", "Menus/LinkList").Render(); }
 @{/*
 						<ul class="list-unstyled">
 							@if (Model.ManufacturerEnabled)
@@ -109,7 +109,7 @@
                         <span class="d-md-none">@T("Footer.Service.Mobile")</span>
                     </h4>
 					<div class="collapse nav-collapse" id="footer-service">
-                        @(Html.SmartStore().Menu("FooterService", "Menus/LinkList"))
+                        @{ Html.SmartStore().Menu("FooterService", "Menus/LinkList").Render(); }
 @{/*
 						<ul class="list-unstyled">
                             @{ 
@@ -151,7 +151,7 @@
                         <span class="d-md-none">@T("Footer.Company.Mobile")</span>
                     </h4>
 					<div class="collapse nav-collapse" id="footer-company">
-                        @(Html.SmartStore().Menu("FooterCompany", "Menus/LinkList"))
+						@{ Html.SmartStore().Menu("FooterCompany", "Menus/LinkList").Render(); }
 @{/*
 						<ul class="list-unstyled">
 							@foreach (var link in footerLinks)

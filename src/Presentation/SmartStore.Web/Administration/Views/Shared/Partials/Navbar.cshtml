@@ -27,8 +27,8 @@
 	<div id="navbar-menu" class="collapse navbar-collapse mr-auto">
 		@{
 			Html.RenderWidget("admin_menu_before");
-			Html.RenderAction("Menu", "Common", new { area = "Admin" });
-			Html.RenderWidget("admin_menu_before");
+            @(Html.SmartStore().Menu("Admin"))
+            Html.RenderWidget("admin_menu_before");
 		}
 	</div>
     

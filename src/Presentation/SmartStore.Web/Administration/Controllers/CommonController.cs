@@ -72,7 +72,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDbCache _dbCache;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ICommonServices _services;
-        private readonly Lazy<IMenuService> _menuService;
 
         public CommonController(
 			Lazy<IPaymentService> paymentService,
@@ -91,8 +90,7 @@ namespace SmartStore.Admin.Controllers
 			IGenericAttributeService genericAttributeService,
 			IDbCache dbCache,
 			ITaskScheduler taskScheduler,
-			ICommonServices services,
-            Lazy<IMenuService> menuService)
+			ICommonServices services)
         {
             _paymentService = paymentService;
             _shippingService = shippingService;
@@ -111,10 +109,7 @@ namespace SmartStore.Admin.Controllers
 			_dbCache = dbCache;
 			_taskScheduler = taskScheduler;
 			_services = services;
-            _menuService = menuService;
         }
-
-        #region Navbar & Menu
 
 		[ChildActionOnly]
 		public ActionResult Navbar()
@@ -130,15 +125,6 @@ namespace SmartStore.Admin.Controllers
 
 			return PartialView();
 		}
-
-        [ChildActionOnly]
-        public ActionResult Menu()
-        {
-            var rootNode = _menuService.Value.GetRootNode("Admin");
-            return PartialView(rootNode);
-        }
-
-		#endregion
 
 		#region CheckUpdate
 

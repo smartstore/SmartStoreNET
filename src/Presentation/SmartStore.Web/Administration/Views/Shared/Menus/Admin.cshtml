@@ -1,9 +1,6 @@
-﻿@model TreeNode<SmartStore.Web.Framework.UI.MenuItem>
-
-@using SmartStore.Services.Security;
-@using SmartStore.Core.Domain.Security;
-@using SmartStore.Collections;
+﻿@using SmartStore.Collections;
 @using SmartStore.Web.Framework.UI;
+@model MenuModel
 
 @functions {
     public string GetNodeLink(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node) 
@@ -18,7 +15,7 @@
 
 <ul class="navbar-nav">
 @{
-    foreach (var node in Model.Children)
+    foreach (var node in Model.Root.Children)
     {
         var item = node.Value;
 
@@ -58,11 +55,9 @@
                 @CreateDropdown(node.Children, true)
             }
         </li>
-        
     }   
 }
 </ul>
-
 
 @helper CreateDropdown(IEnumerable<TreeNode<SmartStore.Web.Framework.UI.MenuItem>> nodes, bool isRoot)
 {

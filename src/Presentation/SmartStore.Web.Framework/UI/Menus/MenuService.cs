@@ -5,7 +5,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Cms;
 
-namespace SmartStore.Web.Framework.UI.Menus
+namespace SmartStore.Web.Framework.UI
 {
     public partial class MenuService : IMenuService
     {

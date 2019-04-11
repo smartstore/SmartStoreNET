@@ -73,9 +73,16 @@ namespace SmartStore.Services.Cms
             var systemNames = GetMenuSystemNames(false);
             if (systemNames != null)
             {
-                if (modProps.TryGetValue(nameof(menu.Published), out var original) && original.Convert<bool>() == true)
+                if (modProps.TryGetValue(nameof(menu.Published), out var original))
                 {
-                    systemNames.Remove(menu.SystemName);
+                    if (original.Convert<bool>() == true)
+                    {
+                        systemNames.Remove(menu.SystemName);
+                    }
+                    else
+                    {
+                        systemNames.Add(menu.SystemName);
+                    }
                 }
                 else if (modProps.TryGetValue(nameof(menu.SystemName), out original))
                 {

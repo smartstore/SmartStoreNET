@@ -89,7 +89,6 @@ using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Theming.Assets;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.UI.Menus;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;

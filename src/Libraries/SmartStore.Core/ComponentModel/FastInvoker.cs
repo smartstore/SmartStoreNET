@@ -139,21 +139,6 @@ namespace SmartStore.ComponentModel
 		/// <summary>
 		/// Creates and caches a fast method invoker.
 		/// </summary>
-		/// <param name="methodInfo">Method info instance to create an invoker for.</param>
-		/// <returns>The fast method invoker.</returns>
-		public static FastInvoker GetInvoker(MethodInfo methodInfo)
-		{
-			Guard.NotNull(methodInfo, nameof(methodInfo));
-
-			return GetInvoker(
-				methodInfo.DeclaringType, 
-				methodInfo.Name,
-				methodInfo.GetParameters().Select(x => x.ParameterType).ToArray());
-		}
-
-		/// <summary>
-		/// Creates and caches a fast method invoker.
-		/// </summary>
 		/// <param name="methodName">Name of method to create an invoker for.</param>
 		/// <param name="argTypes">Argument types of method to create an invoker for.</param>
 		/// <returns>The fast method invoker.</returns>
@@ -174,7 +159,7 @@ namespace SmartStore.ComponentModel
 			Guard.NotNull(type, nameof(type));
 			Guard.NotEmpty(methodName, nameof(methodName));
 
-			var cacheKey = MethodKey.Create(type, methodName, argTypes);
+			var cacheKey = new HashMethodKey(type, methodName, argTypes);
 
 			if (!_invokersCache.TryGetValue(cacheKey, out var invoker))
 			{
@@ -185,6 +170,26 @@ namespace SmartStore.ComponentModel
 					throw new MethodAccessException("Could not find a matching method '{0}' in type {1}.".FormatInvariant(methodName, type));
 				}
 
+				invoker = new FastInvoker(method);
+				_invokersCache.TryAdd(cacheKey, invoker);
+			}
+
+			return invoker;
+		}
+
+		/// <summary>
+		/// Creates and caches a fast method invoker.
+		/// </summary>
+		/// <param name="method">Method info instance to create an invoker for.</param>
+		/// <returns>The fast method invoker.</returns>
+		public static FastInvoker GetInvoker(MethodInfo method)
+		{
+			Guard.NotNull(method, nameof(method));
+
+			var cacheKey = new MethodInfoKey(method);
+
+			if (!_invokersCache.TryGetValue(cacheKey, out var invoker))
+			{
 				invoker = new FastInvoker(method);
 				_invokersCache.TryAdd(cacheKey, invoker);
 			}
@@ -208,20 +213,70 @@ namespace SmartStore.ComponentModel
 
 		#endregion
 
-		class MethodKey : Tuple<Type, string, int>
+		abstract class MethodKey
 		{
-			public MethodKey(Type type, string methodName, int parametersHash)
-				: base(type, methodName, parametersHash)
-			{
-			}
-			public Type Type { get { return base.Item1; } }
-			public string MethodName { get { return base.Item2; } }
-			public int ParameterHash { get { return base.Item3; } }
+			public override bool Equals(object obj) => 
+				throw new NotImplementedException();
 
-			public static MethodKey Create(Type type, string methodName, IEnumerable<Type> parameterTypes)
+			public override int GetHashCode() => 
+				throw new NotImplementedException();
+
+			public static bool operator ==(MethodKey left, MethodKey right) => 
+				object.Equals(left, right);
+
+			public static bool operator !=(MethodKey left, MethodKey right) =>
+				!(left == right);
+		}
+
+		class HashMethodKey : MethodKey, IEquatable<HashMethodKey>
+		{
+			private readonly int _hash;
+
+			public HashMethodKey(Type type, string methodName, IEnumerable<Type> parameterTypes)
 			{
-				var hashCombiner = HashCodeCombiner.Start().Add(parameterTypes);
-				return new MethodKey(type, methodName, hashCombiner.CombinedHash);
+				_hash = HashCodeCombiner.Start().Add(type).Add(methodName).Add(parameterTypes).CombinedHash;
+			}
+
+			public override bool Equals(object obj) =>
+				this.Equals(obj as HashMethodKey);
+
+			public bool Equals(HashMethodKey other)
+			{
+				if (other == null)
+					return false;
+
+				return this._hash == other._hash;
+			}
+
+			public override int GetHashCode()
+			{
+				return _hash;
+			}
+		}
+
+		class MethodInfoKey : MethodKey, IEquatable<MethodInfoKey>
+		{
+			private readonly MethodInfo _method;
+
+			public MethodInfoKey(MethodInfo method)
+			{
+				_method = method;
+			}
+
+			public override bool Equals(object obj) =>
+				this.Equals(obj as HashMethodKey);
+
+			public bool Equals(MethodInfoKey other)
+			{
+				if (other == null)
+					return false;
+
+				return this._method == other._method;
+			}
+
+			public override int GetHashCode()
+			{
+				return _method.GetHashCode();
 			}
 		}
 	}

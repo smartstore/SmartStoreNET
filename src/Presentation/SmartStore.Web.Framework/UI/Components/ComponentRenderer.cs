@@ -51,43 +51,45 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        protected void WriteHtml(HtmlTextWriter writer)
-        {
-            this.VerifyState();
-            this.Component.Id = SanitizeId(this.Component.Id);
+		protected string SanitizeId(string id)
+		{
+			return id.SanitizeHtmlId();
+		}
 
-            this.WriteHtmlCore(writer);
-        }
-
-        protected virtual void WriteHtmlCore(HtmlTextWriter writer)
+		public virtual void Render()
         {
-            throw new NotImplementedException();
-        }
-
-        public virtual void Render()
-        {
-			var output = ((System.Web.Mvc.WebViewPage)this.HtmlHelper.ViewDataContainer).Output;
-			var str = ToHtmlString();
-			output.Write(str);
+			RenderInternal(ViewContext.Writer);
 		}
 
         public virtual string ToHtmlString()
         {
             using (var stringWriter = new StringWriter())
             {
-				using (var htmlWriter = new HtmlTextWriter(stringWriter))
-				{
-					this.WriteHtml(htmlWriter);
-					var str = stringWriter.ToString();
-					return str;
-				}
-            }
-        }
+				RenderInternal(stringWriter);
+				var str = stringWriter.ToString();
+				return str;
+			}
+		}
 
+		private void RenderInternal(TextWriter writer)
+		{
+			using (var htmlWriter = new HtmlTextWriter(writer))
+			{
+				WriteHtmlCore(htmlWriter);
+			}
+		}
 
-        protected string SanitizeId(string id)
-        {
-            return id.SanitizeHtmlId();
-        }
+		protected void WriteHtml(HtmlTextWriter writer)
+		{
+			this.VerifyState();
+			this.Component.Id = SanitizeId(this.Component.Id);
+
+			this.WriteHtmlCore(writer);
+		}
+
+		protected virtual void WriteHtmlCore(HtmlTextWriter writer)
+		{
+			throw new NotImplementedException();
+		}
     }
 }

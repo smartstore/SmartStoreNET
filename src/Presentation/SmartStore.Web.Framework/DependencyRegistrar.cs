@@ -120,6 +120,8 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new ProvidersModule(typeFinder, pluginFinder));
             builder.RegisterModule(new TasksModule(typeFinder));
 			builder.RegisterModule(new DataExchangeModule(typeFinder));
+
+			builder.RegisterModule(new EventHandlerModule(typeFinder, pluginFinder));
 		}
 
         public int Order
@@ -596,6 +598,58 @@ namespace SmartStore.Web.Framework
         }
 	}
 
+	public class EventHandlerModule : Module
+	{
+		private readonly ITypeFinder _typeFinder;
+		private readonly IPluginFinder _pluginFinder;
+
+		public EventHandlerModule(ITypeFinder typeFinder, IPluginFinder pluginFinder)
+		{
+			_typeFinder = typeFinder;
+			_pluginFinder = pluginFinder;
+		}
+
+		protected override void Load(ContainerBuilder builder)
+		{
+			builder.RegisterType<ConsumerRegistry>().As<IConsumerRegistry>().SingleInstance();
+			builder.RegisterType<ConsumerResolver>().As<IConsumerResolver>().InstancePerRequest();
+			builder.RegisterType<DefaultMessagePublisher>().As<IMessagePublisher>().InstancePerRequest();
+
+			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer));
+			foreach (var type in consumerTypes)
+			{
+				var registration = builder
+					.RegisterType(type)
+					.As<IConsumer>()
+					.Keyed<IConsumer>(type)
+					.InstancePerRequest();
+
+				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(type.Assembly);
+				var isActive = PluginManager.IsActivePluginAssembly(type.Assembly);
+
+				registration.WithMetadata<EventConsumerMetadata>(m => {
+					m.For(em => em.IsActive, isActive);
+					m.For(em => em.ExecuteAsync, false);
+					m.For(em => em.ContainerType, type);
+					m.For(em => em.PluginDescriptor, pluginDescriptor);
+				});
+			}
+		}
+
+		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		{
+			var type = registration.Activator.LimitType;
+			var isEventHandler = typeof(IConsumer).IsAssignableFrom(type);
+
+			if (isEventHandler)
+			{
+				var svc = new KeyedService(type, typeof(IConsumer));
+				//var services = registration.Services as ICollection<Service>;
+				//services.Add(svc);
+			}
+		}
+	}
+
 	public class EventModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
@@ -629,6 +683,7 @@ namespace SmartStore.Web.Framework
 				registration.WithMetadata<EventConsumerMetadata>(m => {
 					m.For(em => em.IsActive, isActive);
 					m.For(em => em.ExecuteAsync, shouldExecuteAsync);
+					m.For(em => em.ContainerType, consumerType);
 					m.For(em => em.PluginDescriptor, pluginDescriptor);
 				});
 
@@ -1285,8 +1340,7 @@ namespace SmartStore.Web.Framework
 
 		public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<IComponentRegistration>> registrationAccessor)
 		{
-			var swt = service as IServiceWithType;
-			if (swt == null || !IsClosingTypeOf(swt.ServiceType, typeof(Work<>)))
+			if (!(service is IServiceWithType swt) || !IsClosingTypeOf(swt.ServiceType, typeof(Work<>)))
 				return Enumerable.Empty<IComponentRegistration>();
 
 			var valueType = swt.ServiceType.GetGenericArguments()[0];

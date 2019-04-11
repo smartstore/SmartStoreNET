@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Email;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -80,6 +81,9 @@ namespace SmartStore.Web.Controllers
                 MetaDescription = topic?.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic?.GetLocalized(x => x.MetaTitle),
             };
+
+			var publisher = Services.Resolve<SmartStore.Core.Events.IMessagePublisher>();
+			publisher.Publish(new Core.Events.AppStartedEvent());
 
 			return View(model);
 		}

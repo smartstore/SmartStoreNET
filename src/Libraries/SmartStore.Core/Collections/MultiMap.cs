@@ -187,7 +187,10 @@ namespace SmartStore.Collections
         /// <param name="values">The values.</param>
         public virtual void AddRange(TKey key, IEnumerable<TValue> values)
         {
-            CheckNotReadonly();
+			if (values == null || !values.Any())
+				return;
+
+			CheckNotReadonly();
 
 			this[key].AddRange(values);
         }

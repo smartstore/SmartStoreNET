@@ -252,6 +252,12 @@
     <Compile Include="Domain\Tasks\ScheduleTaskHistory.cs" />
     <Compile Include="Domain\Tax\AuxiliaryServicesTaxType.cs" />
     <Compile Include="Events\CommonMessages\AppStartedEvent.cs" />
+    <Compile Include="Events\_New\ConsumeContext.cs" />
+    <Compile Include="Events\_New\ConsumerDescriptor.cs" />
+    <Compile Include="Events\_New\IConsumer.cs" />
+    <Compile Include="Events\_New\IConsumerRegistry.cs" />
+    <Compile Include="Events\_New\IConsumerResolver.cs" />
+    <Compile Include="Events\_New\IMessagePublisher.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\NumericExtensions.cs" />

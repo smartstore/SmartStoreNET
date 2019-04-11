@@ -2,7 +2,6 @@
 
 namespace SmartStore.Core.Events
 {
-
 	public interface IConsumerFactory<T>
 	{
 		/// <summary>

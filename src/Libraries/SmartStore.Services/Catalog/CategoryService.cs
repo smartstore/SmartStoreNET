@@ -20,7 +20,7 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Catalog
 {
-	public partial class CategoryService : ICategoryService
+	public partial class CategoryService : ICategoryService, IConsumer
     {
 		internal static TimeSpan CategoryTreeCacheDuration = TimeSpan.FromHours(6);
 
@@ -84,6 +84,11 @@ namespace SmartStore.Services.Catalog
 
 			QuerySettings = DbQuerySettings.Default;
         }
+
+		public void HandleEvent(CategoryTreeChangedEvent e)
+		{
+
+		}
 
 		public DbQuerySettings QuerySettings { get; set; }
 
@@ -183,12 +188,11 @@ namespace SmartStore.Services.Catalog
                         }
                         else
                         {
-                            AclRecord aclRecordToDelete;
-                            if (existingAclRecords.TryGetValue(customerRole.Id, out aclRecordToDelete))
-                            {
-                                _aclRepository.Delete(aclRecordToDelete);
-                            }
-                        }
+							if (existingAclRecords.TryGetValue(customerRole.Id, out var aclRecordToDelete))
+							{
+								_aclRepository.Delete(aclRecordToDelete);
+							}
+						}
                     }
                 }
 
@@ -241,12 +245,11 @@ namespace SmartStore.Services.Catalog
                         }
                         else
                         {
-                            StoreMapping storeMappingToDelete;
-                            if (existingStoreMappingsRecords.TryGetValue(store.Id, out storeMappingToDelete))
-                            {
-                                _storeMappingRepository.Delete(storeMappingToDelete);
-                            }
-                        }
+							if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
+							{
+								_storeMappingRepository.Delete(storeMappingToDelete);
+							}
+						}
                     }
                 }
 
@@ -273,12 +276,11 @@ namespace SmartStore.Services.Catalog
                         }
                         else
                         {
-                            StoreMapping storeMappingToDelete;
-                            if (existingStoreMappingsRecords.TryGetValue(store.Id, out storeMappingToDelete))
-                            {
-                                _storeMappingRepository.Delete(storeMappingToDelete);
-                            }
-                        }
+							if (existingStoreMappingsRecords.TryGetValue(store.Id, out var storeMappingToDelete))
+							{
+								_storeMappingRepository.Delete(storeMappingToDelete);
+							}
+						}
                     }
                 }
 

@@ -4,8 +4,6 @@
 @using SmartStore.Services.Cms;
 
 @{
-	Html.RenderWidget("servicemenu_before");
-
 	var links = new List<LinkResolverResult>
 	{
 		LinkResolver.Resolve("topic:aboutus"),
@@ -41,5 +39,3 @@
 		<a href="@link.Link" class="dropdown-item">@link.Label</a>
 	}
 }
-
-@{ Html.RenderWidget("servicemenu_after"); }

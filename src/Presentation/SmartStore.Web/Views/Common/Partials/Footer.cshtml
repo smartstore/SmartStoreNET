@@ -80,8 +80,6 @@
                         @(Html.SmartStore().Menu("FooterInformation", "Menus/LinkList"))
 @{/*
 						<ul class="list-unstyled">
-                            @{ Html.RenderWidget("footer_col_1_before"); }
-
 							@if (Model.ManufacturerEnabled)
 							{
 								<li><a class="footer-link" href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
@@ -98,8 +96,6 @@
 							{
 								<li><a class="footer-link" href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
 							}
-
-                            @{ Html.RenderWidget("footer_col_1_after"); }
 						</ul>
 */}
 					</div>
@@ -117,8 +113,6 @@
 @{/*
 						<ul class="list-unstyled">
                             @{ 
-								Html.RenderWidget("footer_col_2_before");
-
 								var contactUsUrl = Url.RouteUrl("contactus");
 								var shippingInfoLink = LinkResolver.Resolve("topic:shippinginfo");
 								var paymentInfoLink = LinkResolver.Resolve("topic:paymentinfo");
@@ -144,8 +138,6 @@
 							{
 								<li><a class="footer-link" href="@paymentInfoLink.Link">@paymentInfoLink.Label</a></li>
 							}
-
-                            @{ Html.RenderWidget("footer_col_2_after"); }
 						</ul>
 */}
 					</div>
@@ -162,8 +154,6 @@
                         @(Html.SmartStore().Menu("FooterCompany", "Menus/LinkList"))
 @{/*
 						<ul class="list-unstyled">
-                            @{ Html.RenderWidget("footer_col_3_before"); }
-
 							@foreach (var link in footerLinks)
 							{
 								if (link.Status == LinkStatus.Ok)
@@ -176,8 +166,6 @@
                             {
                                 <li><a class="footer-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })">@T("Account.Login")</a></li>
                             }
-
-                            @{ Html.RenderWidget("footer_col_3_after"); }
 						</ul>
 */}
 					</div>
@@ -226,7 +214,6 @@
 								@{ Html.RenderWidget("gdpr_consent_small"); }
 
 								@Html.ValidationMessageFor(x => x.NewsletterEmail)
-
 							</div>
 							<div id="newsletter-result-block" class="alert alert-success d-none"></div>
 						</div>

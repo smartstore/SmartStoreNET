@@ -15,8 +15,6 @@
 
 <div class="cms-menu cms-menu-linklist" data-menu-name="@(Model.Name?.ToLower())">
     <ul class="list-unstyled">
-        @*@{ Html.RenderWidget("footer_col_1_before"); }*@
-
         @foreach (var node in root.Children)
         {
             var item = node.Value;
@@ -67,7 +65,5 @@
 
             isFirst = false;
         }
-
-        @*@{ Html.RenderWidget("footer_col_1_after"); }*@
     </ul>
 </div>

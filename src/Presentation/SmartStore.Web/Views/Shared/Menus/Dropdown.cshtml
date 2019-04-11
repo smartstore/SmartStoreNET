@@ -49,8 +49,6 @@
     var hasImages = nodes.Any(x => x.Value.ImageUrl.HasValue());
 
     <div class="dropdown-menu @(rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
-        @*@{ Html.RenderWidget("servicemenu_before"); }*@
-
         @foreach (var node in nodes)
         {
             var item = node.Value;
@@ -99,7 +97,5 @@
 
             isFirst = false;
         }
-
-        @*@{ Html.RenderWidget("servicemenu_after"); }*@
     </div>
 }

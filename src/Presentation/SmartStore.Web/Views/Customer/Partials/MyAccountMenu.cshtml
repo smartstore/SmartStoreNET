@@ -13,8 +13,6 @@
         @T("Account.Navigation")
     </h5>
 	<div class="list-group list-group-flush has-icons">
-		@{ Html.RenderWidget("myaccount_menu_firstitem_before"); }
-
 		@foreach (var item in Model.Root.Children.Where(x => x.Value.Visible).Select(x => x.Value))
 		{
 			<a href="@item.Url" rel="nofollow" class="list-group-item list-group-item-action@(selItem.IsCaseInsensitiveEqual(item.Id) ? " active" : "")">
@@ -26,8 +24,6 @@
                 }
             </a>
 		}
-
-		@{ Html.RenderWidget("myaccount_menu_lastitem_after"); }
 	</div>
 </div>
 

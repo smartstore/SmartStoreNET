@@ -103,8 +103,6 @@
 				"header_menu_special_after",
 				"header_menu_after",
 				"header_menu_bottom",
-				"servicemenu_before",
-				"servicemenu_after",
 				"shopbar_tools_before",
 				"shopbar_tools_after",
 				"mainmenu_before_first_item",
@@ -114,9 +112,7 @@
 				"account_dropdown_before",
 				"account_dropdown_after",
 				"myaccount_menu_before",
-				"myaccount_menu_after",
-				"myaccount_menu_firstitem_before",
-				"myaccount_menu_lastitem_after"
+				"myaccount_menu_after"
 			]
 		},
 		{
@@ -163,12 +159,6 @@
       "zones": [
         "footer_top",
         "footer_bottom",
-        "footer_col_1_after",
-        "footer_col_1_before",
-        "footer_col_2_after",
-        "footer_col_2_before",
-        "footer_col_3_after",
-        "footer_col_3_before",
         "footer_col_4_after",
         "footer_col_4_before"
       ]

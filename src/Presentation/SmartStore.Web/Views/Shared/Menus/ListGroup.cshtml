@@ -23,8 +23,6 @@
             </h5>
         }
         <div class="list-group list-group-flush has-icons">
-            @*@{ Html.RenderWidget("myaccount_menu_firstitem_before"); }*@
-
 		    @foreach (var node in Model.Root.Children.Where(x => x.Value.Visible))
 		    {
                 var item = node.Value;
@@ -56,8 +54,6 @@
                     }
                 </a>
 		    }
-
-            @*@{ Html.RenderWidget("myaccount_menu_lastitem_after"); }*@
         </div>
     </div>
 </div>

@@ -2,18 +2,30 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Collections;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Cms;
 
 namespace SmartStore.Web.Framework.UI.Menus
 {
     public partial class MenuService : IMenuService
     {
+        protected readonly IChronometer _chronometer;
+        protected readonly IWidgetProvider _widgetProvider;
+        protected readonly IMenuStorage _menuStorage;
         protected readonly IMenuResolver[] _menuResolvers;
 
         private TreeNode<MenuItem> _currentNode;
         private bool _currentNodeResolved;
 
-        public MenuService(IEnumerable<IMenuResolver> menuResolvers)
+        public MenuService(
+            IChronometer chronometer,
+            IWidgetProvider widgetProvider,
+            IMenuStorage menuStorage,
+            IEnumerable<IMenuResolver> menuResolvers)
         {
+            _chronometer = chronometer;
+            _widgetProvider = widgetProvider;
+            _menuStorage = menuStorage;
             _menuResolvers = menuResolvers.OrderBy(x => x.Order).ToArray();
         }
 
@@ -61,6 +73,24 @@ namespace SmartStore.Web.Framework.UI.Menus
         public virtual void ClearCache(string menuName)
         {
             GetMenu(menuName)?.ClearCache();
+        }
+
+        public virtual void ProcessMenus()
+        {
+            using (_chronometer.Step("ProcessMenus"))
+            {
+                var menusInfo = _menuStorage.GetUserMenusInfo();
+
+                foreach (var info in menusInfo)
+                {
+                    _widgetProvider.RegisterAction(
+                        info.WidgetZones,
+                        "UserMenu",
+                        "Common",
+                        new { area = "", systemName = info.SystemName, template = info.Template },
+                        info.DisplayOrder);
+                }
+            }
         }
     }
 }

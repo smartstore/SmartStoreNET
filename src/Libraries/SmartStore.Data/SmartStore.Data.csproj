@@ -657,9 +657,9 @@
     <Compile Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.Designer.cs">
       <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201904071537124_Menus.cs" />
-    <Compile Include="Migrations\201904071537124_Menus.Designer.cs">
-      <DependentUpon>201904071537124_Menus.cs</DependentUpon>
+    <Compile Include="Migrations\201904110735029_Menus.cs" />
+    <Compile Include="Migrations\201904110735029_Menus.Designer.cs">
+      <DependentUpon>201904110735029_Menus.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -1182,8 +1182,8 @@
     <EmbeddedResource Include="Migrations\201902211855242_TopicHtmlIdAndBodyCss.resx">
       <DependentUpon>201902211855242_TopicHtmlIdAndBodyCss.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201904071537124_Menus.resx">
-      <DependentUpon>201904071537124_Menus.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201904110735029_Menus.resx">
+      <DependentUpon>201904110735029_Menus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

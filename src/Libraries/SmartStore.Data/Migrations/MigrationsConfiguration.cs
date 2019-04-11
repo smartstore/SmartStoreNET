@@ -784,6 +784,11 @@
                 "Specifies whether the menu is visible in the shop.",
                 "Legt fest, ob das Menü im Shop sichtbar ist.");
 
+            builder.AddOrUpdate("Admin.ContentManagement.Menus.DisplayOrder",
+                "Display order",
+                "Reihenfolge",
+                "Specifies the display order of the widget zones.",
+                "Legt die Darstellungreihenfolge der Widget Zonen fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ParentItem",
                 "Parent menu item",

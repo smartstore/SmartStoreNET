@@ -37,22 +37,21 @@ namespace SmartStore.Web.Framework.UI
 					{
 						var root = Build();
 
-						// Menu publisher
 						MenuPublisher.RegisterMenus(root, this.Name);
 
-						// Apply permission
 						if (this.ApplyPermissions)
 						{
 							DoApplyPermissions(root);
 						}
 
-						Services.EventPublisher.Publish(new MenuBuiltEvent(this.Name, root));
-
 						return root;
 					}
 				});
 
-				return rootNode;
+                // Always fire event to be able to add items programmatically.
+                Services.EventPublisher.Publish(new MenuBuiltEvent(this.Name, rootNode));
+
+                return rootNode;
 			}
 		}
 

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
@@ -61,6 +63,11 @@ namespace SmartStore.Core.Domain.Cms
         public bool Published { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the order for widget registration.
+        /// </summary>
+        public int DisplayOrder { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the entity is limited/restricted to certain stores.
         /// </summary>
         [Index("IX_Menu_LimitedToStores")]
@@ -71,5 +78,19 @@ namespace SmartStore.Core.Domain.Cms
         /// </summary>
         [Index("IX_Menu_SubjectToAcl")]
         public bool SubjectToAcl { get; set; }
+
+        /// <summary>
+        /// Helper function to get the comma-separated <c>WidgetZone</c> property as an enumerable of strings.
+        /// </summary>
+        /// <returns>Widget zones.</returns>
+        public IEnumerable<string> GetWidgetZones()
+        {
+            if (WidgetZone.IsEmpty())
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            return WidgetZone.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
+        }
     }
 }

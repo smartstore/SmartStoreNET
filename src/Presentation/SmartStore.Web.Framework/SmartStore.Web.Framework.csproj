@@ -390,6 +390,7 @@
     <Compile Include="UI\Menus\Providers\IMenuItemProvider.cs" />
     <Compile Include="UI\Menus\Providers\MenuItemProviderBase.cs" />
     <Compile Include="UI\Menus\MenuBuiltEvent.cs" />
+    <Compile Include="UI\Menus\UserMenuFilter.cs" />
     <Compile Include="UI\SiteMap\ISiteMap.cs" />
     <Compile Include="UI\SiteMap\ISiteMapService.cs" />
     <Compile Include="UI\SiteMap\SiteMapBase.cs" />

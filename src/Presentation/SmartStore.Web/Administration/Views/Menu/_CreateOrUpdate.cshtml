@@ -63,6 +63,15 @@
 				@Html.ValidationMessageFor(model => model.WidgetZone)
             </div>
         </div>
+        <div class="adminRow@(Model.IsSystemMenu ? " d-none" : "")">
+            <div class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayOrder)
+            </div>
+            <div class="adminData">
+				@Html.EditorFor(model => model.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+            </div>
+        </div>
     </div>
     
     @(Html.LocalizedEditor<MenuRecordModel, MenuRecordLocalizedModel>("menu-info-localized",

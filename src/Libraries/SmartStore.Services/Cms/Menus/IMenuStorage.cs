@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Cms;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Cms
 {
@@ -39,6 +40,14 @@ namespace SmartStore.Services.Cms
             bool includeHidden = false,
             int pageIndex = 0,
             int pageSize = int.MaxValue);
+
+        /// <summary>
+        /// Gets info about user menus.
+        /// </summary>
+		/// <param name="roles">Customer roles to check access for. <c>null</c> to use current customer's roles.</param>
+		/// <param name="storeId">Store identifier. 0 to use current store.</param>
+        /// <returns>Menu infos.</returns>
+        IList<MenuInfo> GetUserMenusInfo(IEnumerable<CustomerRole> roles = null, int storeId = 0);
 
         /// <summary>
         /// Gets a menu by identifier.

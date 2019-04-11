@@ -7,12 +7,28 @@
     {
         return;
     }
+
+    // Support both cases: the dropdown-link is Model.Root or the first item if it has children.
+    if (root.HasChildren && root.Children.Count == 1 && root.FirstChild.HasChildren)
+    {
+        root = root.FirstChild;
+    }
+
+    object obj = null;
+    var item = root.Value;
+    var itemText = root.GetItemText(T);
+    var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
+    var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
+    var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
 }
 
 <div class="cms-menu cms-menu-dropdown" data-menu-name="@(Model.Name?.ToLower())">
     <div class="dropdown">
-        <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
-		    <span>@root.GetItemText(T)</span>
+        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" rel="nofollow" 
+           class="menubar-link@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")"
+           @Html.Attr("id", linkId, linkId.HasValue())
+           @Html.Attr("title", shortDescription, shortDescription.HasValue())>
+		    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != WorkContext.WorkingLanguage.Rtl)>@itemText</span>
             <i class="fal fa-angle-down menubar-caret"></i>
         </a>
         @CreateDropdown(root.Children)
@@ -28,11 +44,11 @@
 
     object obj = null;
     var isFirst = true;
-    var isRtl = nodes.First().Value.Rtl;
+    var rtl = WorkContext.WorkingLanguage.Rtl;
     var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
     var hasImages = nodes.Any(x => x.Value.ImageUrl.HasValue());
 
-    <div class="dropdown-menu @(isRtl ? "dropdown-menu-left" : "dropdown-menu-right")">
+    <div class="dropdown-menu @(rtl ? "dropdown-menu-right" : "dropdown-menu-left")">
         @*@{ Html.RenderWidget("servicemenu_before"); }*@
 
         @foreach (var node in nodes)
@@ -78,7 +94,7 @@
                 {
                     <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
                 }
-                <span>@itemText</span>
+                <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
             </a>
 
             isFirst = false;

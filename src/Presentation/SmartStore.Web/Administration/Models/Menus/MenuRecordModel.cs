@@ -35,6 +35,9 @@ namespace SmartStore.Admin.Models.Menus
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Published")]
         public bool Published { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Menus.DisplayOrder")]
+        public int DisplayOrder { get; set; }
+
         // Store mapping.
         [SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
         public bool LimitedToStores { get; set; }

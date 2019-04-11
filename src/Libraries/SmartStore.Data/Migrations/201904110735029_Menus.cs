@@ -21,6 +21,7 @@ namespace SmartStore.Data.Migrations
                         WidgetZone = c.String(maxLength: 4000),
                         Title = c.String(maxLength: 400),
                         Published = c.Boolean(nullable: false),
+                        DisplayOrder = c.Int(nullable: false),
                         LimitedToStores = c.Boolean(nullable: false),
                         SubjectToAcl = c.Boolean(nullable: false),
                     })

@@ -883,7 +883,21 @@ namespace SmartStore.Web.Controllers
 
 			return PartialView(model);
 		}
-	
-		#endregion
-	}
+
+        [ChildActionOnly]
+        public ActionResult UserMenu(string systemName, string template)
+        {
+            if (systemName.HasValue() && template.HasValue())
+            {
+                ViewBag.SystemName = systemName;
+                ViewBag.Template = template;
+
+                return PartialView();
+            }
+
+            return new EmptyResult();
+        }
+
+        #endregion
+    }
 }

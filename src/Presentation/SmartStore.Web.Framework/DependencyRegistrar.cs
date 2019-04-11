@@ -873,6 +873,11 @@ namespace SmartStore.Web.Framework
                     m.For(em => em.AppendsMultipleItems, attribute.AppendsMultipleItems);
                 });
             }
+
+            if (DataSettings.DatabaseIsInstalled())
+            {
+                builder.RegisterType<UserMenuFilter>().AsActionFilterFor<PublicControllerBase>();
+            }
         }
 	}
 

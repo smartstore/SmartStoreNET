@@ -36,19 +36,17 @@
 	}
 </div>
 
-<script type="text/javascript">
-    $(function () {
-		window['onAvatarUploaded'] = function (e, el, data) {
-			var result = data.result;
-			if (result.success) {
-                window.location = '@Url.Action("Avatar", "Customer", new { area = "" })';
-			}
-		};
-
-        window['onAvatarRemoved'] = function (e, el) {
-			$(this).doPostData({
-				url: '@Url.Action("RemoveAvatar", "Customer", new { area = "" })'
-			});
+<script>
+	window['onAvatarUploaded'] = function (e, el, data) {
+		var result = data.result;
+		if (result.success) {
+            window.location = '@Url.Action("Avatar", "Customer", new { area = "" })';
 		}
-    });
+	};
+
+    window['onAvatarRemoved'] = function (e, el) {
+		$(this).doPostData({
+			url: '@Url.Action("RemoveAvatar", "Customer", new { area = "" })'
+		});
+	}
 </script>

@@ -31,35 +31,35 @@
 </div>
 
 <script type="text/javascript">
-    $(function () {
-		window['onFileUploaded@(clientId)'] = function (e, el, data) {
-			var result = data.result;
+	window['onFileUploaded@(clientId)'] = function (e, el, data) {
+		var result = data.result;
 
-			if (result.downloadGuid) {
-				setUploadedFile(result.downloadGuid, data.files[0].name);
-			}
-
-			if (result.message) {
-				displayNotification(result.message, "success");
-			}
-		};
-
-		window['onFileRemoved@(clientId)'] = function (e, el) {
-			$('#@containerId .hidden').val('');
-			$('#@containerId .uploaded-file').empty().hide();
+		if (result.downloadGuid) {
+			setUploadedFile(result.downloadGuid, data.files[0].name);
 		}
 
-        setUploadedFile('@Model.UploadedFileGuid', '@Model.UploadedFileName');
+		if (result.message) {
+			displayNotification(result.message, "success");
+		}
+	};
 
-        function setUploadedFile(downloadGuid, fileName) {
-        	if (!_.isEmpty(downloadGuid) && downloadGuid !== '0') {
-        		$('#@containerId .hidden').val(downloadGuid);
+	window['onFileRemoved@(clientId)'] = function (e, el) {
+		$('#@containerId .hidden').val('');
+		$('#@containerId .uploaded-file').empty().hide();
+    }
 
-        		var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + downloadGuid;
-        		var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
+    function setUploadedFile(downloadGuid, fileName) {
+        if (!_.isEmpty(downloadGuid) && downloadGuid !== '0') {
+        	$('#@containerId .hidden').val(downloadGuid);
 
-				$('#@containerId .uploaded-file').html(fileLink).show();
-        	}
+        	var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + downloadGuid;
+        	var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
+
+			$('#@containerId .uploaded-file').html(fileLink).show();
         }
+    }
+
+    $(function () {
+        setUploadedFile('@Model.UploadedFileGuid', '@Model.UploadedFileName');
     });
 </script>

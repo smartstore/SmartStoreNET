@@ -54,8 +54,6 @@
     data-current-product-id="@CurrentProductId"
     data-current-manufacturer-id="@CurrentManufacturerId">
 
-    @{ Html.RenderWidget("mainmenu_before_first_item"); }
-
     @foreach(var node in Model.Root.Children)
     {
         var item = node.Value;
@@ -104,8 +102,6 @@
             </a>
         </li>
     }
-
-    @{ Html.RenderWidget("mainmenu_after_last_item"); }
 </ul>
 
 <div class="megamenu-nav megamenu-nav--next @(rtl ? "alpha" : "omega")">

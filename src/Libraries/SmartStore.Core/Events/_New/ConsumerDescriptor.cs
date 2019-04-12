@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.ComponentModel;
@@ -10,12 +11,30 @@ namespace SmartStore.Core.Events
 {
 	public class ConsumerDescriptor
 	{
+		public ConsumerDescriptor()
+		{
+		}
+
+		public ConsumerDescriptor(EventConsumerMetadata metadata)
+		{
+			ContainerType = metadata.ContainerType;
+			PluginDescriptor = metadata.PluginDescriptor;
+		}
+
 		public bool WithEnvelope { get; set; }
 		public bool IsAsync { get; set; }
+		public bool FireForget { get; set; }
 		public PluginDescriptor PluginDescriptor { get; set; }
 
 		public Type MessageType { get; set; }
 		public Type ContainerType { get; set; }
-		public FastInvoker Invoker { get; set; }
+
+		public MethodInfo Method { get; set; }
+		public ParameterInfo MessageParameter { get; set; }
+
+		/// <summary>
+		/// All method parameters except <see cref="MessageParameter"/>
+		/// </summary>
+		public ParameterInfo[] Parameters { get; set; }
 	}
 }

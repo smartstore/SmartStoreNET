@@ -83,38 +83,15 @@ namespace SmartStore.Core.Async
 			return ret;
 		}
 
-		public static Task Run(Action<ILifetimeScope, CancellationToken> action)
-		{
-			return Run(action, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
-		}
-
-		public static Task Run(Action<ILifetimeScope, CancellationToken> action, CancellationToken cancellationToken)
-		{
-			return Run(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
-		}
-
-		public static Task Run(Action<ILifetimeScope, CancellationToken> action, TaskCreationOptions options)
-		{
-			return Run(action, CancellationToken.None, options, TaskScheduler.Default);
-		}
-
-		public static Task Run(Action<ILifetimeScope, CancellationToken> action, CancellationToken cancellationToken, TaskCreationOptions options)
-		{
-			return Run(action, cancellationToken, options, TaskScheduler.Default);
-		}
-
-		public static Task Run(Action<ILifetimeScope, CancellationToken> action, TaskScheduler scheduler)
-		{
-			return Run(action, CancellationToken.None, TaskCreationOptions.None, scheduler);
-		}
-
-		public static Task Run(Action<ILifetimeScope, CancellationToken> action, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		public static Task Run(
+			Action<ILifetimeScope, CancellationToken> action, 
+			CancellationToken cancellationToken = default(CancellationToken), 
+			TaskCreationOptions options = TaskCreationOptions.LongRunning, 
+			TaskScheduler scheduler = null)
 		{
 			Guard.NotNull(action, nameof(action));
-			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
-			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
 
 			var t = Task.Factory.StartNew(() => {
 				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
@@ -122,21 +99,24 @@ namespace SmartStore.Core.Async
 				{
 					action(accessor.GetLifetimeScope(null), ct);
 				}
-			}, ct, options, scheduler);
+			}, ct, options, scheduler ?? TaskScheduler.Default);
 
 			_host.Register(t, ct);
 
 			return t;
 		}
 
-		public static Task Run(Action<ILifetimeScope, CancellationToken, object> action, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		public static Task Run(
+			Action<ILifetimeScope, CancellationToken, object> action, 
+			object state, 
+			CancellationToken cancellationToken = default(CancellationToken), 
+			TaskCreationOptions options = TaskCreationOptions.LongRunning, 
+			TaskScheduler scheduler = null)
 		{
 			Guard.NotNull(state, nameof(state));
 			Guard.NotNull(action, nameof(action));
-			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
-			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
 
 			var t = Task.Factory.StartNew((o) =>
 			{
@@ -145,47 +125,22 @@ namespace SmartStore.Core.Async
 				{
 					action(accessor.GetLifetimeScope(null), ct, o);
 				}
-			}, state, ct, options, scheduler);
+			}, state, ct, options, scheduler ?? TaskScheduler.Default);
 
 			_host.Register(t, ct);
 
 			return t;
 		}
 
-
-
-		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function)
-		{
-			return Run(function, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
-		}
-
-		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, CancellationToken cancellationToken)
-		{
-			return Run(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
-		}
-
-		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, TaskCreationOptions options)
-		{
-			return Run(function, CancellationToken.None, options, TaskScheduler.Default);
-		}
-
-		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, CancellationToken cancellationToken, TaskCreationOptions options)
-		{
-			return Run(function, cancellationToken, options, TaskScheduler.Default);
-		}
-
-		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, TaskScheduler scheduler)
-		{
-			return Run(function, CancellationToken.None, TaskCreationOptions.None, scheduler);
-		}
-
-		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		public static Task<TResult> Run<TResult>(
+			Func<ILifetimeScope, CancellationToken, TResult> function, 
+			CancellationToken cancellationToken = default(CancellationToken), 
+			TaskCreationOptions options = TaskCreationOptions.LongRunning, 
+			TaskScheduler scheduler = null)
 		{
 			Guard.NotNull(function, nameof(function));
-			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
-			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
 
 			var t = Task.Factory.StartNew(() =>
 			{
@@ -194,21 +149,24 @@ namespace SmartStore.Core.Async
 				{
 					return function(accessor.GetLifetimeScope(null), ct);
 				}
-			}, ct, options, scheduler);
+			}, ct, options, scheduler ?? TaskScheduler.Default);
 
 			_host.Register(t, ct);
 
 			return t;
 		}
 
-		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		public static Task<TResult> Run<TResult>(
+			Func<ILifetimeScope, CancellationToken, object, TResult> function, 
+			object state,
+			CancellationToken cancellationToken = default(CancellationToken),
+			TaskCreationOptions options = TaskCreationOptions.LongRunning,
+			TaskScheduler scheduler = null)
 		{
 			Guard.NotNull(state, nameof(state));
 			Guard.NotNull(function, nameof(function));
-			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
-			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
 
 			var t = Task.Factory.StartNew((o) =>
 			{
@@ -217,7 +175,7 @@ namespace SmartStore.Core.Async
 				{
 					return function(accessor.GetLifetimeScope(null), ct, o);
 				}
-			}, state, ct, options, scheduler);
+			}, state, ct, options, scheduler ?? TaskScheduler.Default);
 
 			_host.Register(t, ct);
 

@@ -159,7 +159,7 @@ namespace SmartStore.ComponentModel
 			Guard.NotNull(type, nameof(type));
 			Guard.NotEmpty(methodName, nameof(methodName));
 
-			var cacheKey = new HashMethodKey(type, methodName, argTypes);
+			var cacheKey = MethodKey.Create(type, methodName, argTypes);
 
 			if (!_invokersCache.TryGetValue(cacheKey, out var invoker))
 			{
@@ -186,7 +186,7 @@ namespace SmartStore.ComponentModel
 		{
 			Guard.NotNull(method, nameof(method));
 
-			var cacheKey = new MethodInfoKey(method);
+			var cacheKey = MethodKey.Create(method);
 
 			if (!_invokersCache.TryGetValue(cacheKey, out var invoker))
 			{
@@ -226,6 +226,16 @@ namespace SmartStore.ComponentModel
 
 			public static bool operator !=(MethodKey left, MethodKey right) =>
 				!(left == right);
+
+			internal static MethodKey Create(Type type, string methodName, IEnumerable<Type> parameterTypes)
+			{
+				return new HashMethodKey(type, methodName, parameterTypes);
+			}
+
+			internal static MethodKey Create(MethodInfo method)
+			{
+				return new MethodInfoKey(method);
+			}
 		}
 
 		class HashMethodKey : MethodKey, IEquatable<HashMethodKey>
@@ -264,7 +274,7 @@ namespace SmartStore.ComponentModel
 			}
 
 			public override bool Equals(object obj) =>
-				this.Equals(obj as HashMethodKey);
+				this.Equals(obj as MethodInfoKey);
 
 			public bool Equals(MethodInfoKey other)
 			{

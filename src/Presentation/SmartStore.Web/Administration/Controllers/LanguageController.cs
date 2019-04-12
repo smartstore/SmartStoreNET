@@ -897,12 +897,7 @@ namespace SmartStore.Admin.Controllers
 
 				if (ctx.AvailableResources.Resources.Any())
                 {
-                    var task = AsyncRunner.Run(
-                        (container, ct, obj) => DownloadCore(container, ct, obj as LanguageDownloadContext),
-                        ctx,
-                        CancellationToken.None,
-                        TaskCreationOptions.None,
-                        TaskScheduler.Default);
+                    var task = AsyncRunner.Run((c, ct, obj) => DownloadCore(c, ct, obj as LanguageDownloadContext), ctx);
                 }
             }
 

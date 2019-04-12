@@ -13,11 +13,13 @@ namespace SmartStore.Services.Events
 	{
 		private readonly IConsumerRegistry _registry;
 		private readonly IConsumerResolver _resolver;
+		private readonly IConsumerInvoker _invoker;
 
-		public DefaultMessagePublisher(IConsumerRegistry registry, IConsumerResolver resolver)
+		public DefaultMessagePublisher(IConsumerRegistry registry, IConsumerResolver resolver, IConsumerInvoker invoker)
 		{
 			_registry = registry;
 			_resolver = resolver;
+			_invoker = invoker;
 
 			Logger = NullLogger.Instance;
 		}
@@ -41,23 +43,8 @@ namespace SmartStore.Services.Events
 				var consumer = _resolver.Resolve(descriptor);
 				if (consumer != null)
 				{
-					InvokeConsumer(descriptor, envelope, consumer);
+					_invoker.Invoke(descriptor, consumer, envelope);
 				}
-			}
-		}
-
-		private void InvokeConsumer<T>(ConsumerDescriptor descriptor, ConsumeContext<T> envelope, IConsumer consumer) where T : class
-		{
-			var p = descriptor.WithEnvelope ? (object)envelope : envelope.Message;
-
-			try
-			{
-				descriptor.Invoker.Invoke(consumer, p);
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex);
-				throw;
 			}
 		}
 	}

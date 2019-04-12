@@ -84,6 +84,8 @@ namespace SmartStore.Web.Controllers
 
 			var publisher = Services.Resolve<SmartStore.Core.Events.IMessagePublisher>();
 			publisher.Publish(new Core.Events.AppStartedEvent());
+			publisher.Publish(new Core.Events.AppInitScheduledTasksEvent());
+			publisher.Publish(new Core.Events.AppRegisterGlobalFiltersEvent());
 
 			return View(model);
 		}

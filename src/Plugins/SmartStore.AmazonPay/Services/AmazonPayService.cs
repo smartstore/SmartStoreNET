@@ -1167,12 +1167,12 @@ namespace SmartStore.AmazonPay.Services
 					state.Errors.AddRange(orderNoteErrors);
 				}
 
-				AsyncRunner.Run((container, ct, o) =>
+				AsyncRunner.Run((c, ct, o) =>
 				{
 					var obj = o as AmazonPayActionState;
-					container.Resolve<IAmazonPayService>().AddCustomerOrderNoteLoop(obj);
+					c.Resolve<IAmazonPayService>().AddCustomerOrderNoteLoop(obj);
 				},
-				state, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+				state);
 			}
 
 			return result;

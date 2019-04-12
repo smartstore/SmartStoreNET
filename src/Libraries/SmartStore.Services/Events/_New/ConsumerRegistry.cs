@@ -29,11 +29,10 @@ namespace SmartStore.Services.Events
 
 				foreach (var method in methods)
 				{
-					var descriptor = new ConsumerDescriptor
+					var descriptor = new ConsumerDescriptor(metadata)
 					{
-						ContainerType = metadata.ContainerType,
-						PluginDescriptor = metadata.PluginDescriptor,
-						IsAsync = method.ReturnType == typeof(Task)
+						IsAsync = method.ReturnType == typeof(Task),
+						FireForget = method.HasAttribute<FireForgetAttribute>(false)
 					};
 					
 					if (method.ReturnType != typeof(Task) && method.ReturnType != typeof(void))
@@ -49,35 +48,38 @@ namespace SmartStore.Services.Events
 					}
 
 					var parameters = method.GetParameters();
-					if (parameters.Length != 1)
+					if (parameters.Length == 0)
 					{
 						// TODO: better message
-						throw new NotSupportedException("A message consumer method must have exactly one parameter identifying the message to consume.");
+						throw new NotSupportedException("A message consumer method must have at least one parameter identifying the message to consume.");
+					}
+
+					if (parameters.Any(x => x.IsRetval || x.IsOut || x.IsOptional))
+					{
+						// TODO: better message
+						throw new NotSupportedException("'out', 'ref' and optional parameters are not allowed in consumer methods.");
 					}
 
 					var p = parameters[0];
-					if (p.IsRetval || p.IsOut || p.IsOptional)
-					{
-						// TODO: message
-						throw new NotSupportedException();
-					}
+					var messageType = p.ParameterType;
 
-					var type = p.ParameterType;
-
-					if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ConsumeContext<>))
+					if (messageType.IsGenericType && messageType.GetGenericTypeDefinition() == typeof(ConsumeContext<>))
 					{
-						type = type.GetGenericArguments()[0];
+						messageType = messageType.GetGenericArguments()[0];
 						descriptor.WithEnvelope = true;
 					}
 
 					// TODO: MyEvent and ConsumeContext<MyEvent> must throw "ambigous" exception
 
-					if (type.IsPublic && (type.IsClass || type.IsInterface))
+					if (messageType.IsPublic && (messageType.IsClass || messageType.IsInterface))
 					{
 						// The method signature is valid: add to dictionary.
-						descriptor.MessageType = type;
-						descriptor.Invoker = new FastInvoker(method);
-						_descriptorMap.Add(type, descriptor);
+						descriptor.MessageParameter = p;
+						descriptor.Parameters = parameters.Skip(1).ToArray();
+						descriptor.MessageType = messageType;
+						descriptor.Method = method;
+
+						_descriptorMap.Add(messageType, descriptor);
 					}
 					else
 					{

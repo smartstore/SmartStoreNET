@@ -613,6 +613,7 @@ namespace SmartStore.Web.Framework
 		{
 			builder.RegisterType<ConsumerRegistry>().As<IConsumerRegistry>().SingleInstance();
 			builder.RegisterType<ConsumerResolver>().As<IConsumerResolver>().InstancePerRequest();
+			builder.RegisterType<ConsumerInvoker>().As<IConsumerInvoker>().SingleInstance();
 			builder.RegisterType<DefaultMessagePublisher>().As<IMessagePublisher>().InstancePerRequest();
 
 			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer));

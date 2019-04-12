@@ -54,7 +54,7 @@ namespace SmartStore.Web.Framework.UI
 						catch (Exception ex)
 						{
 							Logger.Error(ex);
-							_icons = new Dictionary<string, IconDescription>();
+							_icons = new Dictionary<string, IconDescription>(StringComparer.OrdinalIgnoreCase);
 						}
 
 						foreach (var kvp in _icons)
@@ -162,14 +162,19 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotEmpty(searchTerm, nameof(searchTerm));
 			EnsureIsLoaded();
 
+			if (_icons.TryGetValue(searchTerm, out var description))
+			{
+				yield return description;
+			}
+
 			if (_searchMap.ContainsKey(searchTerm))
 			{
 				var names = _searchMap[searchTerm];
 				foreach (var name in names)
 				{
-					if (_icons.TryGetValue(name, out var description))
+					if (_icons.TryGetValue(name, out var description2))
 					{
-						yield return description;
+						yield return description2;
 					}
 				}
 			}

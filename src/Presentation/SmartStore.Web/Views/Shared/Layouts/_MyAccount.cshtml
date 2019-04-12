@@ -7,7 +7,15 @@
 	<div class="page-body">
 		<div class="row">
 			<div class="col-md-4 col-lg-3 d-print-none">
-				@{ Html.RenderAction("MyAccountMenu", "Customer", new { selectedItem = ViewBag.PageClassToken, area = "" }); }
+                @{ Html.RenderWidget("myaccount_menu_before"); }
+
+                @{ Html.SmartStore().Menu("MyAccount", "Menus/ListGroup").Render(); }
+
+                @{ Html.RenderWidget("myaccount_menu_after"); }
+
+                @{ Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "MyAccountMenu", area = "" }); }
+
+				@*@{ Html.RenderAction("MyAccountMenu", "Customer", new { selectedItem = ViewBag.PageClassToken, area = "" }); }*@
 			</div>
 			<div class="col-md-8 col-lg-9">
 				<div class="page-title pt-4 pt-md-0">

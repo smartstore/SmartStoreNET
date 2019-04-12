@@ -4,7 +4,7 @@ using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Infrastructure
 {
-    public class AdminMenu : MenuBase
+    public partial class AdminMenu : MenuBase
     {
         public override string Name => "Admin";
 
@@ -31,13 +31,13 @@ namespace SmartStore.Admin.Infrastructure
         protected virtual TreeNode<MenuItem> ConvertSitemapNodeToMenuItemNode(Telerik.Web.Mvc.SiteMapNode node)
         {
             var item = new MenuItem();
-            var treeNode = new TreeNode<MenuItem>(item);
+            var root = new TreeNode<MenuItem>(item);
 
             var id = node.Attributes.ContainsKey("id")
                 ? node.Attributes["id"] as string
                 : null;
 
-            treeNode.Id = id;
+            root.Id = id;
 
             if (node.RouteName.HasValue())
             {
@@ -88,10 +88,12 @@ namespace SmartStore.Admin.Infrastructure
             foreach (var childNode in node.ChildNodes)
             {
                 var childTreeNode = ConvertSitemapNodeToMenuItemNode(childNode);
-                treeNode.Append(childTreeNode);
+                root.Append(childTreeNode);
             }
 
-            return treeNode;
+            Services.EventPublisher.Publish(new MenuBuiltEvent(Name, root));
+
+            return root;
         }
     }
 }

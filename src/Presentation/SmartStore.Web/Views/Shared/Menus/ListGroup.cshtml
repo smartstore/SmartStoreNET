@@ -1,4 +1,5 @@
-﻿@using SmartStore.Web.Framework.UI
+﻿@using SmartStore.Collections
+@using SmartStore.Web.Framework.UI
 @model MenuModel
 @{
     var root = Model.Root;
@@ -11,7 +12,6 @@
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
     var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
     var headerText = root.GetItemText(T);
-    var selectedItemId = root.SelectNode(x => x.Value.Selected)?.Value?.Id;
 }
 
 <div class="cms-menu cms-menu-listgroup" data-menu-name="@(Model.Name?.ToLower())">
@@ -26,6 +26,7 @@
 		    @foreach (var node in Model.Root.Children.Where(x => x.Value.Visible))
 		    {
                 var item = node.Value;
+                var itemState = node.GetNodePathState(Model.Path);
                 var itemText = node.GetItemText(T);
                 var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
                 var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
@@ -34,7 +35,7 @@
                 var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
                 var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
 
-			    <a href="@item.Url" class="list-group-item list-group-item-action menu-link@(item.Id.IsCaseInsensitiveEqual(selectedItemId) ? " active" : "")@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")"
+			    <a href="@item.Url" class="@(GetCssClassForNode(node, itemState, cssClass))"
                     @Html.Attr("id", linkId, linkId.HasValue())
                     @Html.Attr("rel", relAttr, relAttr.HasValue())
                     @Html.Attr("target", target, target.HasValue())
@@ -57,3 +58,27 @@
         </div>
     </div>
 </div>
+
+@functions {
+    private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state, string moreCss)
+    {
+        var classes = new List<string>
+        {
+            "list-group-item",
+            "list-group-item-action",
+            "menu-link"
+        };
+
+        if ((state & NodePathState.Selected) == NodePathState.Selected)
+        {
+            classes.Add("active");
+        }
+
+        if (moreCss.HasValue())
+        {
+            classes.Add(moreCss);
+        }
+
+        return string.Join(" ", classes);
+    }
+}

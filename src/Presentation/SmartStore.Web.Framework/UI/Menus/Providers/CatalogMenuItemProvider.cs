@@ -2,7 +2,6 @@
 using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -41,7 +40,7 @@ namespace SmartStore.Web.Framework.UI
                 item.Summary = T("Providers.MenuItems.FriendlyName.Catalog");
                 item.Icon = "fa fa-sitemap";
 
-                request.Parent.Append(item);
+                AppendToParent(request, item);
             }
             else
             {
@@ -54,7 +53,7 @@ namespace SmartStore.Web.Framework.UI
 
                 if (request.Entity.BeginGroup)
                 {
-                    request.Parent.Append(new MenuItem
+                    AppendToParent(request, new MenuItem
                     {
                         IsGroupHeader = true,
                         Text = request.Entity.GetLocalized(x => x.ShortDescription)
@@ -64,8 +63,7 @@ namespace SmartStore.Web.Framework.UI
                 // Do not append the root itself.
                 foreach (var child in tree.Children)
                 {
-                    var node = ConvertNode(child, request.Entity, allPictureInfos);
-                    request.Parent.Append(node);
+                    AppendToParent(request, ConvertNode(request, child, allPictureInfos));
                 }
             }
 
@@ -80,8 +78,8 @@ namespace SmartStore.Web.Framework.UI
 		}
 
         private TreeNode<MenuItem> ConvertNode(
+            MenuItemProviderRequest request,
             TreeNode<ICategoryNode> categoryNode,
-            MenuItemRecord entity,
             IDictionary<int, PictureInfo> allPictureInfos)
         {
             var node = categoryNode.Value;
@@ -109,15 +107,15 @@ namespace SmartStore.Web.Framework.UI
             }
 
             // Apply inheritable properties.
-            menuItem.Visible = entity.Published;
-            menuItem.PermissionNames = entity.PermissionNames;
+            menuItem.Visible = request.Entity.Published;
+            menuItem.PermissionNames = request.Entity.PermissionNames;
 
-            if (entity.NoFollow)
+            if (request.Entity.NoFollow)
             {
                 menuItem.LinkHtmlAttributes.Add("rel", "nofollow");
             }
 
-            if (entity.NewWindow)
+            if (request.Entity.NewWindow)
             {
                 menuItem.LinkHtmlAttributes.Add("target", "_blank");
             }
@@ -131,7 +129,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 foreach (var childNode in categoryNode.Children)
                 {
-                    convertedNode.Append(ConvertNode(childNode, entity, allPictureInfos));
+                    convertedNode.Append(ConvertNode(request, childNode, allPictureInfos));
                 }
             }
 

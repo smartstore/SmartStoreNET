@@ -1,4 +1,7 @@
-﻿using System.Web.Mvc.Html;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc.Html;
+using SmartStore.Collections;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.UI
@@ -37,7 +40,12 @@ namespace SmartStore.Web.Framework.UI
             if (menu != null)
             {
                 model.Root = menu.Root;
-                model.Path = menu.GetCurrentBreadcrumb();
+
+                var currentNode = menu.ResolveCurrentNode(HtmlHelper.ViewContext?.Controller?.ControllerContext);
+
+                model.Path = currentNode != null
+                    ? currentNode.Trail.Where(x => !x.IsRoot).ToList()
+                    : new List<TreeNode<MenuItem>>();
 
                 menu.ResolveElementCounts(model.SelectedNode, false);
             }

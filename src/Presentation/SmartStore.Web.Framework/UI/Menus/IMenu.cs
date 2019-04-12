@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
@@ -31,10 +32,11 @@ namespace SmartStore.Web.Framework.UI
 		void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false);
 
         /// <summary>
-        /// Gets the current breadcrumb (e.g. for the current category page).
+        /// Resolves the current node.
         /// </summary>
-        /// <returns>Current breadcrumb if available, otherwise an empty list.</returns>
-        IList<TreeNode<MenuItem>> GetCurrentBreadcrumb();
+        /// <param name="context">Controller context.</param>
+        /// <returns>The current menu item node.</returns>
+        TreeNode<MenuItem> ResolveCurrentNode(ControllerContext context);
 
         /// <summary>
         /// Gets all cached trees from the underlying cache storage

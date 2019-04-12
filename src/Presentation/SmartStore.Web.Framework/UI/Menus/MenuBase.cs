@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
@@ -19,37 +20,37 @@ namespace SmartStore.Web.Framework.UI
 		internal const string MENU_KEY = "pres:menu:{0}-{1}";
 		internal const string MENU_PATTERN_KEY = "pres:menu:{0}*";
 
-		public abstract string Name { get; }
+        private TreeNode<MenuItem> _currentNode;
+        private bool _currentNodeResolved;
+        private HashSet<string> _providers;
 
-		public virtual bool ApplyPermissions
-		{
-			get { return true; }
-		}
+        public abstract string Name { get; }
+
+        public virtual bool ApplyPermissions => true;
 
 		public TreeNode<MenuItem> Root
 		{
 			get
 			{
-				var cacheKey = MENU_KEY.FormatInvariant(this.Name, GetCacheKey());
+				var cacheKey = MENU_KEY.FormatInvariant(Name, GetCacheKey());
 				var rootNode = Services.Cache.Get(cacheKey, () =>
 				{
-					using (Services.Chronometer.Step("Build menu '{0}'".FormatInvariant(this.Name)))
+					using (Services.Chronometer.Step($"Build menu '{Name}'"))
 					{
 						var root = Build();
 
-						MenuPublisher.RegisterMenus(root, this.Name);
+						MenuPublisher.RegisterMenus(root, Name);
 
-						if (this.ApplyPermissions)
+						if (ApplyPermissions)
 						{
 							DoApplyPermissions(root);
 						}
 
-						return root;
+                        Services.EventPublisher.Publish(new MenuBuiltEvent(Name, root));
+
+                        return root;
 					}
 				});
-
-                // Always fire event to be able to add items programmatically.
-                Services.EventPublisher.Publish(new MenuBuiltEvent(this.Name, rootNode));
 
                 return rootNode;
 			}
@@ -79,22 +80,6 @@ namespace SmartStore.Web.Framework.UI
 			});
 		}
 
-		private bool MenuItemAccessPermitted(MenuItem item)
-		{
-			var result = true;
-
-			if (item.PermissionNames.HasValue())
-			{
-				var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => Services.Permissions.Authorize(x.Trim()));
-				if (!permitted)
-				{
-					result = false;
-				}
-			}
-
-			return result;
-		}
-
 		protected abstract string GetCacheKey();
 
 		protected abstract TreeNode<MenuItem> Build();
@@ -103,9 +88,15 @@ namespace SmartStore.Web.Framework.UI
 		{
 		}
 
-        public virtual IList<TreeNode<MenuItem>> GetCurrentBreadcrumb()
+        public virtual TreeNode<MenuItem> ResolveCurrentNode(ControllerContext context)
         {
-            return new List<TreeNode<MenuItem>>();
+            if (!_currentNodeResolved)
+            {
+                _currentNode = Root.SelectNode(x => x.Value.IsCurrent(context), true);
+                _currentNodeResolved = true;
+            }
+
+            return _currentNode;
         }
 
         public IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus()
@@ -138,6 +129,38 @@ namespace SmartStore.Web.Framework.UI
 
 		public IMenuPublisher MenuPublisher { get; set; }
 
-		#endregion
-	}
+        #endregion
+
+        #region Utilities
+
+        protected virtual bool ContainsProvider(string provider)
+        {
+            Guard.NotEmpty(provider, nameof(provider));
+
+            if (_providers == null)
+            {
+                _providers = Root.GetMetadata<HashSet<string>>("Providers") ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            return _providers.Contains(provider);
+        }
+
+        private bool MenuItemAccessPermitted(MenuItem item)
+        {
+            var result = true;
+
+            if (item.PermissionNames.HasValue())
+            {
+                var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => Services.Permissions.Authorize(x.Trim()));
+                if (!permitted)
+                {
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+    }
 }

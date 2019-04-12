@@ -1,4 +1,6 @@
-﻿using SmartStore.Collections;
+﻿using System;
+using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
@@ -16,24 +18,49 @@ namespace SmartStore.Web.Framework.UI
             // Add group header item.
             if (request.Entity.BeginGroup && !request.IsMenuEditing)
             {
-                request.Parent.Append(new MenuItem
+                AppendToParent(request, new MenuItem
                 {
                     IsGroupHeader = true,
                     Text = request.Entity.GetLocalized(x => x.ShortDescription)
                 });
             }
 
-			var node = request.Parent.Append(ConvertToMenuItem(request));
+			var node = AppendToParent(request, ConvertToMenuItem(request));
 			
 			ApplyLink(request, node);
 		}
 
-		/// <summary>
-		/// Converts the passed menu item entity to a <see cref="MenuItem"/> object.
-		/// </summary>
-		/// <param name="entity">The entity to convert.</param>
-		/// <returns>Menu item.</returns>
-		protected virtual MenuItem ConvertToMenuItem(MenuItemProviderRequest request)
+        protected virtual TreeNode<MenuItem> AppendToParent(MenuItemProviderRequest request, MenuItem item)
+        {
+            return AppendToParent(request, new TreeNode<MenuItem>(item));
+        }
+
+        protected virtual TreeNode<MenuItem> AppendToParent(MenuItemProviderRequest request, TreeNode<MenuItem> node)
+        {
+            var root = request.Parent.Root;
+            var providers = root.GetMetadata<HashSet<string>>("Providers");
+            var provider = request.Entity.ProviderName;
+
+            node.SetMetadata("Provider", provider);
+
+            if (providers == null)
+            {
+                root.SetMetadata("Providers", new HashSet<string>(new string[] { provider }, StringComparer.OrdinalIgnoreCase));
+            }
+            else
+            {
+                providers.Add(provider);
+            }
+
+            return request.Parent.Append(node);
+        }
+
+        /// <summary>
+        /// Converts the passed menu item entity to a <see cref="MenuItem"/> object.
+        /// </summary>
+        /// <param name="entity">The entity to convert.</param>
+        /// <returns>Menu item.</returns>
+        protected virtual MenuItem ConvertToMenuItem(MenuItemProviderRequest request)
 		{
             var entity = request.Entity;
             var title = entity.GetLocalized(x => x.Title);

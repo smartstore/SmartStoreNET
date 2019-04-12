@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -66,14 +67,14 @@ namespace SmartStore.Web.Framework.UI
 
         public override void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false)
         {
-            if (curNode == null || Name != "Main" || !_catalogSettings.Value.ShowCategoryProductNumber)
+            if (curNode == null || !ContainsProvider("catalog") || !_catalogSettings.Value.ShowCategoryProductNumber)
             {
                 return;
             }
 
             try
             {
-                using (Services.Chronometer.Step($"DatabaseMenu.ResolveElementsCount() for {curNode.Value.Text.EmptyNull()}"))
+                using (Services.Chronometer.Step($"DatabaseMenu.ResolveElementsCount() for {curNode.Value.Text.NaIfEmpty()}"))
                 {
                     // Perf: only resolve counts for categories in the current path.
                     while (curNode != null)
@@ -128,63 +129,68 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public override IList<TreeNode<MenuItem>> GetCurrentBreadcrumb()
+        public override TreeNode<MenuItem> ResolveCurrentNode(ControllerContext context)
         {
-            if (Name != "Main" || !_httpContext.TryGetRouteData(out var rd))
+            if (context == null || !ContainsProvider("catalog"))
             {
-                return base.GetCurrentBreadcrumb();
+                return base.ResolveCurrentNode(context);
             }
 
-            var controller = rd.Values["controller"] as string;
-            var action = rd.Values["action"] as string;            
-            var currentCategoryId = 0;
-            var currentProductId = 0;
+            TreeNode<MenuItem> currentNode = null;
 
-            if (controller.IsCaseInsensitiveEqual("catalog") && action.IsCaseInsensitiveEqual("category"))
+            try
             {
-                currentCategoryId = rd.Values["categoryId"]?.ToString()?.ToInt() ?? 0;
-            }
-            if (controller.IsCaseInsensitiveEqual("product") && action.IsCaseInsensitiveEqual("productdetails"))
-            {
-                currentProductId = rd.Values["productId"]?.ToString()?.ToInt() ?? 0;
-            }
+                var rd = context.RouteData;
+                var controller = rd.Values["controller"] as string;
+                var action = rd.Values["action"] as string;
+                var currentCategoryId = 0;
+                var currentProductId = 0;
 
-            if (currentCategoryId == 0 && currentProductId == 0)
-            {
-                return base.GetCurrentBreadcrumb();
-            }
-
-            var cacheKey = $"sm.temp.category.breadcrumb.{currentCategoryId}-{currentProductId}";
-            var breadcrumb = Services.RequestCache.Get(cacheKey, () =>
-            {
-                var root = Root;
-                TreeNode<MenuItem> node = null;
-
-                if (currentCategoryId > 0)
+                if (controller.IsCaseInsensitiveEqual("catalog") && action.IsCaseInsensitiveEqual("category"))
                 {
-                    node = root.SelectNodeById(currentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == currentCategoryId);
+                    currentCategoryId = rd.Values["categoryId"]?.ToString()?.ToInt() ?? 0;
+                }
+                if (controller.IsCaseInsensitiveEqual("product") && action.IsCaseInsensitiveEqual("productdetails"))
+                {
+                    currentProductId = rd.Values["productId"]?.ToString()?.ToInt() ?? 0;
                 }
 
-                if (node == null && currentProductId > 0)
+                if (currentCategoryId == 0 && currentProductId == 0)
                 {
-                    var productCategories = _categoryService.Value.GetProductCategoriesByProductId(currentProductId);
-                    if (productCategories.Any())
+                    // Possibly not a category node of a menu where the category tree is attached to.
+                    return base.ResolveCurrentNode(context);
+                }
+
+                var cacheKey = $"sm.temp.category.breadcrumb.{currentCategoryId}-{currentProductId}";
+                currentNode = Services.RequestCache.Get(cacheKey, () =>
+                {
+                    var root = Root;
+                    TreeNode<MenuItem> node = null;
+
+                    if (currentCategoryId > 0)
                     {
-                        currentCategoryId = productCategories[0].Category.Id;
                         node = root.SelectNodeById(currentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == currentCategoryId);
                     }
-                }
 
-                if (node != null)
-                {
-                    var path = node.GetBreadcrumb().ToList();
-                    return path;
-                }
+                    if (node == null && currentProductId > 0)
+                    {
+                        var productCategories = _categoryService.Value.GetProductCategoriesByProductId(currentProductId);
+                        if (productCategories.Any())
+                        {
+                            currentCategoryId = productCategories[0].Category.Id;
+                            node = root.SelectNodeById(currentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == currentCategoryId);
+                        }
+                    }
 
-                return new List<TreeNode<MenuItem>>();
-            });
+                    return node;
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
 
-            return breadcrumb;
+            return currentNode;
         }
 
         protected override TreeNode<MenuItem> Build()

@@ -1,12 +1,11 @@
-﻿using System.Web.Mvc;
-using SmartStore.Collections;
+﻿using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
 {
-	/// <summary>
-	/// Main service for menus
-	/// </summary>
-	public partial interface IMenuService
+    /// <summary>
+    /// Main service for menus
+    /// </summary>
+    public partial interface IMenuService
 	{
 		/// <summary>
 		/// Gets a menu instance
@@ -21,14 +20,6 @@ namespace SmartStore.Web.Framework.UI
 		/// <param name="menuName">Name of a code-based or a persisted user menu.</param>
 		/// <returns>The root menu item node.</returns>
 		TreeNode<MenuItem> GetRootNode(string menuName);
-
-		/// <summary>
-		/// Resolves the current node
-		/// </summary>
-		/// <param name="menuName">Name of a code-based or a persisted user menu.</param>
-		/// <param name="controllerContext">Controller context</param>
-		/// <returns>The current menu item node.</returns>
-		TreeNode<MenuItem> ResolveCurrentNode(string menuName, ControllerContext controllerContext);
 
 		/// <summary>
 		/// Resolves all element counts for a tree subset, e.g. resolves the number of products in categories.

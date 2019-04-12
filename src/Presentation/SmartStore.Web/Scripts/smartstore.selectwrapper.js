@@ -245,7 +245,7 @@
                     if (terms) {
                         terms = _.isArray(terms) ? terms : [terms];
                         if (terms.length > 0) {
-                            fallback = false;
+                            //fallback = false;
                             for (var i = 0; i < terms.length; i++) {
                                 if (terms[i].indexOf(params.term) > -1) {
                                     return data;

@@ -565,6 +565,8 @@ $art-border-color:              #ddd;
     
     .art {
         border-bottom-color: $art-border-color;
+        display: flex;
+        flex-flow: column;
     }
 
     // Grid has always 2 cols per row at least, even on xs

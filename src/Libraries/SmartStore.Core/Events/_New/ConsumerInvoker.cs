@@ -57,12 +57,19 @@ namespace SmartStore.Core.Events
 			{
 				// A synch method should be executed async (without awaiting)
 				AsyncRunner.Run((c, ct, state) => InvokeCore(c, ct), d)
-					.ContinueWith(t => EndInvoke(t), TaskContinuationOptions.OnlyOnFaulted)
+					.ContinueWith(t => EndInvoke(t), /*TaskContinuationOptions.OnlyOnFaulted*/ TaskContinuationOptions.None)
 					.ConfigureAwait(false);
 			}
 			else if (d.FireForget && d.IsAsync)
 			{
 				// An async (Task) method should be executed without awaiting
+				AsyncRunner.Run((c, ct) => (Task)InvokeCore(c, ct), d)
+					.ContinueWith(t => EndInvoke(t), TaskContinuationOptions.OnlyOnFaulted)
+					.ContinueWith(t =>
+					{
+						var xxx = t.AsyncState;
+					})
+					.ConfigureAwait(false);
 			}
 
 			object InvokeCore(IComponentContext c = null, CancellationToken cancelToken = default(CancellationToken))
@@ -73,13 +80,13 @@ namespace SmartStore.Core.Events
 					return fastInvoker.Invoke(consumer, p);
 				}
 
-				c = c ?? EngineContext.Current.ContainerManager.Container;
+				c = c ?? EngineContext.Current.ContainerManager.Scope();
 
 				var parameters = new object[d.Parameters.Length + 1];
 				parameters[0] = p;
 
 				int i = 0;
-				foreach (var obj in ResolveParameters(c, d, cancelToken))
+				foreach (var obj in ResolveParameters(c, d, cancelToken).ToArray())
 				{
 					i++;
 					parameters[i] = obj;
@@ -139,8 +146,10 @@ namespace SmartStore.Core.Events
 			{
 				HandleException(task.Exception, (ConsumerDescriptor)asyncResult.AsyncState);
 			}
-
-			var d = HttpContext.Current.Items["ConsumerInvoker"];
+			if (HttpContext.Current != null)
+			{
+				var d = HttpContext.Current.Items["ConsumerInvoker"];
+			}
 		}
 
 		private void HandleException(Exception ex, ConsumerDescriptor descriptor)
@@ -171,8 +180,10 @@ namespace SmartStore.Core.Events
 				{
 					yield return cancelToken;
 				}
-
-				yield return container.Resolve(p.ParameterType);
+				else
+				{
+					yield return container.Resolve(p.ParameterType);
+				}
 			}
 		}
 

@@ -182,6 +182,37 @@ namespace SmartStore.Core.Async
 			return t;
 		}
 
+		public static Task Run(
+			Func<ILifetimeScope, CancellationToken, Task> function,
+			object state,
+			CancellationToken cancellationToken = default(CancellationToken))
+		{
+			Guard.NotNull(state, nameof(state));
+			Guard.NotNull(function, nameof(function));
+
+			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
+
+			var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
+			var scope = accessor.BeginLifetimeScope(null);
+
+			Task task = null;
+
+			try
+			{
+				task = function(scope, ct).ContinueWith(x => 
+				{
+					scope.Dispose();
+				});
+				_host.Register(task, ct);
+			}
+			catch
+			{
+				scope.Dispose();
+			}
+
+			return task;
+		}
+
 
 		private class ExclusiveSynchronizationContext : SynchronizationContext
 		{

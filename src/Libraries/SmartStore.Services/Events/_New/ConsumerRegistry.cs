@@ -34,7 +34,13 @@ namespace SmartStore.Services.Events
 						IsAsync = method.ReturnType == typeof(Task),
 						FireForget = method.HasAttribute<FireForgetAttribute>(false)
 					};
-					
+
+					if (descriptor.IsAsync && descriptor.FireForget)
+					{
+						// TODO: better message
+						throw new NotSupportedException("An asynchronous message consumer method cannot be called as fire & forget.");
+					}
+
 					if (method.ReturnType != typeof(Task) && method.ReturnType != typeof(void))
 					{
 						// TODO: better message

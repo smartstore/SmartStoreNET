@@ -76,7 +76,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 		//	Debug.WriteLine("Scope END, Web: " + isWeb);
 		//}
 
-		private ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> configurationAction)
+		public ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> configurationAction)
 		{
 			return (configurationAction == null)
 				? _rootContainer.BeginLifetimeScope(ScopeTag)

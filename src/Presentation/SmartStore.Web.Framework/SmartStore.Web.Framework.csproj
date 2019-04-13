@@ -308,7 +308,6 @@
     <Compile Include="UI\Components\Menu\CatalogMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\Menu.cs" />
     <Compile Include="UI\Components\Menu\MenuBuilder.cs" />
-    <Compile Include="UI\Components\Menu\MenuCreatedEvent.cs" />
     <Compile Include="UI\Components\Menu\MenuRenderer.cs" />
     <Compile Include="UI\Components\ViewBasedComponentRenderer.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />

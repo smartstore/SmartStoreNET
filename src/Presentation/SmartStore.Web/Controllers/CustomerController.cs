@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -14,7 +12,6 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
-using SmartStore.Services;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
@@ -36,18 +33,15 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
-using SmartStore.Core.Events;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CustomerController : PublicControllerBase
+    public partial class CustomerController : PublicControllerBase
     {
         #region Fields
 
-        private readonly ICommonServices _services;
         private readonly IAuthenticationService _authenticationService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly DateTimeSettings _dateTimeSettings;
@@ -88,14 +82,12 @@ namespace SmartStore.Web.Controllers
         private readonly CaptchaSettings _captchaSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
 		private readonly PluginMediator _pluginMediator;
-		private readonly IEventPublisher _eventPublisher;
 
 		#endregion
 
 		#region Ctor
 
 		public CustomerController(
-            ICommonServices services,
             IAuthenticationService authenticationService,
             IDateTimeHelper dateTimeHelper,
             DateTimeSettings dateTimeSettings, TaxSettings taxSettings,
@@ -123,9 +115,8 @@ namespace SmartStore.Web.Controllers
 			MediaSettings mediaSettings,
             LocalizationSettings localizationSettings,
             CaptchaSettings captchaSettings, ExternalAuthenticationSettings externalAuthenticationSettings,
-			PluginMediator pluginMediator, IEventPublisher eventPublisher)
+			PluginMediator pluginMediator)
         {
-            _services = services;
             _authenticationService = authenticationService;
             _dateTimeHelper = dateTimeHelper;
             _dateTimeSettings = dateTimeSettings;
@@ -166,7 +157,6 @@ namespace SmartStore.Web.Controllers
             _captchaSettings = captchaSettings;
             _externalAuthenticationSettings = externalAuthenticationSettings;
 			_pluginMediator = pluginMediator;
-			_eventPublisher = eventPublisher;
 		}
 
         #endregion
@@ -177,23 +167,6 @@ namespace SmartStore.Web.Controllers
         protected bool IsCurrentUserRegistered()
         {
             return _workContext.CurrentCustomer.IsRegistered();
-        }
-
-        [NonAction]
-        protected int GetUnreadPrivateMessages()
-        {
-            var result = 0;
-            var customer = _services.WorkContext.CurrentCustomer;
-            if (_forumSettings.AllowPrivateMessages && !customer.IsGuest())
-            {
-                var privateMessages = _forumService.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, 0, 1);
-                if (privateMessages.TotalCount > 0)
-                {
-                    result = privateMessages.TotalCount;
-                }
-            }
-
-            return result;
         }
 
         [NonAction]
@@ -505,7 +478,7 @@ namespace SmartStore.Web.Controllers
 
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
-					_eventPublisher.Publish(new CustomerLogedInEvent { Customer = customer });
+					Services.EventPublisher.Publish(new CustomerLogedInEvent { Customer = customer });
 
 					// Redirect home where redirect to referrer would be confusing.
 					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?") || returnUrl.Contains(@"/passwordrecoveryconfirm"))
@@ -624,7 +597,7 @@ namespace SmartStore.Web.Controllers
             // validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
             {
-                ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
+                ModelState.AddModelError("", T("Common.WrongCaptcha"));
             }
             
             if (ModelState.IsValid)
@@ -728,7 +701,7 @@ namespace SmartStore.Web.Controllers
                                     Active = true,
                                     CreatedOnUtc = DateTime.UtcNow,
 									StoreId = _storeContext.CurrentStore.Id,
-                                    WorkingLanguageId = _services.WorkContext.WorkingLanguage.Id
+                                    WorkingLanguageId = Services.WorkContext.WorkingLanguage.Id
                                 });
                             }
                         }
@@ -994,149 +967,6 @@ namespace SmartStore.Web.Controllers
         }
 
         #endregion
-
-		[ChildActionOnly]
-		public ActionResult MyAccountMenu(string selectedItem = null)
-		{
-			var customer = _workContext.CurrentCustomer;
-			var menu = new List<MenuItem>();
-
-			// Info
-			menu.Add(new MenuItem
-			{
-				Id = "info",
-				Text = T("Account.CustomerInfo"),
-				Icon = "fal fa-user",
-				Url = Url.Action("Info"),
-			});
-
-			// Addresses
-			menu.Add(new MenuItem
-			{
-				Id = "addresses",
-				Text = T("Account.CustomerAddresses"),
-				Icon = "fal fa-address-book",
-				Url = Url.Action("Addresses"),
-			});
-
-			// Orders
-			menu.Add(new MenuItem
-			{
-				Id = "orders",
-				Text = T("Account.CustomerOrders"),
-				Icon = "fal fa-file-invoice",
-				Url = Url.Action("Orders"),
-			});
-
-			// Return requests
-			if (_orderSettings.ReturnRequestsEnabled && _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).TotalCount > 0)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "returnrequests",
-					Text = T("Account.CustomerReturnRequests"),
-					Icon = "fal fa-truck",
-					Url = Url.Action("ReturnRequests"),
-				});
-			}
-
-			// Downloadable products
-			if (!_customerSettings.HideDownloadableProductsTab)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "downloads",
-					Text = T("Account.DownloadableProducts"),
-					Icon = "fal fa-download",
-					Url = Url.Action("DownloadableProducts"),
-				});
-			}
-
-			// BackInStock subscriptions
-			if (!_customerSettings.HideBackInStockSubscriptionsTab)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "backinstock",
-					Text = T("Account.BackInStockSubscriptions"),
-					Icon = "fal fa-truck-loading",
-					Url = Url.Action("BackInStockSubscriptions"),
-				});
-			}
-
-			// Reward points
-			if (_rewardPointsSettings.Enabled)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "rewardpoints",
-					Text = T("Account.RewardPoints"),
-					Icon = "fal fa-certificate",
-					Url = Url.Action("RewardPoints"),
-				});
-			}
-
-			// Change password
-			menu.Add(new MenuItem
-			{
-				Id = "changepassword",
-				Text = T("Account.ChangePassword"),
-				Icon = "fal fa-unlock-alt",
-				Url = Url.Action("ChangePassword"),
-			});
-
-			// Avatar
-			if (_customerSettings.AllowCustomersToUploadAvatars)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "avatar",
-					Text = T("Account.Avatar"),
-					Icon = "fal fa-user-circle",
-					Url = Url.Action("Avatar"),
-				});
-			}
-
-			// Forum subscriptions
-			if (_forumSettings.ForumsEnabled && _forumSettings.AllowCustomersToManageSubscriptions)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "forumsubscriptions",
-					Text = T("Account.ForumSubscriptions"),
-					Icon = "fal fa-bell",
-					Url = Url.Action("ForumSubscriptions"),
-				});
-			}
-
-			// Private messages
-			var numUnreadMessages = GetUnreadPrivateMessages();
-			if (_forumSettings.AllowPrivateMessages)
-			{
-				menu.Add(new MenuItem
-				{
-					Id = "privatemessages",
-					Text = T("PrivateMessages.Inbox"),
-					Icon = "fal fa-envelope",
-					Url = Url.RouteUrl("PrivateMessages", new { tab = "inbox" }),
-					BadgeText = numUnreadMessages > 0 ? numUnreadMessages.ToString() : null,
-					BadgeStyle = BadgeStyle.Warning
-				});
-			}
-
-			var model = new MyAccountMenuModel
-			{
-				Root = new TreeNode<MenuItem>(new MenuItem { Id = "root" }, menu),
-				SelectedItemToken = selectedItem
-			};
-
-			// Event for plugins
-			var evt = new MenuCreatedEvent("MyAccount", model.Root, model.SelectedItemToken);
-			_services.EventPublisher.Publish(evt);
-			model.SelectedItemToken = evt.SelectedItemToken;
-
-			return PartialView(model);
-		}
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
         public ActionResult Info()
@@ -1620,14 +1450,14 @@ namespace SmartStore.Web.Controllers
 			var orderItem = _orderService.GetOrderItemByGuid(id);
             if (orderItem == null)
             {
-                NotifyError(_services.Localization.GetResource("Customer.UserAgreement.OrderItemNotFound"));
+                NotifyError(T("Customer.UserAgreement.OrderItemNotFound"));
                 return RedirectToRoute("HomePage");
             }
 			
             var product = orderItem.Product;
             if (product == null || !product.HasUserAgreement)
             {
-                NotifyError(_services.Localization.GetResource("Customer.UserAgreement.ProductNotFound"));
+                NotifyError(T("Customer.UserAgreement.ProductNotFound"));
                 return RedirectToRoute("HomePage");
             }
 			

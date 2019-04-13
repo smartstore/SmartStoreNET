@@ -102,12 +102,12 @@ namespace SmartStore.Services.Seo
 
 		public ILogger Logger { get; set; }
 
-		public virtual XmlSitemapPartition GetSitemapPart(int index = 0)
+		public virtual async Task<XmlSitemapPartition> GetSitemapPartAsync(int index = 0)
 		{
-			return GetSitemapPart(index, false);
+			return await GetSitemapPartAsync(index, false);
 		}
 
-		private XmlSitemapPartition GetSitemapPart(int index, bool isRetry)
+		private async Task<XmlSitemapPartition> GetSitemapPartAsync(int index, bool isRetry)
 		{
 			Guard.NotNegative(index, nameof(index));
 
@@ -174,11 +174,11 @@ namespace SmartStore.Services.Seo
 					CancellationToken = CancellationToken.None
 				};
 
-				Rebuild(buildContext);
+				await RebuildAsync(buildContext);
 			}
 
 			// DRY: call self to get sitemap partition object
-			return GetSitemapPart(index, true);
+			return await GetSitemapPartAsync(index, true);
 		}
 
 		private bool SitemapFileExists(int storeId, int languageId, int index, out string path, out string name)
@@ -216,7 +216,7 @@ namespace SmartStore.Services.Seo
 			return _tenantFolder.Combine(_baseDir, fileName);
 		}
 
-		public virtual void Rebuild(XmlSitemapBuildContext ctx)
+		public virtual async Task RebuildAsync(XmlSitemapBuildContext ctx)
 		{
 			Guard.NotNull(ctx, nameof(ctx));
 
@@ -283,7 +283,7 @@ namespace SmartStore.Services.Seo
 					var nodes = new List<XmlSitemapNode>();
 
 					var queries = CreateQueries(ctx);
-					var total = queries.GetTotalRecordCount();
+					var total = await queries.GetTotalRecordCountAsync();
 
 					var totalSegments = (int)Math.Ceiling(total / (double)MaximumSiteMapNodeCount);
 					var hasIndex = totalSegments > 1;
@@ -295,7 +295,7 @@ namespace SmartStore.Services.Seo
 
 					using (new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
 					{
-						var entities = EnumerateEntities(queries);
+						var entities = await EnumerateEntitiesAsync(queries);
 
 						foreach (var batch in entities.Slice(MaximumSiteMapNodeCount))
 						{
@@ -339,7 +339,7 @@ namespace SmartStore.Services.Seo
 								{
 									// Commit every 5th segment (10.000 nodes) temporarily to disk to minimize RAM usage
 									var documents = GetSiteMapDocuments((IReadOnlyCollection<XmlSitemapNode>)sitemaps[language.Id]);
-									SaveTemp(documents, data, segment - documents.Count + (hasIndex ? 1 : 0));
+									await SaveTempAsync(documents, data, segment - documents.Count + (hasIndex ? 1 : 0));
 
 									documents.Clear();
 									sitemaps.RemoveAll(language.Id);
@@ -348,8 +348,8 @@ namespace SmartStore.Services.Seo
 
 							slugs.Clear();
 
-							GC.Collect();
-							GC.WaitForPendingFinalizers();
+							//GC.Collect();
+							//GC.WaitForPendingFinalizers();
 						}
 
 						// Process custom nodes
@@ -363,7 +363,7 @@ namespace SmartStore.Services.Seo
 								if (sitemaps.ContainsKey(data.Language.Id) && sitemaps[data.Language.Id].Count > 0)
 								{
 									var documents = GetSiteMapDocuments((IReadOnlyCollection<XmlSitemapNode>)sitemaps[data.Language.Id]);
-									SaveTemp(documents, data, (segment + 1) - documents.Count + (hasIndex ? 1 : 0));
+									await SaveTempAsync(documents, data, (segment + 1) - documents.Count + (hasIndex ? 1 : 0));
 								}
 								else if (segment == 0)
 								{
@@ -371,7 +371,7 @@ namespace SmartStore.Services.Seo
 									// the system will try to rebuild again.
 									var homeNode = new XmlSitemapNode { LastMod = DateTime.UtcNow, Loc = data.BaseUrl };
 									var documents = GetSiteMapDocuments(new List<XmlSitemapNode> { homeNode });
-									SaveTemp(documents, data, 0);
+									await SaveTempAsync(documents, data, 0);
 								}
 
 							}
@@ -388,7 +388,7 @@ namespace SmartStore.Services.Seo
 						if (hasIndex && indexNodes.Any())
 						{
 							var indexDocument = CreateSitemapIndexDocument(indexNodes[data.Language.Id]);
-							SaveTemp(new List<string> { indexDocument }, data, 0);
+							await SaveTempAsync(new List<string> { indexDocument }, data, 0);
 						}
 
 						// Save finally (actually renames temp folder)
@@ -409,8 +409,8 @@ namespace SmartStore.Services.Seo
 						}
 					}
 
-					GC.Collect();
-					GC.WaitForPendingFinalizers();
+					//GC.Collect();
+					//GC.WaitForPendingFinalizers();
 				}
 			}
 		}
@@ -437,7 +437,7 @@ namespace SmartStore.Services.Seo
 			return baseUrl + slugs.GetSlug(language.Id, entity.Id, true);
 		}
 
-		private void SaveTemp(List<string> documents, LanguageData data, int start)
+		private async Task SaveTempAsync(List<string> documents, LanguageData data, int start)
 		{
 			for (int i = 0; i < documents.Count; i++)
 			{
@@ -445,7 +445,7 @@ namespace SmartStore.Services.Seo
 				var fileName = SiteMapFileNamePattern.FormatInvariant(i + start);
 				var filePath = _tenantFolder.Combine(data.TempDir, fileName);
 
-				_tenantFolder.CreateTextFile(filePath, documents[i]);
+				await _tenantFolder.CreateTextFileAsync(filePath, documents[i]);
 			}
 		}
 
@@ -474,35 +474,24 @@ namespace SmartStore.Services.Seo
 			}
 		}
 
-		private IEnumerable<NamedEntity> EnumerateEntities(QueryHolder queries)
+		private async Task<IEnumerable<NamedEntity>> EnumerateEntitiesAsync(QueryHolder queries)
 		{
-			var entities = Enumerable.Empty<NamedEntity>();
-
 			if (queries.Categories != null)
 			{
-				var categories = queries.Categories.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
-				foreach (var x in categories)
-				{
-					yield return new NamedEntity { EntityName = "Category", Id = x.Id, LastMod = x.UpdatedOnUtc };
-				}
+				var categories = await queries.Categories.Select(x => new { x.Id, x.UpdatedOnUtc }).ToListAsync();
+				return categories.Select(x => new NamedEntity { EntityName = "Category", Id = x.Id, LastMod = x.UpdatedOnUtc });
 			}
 
 			if (queries.Manufacturers != null)
 			{
-				var manufacturers = queries.Manufacturers.Select(x => new { x.Id, x.UpdatedOnUtc }).ToList();
-				foreach (var x in manufacturers)
-				{
-					yield return new NamedEntity { EntityName = "Manufacturer", Id = x.Id, LastMod = x.UpdatedOnUtc };
-				}
+				var manufacturers = await queries.Manufacturers.Select(x => new { x.Id, x.UpdatedOnUtc }).ToListAsync();
+				return manufacturers.Select(x => new NamedEntity { EntityName = "Manufacturer", Id = x.Id, LastMod = x.UpdatedOnUtc });
 			}
 
 			if (queries.Topics != null)
 			{
-				var topics = queries.Topics.Select(x => new { x.Id }).ToList();
-				foreach (var x in topics)
-				{
-					yield return new NamedEntity { EntityName = "Topic", Id = x.Id, LastMod = DateTime.UtcNow };
-				}
+				var topics = await queries.Topics.Select(x => new { x.Id }).ToListAsync();
+				return topics.Select(x => new NamedEntity { EntityName = "Topic", Id = x.Id, LastMod = DateTime.UtcNow });
 			}
 
 			if (queries.Products != null)
@@ -513,12 +502,12 @@ namespace SmartStore.Services.Seo
 				//var limit = 0;
 				while (maxId > 1)
 				{
-					var products = query
+					var products = await query
 						.Where(x => x.Id < maxId)
 						.OrderByDescending(x => x.Id)
 						.Take(() => MaximumSiteMapNodeCount)
 						.Select(x => new { x.Id, x.UpdatedOnUtc })
-						.ToList();
+						.ToListAsync();
 
 					//limit++;
 					//if (limit >= 100)
@@ -533,12 +522,11 @@ namespace SmartStore.Services.Seo
 
 					maxId = products.Last().Id;
 
-					foreach (var x in products)
-					{
-						yield return new NamedEntity { EntityName = "Product", Id = x.Id, LastMod = x.UpdatedOnUtc };
-					}
+					return products.Select(x => new NamedEntity { EntityName = "Product", Id = x.Id, LastMod = x.UpdatedOnUtc });
 				}
 			}
+
+			return Enumerable.Empty<NamedEntity>();
 		}
 
 		private IDictionary<string, UrlRecordCollection> GetUrlRecordCollectionsForBatch(IEnumerable<NamedEntity> batch, int[] languageIds)
@@ -707,7 +695,7 @@ namespace SmartStore.Services.Seo
 
 			if (seoSettings.XmlSitemapIncludesCategories)
 			{
-				holder.Categories = _categoryService.GetAllCategories(showHidden: false, storeId: storeId).SourceQuery;
+				holder.Categories = _categoryService.BuildCategoriesQuery(showHidden: false, storeId: storeId);
 			}
 
 			if (seoSettings.XmlSitemapIncludesManufacturers)
@@ -810,13 +798,13 @@ namespace SmartStore.Services.Seo
 			public IQueryable<Topic> Topics { get; set; }
 			public IQueryable<Product> Products { get; set; }
 
-			public int GetTotalRecordCount()
+			public async Task<int> GetTotalRecordCountAsync()
 			{
 				int num = 0;
-				if (Categories != null) num += Categories.Count();
-				if (Manufacturers != null) num += Manufacturers.Count();
-				if (Topics != null) num += Topics.Count();
-				if (Products != null) num += Products.Count();
+				if (Categories != null) num += await Categories.CountAsync();
+				if (Manufacturers != null) num += await Manufacturers.CountAsync();
+				if (Topics != null) num += await Topics.CountAsync();
+				if (Products != null) num += await Products.CountAsync();
 				//if (Products != null) num += 200000;
 
 				return num;

@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core
 {
@@ -66,6 +67,26 @@ namespace SmartStore.Core
 			}
 		}
 
+		private async Task EnsureIsLoadedAsync()
+		{
+			if (_list == null)
+			{
+				if (_totalCount == null)
+				{
+					_totalCount = SourceQuery.Count();
+				}
+
+				if (_queryIsPagedAlready)
+				{
+					_list = await SourceQuery.ToListAsync();
+				}
+				else
+				{
+					_list = await ApplyPaging(SourceQuery).ToListAsync();
+				}
+			}
+		}
+
 		#region IPageable Members
 
 		public IQueryable<T> SourceQuery { get; private set; }
@@ -101,6 +122,7 @@ namespace SmartStore.Core
 
 		public IPagedList<T> Load(bool force = false)
 		{
+			// Returns instance for chaining.
 			if (force && _list != null)
 			{
 				_list.Clear();
@@ -108,6 +130,20 @@ namespace SmartStore.Core
 			}
 
 			EnsureIsLoaded();
+
+			return this;
+		}
+
+		public async Task<IPagedList<T>> LoadAsync(bool force = false)
+		{
+			// Returns instance for chaining.
+			if (force && _list != null)
+			{
+				_list.Clear();
+				_list = null;
+			}
+
+			await EnsureIsLoadedAsync();
 
 			return this;
 		}

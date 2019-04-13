@@ -836,7 +836,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost, ActionName("Maintenance")]
         [FormValueRequired("delete-guests")]
-        public ActionResult MaintenanceDeleteGuests(MaintenanceModel model)
+        public async Task<ActionResult> MaintenanceDeleteGuests(MaintenanceModel model)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
@@ -847,7 +847,7 @@ namespace SmartStore.Admin.Controllers
             DateTime? endDateValue = (model.DeleteGuests.EndDate == null) ? null
 							: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteGuests.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
 
-            model.DeleteGuests.NumberOfDeletedCustomers = _customerService.DeleteGuestCustomers(startDateValue, endDateValue, model.DeleteGuests.OnlyWithoutShoppingCart);
+            model.DeleteGuests.NumberOfDeletedCustomers = await _customerService.DeleteGuestCustomersAsync(startDateValue, endDateValue, model.DeleteGuests.OnlyWithoutShoppingCart);
 
             return View(model);
         }

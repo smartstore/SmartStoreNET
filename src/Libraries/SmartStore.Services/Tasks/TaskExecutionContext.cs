@@ -9,7 +9,6 @@ namespace SmartStore.Services.Tasks
 {
 	public delegate void ProgressCallback(int value, int maximum, string message);
 
-
 	/// <summary>
 	/// Provides the context for the Execute method of the <see cref="ITask"/> interface.
 	/// </summary>

@@ -73,14 +73,14 @@ namespace SmartStore.Web.Controllers
 
 		[Compress]
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult XmlSitemap(int? index = null)
+		public async Task<ActionResult> XmlSitemap(int? index = null)
 		{
 			if (!_seoSettings.Value.XmlSitemapEnabled)
 				return HttpNotFound();
 
 			try
 			{
-				var partition = _sitemapGenerator.Value.GetSitemapPart(index ?? 0);
+				var partition = await _sitemapGenerator.Value.GetSitemapPartAsync(index ?? 0);
 				return new FileStreamResult(partition.Stream, "text/xml");
 			}
 			catch (IndexOutOfRangeException)

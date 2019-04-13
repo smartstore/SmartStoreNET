@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Tasks;
 
@@ -41,7 +42,7 @@ namespace SmartStore.Services.Tasks
         /// Gets all pending tasks
         /// </summary>
         /// <returns>Tasks</returns>
-        IList<ScheduleTask> GetPendingTasks();
+        Task<IList<ScheduleTask>> GetPendingTasksAsync();
 
         /// <summary>
         /// Inserts a task

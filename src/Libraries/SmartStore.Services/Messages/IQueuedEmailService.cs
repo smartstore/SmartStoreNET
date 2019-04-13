@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
 
@@ -52,11 +53,11 @@ namespace SmartStore.Services.Messages
 		IPagedList<QueuedEmail> SearchEmails(SearchEmailsQuery query);
 
 		/// <summary>
-		/// Sends a queued email
+		/// Sends a queued email asynchronously.
 		/// </summary>
 		/// <param name="queuedEmail">Queued email</param>
 		/// <returns>Whether the operation succeeded</returns>
-		bool SendEmail(QueuedEmail queuedEmail);
+		Task<bool> SendEmailAsync(QueuedEmail queuedEmail);
 
 		/// <summary>
 		/// Gets a queued email attachment by identifier

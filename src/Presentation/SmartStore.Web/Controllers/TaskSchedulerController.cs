@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.SessionState;
 using SmartStore.Collections;
@@ -38,14 +39,14 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Sweep()
+        public async Task<ActionResult> Sweep()
         {
             if (!_taskScheduler.VerifyAuthToken(Request.Headers["X-AUTH-TOKEN"]))
             {
                 return new HttpUnauthorizedResult();
             }
 
-			var pendingTasks = _scheduleTaskService.GetPendingTasks();
+			var pendingTasks = await _scheduleTaskService.GetPendingTasksAsync();
 			var count = 0;
 			var taskParameters = QueryString.Current.ToDictionary();
 
@@ -70,7 +71,7 @@ namespace SmartStore.Web.Controllers
 
 				if (task.IsPending)
 				{
-					_taskExecutor.Execute(task, taskParameters);
+					await _taskExecutor.ExecuteAsync(task, taskParameters);
 					count++;
 				}
 			}
@@ -79,7 +80,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Execute(int id /* taskId */)
+        public async Task<ActionResult> Execute(int id /* taskId */)
         {
             if (!_taskScheduler.VerifyAuthToken(Request.Headers["X-AUTH-TOKEN"]))
             {
@@ -95,7 +96,7 @@ namespace SmartStore.Web.Controllers
 			var taskParameters = QueryString.Current.ToDictionary();
 			Virtualize(taskParameters);
 
-			_taskExecutor.Execute(task, taskParameters);
+			await _taskExecutor.ExecuteAsync(task, taskParameters);
 
             return Content("Task '{0}' executed".FormatCurrent(task.Name));
         }

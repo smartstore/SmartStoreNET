@@ -197,55 +197,7 @@ namespace SmartStore.Data
 				get { return _stage; }
 			}
 
-			public int Execute()
-			{
-				var autoDetectChanges = _ctx.Configuration.AutoDetectChangesEnabled;
-				IEnumerable<IMergedData> mergeableEntities = null;
-				
-				Action endExecute = () =>
-				{
-					_ctx.Configuration.AutoDetectChangesEnabled = autoDetectChanges;
-					_ctx.IgnoreMergedData(mergeableEntities, false);
-				};
-
-				using (new ActionDisposable(endExecute))
-				{
-					// Suppress implicit DetectChanges() calls by EF,
-					// e.g. called by SaveChanges(), ChangeTracker.Entries() etc.
-					_ctx.Configuration.AutoDetectChangesEnabled = false;
-
-					// Get all attached entries implementing IMergedData,
-					// we need to ignore merge on them. Otherwise
-					// EF's change detection may think that properties has changed
-					// where they actually didn't.
-					mergeableEntities = _ctx.GetMergeableEntitiesFromChangeTracker().ToArray();
-
-					// Now ignore merged data, otherwise merged data will be saved to database
-					_ctx.IgnoreMergedData(mergeableEntities, true);
-
-					// We must detect changes earlier in the process
-					// before hooks are executed. Therefore we suppressed the
-					// implicit DetectChanges() call by EF and call it here explicitly.
-					_ctx.ChangeTracker.DetectChanges();
-
-					// Now get changed entries
-					_changedEntries = _ctx.GetChangedEntries();
-
-					// pre
-					IEnumerable<IHookedEntity> changedHookEntries;
-					PreExecute(out changedHookEntries);
-
-					// save
-					var result = _ctx.SaveChangesCore();
-
-					// post
-					PostExecute(changedHookEntries);
-
-					return result;
-				}
-			}
-
-			public Task<int> ExecuteAsync(CancellationToken cancellationToken)
+			private IDisposable ExecuteCore()
 			{
 				var autoDetectChanges = _ctx.Configuration.AutoDetectChangesEnabled;
 				IEnumerable<IMergedData> mergeableEntities = null;
@@ -265,32 +217,46 @@ namespace SmartStore.Data
 
 				// We must detect changes earlier in the process
 				// before hooks are executed. Therefore we suppressed the
-				// implicit DetectChanges() calls by EF and call it here explicitly.
+				// implicit DetectChanges() call by EF and call it here explicitly.
 				_ctx.ChangeTracker.DetectChanges();
 
 				// Now get changed entries
 				_changedEntries = _ctx.GetChangedEntries();
 
 				// pre
-				IEnumerable<IHookedEntity> changedHookEntries;
-				PreExecute(out changedHookEntries);
+				PreExecute(out IEnumerable<IHookedEntity> changedHookEntries);
 
-				// save
-				var result = _ctx.SaveChangesCoreAsync(cancellationToken);
+				return new ActionDisposable(endExecute);
 
-				// post
-				result.ContinueWith((t) =>
+				void endExecute()
 				{
-					if (!t.IsFaulted)
+					try
 					{
+						// post
 						PostExecute(changedHookEntries);
 					}
+					finally
+					{
+						_ctx.Configuration.AutoDetectChangesEnabled = autoDetectChanges;
+						_ctx.IgnoreMergedData(mergeableEntities, false);
+					}
+				}
+			}
 
-					_ctx.Configuration.AutoDetectChangesEnabled = autoDetectChanges;
-					_ctx.IgnoreMergedData(mergeableEntities, false);
-				});
+			public int Execute()
+			{
+				using (ExecuteCore())
+				{
+					return _ctx.SaveChangesCore();
+				}
+			}
 
-				return result;
+			public async Task<int> ExecuteAsync(CancellationToken cancellationToken)
+			{
+				using (ExecuteCore())
+				{
+					return await _ctx.SaveChangesCoreAsync(cancellationToken);
+				}
 			}
 
 			private IEnumerable<IDbSaveHook> PreExecute(out IEnumerable<IHookedEntity> changedHookEntries)

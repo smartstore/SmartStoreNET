@@ -10,7 +10,7 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Seo
 {
-	public class RebuildXmlSitemapTask : ITask
+	public class RebuildXmlSitemapTask : AsyncTask
 	{
 		private readonly IStoreService _storeService;
 		private readonly ILanguageService _languageService;
@@ -29,7 +29,7 @@ namespace SmartStore.Services.Seo
 			_seoSettings = seoSettings;
 		}
 
-		public void Execute(TaskExecutionContext ctx)
+		public override async Task ExecuteAsync(TaskExecutionContext ctx)
 		{
 			var stores = _storeService.GetAllStores();
 
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Seo
 					ProgressCallback = OnProgress
 				};
 
-				_generator.Rebuild(buildContext);
+				await _generator.RebuildAsync(buildContext);
 			}
 
 			void OnProgress(int value, int max, string msg)

@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core
 {   
@@ -100,7 +101,19 @@ namespace SmartStore.Core
 		/// <returns>A query with applied paging args</returns>
 		IQueryable<T> ApplyPaging(IQueryable<T> query);
 
+		/// <summary>
+		/// Loads the data synchronously.
+		/// </summary>
+		/// <param name="force">When <c>true</c>, always reloads data. When <c>false</c>, first checks to see whether data has been loaded already and skips if so.</param>
+		/// <returns>Returns itself for chaining.</returns>
 		IPagedList<T> Load(bool force = false);
+
+		/// <summary>
+		/// Loads the data asynchronously.
+		/// </summary>
+		/// <param name="force">When <c>true</c>, always reloads data. When <c>false</c>, first checks to see whether data has been loaded already and skips if so.</param>
+		/// <returns>Returns itself for chaining.</returns>
+		Task<IPagedList<T>> LoadAsync(bool force = false);
 	}
 
 }

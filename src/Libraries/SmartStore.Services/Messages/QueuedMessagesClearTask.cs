@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Messages;
@@ -9,7 +10,7 @@ namespace SmartStore.Services.Messages
     /// <summary>
     /// Represents a task for deleting sent emails from the message queue.
     /// </summary>
-    public partial class QueuedMessagesClearTask : ITask
+    public partial class QueuedMessagesClearTask : AsyncTask
     {
         private readonly IRepository<QueuedEmail> _qeRepository;
         private readonly CommonSettings _commonSettings;
@@ -22,10 +23,10 @@ namespace SmartStore.Services.Messages
             _commonSettings = commonSettings;
         }
 
-		public void Execute(TaskExecutionContext ctx)
+		public override async Task ExecuteAsync(TaskExecutionContext ctx)
         {
 			var olderThan = DateTime.UtcNow.AddDays(-Math.Abs(_commonSettings.MaxQueuedMessagesAgeInDays));
-			_qeRepository.DeleteAll(x => x.SentOnUtc.HasValue && x.CreatedOnUtc < olderThan);
+			await _qeRepository.DeleteAllAsync(x => x.SentOnUtc.HasValue && x.CreatedOnUtc < olderThan);
 
 			_qeRepository.Context.ShrinkDatabase();
         }

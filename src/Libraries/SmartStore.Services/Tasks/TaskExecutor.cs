@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Async;
@@ -43,8 +44,8 @@ namespace SmartStore.Services.Tasks
         public ILogger Logger { get; set; }
 		public Localizer T { get; set; }
 
-		public void Execute(
-			ScheduleTask task,
+		public async Task ExecuteAsync(
+			ScheduleTask entity,
 			IDictionary<string, string> taskParameters = null,
             bool throwOnError = false)
         {
@@ -53,13 +54,13 @@ namespace SmartStore.Services.Tasks
                 return;
             }
 
-            if (task.LastHistoryEntry == null)
+            if (entity.LastHistoryEntry == null)
             {
                 // The task was started manually.
-                task.LastHistoryEntry = _scheduledTaskService.GetLastHistoryEntryByTaskId(task.Id);
+                entity.LastHistoryEntry = _scheduledTaskService.GetLastHistoryEntryByTaskId(entity.Id);
             }
 
-            if (task?.LastHistoryEntry?.IsRunning == true)
+            if (entity?.LastHistoryEntry?.IsRunning == true)
             {
                 return;
             }
@@ -67,14 +68,14 @@ namespace SmartStore.Services.Tasks
             bool faulted = false;
 			bool canceled = false;
             string lastError = null;
-            ITask instance = null;
+            ITask task = null;
 			string stateName = null;
 			Type taskType = null;
             Exception exception = null;
 
             var historyEntry = new ScheduleTaskHistory
             {
-                ScheduleTaskId = task.Id,
+                ScheduleTaskId = entity.Id,
                 IsRunning = true,
                 MachineName = _env.MachineName.EmptyNull(),
                 StartedOnUtc = DateTime.UtcNow
@@ -82,10 +83,10 @@ namespace SmartStore.Services.Tasks
 
             try
             {
-				taskType = Type.GetType(task.Type);
+				taskType = Type.GetType(entity.Type);
 				if (taskType == null)
 				{
-					Logger.DebugFormat("Invalid scheduled task type: {0}", task.Type.NaIfEmpty());
+					Logger.DebugFormat("Invalid scheduled task type: {0}", entity.Type.NaIfEmpty());
 				}
 
 				if (taskType == null)
@@ -94,8 +95,8 @@ namespace SmartStore.Services.Tasks
 				if (!PluginManager.IsActivePluginAssembly(taskType.Assembly))
 					return;
 
-                task.ScheduleTaskHistory.Add(historyEntry);
-                _scheduledTaskService.UpdateTask(task);
+                entity.ScheduleTaskHistory.Add(historyEntry);
+                _scheduledTaskService.UpdateTask(entity);
             }
             catch
 			{
@@ -106,8 +107,8 @@ namespace SmartStore.Services.Tasks
             {
                 // Task history entry has been successfully added, now we execute the task.
 				// Create task instance.
-				instance = _taskResolver(taskType);
-				stateName = task.Id.ToString();
+				task = _taskResolver(taskType);
+				stateName = entity.Id.ToString();
 
 				// Create & set a composite CancellationTokenSource which also contains the global app shoutdown token.
 				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
@@ -120,8 +121,16 @@ namespace SmartStore.Services.Tasks
 					Parameters = taskParameters ?? new Dictionary<string, string>()
 				};
 
-				Logger.DebugFormat("Executing scheduled task: {0}", task.Type);
-				instance.Execute(ctx);
+				Logger.DebugFormat("Executing scheduled task: {0}", entity.Type);
+
+				if (task is IAsyncTask asyncTask)
+				{
+					await asyncTask.ExecuteAsync(ctx);
+				}
+				else
+				{
+					task.Execute(ctx);
+				}
             }
             catch (Exception ex)
             {
@@ -132,11 +141,11 @@ namespace SmartStore.Services.Tasks
 
                 if (canceled)
                 {
-                    Logger.Warn(ex, T("Admin.System.ScheduleTasks.Cancellation", task.Name));
+                    Logger.Warn(ex, T("Admin.System.ScheduleTasks.Cancellation", entity.Name));
                 }
                 else
                 {
-                    Logger.Error(ex, string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", ex.Message));
+					Logger.Error(ex, string.Concat(T("Admin.System.ScheduleTasks.RunningError", entity.Name), ": ", ex.Message));
                 }
             }
             finally
@@ -152,9 +161,9 @@ namespace SmartStore.Services.Tasks
 				
 				if (faulted)
 				{
-					if ((!canceled && task.StopOnError) || instance == null)
+					if ((!canceled && entity.StopOnError) || task == null)
 					{
-						task.Enabled = false;
+						entity.Enabled = false;
                         updateTask = true;
 					}
 				}
@@ -165,7 +174,7 @@ namespace SmartStore.Services.Tasks
 
                 try
                 {
-                    Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - historyEntry.StartedOnUtc).TotalMilliseconds);
+                    Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", entity.Type, (now - historyEntry.StartedOnUtc).TotalMilliseconds);
 
                     // Remove from AsyncState.
                     if (stateName.HasValue())
@@ -178,9 +187,9 @@ namespace SmartStore.Services.Tasks
                     Logger.Error(ex);
                 }
 
-                if (task.Enabled)
+                if (entity.Enabled)
 				{
-					task.NextRunUtc = _scheduledTaskService.GetNextSchedule(task);
+					entity.NextRunUtc = _scheduledTaskService.GetNextSchedule(entity);
                     updateTask = true;
                 }
 
@@ -188,7 +197,7 @@ namespace SmartStore.Services.Tasks
 
                 if (updateTask)
                 {
-                    _scheduledTaskService.UpdateTask(task);
+                    _scheduledTaskService.UpdateTask(entity);
                 }
 
                 Throttle.Check("Delete old schedule task history entries", TimeSpan.FromDays(1), () => _scheduledTaskService.DeleteHistoryEntries() > 0);

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Data.Entity;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Tasks;
@@ -11,7 +13,7 @@ namespace SmartStore.Services.Media
     /// Represents a task for deleting transient media from the database
 	/// (pictures and downloads which have been uploaded but never assigned to an entity)
     /// </summary>
-    public partial class TransientMediaClearTask : ITask
+    public partial class TransientMediaClearTask : AsyncTask
     {
 		private readonly IPictureService _pictureService;
 		private readonly IRepository<Picture> _pictureRepository;
@@ -22,18 +24,18 @@ namespace SmartStore.Services.Media
 			IRepository<Picture> pictureRepository, 
 			IRepository<Download> downloadRepository)
         {
-			this._pictureService = pictureService;
-			this._pictureRepository = pictureRepository;
-			this._downloadRepository = downloadRepository;
+			_pictureService = pictureService;
+			_pictureRepository = pictureRepository;
+			_downloadRepository = downloadRepository;
         }
 
-		public void Execute(TaskExecutionContext ctx)
+		public override async Task ExecuteAsync(TaskExecutionContext ctx)
         {
 			// delete all media records which are in transient state since at least 3 hours
 			var olderThan = DateTime.UtcNow.AddHours(-3);
 
 			// delete Downloads
-			_downloadRepository.DeleteAll(x => x.IsTransient && x.UpdatedOnUtc < olderThan);
+			await _downloadRepository.DeleteAllAsync(x => x.IsTransient && x.UpdatedOnUtc < olderThan);
 
 			// delete Pictures
 			var autoCommit = _pictureRepository.AutoCommitEnabled;
@@ -43,13 +45,13 @@ namespace SmartStore.Services.Media
 			{
 				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
 				{
-					var pictures = _pictureRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToList();
+					var pictures = await _pictureRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToListAsync();
 					foreach (var picture in pictures)
 					{
 						_pictureService.DeletePicture(picture);
 					}
 
-					_pictureRepository.Context.SaveChanges();
+					await _pictureRepository.Context.SaveChangesAsync();
 
 					if (DataSettings.Current.IsSqlServer)
 					{

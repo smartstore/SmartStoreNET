@@ -110,7 +110,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new SearchModule());
 			builder.RegisterModule(new LocalizationModule());
-			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
+			//builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
 			builder.RegisterModule(new WebApiModule(typeFinder));
@@ -611,10 +611,12 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<DefaultMessageBus>().As<IMessageBus>().SingleInstance();
+
 			builder.RegisterType<ConsumerRegistry>().As<IConsumerRegistry>().SingleInstance();
-			builder.RegisterType<ConsumerResolver>().As<IConsumerResolver>().InstancePerRequest();
+			builder.RegisterType<ConsumerResolver>().As<IConsumerResolver>().SingleInstance();
 			builder.RegisterType<ConsumerInvoker>().As<IConsumerInvoker>().SingleInstance();
-			builder.RegisterType<DefaultMessagePublisher>().As<IMessagePublisher>().InstancePerRequest();
+			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 
 			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer));
 			foreach (var type in consumerTypes)
@@ -637,18 +639,18 @@ namespace SmartStore.Web.Framework
 			}
 		}
 
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
-		{
-			var type = registration.Activator.LimitType;
-			var isEventHandler = typeof(IConsumer).IsAssignableFrom(type);
+		//protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
+		//{
+		//	var type = registration.Activator.LimitType;
+		//	var isEventHandler = typeof(IConsumer).IsAssignableFrom(type);
 
-			if (isEventHandler)
-			{
-				var svc = new KeyedService(type, typeof(IConsumer));
-				//var services = registration.Services as ICollection<Service>;
-				//services.Add(svc);
-			}
-		}
+		//	if (isEventHandler)
+		//	{
+		//		var svc = new KeyedService(type, typeof(IConsumer));
+		//		//var services = registration.Services as ICollection<Service>;
+		//		//services.Add(svc);
+		//	}
+		//}
 	}
 
 	public class EventModule : Module

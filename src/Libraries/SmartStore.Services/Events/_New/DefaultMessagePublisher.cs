@@ -9,13 +9,13 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Events
 {
-	public class DefaultMessagePublisher : IMessagePublisher
+	public class EventPublisher : IEventPublisher
 	{
 		private readonly IConsumerRegistry _registry;
 		private readonly IConsumerResolver _resolver;
 		private readonly IConsumerInvoker _invoker;
 
-		public DefaultMessagePublisher(IConsumerRegistry registry, IConsumerResolver resolver, IConsumerInvoker invoker)
+		public EventPublisher(IConsumerRegistry registry, IConsumerResolver resolver, IConsumerInvoker invoker)
 		{
 			_registry = registry;
 			_resolver = resolver;

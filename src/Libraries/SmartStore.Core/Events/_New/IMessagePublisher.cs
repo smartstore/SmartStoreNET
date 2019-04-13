@@ -9,7 +9,7 @@ using SmartStore.Services;
 
 namespace SmartStore.Core.Events
 {
-	public interface IMessagePublisher
+	public interface IEventPublisher
 	{
 		void Publish<T>(T message) where T : class;
 	}

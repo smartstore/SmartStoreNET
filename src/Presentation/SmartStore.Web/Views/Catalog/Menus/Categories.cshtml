@@ -3,7 +3,7 @@
 @using SmartStore.Collections;
 
 @{ 
-	if (Model.SelectedNode.IsRoot || !Model.Root.HasChildren)
+	if (Model.Root == null || Model.SelectedNode.IsRoot || !Model.Root.HasChildren)
 	{
 		return;
 	}

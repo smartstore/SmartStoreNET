@@ -5,6 +5,11 @@
 @{
     Layout = "";
 
+    if (Model.Root == null)
+    {
+	    return;
+    }
+
     var cutOffItems = Model.Root.Children
         .Where(x => x.Value.Id == null && x.GetMetadata<bool>("spare", false))
         .ToList();

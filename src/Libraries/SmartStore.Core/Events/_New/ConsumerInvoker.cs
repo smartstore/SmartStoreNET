@@ -20,7 +20,7 @@ namespace SmartStore.Core.Events
 
 	public class ConsumerInvoker : IConsumerInvoker
 	{
-		public ConsumerInvoker(IComponentContext container)
+		public ConsumerInvoker()
 		{
 			Logger = NullLogger.Instance;
 		}

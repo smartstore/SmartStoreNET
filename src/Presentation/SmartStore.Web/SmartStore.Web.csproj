@@ -294,8 +294,8 @@
     <Compile Include="Infrastructure\DefaultBundles.cs" />
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
-    <Compile Include="Infrastructure\MainMenuInvalidator.cs" />
-    <Compile Include="Infrastructure\MyAccountMenu.cs" />
+    <Compile Include="Infrastructure\Menus\MainMenuInvalidator.cs" />
+    <Compile Include="Infrastructure\Menus\MyAccountMenu.cs" />
     <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
     <Compile Include="Infrastructure\Routes\3_GenericRoutes.cs" />
     <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />
@@ -308,7 +308,7 @@
     <Compile Include="Infrastructure\Routes\1_StoreRoutes.cs" />
     <Compile Include="Infrastructure\Routes\MapLegacyRoutesAttribute.cs" />
     <Compile Include="Infrastructure\DefaultFacetTemplateSelector.cs" />
-    <Compile Include="Infrastructure\MainMenuShrinker.cs" />
+    <Compile Include="Infrastructure\Menus\MainMenuShrinker.cs" />
     <Compile Include="Models\Blogs\BlogPostListModel.cs" />
     <Compile Include="Models\Blogs\BlogPagingFilteringModel.cs" />
     <Compile Include="Models\Blogs\BlogPostTagModel.cs" />

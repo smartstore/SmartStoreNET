@@ -15,6 +15,13 @@ namespace SmartStore.Services.Events
 {
 	public class ConsumerResolver : IConsumerResolver
 	{
+		private readonly Work<>
+
+		public ConsumerResolver()
+		{
+
+		}
+
 		public virtual IConsumer Resolve(ConsumerDescriptor descriptor)
 		{
 			if (descriptor.PluginDescriptor == null || IsActiveForStore(descriptor.PluginDescriptor))

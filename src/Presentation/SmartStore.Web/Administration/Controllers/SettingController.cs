@@ -24,6 +24,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -1553,7 +1554,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
             }
 
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+            var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
             var fsettings = Services.Settings.LoadSetting<ForumSearchSettings>(storeScope);
 
@@ -1577,6 +1578,10 @@ namespace SmartStore.Admin.Controllers
             {
                 return Search();
             }
+
+            CategoryTreeChangeReason? categoriesChange = model.AvailabilityFacet.IncludeNotAvailable != settings.IncludeNotAvailable
+                ? CategoryTreeChangeReason.ElementCounts
+                : (CategoryTreeChangeReason?)null;
 
 			ModelState.Clear();
 			MiniMapper.Map(model, settings);
@@ -1655,6 +1660,10 @@ namespace SmartStore.Admin.Controllers
             if (clearForumFacetCache)
             {
                 _forumSearchQueryAliasMapper.Value.ClearCommonFacetCache();
+            }
+            if (categoriesChange.HasValue)
+            {
+                Services.EventPublisher.Publish(new CategoryTreeChangedEvent(categoriesChange.Value));
             }
 
 			return NotifyAndRedirect("Search");

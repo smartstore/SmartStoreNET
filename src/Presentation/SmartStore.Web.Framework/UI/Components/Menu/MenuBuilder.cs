@@ -14,11 +14,5 @@ namespace SmartStore.Web.Framework.UI
             Component.ViewName = value;
             return this;
         }
-
-        public MenuBuilder<TModel> ResolveCounts(bool value)
-        {
-            Component.ResolveCounts = value;
-            return this;
-        }
     }
 }

@@ -8,6 +8,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Search;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Cms;
@@ -30,6 +31,7 @@ namespace SmartStore.Web.Framework.UI
         private readonly HttpContextBase _httpContext;
         private readonly DbQuerySettings _querySettings;
         private readonly Lazy<CatalogSettings> _catalogSettings;
+        private readonly Lazy<SearchSettings> _searchSettings;
         private readonly IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> _menuItemProviders;
 
         public DatabaseMenu(
@@ -43,6 +45,7 @@ namespace SmartStore.Web.Framework.UI
             IMenuPublisher menuPublisher,
             DbQuerySettings querySettings,
             Lazy<CatalogSettings> catalogSettings,
+            Lazy<SearchSettings> searchSettings,
             IEnumerable<Lazy<IMenuItemProvider, MenuItemProviderMetadata>> menuItemProviders)
         {
             Guard.NotEmpty(menuName, nameof(menuName));
@@ -58,6 +61,7 @@ namespace SmartStore.Web.Framework.UI
             MenuPublisher = menuPublisher;
             _querySettings = querySettings;
             _catalogSettings = catalogSettings;
+            _searchSettings = searchSettings;
             _menuItemProviders = menuItemProviders.ToDictionarySafe(x => x.Metadata.ProviderName, x => x);
         }
 
@@ -112,6 +116,11 @@ namespace SmartStore.Web.Framework.UI
                                             .HasStoreId(Services.StoreContext.CurrentStoreIdIfMultiStoreMode)
                                             .BuildFacetMap(false)
                                             .BuildHits(false);
+
+                                        if (!_searchSettings.Value.IncludeNotAvailable)
+                                        {
+                                            context = context.AvailableOnly(true);
+                                        }
 
                                         node.Value.ElementsCount = _catalogSearchService.Value.Search(context).TotalHitsCount;
                                     }

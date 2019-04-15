@@ -47,10 +47,7 @@ namespace SmartStore.Web.Framework.UI
                     ? currentNode.Trail.Where(x => !x.IsRoot).ToList()
                     : new List<TreeNode<MenuItem>>();
 
-                if (Component.ResolveCounts)
-                {
-                    menu.ResolveElementCounts(model.SelectedNode, false);
-                }
+                menu.ResolveElementCounts(model.SelectedNode, false);
             }
 
             return model;

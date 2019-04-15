@@ -79,7 +79,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly Lazy<IMediaMover> _mediaMover;
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
         private readonly Lazy<IForumSearchQueryAliasMapper> _forumSearchQueryAliasMapper;
-        private readonly Lazy<ISiteMapService> _siteMapService;
+        private readonly Lazy<IMenuService> _menuService;
 
         private StoreDependingSettingHelper _storeDependingSettings;
 
@@ -109,7 +109,7 @@ namespace SmartStore.Admin.Controllers
 			Lazy<IMediaMover> mediaMover,
 			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
             Lazy<IForumSearchQueryAliasMapper> forumSearchQueryAliasMapper,
-            Lazy<ISiteMapService> siteMapService)
+            Lazy<IMenuService> menuService)
         {
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -132,7 +132,7 @@ namespace SmartStore.Admin.Controllers
 			_mediaMover = mediaMover;
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
             _forumSearchQueryAliasMapper = forumSearchQueryAliasMapper;
-            _siteMapService = siteMapService;
+            _menuService = menuService;
         }
 
 		#endregion
@@ -600,8 +600,7 @@ namespace SmartStore.Admin.Controllers
 			if (catalogSettings.MaxItemsToDisplayInCatalogMenu != model.MaxItemsToDisplayInCatalogMenu)
             {
                 // Clear cached navigation model.
-                var siteMap = _siteMapService.Value.GetSiteMap("catalog");
-                siteMap.ClearCache();
+                _menuService.Value.ClearCache("Main");
             }
 
             catalogSettings = model.ToEntity(catalogSettings);

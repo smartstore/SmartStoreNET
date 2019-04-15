@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -16,7 +14,7 @@ using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Infrastructure
 {
-	public class CatalogSiteMap : SiteMapBase
+    public class CatalogSiteMap : SiteMapBase
 	{
 		const string SiteMapName = "catalog";
 
@@ -167,81 +165,6 @@ namespace SmartStore.Web.Infrastructure
 			}			
 
 			return convertedNode;
-		}
-	}
-
-	public class CatalogSiteMapInvalidationConsumer : IConsumer<CategoryTreeChangedEvent>
-	{
-		private readonly Lazy<ISiteMapService> _siteMapService;
-		private readonly ICommonServices _services;
-		private readonly CatalogSettings _catalogSettings;
-
-		private bool _invalidated;
-		private bool _countsResetted = false;
-
-		public CatalogSiteMapInvalidationConsumer(
-			Lazy<ISiteMapService> siteMapService,
-			ICommonServices services,
-			CatalogSettings catalogSettings)
-		{
-			_siteMapService = siteMapService;
-			_services = services;
-			_catalogSettings = catalogSettings;
-		}
-
-		private ISiteMap GetSiteMap()
-		{
-			return _siteMapService.Value.GetSiteMap("catalog");
-		}
-
-		public void HandleEvent(CategoryTreeChangedEvent eventMessage)
-		{
-			var reason = eventMessage.Reason;
-
-			if (reason == CategoryTreeChangeReason.ElementCounts)
-			{
-				ResetElementCounts();
-			}
-			else
-			{
-				Invalidate();
-			}
-		}
-
-		private void Invalidate(bool condition = true)
-		{
-			if (condition && !_invalidated)
-			{
-				GetSiteMap().ClearCache();
-				_invalidated = true;
-			}
-		}
-
-		private void ResetElementCounts()
-		{
-			if (!_countsResetted && _catalogSettings.ShowCategoryProductNumber)
-			{
-				var allCachedTrees = GetSiteMap().GetAllCachedTrees();
-				foreach (var kvp in allCachedTrees)
-				{
-					bool dirty = false;
-					kvp.Value.Traverse(x =>
-					{
-						if (x.Value.ElementsCount.HasValue)
-						{
-							dirty = true;
-							x.Value.ElementsCount = null;
-						}
-					}, true);
-
-					if (dirty)
-					{
-						_services.Cache.Put(kvp.Key, kvp.Value);
-					}
-				}
-
-				_countsResetted = true;
-			}
 		}
 	}
 }

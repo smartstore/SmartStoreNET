@@ -20,7 +20,6 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
-using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
@@ -29,7 +28,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using SmartStore.Services.Topics;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -42,22 +40,20 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CommonController : PublicControllerBase
+    public partial class CommonController : PublicControllerBase
     {
 		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
 		private readonly ICommonServices _services;
-		private readonly ITopicService _topicService;
         private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<ICurrencyService> _currencyService;
         private readonly IThemeContext _themeContext;
         private readonly Lazy<IThemeRegistry> _themeRegistry;
-        private readonly Lazy<IForumService> _forumservice;
+        private readonly Lazy<IForumService> _forumService;
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly IPageAssetsBuilder _pageAssetsBuilder;
 		private readonly Lazy<IPictureService> _pictureService;
-		private readonly Lazy<IManufacturerService> _manufacturerService;
 
 		private readonly CustomerSettings _customerSettings;
 		private readonly PrivacySettings _privacySettings;
@@ -76,7 +72,6 @@ namespace SmartStore.Web.Controllers
 		
 		public CommonController(
 			ICommonServices services,
-			ITopicService topicService,
             Lazy<ILanguageService> languageService,
             Lazy<ICurrencyService> currencyService,
 			IThemeContext themeContext,
@@ -87,7 +82,6 @@ namespace SmartStore.Web.Controllers
 			Lazy<IUrlRecordService> urlRecordService,
 			IPageAssetsBuilder pageAssetsBuilder,
 			Lazy<IPictureService> pictureService,
-			Lazy<IManufacturerService> manufacturerService,
 			CustomerSettings customerSettings,
 			PrivacySettings privacySettings,
 			TaxSettings taxSettings, 
@@ -104,17 +98,15 @@ namespace SmartStore.Web.Controllers
 			IBreadcrumb breadcrumb)
         {
 			_services = services;
-			_topicService = topicService;
             _languageService = languageService;
             _currencyService = currencyService;
             _themeContext = themeContext;
             _themeRegistry = themeRegistry;
-            _forumservice = forumService;
+            _forumService = forumService;
             _genericAttributeService = genericAttributeService;
 			_urlRecordService = urlRecordService;
 			_pageAssetsBuilder = pageAssetsBuilder;
 			_pictureService = pictureService;
-			_manufacturerService = manufacturerService;
 
 			_customerSettings = customerSettings;
 			_privacySettings = privacySettings;
@@ -405,30 +397,25 @@ namespace SmartStore.Web.Controllers
 
 			var taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 
-			var availableStoreThemes = !_themeSettings.AllowCustomerToSelectTheme ? new List<StoreThemeModel>() : _themeRegistry.Value.GetThemeManifests()
-                .Select(x =>
-                {
-                    return new StoreThemeModel
+			var availableStoreThemes = !_themeSettings.AllowCustomerToSelectTheme 
+                ? new List<StoreThemeModel>() 
+                : _themeRegistry.Value.GetThemeManifests()
+                    .Select(x =>
                     {
-                        Name = x.ThemeName,
-                        Title = x.ThemeTitle
-                    };
-                })
-                .ToList();
+                        return new StoreThemeModel
+                        {
+                            Name = x.ThemeName,
+                            Title = x.ThemeTitle
+                        };
+                    })
+                    .ToList();
 
             var model = new FooterModel
             {
 				StoreName = store.Name,
                 ShowLegalInfo = _taxSettings.ShowLegalHintsInFooter,
                 ShowThemeSelector = availableStoreThemes.Count > 1,          
-                BlogEnabled = _blogSettings.Enabled,                          
-                ForumEnabled = _forumSettings.ForumsEnabled,
-                HideNewsletterBlock = _customerSettings.HideNewsletterBlock,
-                RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
-                RecentlyViewedProductsEnabled = _catalogSettings.RecentlyViewedProductsEnabled,
-                CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
-                ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers(String.Empty, 0, 0).TotalCount > 0,
-                DisplayLoginLink = _customerSettings.UserRegistrationType == UserRegistrationType.Disabled
+                HideNewsletterBlock = _customerSettings.HideNewsletterBlock
             };
 
 			var shippingInfoUrl = Url.Topic("shippinginfo").ToString();
@@ -482,22 +469,6 @@ namespace SmartStore.Web.Controllers
                 DisplayLoginLink = _customerSettings.UserRegistrationType != UserRegistrationType.Disabled
             };
             
-            return PartialView(model);
-        }
-
-        [ChildActionOnly]
-        public ActionResult ServiceMenu()
-        {
-            var model = new ServiceMenuModel
-            {
-                RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
-                RecentlyViewedProductsEnabled = _catalogSettings.RecentlyViewedProductsEnabled,
-                CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
-                BlogEnabled = _blogSettings.Enabled,
-                ForumEnabled = _forumSettings.ForumsEnabled,
-                ManufacturerEnabled = _manufacturerService.Value.GetAllManufacturers(String.Empty, 0, 0).TotalCount > 0
-            };
-
             return PartialView(model);
         }
 
@@ -752,7 +723,7 @@ namespace SmartStore.Web.Controllers
             var customer = _services.WorkContext.CurrentCustomer;
             if (_forumSettings.AllowPrivateMessages && !customer.IsGuest())
             {
-                var privateMessages = _forumservice.Value.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, 0, 1);
+                var privateMessages = _forumService.Value.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, 0, 1);
                 if (privateMessages.TotalCount > 0)
                 {
                     result = privateMessages.TotalCount;

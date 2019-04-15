@@ -24,18 +24,6 @@
 		}
 
 		@{ Html.SmartStore().Menu("HelpAndService", "Menus/Dropdown").Render(); }
-		@*<div class="dropdown service-links">
-			<a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
-				<span>@T("Menu.ServiceMenu")</span>
-				<i class="fal fa-angle-down menubar-caret"></i>
-			</a>
-
-			<div class="dropdown-menu">
-				@{
-					Html.RenderAction("ServiceMenu", "Common", new { area = "" });
-				}
-			</div>
-		</div>*@
 
 		@if (Model.IsCustomerImpersonated)
 		{

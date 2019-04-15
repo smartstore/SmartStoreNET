@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SmartStore.Web.Framework.Modelling;
+﻿using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Common
 {
@@ -13,13 +12,6 @@ namespace SmartStore.Web.Models.Common
         public string NewsletterEmail { get; set; }
 		public string SmartStoreHint { get; set; }
         public bool HideNewsletterBlock { get; set; }
-        public bool BlogEnabled { get; set; }
-        public bool ForumEnabled { get; set; }
-        public bool RecentlyAddedProductsEnabled { get; set; }
-        public bool RecentlyViewedProductsEnabled { get; set; }
-        public bool CompareProductsEnabled { get; set; }
-        public bool ManufacturerEnabled { get; set; }
-        public bool DisplayLoginLink { get; set; }
 
         public bool ShowSocialLinks { get; set; }
         public string FacebookLink { get; set; }

@@ -78,26 +78,6 @@
                     </h4>
 					<div class="collapse nav-collapse" id="footer-info">
                         @{ Html.SmartStore().Menu("FooterInformation", "Menus/LinkList").Render(); }
-@{/*
-						<ul class="list-unstyled">
-							@if (Model.ManufacturerEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("ManufacturerList")">@T("Manufacturers.List")</a></li>
-							}
-							@if (Model.RecentlyAddedProductsEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyAddedProducts")">@T("Products.NewProducts")</a></li>
-							}
-							@if (Model.RecentlyViewedProductsEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("RecentlyViewedProducts")">@T("Products.RecentlyViewedProducts")</a></li>
-							}
-							@if (Model.CompareProductsEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
-							}
-						</ul>
-*/}
 					</div>
 				</nav>
 			</div>
@@ -110,36 +90,6 @@
                     </h4>
 					<div class="collapse nav-collapse" id="footer-service">
                         @{ Html.SmartStore().Menu("FooterService", "Menus/LinkList").Render(); }
-@{/*
-						<ul class="list-unstyled">
-                            @{ 
-								var contactUsUrl = Url.RouteUrl("contactus");
-								var shippingInfoLink = LinkResolver.Resolve("topic:shippinginfo");
-								var paymentInfoLink = LinkResolver.Resolve("topic:paymentinfo");
-							}
-
-							@if (contactUsUrl.HasValue())
-							{
-								<li><a class="footer-link" href="@contactUsUrl">@T("ContactUs")</a></li>
-							}
-							@if (Model.BlogEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
-							}
-							@if (Model.ForumEnabled)
-							{
-								<li><a class="footer-link" href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
-							}
-							@if (shippingInfoLink.Status == LinkStatus.Ok)
-							{
-								<li><a class="footer-link" href="@shippingInfoLink.Link">@shippingInfoLink.Label</a></li>
-							}
-							@if (paymentInfoLink.Status == LinkStatus.Ok)
-							{
-								<li><a class="footer-link" href="@paymentInfoLink.Link">@paymentInfoLink.Label</a></li>
-							}
-						</ul>
-*/}
 					</div>
 				</nav>
 			</div>
@@ -152,22 +102,6 @@
                     </h4>
 					<div class="collapse nav-collapse" id="footer-company">
 						@{ Html.SmartStore().Menu("FooterCompany", "Menus/LinkList").Render(); }
-@{/*
-						<ul class="list-unstyled">
-							@foreach (var link in footerLinks)
-							{
-								if (link.Status == LinkStatus.Ok)
-								{
-									<li><a class="footer-link" href="@link.Link">@link.Label</a></li>
-								}
-							}
-
-                            @if (Model.DisplayLoginLink)
-                            {
-                                <li><a class="footer-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })">@T("Account.Login")</a></li>
-                            }
-						</ul>
-*/}
 					</div>
 				</nav>
 			</div>

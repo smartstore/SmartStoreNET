@@ -44,9 +44,6 @@ namespace SmartStore.Web.Framework.UI
             }
             else
             {
-                // INFO: Replaces CatalogSiteMap to a large extent and appends 
-                // all catalog nodes (without root) to the passed parent node.
-
                 var tree = _categoryService.GetCategoryTree(0, false, _services.StoreContext.CurrentStore.Id);
                 var allPictureIds = tree.Flatten().Select(x => x.PictureId.GetValueOrDefault());
                 var allPictureInfos = _pictureService.GetPictureInfos(allPictureIds);

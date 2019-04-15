@@ -803,6 +803,17 @@ namespace SmartStore.Data.Utilities
 
                 #endregion
 
+                #region Localization
+
+                var resourceSet = context.Set<LocaleStringResource>();
+
+                var removeNames = new List<string> { "Menu.ServiceMenu" };
+                var removeResources = resourceSet.Where(x => removeNames.Contains(x.ResourceName)).ToList();
+                resourceSet.RemoveRange(removeResources);
+
+                scope.Commit();
+
+                #endregion
             }
 
             #region Utilities

@@ -58,8 +58,8 @@
 }
 
 @section left {
-	@{ 
-		Html.RenderAction("CategoryMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, area = "" });
+	@{
+        Html.SmartStore().Menu("Main", "Menus/Categories").Render();
 		Html.RenderAction("Filters", "Search", new { model = Model });
 	}
 }

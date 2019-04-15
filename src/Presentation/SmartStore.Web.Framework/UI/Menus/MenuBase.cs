@@ -22,7 +22,7 @@ namespace SmartStore.Web.Framework.UI
 
         private TreeNode<MenuItem> _currentNode;
         private bool _currentNodeResolved;
-        private HashSet<string> _providers;
+        private List<string> _providers;
 
         public abstract string Name { get; }
 
@@ -139,7 +139,7 @@ namespace SmartStore.Web.Framework.UI
 
             if (_providers == null)
             {
-                _providers = Root.GetMetadata<HashSet<string>>("Providers") ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                _providers = Root.GetMetadata<List<string>>("Providers") ?? new List<string>();
             }
 
             return _providers.Contains(provider);

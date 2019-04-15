@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Services.Localization;
 
@@ -38,16 +39,16 @@ namespace SmartStore.Web.Framework.UI
         protected virtual TreeNode<MenuItem> AppendToParent(MenuItemProviderRequest request, TreeNode<MenuItem> node)
         {
             var root = request.Parent.Root;
-            var providers = root.GetMetadata<HashSet<string>>("Providers");
+            var providers = root.GetMetadata<List<string>>("Providers");
             var provider = request.Entity.ProviderName;
 
             node.SetMetadata("Provider", provider);
 
             if (providers == null)
             {
-                root.SetMetadata("Providers", new HashSet<string>(new string[] { provider }, StringComparer.OrdinalIgnoreCase));
+                root.SetMetadata("Providers", new List<string> { provider });
             }
-            else
+            else if (!providers.Contains(provider))
             {
                 providers.Add(provider);
             }

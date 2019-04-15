@@ -117,7 +117,6 @@ namespace SmartStore.Web.Framework.UI
             var menu = items.First().Menu;
             var rootItem = new MenuItem
             {
-                EntityId = menu.Id,
                 Text = menu.GetLocalized(x => x.Title)
             };
             var root = new TreeNode<MenuItem>(rootItem)

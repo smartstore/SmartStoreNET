@@ -910,21 +910,12 @@ namespace SmartStore.Web.Controllers
         #region OffCanvasMenu 
 
         /// <summary>
-        /// Called by ajax, to get a partial catalog menu to display in OffCanvasMenu
+        /// Called by ajax, to get a partial catalog menu to display in OffCanvasMenu.
         /// </summary>
-        /// <param name="categoryId">EntityId of the category to which should be navigated in the OffCanvasMenu</param>
-        /// <param name="currentCategoryId">EntityId of the category that is currently displayed in the shop (WebViewPage.CurrentCategoryId)</param >
-        /// <param name="currentProductId">EntityId of the product that is currently displayed in the shop (WebViewPage.CurrentProductId)</param>
-        /// <returns>PartialView with MenuModel</returns>
         [HttpPost]
-        public ActionResult OffCanvasMenuCategories(int categoryId, int currentCategoryId, int currentProductId)
+        public ActionResult OffCanvasMenuCategories()
         {
-            var model = _helper.PrepareCategoryMenuModel(currentCategoryId, currentProductId);
-            ViewBag.SelectedNode = categoryId == 0 
-				? model.Root 
-				: ViewBag.SelectedNode = model.Root.SelectNodeById(categoryId) ?? model.Root.SelectNode(x => x.Value.EntityId == categoryId);
-
-            return PartialView(model);
+            return PartialView();
         }
 
         // ajax

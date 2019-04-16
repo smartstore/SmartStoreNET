@@ -145,6 +145,24 @@ namespace SmartStore.Web.Framework.UI
             return _providers.Contains(provider);
         }
 
+        protected virtual T GetRequestValue<T>(ControllerContext context, string name)
+        {
+            Guard.NotNull(context, nameof(context));
+            Guard.NotEmpty(name, nameof(name));
+
+            var value = context.RouteData?.Values[name]?.ToString();
+            if (value.IsEmpty())
+            {
+                value = context.HttpContext?.Request?.Form?.GetValues(name)?.FirstOrDefault();
+                if (value.IsEmpty())
+                {
+                    context.HttpContext?.Request?.QueryString?.GetValues(name)?.FirstOrDefault();
+                }
+            }
+
+            return value.Convert<T>();
+        }
+
         private bool MenuItemAccessPermitted(MenuItem item)
         {
             var result = true;

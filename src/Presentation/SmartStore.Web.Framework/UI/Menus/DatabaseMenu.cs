@@ -149,19 +149,19 @@ namespace SmartStore.Web.Framework.UI
 
             try
             {
-                var rd = context.RouteData;
-                var controller = rd.Values["controller"] as string;
-                var action = rd.Values["action"] as string;
+                var controller = (context.RouteData.Values["controller"] as string).EmptyNull().ToLower();
+                var action = (context.RouteData.Values["action"] as string).EmptyNull().ToLower();
                 var currentCategoryId = 0;
                 var currentProductId = 0;
 
-                if (controller.IsCaseInsensitiveEqual("catalog") && action.IsCaseInsensitiveEqual("category"))
+                if (controller == "catalog")
                 {
-                    currentCategoryId = rd.Values["categoryId"]?.ToString()?.ToInt() ?? 0;
+                    currentCategoryId = GetRequestValue<int?>(context, "categoryId") ?? GetRequestValue<int>(context, "currentCategoryId");
+                    currentProductId = GetRequestValue<int>(context, "currentProductId");
                 }
-                if (controller.IsCaseInsensitiveEqual("product") && action.IsCaseInsensitiveEqual("productdetails"))
+                else if (controller == "product" && action == "productdetails")
                 {
-                    currentProductId = rd.Values["productId"]?.ToString()?.ToInt() ?? 0;
+                    currentProductId = GetRequestValue<int>(context, "productId");
                 }
 
                 if (currentCategoryId == 0 && currentProductId == 0)

@@ -19,7 +19,7 @@
     Html.AddScriptParts(true, "~/Scripts/smartstore.linkbuilder.js");
 }
 
-<div id="link-builder-@rnd" class="link-builder" data-field-id="@id" data-current-type="@link.Type.ToString().ToLower()">
+<div id="link-builder-@rnd" class="link-builder" data-field-id="@id" data-current-type="@(Value != null ? link.Type.ToString().ToLower() : "")">
     <div class="d-flex flex-nowrap input-group">
         @* Template control that receives the link expression. *@
         @Html.Hidden("", Value)

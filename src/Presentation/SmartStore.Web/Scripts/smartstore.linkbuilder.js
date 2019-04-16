@@ -16,11 +16,19 @@
             self.controls = $el.find(".link-control");
             self.templateValueField = $el.find("#" + $el.data("field-id"));
             self.queryStringCtrl = $el.find(".query-string");
+            self.typeContainer = $el.find(".type-container");
 
-            // set type selector to initial type from current expression
             _.delay(function () {
+
+                // hide dropdown-menu if only one type is available
+                self._tryHideTypeContainer();
+
+                // set type selector to initial type from current expression
                 var currentType = $el.find('a[data-type="' + self.currentType + '"]');
-                self._updateTypeInfo(currentType);
+
+                if (self.currentType != "") 
+                    self._updateTypeInfo(currentType);
+
             }, 100);
 
             // init controls
@@ -135,7 +143,7 @@
             var cnt = $(this.element),
                 type = elem.data('type');
 
-            var btn = cnt.find('.dropdown-toggle'),
+            var btn = cnt.find('.btn-icon'),
                 icon = elem.find('i').attr('class').replace('fa-fw ', ''),
                 name = elem.find('span').text();
 
@@ -143,6 +151,24 @@
             btn.attr('title', name);
 
             cnt.find('.btn-query-string').toggle(type !== 'url');
+        },
+
+        _tryHideTypeContainer: function (hasQueryString) {
+            var self = this;
+            var types = self.typeContainer.find(".dropdown-menu .dropdown-item");
+            if (types.length === 1) {
+
+                // find the only dropdown-item and trigger click to display the correct type
+                self.typeContainer
+                    .find(".dropdown-item")
+                    .trigger("click");
+
+                // Prevent dropdown-menu from being displayed
+                self.typeContainer
+                    .find(".btn-icon")
+                    .removeClass("dropdown-toggle")
+                    .removeAttr("data-toggle");
+            }
         },
 
         _updateQueryStringIcon: function (hasQueryString) {

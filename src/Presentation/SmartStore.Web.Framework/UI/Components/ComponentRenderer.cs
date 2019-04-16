@@ -75,7 +75,7 @@ namespace SmartStore.Web.Framework.UI
 		{
 			using (var htmlWriter = new HtmlTextWriter(writer))
 			{
-				WriteHtmlCore(htmlWriter);
+				WriteHtml(htmlWriter);
 			}
 		}
 

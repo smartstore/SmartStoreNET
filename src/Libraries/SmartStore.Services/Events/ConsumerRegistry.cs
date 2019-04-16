@@ -11,8 +11,7 @@ namespace SmartStore.Services.Events
 {
 	public class ConsumerRegistry : IConsumerRegistry
 	{
-		private readonly static Multimap<Type, ConsumerDescriptor> _descriptorMap
-			= new Multimap<Type, ConsumerDescriptor>();
+		private readonly Multimap<Type, ConsumerDescriptor> _descriptorMap = new Multimap<Type, ConsumerDescriptor>();
 
 		public ConsumerRegistry(IEnumerable<Lazy<IConsumer, EventConsumerMetadata>> consumers)
 		{
@@ -24,21 +23,20 @@ namespace SmartStore.Services.Events
 					continue;
 
 				var methods = FindMethods(metadata);
+				var messageTypes = new Dictionary<Type, MethodInfo>();
 
 				foreach (var method in methods)
 				{
-					var messageTypes = new Dictionary<Type, MethodInfo>();
-
 					var descriptor = new ConsumerDescriptor(metadata)
 					{
 						IsAsync = method.ReturnType == typeof(Task),
 						FireForget = method.HasAttribute<FireForgetAttribute>(false)
 					};
 
-					if (descriptor.IsAsync && descriptor.FireForget)
-					{
-						throw new NotSupportedException($"An asynchronous message consumer method cannot be called as fire & forget. Method: '{method}'.");
-					}
+					//if (descriptor.IsAsync && descriptor.FireForget)
+					//{
+					//	throw new NotSupportedException($"An asynchronous message consumer method cannot be called as fire & forget. Method: '{method}'.");
+					//}
 
 					if (method.ReturnType != typeof(Task) && method.ReturnType != typeof(void))
 					{
@@ -56,7 +54,7 @@ namespace SmartStore.Services.Events
 						throw new NotSupportedException($"A message consumer method must have at least one parameter identifying the message to consume. Method: '{method}'.");
 					}
 
-					if (parameters.Any(x => x.IsRetval || x.IsOut || x.IsOptional))
+					if (parameters.Any(x => x.ParameterType.IsByRef || x.IsOut || x.IsOptional))
 					{
 						throw new NotSupportedException($"'out', 'ref' and optional parameters are not allowed in consumer methods. Method: '{method}'.");
 					}

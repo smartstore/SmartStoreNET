@@ -342,6 +342,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 			PopulateUrlRecordsFor(topics);
 		}
 
+        private void PopulateMenus()
+        {
+            DataMigrator.CreateSystemMenus(_ctx);
+        }
+
         private void AddProductTag(Product product, string tag)
         {
 			var productTag = _ctx.Set<ProductTag>().FirstOrDefault(pt => pt.Name == tag);
@@ -548,7 +553,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", PopulateTopics);
-			Populate("PopulateSettings", PopulateSettings);
+            Populate("PopulateMenus", PopulateMenus);
+            Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));
 			Populate("PopulateProductTemplates", _data.ProductTemplates());

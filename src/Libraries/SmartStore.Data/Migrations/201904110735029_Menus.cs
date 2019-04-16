@@ -1,7 +1,6 @@
 namespace SmartStore.Data.Migrations
 {
     using System.Data.Entity.Migrations;
-    using System.Web.Hosting;
     using SmartStore.Core.Data;
     using SmartStore.Data.Setup;
     using SmartStore.Data.Utilities;
@@ -82,7 +81,7 @@ namespace SmartStore.Data.Migrations
 
         public void Seed(SmartObjectContext context)
         {
-            if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
+            if (DataSettings.DatabaseIsInstalled())
             {
                 DataMigrator.CreateSystemMenus(context);
             }

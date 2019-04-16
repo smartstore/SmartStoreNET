@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Autofac;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Async;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.Events
 {
-	public interface IConsumerInvoker
-	{
-		void Invoke<TMessage>(ConsumerDescriptor descriptor, IConsumer consumer, ConsumeContext<TMessage> envelope) where TMessage : class;
-	}
-
 	public class ConsumerInvoker : IConsumerInvoker
 	{
-		public ConsumerInvoker()
+		private readonly IConsumerResolver _resolver;
+
+		public ConsumerInvoker(IConsumerResolver resolver)
 		{
+			_resolver = resolver;
+
 			Logger = NullLogger.Instance;
 		}
 
@@ -51,7 +48,7 @@ namespace SmartStore.Core.Events
 			else if (!d.FireForget && d.IsAsync)
 			{
 				// The awaitable Task case
-				BeginInvoke((Task)InvokeCore(), EndInvoke, d);
+				BeginInvoke((Task)InvokeCore(cancelToken: AsyncRunner.AppShutdownCancellationToken), EndInvoke, d);
 			}
 			else if (d.FireForget && !d.IsAsync)
 			{
@@ -65,10 +62,6 @@ namespace SmartStore.Core.Events
 				// An async (Task) method should be executed without awaiting
 				AsyncRunner.Run((c, ct) => (Task)InvokeCore(c, ct), d)
 					.ContinueWith(t => EndInvoke(t), TaskContinuationOptions.OnlyOnFaulted)
-					.ContinueWith(t =>
-					{
-						var xxx = t.AsyncState;
-					})
 					.ConfigureAwait(false);
 			}
 
@@ -79,8 +72,6 @@ namespace SmartStore.Core.Events
 					// Only one method param: the message!
 					return fastInvoker.Invoke(consumer, p);
 				}
-
-				c = c ?? EngineContext.Current.ContainerManager.Scope();
 
 				var parameters = new object[d.Parameters.Length + 1];
 				parameters[0] = p;
@@ -182,7 +173,7 @@ namespace SmartStore.Core.Events
 				}
 				else
 				{
-					yield return container.Resolve(p.ParameterType);
+					yield return _resolver.ResolveParameter(p, container);
 				}
 			}
 		}
@@ -195,21 +186,6 @@ namespace SmartStore.Core.Events
 		//	try
 		//	{
 		//		action();
-		//	}
-		//	finally
-		//	{
-		//		SynchronizationContext.SetSynchronizationContext(synchContext);
-		//	}
-		//}
-
-		//private Task NoContext(Func<Task> func)
-		//{
-		//	var synchContext = SynchronizationContext.Current;
-		//	SynchronizationContext.SetSynchronizationContext(null);
-
-		//	try
-		//	{
-		//		return func();
 		//	}
 		//	finally
 		//	{

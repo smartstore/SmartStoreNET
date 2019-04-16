@@ -9,6 +9,9 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Events
 {
+	/// <summary>
+	/// Contains metadata about a consumer / event handler method.
+	/// </summary>
 	public class ConsumerDescriptor
 	{
 		public ConsumerDescriptor()
@@ -34,6 +37,7 @@ namespace SmartStore.Core.Events
 
 		/// <summary>
 		/// All method parameters except <see cref="MessageParameter"/>
+		/// or empty array if <see cref="MessageParameter"/> is the only parameter.
 		/// </summary>
 		public ParameterInfo[] Parameters { get; set; }
 	}

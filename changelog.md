@@ -55,13 +55,14 @@
 	* At least 10x faster
 	* Generated files are saved on the hard disk now: a rebuild after an app restart is no longer necessary.
 	* No exclusive locks during rebuilds anymore: if an (outdated) file already exists, it is returned instantly.
+* (Dev) Enhanced pub/sub: new `IConsumer` marker interface for classes that contain one or more event message handlers. The generic `IConsumer<T>` implements `IConsumer` but has been marked as `Obsolete`.
 * Better protection against XSS attacks
 * **Debitoor**:
 	* Partially update customer instead of full update to avoid all fields being overwritten.
 	* #1540 Place company name in front of customer name (according to address format of the particular country).
 	* #1565 Add a button to manually create a draft invoice.
 * #1479 Show in messages the delivery time at the time of purchase
-* #1184 Sort Current shopping carts & Current wishlists by ShoppingCartItem.CreatedOn.
+* #1184 Sort Current shopping carts & Current wishlists by `ShoppingCartItem.CreatedOn`.
 * #1106 BMECat: import & export support for product keywords
 * #1499 Added hint to forms indicating that fields with an asterisk (*)
 * Added filter for newsletter subscriber export by working language

@@ -82,11 +82,6 @@ namespace SmartStore.Web.Controllers
                 MetaTitle = topic?.GetLocalized(x => x.MetaTitle),
             };
 
-			//var publisher = Services.Resolve<SmartStore.Core.Events.IEventPublisher>();
-			//publisher.Publish(new Core.Events.AppStartedEvent());
-			//publisher.Publish(new Core.Events.AppInitScheduledTasksEvent());
-			//publisher.Publish(new Core.Events.AppRegisterGlobalFiltersEvent());
-
 			return View(model);
 		}
 

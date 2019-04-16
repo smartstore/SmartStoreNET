@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Configuration;
@@ -15,21 +17,26 @@ namespace SmartStore.Services.Events
 {
 	public class ConsumerResolver : IConsumerResolver
 	{
-		private readonly Work<>
+		private readonly Work<IComponentContext> _container;
 
-		public ConsumerResolver()
+		public ConsumerResolver(Work<IComponentContext> container)
 		{
-
+			_container = container;
 		}
 
 		public virtual IConsumer Resolve(ConsumerDescriptor descriptor)
 		{
 			if (descriptor.PluginDescriptor == null || IsActiveForStore(descriptor.PluginDescriptor))
 			{
-				return EngineContext.Current.ContainerManager.Scope().ResolveKeyed<IConsumer>(descriptor.ContainerType);
+				return _container.Value.ResolveKeyed<IConsumer>(descriptor.ContainerType);
 			}
 
 			return null;
+		}
+
+		public virtual object ResolveParameter(ParameterInfo p, IComponentContext c = null)
+		{
+			return (c ?? _container.Value).Resolve(p.ParameterType);
 		}
 
 		private bool IsActiveForStore(PluginDescriptor plugin)
@@ -47,7 +54,7 @@ namespace SmartStore.Services.Events
 				return true;
 			}
 
-			var settingService = EngineContext.Current.Resolve<ISettingService>();
+			var settingService = _container.Value.Resolve<ISettingService>();
 
 			var limitedToStoresSetting = settingService.GetSettingByKey<string>(plugin.GetSettingKey("LimitedToStores"));
 			if (limitedToStoresSetting.IsEmpty())

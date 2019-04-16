@@ -6,7 +6,7 @@ using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Infrastructure
 {
-    public class MainMenuShrinker : IConsumer<MenuBuiltEvent>
+    public class MainMenuShrinker : IConsumer
     {
         private readonly ICommonServices _services;
         private readonly CatalogSettings _catalogSettings;

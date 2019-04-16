@@ -110,7 +110,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new SearchModule());
 			builder.RegisterModule(new LocalizationModule());
-			//builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
 			builder.RegisterModule(new WebApiModule(typeFinder));
@@ -120,8 +119,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new ProvidersModule(typeFinder, pluginFinder));
             builder.RegisterModule(new TasksModule(typeFinder));
 			builder.RegisterModule(new DataExchangeModule(typeFinder));
-
-			builder.RegisterModule(new EventHandlerModule(typeFinder, pluginFinder));
+			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 		}
 
         public int Order
@@ -598,12 +596,12 @@ namespace SmartStore.Web.Framework
         }
 	}
 
-	public class EventHandlerModule : Module
+	public class EventModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
 		private readonly IPluginFinder _pluginFinder;
 
-		public EventHandlerModule(ITypeFinder typeFinder, IPluginFinder pluginFinder)
+		public EventModule(ITypeFinder typeFinder, IPluginFinder pluginFinder)
 		{
 			_typeFinder = typeFinder;
 			_pluginFinder = pluginFinder;
@@ -632,74 +630,10 @@ namespace SmartStore.Web.Framework
 
 				registration.WithMetadata<EventConsumerMetadata>(m => {
 					m.For(em => em.IsActive, isActive);
-					m.For(em => em.ExecuteAsync, false);
 					m.For(em => em.ContainerType, type);
 					m.For(em => em.PluginDescriptor, pluginDescriptor);
 				});
 			}
-		}
-
-		//protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
-		//{
-		//	var type = registration.Activator.LimitType;
-		//	var isEventHandler = typeof(IConsumer).IsAssignableFrom(type);
-
-		//	if (isEventHandler)
-		//	{
-		//		var svc = new KeyedService(type, typeof(IConsumer));
-		//		//var services = registration.Services as ICollection<Service>;
-		//		//services.Add(svc);
-		//	}
-		//}
-	}
-
-	public class EventModule : Module
-	{
-		private readonly ITypeFinder _typeFinder;
-		private readonly IPluginFinder _pluginFinder;
-
-		public EventModule(ITypeFinder typeFinder, IPluginFinder pluginFinder)
-		{
-			_typeFinder = typeFinder;
-			_pluginFinder = pluginFinder;
-		}
-
-		protected override void Load(ContainerBuilder builder)
-		{
-			builder.RegisterType<DefaultMessageBus>().As<IMessageBus>().SingleInstance();
-
-			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
-			builder.RegisterGeneric(typeof(DefaultConsumerFactory<>)).As(typeof(IConsumerFactory<>)).InstancePerDependency();
-
-			// Register event consumers
-			var consumerTypes = _typeFinder.FindClassesOfType(typeof(IConsumer<>));
-			foreach (var consumerType in consumerTypes)
-			{
-				Type[] implementedInterfaces = consumerType.FindInterfaces(IsConsumerInterface, typeof(IConsumer<>));
-
-				var registration = builder.RegisterType(consumerType).As(implementedInterfaces);
-
-				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(consumerType.Assembly);
-				var isActive = PluginManager.IsActivePluginAssembly(consumerType.Assembly);
-				var shouldExecuteAsync = consumerType.GetAttribute<AsyncConsumerAttribute>(false) != null;
-
-				registration.WithMetadata<EventConsumerMetadata>(m => {
-					m.For(em => em.IsActive, isActive);
-					m.For(em => em.ExecuteAsync, shouldExecuteAsync);
-					m.For(em => em.ContainerType, consumerType);
-					m.For(em => em.PluginDescriptor, pluginDescriptor);
-				});
-
-				if (!shouldExecuteAsync)
-					registration.InstancePerRequest();
-
-			}
-		}
-
-		private static bool IsConsumerInterface(Type type, object criteria)
-		{
-			var isMatch = type.IsGenericType && ((Type)criteria).IsAssignableFrom(type.GetGenericTypeDefinition());
-			return isMatch;
 		}
 	}
 

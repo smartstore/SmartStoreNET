@@ -5,9 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Collections;
-using SmartStore.ComponentModel;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Services.Events
 {
@@ -29,6 +27,8 @@ namespace SmartStore.Services.Events
 
 				foreach (var method in methods)
 				{
+					var messageTypes = new Dictionary<Type, MethodInfo>();
+
 					var descriptor = new ConsumerDescriptor(metadata)
 					{
 						IsAsync = method.ReturnType == typeof(Task),
@@ -37,33 +37,28 @@ namespace SmartStore.Services.Events
 
 					if (descriptor.IsAsync && descriptor.FireForget)
 					{
-						// TODO: better message
-						throw new NotSupportedException("An asynchronous message consumer method cannot be called as fire & forget.");
+						throw new NotSupportedException($"An asynchronous message consumer method cannot be called as fire & forget. Method: '{method}'.");
 					}
 
 					if (method.ReturnType != typeof(Task) && method.ReturnType != typeof(void))
 					{
-						// TODO: better message
-						throw new NotSupportedException("A message consumer method's return type must either be 'void' or '{0}'. Method: {1}".FormatInvariant(typeof(Task).FullName));
+						throw new NotSupportedException($"A message consumer method's return type must either be 'void' or '${typeof(Task).FullName}'. Method: '{method}'.");
 					}
 
 					if (method.Name.EndsWith("Async") && !descriptor.IsAsync)
 					{
-						// TODO: better message
-						throw new NotSupportedException("A synchronous message consumer method name should not end on 'Async'.");
+						throw new NotSupportedException($"A synchronous message consumer method name should not end with 'Async'. Method: '{method}'.");
 					}
 
 					var parameters = method.GetParameters();
 					if (parameters.Length == 0)
 					{
-						// TODO: better message
-						throw new NotSupportedException("A message consumer method must have at least one parameter identifying the message to consume.");
+						throw new NotSupportedException($"A message consumer method must have at least one parameter identifying the message to consume. Method: '{method}'.");
 					}
 
 					if (parameters.Any(x => x.IsRetval || x.IsOut || x.IsOptional))
 					{
-						// TODO: better message
-						throw new NotSupportedException("'out', 'ref' and optional parameters are not allowed in consumer methods.");
+						throw new NotSupportedException($"'out', 'ref' and optional parameters are not allowed in consumer methods. Method: '{method}'.");
 					}
 
 					var p = parameters[0];
@@ -75,7 +70,13 @@ namespace SmartStore.Services.Events
 						descriptor.WithEnvelope = true;
 					}
 
-					// TODO: MyEvent and ConsumeContext<MyEvent> must throw "ambigous" exception
+					if (messageTypes.TryGetValue(messageType, out var method2))
+					{
+						// We won't allow methods with different signatures, but same message type: there can only be one!
+						throw new AmbigousConsumerException(method2, method);
+					}
+
+					messageTypes.Add(messageType, method);
 
 					if (messageType.IsPublic && (messageType.IsClass || messageType.IsInterface))
 					{

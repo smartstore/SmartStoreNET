@@ -3,14 +3,10 @@ using SmartStore.DevTools.Models;
 using SmartStore.Services;
 using SmartStore.Web.Framework.Events;
 using SmartStore.Web.Framework.Modelling;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace SmartStore.DevTools.Events
 {
-    public class CustomTab : IConsumer<TabStripCreated>, IConsumer<ModelBoundEvent>
+	public class CustomTab : IConsumer
     {
         private readonly ICommonServices _services;
 

@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Infrastructure
 {
-    public class MainMenuInvalidator : IConsumer<CategoryTreeChangedEvent>
+    public class MainMenuInvalidator : IConsumer
     {
         private readonly ICommonServices _services;
         private readonly Lazy<IMenuService> _menuService;

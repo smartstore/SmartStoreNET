@@ -288,9 +288,9 @@
     <Compile Include="Events\DefaultMessageBus.cs" />
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Events\IMessageBus.cs" />
-    <Compile Include="Events\_New\ConsumerRegistry.cs" />
-    <Compile Include="Events\_New\ConsumerResolver.cs" />
-    <Compile Include="Events\_New\DefaultMessagePublisher.cs" />
+    <Compile Include="Events\ConsumerRegistry.cs" />
+    <Compile Include="Events\ConsumerResolver.cs" />
+    <Compile Include="Events\EventPublisher.cs" />
     <Compile Include="Forums\ForumMessageFactoryExtensions.cs" />
     <Compile Include="Hooks\LocalizedEntityRelationHook.cs" />
     <Compile Include="Hooks\PictureHook.cs" />
@@ -423,8 +423,6 @@
     <Compile Include="Directory\GeoCountryLookup.cs" />
     <Compile Include="Directory\IDeliveryTimeService.cs" />
     <Compile Include="Directory\DeliveryTimeService.cs" />
-    <Compile Include="Events\EventPublisher.cs" />
-    <Compile Include="Events\DefaultConsumerFactory.cs" />
     <Compile Include="Forums\ForumExtensions.cs" />
     <Compile Include="ICommonServices.cs" />
     <Compile Include="Hooks\LocalizedEntityHook.cs" />

@@ -1,100 +1,51 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Threading;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Logging;
-using SmartStore.Core.Async;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Events;
-using Autofac;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Events
 {
-  //  public class EventPublisher : IEventPublisher
-  //  {
-		//private readonly ConcurrentDictionary<object, Timer> _queue = new ConcurrentDictionary<object, Timer>();
+	public class EventPublisher : IEventPublisher
+	{
+		private readonly IConsumerRegistry _registry;
+		private readonly IConsumerResolver _resolver;
+		private readonly IConsumerInvoker _invoker;
 
-		//public EventPublisher()
-		//{
-		//	Logger = NullLogger.Instance;
-		//}
+		public EventPublisher(IConsumerRegistry registry, IConsumerResolver resolver, IConsumerInvoker invoker)
+		{
+			_registry = registry;
+			_resolver = resolver;
+			_invoker = invoker;
 
-		//public ILogger Logger { get; set; }
+			Logger = NullLogger.Instance;
+		}
 
-		//public void Publish<T>(T eventMessage)
-  //      {
-		//	if (eventMessage != null)
-		//	{
-		//		// Enable event throttling by allowing the very same event to be published only all 150 ms.
-		//		if (_queue.TryGetValue(eventMessage, out var timer))
-		//		{
-		//			// do nothing. The same event was published a tick ago.
-		//			return;
-		//		}
+		public ILogger Logger { get; set; }
 
-		//		_queue[eventMessage] = new Timer(RemoveFromQueue, eventMessage, 150, Timeout.Infinite);
-		//	}
-	
-		//	var consumerFactory = EngineContext.Current.Resolve<IConsumerFactory<T>>();
-		//	if (consumerFactory == null)
-		//		return;
+		public void Publish<T>(T message) where T : class
+		{
+			var descriptors = _registry.GetConsumers(message);
 
-		//	IEnumerable<IConsumer<T>> consumers = null;			
+			if (!descriptors.Any())
+			{
+				return;
+			}
 
-		//	// first fire/forget all async consumers
-		//	if (consumerFactory.HasAsyncConsumer)
-		//	{
-		//		AsyncRunner.Run((c, ct) =>
-		//		{
-		//			// for wiring up dependencies correctly
-		//			var newFactory = c.Resolve<IConsumerFactory<T>>();
-		//			consumers = newFactory.GetConsumers(true).ToArray();
-		//			foreach (var consumer in consumers)
-		//			{
-		//				consumer.HandleEvent(eventMessage);
-		//			}
-		//		}).ContinueWith(t =>
-		//		{
-		//			if (t.IsFaulted)
-		//			{
-		//				var ex = t.Exception;
-		//				if (ex != null)
-		//				{
-		//					ex.InnerExceptions.Each(x => Logger.Error(x));
-		//				}
-		//			}
-		//		});
-		//	}
+			var envelopeType = typeof(ConsumeContext<>).MakeGenericType(typeof(T));
+			var envelope = (ConsumeContext<T>)FastActivator.CreateInstance(envelopeType, message);
 
-		//	// now execute all sync consumers
-		//	consumers = consumerFactory.GetConsumers(false).ToArray();
-		//	foreach (var consumer in consumers)
-		//	{
-		//		PublishEvent(consumer, eventMessage);
-		//	}
-  //      }
-
-		//private void PublishEvent<T>(IConsumer<T> x, T eventMessage)
-		//{
-		//	try
-		//	{
-		//		x.HandleEvent(eventMessage);
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		Logger.Error(ex);
-		//		throw;
-		//	}
-		//}
-
-		//private void RemoveFromQueue(object eventMessage)
-		//{
-		//	if (_queue.TryRemove(eventMessage, out var timer))
-		//	{
-		//		timer.Dispose();
-		//	}
-		//}
-
-  //  }
+			foreach (var descriptor in descriptors)
+			{
+				var consumer = _resolver.Resolve(descriptor);
+				if (consumer != null)
+				{
+					_invoker.Invoke(descriptor, consumer, envelope);
+				}
+			}
+		}
+	}
 }

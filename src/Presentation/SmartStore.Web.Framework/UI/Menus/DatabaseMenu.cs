@@ -149,20 +149,11 @@ namespace SmartStore.Web.Framework.UI
 
             try
             {
-                var controller = (context.RouteData.Values["controller"] as string).EmptyNull().ToLower();
-                var action = (context.RouteData.Values["action"] as string).EmptyNull().ToLower();
-                var currentCategoryId = 0;
-                var currentProductId = 0;
+                var currentCategoryId = GetRequestValue<int?>(context, "categoryId") ?? GetRequestValue<int>(context, "currentCategoryId");
 
-                if (controller == "catalog")
-                {
-                    currentCategoryId = GetRequestValue<int?>(context, "categoryId") ?? GetRequestValue<int>(context, "currentCategoryId");
-                    currentProductId = GetRequestValue<int>(context, "currentProductId");
-                }
-                else if (controller == "product" && action == "productdetails")
-                {
-                    currentProductId = GetRequestValue<int>(context, "productId");
-                }
+                var currentProductId = currentCategoryId == 0
+                    ? (GetRequestValue<int?>(context, "productId") ?? GetRequestValue<int>(context, "currentProductId"))
+                    : 0;
 
                 if (currentCategoryId == 0 && currentProductId == 0)
                 {

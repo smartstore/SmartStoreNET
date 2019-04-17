@@ -10,7 +10,6 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
-using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
@@ -23,16 +22,14 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
-using SmartStore.Web.Models.Common;
-using SmartStore.Web.Framework.UI;
-using SmartStore.Collections;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CatalogController : PublicControllerBase
+    public partial class CatalogController : PublicControllerBase
     {
 		private readonly ICommonServices _services;
         private readonly IMenuService _menuService;
@@ -41,13 +38,10 @@ namespace SmartStore.Web.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryTemplateService _categoryTemplateService;
         private readonly IManufacturerTemplateService _manufacturerTemplateService;
-        private readonly ICurrencyService _currencyService;
         private readonly IPictureService _pictureService;
-        private readonly IPriceFormatter _priceFormatter;
 		private readonly IOrderReportService _orderReportService;
 		private readonly IProductTagService _productTagService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
-        private readonly ISpecificationAttributeService _specificationAttributeService;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
@@ -55,7 +49,6 @@ namespace SmartStore.Web.Controllers
 		private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly ICompareProductsService _compareProductsService;
-        private readonly Lazy<ILanguageService> _languageService;
         private readonly CatalogHelper _helper;
 		private readonly IBreadcrumb _breadcrumb;
 
@@ -67,13 +60,10 @@ namespace SmartStore.Web.Controllers
 			IProductService productService,
             ICategoryTemplateService categoryTemplateService,
             IManufacturerTemplateService manufacturerTemplateService,
-			ICurrencyService currencyService,
 			IOrderReportService orderReportService,
 			IProductTagService productTagService,
 			IRecentlyViewedProductsService recentlyViewedProductsService,
             IPictureService pictureService,
-            IPriceFormatter priceFormatter,
-            ISpecificationAttributeService specificationAttributeService,
 			ICompareProductsService compareProductsService,
 			IGenericAttributeService genericAttributeService,
 			IAclService aclService,
@@ -81,7 +71,6 @@ namespace SmartStore.Web.Controllers
 			ICatalogSearchService catalogSearchService,
 			MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
-            Lazy<ILanguageService> languageService,
             CatalogHelper helper,
 			IBreadcrumb breadcrumb)
         {
@@ -92,21 +81,17 @@ namespace SmartStore.Web.Controllers
             _productService = productService;
             _categoryTemplateService = categoryTemplateService;
             _manufacturerTemplateService = manufacturerTemplateService;
-            _currencyService = currencyService;
 			_orderReportService = orderReportService;
 			_productTagService = productTagService;
 			_recentlyViewedProductsService = recentlyViewedProductsService;
 			_compareProductsService = compareProductsService;
             _pictureService = pictureService;
-            _priceFormatter = priceFormatter;
-            _specificationAttributeService = specificationAttributeService;
             _genericAttributeService = genericAttributeService;
             _aclService = aclService;
 			_storeMappingService = storeMappingService;
 			_catalogSearchService = catalogSearchService;
             _mediaSettings = mediaSettings;
             _catalogSettings = catalogSettings;
-            _languageService = languageService;
             _helper = helper;
 			_breadcrumb = breadcrumb;
         }
@@ -275,12 +260,6 @@ namespace SmartStore.Web.Controllers
 
 			return View(templateViewPath, model);
 		}
-
-        public ActionResult CatalogMenu(int currentCategoryId, int currentProductId = 0)
-        {
-			var model = _helper.PrepareCategoryMenuModel(currentCategoryId, currentProductId);
-            return PartialView(model);
-        }
 
         [ChildActionOnly]
         public ActionResult HomepageCategories()
@@ -952,16 +931,14 @@ namespace SmartStore.Web.Controllers
             ViewBag.ShowManufacturers = false;
 			ViewBag.ShowCategories = false;
 
-			if (
-				_catalogSettings.ShowManufacturersInOffCanvas == true && 
+			if (_catalogSettings.ShowManufacturersInOffCanvas == true && 
 				_catalogSettings.ManufacturerItemsToDisplayInOffcanvasMenu > 0 &&
-				_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation)
-			)
+				_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation))
             {
                 ViewBag.ShowManufacturers = true;
             }
 
-			if(_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation))
+			if (_services.Permissions.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation))
 			{
 				ViewBag.ShowCategories = true;
 			}

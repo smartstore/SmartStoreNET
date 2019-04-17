@@ -43,10 +43,10 @@ namespace SmartStore.Web.Framework.UI
         /// </summary>
         /// <returns>A dictionary of trees (Key: cache key, Value: tree instance)</returns>
         /// <remarks>
-        /// Multiple trees are created per sitemap depending
+        /// Multiple trees are created per menu depending
         /// on language, customer-(roles), store and other parameters.
         /// This method does not create anything, but returns all 
-        /// previously processed and cached sitemap variations.
+        /// previously processed and cached menu variations.
         /// </remarks>
         IDictionary<string, TreeNode<MenuItem>> GetAllCachedMenus();
 

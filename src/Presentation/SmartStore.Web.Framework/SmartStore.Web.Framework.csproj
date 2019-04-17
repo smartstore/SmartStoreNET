@@ -392,11 +392,6 @@
     <Compile Include="UI\Menus\Providers\MenuItemProviderBase.cs" />
     <Compile Include="UI\Menus\MenuBuiltEvent.cs" />
     <Compile Include="UI\Menus\UserMenuFilter.cs" />
-    <Compile Include="UI\SiteMap\ISiteMap.cs" />
-    <Compile Include="UI\SiteMap\ISiteMapService.cs" />
-    <Compile Include="UI\SiteMap\SiteMapBase.cs" />
-    <Compile Include="UI\SiteMap\SiteMapBuiltEvent.cs" />
-    <Compile Include="UI\SiteMap\SiteMapService.cs" />
     <Compile Include="UI\WidgetZoneModel.cs" />
     <Compile Include="Validators\FluentValidatorExtensions.cs" />
     <Compile Include="Validators\SmartBaseValidator.cs" />

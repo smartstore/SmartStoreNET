@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Hosting;
-using System.Web.Mvc;
 using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
@@ -95,7 +94,7 @@ using Module = Autofac.Module;
 
 namespace SmartStore.Web.Framework
 {
-	public class DependencyRegistrar : IDependencyRegistrar
+    public class DependencyRegistrar : IDependencyRegistrar
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
@@ -825,15 +824,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<MenuPublisher>().As<IMenuPublisher>().InstancePerRequest();
 			builder.RegisterType<DefaultBreadcrumb>().As<IBreadcrumb>().InstancePerRequest();
 			builder.RegisterType<IconExplorer>().As<IIconExplorer>().SingleInstance();
-
-			// Sitemaps
-			builder.RegisterType<SiteMapService>().As<ISiteMapService>().InstancePerRequest();
-
-			var siteMapTypes = _typeFinder.FindClassesOfType<ISiteMap>(ignoreInactivePlugins: true);
-			foreach (var type in siteMapTypes)
-			{
-				builder.RegisterType(type).As<ISiteMap>().PropertiesAutowired(PropertyWiringOptions.None).InstancePerRequest();
-			}
 
             // Menus.
             builder.RegisterType<MenuService>().As<IMenuService>().InstancePerRequest();

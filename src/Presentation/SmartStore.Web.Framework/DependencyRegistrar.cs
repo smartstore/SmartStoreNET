@@ -820,7 +820,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<TabStripRenderer>().As<ComponentRenderer<TabStrip>>();
 			builder.RegisterType<PagerRenderer>().As<ComponentRenderer<Pager>>();
 			builder.RegisterType<WindowRenderer>().As<ComponentRenderer<Window>>();
-            builder.RegisterType<MenuRenderer>().As<ComponentRenderer<Menu>>();
 
             builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
 			builder.RegisterType<MenuPublisher>().As<IMenuPublisher>().InstancePerRequest();

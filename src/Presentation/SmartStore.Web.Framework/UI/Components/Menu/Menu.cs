@@ -4,6 +4,8 @@
     {
         public override bool NameIsRequired => true;
 
-        public string ViewName { get; set; }
+        public string Template { get; set; }
+
+		public RouteInfo Route { get; set; }
     }
 }

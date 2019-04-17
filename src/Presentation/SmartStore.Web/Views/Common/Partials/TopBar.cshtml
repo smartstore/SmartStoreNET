@@ -1,5 +1,7 @@
 ﻿@model MenuBarModel
+
 @using SmartStore.Web.Models.Common;
+
 @{
     string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
 }
@@ -23,7 +25,7 @@
 			<a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
 		}
 
-		@{ Html.SmartStore().Menu("HelpAndService", "Menus/Dropdown").Render(); }
+		@{ Html.SmartStore().Menu().Name("HelpAndService").Template("Dropdown").Render(); }
 
 		@if (Model.IsCustomerImpersonated)
 		{

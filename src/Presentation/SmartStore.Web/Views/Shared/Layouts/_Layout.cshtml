@@ -43,7 +43,7 @@
                 <div class="menubar-section d-none d-lg-block @(GetThemeVariable<bool>("inverse-menubar") ? "menubar-inverse" : "menubar-light")">
                     <div class="container menubar-container">
                         @{ 
-							Html.RenderAction("Menu", "Common", new { area = "" });
+							Html.RenderAction("TopBar", "Common", new { area = "" });
 						}
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 <div class="megamenu-section d-none d-lg-block">
                     <nav class='navbar @(GetThemeVariable<bool>("inverse-navbar") ? "navbar-inverse" : "navbar-light")'>
                         <div class="container megamenu-container">
-                            @{ Html.SmartStore().Menu("Main").Render(); }
+                            @{ Html.SmartStore().Menu().Name("Main").Render(); }
                             @*@{ 
 								Html.RenderAction("CatalogMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
 							}*@

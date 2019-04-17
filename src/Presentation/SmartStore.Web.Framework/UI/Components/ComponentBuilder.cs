@@ -95,13 +95,12 @@ namespace SmartStore.Web.Framework.UI
             Guard.NotNull(rendererType, nameof(rendererType));
             Guard.Implements<ComponentRenderer<TComponent>>(rendererType);
 
-            var renderer = Activator.CreateInstance(rendererType) as ComponentRenderer<TComponent>;
-            if (renderer != null)
-            {
-                this.Renderer = renderer;
-            }
+			if (Activator.CreateInstance(rendererType) is ComponentRenderer<TComponent> renderer)
+			{
+				this.Renderer = renderer;
+			}
 
-            return this as TBuilder;
+			return this as TBuilder;
         }
 
         public virtual TBuilder Name(string name)

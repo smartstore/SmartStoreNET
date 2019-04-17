@@ -1,61 +1,61 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc.Html;
+using System.Web.UI;
 using SmartStore.Collections;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public class MenuRenderer : ViewBasedComponentRenderer<Menu>
+    public class MenuRenderer : ComponentRenderer<Menu>
     {
-        protected IMenuService _menuService;
+		protected override void WriteHtmlCore(HtmlTextWriter writer)
+		{
+			var route = Component.Route;
 
-        public MenuRenderer()
-            : this(EngineContext.Current.Resolve<IMenuService>())
-        {
-        }
+			if (route != null)
+			{
+				HtmlHelper.RenderAction(route.Action, route.Controller, route.RouteValues);
+			}
+			else
+			{
+				HtmlHelper.RenderAction("Menu", "Common", new
+				{
+					area = "",
+					name = Component.Name,
+					template = Component.Template
+				});
+			}
+		}
 
-        public MenuRenderer(IMenuService menuService)
-        {
-            _menuService = menuService;
-        }
+		public override void Render()
+		{
+			var c = Component;
+			var route = c.Route;
 
-        public override void Render()
-        {
-            var model = CreateModel();
-            HtmlHelper.RenderPartial(GetViewName(), model);
-        }
+			if (route != null)
+			{
+				HtmlHelper.RenderAction(route.Action, route.Controller, route.RouteValues);
+			}
+			else
+			{
+				HtmlHelper.RenderAction("Menu", "Common", new { area = "", name = c.Name, template = c.Template });
+			}
+		}
 
-        public override string ToHtmlString()
-        {
-            var model = CreateModel();
-            return HtmlHelper.Partial(GetViewName(), model).ToString();
-        }
+		public override string ToHtmlString()
+		{
+			var c = Component;
+			var route = c.Route;
 
-        protected virtual MenuModel CreateModel()
-        {
-            var model = new MenuModel { Name = Component.Name };
-            var menu = _menuService.GetMenu(Component.Name);
-
-            if (menu != null)
-            {
-                model.Root = menu.Root;
-
-                var currentNode = menu.ResolveCurrentNode(HtmlHelper.ViewContext?.Controller?.ControllerContext);
-
-                model.Path = currentNode != null
-                    ? currentNode.Trail.Where(x => !x.IsRoot).ToList()
-                    : new List<TreeNode<MenuItem>>();
-
-                menu.ResolveElementCounts(model.SelectedNode, false);
-            }
-
-            return model;
-        }
-
-        protected override string GetViewName()
-        {
-            return Component.ViewName.NullEmpty() ?? ("Menus/" + Component.Name);
-        }
-    }
+			if (route != null)
+			{
+				return HtmlHelper.Action(route.Action, route.Controller, route.RouteValues).ToHtmlString();
+			}
+			else
+			{
+				return HtmlHelper.Action("Menu", "Common", new { area = "", name = c.Name, template = c.Template }).ToHtmlString();
+			}
+		}
+	}
 }

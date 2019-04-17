@@ -70,14 +70,9 @@ namespace SmartStore.Web.Framework.UI
 			return new FileUploaderBuilder<TModel>(new FileUploader(), this.HtmlHelper);
 		}
 
-        public virtual MenuBuilder<TModel> Menu(string name, string viewName = null)
+        public virtual MenuBuilder<TModel> Menu()
         {
-            Guard.NotEmpty(name, nameof(name));
-
-            return new MenuBuilder<TModel>(new Menu(), HtmlHelper)
-                .Name(name)
-                .ViewName(viewName)
-                .WithRenderer(new MenuRenderer());
+            return new MenuBuilder<TModel>(new Menu(), this.HtmlHelper).WithRenderer(new MenuRenderer());
         }
 
 		#endregion

@@ -1608,7 +1608,7 @@
     <Content Include="Views\Common\Partials\Footer.cshtml" />
     <Content Include="Views\Common\Partials\JavaScriptDisabledWarning.cshtml" />
     <Content Include="Views\Common\Partials\LanguageSelector.cshtml" />
-    <Content Include="Views\Common\Partials\Menu.cshtml" />
+    <Content Include="Views\Common\Partials\TopBar.cshtml" />
     <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
     <Content Include="Views\Common\Partials\ShopBar.cshtml" />
@@ -1820,7 +1820,6 @@
     <Content Include="Views\Shared\Menus\Navbar.cshtml" />
     <Content Include="Views\Shared\Menus\ListGroup.cshtml" />
     <Content Include="Views\Shared\Menus\Main.cshtml" />
-    <Content Include="Views\Common\Partials\UserMenu.cshtml" />
     <Content Include="Views\Catalog\Menus\Categories.cshtml" />
     <Content Include="Views\Catalog\Menus\OffCanvasCategories.cshtml" />
     <None Include="Web.EFMigrations.config">

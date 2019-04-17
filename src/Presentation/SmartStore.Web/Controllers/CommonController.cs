@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -45,7 +46,8 @@ namespace SmartStore.Web.Controllers
 		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
 		private readonly ICommonServices _services;
-        private readonly Lazy<ILanguageService> _languageService;
+		private readonly IMenuService _menuService;
+		private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<ICurrencyService> _currencyService;
         private readonly IThemeContext _themeContext;
         private readonly Lazy<IThemeRegistry> _themeRegistry;
@@ -72,7 +74,8 @@ namespace SmartStore.Web.Controllers
 		
 		public CommonController(
 			ICommonServices services,
-            Lazy<ILanguageService> languageService,
+			IMenuService menuService,
+			Lazy<ILanguageService> languageService,
             Lazy<ICurrencyService> currencyService,
 			IThemeContext themeContext,
             Lazy<IThemeRegistry> themeRegistry, 
@@ -98,6 +101,7 @@ namespace SmartStore.Web.Controllers
 			IBreadcrumb breadcrumb)
         {
 			_services = services;
+			_menuService = menuService;
             _languageService = languageService;
             _currencyService = currencyService;
             _themeContext = themeContext;
@@ -451,7 +455,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult Menu()
+        public ActionResult TopBar()
         {
 			var customer = _services.WorkContext.CurrentCustomer;
 
@@ -473,11 +477,36 @@ namespace SmartStore.Web.Controllers
         }
 
 		[ChildActionOnly]
+		public ActionResult Menu(string name, string template = null)
+		{
+			var menu = _menuService.GetMenu(name);
+
+			if (menu == null)
+				return new EmptyResult();
+
+			var model = new MenuModel
+			{
+				Name = name,
+				Root = menu.Root
+			};
+
+			var currentNode = menu.ResolveCurrentNode(this.ControllerContext);
+
+			model.Path = currentNode != null
+				? currentNode.Trail.Where(x => !x.IsRoot).ToList()
+				: new List<TreeNode<MenuItem>>();
+
+			menu.ResolveElementCounts(model.SelectedNode, false);
+
+			return PartialView("Menus/" + (template ?? name), model);
+		}
+
+		[ChildActionOnly]
 		public ActionResult Breadcrumb()
 		{
 			if (_breadcrumb.Trail == null || _breadcrumb.Trail.Count == 0)
 			{
-				return Content("");
+				return new EmptyResult();
 			}
 
 			return PartialView(_breadcrumb.Trail);
@@ -856,20 +885,6 @@ namespace SmartStore.Web.Controllers
 
 			return PartialView(model);
 		}
-
-        [ChildActionOnly]
-        public ActionResult UserMenu(string systemName, string template)
-        {
-            if (systemName.HasValue() && template.HasValue())
-            {
-                ViewBag.SystemName = systemName;
-                ViewBag.Template = template;
-
-                return PartialView();
-            }
-
-            return new EmptyResult();
-        }
 
         #endregion
     }

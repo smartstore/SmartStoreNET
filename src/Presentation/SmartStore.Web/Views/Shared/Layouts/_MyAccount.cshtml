@@ -9,7 +9,7 @@
 			<div class="col-md-4 col-lg-3 d-print-none">
                 @{ Html.RenderWidget("myaccount_menu_before"); }
 
-                @{ Html.SmartStore().Menu("MyAccount", "Menus/ListGroup").Render(); }
+                @{ Html.SmartStore().Menu().Name("MyAccount").Template("ListGroup").Render(); }
 
                 @{ Html.RenderWidget("myaccount_menu_after"); }
 

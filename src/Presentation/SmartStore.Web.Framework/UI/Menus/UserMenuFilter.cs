@@ -39,9 +39,9 @@ namespace SmartStore.Web.Framework.UI
 			{
 				_widgetProvider.RegisterAction(
 					info.WidgetZones,
-					"UserMenu",
+					"Menu",
 					"Common",
-					new { area = "", systemName = info.SystemName, template = info.Template },
+					new { area = "", name = info.SystemName, template = info.Template },
 					info.DisplayOrder);
 			}
 		}

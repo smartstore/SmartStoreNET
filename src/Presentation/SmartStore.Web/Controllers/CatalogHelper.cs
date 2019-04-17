@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Data.Entity;
-using SmartStore.Collections;
-using SmartStore.Core.Caching;
+using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Fakes;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Extensions;
 using SmartStore.Services.Catalog.Modelling;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
@@ -32,21 +31,19 @@ using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
-using SmartStore.Services.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
-using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CatalogHelper
+    public partial class CatalogHelper
 	{
 		private readonly ICommonServices _services;
-		private readonly ICategoryService _categoryService;
+        private readonly IMenuService _menuService;
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IProductService _productService;
 		private readonly IProductTemplateService _productTemplateService;
@@ -73,13 +70,10 @@ namespace SmartStore.Web.Controllers
         private readonly IQuantityUnitService _quantityUnitService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
-		private readonly ISettingService _settingService;
-		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IDataExporter> _dataExporter;
         private readonly Lazy<IPermissionService> _permissionService;
         private readonly ICatalogSearchService _catalogSearchService;
 		private readonly ICatalogSearchQueryFactory _catalogSearchQueryFactory;
-		private readonly ISiteMapService _siteMapService;
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
 		private readonly ProductUrlHelper _productUrlHelper;
@@ -88,7 +82,7 @@ namespace SmartStore.Web.Controllers
 
 		public CatalogHelper(
 			ICommonServices services,
-			ICategoryService categoryService,
+            IMenuService menuService,
 			IManufacturerService manufacturerService,
 			IProductService productService,
 			IProductTemplateService productTemplateService,
@@ -114,60 +108,54 @@ namespace SmartStore.Web.Controllers
 			TaxSettings taxSettings,
 			PerformanceSettings performanceSettings,
 			IDeliveryTimeService deliveryTimeService,
-			ISettingService settingService,
 			Lazy<IMenuPublisher> _menuPublisher,
-			Lazy<ITopicService> topicService,
 			Lazy<IDataExporter> dataExporter,
             Lazy<IPermissionService> permissionService,
             ICatalogSearchService catalogSearchService,
 			ICatalogSearchQueryFactory catalogSearchQueryFactory,
-			ISiteMapService siteMapService,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper,
 			ProductUrlHelper productUrlHelper,
 			ILocalizedEntityService localizedEntityService,
 			IUrlRecordService urlRecordService)
 		{
-			this._services = services;
-			this._categoryService = categoryService;
-			this._manufacturerService = manufacturerService;
-			this._productService = productService;
-			this._productTemplateService = productTemplateService;
-			this._productAttributeService = productAttributeService;
-			this._productAttributeParser = productAttributeParser;
-			this._productAttributeFormatter = productAttributeFormatter;
-			this._taxService = taxService;
-			this._currencyService = currencyService;
-			this._pictureService = pictureService;
-			this._localizationService = _services.Localization;
-			this._priceCalculationService = priceCalculationService;
-			this._priceFormatter = priceFormatter;
-			this._specificationAttributeService = specificationAttributeService;
-			this._dateTimeHelper = dateTimeHelper;
-			this._backInStockSubscriptionService = backInStockSubscriptionService;
-			this._downloadService = downloadService;
-			this._measureService = measureService;
-            this._quantityUnitService = quantityUnitService;
-			this._measureSettings = measureSettings;
-			this._taxSettings = taxSettings;
-			this._performanceSettings = performanceSettings;
-			this._deliveryTimeService = deliveryTimeService;
-			this._settingService = settingService;
-			this._mediaSettings = mediaSettings;
-			this._catalogSettings = catalogSettings;
-			this._customerSettings = customerSettings;
-			this._captchaSettings = captchaSettings;
-			this._topicService = topicService;
-			this._dataExporter = dataExporter;
-            this._permissionService = permissionService;
-            this._catalogSearchService = catalogSearchService;
-			this._catalogSearchQueryFactory = catalogSearchQueryFactory;
-			this._siteMapService = siteMapService;
-			this._httpRequest = httpRequest;
-			this._urlHelper = urlHelper;
-			this._productUrlHelper = productUrlHelper;
-			this._localizedEntityService = localizedEntityService;
-			this._urlRecordService = urlRecordService;
+			_services = services;
+            _menuService = menuService;
+			_manufacturerService = manufacturerService;
+			_productService = productService;
+			_productTemplateService = productTemplateService;
+			_productAttributeService = productAttributeService;
+			_productAttributeParser = productAttributeParser;
+			_productAttributeFormatter = productAttributeFormatter;
+			_taxService = taxService;
+			_currencyService = currencyService;
+			_pictureService = pictureService;
+			_localizationService = _services.Localization;
+			_priceCalculationService = priceCalculationService;
+			_priceFormatter = priceFormatter;
+			_specificationAttributeService = specificationAttributeService;
+			_dateTimeHelper = dateTimeHelper;
+			_backInStockSubscriptionService = backInStockSubscriptionService;
+			_downloadService = downloadService;
+			_measureService = measureService;
+            _quantityUnitService = quantityUnitService;
+			_measureSettings = measureSettings;
+			_taxSettings = taxSettings;
+			_performanceSettings = performanceSettings;
+			_deliveryTimeService = deliveryTimeService;
+			_mediaSettings = mediaSettings;
+			_catalogSettings = catalogSettings;
+			_customerSettings = customerSettings;
+			_captchaSettings = captchaSettings;
+			_dataExporter = dataExporter;
+            _permissionService = permissionService;
+            _catalogSearchService = catalogSearchService;
+			_catalogSearchQueryFactory = catalogSearchQueryFactory;
+			_httpRequest = httpRequest;
+			_urlHelper = urlHelper;
+			_productUrlHelper = productUrlHelper;
+			_localizedEntityService = localizedEntityService;
+			_urlRecordService = urlRecordService;
 
 			T = NullLocalizer.Instance;
 		}
@@ -1275,8 +1263,8 @@ namespace SmartStore.Web.Controllers
 
 		public IEnumerable<int> GetChildCategoryIds(int parentCategoryId, bool deep = true)
 		{
-			var root = GetCategoryMenu();
-			var node = root.SelectNodeById(parentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == parentCategoryId);
+            var root = _menuService.GetRootNode("Main");
+            var node = root.SelectNodeById(parentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == parentCategoryId);
 			if (node != null)
 			{
 				var children = deep ? node.Flatten(false) : node.Children.Select(x => x.Value);
@@ -1287,42 +1275,45 @@ namespace SmartStore.Web.Controllers
 			return Enumerable.Empty<int>();
 		}
 
-		public IList<TreeNode<MenuItem>> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
-		{
-			var requestCache = EngineContext.Current.Resolve<IRequestCache>();
-			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
+        public void GetCategoryBreadcrumb(IBreadcrumb breadcrumb, ControllerContext context, Product product = null)
+        {
+            var menu = _menuService.GetMenu("Main");
+            var currentNode = menu.ResolveCurrentNode(context);
 
-			var breadcrumb = requestCache.Get(cacheKey, () =>
-			{
-				var root = GetCategoryMenu();
-				TreeNode<MenuItem> node = null;
+            if (currentNode != null)
+            {
+                currentNode.Trail.Where(x => !x.IsRoot).Each(x => breadcrumb.Track(x.Value));
+            }
 
-				if (currentCategoryId > 0)
-				{
-					node = root.SelectNodeById(currentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == currentCategoryId);
-				}
+            // Add trail of parent product if product has no category assigned.
+            if (product != null && !(breadcrumb.Trail?.Any() ?? false))
+            {
+                var parentProduct = _productService.GetProductById(product.ParentGroupedProductId);
+                if (parentProduct != null)
+                {
+                    var fc = new FakeController();
+                    var rd = new RouteData();
+                    rd.Values.Add("currentProductId", parentProduct.Id);
+                    var fcc = new ControllerContext(new RequestContext(context.HttpContext, rd), fc);
+                    fc.ControllerContext = fcc;
 
-				if (node == null && currentProductId > 0)
-				{
-					var productCategories = _categoryService.GetProductCategoriesByProductId(currentProductId);
-					if (productCategories.Count > 0)
-					{
-						currentCategoryId = productCategories[0].Category.Id;
-						node = root.SelectNodeById(currentCategoryId) ?? root.SelectNode(x => x.Value.EntityId == currentCategoryId);
-					}
-				}
+                    currentNode = menu.ResolveCurrentNode(fcc);
+                    if (currentNode != null)
+                    {
+                        currentNode.Trail.Where(x => !x.IsRoot).Each(x => breadcrumb.Track(x.Value));
+                        var parentName = parentProduct.GetLocalized(x => x.Name);
 
-				if (node != null)
-				{
-					var path = node.GetBreadcrumb().ToList();
-                    return path;
-				}
-
-				return new List<TreeNode<MenuItem>>();
-			});
-
-            return breadcrumb;
-		}
+                        breadcrumb.Track(new MenuItem
+                        {
+                            Text = parentName,
+                            Rtl = parentName.CurrentLanguage.Rtl,
+                            EntityId = parentProduct.Id,
+                            Url = _urlHelper.RouteUrl("Product", new { SeName = parentProduct.GetSeName() })
+                        });
+                    }
+                }
+            }
+        }
 
 		public IList<ProductSpecificationModel> PrepareProductSpecificationModel(Product product)
 		{
@@ -1357,32 +1348,6 @@ namespace SmartStore.Web.Controllers
 
 				return model;
 			}
-		}
-
-		public MenuModel PrepareCategoryMenuModel(int currentCategoryId, int currentProductId)
-		{
-			var root = GetCategoryMenu();
-		
-			var breadcrumb = GetCategoryBreadCrumb(currentCategoryId, currentProductId);
-
-			var model = new MenuModel
-			{
-				Root = root,
-				Path = breadcrumb
-			};
-
-			// Resolve number of products
-			if (_catalogSettings.ShowCategoryProductNumber)
-			{
-				_siteMapService.ResolveElementCounts("catalog", model.SelectedNode, false);
-			}
-
-			return model;
-		}
-
-		public TreeNode<MenuItem> GetCategoryMenu()
-		{
-			return _siteMapService.GetRootNode("catalog");
 		}
 
 		public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(

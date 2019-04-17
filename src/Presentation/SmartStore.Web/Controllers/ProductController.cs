@@ -170,26 +170,7 @@ namespace SmartStore.Web.Controllers
 			// Breadcrumb
 			if (_catalogSettings.CategoryBreadcrumbEnabled)
 			{
-				_helper.GetCategoryBreadCrumb(0, productId).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
-
-                // Add trail of parent product if product has no category assigned.
-                var hasTrail = _breadcrumb.Trail?.Any() ?? false;
-                if (!hasTrail)
-                {
-                    var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
-                    if (parentGroupedProduct != null)
-                    {
-                        _helper.GetCategoryBreadCrumb(0, parentGroupedProduct.Id).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
-
-                        _breadcrumb.Track(new MenuItem
-                        {
-                            Text = parentGroupedProduct.GetLocalized(x => x.Name),
-                            Rtl = model.Name.CurrentLanguage.Rtl,
-                            EntityId = parentGroupedProduct.Id,
-                            Url = Url.RouteUrl("Product", new { SeName = parentGroupedProduct.GetSeName() })
-                        });
-                    }
-                }
+                _helper.GetCategoryBreadcrumb(_breadcrumb, ControllerContext, product);
 
 				_breadcrumb.Track(new MenuItem
 				{

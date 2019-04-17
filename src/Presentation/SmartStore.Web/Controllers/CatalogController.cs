@@ -105,26 +105,26 @@ namespace SmartStore.Web.Controllers
             if (category == null || category.Deleted)
 				return HttpNotFound();
 
-            // Check whether the current user has a "Manage catalog" permission
-            // It allows him to preview a category before publishing
+            // Check whether the current user has a "Manage catalog" permission.
+            // It allows him to preview a category before publishing.
             if (!category.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
 				return HttpNotFound();
 
-            // ACL (access control list)
+            // ACL (access control list).
             if (!_aclService.Authorize(category))
 				return HttpNotFound();
 
-			// Store mapping
+			// Store mapping.
 			if (!_storeMappingService.Authorize(category))
 				return HttpNotFound();
 
-			// 'Continue shopping' URL
-			if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
+            var store = _services.StoreContext.CurrentStore;
+            var customer = _services.WorkContext.CurrentCustomer;
+
+            // 'Continue shopping' URL.
+            if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
 			{
-				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
-					SystemCustomerAttributeNames.LastContinueShoppingPage,
-					_services.WebHelper.GetThisPageUrl(false),
-					_services.StoreContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastContinueShoppingPage,	_services.WebHelper.GetThisPageUrl(false), store.Id);
 			}
 
             var model = category.ToModel();
@@ -135,17 +135,17 @@ namespace SmartStore.Web.Controllers
 
 			_services.DisplayControl.Announce(category);
 
-            // Category breadcrumb
+            // Category breadcrumb.
 			if (_catalogSettings.CategoryBreadcrumbEnabled)
 			{
-				_helper.GetCategoryBreadCrumb(category.Id, 0).Select(x => x.Value).Each(x => _breadcrumb.Track(x));
+                _helper.GetCategoryBreadcrumb(_breadcrumb, ControllerContext);
 			}
 
-			// Products
-			int[] catIds = new int[] { categoryId };
+			// Products.
+			var catIds = new int[] { categoryId };
 			if (_catalogSettings.ShowProductsFromSubcategories)
 			{
-				// Include subcategories
+				// Include subcategories.
 				catIds = catIds.Concat(_helper.GetChildCategoryIds(categoryId)).ToArray();
 			}
 
@@ -159,15 +159,15 @@ namespace SmartStore.Web.Controllers
 
 			model.SubCategoryDisplayType = _catalogSettings.SubCategoryDisplayType;
 
-			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			int pictureSize = _mediaSettings.CategoryThumbPictureSize;
+			var customerRolesIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+			var pictureSize = _mediaSettings.CategoryThumbPictureSize;
 			var fallbackType = _catalogSettings.HideCategoryDefaultPictures ? FallbackPictureType.NoFallback : FallbackPictureType.Entity;
 
 			var hideSubCategories = _catalogSettings.SubCategoryDisplayType == SubCategoryDisplayType.Hide 
 				|| (_catalogSettings.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList && query.IsSubPage && !_catalogSettings.ShowSubCategoriesInSubPages);
 			var hideFeaturedProducts = _catalogSettings.IgnoreFeaturedProducts || (query.IsSubPage && !_catalogSettings.IncludeFeaturedProductsInSubPages);
 
-			// Subcategories
+			// Subcategories.
 			if (!hideSubCategories)
 			{
 				var subCategories = _categoryService.GetAllCategoriesByParentCategoryId(categoryId);
@@ -186,8 +186,8 @@ namespace SmartStore.Web.Controllers
 
 						_services.DisplayControl.Announce(x);
 
-					// prepare picture model
-					var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
+					    // Prepare picture model.
+					    var pictureInfo = allPictureInfos.Get(x.PictureId.GetValueOrDefault());
 
 						subCatModel.PictureModel = new PictureModel
 						{
@@ -206,16 +206,16 @@ namespace SmartStore.Web.Controllers
 					.ToList();
 			}
 
-			// Featured Products
+			// Featured Products.
 			if (!hideFeaturedProducts)
 			{
 				CatalogSearchResult featuredProductsResult = null;
 
-				string cacheKey = ModelCacheEventConsumer.CATEGORY_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(categoryId, string.Join(",", customerRolesIds), _services.StoreContext.CurrentStore.Id);
+				string cacheKey = ModelCacheEventConsumer.CATEGORY_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(categoryId, string.Join(",", customerRolesIds), store.Id);
 				var hasFeaturedProductsCache = _services.Cache.Get<bool?>(cacheKey);
 
 				var featuredProductsQuery = new CatalogSearchQuery()
-					.VisibleOnly(_services.WorkContext.CurrentCustomer)
+					.VisibleOnly(customer)
 					.VisibleIndividuallyOnly(true)
 					.WithCategoryIds(true, categoryId)
 					.HasStoreId(_services.StoreContext.CurrentStore.Id)
@@ -241,11 +241,10 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-
-			// Prepare paging/sorting/mode stuff
+			// Prepare paging/sorting/mode stuff.
 			_helper.MapListActions(model.Products, category, _catalogSettings.DefaultPageSizeOptions);
 
-			// template
+			// Template.
 			var templateCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_TEMPLATE_MODEL_KEY, category.CategoryTemplateId);
 			var templateViewPath = _services.Cache.Get(templateCacheKey, () =>
 			{
@@ -255,7 +254,7 @@ namespace SmartStore.Web.Controllers
 				return template.ViewPath;
 			});
 
-			// Activity log
+			// Activity log.
 			_services.CustomerActivity.InsertActivity("PublicStore.ViewCategory", T("ActivityLog.PublicStore.ViewCategory"), category.Name);
 
 			return View(templateViewPath, model);

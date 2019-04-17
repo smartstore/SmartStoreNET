@@ -442,7 +442,6 @@ namespace SmartStore.Web.Controllers
 
             model.ShowSocialLinks = _socialSettings.Value.ShowSocialLinksInFooter;
             model.FacebookLink = _socialSettings.Value.FacebookLink;
-            model.GooglePlusLink = _socialSettings.Value.GooglePlusLink;
             model.TwitterLink = _socialSettings.Value.TwitterLink;
             model.PinterestLink = _socialSettings.Value.PinterestLink;
             model.YoutubeLink = _socialSettings.Value.YoutubeLink;

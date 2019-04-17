@@ -15,7 +15,6 @@ namespace SmartStore.Web.Models.Common
 
         public bool ShowSocialLinks { get; set; }
         public string FacebookLink { get; set; }
-        public string GooglePlusLink { get; set; }
         public string TwitterLink { get; set; }
         public string PinterestLink { get; set; }
         public string YoutubeLink { get; set; }

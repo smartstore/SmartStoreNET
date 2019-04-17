@@ -867,6 +867,9 @@
                 "CSS Klasse",
                 "Sets a CSS class for the menu link.",
                 "Legt eine CSS Klasse für das Menüelement fest.");
+
+            builder.Delete("Admin.Configuration.Settings.GeneralCommon.SocialSettings.GooglePlusLink");
+            builder.Delete("Admin.Configuration.Settings.GeneralCommon.SocialSettings.GooglePlusLink.Hint");
         }
     }
 }

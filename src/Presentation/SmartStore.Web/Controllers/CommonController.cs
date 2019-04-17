@@ -484,19 +484,7 @@ namespace SmartStore.Web.Controllers
 			if (menu == null)
 				return new EmptyResult();
 
-			var model = new MenuModel
-			{
-				Name = name,
-				Root = menu.Root
-			};
-
-			var currentNode = menu.ResolveCurrentNode(this.ControllerContext);
-
-			model.Path = currentNode != null
-				? currentNode.Trail.Where(x => !x.IsRoot).ToList()
-				: new List<TreeNode<MenuItem>>();
-
-			menu.ResolveElementCounts(model.SelectedNode, false);
+            var model = menu.CreateModel(ControllerContext);
 
 			return PartialView("Menus/" + (template ?? name), model);
 		}

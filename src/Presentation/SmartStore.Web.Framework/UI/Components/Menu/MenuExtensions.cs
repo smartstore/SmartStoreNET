@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Localization;
@@ -90,6 +91,33 @@ namespace SmartStore.Web.Framework.UI
 
 			return state;
 		}
+
+        /// <summary>
+        /// Creates a menu model.
+        /// </summary>
+        /// <param name="menu">Menu.</param>
+        /// <param name="context">Controller context to resolve current node. Can be <c>null</c>.</param>
+        /// <returns>Menu model.</returns>
+        public static MenuModel CreateModel(this IMenu menu, ControllerContext context)
+        {
+            Guard.NotNull(menu, nameof(menu));
+
+            var model = new MenuModel
+            {
+                Name = menu.Name,
+                Root = menu.Root
+            };
+
+            var currentNode = menu.ResolveCurrentNode(context);
+
+            model.Path = currentNode != null
+                ? currentNode.Trail.Where(x => !x.IsRoot).ToList()
+                : new List<TreeNode<MenuItem>>();
+
+            menu.ResolveElementCounts(model.SelectedNode, false);
+
+            return model;
+        }
 
         /// <summary>
         /// Converts a list of menu items into a tree.

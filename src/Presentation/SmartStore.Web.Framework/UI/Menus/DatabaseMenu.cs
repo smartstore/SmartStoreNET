@@ -149,10 +149,10 @@ namespace SmartStore.Web.Framework.UI
 
             try
             {
-                var currentCategoryId = GetRequestValue<int?>(context, "categoryId") ?? GetRequestValue<int>(context, "currentCategoryId");
+                var currentCategoryId = GetRequestValue<int?>(context, "currentCategoryId") ?? GetRequestValue<int>(context, "categoryId");
 
                 var currentProductId = currentCategoryId == 0
-                    ? (GetRequestValue<int?>(context, "productId") ?? GetRequestValue<int>(context, "currentProductId"))
+                    ? (GetRequestValue<int?>(context, "currentProductId") ?? GetRequestValue<int>(context, "productId"))
                     : 0;
 
                 if (currentCategoryId == 0 && currentProductId == 0)

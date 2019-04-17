@@ -28,12 +28,14 @@ using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Collections;
 
 namespace SmartStore.Web.Controllers
 {
 	public partial class CatalogController : PublicControllerBase
     {
 		private readonly ICommonServices _services;
+        private readonly IMenuService _menuService;
         private readonly ICategoryService _categoryService;
         private readonly IManufacturerService _manufacturerService;
         private readonly IProductService _productService;
@@ -59,7 +61,8 @@ namespace SmartStore.Web.Controllers
 
 		public CatalogController(
 			ICommonServices services,
-			ICategoryService categoryService,
+            IMenuService menuService,
+            ICategoryService categoryService,
             IManufacturerService manufacturerService, 
 			IProductService productService,
             ICategoryTemplateService categoryTemplateService,
@@ -83,6 +86,7 @@ namespace SmartStore.Web.Controllers
 			IBreadcrumb breadcrumb)
         {
 			_services = services;
+            _menuService = menuService;
 			_categoryService = categoryService;
             _manufacturerService = manufacturerService;
             _productService = productService;
@@ -912,10 +916,25 @@ namespace SmartStore.Web.Controllers
         /// <summary>
         /// Called by ajax, to get a partial catalog menu to display in OffCanvasMenu.
         /// </summary>
+        /// <param name="categoryId">EntityId of the category to which should be navigated in the OffCanvasMenu.</param>
+        /// <param name="currentCategoryId">EntityId of the category that is currently displayed in the shop (WebViewPage.CurrentCategoryId).</param>
+        /// <param name="currentProductId">EntityId of the product that is currently displayed in the shop (WebViewPage.CurrentProductId).</param>
         [HttpPost]
-        public ActionResult OffCanvasMenuCategories()
+        public ActionResult OffCanvasMenuCategories(int categoryId, int currentCategoryId, int currentProductId)
         {
-            return PartialView();
+            var menu = _menuService.GetMenu("Main");
+            if (menu == null)
+            {
+                return new EmptyResult();
+            }
+
+            var model = menu.CreateModel(ControllerContext);
+
+            ViewBag.SelectedNode = categoryId == 0
+                ? model.Root
+                : ViewBag.SelectedNode = model.Root.SelectNodeById(categoryId) ?? model.Root.SelectNode(x => x.Value.EntityId == categoryId);
+
+            return PartialView(model);
         }
 
         // ajax

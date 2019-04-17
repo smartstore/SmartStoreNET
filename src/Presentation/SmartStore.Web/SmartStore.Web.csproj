@@ -1821,7 +1821,6 @@
     <Content Include="Views\Shared\Menus\ListGroup.cshtml" />
     <Content Include="Views\Shared\Menus\Main.cshtml" />
     <Content Include="Views\Shared\Menus\Categories.cshtml" />
-    <Content Include="Views\Shared\Menus\OffCanvasCategories.cshtml" />
     <Content Include="Views\Shared\Menus\Admin.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>

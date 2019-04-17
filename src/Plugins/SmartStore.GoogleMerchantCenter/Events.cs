@@ -8,9 +8,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.GoogleMerchantCenter
 {
-	public class Events : 
-		IConsumer<TabStripCreated>,
-		IConsumer<ModelBoundEvent>
+	public class Events : IConsumer
 	{
 		private readonly IGoogleFeedService _googleService;
 

@@ -906,7 +906,7 @@ namespace SmartStore.Web.Controllers
                 return new EmptyResult();
             }
 
-            var model = menu.CreateModel(ControllerContext);
+            var model = menu.CreateModel("offcanvas", ControllerContext);
 
             ViewBag.SelectedNode = categoryId == 0
                 ? model.Root

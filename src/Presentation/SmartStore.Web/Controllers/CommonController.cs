@@ -483,9 +483,15 @@ namespace SmartStore.Web.Controllers
 			if (menu == null)
 				return new EmptyResult();
 
-            var model = menu.CreateModel(ControllerContext);
+            var model = menu.CreateModel(template, ControllerContext);
 
-			return PartialView("Menus/" + (template ?? name), model);
+			var viewName = (template ?? name);
+			if (viewName[0] != '~' && !viewName.StartsWith("Menus/", StringComparison.OrdinalIgnoreCase))
+			{
+				viewName = "Menus/" + viewName;
+			}
+
+			return this.RootActionPartialView(viewName, model);
 		}
 
 		[ChildActionOnly]

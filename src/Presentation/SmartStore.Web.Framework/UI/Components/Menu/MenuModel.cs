@@ -10,6 +10,7 @@ namespace SmartStore.Web.Framework.UI
 		private bool _seekedSelectedNode;
 
         public string Name { get; set; }
+		public string Template { get; set; }
 
 		public TreeNode<MenuItem> Root { get; set; }
 		public IList<TreeNode<MenuItem>> Path { get; set; }

@@ -598,6 +598,7 @@
     <Content Include="Views\Menu\EditorTemplates\MenuItem.Route.cshtml" />
     <Content Include="Views\Menu\EditorTemplates\MenuItem.Catalog.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\AccessPermissions.cshtml" />
+    <Content Include="Views\Shared\Menus\Admin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Category\Create.cshtml" />

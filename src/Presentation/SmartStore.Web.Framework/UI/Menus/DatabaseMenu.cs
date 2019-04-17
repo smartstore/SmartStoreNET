@@ -149,16 +149,20 @@ namespace SmartStore.Web.Framework.UI
 
             try
             {
-                var currentCategoryId = GetRequestValue<int?>(context, "currentCategoryId") ?? GetRequestValue<int>(context, "categoryId");
+				var rootContext = context.GetRootControllerContext();
 
-                var currentProductId = currentCategoryId == 0
-                    ? (GetRequestValue<int?>(context, "currentProductId") ?? GetRequestValue<int>(context, "productId"))
-                    : 0;
+				int currentCategoryId = GetRequestValue<int?>(rootContext, "currentCategoryId") ?? GetRequestValue<int>(rootContext, "categoryId");
+				int currentProductId = 0;
 
-                if (currentCategoryId == 0 && currentProductId == 0)
+				if (currentCategoryId == 0)
+				{
+					currentProductId = GetRequestValue<int?>(rootContext, "currentProductId") ?? GetRequestValue<int>(rootContext, "productId");
+				}
+
+				if (currentCategoryId == 0 && currentProductId == 0)
                 {
                     // Possibly not a category node of a menu where the category tree is attached to.
-                    return base.ResolveCurrentNode(context);
+                    return base.ResolveCurrentNode(rootContext);
                 }
 
                 var cacheKey = $"sm.temp.category.breadcrumb.{currentCategoryId}-{currentProductId}";

@@ -23,12 +23,12 @@ namespace SmartStore.Web.Models.Search
 
             if (typeof(ISearchResultModel).IsAssignableFrom(modelType))
             {
-                var model = controllerContext.GetMasterControllerContext().Controller.ViewData.Model as ISearchResultModel;
+                var model = controllerContext.GetRootControllerContext().Controller.ViewData.Model as ISearchResultModel;
                 return model;
             }
             else if (typeof(IForumSearchResultModel).IsAssignableFrom(modelType))
             {
-                var model = controllerContext.GetMasterControllerContext().Controller.ViewData.Model as IForumSearchResultModel;
+                var model = controllerContext.GetRootControllerContext().Controller.ViewData.Model as IForumSearchResultModel;
                 return model;
             }
 

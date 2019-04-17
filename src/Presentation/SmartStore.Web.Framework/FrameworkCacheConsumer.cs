@@ -16,7 +16,7 @@ using SmartStore.Web.Framework.Theming.Assets;
 
 namespace SmartStore.Web.Framework
 {
-    public partial class FrameworkCacheConsumer : DbSaveHook<BaseEntity>, IConsumer<ThemeTouchedEvent>
+    public partial class FrameworkCacheConsumer : DbSaveHook<BaseEntity>, IConsumer
     {
         /// <summary>
         /// Key for ThemeVariables caching

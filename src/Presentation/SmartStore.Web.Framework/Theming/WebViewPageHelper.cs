@@ -49,7 +49,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			if (!_initialized)
 			{
-				_controllerContext = viewContext.GetMasterControllerContext();
+				_controllerContext = viewContext.GetRootControllerContext();
 				_initialized = true;
 			}
 		}

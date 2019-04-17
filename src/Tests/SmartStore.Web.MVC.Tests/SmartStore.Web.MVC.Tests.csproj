@@ -116,7 +116,6 @@
     <Compile Include="Admin\Controllers\CategoryControllerTests.cs" />
     <Compile Include="Admin\Infrastructure\AutoMapperConfigurationTest.cs" />
     <Compile Include="Events\DateTimeConsumer.cs" />
-    <Compile Include="Events\EventsTests.cs" />
     <Compile Include="Framework\Controllers\AdminAuthorizeAttributeTests.cs" />
     <Compile Include="Framework\Controllers\FormValueRequiredTests.cs" />
     <Compile Include="Framework\WebApi\WebApiTests.cs" />

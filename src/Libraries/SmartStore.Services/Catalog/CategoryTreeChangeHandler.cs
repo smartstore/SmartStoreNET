@@ -35,7 +35,7 @@ namespace SmartStore.Services.Catalog
 		public CategoryTreeChangeReason Reason { get; private set; }
 	}
 
-	public class CategoryTreeChangeHook : IDbSaveHook, IConsumer<IndexingCompletedEvent>
+	public class CategoryTreeChangeHook : IDbSaveHook, IConsumer
 	{
 		private readonly ICommonServices _services;
 		private readonly ICategoryService _categoryService;
@@ -258,7 +258,7 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-		void IConsumer<IndexingCompletedEvent>.HandleEvent(IndexingCompletedEvent message)
+		public void HandleEvent(IndexingCompletedEvent message)
 		{
 			if (message.IndexInfo.IsModified)
 			{

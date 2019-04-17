@@ -242,7 +242,7 @@ namespace SmartStore
 			return keys.ToArray();
 		}
 
-		public static ControllerContext GetMasterControllerContext(this ControllerContext controllerContext)
+		public static ControllerContext GetRootControllerContext(this ControllerContext controllerContext)
         {
             Guard.NotNull(controllerContext, nameof(controllerContext));
 
@@ -258,7 +258,7 @@ namespace SmartStore
 
         public static bool IsBareBonePage(this ControllerContext controllerContext)
         {
-            var ctx = controllerContext.GetMasterControllerContext();
+            var ctx = controllerContext.GetRootControllerContext();
 
             if (ctx is ViewContext viewContext)
             {

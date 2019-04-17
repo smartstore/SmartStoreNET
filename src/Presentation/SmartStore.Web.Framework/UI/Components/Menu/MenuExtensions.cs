@@ -98,13 +98,14 @@ namespace SmartStore.Web.Framework.UI
         /// <param name="menu">Menu.</param>
         /// <param name="context">Controller context to resolve current node. Can be <c>null</c>.</param>
         /// <returns>Menu model.</returns>
-        public static MenuModel CreateModel(this IMenu menu, ControllerContext context)
+        public static MenuModel CreateModel(this IMenu menu, string template, ControllerContext context)
         {
             Guard.NotNull(menu, nameof(menu));
 
             var model = new MenuModel
             {
                 Name = menu.Name,
+				Template = template ?? menu.Name,
                 Root = menu.Root
             };
 

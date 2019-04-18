@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Utilities;
@@ -152,7 +153,9 @@ namespace SmartStore.Services.Catalog.Importer
 							_categoryRepository.Context.AutoDetectChangesEnabled = false;
 						}
 					}
-				}
+
+                    context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<Category>(context, batch));
+                }
 
 				// map parent id of inserted categories
 				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentCategoryId") && !segmenter.IsIgnored("ParentCategoryId"))

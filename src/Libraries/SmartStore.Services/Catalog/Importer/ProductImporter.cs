@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Utilities;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Utilities;
@@ -269,6 +270,8 @@ namespace SmartStore.Services.Catalog.Importer
                         context.Result.AddError(ex, segmenter.CurrentSegment, "ProcessProductTags");
                     }
                 }
+
+                context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<Product>(context, batch));
             }
 
             // ===========================================================================

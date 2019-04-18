@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using SmartStore.Core.Async;
@@ -10,10 +9,10 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Events;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Common;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.DataExchange.Import.Events;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Media;
@@ -22,7 +21,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers.Importer
 {
-	public class CustomerImporter : EntityImporterBase
+    public class CustomerImporter : EntityImporterBase
 	{
 		private const string _attributeKeyGroup = "Customer";
 
@@ -195,7 +194,9 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						_services.DbContext.AutoDetectChangesEnabled = false;
 					}
-				}
+
+                    context.Services.EventPublisher.Publish(new ImportBatchExecutedEvent<Customer>(context, batch));
+                }
 			}
 		}
 

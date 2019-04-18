@@ -39,7 +39,7 @@ namespace SmartStore.Services.Cms
 			_services = services;
 		}
 
-		public override void OnAfterSave(IHookedEntity entry)
+		public override void OnBeforeSave(IHookedEntity entry)
 		{
 			var cache = _services.Cache;
 			var e = entry.Entity;

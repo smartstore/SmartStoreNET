@@ -1,5 +1,4 @@
-﻿@using SmartStore.Collections
-@using SmartStore.Web.Framework.UI
+﻿@using SmartStore.Web.Framework.UI
 @model MenuModel
 @{
     var root = Model.Root;
@@ -8,10 +7,10 @@
         return;
     }
 
-    object obj = null;
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
     var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
     var headerText = root.GetItemText(T);
+    var rtl = WorkContext.WorkingLanguage.Rtl;
 }
 
 <div class="cms-menu cms-menu-listgroup" data-menu-name="@(Model.Name?.ToLower())">
@@ -29,17 +28,10 @@
                 var itemState = node.GetNodePathState(Model.Path);
                 var itemText = node.GetItemText(T);
                 var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
-                var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
-                var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
-                var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
-                var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
-                var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
 
-			    <a href="@item.Url" class="@(GetCssClassForNode(node, itemState, cssClass))"
-                    @Html.Attr("id", linkId, linkId.HasValue())
-                    @Html.Attr("rel", relAttr, relAttr.HasValue())
-                    @Html.Attr("target", target, target.HasValue())
-                    @Html.Attr("title", shortDescription, shortDescription.HasValue())>
+                item.LinkHtmlAttributes.PrependCssClass("list-group-item list-group-item-action menu-link" + ((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : ""));
+
+			    <a href="@item.Url" @Html.Attrs(item.LinkHtmlAttributes)>
 		            @if (hasIcons)
                     {
 			            <i class="fal fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "") list-group-item-icon"></i>
@@ -48,7 +40,7 @@
                     {
                         <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
                     }
-                    <span>@itemText</span>
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
                     @if (item.BadgeText.HasValue())
                     {
                         <span class="badge badge-pill badge-@item.BadgeStyle.ToString().ToLower() ml-auto">@Html.Raw(item.BadgeText)</span>
@@ -58,27 +50,3 @@
         </div>
     </div>
 </div>
-
-@functions {
-    private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state, string moreCss)
-    {
-        var classes = new List<string>
-        {
-            "list-group-item",
-            "list-group-item-action",
-            "menu-link"
-        };
-
-        if ((state & NodePathState.Selected) == NodePathState.Selected)
-        {
-            classes.Add("active");
-        }
-
-        if (moreCss.HasValue())
-        {
-            classes.Add(moreCss);
-        }
-
-        return string.Join(" ", classes);
-    }
-}

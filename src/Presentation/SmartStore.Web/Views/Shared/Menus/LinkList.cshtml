@@ -7,10 +7,10 @@
         return;
     }
 
-    object obj = null;
     var isFirst = true;
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
     var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
+    var rtl = WorkContext.WorkingLanguage.Rtl;
 }
 
 <div class="cms-menu cms-menu-linklist" data-menu-name="@(Model.Name?.ToLower())">
@@ -25,11 +25,8 @@
 
             var itemText = node.GetItemText(T);
             var itemUrl = item.GenerateUrl(this.ViewContext.RequestContext);
-            var linkId = item.LinkHtmlAttributes.TryGetValue("id", out obj) ? (string)obj : string.Empty;
-            var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
-            var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
-            var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
-            var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+
+            item.LinkHtmlAttributes.PrependCssClass("menu-link");
 
             if (item.IsGroupHeader)
             {
@@ -46,11 +43,7 @@
             }
 
             <li>
-                <a href="@itemUrl" class="menu-link@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")" 
-                    @Html.Attr("id", linkId, linkId.HasValue())
-                    @Html.Attr("rel", relAttr, relAttr.HasValue())
-                    @Html.Attr("target", target, target.HasValue())
-                    @Html.Attr("title", shortDescription, shortDescription.HasValue())>
+                <a href="@itemUrl" @Html.Attrs(item.LinkHtmlAttributes)>
 		            @if (hasIcons)
 		            {
 			            <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
@@ -59,7 +52,7 @@
                     {
                         <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
                     }
-                    <span>@itemText</span>
+                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
                 </a>
             </li>
 

@@ -16,7 +16,6 @@
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
     var hasImages = root.Children.Any(x => x.Value.ImageUrl.HasValue());
     var isFirst = true;
-    object obj = null;
 }
 
 @functions {
@@ -73,10 +72,13 @@
             var isDropDownActive = (isMegaMenuActive == null ? true : (bool)isMegaMenuActive) && node.HasChildren;
             var itemText = node.GetItemText(T);
             var itemUrl = item.GenerateUrl(this.Url);
-            var relAttr = item.LinkHtmlAttributes.TryGetValue("rel", out obj) ? (string)obj : string.Empty;
-            var target = item.LinkHtmlAttributes.TryGetValue("target", out obj) ? (string)obj : string.Empty;
-            var cssClass = item.LinkHtmlAttributes.TryGetValue("class", out obj) ? (string)obj : string.Empty;
-            var shortDescription = item.LinkHtmlAttributes.TryGetValue("title", out obj) ? (string)obj : string.Empty;
+
+            item.LinkHtmlAttributes.PrependCssClass("nav-link menu-link" + (isDropDownActive ? " dropdown-toggle" : ""));
+            if (isDropDownActive)
+            {
+                item.LinkHtmlAttributes["aria-expanded"] = "false";
+                item.LinkHtmlAttributes["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.EntityId);
+            }
 
             if (item.IsGroupHeader)
             {
@@ -93,12 +95,7 @@
             }
 
             <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.EntityId" data-id="@item.EntityId">
-                <a href="@itemUrl" class="menu-link nav-link@(isDropDownActive ? " dropdown-toggle" : "")@(cssClass.HasValue() ? cssClass.EnsureStartsWith(" ") : "")"
-                    @Html.Attr("rel", relAttr, relAttr.HasValue())
-                    @Html.Attr("target", target, target.HasValue())
-                    @Html.Attr("title", shortDescription, shortDescription.HasValue())
-                    @Html.Attr("aria-expanded", "false", isDropDownActive)
-                    @Html.Attr("data-target", "#dropdown-menu-{0}".FormatInvariant(item.EntityId), isDropDownActive)>
+                <a href="@itemUrl" @Html.Attrs(item.LinkHtmlAttributes)>
                     @if (hasIcons)
                     {
 	                    <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>

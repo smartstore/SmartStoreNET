@@ -378,6 +378,7 @@
     <Compile Include="Localization\SmartResourceDisplayName.cs" />
     <Compile Include="UI\Menus\MenuInvalidator.cs" />
     <Compile Include="UI\Menus\MenuService.cs" />
+    <Compile Include="UI\Menus\Providers\CatalogMenuInvalidator.cs" />
     <Compile Include="UI\Menus\Providers\CatalogMenuItemProvider.cs" />
     <Compile Include="UI\Menus\DatabaseMenuResolver.cs" />
     <Compile Include="UI\Menus\DependencyMenuResolver.cs" />

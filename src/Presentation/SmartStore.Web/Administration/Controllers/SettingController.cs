@@ -1657,10 +1657,12 @@ namespace SmartStore.Admin.Controllers
 			{
 				_catalogSearchQueryAliasMapper.Value.ClearCommonFacetCache();
 			}
+
             if (clearForumFacetCache)
             {
                 _forumSearchQueryAliasMapper.Value.ClearCommonFacetCache();
             }
+
             if (categoriesChange.HasValue)
             {
                 Services.EventPublisher.Publish(new CategoryTreeChangedEvent(categoriesChange.Value));

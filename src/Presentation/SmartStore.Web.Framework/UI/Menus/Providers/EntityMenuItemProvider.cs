@@ -38,7 +38,7 @@ namespace SmartStore.Web.Framework.UI
                 case LinkType.Category:
                 case LinkType.Manufacturer:
                 case LinkType.Topic:
-                    if (request.IsMenuEditing)
+                    if (request.IsEditMode)
                     {
                         // Info: node.Value.EntityId is MenuItemRecord.Id for editing MenuItemRecord.
                     }
@@ -50,7 +50,7 @@ namespace SmartStore.Web.Framework.UI
                     break;
             }
 
-            if (request.IsMenuEditing)
+            if (request.IsEditMode)
             {
                 var info = result.Type.GetLinkTypeInfo();
                 node.Value.Summary = T(info.ResKey);

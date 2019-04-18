@@ -17,7 +17,7 @@ namespace SmartStore.Web.Framework.UI
 			Guard.NotNull(request.Entity, nameof(request.Entity));
 
             // Add group header item.
-            if (request.Entity.BeginGroup && !request.IsMenuEditing)
+            if (request.Entity.BeginGroup && !request.IsEditMode)
             {
                 AppendToParent(request, new MenuItem
                 {
@@ -101,7 +101,7 @@ namespace SmartStore.Web.Framework.UI
                 menuItem.LinkHtmlAttributes.Add("id", entity.HtmlId);
             }
 
-            if (entity.Icon.HasValue() && !request.IsMenuEditing)
+            if (entity.Icon.HasValue() && !request.IsEditMode)
             {
                 menuItem.Icon = IconExplorer.GetIconByName(entity.Icon).GetCssClass(entity.Style);
             }

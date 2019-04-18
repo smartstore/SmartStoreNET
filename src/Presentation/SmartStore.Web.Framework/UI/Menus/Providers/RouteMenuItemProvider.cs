@@ -42,7 +42,7 @@ namespace SmartStore.Web.Framework.UI
             }
             catch { }
 
-            if (request.IsMenuEditing)
+            if (request.IsEditMode)
             {
                 node.Value.Summary = T("Providers.MenuItems.FriendlyName.Route");
                 node.Value.Icon = "fas fa-directions";

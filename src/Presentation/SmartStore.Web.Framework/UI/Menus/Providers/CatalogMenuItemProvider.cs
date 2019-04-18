@@ -34,7 +34,7 @@ namespace SmartStore.Web.Framework.UI
 
         public override void Append(MenuItemProviderRequest request)
 		{
-            if (request.IsMenuEditing)
+            if (request.IsEditMode)
             {
                 var item = ConvertToMenuItem(request);
                 item.Summary = T("Providers.MenuItems.FriendlyName.Catalog");

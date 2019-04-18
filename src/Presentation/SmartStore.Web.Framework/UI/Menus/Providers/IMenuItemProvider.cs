@@ -33,6 +33,6 @@ namespace SmartStore.Web.Framework.UI
         /// <summary>
         /// Inidicates whether the request is for backend menu editing.
         /// </summary>
-        public bool IsMenuEditing => Origin.IsCaseInsensitiveEqual("EditMenu");
+        public bool IsEditMode => Origin.IsCaseInsensitiveEqual("EditMenu");
     }
 }

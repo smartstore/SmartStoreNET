@@ -1392,13 +1392,22 @@ table.payment-method-features td {
 // --------------------------------------------------------------
 
 .menu-item-list {
-    .list-group-item {
+    .menu-item {
+        position: relative;
         overflow: visible;
         padding-left: 0px;
 
         .item-commands {
-            opacity: 0;
-            transition: opacity 0.05s linear;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            /*opacity: 0;
+            transition: opacity 0.05s linear;*/
+
+            > .btn {
+                position: relative;
+            }
         }
 
         &:hover .item-commands {

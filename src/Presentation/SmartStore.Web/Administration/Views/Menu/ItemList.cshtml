@@ -1,78 +1,80 @@
-﻿@using SmartStore.Collections
+﻿@model MenuRecordModel
+
+@using SmartStore.Collections
 @using SmartStore.Admin.Models.Menus
-@model MenuRecordModel
 
 @if (Model.ItemTree.HasChildren)
 {
-    <div class="list-group">
-        @foreach (var item in Model.ItemTree.Children)
-        {
-            @ItemGroup(item, 0, 0)
-        }
-    </div>
+	<div class="list-group list-group-flush">
+		@foreach (var item in Model.ItemTree.Children)
+		{
+			@ItemGroup(item, 0, 42)
+		}
+	</div>
 }
 else
 {
-    <div class="alert alert-info mt-2">
-        @T("Admin.ContentManagement.Menus.NoMenuItemsAvailable")
-    </div>
+	<div class="alert alert-info mt-2">
+		@T("Admin.ContentManagement.Menus.NoMenuItemsAvailable")
+	</div>
 }
 
 @helper ItemGroup(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node, int level, int padding)
 {
-    var item = node.Value;
-    var indentStyle = " style=\"padding-left: {0}px;\"".FormatInvariant(padding);
+	var item = node.Value;
+	var indentStyle = " style=\"padding-left: {0}px;\"".FormatInvariant(padding);
 
-    <div class="list-group-item d-flex align-items-center py-2@(level == 0 ? "" : " sub-item")">
-        <div class="item-commands mr-1">
-			<button type="button" class="btn btn-sm btn-light btn-to-primary btn-item-menu ml-1 mr-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	<div class="list-group-item menu-item d-flex align-items-center py-2@(level == 0 ? "" : " sub-item")">
+		<div class="item-commands btn-group">
+			<button type="button" class="btn btn-light btn-flat btn-no-border rounded-0 btn-item-menu dropdown-toggle no-chevron" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<i class="fa fa-ellipsis-v"></i>
 			</button>
 			<div class="dropdown-menu">
-                <div class="dropdown-header h6">
-                    @T("Admin.ContentManagement.AddMenuItem")
-                </div>
-                @foreach (var provider in Model.AllProviders)
-                {
-			        <a class="dropdown-item" href="@Url.Action("CreateItem", new { providerName = provider.Value, menuId = Model.Id, parentItemId = item.EntityId, area = "Admin" })">
-				        <span>@provider.Text</span>
-			        </a>
-                }
-                <div class="dropdown-divider"></div>
-			    <a class="dropdown-item" href="@Url.Action("EditItem", new { id = item.EntityId, area = "Admin" })">
-				    <i class="far fa-fw fa-edit"></i>
-				    <span>@T("Common.Edit")</span>
-			    </a>
-			    <a class="menu-item-command dropdown-item" href="#" data-action="delete-item" data-url="@Url.Action("DeleteItem", new { id = item.EntityId, area = "Admin" })">
-				    <i class="far fa-fw fa-trash-alt"></i>
-				    <span>@T("Common.Delete")</span>
-			    </a>
-            </div>
-        </div>
-        <div class="item-text"@Html.Raw(indentStyle)>
-            @if (item.Icon.HasValue())
-            {
-                <i class="mr-1 fa-fw @item.Icon" title="@item.Summary"></i>
-            }
-		    <a class="@(!item.Visible ? "muted" : "")" href="@Url.Action("EditItem", new { id = item.EntityId, area = "Admin" })">
-                @if (item.Text.HasValue())
-                {
-                    <span>@item.Text</span>
-                }
-                else
-                {
-                    <span class="font-italic">[@T(item.ResKey.NullEmpty() ?? "Common.NoTitle")]</span>
-                }
-		    </a>
-        </div>
-    </div>
-    if (node.HasChildren)
-    {
-        <div class="list-group">
-            @foreach (var child in node.Children)
-            {
-                @ItemGroup(child, level + 1, padding + 40);
-            }
-        </div>
-    }
+				<div class="dropdown-header h6 text-uppercase">
+					@T("Admin.ContentManagement.AddMenuItem")
+				</div>
+				@foreach (var provider in Model.AllProviders)
+				{
+					<a class="dropdown-item" href="@Url.Action("CreateItem", new { providerName = provider.Value, menuId = Model.Id, parentItemId = item.EntityId, area = "Admin" })">
+						<i class="fa fa-fw fa-plus"></i>
+						<span>@provider.Text</span>
+					</a>
+				}
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="@Url.Action("EditItem", new { id = item.EntityId, area = "Admin" })">
+					<i class="far fa-fw fa-edit"></i>
+					<span>@T("Common.Edit")</span>
+				</a>
+				<a class="menu-item-command dropdown-item" href="#" data-action="delete-item" data-url="@Url.Action("DeleteItem", new { id = item.EntityId, area = "Admin" })">
+					<i class="far fa-fw fa-trash-alt"></i>
+					<span>@T("Common.Delete")</span>
+				</a>
+			</div>
+		</div>
+		<div class="item-text" @Html.Raw(indentStyle)>
+			@if (item.Icon.HasValue())
+			{
+				<i class="mr-1 fa-fw @item.Icon" title="@item.Summary"></i>
+			}
+			<a class="@(!item.Visible ? "muted" : "")" href="@Url.Action("EditItem", new { id = item.EntityId, area = "Admin" })">
+				@if (item.Text.HasValue())
+				{
+					<span>@item.Text</span>
+				}
+				else
+				{
+					<span>(@T(item.ResKey.NullEmpty() ?? "Common.NoTitle"))</span>
+				}
+			</a>
+		</div>
+	</div>
+	if (node.HasChildren)
+	{
+		<div class="list-group">
+			@foreach (var child in node.Children)
+			{
+				@ItemGroup(child, level + 1, padding + 40);
+			}
+		</div>
+	}
 }

@@ -38,7 +38,7 @@ namespace SmartStore.Web.Framework.UI
             {
                 var item = ConvertToMenuItem(request);
                 item.Summary = T("Providers.MenuItems.FriendlyName.Catalog");
-                item.Icon = "fa fa-sitemap";
+                item.Icon = "fa fa-cubes";
 
                 AppendToParent(request, item);
             }

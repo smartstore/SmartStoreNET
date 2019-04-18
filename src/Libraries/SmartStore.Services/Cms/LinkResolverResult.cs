@@ -107,7 +107,7 @@ namespace SmartStore.Services.Cms
                 case LinkType.Manufacturer:
                     return ("far fa-building", "Common.Entity.Manufacturer");
                 case LinkType.Topic:
-                    return ("far fa-file", "Common.Entity.Topic");
+                    return ("far fa-file-alt", "Common.Entity.Topic");
                 case LinkType.Url:
                     return ("fa fa-link", "Common.Url");
                 case LinkType.File:

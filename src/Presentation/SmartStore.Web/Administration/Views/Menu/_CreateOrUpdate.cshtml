@@ -105,21 +105,24 @@
 
     if (Model.Id > 0)
     {
-        <div id="menu-items-container">
-            <h4 class="h4 mt-5">@T("Admin.ContentManagement.MenuLinks")</h4>
-
-            <button type="button" class="btn btn-secondary btn-to-primary mb-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	            <i class="fa fa-plus"></i>
-	            <span>@T("Admin.ContentManagement.AddMenuItem")</span>
-            </button>
-		    <div class="dropdown-menu">
-                @foreach (var provider in Model.AllProviders)
-                {
-			        <a class="dropdown-item" href="@Url.Action("CreateItem", new { providerName = provider.Value, menuId = Model.Id, parentItemId = 0, area = "Admin" })">
-				        <span>@provider.Text</span>
-			        </a>
-                }
-            </div>
+		<h4 class="h4 mt-5 mb-4">@T("Admin.ContentManagement.MenuLinks")</h4>
+		
+		<div id="menu-items-container" class="t-widget t-grid" style="overflow: visible !important">
+			<div class="t-toolbar t-grid-toolbar">
+				<button type="button" class="btn btn-flat btn-no-border btn-to-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fa fa-plus"></i>
+					<span>@T("Admin.ContentManagement.AddMenuItem")</span>
+				</button>
+				<div class="dropdown-menu">
+					@foreach (var provider in Model.AllProviders)
+					{
+						<a class="dropdown-item" href="@Url.Action("CreateItem", new { providerName = provider.Value, menuId = Model.Id, parentItemId = 0, area = "Admin" })">
+							<i class="fa fa-plus"></i>
+							<span>@provider.Text</span>
+						</a>
+					}
+				</div>
+			</div>
 
             <div id="menu-items" class="menu-item-list">
                 @Html.Partial("ItemList", Model)

@@ -68,6 +68,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly Lazy<IImageCache> _imageCache;
 		private readonly Lazy<IImportProfileService> _importProfileService;
+		private readonly Lazy<IIconExplorer> _iconExplorer;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IDbCache _dbCache;
 		private readonly ITaskScheduler _taskScheduler;
@@ -87,6 +88,7 @@ namespace SmartStore.Admin.Controllers
 			ILocalizationService localizationService,
             Lazy<IImageCache> imageCache,
 			Lazy<IImportProfileService> importProfileService,
+			Lazy<IIconExplorer> iconExplorer,
 			IGenericAttributeService genericAttributeService,
 			IDbCache dbCache,
 			ITaskScheduler taskScheduler,
@@ -105,6 +107,7 @@ namespace SmartStore.Admin.Controllers
             _localizationService = localizationService;
             _imageCache = imageCache;
 			_importProfileService = importProfileService;
+			_iconExplorer = iconExplorer;
             _genericAttributeService = genericAttributeService;
 			_dbCache = dbCache;
 			_taskScheduler = taskScheduler;
@@ -266,6 +269,35 @@ namespace SmartStore.Admin.Controllers
 		#endregion
 
 		#region UI Helpers
+
+		[HttpPost]
+		public JsonResult SearchIcons(string term, int page = 1)
+		{
+			var icons = _iconExplorer.Value.All.AsEnumerable();
+
+			if (term.HasValue())
+			{
+				icons = _iconExplorer.Value.FindIcons(term, true);
+			}
+
+			var result = new PagedList<IconDescription>(icons, page - 1, 250);
+
+			return Json(new
+			{
+				results = result.Select(x => new
+				{
+					id = x.Name,
+					text = x.Name,
+					name = x.Name,
+					hasRegularStyle = x.HasRegularStyle,
+					isBrandIcon = x.IsBrandIcon,
+					isPro = x.IsPro,
+					label = x.Label,
+					styles = x.Styles
+				}),
+				pagination = new { more = result.HasNextPage }
+			});
+		}
 
 		[HttpPost]
 		public JsonResult SetSelectedTab(string navId, string tabId, string path)

@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.UI
 		ICollection<IconDescription> All { get; }
 		Multimap<string, string> SearchMap { get; }
 		IconDescription GetIconByName(string name);
-		IEnumerable<IconDescription> FindIcons(string searchTerm);
+		IEnumerable<IconDescription> FindIcons(string searchTerm, bool relaxed = false);
 	}
 
 	public class IconExplorer : IIconExplorer
@@ -157,13 +157,16 @@ namespace SmartStore.Web.Framework.UI
 			return description;
 		}
 
-		public IEnumerable<IconDescription> FindIcons(string searchTerm)
+		public IEnumerable<IconDescription> FindIcons(string searchTerm, bool relaxed = false)
 		{
 			Guard.NotEmpty(searchTerm, nameof(searchTerm));
 			EnsureIsLoaded();
 
+			var hasExactMatch = false;
+
 			if (_icons.TryGetValue(searchTerm, out var description))
 			{
+				hasExactMatch = true;
 				yield return description;
 			}
 
@@ -174,7 +177,19 @@ namespace SmartStore.Web.Framework.UI
 				{
 					if (_icons.TryGetValue(name, out var description2))
 					{
+						hasExactMatch = true;
 						yield return description2;
+					}
+				}
+			}
+
+			if (relaxed && !hasExactMatch)
+			{
+				foreach (var kvp in _icons)
+				{
+					if (kvp.Key.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) > -1)
+					{
+						yield return kvp.Value;
 					}
 				}
 			}

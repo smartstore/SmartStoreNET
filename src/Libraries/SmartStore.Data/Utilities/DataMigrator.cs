@@ -470,13 +470,6 @@ namespace SmartStore.Data.Utilities
                 "Blog",
                 "Forum.Forums",
                 "Account.Login",
-                "ShippingReturns",
-                "Paymentinfo",
-                "AboutUs",
-                "Imprint",
-                "Disclaimer",
-                "PrivacyNotice",
-                "ConditionsOfUse",
                 "Menu.ServiceMenu"
             };
 
@@ -652,7 +645,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = footerService.Id,
                     ProviderName = entityProvider,
                     Model = "topic:shippinginfo",
-                    Title = GetResource("ShippingReturns"),
                     DisplayOrder = ++order
                 });
                 menuItemSet.Add(new MenuItemRecord
@@ -660,7 +652,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = footerService.Id,
                     ProviderName = entityProvider,
                     Model = "topic:paymentinfo",
-                    Title = GetResource("Paymentinfo"),
                     DisplayOrder = ++order
                 });
 
@@ -672,7 +663,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = footerCompany.Id,
                     ProviderName = entityProvider,
                     Model = "topic:aboutus",
-                    Title = GetResource("AboutUs"),
                     DisplayOrder = ++order
                 });
                 menuItemSet.Add(new MenuItemRecord
@@ -680,7 +670,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = footerCompany.Id,
                     ProviderName = entityProvider,
                     Model = "topic:imprint",
-                    Title = GetResource("Imprint"),
                     DisplayOrder = ++order
                 });
                 menuItemSet.Add(new MenuItemRecord
@@ -688,7 +677,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = footerCompany.Id,
                     ProviderName = entityProvider,
                     Model = "topic:disclaimer",
-                    Title = GetResource("Disclaimer"),
                     DisplayOrder = ++order
                 });
                 menuItemSet.Add(new MenuItemRecord
@@ -696,7 +684,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = footerCompany.Id,
                     ProviderName = entityProvider,
                     Model = "topic:privacyinfo",
-                    Title = GetResource("PrivacyNotice"),
                     DisplayOrder = ++order
                 });
                 menuItemSet.Add(new MenuItemRecord
@@ -704,7 +691,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = footerCompany.Id,
                     ProviderName = entityProvider,
                     Model = "topic:conditionsofuse",
-                    Title = GetResource("ConditionsOfUse"),
                     DisplayOrder = ++order
                 });
 
@@ -769,7 +755,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = serviceMenu.Id,
                     ProviderName = entityProvider,
                     Model = "topic:aboutus",
-                    Title = GetResource("AboutUs"),
                     DisplayOrder = ++order,
                     BeginGroup = true
                 });
@@ -778,7 +763,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = serviceMenu.Id,
                     ProviderName = entityProvider,
                     Model = "topic:disclaimer",
-                    Title = GetResource("Disclaimer"),
                     DisplayOrder = ++order
                 });
                 menuItemSet.Add(new MenuItemRecord
@@ -786,7 +770,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = serviceMenu.Id,
                     ProviderName = entityProvider,
                     Model = "topic:shippinginfo",
-                    Title = GetResource("ShippingReturns"),
                     DisplayOrder = ++order
                 });
                 menuItemSet.Add(new MenuItemRecord
@@ -794,7 +777,6 @@ namespace SmartStore.Data.Utilities
                     MenuId = serviceMenu.Id,
                     ProviderName = entityProvider,
                     Model = "topic:conditionsofuse",
-                    Title = GetResource("ConditionsOfUse"),
                     DisplayOrder = ++order
                 });
 

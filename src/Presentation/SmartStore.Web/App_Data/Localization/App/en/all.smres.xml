@@ -14388,9 +14388,6 @@
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.CreatedOnAsc">
 		<Value>Date: Oldest first</Value>
 	</LocaleResource>
-	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.CreatedOnAsc">
-		<Value>Date: Oldest first</Value>
-	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Initial">
 		<Value>Position</Value>
 	</LocaleResource>

@@ -27,6 +27,7 @@ namespace SmartStore.Admin.Models.Menus
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Title")]
         public string Title { get; set; }
+        public string TitlePlaceholder { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Menus.Item.ShortDescription")]
         public string ShortDescription { get; set; }

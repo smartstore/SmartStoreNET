@@ -328,8 +328,10 @@ namespace SmartStore.Services.Cms
 				
                 if (data.Type == LinkType.Topic)
                 {
-                    data.Label = GetLocalized(data.Id, entityName, "ShortTitle", languageId, summary.ShortTitle)
-                        ?? GetLocalized(data.Id, entityName, "Title", languageId, summary.Title)
+                    data.Label = GetLocalized(data.Id, entityName, "ShortTitle", languageId, null)
+                        ?? GetLocalized(data.Id, entityName, "Title", languageId, null)
+                        ?? summary.ShortTitle.NullEmpty()
+                        ?? summary.Title.NullEmpty()
                         ?? summary.Name;
                 }
                 else

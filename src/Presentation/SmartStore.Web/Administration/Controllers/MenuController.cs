@@ -471,6 +471,7 @@ namespace SmartStore.Admin.Controllers
                 if (entity != null && entity.Id == x.Value.EntityId)
                 {
                     // Ignore. Element cannot be parent itself.
+                    model.TitlePlaceholder = x.Value.Text;
                 }
                 else if (entities.TryGetValue(x.Value.EntityId, out var record) && 
                     _menuItemProviders.TryGetValue(record.ProviderName, out provider) &&

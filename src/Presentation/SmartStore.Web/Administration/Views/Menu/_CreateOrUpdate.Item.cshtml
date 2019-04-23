@@ -68,7 +68,7 @@
                         @Html.SmartLabelFor(model => model.Title)
                     </div>
                     <div class="adminData">
-                        @Html.EditorFor(model => model.Title)
+                        @Html.TextBoxFor(model => Model.Title, new { placeholder = Model.TitlePlaceholder })
                         @Html.ValidationMessageFor(model => model.Title)
                     </div>
                 </div>

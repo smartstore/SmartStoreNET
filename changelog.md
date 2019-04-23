@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.2
 
@@ -44,7 +44,9 @@
 * Added options for alternating price display (in badges).
 * #1515 Poll: Add result tab with a list of answers and customers for a poll
 * BMEcat: Added export and import of product tags.
-* Santander instalment purchase.
+* **Santander**:
+	* Added payment method for instalment purchase.
+	* Added financing calculator.
 * #1542 Pages: Added options to set body CSS class and Html Id.
 * Web-API: Added endpoints for ProductSpecificationAttribute.
 * Trusted Shops: Added new Trustbadge display for mobile devices

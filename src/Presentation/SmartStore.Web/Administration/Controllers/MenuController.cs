@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Menus;
 using SmartStore.ComponentModel;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Cms;
@@ -242,6 +243,12 @@ namespace SmartStore.Admin.Controllers
         // Ajax.
         public ActionResult ItemList(int id)
         {
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            {
+                NotifyAccessDenied();
+                return new EmptyResult();
+            }
+
             var model = new MenuRecordModel { Id = id };
             PrepareModel(model, null);
 
@@ -375,17 +382,88 @@ namespace SmartStore.Admin.Controllers
             return View(itemModel);
         }
 
+        // Ajax.
+        [HttpPost]
+        public ActionResult MoveItem(int menuId, int sourceId, int targetId, string direction)
+        {
+            if (menuId == 0 || sourceId == 0 || targetId == 0 || direction.IsEmpty())
+            {
+                return new EmptyResult();
+            }
+
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
+            {
+                NotifyAccessDenied();
+                return new EmptyResult();
+            }
+
+            using (var scope = new DbContextScope(ctx: Services.DbContext, autoCommit: false))
+            {
+                var newDisplayOrder = 0;
+                var allItems = _menuStorage.GetMenuItems(menuId, 0, true).ToDictionary(x => x.Id, x => x);
+                var sourceItem = allItems[sourceId];
+                var targetItem = allItems[targetId];
+                var siblings = allItems.Select(x => x.Value)
+                    .Where(x => x.ParentItemId == targetItem.ParentItemId)
+                    .OrderBy(x => x.DisplayOrder)
+                    .ToList();
+
+                if (sourceItem.ParentItemId != targetItem.ParentItemId)
+                {
+                    if (direction == "up")
+                    {
+                        newDisplayOrder = siblings
+                            .Select(x => x.DisplayOrder)
+                            .OrderByDescending(x => x)
+                            .FirstOrDefault() + 1;
+                    }
+                    else
+                    {
+                        newDisplayOrder = 1;
+
+                        var count = newDisplayOrder;
+                        siblings.Each(x => x.DisplayOrder = ++count);
+                    }
+                }
+                else
+                {
+                    // Swap display order.
+                    newDisplayOrder = targetItem.DisplayOrder;
+                    targetItem.DisplayOrder = sourceItem.DisplayOrder;
+                }
+
+                sourceItem.ParentItemId = targetItem.ParentItemId;
+                sourceItem.DisplayOrder = newDisplayOrder;
+
+                scope.Commit();
+            }
+
+            return RedirectToAction("ItemList", new { id = menuId });
+
+            //return new JsonResult
+            //{
+            //    Data = new { success = true }
+            //};
+        }
+
         [HttpPost]
         public ActionResult DeleteItem(int id)
         {
+            var isAjax = Request.IsAjaxRequest();
+
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
-                return AccessDeniedView();
+                return isAjax ? new EmptyResult() : AccessDeniedView();
             }
 
             var item = _menuStorage.GetMenuItemById(id);
             if (item == null)
             {
+                if (isAjax)
+                {
+                    return new EmptyResult();
+                }
+
                 return HttpNotFound();
             }
 
@@ -394,12 +472,7 @@ namespace SmartStore.Admin.Controllers
 
             NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
-            if (Request.IsAjaxRequest())
-            {
-                return RedirectToAction("ItemList", new { id = menuId });
-            }
-
-            return RedirectToAction("Edit", new { id = menuId });
+            return RedirectToAction(isAjax ? "ItemList" : "Edit", new { id = menuId });
         }
 
         #endregion

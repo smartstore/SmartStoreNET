@@ -45,8 +45,8 @@ namespace SmartStore.Web.Framework.UI
                     else
                     {
                         node.Value.EntityId = result.Id;
+                        node.Value.EntityName = result.Type.ToString();
                     }
-                    node.Value.EntityName = result.Type.ToString();
                     break;
             }
 

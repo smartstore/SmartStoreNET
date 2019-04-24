@@ -24,7 +24,7 @@ else
 	var item = node.Value;
 	var indentStyle = " style=\"padding-left: {0}px;\"".FormatInvariant(padding);
 
-	<div class="list-group-item menu-item d-flex align-items-center py-2@(level == 0 ? "" : " sub-item")">
+	<div class="list-group-item menu-item d-flex align-items-center py-2@(level == 0 ? "" : " sub-item")" data-id="@item.EntityId">
 		<div class="item-commands btn-group">
 			<button type="button" class="btn btn-light btn-flat btn-no-border rounded-0 btn-item-menu dropdown-toggle no-chevron" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<i class="fa fa-ellipsis-v"></i>
@@ -44,6 +44,14 @@ else
 				<a class="dropdown-item" href="@Url.Action("EditItem", new { id = item.EntityId, area = "Admin" })">
 					<i class="far fa-fw fa-edit"></i>
 					<span>@T("Common.Edit")</span>
+				</a>
+				<a class="menu-item-command dropdown-item" href="#" data-action="move-item-up" data-url="@Url.Action("MoveItem", new { menuId = Model.Id, sourceId = item.EntityId, targetId = "__targetid__", direction = "up", area = "Admin" })">
+					<i class="fa fa-fw fa-angle-up"></i>
+					<span>@T("Common.MoveUp")</span>
+				</a>
+				<a class="menu-item-command dropdown-item" href="#" data-action="move-item-down" data-url="@Url.Action("MoveItem", new { menuId = Model.Id, sourceId = item.EntityId, targetId = "__targetid__", direction = "down", area = "Admin" })">
+					<i class="fa fa-fw fa-angle-down"></i>
+					<span>@T("Common.MoveDown")</span>
 				</a>
 				<a class="menu-item-command dropdown-item" href="#" data-action="delete-item" data-url="@Url.Action("DeleteItem", new { id = item.EntityId, area = "Admin" })">
 					<i class="far fa-fw fa-trash-alt"></i>

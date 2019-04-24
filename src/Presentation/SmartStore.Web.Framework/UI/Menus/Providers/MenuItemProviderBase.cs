@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Cms;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
@@ -70,6 +71,7 @@ namespace SmartStore.Web.Framework.UI
 			var menuItem = new MenuItem
 			{
                 EntityId = entity.Id,
+                EntityName = nameof(MenuItemRecord),
 				Text = title,
                 Visible = entity.Published,
                 Rtl = title?.CurrentLanguage?.Rtl ?? false,

@@ -384,9 +384,9 @@ namespace SmartStore.Admin.Controllers
 
         // Ajax.
         [HttpPost]
-        public ActionResult MoveItem(int menuId, int sourceId, int targetId, string direction)
+        public ActionResult MoveItem(int menuId, int sourceId, string direction)
         {
-            if (menuId == 0 || sourceId == 0 || targetId == 0 || direction.IsEmpty())
+            if (menuId == 0 || sourceId == 0 || direction.IsEmpty())
             {
                 return new EmptyResult();
             }
@@ -399,51 +399,33 @@ namespace SmartStore.Admin.Controllers
 
             using (var scope = new DbContextScope(ctx: Services.DbContext, autoCommit: false))
             {
-                var newDisplayOrder = 0;
                 var allItems = _menuStorage.GetMenuItems(menuId, 0, true).ToDictionary(x => x.Id, x => x);
                 var sourceItem = allItems[sourceId];
-                var targetItem = allItems[targetId];
+
                 var siblings = allItems.Select(x => x.Value)
-                    .Where(x => x.ParentItemId == targetItem.ParentItemId)
+                    .Where(x => x.ParentItemId == sourceItem.ParentItemId)
                     .OrderBy(x => x.DisplayOrder)
                     .ToList();
 
-                if (sourceItem.ParentItemId != targetItem.ParentItemId)
+                var index = siblings.IndexOf(sourceItem) + (direction == "up" ? -1 : 1);
+                if (index >= 0 && index < siblings.Count)
                 {
-                    if (direction == "up")
-                    {
-                        newDisplayOrder = siblings
-                            .Select(x => x.DisplayOrder)
-                            .OrderByDescending(x => x)
-                            .FirstOrDefault() + 1;
-                    }
-                    else
-                    {
-                        newDisplayOrder = 1;
+                    var targetItem = siblings[index];
 
-                        var count = newDisplayOrder;
-                        siblings.Each(x => x.DisplayOrder = ++count);
-                    }
+                    // Ensure unique display order starting from 1.
+                    var count = 0;
+                    siblings.Each(x => x.DisplayOrder = ++count);
+
+                    // Swap display order of source and target item.
+                    var tmp = sourceItem.DisplayOrder;
+                    sourceItem.DisplayOrder = targetItem.DisplayOrder;
+                    targetItem.DisplayOrder = tmp;
+
+                    scope.Commit();
                 }
-                else
-                {
-                    // Swap display order.
-                    newDisplayOrder = targetItem.DisplayOrder;
-                    targetItem.DisplayOrder = sourceItem.DisplayOrder;
-                }
-
-                sourceItem.ParentItemId = targetItem.ParentItemId;
-                sourceItem.DisplayOrder = newDisplayOrder;
-
-                scope.Commit();
             }
 
             return RedirectToAction("ItemList", new { id = menuId });
-
-            //return new JsonResult
-            //{
-            //    Data = new { success = true }
-            //};
         }
 
         [HttpPost]

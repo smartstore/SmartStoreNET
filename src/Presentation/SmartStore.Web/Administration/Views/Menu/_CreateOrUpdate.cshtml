@@ -146,10 +146,9 @@
         // Process item command.
         $('#menu-items-container').on('click', '.menu-item-command', function (e) {
             e.preventDefault();
-            var el = $(this),
-                action = el.data('action');
+            var el = $(this);
 
-            switch (action) {
+            switch (el.data('action')) {
                 case 'delete-item':
 					el.doAjax({
 						type: 'POST',
@@ -163,31 +162,16 @@
                     break;
                 case 'move-item-up':
                 case 'move-item-down':
-                    var url = el.data('url'),
-                        item = el.closest('.menu-item'),
-                        sourceId = item.data('id');
-
-                    var ids = $('#menu-items-container').find('.menu-item').map(function () {
-                        return $(this).data('id');
-                    }).get();
-
-                    var index = ids.findIndex(function (elem) {
-                        return elem === sourceId;
-                    });
-                    index += action === 'move-item-up' ? -1 : 1;
-
-                    if (index >= 0 && index < ids.length) {
-                        $({}).doAjax({
+                    if (!el.hasClass('disabled')) {
+                        el.doAjax({
                             type: 'POST',
-                            url: url.replace('__targetid__', ids[index]),
                             callbackSuccess: function (response) {
                                 if (!_.isEmpty(response)) {
                                     $('#menu-items').html(response);
                                 }
-						    }
+                            }
                         });
                     }
-
                     break;
             }
 

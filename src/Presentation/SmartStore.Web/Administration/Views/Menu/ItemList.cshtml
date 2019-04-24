@@ -22,9 +22,10 @@ else
 @helper ItemGroup(TreeNode<SmartStore.Web.Framework.UI.MenuItem> node, int level, int padding)
 {
 	var item = node.Value;
+    var parentId = node.Parent != null ? node.Parent.Value.EntityId : 0;
 	var indentStyle = " style=\"padding-left: {0}px;\"".FormatInvariant(padding);
 
-	<div class="list-group-item menu-item d-flex align-items-center py-2@(level == 0 ? "" : " sub-item")" data-id="@item.EntityId">
+	<div class="list-group-item menu-item d-flex align-items-center py-2@(level == 0 ? "" : " sub-item")" data-id="@item.EntityId" data-parentid="@parentId">
 		<div class="item-commands btn-group">
 			<button type="button" class="btn btn-light btn-flat btn-no-border rounded-0 btn-item-menu dropdown-toggle no-chevron" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<i class="fa fa-ellipsis-v"></i>
@@ -45,11 +46,11 @@ else
 					<i class="far fa-fw fa-edit"></i>
 					<span>@T("Common.Edit")</span>
 				</a>
-				<a class="menu-item-command dropdown-item" href="#" data-action="move-item-up" data-url="@Url.Action("MoveItem", new { menuId = Model.Id, sourceId = item.EntityId, targetId = "__targetid__", direction = "up", area = "Admin" })">
+				<a class="menu-item-command dropdown-item@(node.Previous == null ? " disabled" : "")" href="#" data-action="move-item-up" data-url="@Url.Action("MoveItem", new { menuId = Model.Id, sourceId = item.EntityId, direction = "up", area = "Admin" })">
 					<i class="fa fa-fw fa-angle-up"></i>
 					<span>@T("Common.MoveUp")</span>
 				</a>
-				<a class="menu-item-command dropdown-item" href="#" data-action="move-item-down" data-url="@Url.Action("MoveItem", new { menuId = Model.Id, sourceId = item.EntityId, targetId = "__targetid__", direction = "down", area = "Admin" })">
+				<a class="menu-item-command dropdown-item@(node.Next == null ? " disabled" : "")" href="#" data-action="move-item-down" data-url="@Url.Action("MoveItem", new { menuId = Model.Id, sourceId = item.EntityId, direction = "down", area = "Admin" })">
 					<i class="fa fa-fw fa-angle-down"></i>
 					<span>@T("Common.MoveDown")</span>
 				</a>

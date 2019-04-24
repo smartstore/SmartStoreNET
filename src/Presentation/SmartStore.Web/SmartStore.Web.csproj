@@ -1809,7 +1809,6 @@
     <Content Include="Views\Shared\Layouts\_Layout.Bare.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Range.cshtml" />
     <Content Include="Themes\Flex\Content\_accordion.scss" />
-    <Content Include="Views\Shared\Partials\FontAwesomeIcon.cshtml" />
     <Content Include="Views\Shared\Partials\_Assets.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Link.cshtml" />
     <Content Include="Views\Shared\Menus\Dropdown.cshtml" />

@@ -271,7 +271,7 @@ namespace SmartStore.Admin.Controllers
 		#region UI Helpers
 
 		[HttpPost]
-		public JsonResult SearchIcons(string term, int page = 1)
+		public JsonResult SearchIcons(string term, string selected = null, int page = 1)
 		{
 			var icons = _iconExplorer.Value.All.AsEnumerable();
 

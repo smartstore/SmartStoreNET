@@ -288,7 +288,6 @@ namespace SmartStore.Admin.Controllers
 				{
 					id = x.Name,
 					text = x.Name,
-					name = x.Name,
 					hasRegularStyle = x.HasRegularStyle,
 					isBrandIcon = x.IsBrandIcon,
 					isPro = x.IsPro,

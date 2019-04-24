@@ -1,5 +1,3 @@
-;
-
 // Unobtrusive handler for inline discount rule partials
 (function ($, window, document, undefined) {
 

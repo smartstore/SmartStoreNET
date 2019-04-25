@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Newtonsoft.Json;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
-	public class IconDescription
+	public class IconDescription : IEquatable<IconDescription>
 	{
 		[JsonIgnore]
 		public string Name { get; set; }
@@ -70,6 +71,24 @@ namespace SmartStore.Web.Framework.UI
 			}
 
 			return string.Concat(prefix, " fa-", Name);
+		}
+
+		public override bool Equals(object other)
+		{
+			return this.Equals(other as IconDescription);
+		}
+
+		public bool Equals(IconDescription other)
+		{
+			if (other == null)
+				return false;
+
+			return this.Name == other.Name;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCodeCombiner.Start().Add(typeof(IconDescription)).Add(this.Name).CombinedHash;
 		}
 
 		public class Search

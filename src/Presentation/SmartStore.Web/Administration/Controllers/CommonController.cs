@@ -273,6 +273,8 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public JsonResult SearchIcons(string term, string selected = null, int page = 1)
 		{
+			const int pageSize = 250;
+
 			var icons = _iconExplorer.Value.All.AsEnumerable();
 
 			if (term.HasValue())
@@ -280,7 +282,16 @@ namespace SmartStore.Admin.Controllers
 				icons = _iconExplorer.Value.FindIcons(term, true);
 			}
 
-			var result = new PagedList<IconDescription>(icons, page - 1, 250);
+			var result = new PagedList<IconDescription>(icons, page - 1, pageSize);
+
+			if (selected.HasValue() && term.IsEmpty())
+			{
+				var selIcon = _iconExplorer.Value.GetIconByName(selected);
+				if (!selIcon.IsPro && !result.Contains(selIcon))
+				{
+					result.Insert(0, selIcon);
+				}
+			}
 
 			return Json(new
 			{

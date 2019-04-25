@@ -180,7 +180,7 @@
                     var option = $(item.element),
                         imageUrl = option.data('imageurl'),
                         color = option.data('color'),
-                        hint = option.data('hint')
+                        hint = option.data('hint'),
                         icon = option.data('icon');
                     
                     if (imageUrl) {

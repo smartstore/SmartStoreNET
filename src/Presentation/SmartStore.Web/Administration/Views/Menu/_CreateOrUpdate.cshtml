@@ -144,7 +144,7 @@
 <script>
     $(function () {
         // Process item command.
-        $('#menu-items-container').on('click', '.menu-item-command', function (e) {
+        $('#menu-items-container').on('click', '.menu-item-command:not(.disabled)', function (e) {
             e.preventDefault();
             var el = $(this);
 
@@ -162,16 +162,14 @@
                     break;
                 case 'move-item-up':
                 case 'move-item-down':
-                    if (!el.hasClass('disabled')) {
-                        el.doAjax({
-                            type: 'POST',
-                            callbackSuccess: function (response) {
-                                if (!_.isEmpty(response)) {
-                                    $('#menu-items').html(response);
-                                }
+                    el.doAjax({
+                        type: 'POST',
+                        callbackSuccess: function (response) {
+                            if (!_.isEmpty(response)) {
+                                $('#menu-items').html(response);
                             }
-                        });
-                    }
+                        }
+                    });
                     break;
             }
 

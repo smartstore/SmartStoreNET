@@ -70,31 +70,6 @@ namespace SmartStore.Services.Cms
             }
         }
 
-        /// <summary>
-        /// Creates the full link expression including type, value and query string.
-        /// </summary>
-        /// <param name="includeQueryString">Whether to include the query string.</param>
-        /// <returns>Link expression.</returns>
-        public string GetExpression(bool includeQueryString = true)
-        {
-            if (Value == null)
-            {
-                return string.Empty;
-            }
-
-            var result = Type == LinkType.Url
-                ? Value.ToString()
-                : string.Concat(Type.ToString().ToLower(), ":", Value.ToString());
-
-            if (includeQueryString && Type != LinkType.Url && !string.IsNullOrWhiteSpace(QueryString))
-            {
-                return string.Concat(result, "?", QueryString);
-            }
-
-            return result;
-        }
-
-
         public override string ToString()
 		{
 			return this.Link;
@@ -140,6 +115,30 @@ namespace SmartStore.Services.Cms
                 default:
                     throw new SmartException("Unknown link builder type.");
             }
+        }
+
+        /// <summary>
+        /// Creates the full link expression including type, value and query string.
+        /// </summary>
+        /// <param name="includeQueryString">Whether to include the query string.</param>
+        /// <returns>Link expression.</returns>
+        public static string CreateExpression(this LinkResolverResult data, bool includeQueryString = true)
+        {
+            if (data?.Value == null)
+            {
+                return string.Empty;
+            }
+
+            var result = data.Type == LinkType.Url
+                ? data.Value.ToString()
+                : string.Concat(data.Type.ToString().ToLower(), ":", data.Value.ToString());
+
+            if (includeQueryString && data.Type != LinkType.Url && !string.IsNullOrWhiteSpace(data.QueryString))
+            {
+                return string.Concat(result, "?", data.QueryString);
+            }
+
+            return result;
         }
     }
 }

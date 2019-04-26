@@ -172,14 +172,16 @@ namespace SmartStore.Web.Framework.Localization
 
         public LocalizedRoute Clone()
         {
-            var clone = new LocalizedRoute(this.Url, 
-                new RouteValueDictionary(this.Defaults),
-                new RouteValueDictionary(this.Constraints), 
-                new RouteValueDictionary(this.DataTokens), 
-                new MvcRouteHandler());
-            clone.RouteExistingFiles = this.RouteExistingFiles;
-            clone.IsClone = true;
-            return clone;
+			var clone = new LocalizedRoute(this.Url,
+				new RouteValueDictionary(this.Defaults),
+				new RouteValueDictionary(this.Constraints),
+				new RouteValueDictionary(this.DataTokens),
+				new MvcRouteHandler())
+			{
+				RouteExistingFiles = this.RouteExistingFiles,
+				IsClone = true
+			};
+			return clone;
         }
 
         object ICloneable.Clone()

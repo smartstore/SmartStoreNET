@@ -1,13 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Plugins
 {
-	public class ProviderMetadata
+	public interface IProviderMetadata
+	{
+		/// <summary>
+		/// Gets the provider system name
+		/// </summary>
+		string SystemName { get; }
+
+		/// <summary>
+		/// Gets the resource key pattern for user data (e.g. FriendlyName)
+		/// </summary>
+		/// <example>
+		/// Plugins.{1}.{0} > 0 = provider system name, 1 = propertyname
+		/// </example>
+		string ResourceKeyPattern { get; }
+
+		/// <summary>
+		/// Gets the provider friendly name
+		/// </summary>
+		string FriendlyName { get; }
+
+		/// <summary>
+		/// Gets the provider description
+		/// </summary>
+		string Description { get; }
+
+		/// <summary>
+		/// Gets the provider display order
+		/// </summary>
+		int DisplayOrder { get; }
+	}
+
+	public class ProviderMetadata : IProviderMetadata
 	{	
 		/// <summary>
 		/// Gets or sets the provider type
@@ -112,7 +140,7 @@ namespace SmartStore.Core.Plugins
 
 		public override int GetHashCode()
 		{
-			return SystemName.GetHashCode();
+			return HashCodeCombiner.Start().Add(typeof(ProviderMetadata)).Add(SystemName).CombinedHash;
 		}
 	}
 }

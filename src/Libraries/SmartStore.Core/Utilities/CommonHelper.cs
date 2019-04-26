@@ -38,11 +38,11 @@ namespace SmartStore.Utilities
 		}
 
 		/// <summary>
-		/// Returns an random interger number within a specified rage
+		/// Returns a random number within the range <paramref name="min"/> to <paramref name="max"/> - 1.
 		/// </summary>
 		/// <param name="min">Minimum number</param>
-		/// <param name="max">Maximum number</param>
-		/// <returns>Result</returns>
+		/// <param name="max">Maximum number (exclusive!).</param>
+		/// <returns>Random integer number.</returns>
 		public static int GenerateRandomInteger(int min = 0, int max = 2147483647)
 		{
 			var randomNumberBuffer = new byte[10];

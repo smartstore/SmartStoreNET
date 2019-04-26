@@ -45,6 +45,11 @@ namespace SmartStore.Services.Cms.Blocks
         /// <summary>
         /// The property value is a manufacturer identifier.
         /// </summary>
-        Manufacturer
+        Manufacturer,
+
+        /// <summary>
+        /// The property value is a link builder expression.
+        /// </summary>
+        Link
     }
 }

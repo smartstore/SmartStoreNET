@@ -1402,8 +1402,6 @@ table.payment-method-features td {
             left: 0;
             top: 0;
             bottom: 0;
-            /*opacity: 0;
-            transition: opacity 0.05s linear;*/
 
             > .btn {
                 position: relative;
@@ -1413,10 +1411,6 @@ table.payment-method-features td {
         &:hover .item-commands {
             opacity: 1;
         }
-    }
-
-    :not(:last-child) .sub-item:last-child {
-        border-bottom: 0 none;
     }
 }
 

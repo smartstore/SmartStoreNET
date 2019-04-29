@@ -49,7 +49,7 @@
 
 		if (typeof method === 'object' || !method) {
 			var btn = this;
-			$(btn).on('click', function (e) {
+            $(btn).on('click', function (e) {
 				if (!btn.is('.disabled')) {
 					loadDialog(btn, normalizeOptions(method, btn));
 				}
@@ -91,7 +91,15 @@
 
 		if (_.isEmpty(options.url)) {
 			options.url = self.attr('data-url');
-		}
+        }
+
+        if (options.maxItems == 0 && !_.isEmpty(self.data('maxitems'))) {
+            options.maxItems = self.data('maxitems');
+        }
+
+        if (options.appendMode == true && !_.isEmpty(self.data('appendmode'))) {
+            options.appendMode = self.data('appendmode');
+        }
 
 		if (_.isEmpty(options.url)) {
 			console.error('EntityPicker cannot find the url for entity picker!');
@@ -241,11 +249,11 @@
 			fillList(this, { append: false });
 		});
 
-	    // lazy loading
+        // lazy loading
 		dialog.find('.modal-body').on('scroll', function (e) {
             if (dialog.find('.load-more:not(.loading)').visible(true, false, 'vertical')) {
                 fillList(this, { append: true });
-		    }    
+            }    
 		});
 
 		// item select and item hover
@@ -319,7 +327,8 @@
 				$(opts.targetInput)
                     .val(selectedValues.join(opts.delim))
 					.focus()
-					.blur();
+                    .blur()
+                    .trigger("change");
 			}
 
 			if (_.isFunction(opts.onSelectionCompleted)) {

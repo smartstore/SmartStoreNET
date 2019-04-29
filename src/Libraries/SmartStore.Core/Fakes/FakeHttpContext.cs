@@ -66,6 +66,8 @@ namespace SmartStore.Core.Fakes
             _serverVariables = serverVariables;
 
             _items = new Dictionary<object, object>();
+
+            Handler = new FakeHttpHandler();
         }
 
 		public override IHttpHandler Handler { get; set; }

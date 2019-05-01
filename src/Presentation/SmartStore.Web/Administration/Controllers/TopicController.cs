@@ -376,7 +376,7 @@ namespace SmartStore.Admin.Controllers
         }
 
 		// AJAX
-		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false)
+		public ActionResult AllTopics(string label, int selectedId, bool useTitles = false, bool includeWidgets = false, bool includeHomePage = false)
 		{
 			var query = from x in _topicService.GetAllTopics(showHidden: true).SourceQuery
 						where (includeWidgets || !x.RenderAsWidget)
@@ -403,6 +403,16 @@ namespace SmartStore.Admin.Controllers
 					labelTopic.SystemName = label;
 
 				topics.Insert(0, labelTopic);
+			}
+
+			if (includeHomePage)
+			{
+				topics.Insert(0, new Topic
+				{
+					Id = -10,
+					Title = T("Admin.ContentManagement.Homepage"),
+					SystemName = T("Admin.ContentManagement.Homepage"),
+				});
 			}
 
 			var list = from x in topics

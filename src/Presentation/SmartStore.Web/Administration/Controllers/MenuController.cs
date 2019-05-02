@@ -549,18 +549,24 @@ namespace SmartStore.Admin.Controllers
 
         private void UpdateLocales(MenuRecord entity, MenuRecordModel model)
         {
-            foreach (var localized in model.Locales)
+            if (model.Locales != null)
             {
-                _localizedEntityService.SaveLocalizedValue(entity, x => x.Title, localized.Title, localized.LanguageId);
+                foreach (var localized in model.Locales)
+                {
+                    _localizedEntityService.SaveLocalizedValue(entity, x => x.Title, localized.Title, localized.LanguageId);
+                }
             }
         }
 
         private void UpdateLocales(MenuItemRecord entity, MenuItemRecordModel model)
         {
-            foreach (var localized in model.Locales)
+            if (model.Locales != null)
             {
-                _localizedEntityService.SaveLocalizedValue(entity, x => x.Title, localized.Title, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(entity, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
+                foreach (var localized in model.Locales)
+                {
+                    _localizedEntityService.SaveLocalizedValue(entity, x => x.Title, localized.Title, localized.LanguageId);
+                    _localizedEntityService.SaveLocalizedValue(entity, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
+                }
             }
         }
 

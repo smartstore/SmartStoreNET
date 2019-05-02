@@ -558,7 +558,7 @@ namespace SmartStore.Data.Utilities
                     IsSystemMenu = true,
                     Published = true,
                     Template = "Dropdown",
-                    Title = GetResource("Menu.ServiceMenu")
+                    Title = GetResource("Menu.ServiceMenu").NullEmpty() ?? "Service"
                 });
 
                 scope.Commit();

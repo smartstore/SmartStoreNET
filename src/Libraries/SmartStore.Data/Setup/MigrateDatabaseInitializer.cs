@@ -88,28 +88,31 @@ namespace SmartStore.Data.Setup
 				}
 			}
 
-			// run all pending migrations
-			var appliedCount = migrator.RunPendingMigrations(context);
-
-			if (appliedCount > 0)
+			using (new DbContextScope(context as IDbContext, hooksEnabled: false))
 			{
-				Seed(context);
-			}
-			else
-			{
-				// DB is up-to-date and no migration ran.
-				EfMappingViewCacheFactory.SetContext(context);
+				// run all pending migrations
+				var appliedCount = migrator.RunPendingMigrations(context);
 
-				if (config is MigrationsConfiguration coreConfig && context is SmartObjectContext)
+				if (appliedCount > 0)
 				{
-					// Call the main Seed method anyway (on every startup),
-					// we could have locale resources or settings to add/update.
-					coreConfig.SeedDatabase(context as SmartObjectContext);
+					Seed(context);
 				}
-			}
+				else
+				{
+					// DB is up-to-date and no migration ran.
+					EfMappingViewCacheFactory.SetContext(context);
 
-			// not needed anymore
-			this.DataSeeders = null;
+					if (config is MigrationsConfiguration coreConfig && context is SmartObjectContext ctx)
+					{
+						// Call the main Seed method anyway (on every startup),
+						// we could have locale resources or settings to add/update.
+						coreConfig.SeedDatabase(ctx);
+					}
+				}
+
+				// not needed anymore
+				this.DataSeeders = null;
+			}
 		}
 
 		#endregion

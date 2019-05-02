@@ -222,32 +222,33 @@ namespace SmartStore.Services.Configuration
 
 		protected virtual ISettings LoadSettingCore(Type settingType, int storeId = 0)
 		{
-			if (settingType.HasAttribute<JsonPersistAttribute>(true))
-			{
-				return LoadSettingsJson(settingType, storeId);
-			}
-
-			var settings = (ISettings)Activator.CreateInstance(settingType);
-
+			var allSettings = GetAllCachedSettings();
+			var instance = (ISettings)Activator.CreateInstance(settingType);
 			var prefix = settingType.Name;
 
 			foreach (var fastProp in FastProperty.GetProperties(settingType).Values)
 			{
 				var prop = fastProp.Property;
 
-				// get properties we can read and write to
+				// Get properties we can read and write to
 				if (!prop.CanWrite)
 					continue;
 
-				var key = prefix + "." + prop.Name;
-				// load by store
-				string setting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
+				string key = prefix + "." + prop.Name;
 
+				if (!allSettings.TryGetValue(CreateCacheKey(key, storeId), out var cachedSetting) && storeId > 0)
+				{
+					// // Fallback to shared (storeId = 0)
+					allSettings.TryGetValue(CreateCacheKey(key, 0), out cachedSetting);
+				}
+
+				string setting = cachedSetting?.Value;
+				
 				if (setting == null)
 				{
 					if (fastProp.IsSequenceType)
 					{
-						if ((fastProp.GetValue(settings) as IEnumerable) != null)
+						if ((fastProp.GetValue(instance) as IEnumerable) != null)
 						{
 							// Instance of IEnumerable<> was already created, most likely in the constructor of the settings concrete class.
 							// In this case we shouldn't let the EnumerableConverter create a new instance but keep this one.
@@ -292,7 +293,7 @@ namespace SmartStore.Services.Configuration
 					object value = converter.ConvertFrom(setting);
 
 					// Set property
-					fastProp.SetValue(settings, value);
+					fastProp.SetValue(instance, value);
 				}
 				catch (Exception ex)
 				{
@@ -301,7 +302,7 @@ namespace SmartStore.Services.Configuration
 				}
 			}
 
-			return settings;
+			return instance;
 		}
 
 		public virtual void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
@@ -366,12 +367,6 @@ namespace SmartStore.Services.Configuration
 			{
 				var settingType = settings.GetType();
 				var prefix = settingType.Name;
-
-				if (settingType.HasAttribute<JsonPersistAttribute>(true))
-				{
-					SaveSettingsJson(settings);
-					return;
-				}
 
 				/* We do not clear cache after each setting update.
 				 * This behavior can increase performance because cached settings will not be cleared 
@@ -443,12 +438,6 @@ namespace SmartStore.Services.Configuration
         {
 			using (BeginScope())
 			{
-				if (typeof(T).HasAttribute<JsonPersistAttribute>(true))
-				{
-					DeleteSettingsJson<T>();
-					return;
-				}
-
 				var settingsToDelete = new List<Setting>();
 				var allSettings = GetAllSettings();
 				foreach (var prop in typeof(T).GetProperties())

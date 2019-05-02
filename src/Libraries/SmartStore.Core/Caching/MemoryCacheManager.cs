@@ -15,6 +15,8 @@ namespace SmartStore.Core.Caching
 {
     public partial class MemoryCacheManager : DisposableObject, ICacheManager
     {
+		const string LockRecursionExceptionMessage = "Acquiring identical cache items recursively is not supported. Key: {0}";
+		
 		// Wwe put a special string into cache if value is null,
 		// otherwise our 'Contains()' would always return false,
 		// which is bad if we intentionally wanted to save NULL values.
@@ -79,8 +81,14 @@ namespace SmartStore.Core.Caching
 				return value;
 			}
 
+			var lockKey = "cache:" + key;
+			if (KeyedLock.IsLockHeld(lockKey))
+			{
+				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
+			}
+
 			// Get the (semaphore) locker specific to this key
-			using (KeyedLock.Lock(key))
+			using (KeyedLock.Lock(lockKey, TimeSpan.FromMinutes(1)))
 			{
 				// Atomic operation must be outer locked
 				if (!TryGet(key, independent, out value))
@@ -104,8 +112,14 @@ namespace SmartStore.Core.Caching
 				return value;
 			}
 
+			var lockKey = "cache:" + key;
+			if (KeyedLock.IsLockHeld(lockKey))
+			{
+				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
+			}
+
 			// Get the async (semaphore) locker specific to this key
-			using (await KeyedLock.LockAsync(key))
+			using (await KeyedLock.LockAsync(lockKey, TimeSpan.FromMinutes(1)))
 			{
 				if (!TryGet(key, independent, out value))
 				{

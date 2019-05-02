@@ -22,7 +22,7 @@ namespace SmartStore.Utilities.Threading
 		private object Key { get; set; }
 		private SemaphoreSlim Semaphore { get; set; }
 
-		public bool IsLockHeld
+		public bool HasWaiters
 		{
 			get { return _waiterCount > 1; }
 		}
@@ -37,6 +37,11 @@ namespace SmartStore.Utilities.Threading
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DecrementCount() => Interlocked.Decrement(ref _waiterCount);
+
+		public static bool IsLockHeld(object key)
+		{
+			return _locks.ContainsKey(key);
+		}
 
 		public static IDisposable Lock(object key)
 		{

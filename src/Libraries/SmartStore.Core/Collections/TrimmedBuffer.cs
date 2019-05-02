@@ -10,7 +10,7 @@ namespace SmartStore.Collections
 		private readonly List<T> _list;
 
 		public TrimmedBuffer(int maxSize)
-			: this(Enumerable.Empty<T>(), default(T), maxSize)
+			: this((IEnumerable<T>)null, default(T), maxSize)
 		{
 		}
 
@@ -20,22 +20,21 @@ namespace SmartStore.Collections
 		}
 
 		public TrimmedBuffer(string collection, int maxSize)
-			: this(collection.Convert<IEnumerable<T>>().Distinct(), default(T), maxSize)
+			: this(collection.NullEmpty()?.Convert<IEnumerable<T>>()?.Distinct(), default(T), maxSize)
 		{
 		}
 
 		public TrimmedBuffer(string collection, T newItem, int maxSize)
-			: this(collection.Convert<IEnumerable<T>>().Distinct(), newItem, maxSize)
+			: this(collection.NullEmpty()?.Convert<IEnumerable<T>>()?.Distinct(), newItem, maxSize)
 		{
 		}
 
 		public TrimmedBuffer(IEnumerable<T> collection, T newItem, int maxSize)
 		{
-			Guard.NotNull(collection, nameof(collection));
 			Guard.IsPositive(maxSize, nameof(maxSize));
 
 			_maxSize = maxSize;
-			_list = new List<T>(collection);
+			_list = new List<T>(collection ?? Enumerable.Empty<T>());
 
 			if (newItem != null)
 			{

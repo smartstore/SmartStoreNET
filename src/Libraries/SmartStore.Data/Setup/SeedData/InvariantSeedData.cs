@@ -3873,6 +3873,8 @@ namespace SmartStore.Data.Setup
 						SystemName = "CheckoutAsGuestOrRegister",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
+                        RenderAsWidget = true,
+                        WidgetWrapContent = false,
 						Title = "",
 						Body = "<p><strong>Register and save time!</strong><br />Register with us for future convenience:</p><ul><li>Fast and easy check out</li><li>Easy access to your order history and status</li></ul>"
 					},
@@ -3889,7 +3891,9 @@ namespace SmartStore.Data.Setup
 						SystemName = "ContactUs",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Contact us",
+                        RenderAsWidget = true,
+                        WidgetWrapContent = false,
+                        Title = "Contact us",
 						Body = "<p>Put your contact information here. You can edit this in the admin site.</p>"
 					},
 				new Topic
@@ -3897,7 +3901,9 @@ namespace SmartStore.Data.Setup
 						SystemName = "ForumWelcomeMessage",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Forums",
+                        RenderAsWidget = true,
+                        WidgetWrapContent = false,
+                        Title = "Forums",
 						Body = "<p>Put your welcome message here. You can edit this in the admin site.</p>"
 					},
 				new Topic
@@ -3905,7 +3911,9 @@ namespace SmartStore.Data.Setup
 						SystemName = "HomePageText",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "Welcome to our store",
+                        RenderAsWidget = true,
+                        WidgetWrapContent = false,
+                        Title = "Welcome to our store",
 						Body = "<p>Online shopping is the process consumers go through to purchase products or services over the Internet. You can edit this in the admin site.</p></p>"
 					},
 				new Topic
@@ -3913,7 +3921,9 @@ namespace SmartStore.Data.Setup
 						SystemName = "LoginRegistrationInfo",
 						IncludeInSitemap = false,
 						IsPasswordProtected = false,
-						Title = "About login / registration",
+                        RenderAsWidget = true,
+                        WidgetWrapContent = false,
+                        Title = "About login / registration",
 						Body = "<p><strong>Not registered yet?</strong></p><p>Create your own account now and experience our diversity. With an account you can place orders faster and will always have a&nbsp;perfect overview of your current and previous orders.</p>"
 					},
 				new Topic

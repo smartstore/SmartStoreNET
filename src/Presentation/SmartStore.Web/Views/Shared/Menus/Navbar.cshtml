@@ -96,15 +96,15 @@
 
             <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.EntityId" data-id="@item.EntityId">
                 <a href="@itemUrl" @Html.Attrs(item.LinkHtmlAttributes)>
-                    @if (hasIcons)
+                    @if (item.Icon.HasValue())
                     {
-	                    <i class="fa-fw@(item.Icon.HasValue() ? item.Icon.EnsureStartsWith(" ") : "")"></i>
+	                    <i class="@item.Icon"></i>
                     }
-                    else if (hasImages)
+                    else if (item.ImageUrl.HasValue())
                     {
-                        <img class="sm-icon" src="@Url.Content(item.ImageUrl.NullEmpty() ?? "~/Administration/Content/images/ap-default-white.png")" alt="" />
+                        <img class="sm-icon" src="@Url.Content(item.ImageUrl)" alt="" />
                     }
-                    <span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
+					<span @Html.Attr("dir", item.Rtl ? "rtl" : "ltr", item.Rtl != rtl)>@itemText</span>
                 </a>
                 @if (item.BadgeText.HasValue())
                 {

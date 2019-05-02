@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.UI;
 namespace SmartStore.Admin.Models.Menus
 {
     [Validator(typeof(MenuItemRecordValidator))]
-    public class MenuItemRecordModel : EntityModelBase, IIcon, ILocalizedModel<MenuItemRecordLocalizedModel>
+    public class MenuItemRecordModel : TabbableModel, IIcon, ILocalizedModel<MenuItemRecordLocalizedModel>
     {
         public int MenuId { get; set; }
         public string Model { get; set; }

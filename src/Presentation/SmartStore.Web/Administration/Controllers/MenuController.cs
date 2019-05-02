@@ -285,7 +285,7 @@ namespace SmartStore.Admin.Controllers
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
-        public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing)
+        public ActionResult CreateItem(MenuItemRecordModel itemModel, bool continueEditing, FormCollection form)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -301,6 +301,8 @@ namespace SmartStore.Admin.Controllers
                 _menuStorage.InsertMenuItem(item);
 
                 UpdateLocales(item, itemModel);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(itemModel, item, form));
                 NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 if (continueEditing)
@@ -345,7 +347,7 @@ namespace SmartStore.Admin.Controllers
 
         // Do not name parameter "model" because of property of same name.
         [HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-item-continue", "continueEditing")]
-        public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing)
+        public ActionResult EditItem(MenuItemRecordModel itemModel, bool continueEditing, FormCollection form)
         {
             if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageMenus))
             {
@@ -367,6 +369,8 @@ namespace SmartStore.Admin.Controllers
                 _menuStorage.UpdateMenuItem(item);
 
                 UpdateLocales(item, itemModel);
+
+                Services.EventPublisher.Publish(new ModelBoundEvent(itemModel, item, form));
                 NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
                 if (continueEditing)

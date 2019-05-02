@@ -7,14 +7,14 @@
 
 @Html.SmartStore().TabStrip().Name("menu-edit").Style(TabsStyle.Material).Items(x =>
 {
-	x.Add().Text(T("Admin.Common.General").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
 	x.Add().Text(T("Admin.Catalog.Categories.Acl").Text).Content(TabAcl());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 	
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "menu-edit", this.Html, this.Model));
 })
 
-@helper TabInfo()
+@helper TabGeneral()
 { 
     <div class="adminContent mb-3">
         <div class="adminRow">

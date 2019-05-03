@@ -494,7 +494,7 @@ namespace SmartStore.Admin.Controllers
                 .ToList();
 
             var entities = _menuStorage.GetMenuItems(model.Id, 0, true);
-            model.ItemTree = entities.GetTree("EditMenu", _menuItemProviders, true);
+            model.ItemTree = entities.GetTree("EditMenu", _menuItemProviders);
         }
 
         private void PrepareModel(MenuItemRecordModel model, MenuItemRecord entity)
@@ -523,7 +523,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             // Create list for selecting parent item.
-            var tree = entities.Values.GetTree("EditMenu", _menuItemProviders, true);
+            var tree = entities.Values.GetTree("EditMenu", _menuItemProviders);
 
             tree.Traverse(x =>
             {

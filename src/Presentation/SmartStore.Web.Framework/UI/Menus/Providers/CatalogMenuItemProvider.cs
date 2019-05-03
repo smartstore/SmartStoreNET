@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.UI
 
         public Localizer T { get; set; }
 
-        public override void Append(MenuItemProviderRequest request)
+        public override TreeNode<MenuItem> Append(MenuItemProviderRequest request)
 		{
             if (request.IsEditMode)
             {
@@ -64,10 +64,13 @@ namespace SmartStore.Web.Framework.UI
                 }
             }
 
-			// TBD: Cache invalidation workflow changes, because the catalog tree 
-			// is now contained within other menus. Invalidating the tree now means:
-			// invalidate all containing menus also.
-		}
+            // Do not traverse appended items.
+            return null;
+
+            // TBD: Cache invalidation workflow changes, because the catalog tree 
+            // is now contained within other menus. Invalidating the tree now means:
+            // invalidate all containing menus also.
+        }
 
 		protected override void ApplyLink(MenuItemProviderRequest request, TreeNode<MenuItem> node)
 		{

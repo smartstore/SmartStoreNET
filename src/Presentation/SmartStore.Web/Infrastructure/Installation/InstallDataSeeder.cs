@@ -553,7 +553,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateEmailAccounts", _data.EmailAccounts());
 			Populate("PopulateMessageTemplates", PopulateMessageTemplates);
 			Populate("PopulateTopics", PopulateTopics);
-            Populate("PopulateMenus", PopulateMenus);
             Populate("PopulateSettings", PopulateSettings);
 			Populate("PopulateActivityLogTypes", _data.ActivityLogTypes());
 			Populate("PopulateCustomersAndUsers", () => HashDefaultCustomerPassword(_config.DefaultUserName, _config.DefaultUserPassword));
@@ -562,8 +561,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Populate("PopulateManufacturerTemplates", PopulateManufacturerTemplates);
 			Populate("PopulateScheduleTasks", _data.ScheduleTasks());
 			Populate("PopulateLocaleResources", PopulateLocaleResources);
+            Populate("PopulateMenus", PopulateMenus);
 
-			if (_config.SeedSampleData)
+            if (_config.SeedSampleData)
             {
 				_logger.Info("Seeding sample data");
 

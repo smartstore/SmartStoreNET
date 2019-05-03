@@ -126,13 +126,11 @@ namespace SmartStore.Web.Framework.UI
         /// <param name="origin">Origin of the tree.</param>
         /// <param name="items">List of menu items.</param>
         /// <param name="itemProviders">Menu item providers.</param>
-        /// <param name="includeItemsWithoutExistingParent">Whether to include menu items without existing parent menu item.</param>
         /// <returns>Tree of menu items.</returns>
         public static TreeNode<MenuItem> GetTree(
             this IEnumerable<MenuItemRecord> items,
             string origin,
-            IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> itemProviders,
-            bool includeItemsWithoutExistingParent = false)
+            IDictionary<string, Lazy<IMenuItemProvider, MenuItemProviderMetadata>> itemProviders)
         {
             Guard.NotNull(items, nameof(items));
             Guard.NotNull(itemProviders, nameof(itemProviders));
@@ -146,88 +144,40 @@ namespace SmartStore.Web.Framework.UI
             var menu = items.First().Menu;
             var rootItem = new MenuItem
             {
-                Text = menu.GetLocalized(x => x.Title)
+                Text = menu.GetLocalized(x => x.Title),
+                EntityId = 0
             };
             var root = new TreeNode<MenuItem>(rootItem)
             {
                 Id = menu.SystemName
             };
 
-            var parent = root;
-            MenuItemRecord prevItem = null;
-
-            items = items.SortForTree(includeItemsWithoutExistingParent);
-
-            foreach (var item in items)
-            {
-                // Get parent.
-                if (prevItem != null)
-                {
-                    if (item.ParentItemId != parent.Value.EntityId)
-                    {
-                        if (item.ParentItemId == prevItem.Id)
-                        {
-                            // Level +1.
-                            parent = parent.LastChild;
-                        }
-                        else
-                        {
-                            // Level -x.
-                            while (!parent.IsRoot)
-                            {
-                                if (parent.Value.EntityId == item.ParentItemId)
-                                {
-                                    break;
-                                }
-                                parent = parent.Parent;
-                            }
-                        }
-                    }
-                }
-
-                // Add to parent.
-                if (item.ProviderName.HasValue() && itemProviders.TryGetValue(item.ProviderName, out var provider))
-                {
-                    provider.Value.Append(new MenuItemProviderRequest
-                    {
-                        Origin = origin,
-                        Parent = parent,
-                        Entity = item
-                    });
-
-                    prevItem = item;
-                }
-            }
+            AddChildItems(root, 0);
 
             return root;
-        }
 
-        private static IList<MenuItemRecord> SortForTree(this IEnumerable<MenuItemRecord> items, bool includeItemsWithoutExistingParent)
-        {
-            var result = new List<MenuItemRecord>();
-
-            SortChildItems(0);
-
-            if (includeItemsWithoutExistingParent && result.Count != items.Count())
+            void AddChildItems(TreeNode<MenuItem> parentNode, int parentItemId)
             {
-                foreach (var item in items)
+                if (parentNode == null)
                 {
-                    if (result.FirstOrDefault(x => x.Id == item.Id) == null)
-                    {
-                        result.Add(item);
-                    }
+                    return;
                 }
-            }
 
-            return result;
+                var entities = items.Where(x => x.ParentItemId == parentItemId).OrderBy(x => x.DisplayOrder);
 
-            void SortChildItems(int parentItemId)
-            {
-                var childItems = items.Where(x => x.ParentItemId == parentItemId).ToArray();
-                foreach (var item in childItems)
+                foreach (var entity in entities)
                 {
-                    result.Add(item);
-                    SortChildItems(item.Id);
+                    if (entity.ProviderName.HasValue() && itemProviders.TryGetValue(entity.ProviderName, out var provider))
+                    {
+                        var newNode = provider.Value.Append(new MenuItemProviderRequest
+                        {
+                            Origin = origin,
+                            Parent = parentNode,
+                            Entity = entity
+                        });
+
+                        AddChildItems(newNode, entity.Id);
+                    }
                 }
             }
         }

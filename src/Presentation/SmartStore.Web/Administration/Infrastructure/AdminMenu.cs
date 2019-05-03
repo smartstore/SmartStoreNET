@@ -35,7 +35,7 @@ namespace SmartStore.Admin.Infrastructure
 
             var id = node.Attributes.ContainsKey("id")
                 ? node.Attributes["id"] as string
-                : null;
+                : string.Empty;
 
             root.Id = id;
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Services.Localization;
@@ -11,7 +9,7 @@ namespace SmartStore.Web.Framework.UI
 	{
         public IIconExplorer IconExplorer { get; set; }
 
-        public virtual void Append(MenuItemProviderRequest request)
+        public virtual TreeNode<MenuItem> Append(MenuItemProviderRequest request)
 		{
             Guard.NotNull(request, nameof(request));
             Guard.NotNull(request.Parent, nameof(request.Parent));
@@ -28,8 +26,10 @@ namespace SmartStore.Web.Framework.UI
             }
 
 			var node = AppendToParent(request, ConvertToMenuItem(request));
-			
+
 			ApplyLink(request, node);
+
+            return node;
 		}
 
         protected virtual TreeNode<MenuItem> AppendToParent(MenuItemProviderRequest request, MenuItem item)

@@ -81,14 +81,13 @@ namespace SmartStore.Core.Caching
 				return value;
 			}
 
-			var lockKey = "cache:" + key;
-			if (KeyedLock.IsLockHeld(lockKey))
+			if (_scopeAccessor.Value.HasScope(key))
 			{
 				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
 			}
 
 			// Get the (semaphore) locker specific to this key
-			using (KeyedLock.Lock(lockKey, TimeSpan.FromMinutes(1)))
+			using (KeyedLock.Lock("cache:" + key, TimeSpan.FromMinutes(1)))
 			{
 				// Atomic operation must be outer locked
 				if (!TryGet(key, independent, out value))
@@ -112,14 +111,13 @@ namespace SmartStore.Core.Caching
 				return value;
 			}
 
-			var lockKey = "cache:" + key;
-			if (KeyedLock.IsLockHeld(lockKey))
+			if (_scopeAccessor.Value.HasScope(key))
 			{
 				throw new LockRecursionException(LockRecursionExceptionMessage.FormatInvariant(key));
 			}
 
 			// Get the async (semaphore) locker specific to this key
-			using (await KeyedLock.LockAsync(lockKey, TimeSpan.FromMinutes(1)))
+			using (await KeyedLock.LockAsync("cache:" + key, TimeSpan.FromMinutes(1)))
 			{
 				if (!TryGet(key, independent, out value))
 				{

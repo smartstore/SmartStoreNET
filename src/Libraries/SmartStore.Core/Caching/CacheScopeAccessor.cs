@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
@@ -19,6 +20,11 @@ namespace SmartStore.Core.Caching
 				_stack.TryPeek(out var result);
 				return result;
 			}
+		}
+
+		public bool HasScope(string key)
+		{
+			return _stack.Any(x => x.Key.IsCaseInsensitiveEqual(key));
 		}
 
 		public void PropagateKey(string key)

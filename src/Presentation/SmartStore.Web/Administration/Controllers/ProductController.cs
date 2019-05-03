@@ -1024,7 +1024,12 @@ namespace SmartStore.Admin.Controllers
 		{
 			var gridModel = new GridModel<ProductModel>();
 
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				gridModel.Data = Enumerable.Empty<ProductModel>();
+				NotifyAccessDenied();
+			}
+			else
 			{
 				var fields = new List<string> { "name" };
 				if (_searchSettings.SearchFields.Contains("sku"))
@@ -1063,17 +1068,17 @@ namespace SmartStore.Admin.Controllers
 				//_mediaSettings.CartThumbPictureSize
 				gridModel.Data = products.Select(x =>
 				{
-                    var productModel = new ProductModel
-                    {
-                        Sku = x.Sku,
-                        Published = x.Published,
-                        ProductTypeLabelHint = x.ProductTypeLabelHint,
-                        Name = x.Name,
-                        Id = x.Id,
-                        StockQuantity = x.StockQuantity,
-                        Price = x.Price,
-                        LimitedToStores = x.LimitedToStores
-                    };
+					var productModel = new ProductModel
+					{
+						Sku = x.Sku,
+						Published = x.Published,
+						ProductTypeLabelHint = x.ProductTypeLabelHint,
+						Name = x.Name,
+						Id = x.Id,
+						StockQuantity = x.StockQuantity,
+						Price = x.Price,
+						LimitedToStores = x.LimitedToStores
+					};
 
 					var defaultPicture = pictureInfos.Get(x.MainPictureId.GetValueOrDefault());
 					productModel.PictureThumbnailUrl = _pictureService.GetUrl(defaultPicture, _mediaSettings.CartThumbPictureSize, true);
@@ -1087,12 +1092,6 @@ namespace SmartStore.Admin.Controllers
 				});
 
 				gridModel.Total = products.TotalCount;
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<ProductModel>();
-
-				NotifyAccessDenied();
 			}
 
 			return new JsonResult

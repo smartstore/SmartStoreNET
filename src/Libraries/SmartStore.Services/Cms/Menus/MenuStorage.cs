@@ -405,6 +405,7 @@ namespace SmartStore.Services.Cms
             var query =
                 from m in menuQuery
                 join mi in _menuItemRepository.Table on m.Id equals mi.MenuId
+                where includeHidden || mi.Published
                 orderby mi.ParentItemId, mi.DisplayOrder
                 select mi;
 

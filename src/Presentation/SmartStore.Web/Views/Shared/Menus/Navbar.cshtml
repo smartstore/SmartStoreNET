@@ -9,8 +9,8 @@
     }
 
     var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null 
-        ? Model.SelectedNode.Parent.Value.EntityId 
-        : Model.SelectedNode.Value.EntityId;
+        ? Model.SelectedNode.Parent.Value.Id 
+        : Model.SelectedNode.Value.Id;
     var renderMoreItem = false;
     var rtl = WorkContext.WorkingLanguage.Rtl;
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
@@ -77,7 +77,7 @@
             if (isDropDownActive)
             {
                 item.LinkHtmlAttributes["aria-expanded"] = "false";
-                item.LinkHtmlAttributes["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.EntityId);
+                item.LinkHtmlAttributes["data-target"] = "#dropdown-menu-{0}".FormatInvariant(item.Id);
             }
 
             if (item.IsGroupHeader)
@@ -94,7 +94,7 @@
                 continue;
             }
 
-            <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.EntityId" data-id="@item.EntityId">
+            <li class="@(GetCssClassForNode(node, itemState))" id="main-nav-item-@item.Id" data-id="@item.Id">
                 <a href="@itemUrl" @Html.Attrs(item.LinkHtmlAttributes)>
                     @if (item.Icon.HasValue())
                     {

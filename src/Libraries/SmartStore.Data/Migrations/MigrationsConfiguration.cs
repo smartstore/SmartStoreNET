@@ -729,9 +729,9 @@
             builder.AddOrUpdate("Admin.ContentManagement.AddMenu", "Add menu", "Menü hinzufügen");
             builder.AddOrUpdate("Admin.ContentManagement.EditMenu", "Edit menu", "Menü bearbeiten");
 
-            builder.AddOrUpdate("Admin.ContentManagement.MenuLinks", "Menu links", "Menü Links");
-            builder.AddOrUpdate("Admin.ContentManagement.AddMenuItem", "Add menu link", "Menü Link hinzufügen");
-            builder.AddOrUpdate("Admin.ContentManagement.EditMenuItem", "Edit menu link", "Menü Link bearbeiten");
+            builder.AddOrUpdate("Admin.ContentManagement.MenuLinks", "Menu items", "Menü Links");
+            builder.AddOrUpdate("Admin.ContentManagement.AddMenuItem", "Add menu item", "Menü Link hinzufügen");
+            builder.AddOrUpdate("Admin.ContentManagement.EditMenuItem", "Edit menu item", "Menü Link bearbeiten");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.NoMenuItemsAvailable",
                 "There are no menu links available.",
@@ -751,7 +751,7 @@
 
             builder.AddOrUpdate("Providers.MenuItems.FriendlyName.Entity", "Internal object or URL", "Internes Objekt oder URL");
             builder.AddOrUpdate("Providers.MenuItems.FriendlyName.Route", "Route", "Route");
-            builder.AddOrUpdate("Providers.MenuItems.FriendlyName.Catalog", "Categories", "Warengruppen");
+            builder.AddOrUpdate("Providers.MenuItems.FriendlyName.Catalog", "Category tree", "Warengruppenbaum");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.RouteName", "Route name", "Name der Route");
             builder.AddOrUpdate("Admin.ContentManagement.Menus.RouteValues", "Route values (JSON)", "Route Werte (JSON)");
@@ -799,22 +799,22 @@
                 "Legt das übergeordnete Menüelement fest. Lassen Sie das Feld leer, um ein Menüelement erster Ebene zu erzeugen.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.LinkTarget",
-                "Link target",
-                "Link Ziel",
+                "Target",
+                "Ziel",
                 "Specifies the link target.",
                 "Legt das Ziel des Links fest.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ShortDescription",
                 "Short description",
                 "Kurzbeschreibung",
-                "Specifies a short description. Used as the title attribute for the menu link.",
-                "Legt eine Kurzbeschreibung fest. Wird als Title-Attribut für das Menüelement verwendet.");
+                "Specifies a short description. Used as the 'title' attribute for the menu link.",
+                "Legt eine Kurzbeschreibung fest. Wird als 'title' Attribut für das Menüelement verwendet.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.PermissionNames",
-                "Permission names",
-                "Rechtenamen",
-                "Specifies right names (comma-separated). The menu item is not displayed for users without the corresponding permission.",
-                "Legt Rechtenamen fest (kommagetrennt). Das Menülement wird für Nutzer ohne betreffenden Rechts nicht angezeigt.");
+                "Required permissions",
+                "Erforderliche Rechte",
+				"Specifies access permissions that are required to display the menu item (at least 1 permission must be granted).",
+                "Legt Zugriffsrechte fest, die für die Anzeige des Menüelementes erforderlich sind (mind. 1 Recht muss gewährt sein).");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.Published",
                 "Published",
@@ -831,8 +831,8 @@
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.BeginGroup",
                 "Begin group",
                 "Gruppe beginnen",
-                "For the first menu item, the option causes a heading according to the short description. For subsequent elements, a separator element is inserted above.",
-                "Beim ersten Menüelement bewirkt die Option eine Überschrift gemäß der Kurzbeschreibung. Für nachfolgende Elemente wird oberhalb ein Trennelement eingefügt.");
+				"Inserts a separator before the link and optionally a heading (short description).",
+				"Fügt vor den Link ein Trennelement sowie optional eine Überschrift ein (Kurzbeschreibung).");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.ShowExpanded",
                 "Show expanded",
@@ -841,16 +841,14 @@
                 "Legt fest, ob das Menü anfänglich geöffnet ist, sofern es Kindelemente besitzt.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.NoFollow",
-                "No follow",
-                "No follow",
-                "Sets the menu link to 'no follow' via HTML attribute.",
-                "Legt das Menüelement per HTML-Attribut auf 'no follow' fest.");
+                "nofollow",
+                "nofollow",
+                "Sets the HTML attribute rel='nofollow'.",
+                "Gibt das HTML-Attribut rel='nofollow' aus.");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.NewWindow",
-                "New tab",
-                "Neues Tab",
-                "Specifies that the menu link is to be opened in a new tab.",
-                "Legt fest, dass der Menü Link in einem neuen Tab geöffnet werden soll.");
+                "Open in new browser tab",
+                "In neuem Browsertab öffnen");
 
             builder.AddOrUpdate("Admin.ContentManagement.Menus.Item.Icon",
                 "Icon",

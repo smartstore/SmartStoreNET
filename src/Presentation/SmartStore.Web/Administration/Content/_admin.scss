@@ -436,17 +436,29 @@ legend {
 		text-align: center;
 
 		&:hover {
-			color: $gray-600;
+			color: $gray-700;
 		}
 
 		> i {
-			font-size: 1.25rem;
+			font-size: 1rem; 
 		}
 	}
 
 	&:hover > .hint {
 		opacity: 1;
 	}
+
+    .col-form-label-sm + .hint {
+        width: 1rem;
+        margin-bottom: 0;
+        line-height: $input-line-height-sm;
+		padding-top: calc(#{$input-padding-y-sm} + #{$input-border-width});
+		padding-bottom: calc(#{$input-padding-y-sm} + #{$input-border-width});
+
+        > i {
+            font-size: inherit;
+        }
+    }
 }
 
 

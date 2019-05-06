@@ -128,6 +128,7 @@
 * UPS rates were way too high due to incorrect API request
 * #1475 select boxes must be wrapped on mobile devices if data-select-url is set  
 * Fixed the redirection to the homepage for pages which are loaded while the application is restarted
+* Fixes product feeds expect a different base price formatting.
 
 
 ## SmartStore.NET 3.1.5

@@ -22,6 +22,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Modelling;
@@ -667,12 +668,28 @@ namespace SmartStore.Services.DataExchange.Export
 
 				result._ProductTemplateViewPath = ctx.ProductTemplates.ContainsKey(product.ProductTemplateId)
 					? ctx.ProductTemplates[product.ProductTemplateId]
-					: "";
+					: string.Empty;
 
-				result._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
-					_priceCalculationService.Value, ctx.ContextCustomer, ctx.ContextCurrency, decimal.Zero, true);
+                // A standard, language independent base price formatting: <formattedPrice> / <basePriceBaseAmount> <basePriceMeasureUnit>
+                var basePriceInfo = string.Empty;
 
-				ToDeliveryTime(ctx, result, product.DeliveryTimeId);
+                if (product.BasePriceHasValue && product.BasePriceAmount != decimal.Zero)
+                {
+                    var finalPrice = _priceCalculationService.Value.GetFinalPrice(product, ctx.ContextCustomer, true);
+                    var productPrice = _taxService.Value.GetProductPrice(product, finalPrice, ctx.ContextCustomer, ctx.ContextCurrency, out var taxrate);
+                    productPrice = _currencyService.Value.ConvertFromPrimaryStoreCurrency(productPrice, ctx.ContextCurrency);
+
+                    var priceIncludesTax = _services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+                    var priceTemplate = _services.Localization.GetResource("Products.BasePriceInfo.LanguageInsensitive");
+                    var formattedPriceBase = System.Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
+                    var formattedPrice = _priceFormatter.Value.FormatPrice(formattedPriceBase, true, ctx.ContextCurrency, ctx.ContextLanguage, priceIncludesTax, false);
+
+                    basePriceInfo = priceTemplate.FormatInvariant(formattedPrice, product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
+                }
+
+                result._BasePriceInfo = basePriceInfo;
+
+                ToDeliveryTime(ctx, result, product.DeliveryTimeId);
 				ToQuantityUnit(ctx, result, product.QuantityUnitId);
 
                 result._Localized = GetLocalized(ctx, translations, urlRecords, product,

@@ -870,6 +870,10 @@
 
             builder.Delete("Admin.Configuration.Settings.GeneralCommon.SocialSettings.GooglePlusLink");
             builder.Delete("Admin.Configuration.Settings.GeneralCommon.SocialSettings.GooglePlusLink.Hint");
+
+            builder.AddOrUpdate("Products.BasePriceInfo.LanguageInsensitive",
+                "{0} / {1} {2}",
+                "{0} / {1} {2}");
         }
     }
 }

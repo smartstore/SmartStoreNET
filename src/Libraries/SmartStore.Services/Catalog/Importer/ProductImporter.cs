@@ -359,7 +359,11 @@ namespace SmartStore.Services.Catalog.Importer
                         row.SetProperty(context.Result, (x) => x.CustomerRoleId);
                         row.SetProperty(context.Result, (x) => x.Quantity);
                         row.SetProperty(context.Result, (x) => x.Price);
-                        row.SetProperty(context.Result, (x) => x.CalculationMethod);
+
+                        if (row.TryGetDataValue("CalculationMethod", out int calcMethod))
+                        {
+                            tierPrice.CalculationMethod = (TierPriceCalculationMethod)calcMethod;
+                        }
 
                         if (row.IsTransient)
                         {

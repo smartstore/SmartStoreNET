@@ -17,5 +17,5 @@ namespace SmartStore.Web.Framework.Controllers
 	[CheckAffiliate(Order = 100)]
 	public abstract partial class PublicControllerBase : SmartController
     {
-    }
+	}
 }

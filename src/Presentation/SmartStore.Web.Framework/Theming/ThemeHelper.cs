@@ -26,7 +26,7 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			ThemesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 
-			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|js|cshtml|svg|json|liquid)(\?explicit)*$".FormatInvariant(ThemesBasePath);
+			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|scss|js|cshtml|svg|json|liquid)(\?base)*$".FormatInvariant(ThemesBasePath);
 			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_themeVarsPattern = new Regex(@"\.(db|app)/[_]?themevars(.scss)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_moduleImportsPattern = new Regex(@"\.app/[_]?moduleimports.scss", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -116,6 +116,22 @@ namespace SmartStore.Web.Framework.Theming
 
 		internal static StyleSheetResult IsStyleSheet(string path)
 		{
+			// Handle virtual Sass imports with '?base' query
+			// TBD: (mc) other query params could exist
+			var qindex = path.IndexOf('?');
+			if (qindex > -1)
+			{
+				var pathWithoutQuery = path.Substring(0, qindex);
+				var query = path.Substring(pathWithoutQuery.Length);
+				if (query.StartsWith("?base", StringComparison.OrdinalIgnoreCase))
+				{
+					// Process again, this time without query
+					var result = IsStyleSheet(pathWithoutQuery);
+					result.IsBaseImport = true;
+					return result;
+				}
+			}
+
 			var extension = Path.GetExtension(path).ToLowerInvariant();
 
 			if (extension == ".cshtml")
@@ -149,17 +165,6 @@ namespace SmartStore.Web.Framework.Theming
 						return new StyleSheetResult { Path = path, IsBundle = true };
 					}
 				}
-			}
-			else if (extension.Contains("?explicit"))
-			{
-				// Handle virtual Sass imports with '?explicit' query
-				// TBD: (mc) other query params could exist
-
-				// Process again, this time without query
-				var pathWithoutQuery = path.Substring(0, path.IndexOf('?'));
-				var result = IsStyleSheet(pathWithoutQuery);
-				result.IsExplicit = true;
-				return result;
 			}
 
 			return null;
@@ -204,7 +209,7 @@ namespace SmartStore.Web.Framework.Theming
 		public bool IsCss { get; set; }
 		public bool IsSass { get; set; }
 		public bool IsBundle { get; set; }
-		public bool IsExplicit { get; set; }
+		public bool IsBaseImport { get; set; }
 
 		public bool IsPreprocessor
 		{

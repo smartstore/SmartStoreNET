@@ -13,8 +13,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 	{
 		private readonly SassCheckedPathStack _sassCheckedPathStack;
 
-		private string _yoooooo;
-
 		public BundlingVirtualPathProvider(VirtualPathProvider previous)
 			: base(previous)
         {
@@ -48,15 +46,6 @@ namespace SmartStore.Web.Framework.Theming.Assets
 					return true;
 				}
 			}
-
-			//if (virtualPath.Contains("slick.scss"))
-			//{
-			//	var xxx = true;
-			////	throw new Exception("dfsfs");
-			//}
-
-			//System.Diagnostics.Debug.WriteLine("VPATH: " + virtualPath);
-			_yoooooo += virtualPath + Environment.NewLine;
 
 			exists = base.FileExists(virtualPath);
 
@@ -200,7 +189,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 				return false;
 			}
 
-			if (currentPath.StyleResult.IsExplicit && lastPath.StyleResult.IsExplicit && currentPath.FileName == lastPath.FileName)
+			if (currentPath.StyleResult.IsBaseImport && lastPath.StyleResult.IsBaseImport && currentPath.FileName == lastPath.FileName)
 			{
 				return true;
 			}
@@ -222,7 +211,7 @@ namespace SmartStore.Web.Framework.Theming.Assets
 			}
 
 			// slick.(sass|css) > slick.scss
-			if (!currentPath.StyleResult.IsExplicit && _styleExtensions.Contains(currentPath.Extension) && currentPath.FileNameWithoutExtension == lastPath.FileNameWithoutExtension)
+			if (!currentPath.StyleResult.IsBaseImport && _styleExtensions.Contains(currentPath.Extension) && currentPath.FileNameWithoutExtension == lastPath.FileNameWithoutExtension)
 			{
 				return true;
 			}

@@ -90,6 +90,8 @@ namespace SmartStore.Web.Framework.Filters
 										ViewData = new ViewDataDictionary<HandleErrorInfo>(new HandleErrorInfo(filterContext.Exception, controllerName, actionName)),
 										TempData = filterContext.Controller.TempData
 									};
+
+									_workContext.Value.IsAdmin = false;
 								}
 
 								filterContext.ExceptionHandled = true;
@@ -118,6 +120,9 @@ namespace SmartStore.Web.Framework.Filters
 					ViewData = new ViewDataDictionary<HandleErrorInfo>(new HandleErrorInfo(new HttpException(404, "The resource does not exist."), descriptor.ActionName, descriptor.ControllerDescriptor.ControllerName)),
 					TempData = filterContext.Controller.TempData
 				};
+
+				_workContext.Value.IsAdmin = false;
+
 				requestContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
 
 				// prevent IIS 7.0 classic mode from handling the 404/500 itself

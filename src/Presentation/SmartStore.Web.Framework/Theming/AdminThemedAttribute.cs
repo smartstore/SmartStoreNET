@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using SmartStore.Core;
 
 namespace SmartStore.Web.Framework.Theming
 {
@@ -21,14 +22,18 @@ namespace SmartStore.Web.Framework.Theming
 			"~/Administration/Views/Shared/{0}"
 		};
 
+		public Lazy<IWorkContext> WorkContext { get; set; }
+
 		public virtual void OnResultExecuting(ResultExecutingContext filterContext)
 		{
 			if (filterContext?.Result == null)
 				return;
 
-			// add extra view location formats to all view results (even the partial ones)
+			// Add extra view location formats to all view results (even the partial ones)
 			// {0} is appended by view engine
 			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = ExtraAreaViewLocations;
+
+			WorkContext.Value.IsAdmin = true;
 		}
 
 		public virtual void OnResultExecuted(ResultExecutedContext filterContext)

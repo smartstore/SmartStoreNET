@@ -1115,7 +1115,9 @@ namespace SmartStore.Web.Controllers
 						finalPriceWithDiscountBase = _priceCalculationService.GetFinalPrice(product, productBundleItems,
 							customer, attributesTotalPriceBase, true, selectedQuantity, productBundleItem);
 
-						finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
+                        var basePriceAdjustment = finalPriceWithDiscountBase - finalPriceWithoutDiscountBase;
+
+                        finalPriceWithoutDiscountBase = _taxService.GetProductPrice(product, finalPriceWithoutDiscountBase, out taxRate);
 						finalPriceWithDiscountBase = _taxService.GetProductPrice(product, finalPriceWithDiscountBase, out taxRate);
 
 						oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, currency);
@@ -1162,8 +1164,6 @@ namespace SmartStore.Web.Controllers
                             {
                                 model.ProductPrice.NoteWithDiscount = T("Products.Bundle.PriceWithDiscount.Note");
                             }
-
-                            var basePriceAdjustment = (_priceCalculationService.GetFinalPrice(product, true) - finalPriceWithDiscount) * (-1);
 
                             model.BasePriceInfo = product.GetBasePriceInfo(
                                 _localizationService, 

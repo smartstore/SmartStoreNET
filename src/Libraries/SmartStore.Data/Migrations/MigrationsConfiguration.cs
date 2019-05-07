@@ -874,6 +874,10 @@
             builder.AddOrUpdate("Products.BasePriceInfo.LanguageInsensitive",
                 "{0} / {1} {2}",
                 "{0} / {1} {2}");
-        }
+
+			builder.AddOrUpdate("Common.Advanced",
+				"Advanced",
+				"Erweitert");
+		}
     }
 }

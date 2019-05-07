@@ -29,11 +29,24 @@ namespace SmartStore.Web.Framework.Theming
 			if (filterContext?.Result == null)
 				return;
 
-			// Add extra view location formats to all view results (even the partial ones)
-			// {0} is appended by view engine
-			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = ExtraAreaViewLocations;
+			if (!filterContext.Result.IsHtmlViewResult())
+				return;
 
-			WorkContext.Value.IsAdmin = true;
+			if (filterContext.HttpContext.Response.StatusCode < 300)
+			{
+				var isNonAdmin = filterContext.HttpContext.GetItem<bool>("IsNonAdmin", forceCreation: false);
+				if(!isNonAdmin)
+				{
+					// Add extra view location formats to all view results (even the partial ones)
+					// {0} is appended by view engine
+					filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = ExtraAreaViewLocations;
+
+					if (!filterContext.IsChildAction)
+					{
+						WorkContext.Value.IsAdmin = true;
+					}
+				}
+			}
 		}
 
 		public virtual void OnResultExecuted(ResultExecutedContext filterContext)

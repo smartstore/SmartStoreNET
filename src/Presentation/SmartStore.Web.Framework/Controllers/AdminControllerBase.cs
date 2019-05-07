@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Theming;
@@ -7,8 +8,22 @@ using SmartStore.Web.Framework.Theming;
 namespace SmartStore.Web.Framework.Controllers
 {
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-	public sealed class NonAdminAttribute : Attribute
+	public sealed class NonAdminAttribute : FilterAttribute, IActionFilter
 	{
+		public Lazy<IWorkContext> WorkContext { get; set; }
+
+		public void OnActionExecuting(ActionExecutingContext filterContext)
+		{
+		}
+
+		public void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+			if (!filterContext.IsChildAction)
+			{
+				WorkContext.Value.IsAdmin = false;
+				filterContext.HttpContext.Items["IsNonAdmin"] = true;
+			}
+		}
 	}
 
 	[AdminValidateIpAddress(Order = 100)]

@@ -8,9 +8,10 @@
         return;
     }
 
-    var currentNavItem = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null 
-        ? Model.SelectedNode.Parent.Value.Id 
-        : Model.SelectedNode.Value.Id;
+    var selectedEntityId = Model.SelectedNode.IsLeaf && Model.SelectedNode.Parent != null 
+        ? Model.SelectedNode.Parent.Value.EntityId
+        : Model.SelectedNode.Value.EntityId;
+
     var renderMoreItem = false;
     var rtl = WorkContext.WorkingLanguage.Rtl;
     var hasIcons = root.Children.Any(x => x.Value.Icon.HasValue());
@@ -50,7 +51,7 @@
     </div>
 
     <ul class="navbar-nav flex-row flex-nowrap" 
-        data-selected-menu-item="@currentNavItem" 
+        data-selected-entity-id="@selectedEntityId"
         data-current-category-id="@CurrentCategoryId" 
         data-current-product-id="@CurrentProductId"
         data-current-manufacturer-id="@CurrentManufacturerId">

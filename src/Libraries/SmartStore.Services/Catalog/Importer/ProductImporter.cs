@@ -390,7 +390,11 @@ namespace SmartStore.Services.Catalog.Importer
                 // Update has tier prices property for inserted records.
                 var insertedProductIds = new HashSet<int>(batch.Where(x => x.IsNew).Select(x => x.Entity.ProductId));
                 var products = _productService.GetProductsByIds(insertedProductIds.ToArray());
-                products.Each(x => _productService.UpdateHasTierPricesProperty(x));
+                if (products.Any())
+                {
+                    products.Each(x => _productService.UpdateHasTierPricesProperty(x));
+                    _productRepository.Context.SaveChanges();
+                }
             }
         }
 
@@ -592,7 +596,11 @@ namespace SmartStore.Services.Catalog.Importer
 
                 // Update lowest attribute combination price property.
                 var products = _productService.GetProductsByIds(lowestCombinationPriceProductIds.ToArray());
-                products.Each(x => _productService.UpdateLowestAttributeCombinationPriceProperty(x));
+                if (products.Any())
+                {
+                    products.Each(x => _productService.UpdateLowestAttributeCombinationPriceProperty(x));
+                    _productRepository.Context.SaveChanges();
+                }
             }
         }
 

@@ -65,6 +65,6 @@
 
 <script data-origin="DateTime">
 	$(function () {
-		$("#@(id)-parent").datetimepicker({ format: '@(format)', useCurrent: false });
+		$("#@(id)-parent").datetimepicker({ format: '@(format)', useCurrent: false, locale: moment.locale() });
 	});
 </script>

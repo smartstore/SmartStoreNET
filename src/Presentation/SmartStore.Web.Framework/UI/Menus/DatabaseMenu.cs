@@ -67,7 +67,7 @@ namespace SmartStore.Web.Framework.UI
 
         public override string Name { get; }
 
-        public override bool ApplyPermissions => false;
+        public override bool ApplyPermissions => true;
 
         public override void ResolveElementCounts(TreeNode<MenuItem> curNode, bool deep = false)
         {

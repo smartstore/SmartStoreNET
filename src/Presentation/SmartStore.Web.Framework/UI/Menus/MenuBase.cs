@@ -59,7 +59,8 @@ namespace SmartStore.Web.Framework.UI
 		protected virtual void DoApplyPermissions(TreeNode<MenuItem> root)
 		{
 			// Hide based on permissions
-			root.Traverse(x => {
+			root.Traverse(x =>
+            {
 				if (!MenuItemAccessPermitted(x.Value))
 				{
 					x.Value.Visible = false;

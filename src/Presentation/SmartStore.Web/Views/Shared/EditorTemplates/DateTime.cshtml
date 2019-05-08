@@ -59,15 +59,12 @@
 <div class="@CssClass" id="@id-parent" data-date="@value" data-target-input="nearest">
     @Html.TextBox("", value, new { @class = "form-control datetimepicker-input", data_target = "#" + id + "-parent", data_format = format })
 	<div class="input-group-append input-group-addon" data-target="#@(id)-parent" data-toggle="datetimepicker">
-		<span class="input-group-text"><i class="fa fa-calendar-alt"></i></span>
+		<span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
 	</div>
 </div>
 
-@using (Html.BeginZoneContent("end"))
-{
-	<script data-origin="DateTime">
-		$(function () {
-			$("#@(id)-parent").datetimepicker({ format: '@(format)', useCurrent: false });
-		});
-	</script>
-}
+<script data-origin="DateTime">
+	$(function () {
+		$("#@(id)-parent").datetimepicker({ format: '@(format)', useCurrent: false });
+	});
+</script>

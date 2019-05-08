@@ -44,12 +44,9 @@
 	</div>
 </div>
 
-@using (Html.BeginZoneContent("end"))
-{
-	<script data-origin="Time">
-		$(function () {
-			$("#@(id)-parent").datetimepicker({ format: 'LT', useCurrent: false });
-		});
-	</script>
-}
+<script data-origin="Time">
+	$(function () {
+		$("#@(id)-parent").datetimepicker({ format: 'LT', useCurrent: true });
+	});
+</script>
 

@@ -80,7 +80,7 @@
 * #1571 Compare products only shows one specification attribute option
 * #1539 Allow signing in with both e-mail and username 
 * Trusted Shops: Trustbadge won't be displayed in Popups & Iframes anymore
-* #1461 Admin Grid: filter dialog will be displayed entirely even when grid has no data to display 
+* #1461 Admin Grid: filter dialog will be displayed entirely even when grid has no data to display
 
 ### Bugfixes
 * In a multi-store environment, multiple topics with the same system name cannot be resolved reliably.
@@ -129,6 +129,7 @@
 * #1475 select boxes must be wrapped on mobile devices if data-select-url is set  
 * Fixed the redirection to the homepage for pages which are loaded while the application is restarted
 * Fixes product feeds expect a different base price formatting.
+* #1369 Shopping cart shows "Discount code applied", although it is not applied due to a lower tier price.
 
 
 ## SmartStore.NET 3.1.5

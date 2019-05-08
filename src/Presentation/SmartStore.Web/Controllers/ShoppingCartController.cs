@@ -1755,37 +1755,51 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("applydiscountcouponcode")]
         public ActionResult ApplyDiscountCoupon(string discountcouponcode, ProductVariantQuery query)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var model = new ShoppingCartModel();
+            model.DiscountBox.IsWarning = true;
+
+            var customer = _workContext.CurrentCustomer;
+            var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
             ParseAndSaveCheckoutAttributes(cart, query);
 
-            var model = new ShoppingCartModel();
-			model.DiscountBox.IsWarning = true;
-
-			if (!String.IsNullOrWhiteSpace(discountcouponcode))
+            if (discountcouponcode.HasValue())
 			{
 				var discount = _discountService.GetDiscountByCouponCode(discountcouponcode);
 				var isDiscountValid = 
 					discount != null &&
 					discount.RequiresCouponCode &&
-					_discountService.IsDiscountValid(discount, _workContext.CurrentCustomer, discountcouponcode);
+					_discountService.IsDiscountValid(discount, customer, discountcouponcode);
 
 				if (isDiscountValid)
 				{
-					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
+                    var oldCartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;
 
-					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
-					model.DiscountBox.IsWarning = false;
-				}
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
+
+                    var newCartTotal = ((decimal?)_orderTotalCalculationService.GetShoppingCartTotal(cart)) ?? decimal.Zero;
+
+                    if (oldCartTotal != newCartTotal)
+                    {
+                        model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
+                        model.DiscountBox.IsWarning = false;
+                    }
+                    else
+                    {
+                        model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.NoMoreDiscount");
+
+                        _genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.DiscountCouponCode, null);
+                    }
+                }
 				else
 				{
 					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
-				}
+                }
 			}
 			else
 			{
 				model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
-			}
+            }
 
             PrepareShoppingCartModel(model, cart);
             return View(model);

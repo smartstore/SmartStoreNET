@@ -878,6 +878,10 @@
 			builder.AddOrUpdate("Common.Advanced",
 				"Advanced",
 				"Erweitert");
+
+            builder.AddOrUpdate("ShoppingCart.DiscountCouponCode.NoMoreDiscount",
+                "Further discounts are not possible.",
+                "Eine weitere Rabattierung ist nicht möglich.");
 		}
     }
 }

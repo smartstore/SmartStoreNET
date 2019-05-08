@@ -1,13 +1,13 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Common
 {
     [TestFixture]
-    public class AddressPeristenceTests : PersistenceTest
+    public class AddressPersistenceTests : PersistenceTest
     {
         [Test]
         public void Can_save_and_load_address()

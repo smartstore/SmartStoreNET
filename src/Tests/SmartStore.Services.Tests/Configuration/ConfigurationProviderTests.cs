@@ -1,7 +1,7 @@
-﻿using SmartStore.Core.Configuration;
+﻿using NUnit.Framework;
+using SmartStore.Core.Configuration;
 using SmartStore.Services.Configuration;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Services.Tests.Configuration
 {
@@ -19,7 +19,7 @@ namespace SmartStore.Services.Tests.Configuration
         [Test]
         public void Can_get_settings()
         {
-            // requires settings to be set in app.config in format TestSettings.[PropertyName]
+            // Requires settings to be set in app.config in format TestSettings.[PropertyName].
 			var settings = _settingService.LoadSetting<TestSettings>();
             settings.ServerName.ShouldEqual("Ruby");
             settings.Ip.ShouldEqual("192.168.0.1");

@@ -176,8 +176,21 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public SerializableImportResult Clone()
 		{
-			return (SerializableImportResult)this.MemberwiseClone();
-		}
+            var result = new SerializableImportResult();
+            result.StartDateUtc = StartDateUtc;
+            result.EndDateUtc = EndDateUtc;
+            result.TotalRecords = TotalRecords;
+            result.SkippedRecords = SkippedRecords;
+            result.NewRecords = NewRecords;
+            result.ModifiedRecords = ModifiedRecords;
+            result.AffectedRecords = AffectedRecords;
+            result.Cancelled = Cancelled;
+            result.Warnings = Warnings;
+            result.Errors = Errors;
+            result.LastError = LastError;
+
+            return result;
+        }
 	}
 
 

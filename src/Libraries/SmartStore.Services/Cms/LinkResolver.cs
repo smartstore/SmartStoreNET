@@ -97,7 +97,7 @@ namespace SmartStore.Services.Cms
 			else
 			{
 				var cacheKey = LINKRESOLVER_KEY.FormatInvariant(
-					d.Expression,
+					d.Expression.EmptyNull().ToLower(),
 					languageId,
 					storeId,
 					string.Join(",", roles.Where(x => x.Active).Select(x => x.Id)));

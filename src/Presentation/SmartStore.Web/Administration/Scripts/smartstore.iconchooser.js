@@ -3,6 +3,13 @@ $(function () {
         var map = {};
         $(select).data('icons', map);
 
+        // Add icon data of selected icon (intial option) to the map very early
+        var selectedOption = $(select).find('option[data-icon][selected]');
+        if (selectedOption.length) {
+            var icon = selectedOption.data('icon');
+            map[icon.id] = icon;
+        }
+
         $(select).select2({
             escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
             minimumInputLength: 0,
